@@ -144,7 +144,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private boolean enableOcclusion = false;
 
     private boolean useSimulatedDepth = false;
-
+    boolean isDepthSupported = false;
+    private Config.DepthMode depthMode = Config.DepthMode.RAW_DEPTH_ONLY;
     // Rendering components
     private ARFilamentRenderer arFilamentRenderer;
     private QuadRenderer quadRenderer;
@@ -189,6 +190,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private float GROUND_LEVEL = 1.0f;  
     private float invisibleFloor = -1.0f;
     private boolean groundDetected = false;
+    private int detectedPlaneType = 1;
     private float lastPhysicsUpdateTime = 0.0f;
 
     private List<ARNode> arNodes = Nodes();
@@ -492,11 +494,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         // Draw planes and feature points
-        /*if (PlaneDetectionType() != 0) {
-            Log.d(LOG_TAG, " has tracking planes? " + hasTrackingPlane());
+        if (PlaneDetectionType() != 0) {
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+
+            Log.d(LOG_TAG, " has tracking planes? ");
             planeRenderer.drawPlanes(arViewRender, session.getAllTrackables(Plane.class),
                 camera.getDisplayOrientedPose(), projectionMatrix);
-        }*/
+        }
 
         emitPlaneDetectedEvent();
 
@@ -504,6 +509,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     public void drawObjects(ARViewRender render, List<ARNode> objectNodes,
                             float[] viewMatrix, float[] projectionMatrix) {
+
+
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
         GLES30.glViewport(0, 0, currentViewportWidth, currentViewportHeight);
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
@@ -624,6 +631,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return nearest;
     }
 
+    private android.media.Image getDepthBits(Frame lastFrame) throws NotYetAvailableException {
+        if (depthMode == Config.DepthMode.AUTOMATIC) {
+            return lastFrame.acquireDepthImage16Bits();
+        } else {
+            return lastFrame.acquireRawDepthImage16Bits();
+        }
+    }
+
     @Override
     public void onDrawFrame(ARViewRender render) {
         if (session == null) return;
@@ -652,6 +667,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             } catch (CameraNotAvailableException e) {
                 Log.e(LOG_TAG, "Camera not available: " + e.getMessage());
                 return;
+            } catch (com.google.ar.core.exceptions.SessionPausedException e) {
+                // Session not yet resumed — skip this frame
+                return;
             }
 
             // OpenGL draws — camera feed, planes, sphere/box/capsule
@@ -669,6 +687,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     backgroundRenderer.setUseDepthVisualization(render, false);
                     backgroundRenderer.setUseOcclusion(render,
                         depthSettings.useDepthForOcclusion());
+                    Log.d("ARView3d", "bgRenderer useDepthForOcclusion: " + depthSettings.useDepthForOcclusion());
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "BackgroundRenderer setup: " + e.getMessage());
                     return;
@@ -689,12 +708,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (lastCamera.getTrackingState() == TrackingState.PAUSED) return;
 
             // Depth (unchanged)
-            if (lastCamera.getTrackingState() == TrackingState.TRACKING
+            if (isDepthSupported
+                && lastCamera.getTrackingState() == TrackingState.TRACKING
                 && (depthSettings.useDepthForOcclusion()
                 || depthSettings.depthColorVisualizationEnabled())) {
+                Log.d("ARView3d", "last camera tracking, useDepthForOcclusion: " + depthSettings.useDepthForOcclusion());
+
 
                 try (android.media.Image depthImage =
-                         lastFrame.acquireDepthImage16Bits()) {
+                         getDepthBits(lastFrame)) {
+                    Log.d("ARView3d", "got depthBits");
                     useSimulatedDepth = false;
                     backgroundRenderer.updateCameraDepthTexture(depthImage);
                     if (arFilamentRenderer != null) {
@@ -708,12 +731,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                             Coordinates2d.TEXTURE_NORMALIZED, texCoords);
                         objRenderer.updateDepthTexture(depthImage,
                             calculateTransformMatrix(texCoords));
+                        Log.i(LOG_TAG, "objRenderer updateDepthTexture");
+
+
                     }
                 } catch (NotYetAvailableException e) {
-                    // normal
+                    Log.d(LOG_TAG, "Depth not yet available");
                 } catch (IllegalStateException e) {
                     useSimulatedDepth = true;
                 }
+            }
+
+            if (!isDepthSupported) {
+                Log.i(LOG_TAG, "Depth not supported, setting PlaneFinder");
+               objRenderer.setPlaneFinder(this::findOccludingPlane);
             }
 
             lastCamera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
@@ -767,15 +798,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             planeRenderer       = new PlaneRenderer(arViewRender);
             pointCloudRenderer  = new PointCloudRenderer(arViewRender);
             objRenderer         = new ObjectRenderer(arViewRender);
-            // QuadRenderer REMOVED — no composite pass needed
 
-            // ARFilamentRenderer no longer takes a GLSurfaceView.
-            // It manages its own EGL context via Engine.create().
             arFilamentRenderer = new ARFilamentRenderer(this.container);
             arFilamentRenderer.initializeEngine(); // Phase 1
 
-            // Phase 2 (SwapChain creation) happens automatically when
-            // filamentSurfaceView fires surfaceChanged — see constructor.
 
             Log.d(LOG_TAG, "Renderers initialized");
         } catch (IOException e) {
@@ -833,10 +859,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i("hit is, pose is, trackable is ", hit.toString() + " " + a.getPose() + " " + mostRecentTrackable);
                 if (mostRecentTrackable instanceof Plane) { //most reliably tracked
+
+                    Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), false, true);
 
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
+                    Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
+
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
                 } else if (mostRecentTrackable instanceof Point && useSimulatedDepth) {
                     Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
@@ -844,7 +874,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
                     || (mostRecentTrackable instanceof DepthPoint)) {
 
-
+                    Log.i("instantplacement","instantplacement");
                     //ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
                     //ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
                 } /*else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
@@ -1257,11 +1287,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private void configureSession() {
 
         Config config = session.getConfig();
-        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
+        //config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
+        config.setLightEstimationMode(Config.LightEstimationMode.AMBIENT_INTENSITY);
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
 
         // This is the critical part for plane detection
-        if (PlaneDetectionType() == 1 || PlaneDetectionType() == 3) {
+        if (PlaneDetectionType() == 1) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
         } else if (PlaneDetectionType() == 2) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
@@ -1271,31 +1302,111 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
         }
 
-
-
-
-// Check whether the user's device supports the Depth API.
-        boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
         boolean isGeospatialSupported =
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
         Log.i(LOG_TAG, "ARCore: geospatial supported ? " + isGeospatialSupported);
 
-        if (isDepthSupported) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        } else {
 
-            config.setDepthMode(Config.DepthMode.DISABLED);
-        }
-        /*if (isDepthSupported && isGeospatialSupported) {
-            // These three settings are needed to use Geospatial Depth.
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-            config.setGeospatialMode(Config.GeospatialMode.ENABLED);
-            Log.i(LOG_TAG, "setting geospatial mode " + isGeospatialSupported);
-           // config.setStreetscapeGeometryMode(Config.StreetscapeGeometryMode.ENABLED);
-        }*/
-
-        config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
+        config.setDepthMode(Config.DepthMode.DISABLED);
         session.configure(config);
+
+        configureDepth(config);
+
+    }
+    private void configureDepth(Config config) {
+
+        Log.i(LOG_TAG, "configureDepth: lightMode=" + config.getLightEstimationMode()
+            + " planeFinding=" + config.getPlaneFindingMode()
+            + " updateMode=" + config.getUpdateMode());
+
+        if (EnableOcclusion()) {
+            for (Config.DepthMode mode : new Config.DepthMode[]{
+                Config.DepthMode.AUTOMATIC, Config.DepthMode.RAW_DEPTH_ONLY}) {
+                config.setDepthMode(mode);
+                try {
+                    session.configure(config);
+                    isDepthSupported = true;
+                    depthMode = mode;
+                    Log.i(LOG_TAG, "Depth enabled: " + mode);
+                    return;
+                } catch (com.google.ar.core.exceptions.UnsupportedConfigurationException e) {
+                    Log.i(LOG_TAG, mode + " not supported, trying next");
+                }
+            }
+            //TODO: CSB we should inform the user depth is not supported if they have turned on Occlusion
+        }
+        config.setDepthMode(Config.DepthMode.DISABLED);
+        session.configure(config);
+        isDepthSupported = false;
+        depthMode = Config.DepthMode.DISABLED;
+        Log.i(LOG_TAG, "Depth not supported");
+    }
+
+    private Plane findOccludingPlane(float[] sphereWorldPos, float[] cameraWorldPos) {
+        Collection<Plane> planes = session.getAllTrackables(Plane.class);
+
+        // Ray from camera through sphere
+        float[] rayDir = {
+            sphereWorldPos[0] - cameraWorldPos[0],
+            sphereWorldPos[1] - cameraWorldPos[1],
+            sphereWorldPos[2] - cameraWorldPos[2]
+        };
+        float distanceToSphere = (float) Math.sqrt(
+            rayDir[0]*rayDir[0] + rayDir[1]*rayDir[1] + rayDir[2]*rayDir[2]);
+        // Normalize ray direction
+        rayDir[0] /= distanceToSphere;
+        rayDir[1] /= distanceToSphere;
+        rayDir[2] /= distanceToSphere;
+
+        for (Plane plane : planes) {
+            if (plane.getTrackingState() != TrackingState.TRACKING) continue;
+            if (plane.getExtentX() < 0.3f || plane.getExtentZ() < 0.3f) continue;
+
+            // Get plane normal from pose matrix column 1 (local Y axis)
+            float[] poseMatrix = new float[16];
+            plane.getCenterPose().toMatrix(poseMatrix, 0);
+            float nx = poseMatrix[4], ny = poseMatrix[5], nz = poseMatrix[6];
+
+            // Plane equation: dot(normal, point) + d = 0
+            float[] center = plane.getCenterPose().getTranslation();
+            float d = -(nx * center[0] + ny * center[1] + nz * center[2]);
+
+            // Ray-plane intersection: t = -(dot(normal, rayOrigin) + d) / dot(normal, rayDir)
+            float denom = nx * rayDir[0] + ny * rayDir[1] + nz * rayDir[2];
+
+            // Ray parallel to plane — no intersection
+            if (Math.abs(denom) < 1e-6f) continue;
+
+            float t = -(nx * cameraWorldPos[0] + ny * cameraWorldPos[1]
+                + nz * cameraWorldPos[2] + d) / denom;
+
+            // Intersection must be between camera and sphere
+            if (t < 0.05f || t > distanceToSphere - 0.05f) continue;
+
+            // Intersection point in world space
+            float[] hitPoint = {
+                cameraWorldPos[0] + t * rayDir[0],
+                cameraWorldPos[1] + t * rayDir[1],
+                cameraWorldPos[2] + t * rayDir[2]
+            };
+
+            // Transform hit point into plane local space to check extent
+            float[] invPlaneMatrix = new float[16];
+            android.opengl.Matrix.invertM(invPlaneMatrix, 0, poseMatrix, 0);
+            float[] localHit = new float[4];
+            android.opengl.Matrix.multiplyMV(localHit, 0, invPlaneMatrix, 0,
+                new float[]{hitPoint[0], hitPoint[1], hitPoint[2], 1f}, 0);
+
+            float halfX = plane.getExtentX() / 2f;
+            float halfZ = plane.getExtentZ() / 2f;
+            if (Math.abs(localHit[0]) > halfX || Math.abs(localHit[2]) > halfZ) continue;
+
+            Log.i(LOG_TAG, "Found occluding plane! type=" + plane.getType()
+                + " t=" + t + " distToSphere=" + distanceToSphere
+                + " hitLocalX=" + localHit[0] + " hitLocalZ=" + localHit[2]);
+            return plane;
+        }
+        return null;
     }
 
     // Update lighting estimation from ARCore
@@ -1338,42 +1449,46 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     // Resume AR session
     @Override
     public void onResume() {
-        if (session != null) {
-            return;
-        }
+        if (session == null) {
 
-        try {
-            // Request ARCore installation if needed
-            switch (ArCoreApk.getInstance().requestInstall($form(), !installRequested)) {
-                case INSTALL_REQUESTED:
-                    installRequested = true;
-                    return;
-                case INSTALLED:
-                    break;
-            }
+            try {
+                // Request ARCore installation if needed
+                switch (ArCoreApk.getInstance().requestInstall($form(), !installRequested)) {
+                    case INSTALL_REQUESTED:
+                        installRequested = true;
+                        return;
+                    case INSTALLED:
+                        break;
+                }
 
-            // Check camera permission
-            if ($form().isDeniedPermission(CAMERA)) {
-                $form().askPermission(CAMERA, new PermissionResultHandler() {
-                    @Override
-                    public void HandlePermissionResponse(String permission, boolean granted) {
-                        if (!granted) {
-                            // Handle permission denied
-                            onResume();
+                // Check camera permission
+                if ($form().isDeniedPermission(CAMERA)) {
+                    $form().askPermission(CAMERA, new PermissionResultHandler() {
+                        @Override
+                        public void HandlePermissionResponse(String permission, boolean granted) {
+                            if (!granted) {
+                                // Handle permission denied
+                                onResume();
+                            }
                         }
-                    }
-                });
+                    });
+                    return;
+                }
+
+                // Create and configure ARCore session
+                session = new Session($context());
+                configureSession();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to create AR session", e);
                 return;
             }
-
-            // Create and configure ARCore session
-            session = new Session($context());
-            configureSession();
+        }
+        try {
             session.resume();
             Log.d(LOG_TAG, "resume called");
             // Initialize renderers with ARCore session
             //initializeFilamentAndRenderers();
-
+            depthSettings.setUseDepthForOcclusion(true);
             // Resume display rotation helper
             displayRotationHelper.onResume();
 
@@ -1650,9 +1765,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         "at that point and false otherwise.")
     public void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
         Log.i("TAPPED at ARVIEW3D point", "");
-        EventDispatcher.dispatchEvent(this, "TapAtPoint", x, y, z, isANodeAtPoint);
+        container.$form().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                EventDispatcher.dispatchEvent(ARView3D.this, "TapAtPoint", x, y, z, isANodeAtPoint);
+            }
+        });
     }
-
 
     @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is \" +\n" +
         "        \"the real-world coordinate of the point. Use this event if you want geoCoordinates to also be determined if available. " +
@@ -1834,12 +1953,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AR_PLANE_DETECTION_TYPE, defaultValue = "1")
-    public void PlaneDetectionType(int detectsPlanes) {
+    public void PlaneDetectionType(int planeType) {
+        detectedPlaneType = planeType;
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "<p>Determines whether plane detection is enabled.  If this property is set to None, " + "then planes in the real world will not be detected.  Setting it to Horizontal detects horizontal " + "planes in the real world.  Setting it to Vertical detects vertical planes in the real world, and " + "setting it to both detects both horizontal and vertical planes.  When a plane is detected, a " + "DetectedPlane component will placed at that location.  This works when the TrackingType is WorldTracking.</p>" + "<p>Valid values are: 0 (None), 1 (Horizontal), 2 (Vertical), 3 (Both).</p>")
     public int PlaneDetectionType() {
-        return 1;
+        return detectedPlaneType;
     }
 
     @SimpleProperty(description = "The list of Nodes added to the ARView3D.")
@@ -1963,9 +2083,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "SUCCESS created boxNode node from json, anchor is" + boxNode.Anchor().toString());
                 return boxNode;
-            } catch (JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
             } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create boxNode node from db string which is yail list" + e);
                 throw e;
@@ -2032,10 +2149,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public ImageMarker CreateImageMarkerFromYail(YailDictionary yailObj) {
 
         if (session != null) {
-            try {
-                Log.i(LOG_TAG, " creating block node from " + yailObj);
+          Log.i(LOG_TAG, " creating block node from " + yailObj);
 
-                YailDictionary keyvalue = (YailDictionary)yailObj;
+          YailDictionary keyvalue = (YailDictionary)yailObj;
 
                 /*String  type = (String) keyvalue.get("type");
                       String name = (String) keyvalue.get("name");
@@ -2045,14 +2161,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                       Bool vis =  keyvalue.get("visible");
 
                  */
-                ImageMarker imageMarker = new ImageMarker(this);
+          ImageMarker imageMarker = new ImageMarker(this);
 
-                Log.i(LOG_TAG, "SUCCESS created image marker from json, anchor is" + imageMarker.toString());
-                return imageMarker;
-            } catch (JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
-            }
+          Log.i(LOG_TAG, "SUCCESS created image marker from json, anchor is" + imageMarker.toString());
+          return imageMarker;
 
         }
         Log.i("cannot create imageMarker from yail ", " since there is no session");
@@ -2113,9 +2225,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "SUCCESS created SphereNode node from json, anchor is" + sphereNode.Anchor().toString());
                 return sphereNode;
-            } catch (JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
             } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create SphereNode node from db string which is yail list" + e);
                 throw e;
@@ -2235,9 +2344,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "SUCCESS created Capsule node from json, anchor is" + capNode.Anchor().toString());
                 return capNode;
-            } catch (JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
             } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create capsure node from db string which is yail list" + e);
                 throw e;
@@ -2348,9 +2454,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "SUCCESS created textNode node from json, anchor is" + textNode.Anchor().toString());
                 return textNode;
-            } catch (JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
             } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create textnode from db string which is yail list" + e);
                 throw e;
@@ -2406,9 +2509,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "SUCCESS created videoNode node from json, anchor is" + videoNode.Anchor().toString());
                 return videoNode;
-            } catch (JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
             } catch (Exception e) {
                 Log.e(LOG_TAG, "tried to create videoNode node from db string which is yail list" + e);
                 throw e;
@@ -2488,9 +2588,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 Log.i(LOG_TAG, "SUCCESS created webNode node from json, anchor is" +  webNode.Anchor().toString());
                 return webNode;
-            } catch(JSONException e) {
-                $form().dispatchErrorOccurredEvent(this, "getfromJSON",
-                    ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
             } catch (Exception e){
                 Log.e(LOG_TAG, "tried to create webNode node from db string which is yail list" + e);
                 throw e;

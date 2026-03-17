@@ -51,7 +51,11 @@ public class ObjectRenderer {
   private final Map<String, Texture> textureCache = new HashMap<>();
 
   private Shader shader;
+  private PlaneFinder planeFinder = null;
 
+  public void setPlaneFinder(PlaneFinder finder) {
+    this.planeFinder = finder;
+  }
 
   // Default lighting and material parameters
   private final float[] defaultLightingParameters = {0.0f, 1.0f, 0.0f, 1.0f};
@@ -63,7 +67,7 @@ public class ObjectRenderer {
   private int depthTextureGlId = 0;
   private Texture depthTexture = null;
   private final float[] depthUvTransform = new float[16];
-  private boolean occlusionEnabled = false;
+  private boolean occlusionEnabledByDepth = false;
 
   public ObjectRenderer(ARViewRender render) throws IOException {
     Texture defaultTexture = createOrGetTexture(render, DEFAULT_TEXTURE_NAME);
@@ -101,6 +105,13 @@ public class ObjectRenderer {
     android.opengl.Matrix.setIdentityM(depthUvTransform, 0);
     shader.setMat4("u_UvTransform", depthUvTransform);
     shader.setFloat("u_OcclusionEnabled", 0.0f);
+
+    try {
+      shader.setVec4("u_PlaneEquation", new float[]{0f, 1f, 0f, 0f});
+      shader.setFloat("u_PlaneOcclusionEnabled", 0.0f);
+    } catch (IllegalArgumentException e) {
+      Log.w(TAG, "Plane occlusion uniforms not found: " + e.getMessage());
+    }
   }
 
 
@@ -289,10 +300,11 @@ public class ObjectRenderer {
    * BEFORE drawObjects().
    */
   public void updateDepthTexture(android.media.Image depthImage, float[] uvTransform) {
+    Log.i("Object Renderer:", "Updating camera depth texture");
     if (depthTextureGlId == 0) return;
 
     System.arraycopy(uvTransform, 0, depthUvTransform, 0, 16);
-    occlusionEnabled = true;
+    occlusionEnabledByDepth = true;
 
     android.media.Image.Plane plane = depthImage.getPlanes()[0];
     java.nio.ByteBuffer buffer = plane.getBuffer();
@@ -321,33 +333,72 @@ public class ObjectRenderer {
       Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
       Texture nodeTexture = createOrGetTexture(render, arNode.Texture());
 
-      if (nodeMesh == null || nodeTexture == null) {
-        return;
-      }
-
+      if (nodeMesh == null || nodeTexture == null) return;
+      Log.i("ObjRenderer:", "rendering single object");
       // Calculate matrices
       float[] anchorMatrix = new float[16];
       anchor.getPose().toMatrix(anchorMatrix, 0);
-      float[] modelMatrix = updateModelMatrix(anchorMatrix, arNode.Scale(), arNode.InitialRotation());
+      float[] modelMatrix = updateModelMatrix(
+          anchorMatrix, arNode.Scale(), arNode.InitialRotation());
+
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
-
       android.opengl.Matrix.multiplyMM(
           localModelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
       android.opengl.Matrix.multiplyMM(
-          localModelViewProjectionMatrix, 0, cameraProjection, 0, localModelViewMatrix, 0);
+          localModelViewProjectionMatrix, 0, cameraProjection, 0,
+          localModelViewMatrix, 0);
 
+      // World and camera positions for occlusion checks
+      // Sphere world position comes from anchor matrix translation
+      float[] sphereWorldPos = {
+          anchorMatrix[12], anchorMatrix[13], anchorMatrix[14]};
+
+      // Camera world position from inverse view matrix
+      float[] invView = new float[16];
+      android.opengl.Matrix.invertM(invView, 0, viewMatrix, 0);
+      float[] cameraWorldPos = {invView[12], invView[13], invView[14]};
+
+      // Set shader uniforms
       shader.setTexture("u_Texture", nodeTexture);
+      shader.setMat4("u_Model", modelMatrix);           // for world pos in vert shader
       shader.setMat4("u_ModelView", localModelViewMatrix);
       shader.setMat4("u_ModelViewProjection", localModelViewProjectionMatrix);
 
-      // Depth occlusion uniforms — updated once per frame via updateDepthTexture(),
-      // set here per-object so shader has current values
+      // Depth-based occlusion uniforms
       shader.setMat4("u_UvTransform", depthUvTransform);
-      shader.setFloat("u_OcclusionEnabled", occlusionEnabled ? 1.0f : 0.0f);
+      shader.setFloat("u_OcclusionEnabled",
+          occlusionEnabledByDepth ? 1.0f : 0.0f);
 
-      // depthTexture is already registered with the shader via setTexture()
-      // in the constructor — no need to set it again unless it changed
+      // Plane-based occlusion — only active when depth is not available
+      if (!occlusionEnabledByDepth && planeFinder != null) {
+        Log.i("ObjRenderer", "Depth not supported, setting PlaneFinder");
+        com.google.ar.core.Plane occludingPlane =
+            planeFinder.findOccludingPlane(sphereWorldPos, cameraWorldPos);
+        if (occludingPlane != null) {
+          // Extract plane normal from pose matrix column 1 (local Y axis)
+          float[] poseMatrix = new float[16];
+          occludingPlane.getCenterPose().toMatrix(poseMatrix, 0);
+          float nx = poseMatrix[4];
+          float ny = poseMatrix[5];
+          float nz = poseMatrix[6];
+
+          // Plane equation: dot(normal, point) + d = 0
+          // d = -dot(normal, planeCenter)
+          float[] center = occludingPlane.getCenterPose().getTranslation();
+          float d = -(nx * center[0] + ny * center[1] + nz * center[2]);
+
+          shader.setVec4("u_PlaneEquation", new float[]{nx, ny, nz, d});
+          shader.setFloat("u_PlaneOcclusionEnabled", 1.0f);
+          
+        } else {
+          shader.setFloat("u_PlaneOcclusionEnabled", 0.0f);
+        }
+      } else {
+        // Depth is active or no plane finder — disable plane occlusion
+        shader.setFloat("u_PlaneOcclusionEnabled", 0.0f);
+      }
+
       Log.d(TAG, "renderSingleObject: anchor=" + anchor
           + " tracking=" + anchor.getTrackingState()
           + " mesh=" + nodeMesh
