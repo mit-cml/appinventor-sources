@@ -5,7 +5,7 @@
 * Xcode 14 or higher
 * macOS 12 or higher
 
-(optional) To automatically install the companion app on a connected, authorized iOS device, install ideviceinstaller via Homebrew:
+"(optional) To automatically install the companion app on a connected, authorized iOS device, install ideviceinstaller via Homebrew:"
 
 ```
 brew uninstall ideviceinstaller
