@@ -144,7 +144,8 @@ AI.Yail.forBlock['text_changeCase'] = function(block, generator) {
 
 AI.Yail.forBlock['text_changeCase'].OPERATORS = {
   UPCASE: ['string-to-upper-case', 'upcase', AI.Yail.ORDER_NONE],
-  DOWNCASE: ['string-to-lower-case', 'downcase', AI.Yail.ORDER_NONE]
+  DOWNCASE: ['string-to-lower-case', 'downcase', AI.Yail.ORDER_NONE],
+  'CAPITALIZE': ['string-capitalize', 'capitalize', Blockly.Yail.ORDER_ATOMIC]
 };
 
 AI.Yail.forBlock['text_starts_at'] = function(block, generator) {
