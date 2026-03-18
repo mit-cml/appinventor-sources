@@ -927,6 +927,33 @@ public class BlocklyPanel extends HTMLPanel {
       .isDrawerShowing();
   }-*/;
 
+  /**
+   * Reset cached built-in drawer language tree data.
+   *
+   * Uses feature detection so this is safe across environments where
+   * blocklyeditor source updates may lag behind Java changes.
+   */
+  public native void resetDrawerLanguageTreeCache()/*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    if (!workspace) {
+      return;
+    }
+    if (typeof workspace.resetDrawerLanguageTree === 'function') {
+      try {
+        workspace.resetDrawerLanguageTree();
+        return;
+      } catch (e) {
+        // Fall through to direct cache invalidation for compatibility.
+      }
+    }
+    if (workspace.options) {
+      workspace.options.languageTree = null;
+    }
+    if (workspace.drawer_ && workspace.drawer_.options) {
+      workspace.drawer_.options.languageTree = null;
+    }
+  }-*/;
+
   public native void render()/*-{
     this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
       .resize()

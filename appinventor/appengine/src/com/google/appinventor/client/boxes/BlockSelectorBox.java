@@ -217,6 +217,14 @@ public final class BlockSelectorBox extends Box {
     return advanced;
   }
 
+  /**
+   * Clears the cached built-in blocks tree so the next access rebuilds from
+   * the latest BlocksToolkit value.
+   */
+  public void clearBuiltInBlocksCache() {
+    languageTreeItems.clear();
+  }
+
   public void addBlockDrawerSelectionListener(BlockDrawerSelectionListener listener) {
     drawerListeners.add(listener);
   }
