@@ -75,7 +75,7 @@ public class UploadPackage implements IosTask {
           password,
           "-asc_provider",
           shortName
-      }, new PrintStream(outBuffer), new PrintStream(errBuffer))) {
+      }, new PrintStream(outBuffer), new PrintStream(errBuffer), Execution.Timeout.LONG)) {
         return TaskResult.generateSuccess();
       }
       String error = errBuffer.toString();
