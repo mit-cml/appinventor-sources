@@ -39,10 +39,7 @@ import com.google.ar.core.TrackingState;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -629,6 +626,10 @@ public class ARFilamentRenderer {
         double[] proj64 = new double[16];
         for (int i = 0; i < 16; i++) proj64[i] = projMatrix[i];
         camera.setCustomProjection(proj64, Z_NEAR, Z_FAR);
+    }
+
+    public Collection<ARNode> getFilamentNodes(){
+        return sharedNodes;
     }
 
     // -------------------------------------------------------------------------
