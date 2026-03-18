@@ -1343,10 +1343,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
       if ("Classic".equals(newValue)) {
         ((YaVisibleComponentsPanel) editor.getVisibleComponentsPanel()).enablePhonePreviewCheckBox(false);
-        getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("False");
+        properties.getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("False");
       } else {
         ((YaVisibleComponentsPanel) editor.getVisibleComponentsPanel()).enablePhonePreviewCheckBox(true);
-        getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("True");
+        properties.getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("True");
       }
       setTheme(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_DEFAULTFILESCOPE)) {
