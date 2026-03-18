@@ -36,7 +36,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected Anchor anchor = null;
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
   protected float[] fromPropertyRotation = {0,0,0,1};
-  protected float[] pendingPosition = {0f, 0f, 0f};
+  protected float[] pendingPosition = null;
   protected float[] pendingRotation = {0,0,0,1};
   protected float scale = 1.0f;
   protected Session session = null;
@@ -68,29 +68,15 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected Object originalMaterial = null;
   protected float[] lastFingerPosition ;
 
-  // eventually this should be a property
-
-
-
-
   protected float[] currentVelocity = {0, 0, 0};
-
 
   private boolean onGround = false;
   private float GROUND_LEVEL = 1.0f; // Default ground level
   private static final float GRAVITY = -9.81f; // m/s²
 
-
   protected boolean isCurrentlyColliding = false;
   protected float linearDamping = 0.0f;
   protected float angularDamping = 0.0f;
-
-
-  // Enhanced Collision Properties
-  protected float collisionWidth = 0.0f;
-  protected float collisionHeight = 0.0f;
-  protected float collisionDepth = 0.0f;
-  protected float collisionRadius = 0.0f;
 
   // Enhanced Marker and Positioning Properties
   protected ARImageMarker followingMarker = null;
@@ -100,9 +86,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected boolean hasPreviewSurface = false;
 
   protected long dragStartTime;
-
-
-
 
   @SuppressWarnings("WeakerAccess")
   protected ARNodeBase(ARNodeContainer container) {
@@ -119,6 +102,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     isCurrentlyColliding = false;
   }
 
+  public void setPendingPosition(float[] pendingPosition) {
+    this.pendingPosition = pendingPosition;
+  }
+
+  public float[] getPendingPosition() {
+    return this.pendingPosition;
+  }
 
   // MARK: - Enhanced Basic Properties
 
@@ -126,11 +116,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   except when being dragged
    */
   public void updateSimplePhysics(float deltaTime) {
-    if (!enablePhysics || isBeingDragged) return;
+    if (!EnablePhysics() || isBeingDragged) return;
 
-    Log.d("Physics", "Updating physics for " + name + " deltaTime=" + deltaTime);
+    Log.d("Physics", "Updating physics for " + name + " deltaTime=" + deltaTime + " bc " + EnablePhysics());
     currentVelocity[1] += GRAVITY * deltaTime;
-
 
     currentVelocity[1] = Math.max(currentVelocity[1], -50f); // Max falling speed 50 m/s
     currentVelocity[1] = Math.min(currentVelocity[1], 50f);  // Max upward speed 50 m/s
@@ -141,7 +130,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     currentPos[2] += currentVelocity[2] * deltaTime;
 
     if (currentPos[1] > 100f || currentPos[1] < -100f) {
-      Log.e("Physics", "Position explosion detected! Resetting sphere " + name);
+      Log.e("Physics", "Position explosion detected! Resetting node " + name);
       currentPos[1] = Math.max(currentPos[1], GROUND_LEVEL + 1f); // Reset to safe position
       currentVelocity[1] = 0f; // Stop the madness
     }
@@ -163,8 +152,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       } else {
         currentPos[1] = GROUND_LEVEL;
       }
-
-
 
       // Stop downward velocity and bounce
       if (currentVelocity[1] < 0) {
@@ -210,7 +197,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
     for (int i = 0; i < position.length; i++) {
       if (Float.isNaN(position[i]) || Float.isInfinite(position[i])) {
-        Log.e("SphereNode", "Invalid position[" + i + "]: " + position[i]);
+        Log.e("Node", "Invalid position[" + i + "]: " + position[i]);
         return; // Don't recreate anchor with invalid position
       }
     }
@@ -218,33 +205,32 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
     // Check if values are reasonable (within ~100m of origin)
     if (Math.abs(position[0]) > 100 || Math.abs(position[1]) > 100 || Math.abs(position[2]) > 100) {
-      Log.e("SphereNode", "Position too far from origin: " + arrayToString(position));
+      Log.e("Node", "Position too far from origin: " + arrayToString(position));
       return;
     }
     position[1] = 1f;
     float[] rotation = {0, 0, 0, 1};
-    Log.i("SphereNode", "setting position " + arrayToString(position));
+    Log.i("Node", "setting position " + arrayToString(position));
     pendingPosition = position;
     pendingRotation = rotation;
   }
 
   public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder) {
-
-    Plane bestDetectedPlane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
     if (Anchor() != null || pendingPosition == null) return;
+    Log.w("Node", this.name + "has pending position " + pendingPosition[0] + " " + pendingPosition[1] + " " + pendingPosition[2] + " " );
+    Plane bestDetectedPlane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
     if (bestDetectedPlane == null) return;
 
     try {
-
         Pose newPose = new Pose(pendingPosition, pendingRotation);
         Anchor(bestDetectedPlane.createAnchor(newPose));
 
     } catch (com.google.ar.core.exceptions.NotTrackingException e) {
       // Normal during VIO reset — silent, no log
     } catch (com.google.ar.core.exceptions.ResourceExhaustedException e) {
-      Log.w("SphereNode", "Anchor limit reached");
+      Log.w("Node", "Anchor limit reached");
     } catch (Exception e) {
-      Log.e("SphereNode", "Anchor creation failed: "
+      Log.e("Node", "Anchor creation failed: "
           + e.getClass().getSimpleName() + " " + e.getMessage());
     }
   }
@@ -742,6 +728,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     for (int i = 0; i < positionFloatArray.length; i++) {
       try {
         position[i] = UnitHelper.metersToCentimeters(positionFloatArray[i]);
+        Log.i("ARNodeBase", "Initial position: " + positionFloatArray[i]);
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + positionFloatArray[i]);
       }
@@ -759,19 +746,20 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     for (int i = 0; i < positionArray.length; i++) {
       try {
         position[i] = UnitHelper.centimetersToMeters(Float.parseFloat(positionArray[i]));
+        Log.i("ARNodeBase", "Initial position: " + position[i]);
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + positionArray[i]);
       }
     }
     fromPropertyPosition = position;
 
-    if (this.trackable != null) {
+   /* if (this.trackable != null) {
       Anchor myAnchor = this.trackable.createAnchor(new Pose(position, fromPropertyRotation)); //CSB check
       Anchor(myAnchor);
     } else if (session != null) {
       Anchor myAnchor = session.createAnchor(new Pose(position, fromPropertyRotation));
       Anchor(myAnchor);
-    }
+    }*/
 
     Log.i("ARNodeBase", "Stored pose with position " + positionFromProperty);
   }
@@ -1342,11 +1330,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
       float[] position = anchor.getPose().getTranslation();
       Pose newPose = new Pose(position, quaternion);
-
-      if (trackable != null) {
-        Anchor(trackable.createAnchor(newPose));
-      } else if (session != null) {
-        Anchor(session.createAnchor(newPose));
+      try {
+        if (trackable != null) {
+          Anchor(trackable.createAnchor(newPose));
+        } else if (session != null) {
+          Anchor(session.createAnchor(newPose));
+        }
+      } catch (Exception e) {
+        // csb todo
       }
     }
   }
