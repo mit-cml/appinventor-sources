@@ -553,6 +553,9 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @SimpleProperty
   public void Text(String text) {
     TextViewUtil.setText(view, text);
+
+    view.setSingleLine(false);
+    view.setMaxLines(2);
   }
 
   /**
