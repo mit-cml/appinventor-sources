@@ -41,6 +41,7 @@ public class CompilerContext<P extends Paths> {
   boolean isForCompanion;
   boolean isForEmulator;
   boolean includeDangerousPermissions;
+  boolean isCoreLibraryDesugaring;
   String keystoreFilePath;
   int childProcessRam;
   String dexCacheDir;
@@ -71,6 +72,7 @@ public class CompilerContext<P extends Paths> {
     private boolean isForCompanion = false;
     private boolean isForEmulator = false;
     private boolean includeDangerousPermissions = false;
+    private boolean isCoreLibraryDesugaring = false;
     private String keystoreFilePath;
     private int childProcessRam = 2048;
     private String dexCacheDir = null;
@@ -261,6 +263,10 @@ public class CompilerContext<P extends Paths> {
     return includeDangerousPermissions;
   }
 
+  public boolean isCoreLibraryDesugaring() {
+    return isCoreLibraryDesugaring;
+  }
+
   public String getKeystoreFilePath() {
     return keystoreFilePath;
   }
@@ -321,6 +327,10 @@ public class CompilerContext<P extends Paths> {
     this.extCompTypes = extCompTypes;
   }
 
+  public void setIsCoreLibraryDesugaring(boolean isCoreLibraryDesugaring) {
+    this.isCoreLibraryDesugaring = isCoreLibraryDesugaring;
+  }
+
   public String getResource(String resource) {
     return resources.getResource(resource);
   }
@@ -379,6 +389,7 @@ public class CompilerContext<P extends Paths> {
         + ", isForCompanion=" + isForCompanion
         + ", isForEmulator=" + isForEmulator
         + ", includeDangerousPermissions=" + includeDangerousPermissions
+        + ", isCoreLibraryDesugaring=" + isCoreLibraryDesugaring
         + ", keystoreFilePath='" + keystoreFilePath + '\''
         + ", childProcessRam=" + childProcessRam
         + ", dexCacheDir='" + dexCacheDir + '\''
