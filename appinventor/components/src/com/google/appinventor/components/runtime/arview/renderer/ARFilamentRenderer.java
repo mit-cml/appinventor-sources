@@ -33,6 +33,7 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
+import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
 
@@ -115,6 +116,13 @@ public class ARFilamentRenderer {
     private boolean depthDataReceived           = false;
     private boolean occlusionAppliedToAllAssets = false;
 
+    private float[] lastCameraWorldPos = {0, 0, 0};
+    private PlaneFinder planeFinder = null; // when depth isn't avail via device
+
+    List<Plane> trackingPlanes = new ArrayList<>();
+    public void setPlaneFinder(PlaneFinder finder) {
+        this.planeFinder = finder;
+    }
     // -------------------------------------------------------------------------
     // Shared state — written by GL thread, read by FilamentRenderThread
     // Guarded by matrixLock
@@ -351,12 +359,14 @@ public class ARFilamentRenderer {
      */
     public void updateFrame(List<ARNode> modelNodes,
                             float[] viewMatrix,
-                            float[] projMatrix) {
+                            float[] projMatrix,
+                            List<Plane> tPlanes) {
         synchronized (matrixLock) {
             System.arraycopy(viewMatrix, 0, sharedView, 0, 16);
             System.arraycopy(projMatrix, 0, sharedProj, 0, 16);
             sharedNodes   = new ArrayList<>(modelNodes);
             matricesReady = true;
+            trackingPlanes = tPlanes;
         }
     }
 
@@ -617,6 +627,9 @@ public class ARFilamentRenderer {
         float[] inv = new float[16];
         if (!Matrix.invertM(inv, 0, viewMatrix, 0)) return;
 
+        // Store camera world position for occlusion checks
+        lastCameraWorldPos = new float[]{inv[12], inv[13], inv[14]};
+
         camera.lookAt(
             inv[12], inv[13], inv[14],
             inv[12] - inv[8], inv[13] - inv[9], inv[14] - inv[10],
@@ -638,6 +651,7 @@ public class ARFilamentRenderer {
 
     private void loadAndPositionNodes(Collection<ARNode> nodes) {
         for (ARNode node : nodes) {
+            Log.e(LOG_TAG, "Trying to loading node " + node.Model());
             if (!shouldRender(node)) continue;
             if (!nodeAssetMap.containsKey(node)) {
                 try {
@@ -671,6 +685,25 @@ public class ARFilamentRenderer {
 
         Pose   pose = node.Anchor().getPose();
         float[] t   = pose.getTranslation();
+
+        if (!depthDataReceived && planeFinder != null) {
+            Log.i("ARFilamentRenderer", " has planeFinder  and pos " + node.Model() + " " + t);
+            float[] invView = new float[16];
+            // We need camera world pos — pass it via updateFrame
+            float[] cameraWorldPos = this.lastCameraWorldPos; // stored from view matrix
+            com.google.ar.core.Plane occludingPlane =
+                planeFinder.findOccludingPlane(t, cameraWorldPos);
+            if (occludingPlane != null) {
+                Log.i("ARFilamentRenderer", " has plane " + occludingPlane);
+                // Move model far away so it's invisible — cleaner than removing entity
+                float[] hideMatrix = new float[16];
+                Matrix.setIdentityM(hideMatrix, 0);
+                hideMatrix[13] = -9999f; // move 9999m below scene
+                tm.setTransform(rootInstance, hideMatrix);
+                return;
+            }
+        }
+
 
         float[] m = new float[16];
         Matrix.setIdentityM(m, 0);

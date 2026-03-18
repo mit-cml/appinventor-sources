@@ -784,7 +784,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     new String[]{"ModelNode"});
 
                 if (!modelNodes.isEmpty()) {
-                    arFilamentRenderer.updateFrame(modelNodes, viewMatrix, projectionMatrix);
+                    // In ARView3D.onDrawFrame, collect planes on GL thread and pass to Filament:
+                    List<Plane> trackingPlanes = new ArrayList<>(
+                        session.getAllTrackables(Plane.class));
+                    arFilamentRenderer.updateFrame(modelNodes, viewMatrix, projectionMatrix, trackingPlanes);
                 }
                 for (ARNode n : modelNodes) {
                     float[] pos = n.Anchor() != null ?
@@ -810,12 +813,15 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             pointCloudRenderer  = new PointCloudRenderer(arViewRender);
             objRenderer         = new ObjectRenderer(arViewRender);
 
+
+            arFilamentRenderer = new ARFilamentRenderer(this.container);
+            arFilamentRenderer.initializeEngine(); // Phase 1
+
             if (!isDepthSupported && enableOcclusion) {
                 Log.i(LOG_TAG, "Depth not supported, setting PlaneFinder");
                 objRenderer.setPlaneFinder(this::findOccludingPlane);
+                arFilamentRenderer.setPlaneFinder(this::findOccludingPlane);
             }
-            arFilamentRenderer = new ARFilamentRenderer(this.container);
-            arFilamentRenderer.initializeEngine(); // Phase 1
 // Surface may have already fired before renderer was created
             if (pendingFilamentSurface != null) {
                 Log.d(LOG_TAG, "Applying pending surface to SwapChain");
@@ -1364,14 +1370,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i(LOG_TAG, "Depth not supported");
     }
 
-    private Plane findOccludingPlane(float[] sphereWorldPos, float[] cameraWorldPos) {
+    private Plane findOccludingPlane(float[] nodeWorldPos, float[] cameraWorldPos) {
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
 
         // Ray from camera through sphere
         float[] rayDir = {
-            sphereWorldPos[0] - cameraWorldPos[0],
-            sphereWorldPos[1] - cameraWorldPos[1],
-            sphereWorldPos[2] - cameraWorldPos[2]
+            nodeWorldPos[0] - cameraWorldPos[0],
+            nodeWorldPos[1] - cameraWorldPos[1],
+            nodeWorldPos[2] - cameraWorldPos[2]
         };
         float distanceToSphere = (float) Math.sqrt(
             rayDir[0]*rayDir[0] + rayDir[1]*rayDir[1] + rayDir[2]*rayDir[2]);
@@ -1382,6 +1388,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         for (Plane plane : planes) {
             if (plane.getTrackingState() != TrackingState.TRACKING) continue;
+
+            Log.i(LOG_TAG, "occluding plane test rayDir " + rayDir[0] + ", " + rayDir[1] + ", " + rayDir[2]);
             if (plane.getExtentX() < 0.3f || plane.getExtentZ() < 0.3f) continue;
 
             // Get plane normal from pose matrix column 1 (local Y axis)
