@@ -68,7 +68,7 @@ For all other changes:
 - [ ] My code follows the:
     - [ ] [Google Java style guide](https://google.github.io/styleguide/javaguide.html) (for .java files)
     - [ ] [Google JavaScript style guide](https://google.github.io/styleguide/jsguide.html) (for .js files)
+    - [ ] [Swift style guide](https://google.github.io/swift/) (for .swift files)
     - [ ] Indentation has been doubled checked
     - [ ] This PR does not include unnecessary changes such as formatting or white space
 - [ ] `ant tests` passes on my machine
-- [ ] I have discussed my changes with at least one contributor
