@@ -12,7 +12,7 @@ fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier
 @objc open class PersonalImageClassifier: BaseClassifier, LifecycleDelegate {
   public static let MODE_VIDEO = "Video"
   public static let MODE_IMAGE = "Image"
-  public static let IMAGE_WIDTH = 500
+  public static let IMAGE_WIDTH = 224
   public static let ERROR_INVALID_INPUT_MODE = -6;
 
   private var _inputMode = PersonalImageClassifier.MODE_VIDEO
@@ -75,8 +75,8 @@ fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier
       let width = PersonalImageClassifier.IMAGE_WIDTH
       let height = Int(image.size.height * CGFloat(PersonalImageClassifier.IMAGE_WIDTH) / image.size.width)
 
-      UIGraphicsBeginImageContext(CGSize(width: width, height: height))
-      image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+      UIGraphicsBeginImageContext(CGSize(width: width, height: width))
+      image.draw(in: CGRect(x: 0, y: (PersonalImageClassifier.IMAGE_WIDTH - height) / 2, width: width, height: height))
       scaledImageBitmap = UIGraphicsGetImageFromCurrentImageContext()
       UIGraphicsEndImageContext()
     } else {
@@ -85,7 +85,7 @@ fileprivate let PERSONAL_MODEL_PREFIX = "appinventor://personal-image-classifier
 
     if let immagex = scaledImageBitmap {
       if let imageData = immagex.pngData() {
-        let imageEncodedBase64String = imageData.base64EncodedString(options: .lineLength64Characters).replacingOccurrences(of: "\n", with: "")
+        let imageEncodedBase64String = imageData.base64EncodedString(options: .lineLength64Characters).replacingOccurrences(of: "\r\n", with: "")
         print("imageEncodedBase64String: \(imageEncodedBase64String)")
         _webview?.evaluateJavaScript("classifyImageData(\"\(imageEncodedBase64String)\");", completionHandler: nil)
       }
