@@ -5,14 +5,14 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime;
 
-import java.io.File;
-
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
+
+import java.io.File;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -98,8 +98,8 @@ public class Sharing extends AndroidNonvisibleComponent {
 
     if (clipboard != null) {
       String label = form.getApplication().getApplicationInfo()
-       .loadLabel(form.getApplication().getPackageManager())
-       .toString();
+          .loadLabel(form.getApplication().getPackageManager())
+          .toString();
 
       ClipData clip = ClipData.newPlainText(label, text);
       clipboard.setPrimaryClip(clip);
