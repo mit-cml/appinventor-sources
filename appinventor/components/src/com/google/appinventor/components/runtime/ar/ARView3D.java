@@ -1,18 +1,13 @@
 package com.google.appinventor.components.runtime.ar;
 
+import android.view.*;
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
 
 import android.app.Activity;
 import android.opengl.GLES30;
-import android.view.SurfaceView;
-import android.view.SurfaceHolder;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.GestureDetector;
-import android.view.ScaleGestureDetector;
 //import android.view.RotationGestureDetector;
 import android.content.Context;
 import android.graphics.PointF;
@@ -142,6 +137,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final DepthSettings depthSettings = new DepthSettings();
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
     private boolean enableOcclusion = false;
+    private boolean enableBoundingBoxes = false;
+    private boolean enableWireframes = false;
 
     private boolean useSimulatedDepth = false;
     boolean isDepthSupported = false;
@@ -459,14 +456,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    // Filter ARNodes by type and ensure they have anchors
+
     public void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node : nodes) {
             if (node != null && node.Anchor() == null) {
-                Log.d(LOG_TAG, "Creating default anchor for " + Arrays.toString(node.InitialPosition()));
-                // TBD handle if anchor is loaded from a db
+                // fromPropertyPosition is already in meters — use directly
+                float[] posMeters = ((ARNodeBase)node).fromPropertyPosition;
+                if (posMeters == null) continue;
+                Log.d(LOG_TAG, "Creating default anchor at meters: "
+                    + posMeters[0] + "," + posMeters[1] + "," + posMeters[2]);
                 node.Session(session);
-                node.Anchor(CreateDefaultAnchor(node.InitialPosition())); // assign an anchor if there isn't one
+                node.Anchor(CreateDefaultAnchor(posMeters));
             }
         }
     }
@@ -494,7 +494,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
 
         // Draw planes and feature points
-        if (PlaneDetectionType() != 0) {
+        if (ShowWireframes() && PlaneDetectionType() != 0) {
             GLES30.glEnable(GLES30.GL_BLEND);
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -607,7 +607,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         // Update each node's physics
         for (ARNode node : arNodes) {
-            if (((ARNodeBase)node).enablePhysics) {
+            if (((ARNodeBase)node).EnablePhysics()) {
                 ((ARNodeBase)node).updateSimplePhysics(deltaTime);
             }
         }
@@ -742,11 +742,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 }
             }
 
-            if (!isDepthSupported) {
-                Log.i(LOG_TAG, "Depth not supported, setting PlaneFinder");
-               objRenderer.setPlaneFinder(this::findOccludingPlane);
-            }
-
             lastCamera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
             lastCamera.getViewMatrix(viewMatrix, 0);
 
@@ -781,9 +776,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (arFilamentRenderer != null) {
                 List<ARNode> modelNodes = sort(arNodes,
                     new String[]{"ModelNode"});
+
                 if (!modelNodes.isEmpty()) {
-                    arFilamentRenderer.updateFrame(
-                        modelNodes, viewMatrix, projectionMatrix);
+                    arFilamentRenderer.updateFrame(modelNodes, viewMatrix, projectionMatrix);
+                }
+                for (ARNode n : modelNodes) {
+                    float[] pos = n.Anchor() != null ?
+                        n.Anchor().getPose().getTranslation() : null;
+                    Log.d(LOG_TAG, "ModelNode: anchor=" + (n.Anchor() != null)
+                        + " tracking=" + (n.Anchor() != null ?
+                        n.Anchor().getTrackingState() : "none")
+                        + " pos=" + (pos != null ?
+                        pos[0]+","+pos[1]+","+pos[2] : "null")
+                        + " inFilament " + arFilamentRenderer.getFilamentNodes());
                 }
             }
 
@@ -799,9 +804,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             pointCloudRenderer  = new PointCloudRenderer(arViewRender);
             objRenderer         = new ObjectRenderer(arViewRender);
 
+            if (!isDepthSupported && enableOcclusion) {
+                Log.i(LOG_TAG, "Depth not supported, setting PlaneFinder");
+                objRenderer.setPlaneFinder(this::findOccludingPlane);
+            }
             arFilamentRenderer = new ARFilamentRenderer(this.container);
             arFilamentRenderer.initializeEngine(); // Phase 1
-
+// Surface may have already fired before renderer was created
+            if (pendingFilamentSurface != null) {
+                Log.d(LOG_TAG, "Applying pending surface to SwapChain");
+                arFilamentRenderer.initializeSwapChain(
+                    pendingFilamentSurface, pendingFilamentWidth, pendingFilamentHeight);
+                pendingFilamentSurface = null;
+            }
 
             Log.d(LOG_TAG, "Renderers initialized");
         } catch (IOException e) {
@@ -1159,7 +1174,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             for (int j = i + 1; j < nodes.size(); j++) {
                 ARNode nodeA = nodes.get(i);
                 ARNode nodeB = nodes.get(j);
-
+                if (!((ARNodeBase)nodeA).EnablePhysics()) continue;
+                if (!((ARNodeBase)nodeB).EnablePhysics()) continue;
                 if (checkCollision(nodeA, nodeB)) {
                     handleCollision(nodeA, nodeB);
                 }
@@ -1319,7 +1335,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             + " planeFinding=" + config.getPlaneFindingMode()
             + " updateMode=" + config.getUpdateMode());
 
-        if (EnableOcclusion()) {
+        if (EnableOcclusion()) { //TODO: CSB, I'm not sure this is the correct place to evaluate. Depth is more than occlusion
             for (Config.DepthMode mode : new Config.DepthMode[]{
                 Config.DepthMode.AUTOMATIC, Config.DepthMode.RAW_DEPTH_ONLY}) {
                 config.setDepthMode(mode);
@@ -1488,7 +1504,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             Log.d(LOG_TAG, "resume called");
             // Initialize renderers with ARCore session
             //initializeFilamentAndRenderers();
-            depthSettings.setUseDepthForOcclusion(true);
+            depthSettings.setUseDepthForOcclusion(EnableOcclusion());
             // Resume display rotation helper
             displayRotationHelper.onResume();
 
@@ -1935,21 +1951,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty
     public void ShowWireframes(boolean showWireframes) {
+        enableWireframes = showWireframes;
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether to show the wireframe of nodes' geometries on top of their FillColor of Texture.")
     public boolean ShowWireframes() {
-        return false;
+        return enableWireframes;
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty
     public void ShowBoundingBoxes(boolean showBoundingBoxes) {
+        enableBoundingBoxes = showBoundingBoxes;
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Determines whether to visualize the bounding box surrounding a node.")
     public boolean ShowBoundingBoxes() {
-        return false;
+        return enableBoundingBoxes;
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AR_PLANE_DETECTION_TYPE, defaultValue = "1")
