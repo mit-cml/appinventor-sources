@@ -190,6 +190,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private int detectedPlaneType = 1;
     private float lastPhysicsUpdateTime = 0.0f;
 
+    private Surface pendingFilamentSurface = null;
+    private int pendingFilamentWidth  = 0;
+    private int pendingFilamentHeight = 0;
+
     private List<ARNode> arNodes = Nodes();
 
     public ARView3D(final ComponentContainer container) {
@@ -221,13 +225,15 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-                Log.d(LOG_TAG, "Filament surface changed: " + width + "x" + height);
+                Log.d(LOG_TAG, "Filament surfaceChanged: " + width + "x" + height);
                 if (arFilamentRenderer != null) {
-                    // This is the trigger for Phase 2 of Filament initialization.
-                    // Safe to call even if the engine isn't ready yet — the method
-                    // guards on engineReady internally.
-                    arFilamentRenderer.initializeSwapChain(
-                        holder.getSurface(), width, height);
+                    arFilamentRenderer.initializeSwapChain(holder.getSurface(), width, height);
+                } else {
+                    // arFilamentRenderer not created yet — store for when it is
+                    pendingFilamentSurface = holder.getSurface();
+                    pendingFilamentWidth   = width;
+                    pendingFilamentHeight  = height;
+                    Log.d(LOG_TAG, "Stored pending surface for deferred SwapChain init");
                 }
             }
 
