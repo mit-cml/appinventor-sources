@@ -312,11 +312,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }
 
     // Create event blocks.
-    Object.entries(componentInfo.eventDictionary).forEach(function (pair) {
-      const name = pair[0];
-      const event = pair[1];
+    for (const [name, event] of Object.entries(componentInfo.eventDictionary)) {
       if (event.deprecated) {
-        return;
+        continue;
       }
 
       var eventObj = {
@@ -330,14 +328,12 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
       // Determine if any parameters are associated with a helper which should
       // be added at the bottom of the drawer.
       event.parameters.forEach(getHelper);
-    }, this);
+    }
 
     // Create method blocks.
-    Object.entries(componentInfo.methodDictionary).forEach(function (pair) {
-      const name = pair[0];
-      const method = pair[1];
+    for (const [name, method] of Object.entries(componentInfo.methodDictionary)) {
       if (method.deprecated) {
-        return;
+        continue;
       }
 
       var methodObj = {
@@ -358,21 +354,19 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
         var inputXml = xmlUtils.valueWithHelperXML('ARG' + index, param.helperKey);
         // First child b/c these are wrapped in an <xml/> node.
         methodXml.firstChild.appendChild(inputXml.firstChild);
-      }.bind(this));
+      });
 
       Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(methodXml));
-    }, this);
+    }
 
     // Create getter and setter blocks.
-    Object.entries(componentInfo.properties).forEach(function(pair) {
-      const name = pair[0];
-      const property = pair[1];
+    for (const [name, property] of Object.entries(componentInfo.properties)) {
       if (property.deprecated) {
-        return;
+        continue;
       }
 
       if ((name == 'Left' || name == 'Top') && !freePosition) {
-        return;
+        continue;
       }
 
       var propertyObj = {
@@ -405,7 +399,7 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
       // Collects up helper blocks for properties which use them so they can
       // be added to the bottom of the drawer.
       getHelper(property);
-    }, this);
+    }
 
     // Create helper blocks at the bottom of the drawer, right above the
     // component block.
@@ -415,7 +409,7 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     helperKeys.forEach(function(helper) {
       var xml = xmlUtils.helperKeyToXML(helper);
       Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
-    }.bind(this));
+    });
 
     // Create component literal block.
     var componentObj = {
@@ -463,9 +457,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }
 
   //create generic event blocks
-  Object.entries(componentInfo.eventDictionary).forEach(function(pair){
-    const name = pair[0];
-    const event = pair[1];
+  for (const [name, event] of Object.entries(componentInfo.eventDictionary)) {
     if(!event.deprecated){
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
         component_type: typeName, event_name: name, is_generic: 'true'
@@ -475,12 +467,10 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
       // be added at the bottom of the drawer.
       event.parameters.forEach(getHelper);
     }
-  }, this);
+  }
 
   //create generic method blocks
-  Object.entries(componentInfo.methodDictionary).forEach(function(pair) {
-    const name = pair[0];
-    const method = pair[1];
+  for (const [name, method] of Object.entries(componentInfo.methodDictionary)) {
     if (!method.deprecated) {
       var methodXml = this.blockTypeToXML('component_method', {
         component_type: typeName, method_name: name, is_generic: "true"
@@ -498,11 +488,11 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
         var inputXml = xmlUtils.valueWithHelperXML('ARG' + index, param.helperKey);
         // First child b/c these are wrapped in an <xml/> node.
         methodXml.firstChild.appendChild(inputXml.firstChild);
-      }.bind(this));
+      });
 
       Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(methodXml));
     }
-  }, this);
+  }
 
   //for each property
   for (const [name, property] of Object.entries(componentInfo.properties)) {
@@ -536,7 +526,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   helperKeys.forEach(function(helper) {
     var xml = xmlUtils.helperKeyToXML(helper);
     Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
-  }.bind(this));
+  });
 
   // add the all components getter
   Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
