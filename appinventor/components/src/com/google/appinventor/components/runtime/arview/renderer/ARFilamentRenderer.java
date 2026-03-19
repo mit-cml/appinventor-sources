@@ -30,6 +30,7 @@ import com.google.android.filament.gltfio.ResourceLoader;
 
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.ar.ARNodeBase;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
@@ -683,49 +684,59 @@ public class ARFilamentRenderer {
         int rootInstance = tm.getInstance(asset.getRoot());
         if (rootInstance == 0) return;
 
-        // Guard against null anchor during re-anchoring at drag end
-        if (node.Anchor() == null) return;
-        if (node.Anchor().getTrackingState() != TrackingState.TRACKING) return;
+        ARNodeBase base = (ARNodeBase) node;
 
-        Pose pose = node.Anchor().getPose();
-        float[] t = pose.getTranslation();
+        // Position always comes from the matrix — valid during drag,
+        // physics, collision, and at rest. Never reads anchor for position.
+        float[] t = base.getCurrentPosition();
 
-        if (!depthDataReceived && planeFinder != null) {
-            Log.i("ARFilamentRenderer", " has planeFinder  and pos " + node.Model() + " " + t);
-            float[] invView = new float[16];
-            // We need camera world pos — pass it via updateFrame
-            float[] cameraWorldPos = this.lastCameraWorldPos; // stored from view matrix
-
-
-
+        // Plane-based occlusion — skip during drag so node stays visible
+        if (!depthDataReceived
+            && planeFinder != null
+            && !base.isBeingDragged) {
             com.google.ar.core.Plane occludingPlane =
-                planeFinder.findOccludingPlane(t, cameraWorldPos);
+                planeFinder.findOccludingPlane(t, lastCameraWorldPos);
             if (occludingPlane != null) {
-                Log.i("ARFilamentRenderer", " has plane " + occludingPlane);
-                // Move model far away so it's invisible — cleaner than removing entity
+                // Hide by moving far below scene
                 float[] hideMatrix = new float[16];
                 Matrix.setIdentityM(hideMatrix, 0);
-                hideMatrix[13] = -9999f; // move 9999m below scene
+                hideMatrix[13] = -9999f;
                 tm.setTransform(rootInstance, hideMatrix);
                 return;
             }
         }
 
+        // Rotation from anchor if available, identity otherwise
+        // Rotation doesn't change during drag so anchor is fine here
+        float[] rotMatrix = new float[16];
+        Matrix.setIdentityM(rotMatrix, 0);
+        if (node.Anchor() != null) {
+            quaternionToMatrix(
+                node.Anchor().getPose().getRotationQuaternion(), rotMatrix);
+        }
 
-        float[] m = new float[16];
-        Matrix.setIdentityM(m, 0);
-        m[12] = t[0]; m[13] = t[1]; m[14] = t[2];
+        // Build model matrix: translation + rotation + scale
+        float[] modelMatrix = new float[16];
+        Matrix.setIdentityM(modelMatrix, 0);
 
-        float[] r = new float[16];
-        quaternionToMatrix(pose.getRotationQuaternion(), r);
-        Matrix.multiplyMM(m, 0, m, 0, r, 0);
+        // Apply rotation first
+        Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, rotMatrix, 0);
 
+        // Then translation
+        modelMatrix[12] = t[0];
+        modelMatrix[13] = t[1];
+        modelMatrix[14] = t[2];
+
+        // Then scale
         float s = node.Scale();
-        Matrix.scaleM(m, 0, s, s, s);
+        Matrix.scaleM(modelMatrix, 0, s, s, s);
 
-        tm.setTransform(rootInstance, m);
+        tm.setTransform(rootInstance, modelMatrix);
+
+        Log.d(LOG_TAG, String.format(
+            "applyNodeTransform: pos=[%.3f, %.3f, %.3f] dragging=%b",
+            t[0], t[1], t[2], base.isBeingDragged));
     }
-
     // -------------------------------------------------------------------------
     // Model loading
     // -------------------------------------------------------------------------
