@@ -51,6 +51,9 @@
                        visible="false">
         <actions:ExportAllProjectsAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="ShareProject" caption="{messages.shareProjectMenuItem}">
+        <actions:ShareProjectsAction/>
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Connect Menu -->

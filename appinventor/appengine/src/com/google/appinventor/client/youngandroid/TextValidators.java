@@ -33,6 +33,12 @@ public final class TextValidators {
     DUPLICATEINTRASH
   }
 
+  public enum UserStatus {
+    VALID,
+    INVALIDFORMAT,
+    UNCOMMON
+  }
+
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
           "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
           "SimpleForm", "String", "Pattern", "YailDictionary", "YailList", "YailNumberToString", "YailRuntimeError");
@@ -133,6 +139,25 @@ public final class TextValidators {
   }
 
   /**
+   * 
+   * @param userName the user identifies being used to share project with
+   * @return {@code true} if the user name is valid, {@code false} otherwise
+   */
+  public static UserStatus checkNewUserName(String userName) {
+    // Check the format of the email
+    if (isValidEmailList(userName) != "") {
+      Window.alert("bad username for some reason: " + userName);
+      return UserStatus.INVALIDFORMAT;
+    }
+
+    // Check that user email exists/is gmail?
+    
+    return UserStatus.VALID;
+  }
+
+
+
+  /**
    * Determines whether the given folder name is valid, displaying an alert
    * if it is not.  In order to be valid, the folder name must satisfy
    * {@link #isValidIdentifier(String)} and not be a duplicate of an existing
@@ -178,6 +203,21 @@ public final class TextValidators {
    */
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
+  }
+
+    /**
+   * Checks whether the argument is a legal list of emails
+   *
+   * @param text the proposed identifier
+   * @return {@code ""} if the argument is a legal email list, {@code error_message}
+   *         otherwise
+   */
+  public static String isValidEmailList(String text) {
+    String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(,\\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\\s*)*$";
+    if(text.matches(regex) || text == "") {
+      return "";
+    }
+    return MESSAGES.invalidEmailListError();
   }
 
   /**
@@ -287,6 +327,39 @@ public final class TextValidators {
     }
   }
 
+    /**
+   * Determines human-readable message for specific error.
+   * @param user The username (for now email)
+   * @return String representing error message, empty string if no error
+   */
+  public static String getErrorMessageForUser(String user){
+    String regex = "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})$";
+    String errorMessage = "";
+    String firstCharacterLetter = "[a-zA-Z0-9._%+-]+";
+    String containsAt = firstCharacterLetter + "@[a-zA-Z0-9.-]+";
+    String temp = user.trim();
+    if (temp.length() > 0) {
+      if (!temp.matches(regex)) {
+        if (!temp.matches(firstCharacterLetter)) {
+          //Check to make sure that the first character is a letter
+          errorMessage = MESSAGES.invalidFirstCharUserEmailError();
+        } else { //The text contains a character that is not a letter, number, or underscore
+          if (!temp.matches(containsAt)) {
+            errorMessage = MESSAGES.invalidCharUserEmailError();
+          } else {
+            errorMessage = MESSAGES.invalidDomainUserEmailError();
+          }
+        }
+      }
+    }
+    return errorMessage;
+  }
+
+  /**
+   * Determines human-readable message for specific warning if there are no errors.
+   * @param filename The filename (not path) of uploaded file
+   * @return String representing warning message, empty string if no warning and no error
+   */
   public static String getWarningMessages(String filename) {
     ValidationResult result = validateName(filename);
     if (result.error == NameValidationError.NONE && filename.trim().length() > 0 && !filename.matches("[A-Za-z][A-Za-z0-9_]*")) {
