@@ -184,7 +184,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] lastViewMatrix = new float[16];
     private final float[] lastProjMatrix = new float[16];
 
-    private float GROUND_LEVEL = 1.0f;  
+    private float GROUND_LEVEL = -1.0f;
     private float invisibleFloor = -1.0f;
     private boolean groundDetected = false;
     private int detectedPlaneType = 1;
@@ -511,6 +511,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         emitPlaneDetectedEvent();
 
+        if (!groundDetected) {
+            updateGroundLevelFromPlanes();
+        }
     }
 
     public void drawObjects(ARViewRender render, List<ARNode> objectNodes,
@@ -635,6 +638,37 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
         }
         return nearest;
+    }
+
+    private void updateGroundLevelFromPlanes() {
+        if (groundDetected) return; // only need to do this once
+
+        float lowestY = Float.MAX_VALUE;
+        Plane bestPlane = null;
+
+        for (Plane plane : session.getAllTrackables(Plane.class)) {
+            if (plane.getTrackingState() != TrackingState.TRACKING) continue;
+            if (plane.getType() != Plane.Type.HORIZONTAL_UPWARD_FACING) continue;
+            // Minimum size filter — ignore tiny noise planes
+            if (plane.getExtentX() * plane.getExtentZ() < 0.25f) continue;
+
+            float planeY = plane.getCenterPose().ty();
+            if (planeY < lowestY) {
+                lowestY = planeY;
+                bestPlane = plane;
+            }
+        }
+
+        if (bestPlane != null) {
+            GROUND_LEVEL = lowestY;
+            groundDetected = true;
+            Log.d(LOG_TAG, "Ground level confirmed at: " + GROUND_LEVEL);
+
+            for (ARNode node : arNodes) {
+                ARNodeBase base = (ARNodeBase) node;
+                base.setGroundLevel(GROUND_LEVEL);
+            }
+        }
     }
 
     private android.media.Image getDepthBits(Frame lastFrame) throws NotYetAvailableException {
@@ -1668,6 +1702,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void addNode(ARNode node) {
         Log.i("ADDING ARNODE", "");
         arNodes.add(node);
+        ((ARNodeBase) node).Session(session);
+        ((ARNodeBase) node).setPlaneFinder(this::getNearestPlane);
+        ((ARNodeBase) node).setGroundLevel(GROUND_LEVEL);
         Log.i("ADDED ARNODE", node.NodeType() + " and session is null? " + (session == null));
     }
 
