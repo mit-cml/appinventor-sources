@@ -683,14 +683,21 @@ public class ARFilamentRenderer {
         int rootInstance = tm.getInstance(asset.getRoot());
         if (rootInstance == 0) return;
 
-        Pose   pose = node.Anchor().getPose();
-        float[] t   = pose.getTranslation();
+        // Guard against null anchor during re-anchoring at drag end
+        if (node.Anchor() == null) return;
+        if (node.Anchor().getTrackingState() != TrackingState.TRACKING) return;
+
+        Pose pose = node.Anchor().getPose();
+        float[] t = pose.getTranslation();
 
         if (!depthDataReceived && planeFinder != null) {
             Log.i("ARFilamentRenderer", " has planeFinder  and pos " + node.Model() + " " + t);
             float[] invView = new float[16];
             // We need camera world pos — pass it via updateFrame
             float[] cameraWorldPos = this.lastCameraWorldPos; // stored from view matrix
+
+
+
             com.google.ar.core.Plane occludingPlane =
                 planeFinder.findOccludingPlane(t, cameraWorldPos);
             if (occludingPlane != null) {
