@@ -82,6 +82,18 @@ public class TopToolbar extends Composite {
 
   private static final Logger LOG = Logger.getLogger(TopToolbar.class.getName());
 
+  @UiField
+  protected DropDownButton fileDropDown;
+  @UiField
+  protected DropDownButton connectDropDown;
+  @UiField
+  protected DropDownButton buildDropDown;
+  @UiField
+  protected DropDownButton settingsDropDown;
+  @UiField
+  protected DropDownButton adminDropDown;
+  @UiField(provided = true)
+  Boolean hasWriteAccess;
   @UiField protected DropDownButton fileDropDown;
   @UiField protected DropDownButton connectDropDown;
   @UiField protected DropDownButton buildDropDown;
@@ -93,12 +105,14 @@ public class TopToolbar extends Composite {
   protected boolean readOnly;
 
   /**
-   * This flag is set to true when a check for the android.keystore file is in progress.
+   * This flag is set to true when a check for the android.keystore file is in
+   * progress.
    */
   private volatile boolean isKeystoreCheckPending = false;
 
   /**
-   * This flag is set to true when a call to {@link #updateKeystoreFileMenuButtons(boolean)} has
+   * This flag is set to true when a call to
+   * {@link #updateKeystoreFileMenuButtons(boolean)} has
    * returned and the value was cached.
    */
   private volatile boolean isKeystoreCached = false;
@@ -108,10 +122,12 @@ public class TopToolbar extends Composite {
    */
   private volatile boolean isKeystorePresent = false;
 
-  interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {}
+  interface TopToolbarUiBinder extends UiBinder<FlowPanel, TopToolbar> {
+  }
 
   public TopToolbar() {
-    // The boolean needs to be reversed here so it is true when items need to be visible.
+    // The boolean needs to be reversed here so it is true when items need to be
+    // visible.
     // UIBinder can't negate the boolean itself.
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
@@ -134,16 +150,25 @@ public class TopToolbar extends Composite {
 
     // Second Buildserver Menu Items
     //
-    // We may have a second buildserver which if present permits us to build applications
-    // using different components. This was added primarily to support the "target 26 SDK"
-    // effort where we needed a way for people to package applications against SDK 26 in
-    // order for them to be available in Google's Play Store (Google Requirement as of
-    // 8/1/2018). However such applications have a minSdk of 14 (Ice Cream Sandwich).
+    // We may have a second buildserver which if present permits us to build
+    // applications
+    // using different components. This was added primarily to support the "target
+    // 26 SDK"
+    // effort where we needed a way for people to package applications against SDK
+    // 26 in
+    // order for them to be available in Google's Play Store (Google Requirement as
+    // of
+    // 8/1/2018). However such applications have a minSdk of 14 (Ice Cream
+    // Sandwich).
     //
-    // To support the creation of packages for older devices, we leave the buildserver
-    // (as of 8/1/2018) generating minSdk 7 packages (no target SDK) which will run on
-    // much older devices. The second buildserver will package applications with a target
-    // SDK of 26 for those MIT App Inventor users who wish to put their applications in
+    // To support the creation of packages for older devices, we leave the
+    // buildserver
+    // (as of 8/1/2018) generating minSdk 7 packages (no target SDK) which will run
+    // on
+    // much older devices. The second buildserver will package applications with a
+    // target
+    // SDK of 26 for those MIT App Inventor users who wish to put their applications
+    // in
     // the Play Store after 8/1/2018.
     // template.
     if (!Ode.getInstance().hasSecondBuildserver()) {
@@ -225,7 +250,10 @@ public class TopToolbar extends Composite {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       if (iamChromebook) {
         connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
+        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       } else {
+        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
         connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
       }
@@ -235,7 +263,10 @@ public class TopToolbar extends Composite {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
       if (iamChromebook) {
         connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
+        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       } else {
+        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
         connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
       }
@@ -258,27 +289,27 @@ public class TopToolbar extends Composite {
    * If both forEmulator and forUsb are false, then we are connecting
    * via Wireless.
    *
-   * @param start -- true to start the repl, false to stop it.
+   * @param start         -- true to start the repl, false to stop it.
    * @param forChromebook -- true if we are connecting to a chromebook.
-   * @param forEmulator -- true if we are connecting to the emulator.
-   * @param forUsb -- true if this is a USB connection.
+   * @param forEmulator   -- true if we are connecting to the emulator.
+   * @param forUsb        -- true if this is a USB connection.
    */
 
   public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
     DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
-            + "Ignoring attempt to start the repl.");
+          + "Ignoring attempt to start the repl.");
       return;
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
     screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);
     if (start) {
-      if (forEmulator) {        // We are starting the emulator...
+      if (forEmulator) { // We are starting the emulator...
         updateConnectToDropDownButton(true, false, false);
-      } else if (forUsb) {      // We are starting the usb connection
+      } else if (forUsb) { // We are starting the usb connection
         updateConnectToDropDownButton(false, false, true);
-      } else {                  // We are connecting via wifi to a Companion
+      } else { // We are connecting via wifi to a Companion
         updateConnectToDropDownButton(false, true, false);
       }
     } else {
@@ -290,11 +321,11 @@ public class TopToolbar extends Composite {
     DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
-            + "Ignoring attempt to do hard reset.");
+          + "Ignoring attempt to do hard reset.");
       return;
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    ((YaBlocksEditor)screen.blocksEditor).hardReset();
+    ((YaBlocksEditor) screen.blocksEditor).hardReset();
     updateConnectToDropDownButton(false, false, false);
   }
 
@@ -302,11 +333,11 @@ public class TopToolbar extends Composite {
     DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
-              + "Ignoring attempt to refresh companion screen.");
+          + "Ignoring attempt to refresh companion screen.");
       return;
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    ((YaBlocksEditor)screen.blocksEditor).sendComponentData(true);
+    ((YaBlocksEditor) screen.blocksEditor).sendComponentData(true);
   }
 
   /**
@@ -320,10 +351,11 @@ public class TopToolbar extends Composite {
       return;
     }
 
-    // TODO: This code will work only so long as these menu items stay located in the file/build
+    // TODO: This code will work only so long as these menu items stay located in
+    // the file/build
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
-    if (view == 0) {  // We are in the Projects view
+    if (view == 0) { // We are in the Projects view
       if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(false);
       }
@@ -383,7 +415,8 @@ public class TopToolbar extends Composite {
   }
 
   /**
-   * Enables or disables buttons based on whether the user has an android.keystore file.
+   * Enables or disables buttons based on whether the user has an android.keystore
+   * file.
    */
   public void updateKeystoreFileMenuButtons() {
     Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
@@ -398,7 +431,8 @@ public class TopToolbar extends Composite {
 
           @Override
           public void onFailure(Throwable caught) {
-            // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
+            // Enable the MenuItems. If they are clicked, we'll check again if the keystore
+            // exists.
             fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);
             fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);
           }
@@ -406,9 +440,12 @@ public class TopToolbar extends Composite {
   }
 
   /**
-   * Enables or disables buttons based on whether the user has an android.keystore file. If the
-   * useCache parameter is true, then the last value returned from the UserInfoService is used.
-   * Otherwise, the behavior is identical to {@link #updateKeystoreFileMenuButtons()}.
+   * Enables or disables buttons based on whether the user has an android.keystore
+   * file. If the
+   * useCache parameter is true, then the last value returned from the
+   * UserInfoService is used.
+   * Otherwise, the behavior is identical to
+   * {@link #updateKeystoreFileMenuButtons()}.
    *
    * @param useCache true if a cached value of a previous call is acceptable.
    */
@@ -428,7 +465,8 @@ public class TopToolbar extends Composite {
 
       @Override
       public void onFailure(Throwable caught) {
-        // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
+        // Enable the MenuItems. If they are clicked, we'll check again if the keystore
+        // exists.
         isKeystoreCached = false;
         isKeystorePresent = true;
         isKeystoreCheckPending = false;
