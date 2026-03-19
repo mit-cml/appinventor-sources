@@ -44,12 +44,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   private float radius = 0.05f; // stored in meters
 
-  // Drag system properties
-
-  private float[] lastFingerPosition;
-
-  private boolean isBeingDragged = false;
-
   // Physics constants
   private float dragStartDamping = 0.1f;
   private float dragStartAngularDamping = 0.01f;
@@ -265,23 +259,14 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   // MARK: - Enhanced Drag System
 
-  @SimpleFunction(description = "Start dragging the sphere with enhanced physics control")
-  public void StartDrag() {
-    startDrag(new PointF());
-  }
-
   @Override
   public void startDrag(PointF fingerLocation) {
-    super.startDrag(fingerLocation);
-    Log.i("SphereNode", "Starting optimized drag for " + name);
+    super.startDrag(fingerLocation); // handles everything common
 
-    isBeingDragged = true;
-
+    // Sphere-specific only
     if (EnablePhysics()) {
       adjustPhysicsForDrag();
     }
-
-    showDragEffect();
   }
 
   private void adjustPhysicsForDrag() {
@@ -292,77 +277,34 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   }
 
   @Override
-  public void updateDrag(float[] groundProjection){
-    if (!isBeingDragged) return;
-
-    float[] currentAnchorPos = getCurrentPosition();
-    Log.i("SphereNode", "Current anchor pos: " + arrayToString(currentAnchorPos));
+  public void updateDrag(float[] groundProjection) {
+    if (!isBeingDragged || groundProjection == null) return;
 
     if (lastFingerPosition != null) {
-      float[] movement = subtractVectors(groundProjection, lastFingerPosition);
+      float[] movement = this.subtractVectors(groundProjection, lastFingerPosition);
       float distance = vectorLength(movement);
 
-      if (distance > 0.75f) { // 50cm threshold
-        Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m - using previous position");
-        return; // Skip this frame entirely
+      if (distance > 0.75f) {
+        Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m");
+        lastFingerPosition = groundProjection.clone();
+        return;
       }
-
-      // Apply movement based on behavior
-      updateDragPosition(currentAnchorPos, groundProjection, movement);
-
-      Log.i("SphereNode", "Applied movement: " + arrayToString(movement) + " (distance: " + distance + ")");
-    } else {
-      Log.i("SphereNode", "DRAG UPDATE: Initial position " + arrayToString(groundProjection));
     }
 
-    lastFingerPosition = groundProjection.clone();
+    super.updateDrag(groundProjection); // handles position update
   }
 
-  private void updateDragPosition(float[] currentPos, float[] targetPos, float[] movement) {
-    // Direct position control for immediate feedback
-    float[] constrainedPos = {
-        targetPos[0],
-        currentPos[1],
-        targetPos[2]
-    };
-    Log.i("SphereNode", "Current constrainedPos pos: " + arrayToString(constrainedPos));
-
-    applyRealisticRolling(movement);
-    setCurrentPosition(constrainedPos);
-
-    // Add physics assistance if enabled
-    if (EnablePhysics()) {
-      float responsiveness = getResponsivenessForMass() * DragSensitivity();
-      float forceScale = 2.0f;
-      float[] assistForce = multiplyVector(movement, responsiveness * forceScale);
-
-      // Apply horizontal force only
-      applyForce(assistForce[0], 0, assistForce[2]);
-    }
-  }
-
-  @SimpleFunction(description = "End drag with release velocity for momentum")
-  public void endDrag(String pos) {
-    PointF velocity = parsePointF(pos);
-    //CSB todo
-    endDrag(velocity, null);
-  }
 
   @Override
   public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
-    if (!isBeingDragged) return;
+    super.endDrag(fingerVelocity, cameraVectors);
 
-    Log.i("SphereNode", "Ending optimized drag for " + name);
-    isBeingDragged = false;
-
-    if (EnablePhysics()) {
-      applyReleaseVelocity(fingerVelocity, cameraVectors);
+    // Sphere-specific: update ground level to drop surface
+    if (anchor != null) {
+      setGroundLevel(anchor.getPose().ty());
     }
 
-    // Restore physics settings
-    restorePhysicsAfterDrag();
-
-    // Restore visual appearance
+    // Sphere-specific: restore sphere appearance (different from base material restore)
     restoreOriginalAppearance();
   }
 
@@ -389,74 +331,30 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     rotation = multiplyQuaternions(rollRotation, rotation);
     Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
   }
-
-
-  /**
-   * Apply camera-aware release velocity
-   */
   @Override
   public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
-    float releaseSpeed = (float) Math.sqrt(
-        releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y
-    );
+    float speed = (float) Math.sqrt(
+        releaseVelocity.x * releaseVelocity.x
+            + releaseVelocity.y * releaseVelocity.y);
 
-    if (releaseSpeed <= NORMAL_ROLLING_SPEED) {
-      Log.d("SphereNode", "Release speed too low: " + releaseSpeed);
-      return;
-    }
+    if (speed < NORMAL_ROLLING_SPEED) return;
 
-    // Use default camera vectors if none provided
-    float[] right = (cameraVectors != null) ? cameraVectors.right : new float[]{1, 0, 0};
-    float[] forward = (cameraVectors != null) ? cameraVectors.forward : new float[]{0, 0, -1};
 
-    float baseScale = 0.002f;
+    float[] right   = cameraVectors != null ? cameraVectors.right   : new float[]{1,0,0};
+    float[] forward = cameraVectors != null ? cameraVectors.forward : new float[]{0,0,-1};
 
-    // CONSISTENT mapping: screen X → camera right, screen Y → camera forward
-    // Screen Y is negative because screen coordinates have Y=0 at top
-    float screenX = releaseVelocity.x * baseScale;
-    float screenY = -releaseVelocity.y * baseScale; // Flip screen Y
-    // let worldVelocity = (right * screenX) + (forward * screenY)
-    // Calculate world velocity from camera-relative movement
-    float[] worldVelocity = {
-        (right[0] * screenX) + (forward[0] * screenY),
-        0, // Keep Y velocity as is (no vertical component from horizontal drag)
-        (right[2] * screenX) + (forward[2] * screenY)
-    };
-
-    Log.d("SphereNode", "Screen: (" + releaseVelocity.x + ", " + releaseVelocity.y +
-        ") → World: (" + worldVelocity[0] + ", " + worldVelocity[1] + ", " + worldVelocity[2] + ")");
+    Log.d("SphereNode", "Screen: (" + releaseVelocity.x + ", " + releaseVelocity.y + ")");
     Log.d("SphereNode", "Camera right: (" + right[0] + ", " + right[1] + ", " + right[2] +
         "), forward: (" + forward[0] + ", " + forward[1] + ", " + forward[2] + ")");
 
-    // Apply the world velocity as impulse, preserving any existing Y velocity
-    if (enablePhysics) {
-      // Get current Y velocity to preserve it
-      float currentYVelocity = 0;
+    float scale = 0.002f ; //* getBehaviorMomentumMultiplier();
+    float sx =  releaseVelocity.x * scale;
+    float sy = -releaseVelocity.y * scale;
 
-      // Apply behavior-modified impulse
-      float behaviorMultiplier = getBehaviorMomentumMultiplier();
-
-      applyForce(
-          UnitHelper.metersToCentimeters(worldVelocity[0] * behaviorMultiplier),
-          UnitHelper.metersToCentimeters(currentYVelocity), // Keep existing Y velocity
-          UnitHelper.metersToCentimeters(worldVelocity[2] * behaviorMultiplier)
-      );
-    }
-  }
-
-  private void applyForce(float x, float y, float z) {
-    // Apply physics force - implementation depends on physics system
-    Log.i("SphereNode", "Applying force: " + arrayToString(new float[]{x, y, z}));
-  }
-
-
-
-  private void restorePhysicsAfterDrag() {
-    // Restore original physics damping after drag
-    new android.os.Handler().postDelayed(() -> {
-      // Reset damping values to normal
-      Log.i("SphereNode", "Physics restored after drag");
-    }, 100);
+    // Write directly into currentVelocity — physics loop picks it up next tick
+    currentVelocity[0] = right[0] * sx + forward[0] * sy;
+    currentVelocity[1] = 0;
+    currentVelocity[2] = right[2] * sx + forward[2] * sy;
   }
 
 
@@ -540,10 +438,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     };
   }
 
-  private float[] subtractVectors(float[] a, float[] b) {
-    return new float[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
-  }
-
   private float[] multiplyVector(float[] vector, float scalar) {
     return new float[]{vector[0] * scalar, vector[1] * scalar, vector[2] * scalar};
   }
@@ -601,77 +495,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
 
   // MARK: - Enhanced Move Methods
-
-  @Override
-  @SimpleFunction(description = "Move sphere by offset, maintaining physics if enabled")
-  public void MoveBy(float x, float y, float z) {
-    float[] position = {0, 0, 0};
-    float[] rotation = {0, 0, 0, 1};
-
-    TrackingState trackingState = null;
-    if (this.Anchor() != null) {
-      float[] translations = this.Anchor().getPose().getTranslation();
-      position = new float[]{translations[0] + x, translations[1] + y, translations[2] + z};
-      trackingState = this.Anchor().getTrackingState();
-    }
-
-    // Maintain bottom contact for physics-enabled spheres
-    if (EnablePhysics() && y != 0) {
-      float ballRadius = radius * Scale();
-      position[1] = Math.max(position[1], ballRadius); // Don't go below ground
-    }
-
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null) {
-      Anchor(this.trackable.createAnchor(newPose));
-      Log.i("SphereNode", "Moved anchor BY " + newPose + " with physics correction");
-    } else {
-      if (trackingState == TrackingState.TRACKING) {
-        if (session != null) {
-          Log.i("SphereNode", "Moved anchor BY with SESSION");
-          Anchor(session.createAnchor(newPose));
-        }
-      }
-    }
-  }
-
-  @Override
-  @SimpleFunction(description = "Move sphere to absolute position")
-  public void MoveTo(float x, float y, float z) {
-
-    float xMeters = x / 100.0f;
-    float yMeters = y / 100.0f;
-    float zMeters = z / 100.0f;
-
-    float[] position = {xMeters, yMeters, zMeters};
-    float[] rotation = {0, 0, 0, 1};
-
-    TrackingState trackingState = null;
-    if (this.Anchor() != null) {
-      float[] translations = this.Anchor().getPose().getTranslation();
-      position = new float[]{translations[0] + xMeters, translations[1] + yMeters, translations[2] + zMeters};
-      trackingState = this.Anchor().getTrackingState();
-    }
-
-    // Maintain physics constraints
-    if (EnablePhysics()) {
-      //float ballRadius = radius * Scale();
-      //position[1] = Math.max(position[1], ballRadius); // Don't go below ground
-    }
-
-    Pose newPose = new Pose(position, rotation);
-    if (this.trackable != null) {
-      Log.i("SphereNode", "Moving anchor to pose: " + newPose + " with physics correction");
-      Anchor(this.trackable.createAnchor(newPose));
-    } else {
-      if (trackingState == TrackingState.TRACKING) {
-        if (session != null) {
-          Log.i("SphereNode", "Moved anchor to with SESSION " + xMeters + " " + yMeters + " " + zMeters);
-          Anchor(session.createAnchor(newPose));
-        }
-      }
-    }
-  }
 
   @Override
   @SimpleFunction(description = "Move sphere to detected plane with physics considerations")

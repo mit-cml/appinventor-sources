@@ -1063,7 +1063,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if ("changed".equals(gesturePhase) && node.Anchor() != null) {
                 Log.i(LOG_TAG, "Using stable incremental movement during drag");
                 return projectFingerIncrementally(
-                    node.Anchor().getPose().getTranslation(),
+                    ((ARNodeBase) node).getCurrentPosition(),  // ← reads matrix, updates each frame
                     fingerMovement
                 );
             }
@@ -1100,7 +1100,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         // Keep current position as fallback
         if (node.Anchor() != null) {
-            float[] currentPos = node.Anchor().getPose().getTranslation();
+            float[] currentPos =  ((ARNodeBase) node).getCurrentPosition();
             Log.i(LOG_TAG, "Using CURRENT position: (" + currentPos[0] + ", " + currentPos[1] + ", " + currentPos[2] + ")");
             return currentPos;
         }
@@ -1109,24 +1109,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     private float[] projectFingerIncrementally(float[] currentPos, PointF fingerMovement) {
-        Log.d(LOG_TAG, "projectFingerIncrementally: fingerMovement=(" + fingerMovement.x + ", " + fingerMovement.y + ")");
+        Log.d(LOG_TAG, "projectFingerIncrementally: fingerMovement=("
+            + fingerMovement.x + ", " + fingerMovement.y + ")");
 
         if (lastCamera == null) {
-            Log.w(LOG_TAG, "lastCamera is null - using basic fallback");
-            float scale = 0.0002f;
-            return new float[]{
-                currentPos[0] + fingerMovement.x * scale,
-                currentPos[1],
-                currentPos[2]
-            };
+            Log.w(LOG_TAG, "lastCamera is null");
+            return currentPos;
         }
 
-        try {
-            // Get camera transform
+            // Extract camera yaw from pose matrix
             float[] cameraMatrix = new float[16];
             lastCamera.getPose().toMatrix(cameraMatrix, 0);
-
-            // Extract camera forward vector
             float[] cameraForward = {
                 -cameraMatrix[8], 0, -cameraMatrix[10]
             };
@@ -1146,24 +1139,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             float rotatedX = fingerX * (float) Math.cos(-cameraYaw) - fingerZ * (float) Math.sin(-cameraYaw);
             float rotatedZ = fingerX * (float) Math.sin(-cameraYaw) + fingerZ * (float) Math.cos(-cameraYaw);
 
-            float newZ = currentPos[2] + rotatedZ;
-            newZ = Math.max(-4.0f, Math.min(-1.0f, newZ));
-
-            float[] result = new float[]{
-                currentPos[0] + rotatedX,
-                currentPos[1],
-                newZ
-            };
-
             Log.d(LOG_TAG, "Calculated movement: (" + rotatedX + ", 0, " + rotatedZ + ")");
-            Log.d(LOG_TAG, "New position: (" + result[0] + ", " + result[1] + ", " + result[2] + ")");
 
-            return result;
+            float newX = currentPos[0] + rotatedX;
+            float newZ = currentPos[2] + rotatedZ;
 
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error in incremental projection", e);
-            return currentPos;
-        }
+            return new float[]{newX, currentPos[1], newZ};
     }
 
     private float[] adjustPositionForNodeType(ARNode node, float[] position) {

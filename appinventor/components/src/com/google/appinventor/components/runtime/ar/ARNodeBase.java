@@ -45,7 +45,6 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected String name = "";
   protected String objectModel = Form.ASSETS_PREFIX + "";
 
-
   // Enhanced Physics Properties
   protected String collisionShape = "sphere";
   protected float staticFriction = 0.1f;
@@ -62,7 +61,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected boolean rotateWithGesture = false;
   protected boolean visible = true;
   // Enhanced Dragging
-  protected boolean isBeingDragged = false;
+  protected volatile boolean isBeingDragged = false;
   protected PointF dragStartLocation = new PointF(0, 0);
   protected PointF lastDragLocation = new PointF(0, 0);
   protected Object originalMaterial = null;
@@ -71,7 +70,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] currentVelocity = {0, 0, 0};
 
   private boolean onGround = false;
-  private float GROUND_LEVEL = 1.0f; // Default ground level
+  protected float GROUND_LEVEL = -1.2f; // Default ground level
   private static final float GRAVITY = -9.81f; // m/s²
 
   protected boolean isCurrentlyColliding = false;
@@ -86,6 +85,26 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected boolean hasPreviewSurface = false;
 
   protected long dragStartTime;
+
+  // The world matrix is the single source of truth during simulation
+  public float[] currentWorldMatrix = null;
+
+  protected NearestPlaneFinder planeFinder = null;
+
+  public void setGroundLevel(float y) {
+    GROUND_LEVEL = y;
+  }
+
+  public void setPlaneFinder(NearestPlaneFinder finder) {
+    this.planeFinder = finder;
+  }
+
+ /* simple anchor init */
+  public void initWorldMatrixFromAnchor() {
+    if (anchor == null) return;
+    if (currentWorldMatrix == null) currentWorldMatrix = new float[16];
+    anchor.getPose().toMatrix(currentWorldMatrix, 0);
+  }
 
   @SuppressWarnings("WeakerAccess")
   protected ARNodeBase(ARNodeContainer container) {
@@ -118,66 +137,82 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void updateSimplePhysics(float deltaTime) {
     if (!EnablePhysics() || isBeingDragged) return;
 
-    Log.d("Physics", "Updating physics for " + name + " deltaTime=" + deltaTime + " bc " + EnablePhysics());
+    if (currentWorldMatrix == null) return;
+
     currentVelocity[1] += GRAVITY * deltaTime;
+    currentVelocity[1] = Math.max(currentVelocity[1], -50f);
 
-    currentVelocity[1] = Math.max(currentVelocity[1], -50f); // Max falling speed 50 m/s
-    currentVelocity[1] = Math.min(currentVelocity[1], 50f);  // Max upward speed 50 m/s
+    float[] currentPos = getCurrentPosition(); // reads matrix now, not anchor
 
-    float[] currentPos = getCurrentPosition();
+    if (currentPos[0] == 0 && currentPos[1] == 0 && currentPos[2] == 0) {
+      if (anchor != null) initWorldMatrixFromAnchor();
+      return;
+    }
+
     currentPos[0] += currentVelocity[0] * deltaTime;
     currentPos[1] += currentVelocity[1] * deltaTime;
     currentPos[2] += currentVelocity[2] * deltaTime;
 
-    if (currentPos[1] > 100f || currentPos[1] < -100f) {
-      Log.e("Physics", "Position explosion detected! Resetting node " + name);
-      currentPos[1] = Math.max(currentPos[1], GROUND_LEVEL + 1f); // Reset to safe position
-      currentVelocity[1] = 0f; // Stop the madness
-    }
-
-    // Check ground collision
     float objectBottom = currentPos[1];
     if (this instanceof SphereNode) {
-      SphereNode sphere = (SphereNode) this;
-      objectBottom -= sphere.RadiusInCentimeters() * sphere.Scale(); // Bottom of sphere
+      objectBottom -= ((SphereNode) this).RadiusInCentimeters()
+          * UnitHelper.centimetersToMeters(1f) * Scale();
     }
 
-
-    //  Handle ground collision
     if (objectBottom <= GROUND_LEVEL) {
-      // Position correction - place on ground
       if (this instanceof SphereNode) {
-        SphereNode sphere = (SphereNode) this;
-        currentPos[1] = GROUND_LEVEL + (sphere.RadiusInCentimeters() * sphere.Scale());
+        float r = ((SphereNode) this).RadiusInCentimeters()
+            * UnitHelper.centimetersToMeters(1f) * Scale();
+        currentPos[1] = GROUND_LEVEL + r;
       } else {
         currentPos[1] = GROUND_LEVEL;
       }
 
-      // Stop downward velocity and bounce
       if (currentVelocity[1] < 0) {
         currentVelocity[1] = -currentVelocity[1] * Restitution();
-
-        // Stop tiny bounces
-        if (Math.abs(currentVelocity[1]) < 0.1f) {
+        if (Math.abs(currentVelocity[1]) < 0.05f) {
           currentVelocity[1] = 0;
-          onGround = true;
         }
       }
-      Log.d("Physics", "Updating physics for " + currentVelocity );
-      // Apply friction to horizontal movement
-      currentVelocity[0] *= (1.0f - StaticFriction() * 0.1f);
-      currentVelocity[2] *= (1.0f - StaticFriction() * 0.1f);
-    } else {
-      onGround = false;
+
+      currentVelocity[0] *= (1.0f - StaticFriction() * deltaTime * 10f);
+      currentVelocity[2] *= (1.0f - StaticFriction() * deltaTime * 10f);
     }
 
-    setCurrentPosition(currentPos);
+    setCurrentPosition(currentPos); // writes to matrix, no ARCore
+
+    // Detect rest and sync anchor for drift correction
+    float speed = vectorLength(currentVelocity);
+    if (speed < 0.01f && objectBottom <= GROUND_LEVEL + 0.01f) {
+      currentVelocity[0] = 0;
+      currentVelocity[1] = 0;
+      currentVelocity[2] = 0;
+
+      // Only re-anchor if position has drifted from anchor
+      // avoids unnecessary anchor creation when already at rest
+      if (anchor != null && session != null) {
+        float[] anchorPos = anchor.getPose().getTranslation();
+        float[] matrixPos = getCurrentPosition();
+        float drift = vectorDistance(anchorPos, matrixPos);
+
+        if (drift > 0.01f) { // more than 1cm drift
+          reanchorAtCurrentPosition(planeFinder);
+        }
+      }
+    }
+
   }
 
   /* note, in meters */
   public float[] getCurrentPosition() {
-    // Get current position from anchor or trackable
-    if (anchor != null) {
+    if (currentWorldMatrix != null) {
+      return new float[]{
+          currentWorldMatrix[12],
+          currentWorldMatrix[13],
+          currentWorldMatrix[14]
+      };
+    }
+    if (anchor != null && anchor.getTrackingState() == TrackingState.TRACKING) {
       return anchor.getPose().getTranslation();
     }
     return new float[]{0, 0, 0};
@@ -193,26 +228,51 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   /* note, in meters */
   public void setCurrentPosition(float[] position) {
-    // Set position via anchor system
-
-    for (int i = 0; i < position.length; i++) {
-      if (Float.isNaN(position[i]) || Float.isInfinite(position[i])) {
-        Log.e("Node", "Invalid position[" + i + "]: " + position[i]);
-        return; // Don't recreate anchor with invalid position
-      }
+    for (float v : position) {
+      if (Float.isNaN(v) || Float.isInfinite(v)) return;
     }
+    if (Math.abs(position[0]) > 100 || Math.abs(position[1]) > 100
+        || Math.abs(position[2]) > 100) return;
+
+    if (currentWorldMatrix == null) {
+      currentWorldMatrix = new float[16];
+      android.opengl.Matrix.setIdentityM(currentWorldMatrix, 0);
+    }
+    currentWorldMatrix[12] = position[0];
+    currentWorldMatrix[13] = position[1];
+    currentWorldMatrix[14] = position[2];
+    Log.i("ARNODEBASE", "current position is " + currentWorldMatrix[12] + ", " + currentWorldMatrix[13] + ", " + currentWorldMatrix[14]);
+  }
+
+  // Called at drag end — single anchor creation, then done
+  public void reanchorAtCurrentPosition(NearestPlaneFinder planeFinder) {
+    if (currentWorldMatrix == null) return;
     if (session == null) return;
 
-    // Check if values are reasonable (within ~100m of origin)
-    if (Math.abs(position[0]) > 100 || Math.abs(position[1]) > 100 || Math.abs(position[2]) > 100) {
-      Log.e("Node", "Position too far from origin: " + arrayToString(position));
-      return;
+    float[] pos = getCurrentPosition();
+    Log.i("ARNODEBASE", "reanchor position is " + pos[0] + ", " + pos[1] + ", " + pos[2]);
+    try {
+      Anchor newAnchor;
+      Plane nearest = planeFinder != null
+          ? planeFinder.find(pos[0], pos[2])
+          : null;
+
+      if (nearest != null) {
+        newAnchor = nearest.createAnchor(
+            new Pose(pos, new float[]{0, 0, 0, 1}));
+      } else {
+        newAnchor = session.createAnchor(
+            new Pose(pos, new float[]{0, 0, 0, 1}));
+      }
+
+      // New anchor valid — now safe to detach old one
+      if (anchor != null) anchor.detach();
+      anchor = newAnchor;
+
+    } catch (NotTrackingException e) {
+      // Creation failed — old anchor untouched, node stays visible
+      Log.w("ARNodeBase", "Re-anchor deferred — tracking lost during drag end");
     }
-    position[1] = 1f;
-    float[] rotation = {0, 0, 0, 1};
-    Log.i("Node", "setting position " + arrayToString(position));
-    pendingPosition = position;
-    pendingRotation = rotation;
   }
 
   public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder) {
@@ -1222,8 +1282,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty
   public void XPosition(float xPosition) {
     float xMeters = UnitHelper.centimetersToMeters(xPosition);
-    fromPropertyPosition[0] = xMeters;
-    updatePositionFromProperties();
+    fromPropertyPosition[0] = xMeters; // keep in sync for serialization
+    float[] currentPos = getCurrentPosition();
+    currentPos[0] = xMeters;
+    setCurrentPosition(currentPos);
+    reanchorAtCurrentPosition(planeFinder);
   }
 
   @Override
@@ -1240,9 +1303,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void YPosition(float yPosition) {
     float yMeters = UnitHelper.centimetersToMeters(yPosition);
     fromPropertyPosition[1] = yMeters;
-    updatePositionFromProperties();
+    float[] currentPos = getCurrentPosition();
+    currentPos[1] = yMeters;
+    setCurrentPosition(currentPos);
+    reanchorAtCurrentPosition(planeFinder);
   }
-
   @Override
   @SimpleProperty(description = "The z position in centimeters of the node.")
   public float ZPosition() {
@@ -1257,18 +1322,15 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   public void ZPosition(float zPosition) {
     float zMeters = UnitHelper.centimetersToMeters(zPosition);
     fromPropertyPosition[2] = zMeters;
-    updatePositionFromProperties();
+    float[] currentPos = getCurrentPosition();
+    currentPos[2] = zMeters;
+    setCurrentPosition(currentPos);
+    reanchorAtCurrentPosition(planeFinder);
   }
 
   private void updatePositionFromProperties() {
-    float[] rotation = {0f, 0f, 0f, 1f};
-    Pose newPose = new Pose(fromPropertyPosition, rotation);
-
-    if (trackable != null) {
-      Anchor(trackable.createAnchor(newPose));
-    } else if (session != null) {
-      Anchor(session.createAnchor(newPose));
-    }
+    setCurrentPosition(fromPropertyPosition);
+    reanchorAtCurrentPosition(planeFinder);
   }
 
 // MARK: - Enhanced Rotation Properties
@@ -1322,23 +1384,22 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
 
-  public void setRotationComponent(int component, float radians) { //CSB flag for name changes?
-    if (anchor != null) {
-      float[] euler = quaternionToEulerAngles(anchor.getPose().getRotationQuaternion());
-      euler[component] = radians;
-      float[] quaternion = eulerAnglesToQuaternion(euler);
-
-      float[] position = anchor.getPose().getTranslation();
-      Pose newPose = new Pose(position, quaternion);
-      try {
-        if (trackable != null) {
-          Anchor(trackable.createAnchor(newPose));
-        } else if (session != null) {
-          Anchor(session.createAnchor(newPose));
-        }
-      } catch (Exception e) {
-        // csb todo
-      }
+  public void setRotationComponent(int component, float radians) {
+    if (anchor == null) return;
+    float[] euler = quaternionToEulerAngles(anchor.getPose().getRotationQuaternion());
+    euler[component] = radians;
+    float[] quaternion = eulerAnglesToQuaternion(euler);
+    float[] position = getCurrentPosition(); // from matrix
+    Pose newPose = new Pose(position, quaternion);
+    try {
+      Anchor newAnchor = trackable != null
+          ? trackable.createAnchor(newPose)
+          : session.createAnchor(newPose);
+      if (anchor != null) anchor.detach();
+      anchor = newAnchor;
+      initWorldMatrixFromAnchor(); // sync matrix
+    } catch (Exception e) {
+      Log.w("ARNodeBase", "setRotationComponent failed: " + e.getMessage());
     }
   }
 
@@ -1448,62 +1509,24 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 
   @Override
-  @SimpleFunction(description = "Changes the node's position by (x,y,z) in centimeters.")
   public void MoveBy(float x, float y, float z) {
-    float xMeters = UnitHelper.centimetersToMeters(x);
-    float yMeters = UnitHelper.centimetersToMeters(y);
-    float zMeters = UnitHelper.centimetersToMeters(z);
-
-    float[] currentPos;
-    if (anchor != null) {
-      currentPos = anchor.getPose().getTranslation();
-    } else {
-      currentPos = fromPropertyPosition;
-    }
-
-    float[] newPosition = {
-        currentPos[0] + xMeters,
-        currentPos[1] + yMeters,
-        currentPos[2] + zMeters
-    };
-
-    float[] rotation = getCurrentRotation();
-
-
-    Pose newPose = new Pose(newPosition, rotation);
-
-    if (trackable != null) {
-      Anchor(trackable.createAnchor(newPose));
-    } else if (session != null) {
-      Anchor(session.createAnchor(newPose));
-    }
-
-    Log.i("ARNodeBase", "Moved by (" + x + ", " + y + ", " + z + ") cm");
+    float[] currentPos = getCurrentPosition();
+    setCurrentPosition(new float[]{
+        currentPos[0] + UnitHelper.centimetersToMeters(x),
+        currentPos[1] + UnitHelper.centimetersToMeters(y),
+        currentPos[2] + UnitHelper.centimetersToMeters(z)
+    });
+    reanchorAtCurrentPosition(planeFinder);
   }
 
   @Override
-  @SimpleFunction(description = "Changes the node's position to (x,y,z) in centimeters.")
   public void MoveTo(float x, float y, float z) {
-    float xMeters = UnitHelper.centimetersToMeters(x);
-    float yMeters = UnitHelper.centimetersToMeters(y);
-    float zMeters = UnitHelper.centimetersToMeters(z);
-
-    float[] position = {xMeters, yMeters, zMeters};
-    float[] rotation = {0f, 0f, 0f, 1f};
-
-    if (anchor != null) {
-      rotation = anchor.getPose().getRotationQuaternion();
-    }
-
-    Pose newPose = new Pose(position, rotation);
-
-    if (trackable != null) {
-      Anchor(trackable.createAnchor(newPose));
-    } else if (session != null) {
-      Anchor(session.createAnchor(newPose));
-    }
-
-    Log.i("ARNodeBase", "Moved to (" + x + ", " + y + ", " + z + ") cm");
+    setCurrentPosition(new float[]{
+        UnitHelper.centimetersToMeters(x),
+        UnitHelper.centimetersToMeters(y),
+        UnitHelper.centimetersToMeters(z)
+    });
+    reanchorAtCurrentPosition(planeFinder);
   }
 
   @Override
@@ -1518,14 +1541,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @Override
   @SimpleFunction(description = "Calculates the distance, in centimeters, between two nodes.")
   public float DistanceToNode(ARNode node) {
-    if (anchor == null) return 0f;
-
-    // Get positions and calculate distance
-    float[] myPos = anchor.getPose().getTranslation();
-    // Implementation would need access to other node's position
-    // This is a placeholder - actual implementation depends on ARNode interface
-
-    return UnitHelper.metersToCentimeters(0f); // Placeholder
+    float[] myPos = getCurrentPosition();
+    float[] otherPos = ((ARNodeBase) node).getCurrentPosition();
+    return UnitHelper.metersToCentimeters(vectorDistance(myPos, otherPos));
   }
 
   @Override
@@ -1565,44 +1583,82 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
+  // ARNodeBase — complete version
   @Override
   public void startDrag(PointF fingerLocation) {
     isBeingDragged = true;
+    lastFingerPosition = null;  // reset so first updateDrag has no delta
     dragStartLocation.set(fingerLocation.x, fingerLocation.y);
     dragStartTime = System.currentTimeMillis();
+
+    // Zero velocity so physics doesn't fight drag on any node type
+    currentVelocity[0] = 0;
+    currentVelocity[1] = 0;
+    currentVelocity[2] = 0;
+
     if (originalMaterial == null) {
       originalMaterial = getCurrentMaterial();
     }
     showDragEffect();
-    Log.d("ARNodeBase", "Started advanced drag for " + NodeType());
+    Log.d("ARNodeBase", "startDrag for " + NodeType()
+        + " at " + arrayToString(getCurrentPosition())
+        + " groundLevel=" + GROUND_LEVEL);
   }
 
 
+  // ARNodeBase — handles all node types
   @Override
   public void updateDrag(float[] groundProjection) {
-    if (!isBeingDragged) return;
+    if (!isBeingDragged || groundProjection == null) return;
 
-    if (groundProjection != null) {
-      // Constrain Y position to keep sphere above ground
+    if (lastFingerPosition != null) {
+      float[] movement = subtractVectors(groundProjection, lastFingerPosition);
+      float distance = vectorLength(movement);
 
-      lastFingerPosition = groundProjection.clone();
+      if (distance > 0.75f) {
+        lastFingerPosition = groundProjection.clone();
+        return;
+      }
+
+      float[] currentPos = getCurrentPosition();
+      float[] newPos = {
+          groundProjection[0],
+          currentPos[1],  // preserve Y by default
+          groundProjection[2]
+      };
+
+      setCurrentPosition(newPos);
     }
+    Log.d("ARNodeBase", "updating drag for " + NodeType()
+        + " at " + arrayToString(getCurrentPosition())
+        + " groundLevel=" + GROUND_LEVEL);
+    lastFingerPosition = groundProjection.clone();
+  }
+
+
+  protected float[] subtractVectors(float[] a, float[] b) {
+    return new float[]{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
   }
 
 
   public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
     if (!isBeingDragged) return;
 
-    Log.i("ARNodeBase", "Ending drag with velocity: " + fingerVelocity);
+    isBeingDragged = false;          // once, here
+    lastFingerPosition = null;
 
-    // Re-enable physics mode
-    if (enablePhysics) {
-      // Calculate camera vectors from current AR camera
+    reanchorAtCurrentPosition(planeFinder);
 
+    if (EnablePhysics() && fingerVelocity != null) {
       applyReleaseVelocity(fingerVelocity, cameraVectors);
+    } else {
+      currentVelocity[0] = 0;
+      currentVelocity[1] = 0;
+      currentVelocity[2] = 0;
     }
-    isBeingDragged = false;
+
     restoreOriginalMaterial();
+    Log.d("ARNodeBase", "endDrag for " + NodeType());
   }
 
 
