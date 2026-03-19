@@ -446,7 +446,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (node != null && node.Anchor() == null) {
                 // fromPropertyPosition is already in meters — use directly
                 float[] posMeters = ((ARNodeBase)node).fromPropertyPosition;
+
+
                 if (posMeters == null) continue;
+                // Skip zero positions — tap-placed nodes haven't received
+                // their anchor yet, designer nodes with no InitialPosition set
+                if (posMeters[0] == 0 && posMeters[1] == 0 && posMeters[2] == 0) continue;
+
                 Log.d(LOG_TAG, "Creating default anchor at meters: "
                     + posMeters[0] + "," + posMeters[1] + "," + posMeters[2]);
                 node.Session(session);
