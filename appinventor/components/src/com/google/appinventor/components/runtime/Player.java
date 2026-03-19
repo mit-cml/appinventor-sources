@@ -107,6 +107,8 @@ public final class Player extends AndroidNonvisibleComponent
   private static final boolean audioFocusSupported;
   private Object afChangeListener;
 
+  private int volGetter = 50;
+
   static{
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO) {
       audioFocusSupported = true;
@@ -288,6 +290,15 @@ public final class Player extends AndroidNonvisibleComponent
     // even if the player is not prepared, it will be set according to
     // Loop the next time it is started
     loop = shouldLoop;
+  }
+
+  /**
+   * Returns the volume property of the player.
+   */
+
+  @SimpleProperty(description = "Return the volume", category = PropertyCategory.BEHAVIOR)
+  public int Volume() {
+    return this.volGetter;
   }
 
   /**
