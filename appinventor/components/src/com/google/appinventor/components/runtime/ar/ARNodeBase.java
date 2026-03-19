@@ -61,7 +61,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected boolean rotateWithGesture = false;
   protected boolean visible = true;
   // Enhanced Dragging
-  protected volatile boolean isBeingDragged = false;
+  public volatile boolean isBeingDragged = false;
   protected PointF dragStartLocation = new PointF(0, 0);
   protected PointF lastDragLocation = new PointF(0, 0);
   protected Object originalMaterial = null;
