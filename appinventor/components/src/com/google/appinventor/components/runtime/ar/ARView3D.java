@@ -110,21 +110,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private static final String SEARCHING_PLANE_MESSAGE = "Searching for Surfaces.";
     private static final String WAITING_FOR_TAP_MESSAGE = "Tap on the Surface.";
 
-    private static final float[] sphericalHarmonicFactors = {
-        0.282095f, -0.325735f, 0.325735f, -0.325735f, 0.273137f,
-        -0.273137f, 0.078848f, -0.273137f, 0.136569f,
-    };
-    private static final float TINT_INTENSITY = 0.05f;
-    private static final float TINT_ALPHA = 1.0f;
-    private static final int[] TINT_COLORS_HEX = {
-        0x000000, 0xF44336, 0xE91E63, 0x9C27B0, 0x673AB7, 0x3F51B5, 0x2196F3, 0x03A9F4, 0x00BCD4,
-        0x009688, 0x4CAF50, 0x8BC34A, 0xCDDC39, 0xFFEB3B, 0xFFC107, 0xFF9800,
-    };
+
     private static final float Z_NEAR = 0.085f;
     private static final float Z_FAR = 20f;
-    private static final int CUBE_MAP_RESOLUTION = 16;
-    private static final int CUBE_MAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
-    private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
 
 
     // ARCore components
@@ -145,7 +133,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private Config.DepthMode depthMode = Config.DepthMode.RAW_DEPTH_ONLY;
     // Rendering components
     private ARFilamentRenderer arFilamentRenderer;
-    private QuadRenderer quadRenderer;
     private BackgroundRenderer backgroundRenderer;
     private ObjectRenderer objRenderer;
     private PlaneRenderer planeRenderer;
@@ -156,19 +143,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final FrameLayout   frameLayout;         // returned by getView()
     private ARViewRender arViewRender;
 
-    private int quadShader = 0;
-    private Shader virtualObjectShader;
-
-    private Texture dfgTexture;
-    private SpecularCubeMapFilter cubeMapFilter;
-
     // Matrices and math components
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
-    private final float[] sphericalHarmonicsCoefficients = new float[9 * 3];
-    private final float[] viewInverseMatrix = new float[16];
-    private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
-    private final float[] viewLightDirection = new float[4];
 
     private int currentViewportWidth = 0;
     private int currentViewportHeight = 0;
@@ -179,6 +156,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     // Track dragging state
     private ARNode currentlyDraggedNode = null;
+
     private Frame lastFrame = null;
     private Camera lastCamera = null;
     private final float[] lastViewMatrix = new float[16];
@@ -924,10 +902,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), false, true);
-
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
                     Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
-
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
                 } else if (mostRecentTrackable instanceof Point && useSimulatedDepth) {
                     Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
