@@ -55,4 +55,46 @@ public class CheckboxTest extends ToggleTestBase {
     assertTrue(aCheckbox.Checked());
   }
 
+  @Test
+  public void testCheckboxCheckedColorDefault() {
+    // Default checked color should be green
+    assertEquals(Component.COLOR_GREEN, aCheckbox.CheckedColor());
+  }
+
+  @Test
+  public void testCheckboxUncheckedColorDefault() {
+    // Default unchecked color should be light gray
+    assertEquals(Component.COLOR_LTGRAY, aCheckbox.UncheckedColor());
+  }
+
+  @Test
+  public void testCheckboxCheckedColorCustom() {
+    // Test setting custom checked color
+    aCheckbox.CheckedColor(Component.COLOR_BLUE);
+    assertEquals(Component.COLOR_BLUE, aCheckbox.CheckedColor());
+    
+    aCheckbox.CheckedColor(Component.COLOR_RED);
+    assertEquals(Component.COLOR_RED, aCheckbox.CheckedColor());
+  }
+
+  @Test
+  public void testCheckboxUncheckedColorCustom() {
+    // Test setting custom unchecked color
+    aCheckbox.UncheckedColor(Component.COLOR_YELLOW);
+    assertEquals(Component.COLOR_YELLOW, aCheckbox.UncheckedColor());
+    
+    aCheckbox.UncheckedColor(Component.COLOR_CYAN);
+    assertEquals(Component.COLOR_CYAN, aCheckbox.UncheckedColor());
+  }
+
+  @Test
+  public void testCheckboxBothColorsCustom() {
+    // Test setting both colors together
+    aCheckbox.CheckedColor(Component.COLOR_MAGENTA);
+    aCheckbox.UncheckedColor(Component.COLOR_ORANGE);
+    
+    assertEquals(Component.COLOR_MAGENTA, aCheckbox.CheckedColor());
+    assertEquals(Component.COLOR_ORANGE, aCheckbox.UncheckedColor());
+  }
+
 }
