@@ -711,8 +711,7 @@ public class ARFilamentRenderer {
         float[] rotMatrix = new float[16];
         Matrix.setIdentityM(rotMatrix, 0);
         if (node.Anchor() != null) {
-            quaternionToMatrix(
-                node.Anchor().getPose().getRotationQuaternion(), rotMatrix);
+            quaternionToMatrix(base.getCurrentRotation(), rotMatrix);
         }
 
         // Build model matrix: translation + rotation + scale
