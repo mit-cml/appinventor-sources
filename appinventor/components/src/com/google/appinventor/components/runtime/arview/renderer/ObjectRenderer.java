@@ -326,9 +326,20 @@ public class ObjectRenderer {
   private void renderSingleObject(ARViewRender render, ARNode arNode,
                                   float[] viewMatrix, float[] cameraProjection) {
     try {
-      Anchor anchor = arNode.Anchor();
-      if (anchor == null ||
-          anchor.getTrackingState() != TrackingState.TRACKING) return;
+      // Prefer world matrix — valid during drag, re-anchoring, and physics
+      ARNodeBase base = (ARNodeBase) arNode;
+      float[] anchorMatrix = new float[16];
+
+      if (base.currentWorldMatrix != null) {
+        // Physics/drag has run — use matrix directly, no anchor needed
+        System.arraycopy(base.currentWorldMatrix, 0, anchorMatrix, 0, 16);
+      } else {
+        // Matrix not initialized yet — fall back to anchor
+        Anchor anchor = arNode.Anchor();
+        if (anchor == null ||
+            anchor.getTrackingState() != TrackingState.TRACKING) return;
+        anchor.getPose().toMatrix(anchorMatrix, 0);
+      }
 
       Mesh nodeMesh = createOrGetMesh(render, arNode.Model());
       Texture nodeTexture = createOrGetTexture(render, arNode.Texture());
@@ -336,8 +347,8 @@ public class ObjectRenderer {
       if (nodeMesh == null || nodeTexture == null) return;
       Log.i("ObjRenderer:", "rendering single object");
       // Calculate matrices
-      float[] anchorMatrix = new float[16];
-      anchor.getPose().toMatrix(anchorMatrix, 0);
+
+
       float[] modelMatrix = updateModelMatrix(
           anchorMatrix, arNode.Scale(), arNode.InitialRotation());
 
@@ -399,8 +410,7 @@ public class ObjectRenderer {
         shader.setFloat("u_PlaneOcclusionEnabled", 0.0f);
       }
 
-      Log.d(TAG, "renderSingleObject: anchor=" + anchor
-          + " tracking=" + anchor.getTrackingState()
+      Log.d(TAG, "renderSingleObject: anchor=" + anchorMatrix
           + " mesh=" + nodeMesh
           + " texture=" + nodeTexture);
 
