@@ -20,7 +20,6 @@
 goog.provide('AI.Blockly.Drawer');
 
 goog.require('AI.Blockly.Util.xml');
-goog.require('goog.object');
 goog.require('bd.toolbox.ctr');
 
 // Some block drawers need to be initialized after all the javascript source is loaded because they
@@ -313,7 +312,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }
 
     // Create event blocks.
-    goog.object.forEach(componentInfo.eventDictionary, function (event, name) {
+    Object.entries(componentInfo.eventDictionary).forEach(function (pair) {
+      const name = pair[0];
+      const event = pair[1];
       if (event.deprecated) {
         return;
       }
@@ -332,7 +333,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }, this);
 
     // Create method blocks.
-    goog.object.forEach(componentInfo.methodDictionary, function (method, name) {
+    Object.entries(componentInfo.methodDictionary).forEach(function (pair) {
+      const name = pair[0];
+      const method = pair[1];
       if (method.deprecated) {
         return;
       }
@@ -361,7 +364,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }, this);
 
     // Create getter and setter blocks.
-    goog.object.forEach(componentInfo.properties, function (property, name) {
+    Object.entries(componentInfo.properties).forEach(function(pair) {
+      const name = pair[0];
+      const property = pair[1];
       if (property.deprecated) {
         return;
       }
@@ -458,7 +463,9 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }
 
   //create generic event blocks
-  goog.object.forEach(componentInfo.eventDictionary, function(event, name){
+  Object.entries(componentInfo.eventDictionary).forEach(function(pair){
+    const name = pair[0];
+    const event = pair[1];
     if(!event.deprecated){
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
         component_type: typeName, event_name: name, is_generic: 'true'
@@ -471,7 +478,9 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }, this);
 
   //create generic method blocks
-  goog.object.forEach(componentInfo.methodDictionary, function(method, name) {
+  Object.entries(componentInfo.methodDictionary).forEach(function(pair) {
+    const name = pair[0];
+    const method = pair[1];
     if (!method.deprecated) {
       var methodXml = this.blockTypeToXML('component_method', {
         component_type: typeName, method_name: name, is_generic: "true"
@@ -496,7 +505,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }, this);
 
   //for each property
-  goog.object.forEach(componentInfo.properties, function(property, name) {
+  for (const [name, property] of Object.entries(componentInfo.properties)) {
     if (!property.deprecated) {
       var params = {component_type: typeName, property_name: name};
       if ((property.mutability & Blockly.PROPERTY_READABLE) == Blockly.PROPERTY_READABLE) {
@@ -521,7 +530,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
       // be added to the bottom of the drawer.
       getHelper(property);
     }
-  }, this);
+  }
 
   // Create helper blocks at the bottom of the drawer.
   helperKeys.forEach(function(helper) {
@@ -654,6 +663,19 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '</block>' +
   '</xml>' },
 
+  controls_run_in_background: {xmlString:
+  '<xml>' +
+    '<block type="controls_run_in_background">' +
+      '<value name="PROCEDURE"><block type="procedures_defanonreturn"></block></value>' +
+      '<value name="CALLBACK">' +
+        '<block type="procedures_defanonnoreturn">' +
+          '<mutation><arg name="result"></arg></mutation>' +
+          '<field name="VAR0">result</field>' +
+        '</block>' +
+      '</value>' +
+    '</block>' +
+  '</xml>' },
+
    math_random_int: {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
@@ -716,6 +738,13 @@ Blockly.Drawer.defaultBlockXMLStrings = {
   '<xml>' +
     '<block type="dictionaries_recursive_lookup">' +
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
+    '</block>' +
+  '</xml>'},
+  matrices_create: {xmlString:
+  '<xml>' +
+    '<block type="matrices_create">' +
+      '<value name="ROWS"><block type="math_number"><title name="NUM">2</title></block></value>' +
+      '<value name="COLS"><block type="math_number"><title name="NUM">2</title></block></value>' +
     '</block>' +
   '</xml>'},
 

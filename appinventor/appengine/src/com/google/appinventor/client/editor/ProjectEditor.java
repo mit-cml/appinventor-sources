@@ -399,7 +399,7 @@ public abstract class ProjectEditor extends Composite {
   protected void onUnload() {
     // onUnload is called immediately before a widget becomes detached from the browser's document.
     Ode ode = Ode.getInstance();
-    ode.setTutorialVisible(false);
+    ode.setTutorialVisible(false, true);
     ode.getDesignToolbar().setTutorialToggleVisible(false);
     LOG.info("ProjectEditor: got onUnload for project " + projectId);
     super.onUnload();

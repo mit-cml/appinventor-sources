@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,6 +106,27 @@ public class CreateManifest implements AndroidTask {
         } else {
           // We actually require wifi
           out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n");
+        }
+      }
+
+      final Map<String, Set<String>> featuresNeeded = context.getComponentInfo().getFeaturesNeeded();
+      if (!featuresNeeded.isEmpty()) {
+        final HashMap<String, String> uniqueFeatures = new HashMap<>();
+        for (Map.Entry<String, Set<String>> componentSubElSetPair : featuresNeeded.entrySet()) {
+          for (String feature : componentSubElSetPair.getValue()) {
+            // Extract just the android:name value
+            String name = feature.replaceAll(".*android:name=\"([^\"]+)\".*", "$1");
+            boolean isRequiredTrue = feature.contains("android:required=\"true\"");
+
+            // If new, store it — if existing, only replace if this one has required="true"
+            if (!uniqueFeatures.containsKey(name) || isRequiredTrue) {
+              uniqueFeatures.put(name, feature);
+            }
+          }
+        }
+
+        for (String feature : uniqueFeatures.values()) {
+          out.write(feature);
         }
       }
 
@@ -326,8 +348,20 @@ public class CreateManifest implements AndroidTask {
 
         // Companion display a splash screen... define it's activity here
         if (isMain && context.isForCompanion()) {
+          // Splash Activity
           out.write("    <activity ");
           out.write("android:name=\"com.google.appinventor.components.runtime.SplashActivity\" ");
+          out.write("android:exported=\"false\" ");
+          out.write("android:screenOrientation=\"behind\" ");
+          out.write("android:configChanges=\"keyboardHidden|orientation\">\n");
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
+          out.write("      </intent-filter>\n");
+          out.write("    </activity>\n");
+
+          // Projects Activity
+          out.write("    <activity ");
+          out.write("android:name=\"com.google.appinventor.components.runtime.ProjectsActivity\" ");
           out.write("android:exported=\"false\" ");
           out.write("android:screenOrientation=\"behind\" ");
           out.write("android:configChanges=\"keyboardHidden|orientation\">\n");

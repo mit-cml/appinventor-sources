@@ -1363,15 +1363,35 @@ having dark grey components.</li>
 <h3 id="Spinner-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="Spinner.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
+  <dd>Specifies the <code class="highlighter-rouge">Spinner</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#Spinner.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#Spinner.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
   <dt id="Spinner.Elements" class="list bo"><em>Elements</em></dt>
   <dd>Specifies the list of choices to display.</dd>
   <dt id="Spinner.ElementsFromString" class="text wo"><em>ElementsFromString</em></dt>
   <dd>Set the list of choices from a string of comma-separated values.</dd>
+  <dt id="Spinner.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Specifies whether the <code class="highlighter-rouge">Spinner</code> should be active and clickable.</dd>
+  <dt id="Spinner.FontBold" class="boolean"><em>FontBold</em></dt>
+  <dd>Specifies whether the spinner’s text should be bold.
+ Some fonts do not support bold.</dd>
+  <dt id="Spinner.FontItalic" class="boolean"><em>FontItalic</em></dt>
+  <dd>Specifies whether the spinner’s text should be italic.
+ Some fonts do not support italic.</dd>
+  <dt id="Spinner.FontSize" class="number"><em>FontSize</em></dt>
+  <dd>Specifies the spinner’s text’s font size, measured in sp(scale-independent pixels).</dd>
+  <dt id="Spinner.FontTypeface" class="text do"><em>FontTypeface</em></dt>
+  <dd>Specifies the spinner’s text’s font face as default, serif, sans
+ serif, or monospace.</dd>
   <dt id="Spinner.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Spinner</code>’s vertical height, measured in pixels.</dd>
   <dt id="Spinner.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
   <dd>Specifies the <code class="highlighter-rouge">Spinner</code>’s vertical height as a percentage
  of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dt id="Spinner.Image" class="text"><em>Image</em></dt>
+  <dd>Specifies the path of the <code class="highlighter-rouge">Spinner</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
+ <a href="#Spinner.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
   <dt id="Spinner.Left" class="number"><em>Left</em></dt>
   <dd>Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.</dd>
@@ -1384,6 +1404,16 @@ having dark grey components.</li>
  If an attempt is made to set this to a number less than <code class="highlighter-rouge">1</code> or greater than the number of
  items in the <code class="highlighter-rouge">Spinner</code>, <code class="highlighter-rouge">SelectionIndex</code> will be set to <code class="highlighter-rouge">0</code>, and <a href="#Spinner.Selection"><code class="highlighter-rouge">Selection</code></a>
  will be set to the empty text.</dd>
+  <dt id="Spinner.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
+  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">Spinner</code> with an assigned
+ <a href="#Spinner.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dt id="Spinner.TextAlignment" class="number do"><em>TextAlignment</em></dt>
+  <dd>Specifies the alignment of the spinner’s text: center, normal
+ (e.g., left-justified if text is written left to right), or
+ opposite (e.g., right-justified if text is written left to right).</dd>
+  <dt id="Spinner.TextColor" class="color"><em>TextColor</em></dt>
+  <dd>Specifies the spinner’s text color as an alpha-red-green-blue
+ integer.</dd>
   <dt id="Spinner.Top" class="number"><em>Top</em></dt>
   <dd>Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.</dd>
@@ -1402,6 +1432,10 @@ having dark grey components.</li>
 <dl class="events">
   <dt id="Spinner.AfterSelecting">AfterSelecting(<em class="text">selection</em>)</dt>
   <dd>Event called after the user selects an item from the dropdown list.</dd>
+  <dt id="Spinner.TouchDown">TouchDown()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">Spinner</code> was pressed down.</dd>
+  <dt id="Spinner.TouchUp">TouchUp()</dt>
+  <dd>Indicates that the <code class="highlighter-rouge">Spinner</code> has been released.</dd>
 </dl>
 
 <h3 id="Spinner-Methods">Methods</h3>

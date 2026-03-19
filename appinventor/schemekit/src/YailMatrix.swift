@@ -117,6 +117,10 @@
     return data.map { $0[col - 1] }
   }
 
+  @objc public func getDimensions() -> [Int] {
+    return [rows, cols]
+  }
+
   private func validateIndices(row: Int, col: Int) throws {
     try validateRowIndex(row)
     try validateColumnIndex(col)

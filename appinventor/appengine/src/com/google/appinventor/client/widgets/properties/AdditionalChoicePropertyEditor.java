@@ -187,4 +187,11 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
       updateValue();
     }
   }
+
+  @Override
+  public void setAriaLabelledBy(String labelId) {
+    if (labelId != null && !labelId.isEmpty()) {
+      summary.getElement().setAttribute("aria-labelledby", labelId);
+    }
+  }
 }

@@ -42,6 +42,8 @@ public class ViewerBox extends Box {
         false,  // minimizable
         false); // removable
     addStyleName("ViewerBox");
+    getElement().setAttribute("role", "main");
+    getElement().setAttribute("aria-label", MESSAGES.viewerAriaLabel());
   }
 
   /**
@@ -53,7 +55,7 @@ public class ViewerBox extends Box {
     ProjectEditor projectEditor = Ode.getInstance().getEditorManager().openProject(projectRootNode);
     LOG.info("ViewerBox: switching the content in the viewer box");
     setContent(projectEditor);
-    Ode.getInstance().switchToDesignView();
+    Ode.getInstance().switchToProjectEditor();
     return projectEditor;
   }
 }

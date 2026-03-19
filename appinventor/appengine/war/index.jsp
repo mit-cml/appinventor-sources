@@ -29,6 +29,7 @@
       }
       return;
   }
+  final String gatag = Flag.createFlag("google.analytics", "").get();
   String cachePostfix = "@blocklyeditor_isRelease@".equals("true") ? "cache" : "nocache";
   String locale = request.getParameter("locale");
   if (locale == null || locale.isEmpty() || !i18n.mapping.containsKey(locale)) {
@@ -42,9 +43,9 @@
   String translation = odeBase + "ode/messages" + hash + "." + cachePostfix + ".js";
 %>
 <!-- Copyright 2007-2009 Google Inc. All Rights Reserved. -->
-<!-- Copyright 2011-2024 Massachusetts Institute of Technology. All Rights Reserved. -->
+<!-- Copyright 2011-2025 Massachusetts Institute of Technology. All Rights Reserved. -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=10">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -52,11 +53,21 @@
     <!--meta name="gwt:property" content="locale=en_US"-->
     <!-- Title is set at runtime. -->
     <title> </title>
+    <% if (!gatag.isEmpty()) { %>
+    <!-- Google Analytics. -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= gatag %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '<%= gatag %>');
+    </script>
+<% } %>
     <link type="text/css" rel="stylesheet" href="static/css/gwt.css">
     <link type="text/css" rel="stylesheet" href="static/css/blockly.css">
     <link type="text/css" rel="stylesheet" href="static/css/ai2blockly.css">
-    <link type="text/css" rel="stylesheet" href="static/closure-library/closure/goog/css/dialog.css">
-    <link type="text/css" rel="stylesheet" href="static/closure-library/closure/goog/css/hsvapalette.css">
     <link type="text/css" rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="static/leaflet/leaflet.css">
     <link type="text/css" rel="stylesheet" href="static/leaflet/leaflet.toolbar.css">
@@ -107,17 +118,31 @@
       })();
     </script>
     <script src="static/js/tutorial.js"></script>
-    <script type="text/javascript" src="static/closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="static/closure-compiler/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
-    <script type="text/javascript" src="static/js/scroll-options-5.0.11.min.js"></script>
-    <script type="text/javascript" src="static/js/workspace-search.min.js"></script>
-    <script type="text/javascript" src="static/js/block-dynamic-connection-0.6.0.min.js"></script>
+    <script type="text/javascript" src="static/js/scroll-options-6.0.16.min.js"></script>
+    <script type="text/javascript" src="static/js/workspace-search-9.1.10.min.js"></script>
+    <script type="text/javascript" src="static/js/block-dynamic-connection-0.7.16.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
-    <script type="text/javascript" src="static/js/workspace-multiselect-0.1.14-beta2.min.js"></script>
-    <script type="text/javascript" src="static/js/keyboard-navigation-0.5.13.min.js"></script>
+    <script type="text/javascript" src="static/js/workspace-multiselect-pr126-e813d3a.min.js"></script>
+    <script type="text/javascript" src="static/js/keyboard-navigation-0.7.0.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
+    <script type="text/javascript" src="static/js/blockly-field-colour-5.0.19.min.js"></script>
+    <script type="text/javascript">
+      // Register FieldColour plugin for Blockly v11 compatibility
+      if (typeof window.registerFieldColour === 'function') {
+        window.registerFieldColour();
+      } else if (typeof registerFieldColour === 'function') {
+        registerFieldColour();
+      }
+
+      // Make FieldColour available as Blockly.FieldColour
+      if (typeof window.FieldColour === 'function') {
+        Blockly.FieldColour = window.FieldColour;
+      }
+    </script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>
     <script src="static/leaflet/leaflet-vector-markers.min.js"></script>
