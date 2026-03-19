@@ -2411,6 +2411,21 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return modelNode;
     }
 
+    @SimpleFunction(description = "Create a new CapsuleNode with default properties at the plane position.")
+    public ModelNode CreateModelNodeAtPlane(ARDetectedPlane targetPlane, Object p, String modelObjectString) {
+        Log.i("creating Capsule node", "with detected plane and pose");
+        Pose pose = (Pose) p;
+        ModelNode mNode = new ModelNode(this);
+        mNode.Model(modelObjectString);
+
+        Trackable trackable = (Trackable) targetPlane.DetectedPlane();
+        mNode.Anchor(trackable.createAnchor(pose));
+        mNode.Trackable(trackable);
+
+        Log.i("creating Capsule node, anchor is", mNode.Anchor().toString());
+        return mNode;
+    }
+
     @SimpleFunction(description = "Create a new TubeNode with default properties at the specified (x,y,z) position.")
     public TubeNode CreateTubeNode(float x, float y, float z) {
         return new TubeNode(this);
