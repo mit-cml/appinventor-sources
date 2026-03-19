@@ -750,6 +750,12 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   public void Anchor(Anchor a) {
     this.anchor = a;
+    if (a != null) {
+      initWorldMatrixFromAnchor();
+      // Also set ground level from anchor's plane Y
+      GROUND_LEVEL = a.getPose().ty();
+      Log.d("ARNodeBase", NodeType() + " anchor set, groundLevel=" + GROUND_LEVEL);
+    }
   }
 
 // MARK: - Enhanced Pose Management
