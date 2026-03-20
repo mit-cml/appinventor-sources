@@ -7,9 +7,9 @@ package com.google.appinventor.client.editor.youngandroid.palette;
 
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 interface PaletteHelper {
-  void addPaletteItem(VerticalPanel panel, SimplePaletteItem component);
+  void addPaletteItem(FlowPanel panel, SimplePaletteItem component);
   void clear();
 }

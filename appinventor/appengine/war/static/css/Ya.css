@@ -1040,36 +1040,43 @@ div.StatusPanel {
 
 /* Palette */
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header td:has(img) {
-  display: none;
+/* Category panel container */
+.ode-PaletteCategory {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header td {
+/* Category header (acts as a button) */
+.ode-PaletteCategoryHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
   color: #555;
-  font-size: 13px;
-  vertical-align: top;
-  font-weight: bold;
-}
-
-.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+  font-size: 1.1em;
+  height: 14px;
+  background-color: white;
   border-top: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
-  background-color: #eef2e0;
-  cursor: pointer;
-  height: 14px;
   padding: 8px 16px;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .content {
-  padding: 8px 4px 8px 8px;
-  background-color: white;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  margin-left: 0px;
+.ode-PaletteCategoryContent {
+  max-height: 5000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.ode-PaletteCategoryContent-closed {
+  max-height: 0 !important;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel img {
-  margin-top: 0px;
+.ode-PaletteCategoryContentInner {
+  background-color: white;
+  border: 1px solid #bbbbbb;
+  padding: 8px 4px 8px 8px;
 }
 
 .gwt-StackPanelItem div {
@@ -1126,20 +1133,34 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   background-color: white; /* needed on Firefox */
-  height: 15px;
   cursor: pointer;
   padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ode-SimplePaletteItem-icon {
   height: 16px;
   width: 16px;
+  flex-shrink: 0;
+  margin-right: 10px;
 }
 
 .ode-SimplePaletteItem-caption {
   font-size: 12px;
   color: #555;
+  flex: 1;
+}
+
+.ode-SimplePaletteItem-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
 }
 
 .ode-SimplePaletteItem-button {

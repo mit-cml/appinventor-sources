@@ -8,8 +8,7 @@ package com.google.appinventor.client.editor.simple.palette;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -19,15 +18,14 @@ public class CollapsablePanel extends Composite {
   private static final Logger LOG = Logger.getLogger(PropertiesPanel.class.getName());
 
   // UI elements
-  private final VerticalPanel panel;
-  private final HashMap<ComponentCategory, DisclosurePanel> categoryPanels;
+  private final FlowPanel panel;
+  private final HashMap<ComponentCategory, CollapsiblePaletteCategoryPanel> categoryPanels;
 
   /**
    * Creates a new Collapsable Panel.
    */
   public CollapsablePanel() {
-    // Initialize UI
-    panel = new VerticalPanel();
+    panel = new FlowPanel();
     panel.setWidth("100%");
 
     categoryPanels = new HashMap<>();
@@ -36,45 +34,40 @@ public class CollapsablePanel extends Composite {
   }
 
   /**
-   * Add the given category of components to the panel with title `title`
+   * Add the given category of components to the panel with title {@code title}.
    *
-   * @param category a component category
-   * @param title    the name of the component category
+   * @param componentPanel the content panel for this category
+   * @param category       a component category
+   * @param title          the name of the component category
    */
-  public void add(VerticalPanel componentPanel, ComponentCategory category, String title) {
-    // create the DP for the component category
-    DisclosurePanel innerPanel = new DisclosurePanel(title);
-    innerPanel.add(componentPanel);
+  public void add(FlowPanel componentPanel, ComponentCategory category, String title) {
+    CollapsiblePaletteCategoryPanel innerPanel = new CollapsiblePaletteCategoryPanel(title);
+    innerPanel.addToContent(componentPanel);
     innerPanel.setWidth("100%");
-    // find new idx TODO should think abot this
     categoryPanels.put(category, innerPanel);
-
-    // add the DP to the panel
     panel.add(innerPanel);
   }
 
   /**
-   * Insert a component category into the panel
+   * Insert a component category into the panel.
    *
-   * @param components the components within the category
-   * @param category   the abstract category
-   * @param title      the category name to be displayed on the panel
-   * @param insertIdx  where to insert the category
+   * @param componentPanel the content panel for this category
+   * @param category       the abstract category
+   * @param title          the category name to be displayed on the panel
+   * @param insertIdx      where to insert the category
    */
-  public void insert(VerticalPanel componentPanel, ComponentCategory category, String title,
+  public void insert(FlowPanel componentPanel, ComponentCategory category, String title,
       int insertIdx) {
-    // create the DP for the component category
-    DisclosurePanel innerPanel = new DisclosurePanel(title);
-    innerPanel.add(componentPanel);
+    CollapsiblePaletteCategoryPanel innerPanel = new CollapsiblePaletteCategoryPanel(title);
+    innerPanel.addToContent(componentPanel);
     innerPanel.setWidth("100%");
     categoryPanels.put(category, innerPanel);
-    // add the DP to the panel
     panel.insert(innerPanel, insertIdx);
   }
 
-  public VerticalPanel getCategoryPanel(ComponentCategory category) {
+  public FlowPanel getCategoryPanel(ComponentCategory category) {
     if (categoryPanels.containsKey(category)) {
-      return (VerticalPanel) categoryPanels.get(category).getContent();
+      return categoryPanels.get(category).getContent();
     } else {
       return null;
     }
@@ -85,19 +78,15 @@ public class CollapsablePanel extends Composite {
   }
 
   /**
-   * remove the component category from the panel
-   * The user should clean the panel that was add to the disclosure panel
-   * to be added to the collapsable panel before removing it from the
-   * collapsable panel
+   * Remove the component category from the panel.
    *
-   * @param category the componenet category to be removed - should be in the panel
+   * @param componentPanel the panel that was added to this category
+   * @param category       the component category to be removed
    */
-  public void remove(VerticalPanel componentPanel, ComponentCategory category) {
-    DisclosurePanel categoryPanel = categoryPanels.get(category);
-
-    categoryPanel.remove(componentPanel);
+  public void remove(FlowPanel componentPanel, ComponentCategory category) {
+    CollapsiblePaletteCategoryPanel categoryPanel = categoryPanels.get(category);
+    categoryPanel.getContent().remove(componentPanel);
     panel.remove(categoryPanel);
-    // remove from the data
     categoryPanels.remove(category);
   }
 
@@ -107,15 +96,15 @@ public class CollapsablePanel extends Composite {
   }
 
   /**
-   * Show the category at idx
+   * Show (expand) the category at index {@code idx}.
    *
-   * @param idx the component category location
+   * @param idx the widget index of the category
    */
   public void show(int idx) {
-    ((DisclosurePanel) panel.getWidget(idx)).setOpen(true);
+    ((CollapsiblePaletteCategoryPanel) panel.getWidget(idx)).setOpen(true);
   }
 
   public void close(int idx) {
-    ((DisclosurePanel) panel.getWidget(idx)).setOpen(false);
+    ((CollapsiblePaletteCategoryPanel) panel.getWidget(idx)).setOpen(false);
   }
 }

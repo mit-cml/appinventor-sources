@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * An interface that a palette can implement in order to support showing components in a defined
@@ -18,7 +18,7 @@ public interface PaletteHelper {
    * @param panel the panel to add the component to
    * @param component the component to add
    */
-  void addPaletteItem(VerticalPanel panel, SimplePaletteItem component);
+  void addPaletteItem(FlowPanel panel, SimplePaletteItem component);
 
   /**
    * Clears the palette.
