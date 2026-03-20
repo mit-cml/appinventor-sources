@@ -57,4 +57,11 @@ public class TextValidatorsTest extends TestCase {
       assertFalse(TextValidators.isReservedName(notReservedWord));
     }
   }
+
+  public void testDuplicateProjectNameWithWhitespace() {
+    TextValidators.checkNewProjectName("MyApp", false);
+    ProjectNameStatus status =
+    TextValidators.checkNewProjectName("  MyApp  ", false);
+    assertEquals(ProjectNameStatus.DUPLICATE, status);
+  }
 }
