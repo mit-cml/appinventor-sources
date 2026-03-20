@@ -348,9 +348,8 @@ public class ObjectRenderer {
       Log.i("ObjRenderer:", "rendering single object");
       // Calculate matrices
 
-
       float[] modelMatrix = updateModelMatrix(
-          anchorMatrix, arNode.Scale(), arNode.InitialRotation());
+          anchorMatrix, arNode.Scale(), ((ARNodeBase) arNode).getCurrentRotation());
 
       float[] localModelViewMatrix = new float[16];
       float[] localModelViewProjectionMatrix = new float[16];
