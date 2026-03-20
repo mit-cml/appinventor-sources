@@ -86,6 +86,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   protected long dragStartTime;
 
+  protected float[] currentRotationQuaternion = {0, 0, 0, 1};
+
   // The world matrix is the single source of truth during simulation
   public float[] currentWorldMatrix = null;
 
@@ -104,6 +106,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     if (anchor == null) return;
     if (currentWorldMatrix == null) currentWorldMatrix = new float[16];
     anchor.getPose().toMatrix(currentWorldMatrix, 0);
+    currentRotationQuaternion = anchor.getPose().getRotationQuaternion().clone();
+
+
   }
 
   @SuppressWarnings("WeakerAccess")
@@ -219,11 +224,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   public float[] getCurrentRotation() {
-    // Get current position from anchor or trackable
-    if (anchor != null) {
-      return anchor.getPose().getRotationQuaternion();
-    }
-    return new float[]{0, 0, 0};
+    return currentRotationQuaternion; // always valid — initialized to {0,0,0,1}
   }
 
   /* note, in meters */
@@ -1279,7 +1280,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty(description = "The x position in centimeters of the node.")
   public float XPosition() {
     if (anchor != null) {
-      return UnitHelper.metersToCentimeters(anchor.getPose().tx());
+      return UnitHelper.metersToCentimeters(getCurrentPosition()[0]);
     }
     return UnitHelper.metersToCentimeters(fromPropertyPosition[0]);
   }
@@ -1299,7 +1300,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty(description = "The y position in centimeters of the node.")
   public float YPosition() {
     if (anchor != null) {
-      return UnitHelper.metersToCentimeters(anchor.getPose().ty());
+      return UnitHelper.metersToCentimeters(getCurrentPosition()[1]);
     }
     return UnitHelper.metersToCentimeters(fromPropertyPosition[1]);
   }
@@ -1318,7 +1319,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleProperty(description = "The z position in centimeters of the node.")
   public float ZPosition() {
     if (anchor != null) {
-      return UnitHelper.metersToCentimeters(anchor.getPose().tz());
+      return UnitHelper.metersToCentimeters(getCurrentPosition()[2]);
     }
     return UnitHelper.metersToCentimeters(fromPropertyPosition[2]);
   }
@@ -1407,6 +1408,23 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     } catch (Exception e) {
       Log.w("ARNodeBase", "setRotationComponent failed: " + e.getMessage());
     }
+  }
+
+  public void setCurrentRotation(float[] quaternion) {
+    for (float v : quaternion) {
+      if (Float.isNaN(v) || Float.isInfinite(v)) return;
+    }
+    // Normalize to prevent drift
+    float len = (float) Math.sqrt(
+        quaternion[0]*quaternion[0] + quaternion[1]*quaternion[1] +
+            quaternion[2]*quaternion[2] + quaternion[3]*quaternion[3]);
+    if (len < 0.0001f) return;
+    currentRotationQuaternion = new float[]{
+        quaternion[0]/len,
+        quaternion[1]/len,
+        quaternion[2]/len,
+        quaternion[3]/len
+    };
   }
 
   public float[] InitialRotation() { return fromPropertyRotation; }
