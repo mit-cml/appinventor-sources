@@ -35,6 +35,8 @@ public final class ContextMenu {
     popupPanel.setGlassStyleName("none"); //No style is passed (the default grays out the window)
     menuBar = new MenuBar(true);
     menuBar.setStylePrimaryName("ode-ContextMenu");
+    menuBar.getElement().getStyle().setProperty("maxHeight", "250px");
+    menuBar.getElement().getStyle().setProperty("overflowY", "auto");
     popupPanel.add(menuBar);
   }
 
