@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-//import android.view.RotationGestureDetector;
+
 import android.content.Context;
 import android.graphics.PointF;
 
@@ -53,6 +53,8 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 import android.util.Log;
+import org.osmdroid.views.overlay.gestures.RotationGestureDetector;
+
 import java.util.stream.Collectors;
 
 // TODO: update the component version
@@ -152,7 +154,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
-    //private RotationGestureDetector rotationGestureDetector;
+
+    private float previousTwoFingerAngle = 0f;
+    private enum ActiveGesture { NONE, SCALE, ROTATE }
+    private ActiveGesture activeGesture = ActiveGesture.NONE;
 
     // Track dragging state
     private ARNode currentlyDraggedNode = null;
@@ -346,32 +351,64 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 return handlePinch(detector);
 
             }
+
         });
 
-        this.filamentSurfaceView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                boolean handled = false;
-                handled |= scaleGestureDetector.onTouchEvent(event);
-                if (!scaleGestureDetector.isInProgress()) {
-                    handled |= gestureDetector.onTouchEvent(event);
-                }
-                if (event.getAction() == MotionEvent.ACTION_UP ||
-                    event.getAction() == MotionEvent.ACTION_CANCEL) {
-                    if (currentlyDraggedNode != null) {
-                        if (currentlyDraggedNode instanceof ARNodeBase) {
-                            ((ARNodeBase) currentlyDraggedNode).handleAdvancedGestureUpdate(
-                                new PointF(event.getX(), event.getY()),
-                                new PointF(0, 0), new PointF(0, 0),
-                                null, getCurrentCameraVectors(), "ended"
-                            );
+
+        // In ScaleGestureDetector.onScaleBegin:
+
+
+// In RotationGestureDetector.OnRotationGestureListener.onRotation:
+
+        this.filamentSurfaceView.setOnTouchListener((v, event) -> {
+            boolean handled = false;
+            handled |= scaleGestureDetector.onTouchEvent(event);
+
+            // Extract rotation from two-finger events directly
+            if (event.getPointerCount() == 2) {
+                float dx = event.getX(1) - event.getX(0);
+                float dy = event.getY(1) - event.getY(0);
+                float angle = (float) Math.atan2(dy, dx);
+
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        previousTwoFingerAngle = angle;
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        if (previousTwoFingerAngle != 0) {
+                            float delta = angle - previousTwoFingerAngle;
+                            // Normalize to [-π, π]
+                            if (delta > Math.PI) delta -= 2 * Math.PI;
+                            if (delta < -Math.PI) delta += 2 * Math.PI;
+
+                            if (activeGesture == ActiveGesture.NONE
+                                && Math.abs(delta) > 0.02f) {
+                                activeGesture = ActiveGesture.ROTATE;
+                            }
+                            if (activeGesture == ActiveGesture.ROTATE
+                                && currentlyDraggedNode != null
+                                && currentlyDraggedNode.RotateWithGesture()) {
+                                handleRotation(delta);
+                            }
                         }
-                        currentlyDraggedNode = null;
-                        handled = true;
-                    }
+                        previousTwoFingerAngle = angle;
+                        break;
                 }
-                return handled || tapHelper.onTouch(v, event);
             }
+
+            if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP
+                || event.getActionMasked() == MotionEvent.ACTION_UP) {
+                previousTwoFingerAngle = 0f;
+                if (event.getPointerCount() <= 2) {
+                    activeGesture = ActiveGesture.NONE;
+                }
+            }
+
+            if (!scaleGestureDetector.isInProgress()) {
+                handled |= gestureDetector.onTouchEvent(event);
+            }
+            return handled || tapHelper.onTouch(v, event);
         });
     }
 
@@ -440,23 +477,21 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-
-    public void setDefaultPositions(List<ARNode> nodes) {
+    private void setDefaultPositions(List<ARNode> nodes) {
         for (ARNode node : nodes) {
-            if (node != null && node.Anchor() == null) {
-                // fromPropertyPosition is already in meters — use directly
-                float[] posMeters = ((ARNodeBase)node).fromPropertyPosition;
+            if (node == null) continue;
+            if (node.Anchor() != null) continue;
 
+            ARNodeBase base = (ARNodeBase) node;
+            float[] pos = base.fromPropertyPosition;
+            if (pos[0] == 0 && pos[1] == 0 && pos[2] == 0) continue;
 
-                if (posMeters == null) continue;
-                // Skip zero positions — tap-placed nodes haven't received
-                // their anchor yet, designer nodes with no InitialPosition set
-                if (posMeters[0] == 0 && posMeters[1] == 0 && posMeters[2] == 0) continue;
-
-                Log.d(LOG_TAG, "Creating default anchor at meters: "
-                    + posMeters[0] + "," + posMeters[1] + "," + posMeters[2]);
-                node.Session(session);
-                node.Anchor(CreateDefaultAnchor(posMeters));
+            float[] quaternion = base.eulerAnglesToQuaternion(base.fromPropertyRotation);
+            Pose pose = new Pose(pos, quaternion);
+            try {
+                node.Anchor(session.createAnchor(pose));
+            } catch (Exception e) {
+                Log.w(LOG_TAG, "setDefaultPositions anchor failed: " + e.getMessage());
             }
         }
     }
@@ -1718,6 +1753,37 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
+    private void handleRotation(float rotationDelta) {
+        if (currentlyDraggedNode == null) return;
+        if (!(currentlyDraggedNode instanceof ARNodeBase)) return;
+        ARNodeBase base = (ARNodeBase) currentlyDraggedNode;
+        if (!base.RotateWithGesture()) return;
+
+        float[] currentQ = base.getCurrentRotation();
+
+        // Delta quaternion for Y-axis rotation only
+        float halfAngle = rotationDelta * 0.5f;
+        float[] deltaQ = {
+            0f,
+            (float) Math.sin(halfAngle),
+            0f,
+            (float) Math.cos(halfAngle)
+        };
+
+        // Apply delta to current rotation
+        base.setCurrentRotation(multiplyQuaternions(deltaQ, currentQ));
+    }
+
+    // Quaternion multiply — in ARView3D or a shared math utility
+    private float[] multiplyQuaternions(float[] a, float[] b) {
+        return new float[]{
+            a[3]*b[0] + a[0]*b[3] + a[1]*b[2] - a[2]*b[1],
+            a[3]*b[1] - a[0]*b[2] + a[1]*b[3] + a[2]*b[0],
+            a[3]*b[2] + a[0]*b[1] - a[1]*b[0] + a[2]*b[3],
+            a[3]*b[3] - a[0]*b[0] - a[1]*b[1] - a[2]*b[2]
+        };
+    }
+
     // @Override
     @SimpleEvent(description = "The user tapped on a node in the ARView3D.")
     public void NodeClick(ARNode node) {
@@ -2430,7 +2496,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return modelNode;
     }
 
-    @SimpleFunction(description = "Create a new CapsuleNode with default properties at the plane position.")
+    @SimpleFunction(description = "Create a new ModelNode with default properties at the plane position.")
     public ModelNode CreateModelNodeAtPlane(ARDetectedPlane targetPlane, Object p, String modelObjectString) {
         Log.i("creating Capsule node", "with detected plane and pose");
         Pose pose = (Pose) p;
