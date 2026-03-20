@@ -625,21 +625,26 @@ public class ARFilamentRenderer {
 
     private void updateCameraFromARCore(float[] viewMatrix, float[] projMatrix) {
         if (camera == null) return;
-        float[] inv = new float[16];
-        if (!Matrix.invertM(inv, 0, viewMatrix, 0)) return;
 
-        // Store camera world position for occlusion checks
-        lastCameraWorldPos = new float[]{inv[12], inv[13], inv[14]};
+        // Invert view matrix to get camera world transform
+        float[] invView = new float[16];
+        if (!Matrix.invertM(invView, 0, viewMatrix, 0)) return;
 
-        camera.lookAt(
-            inv[12], inv[13], inv[14],
-            inv[12] - inv[8], inv[13] - inv[9], inv[14] - inv[10],
-            inv[4],  inv[5],  inv[6]
-        );
+        lastCameraWorldPos = new float[]{invView[12], invView[13], invView[14]};
+
+        // Set camera world transform directly — no vector extraction,
+        // no lookAt reconstruction, no floating point round-trip
+        TransformManager tm = engine.getTransformManager();
+        int cameraInstance = tm.getInstance(cameraEntity);
+        tm.setTransform(cameraInstance, invView);
+
+        // Projection — extract near/far from ARCore matrix
+        float near = projMatrix[14] / (projMatrix[10] - 1f);
+        float far  = projMatrix[14] / (projMatrix[10] + 1f);
 
         double[] proj64 = new double[16];
         for (int i = 0; i < 16; i++) proj64[i] = projMatrix[i];
-        camera.setCustomProjection(proj64, Z_NEAR, Z_FAR);
+        camera.setCustomProjection(proj64, near, far);
     }
 
     public Collection<ARNode> getFilamentNodes(){
@@ -652,22 +657,25 @@ public class ARFilamentRenderer {
 
     private void loadAndPositionNodes(Collection<ARNode> nodes) {
         for (ARNode node : nodes) {
-            Log.e(LOG_TAG, "Trying to loading node " + node.Model());
+
             if (!shouldRender(node)) continue;
             if (!nodeAssetMap.containsKey(node)) {
+                // Only attempt load if node has a valid matrix
+                if (((ARNodeBase) node).currentWorldMatrix == null) continue;
                 try {
+                    Log.e(LOG_TAG, "Trying to loading node " + node.Model());
                     loadModelForNode(node);
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, "Load failed: " + node.NodeType()
-                        + " — " + e.getMessage());
                     continue;
                 }
             }
             FilamentAsset asset = nodeAssetMap.get(node);
-            if (asset != null
-                && node.Anchor() != null
-                && node.Anchor().getTrackingState() == TrackingState.TRACKING) {
-                applyNodeTransform(node, asset);
+            if (asset != null) {
+                ARNodeBase base = (ARNodeBase) node;
+                // Render if we have a valid world matrix — don't require anchor tracking
+                if (base.currentWorldMatrix != null) {
+                    applyNodeTransform(node, asset);
+                }
             }
         }
     }
@@ -679,25 +687,20 @@ public class ARFilamentRenderer {
             && !node.Model().isEmpty();
     }
 
+    /* update the model w/r to scale (first) and rotation */
     private void applyNodeTransform(ARNode node, FilamentAsset asset) {
         TransformManager tm = engine.getTransformManager();
         int rootInstance = tm.getInstance(asset.getRoot());
         if (rootInstance == 0) return;
 
         ARNodeBase base = (ARNodeBase) node;
-
-        // Position always comes from the matrix — valid during drag,
-        // physics, collision, and at rest. Never reads anchor for position.
         float[] t = base.getCurrentPosition();
 
-        // Plane-based occlusion — skip during drag so node stays visible
-        if (!depthDataReceived
-            && planeFinder != null
-            && !base.isBeingDragged) {
+        // planeFinder is null if occlusion isn't enabled for either depth or plane-based occlusion
+        if (!depthDataReceived && planeFinder != null && !base.isBeingDragged) {
             com.google.ar.core.Plane occludingPlane =
                 planeFinder.findOccludingPlane(t, lastCameraWorldPos);
             if (occludingPlane != null) {
-                // Hide by moving far below scene
                 float[] hideMatrix = new float[16];
                 Matrix.setIdentityM(hideMatrix, 0);
                 hideMatrix[13] = -9999f;
@@ -706,35 +709,32 @@ public class ARFilamentRenderer {
             }
         }
 
-        // Rotation from anchor if available, identity otherwise
-        // Rotation doesn't change during drag so anchor is fine here
+        float s = node.Scale();
+
+        // Scale matrix
+        float[] scaleMatrix = new float[16];
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, s, s, s);
+
+        // Rotation matrix
         float[] rotMatrix = new float[16];
         Matrix.setIdentityM(rotMatrix, 0);
-        if (node.Anchor() != null) {
-            quaternionToMatrix(base.getCurrentRotation(), rotMatrix);
-        }
+        quaternionToMatrix(base.getCurrentRotation(), rotMatrix);
 
-        // Build model matrix: translation + rotation + scale
+        // Combine rotation * scale
         float[] modelMatrix = new float[16];
-        Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.multiplyMM(modelMatrix, 0, rotMatrix, 0, scaleMatrix, 0);
 
-        // Apply rotation first
-        Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, rotMatrix, 0);
-
-        // Then translation
+        // Translation last — world space, unaffected by rotation/scale
         modelMatrix[12] = t[0];
         modelMatrix[13] = t[1];
         modelMatrix[14] = t[2];
 
-        // Then scale
-        float s = node.Scale();
-        Matrix.scaleM(modelMatrix, 0, s, s, s);
-
         tm.setTransform(rootInstance, modelMatrix);
 
         Log.d(LOG_TAG, String.format(
-            "applyNodeTransform: pos=[%.3f, %.3f, %.3f] dragging=%b",
-            t[0], t[1], t[2], base.isBeingDragged));
+            "applyNodeTransform: pos=[%.3f, %.3f, %.3f] scale=%.3f dragging=%b",
+            t[0], t[1], t[2], s, base.isBeingDragged));
     }
     // -------------------------------------------------------------------------
     // Model loading
