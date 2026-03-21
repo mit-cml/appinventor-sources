@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -71,7 +71,7 @@ public class AndroidBuildFactory extends BuildFactory<AndroidPaths, AndroidCompi
     super.processAssets(compiler);
     compiler.add(MergeResources.class);
     compiler.add(SetupLibs.class);
-    compiler.add(isAab ? RunAapt2.class : RunAapt2ForApk.class);
+    compiler.add(RunAapt2.class);
   }
 
   @Override
