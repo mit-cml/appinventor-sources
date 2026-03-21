@@ -190,29 +190,6 @@ public class Resources {
   }
 
   /**
-   * Get the path to the aapt executable for the current platform.
-   *
-   * @return absolute path to aapt
-   */
-  public String aapt() {
-    String osName = System.getProperty("os.name");
-    String aaptTool;
-    if (osName.equals("Mac OS X")) {
-      aaptTool = RUNTIME_TOOLS_DIR + "mac/aapt";
-    } else if (osName.equals("Linux")) {
-      aaptTool = RUNTIME_TOOLS_DIR + "linux/aapt";
-    } else if (osName.startsWith("Windows")) {
-      aaptTool = RUNTIME_TOOLS_DIR + "windows/aapt";
-    } else {
-      aaptTool = null;
-    }
-    if (aaptTool != null) {
-      return getResource(aaptTool);
-    }
-    return null;
-  }
-
-  /**
    * Get the path to the aapt2 executable for the current platform.
    *
    * @return absolute path to aapt2
