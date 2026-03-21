@@ -1290,7 +1290,7 @@ div.StatusPanel {
 }
 
 .ode-PropertyCategoryContent-closed {
-  max-height: 0 !important;
+  max-height: 0;
 }
 
 .ode-PropertyCategoryContentInner {
