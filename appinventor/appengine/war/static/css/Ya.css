@@ -1070,7 +1070,7 @@ div.StatusPanel {
   transition: max-height 0.3s ease-out;
 }
 .ode-PaletteCategoryContent-closed {
-  max-height: 0 !important;
+  max-height: 0;
 }
 
 .ode-PaletteCategoryContentInner {
