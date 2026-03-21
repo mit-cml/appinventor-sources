@@ -93,9 +93,9 @@ public class CollapsiblePaletteCategoryPanel extends FlowPanel {
     isOpen = open;
     header.getElement().setAttribute("aria-expanded", String.valueOf(open));
     if (open) {
-      content.removeStyleName("ode-PaletteCategoryContent-closed");
+      content.removeStyleDependentName("closed");
     } else {
-      content.addStyleName("ode-PaletteCategoryContent-closed");
+      content.addStyleDependentName("closed");
     }
   }
 
