@@ -8,7 +8,7 @@ package com.google.appinventor.client.editor.youngandroid.palette;
 import com.google.appinventor.client.editor.simple.palette.PaletteHelper;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InsertPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +39,7 @@ abstract class OrderedPaletteHelper implements PaletteHelper {
   }
 
   @Override
-  public final void addPaletteItem(FlowPanel panel, SimplePaletteItem component) {
+  public final void addPaletteItem(InsertPanel panel, SimplePaletteItem component) {
     int index = Collections.binarySearch(componentsAddedSoFar, component, componentsComparator);
     if (index < 0) {
       int insertionPos = - index - 1;
