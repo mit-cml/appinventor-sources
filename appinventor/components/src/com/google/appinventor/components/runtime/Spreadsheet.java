@@ -229,7 +229,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String CredentialsJson() {
     return credentialsPath == null ? "" : credentialsPath;
-}
+ }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
