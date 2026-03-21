@@ -72,3 +72,4 @@ iOSInjectionProject/
 AICompanionApp.xcconfig
 .bundle/
 docs/markdown/vendor/
+docs/markdown/.sass-cache/
