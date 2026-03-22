@@ -180,7 +180,7 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    * @param beforeIndex  index at which the inserted component will reside in the children,
    *                     or {@code -1} to insert the component at the end
    */
-  private void addComponent(MockComponent component, int beforeIndex) {
+  void addComponent(MockComponent component, int beforeIndex) {
 
     // Set the container to be the parent of the component
     component.setContainer(this);
