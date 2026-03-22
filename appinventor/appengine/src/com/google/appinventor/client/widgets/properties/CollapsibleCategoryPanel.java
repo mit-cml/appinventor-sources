@@ -48,8 +48,6 @@ public class CollapsibleCategoryPanel extends AbstractCollapsiblePanel {
 
     content.setStylePrimaryName("ode-PropertyCategoryContent");
 
-    finishInit();
-
     setOpen(!"Advanced".equals(categoryName));
   }
 

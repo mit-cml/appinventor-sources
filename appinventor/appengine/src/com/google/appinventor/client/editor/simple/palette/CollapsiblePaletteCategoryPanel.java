@@ -40,8 +40,6 @@ public class CollapsiblePaletteCategoryPanel extends AbstractCollapsiblePanel {
     contentInner.getElement().setAttribute("aria-label", categoryName + " components");
     content.add(contentInner);
 
-    finishInit();
-
     // Default to closed; callers control initial state via setOpen()
     setOpen(false);
   }

@@ -15,9 +15,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Abstract base class for collapsible category panels used in the palette and properties panel.
- *
- * <p>Subclasses set their own CSS primary names and populate the header, then call
- * {@link #finishInit()} at the end of their constructor to attach header and content to the panel.
  */
 public abstract class AbstractCollapsiblePanel extends FlowPanel {
   private static int idCounter = 0;
@@ -28,7 +25,6 @@ public abstract class AbstractCollapsiblePanel extends FlowPanel {
 
   /**
    * Sets up the shared header/content structure, ARIA attributes, and keyboard/click handlers.
-   * Subclasses must call {@link #finishInit()} after completing their own construction.
    */
   protected AbstractCollapsiblePanel() {
     String contentId = "ode-collapsible-" + (idCounter++);
@@ -59,13 +55,7 @@ public abstract class AbstractCollapsiblePanel extends FlowPanel {
         }
       }
     }, KeyDownEvent.getType());
-  }
 
-  /**
-   * Attaches header and content to the panel. Call at the end of the subclass constructor,
-   * after setting style names and populating the header.
-   */
-  protected final void finishInit() {
     add(header);
     add(content);
   }
