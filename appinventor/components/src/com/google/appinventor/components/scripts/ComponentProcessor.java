@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.scripts;
 
+import com.google.appinventor.components.annotations.DefaultValue;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -280,6 +281,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * The helper key associated with this parameter, if any.
      */
     protected HelperKey helper;
+
+    /**
+     * Default value for this parameter
+     */
+    protected String defaultValue;
+
+    /**
+     * Default value type
+     */
+    protected String defaultValueType;
 
     /**
      * Constructs a Parameter.
@@ -718,6 +729,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private String componentInfoName;
     private boolean color;
     private HelperKey helper;
+    private String defaultValue;
+    private String defaultValueType;
 
     protected Property(String name, String description, String longDescription,
         PropertyCategory category, boolean userVisible, boolean deprecated) {
@@ -804,6 +817,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     protected boolean isColor() {
       return color;
+    }
+
+    protected String getDefaultValue() {
+      return defaultValue;
+    }
+
+    protected String getDefaultValueType() {
+      return defaultValueType;
     }
 
     /**
@@ -2006,6 +2027,20 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         if (ve.getAnnotation(IsColor.class) != null) {
           property.color = true;
         }
+        DefaultValue dv = ve.getAnnotation(DefaultValue.class);
+        if (dv != null) {
+          boolean isDesigner = element.getAnnotation(DesignerProperty.class) != null;
+          if (isDesigner) {
+            messager.printMessage(Kind.ERROR,
+                "The @DefaultValue annotation is not allowed here because this property already uses @DesignerProperty. "
+                    + "Please use the 'defaultValue' attribute within @DesignerProperty instead!",
+                ve);
+          }
+          property.defaultValue = dv.value();
+          if (dv.type() != null && !dv.type().isEmpty()) {
+            property.defaultValueType = dv.type();
+          }
+        }
       }
     }
 
@@ -2371,6 +2406,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       Parameter param = new Parameter(varElem.getSimpleName().toString(), type,
           varElem.getAnnotation(IsColor.class) != null);
       param.helper = elementToHelperKey(varElem, varElem.asType());
+
+      DefaultValue dv = varElem.getAnnotation(DefaultValue.class);
+      if (dv != null) {
+        Element methodElem = varElem.getEnclosingElement();
+        boolean isEvent = methodElem.getAnnotation(SimpleEvent.class) != null;
+        if (isEvent) {
+          messager.printMessage(Kind.ERROR,
+              "Default values cannot be assigned to Event parameters because they are values provided by the component!",
+              varElem);
+        }
+        param.defaultValue = dv.value();
+        if (dv.type() != null && !dv.type().isEmpty()) {
+          param.defaultValueType = dv.type();
+        }
+      }
       return param;
     }
   }
