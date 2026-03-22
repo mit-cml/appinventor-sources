@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -18,7 +19,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class AbstractCollapsiblePanel extends FlowPanel {
   private static final int KEY_SPACE = 32;
-  private static int idCounter = 0;
 
   protected final FlowPanel header;
   protected final FlowPanel content;
@@ -28,7 +28,7 @@ public abstract class AbstractCollapsiblePanel extends FlowPanel {
    * Sets up the shared header/content structure, ARIA attributes, and keyboard/click handlers.
    */
   protected AbstractCollapsiblePanel() {
-    String contentId = "ode-collapsible-" + (idCounter++);
+    String contentId = DOM.createUniqueId();
 
     header = new FlowPanel();
     header.getElement().setAttribute("role", "button");
