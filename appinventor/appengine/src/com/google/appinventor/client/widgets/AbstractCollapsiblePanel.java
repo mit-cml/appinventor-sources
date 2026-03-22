@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
  * Abstract base class for collapsible category panels used in the palette and properties panel.
  */
 public abstract class AbstractCollapsiblePanel extends FlowPanel {
+  private static final int KEY_SPACE = 32;
   private static int idCounter = 0;
 
   protected final FlowPanel header;
@@ -49,7 +50,7 @@ public abstract class AbstractCollapsiblePanel extends FlowPanel {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int key = event.getNativeKeyCode();
-        if (key == KeyCodes.KEY_ENTER || key == 32 /* SPACE */) {
+        if (key == KeyCodes.KEY_ENTER || key == KEY_SPACE) {
           event.preventDefault();
           setOpen(!isOpen);
         }
