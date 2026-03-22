@@ -357,52 +357,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     COMPONENT_DATABASE = editor.getComponentDatabase();
     componentDefinition = COMPONENT_DATABASE.getComponentDefinition(type);
 
-    sourceStructureExplorerItem = new SourceStructureExplorerItem() {
-      @Override
-      public void onSelected(NativeEvent source) {
-        // are we showing the blocks editor? if so, toggle the component drawer
-        if (Ode.getInstance().getCurrentFileEditor() instanceof BlocksEditor) {
-          BlocksEditor<?, ?> blocksEditor =
-              (BlocksEditor<?, ?>) Ode.getInstance().getCurrentFileEditor();
-          LOG.info("Showing item " + getName());
-          blocksEditor.showComponentBlocks(getName());
-        } else {
-          select(source);
-        }
-      }
-
-      @Override
-      public void onStateChange(boolean open) {
-        // The user has expanded or collapsed the branch in the components tree corresponding to
-        // this component. Remember that by setting the expanded field so that when we re-build
-        // the tree, we will keep the branch in the same state.
-        expanded = open;
-      }
-
-      @Override
-      public boolean canRename() {
-        return !isRoot();
-      }
-
-      @Override
-      public void rename() {
-        if (!isRoot()) {
-          new RenameDialog(getName()).center();
-        }
-      }
-
-      @Override
-      public boolean canDelete() {
-        return !isRoot();
-      }
-
-      @Override
-      public void delete() {
-        if (!isRoot()) {
-          new DeleteDialog().center();
-        }
-      }
-    };
+    sourceStructureExplorerItem = new ComponentExplorerItem();
     expanded = true;
 
     // Create a default property set for the component
@@ -904,6 +859,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     };
     itemNode.setUserObject(sourceStructureExplorerItem);
 
+    // Mark non-root items as draggable for tree DnD reordering
+    if (!isRoot()) {
+      itemNode.getElement().setAttribute("draggable", "true");
+      itemNode.getElement().setAttribute("data-name", getName());
+    }
+
     // Set alt text on the icon image for accessibility
     // Use Scheduler to defer until DOM is attached
     final String altText = getName() + " " + getVisibleTypeName();
@@ -1362,5 +1323,179 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public native boolean shouldCancel(Event event)/*-{
     return !event.shouldNotCancel;
   }-*/;
+
+  /**
+   * Implementation of {@link SourceStructureExplorerItem} for this component. Named (not
+   * anonymous) so that its type is accessible for instanceof checks in {@link #moveTo}.
+   */
+  private class ComponentExplorerItem implements SourceStructureExplorerItem {
+
+    /** Returns the {@link MockComponent} this item represents. */
+    MockComponent getMockComponent() {
+      return MockComponent.this;
+    }
+
+    @Override
+    public void onSelected(NativeEvent source) {
+      if (Ode.getInstance().getCurrentFileEditor() instanceof BlocksEditor) {
+        BlocksEditor<?, ?> blocksEditor =
+            (BlocksEditor<?, ?>) Ode.getInstance().getCurrentFileEditor();
+        LOG.info("Showing item " + getName());
+        blocksEditor.showComponentBlocks(getName());
+      } else {
+        select(source);
+      }
+    }
+
+    @Override
+    public void onStateChange(boolean open) {
+      expanded = open;
+    }
+
+    @Override
+    public boolean canRename() {
+      return !isRoot();
+    }
+
+    @Override
+    public void rename() {
+      if (!isRoot()) {
+        new RenameDialog(getName()).center();
+      }
+    }
+
+    @Override
+    public boolean canDelete() {
+      return !isRoot();
+    }
+
+    @Override
+    public void delete() {
+      if (!isRoot()) {
+        new DeleteDialog().center();
+      }
+    }
+
+    @Override
+    public boolean canDrag() {
+      return !isRoot();
+    }
+
+    @Override
+    public boolean isContainer() {
+      return MockComponent.this instanceof MockContainer;
+    }
+
+    @Override
+    public void moveTo(SourceStructureExplorerItem targetItem, int position) {
+      if (!(targetItem instanceof ComponentExplorerItem)) {
+        return;
+      }
+      MockComponent source = MockComponent.this;
+      MockComponent target = ((ComponentExplorerItem) targetItem).getMockComponent();
+
+      if (source == target) {
+        return;
+      }
+      // Cannot drop a component into one of its own descendants
+      if (isAncestorOf(source, target)) {
+        return;
+      }
+
+      // Determine target container and insertion index
+      MockContainer targetContainer;
+      int insertIndex;
+      if (position == 0) {
+        // Drop INTO target — target must be a container
+        if (!(target instanceof MockContainer)) {
+          return;
+        }
+        targetContainer = (MockContainer) target;
+        insertIndex = targetContainer.getChildren().size();
+      } else {
+        // Drop BEFORE (position < 0) or AFTER (position > 0) target
+        targetContainer = target.getContainer();
+        if (targetContainer == null) {
+          return; // target is root — can't insert before/after it
+        }
+        int targetIdx = targetContainer.getChildren().indexOf(target);
+        insertIndex = (position < 0) ? targetIdx : targetIdx + 1;
+      }
+
+      // Non-visible components must remain at Form (Screen) level
+      if (source instanceof MockNonVisibleComponent && !(targetContainer instanceof MockForm)) {
+        return;
+      }
+
+      // Handle coordinate properties when moving to/from AbsoluteArrangement
+      if (source instanceof MockVisibleComponent) {
+        MockVisibleComponent visSource = (MockVisibleComponent) source;
+        if (targetContainer instanceof MockAbsoluteArrangement) {
+          visSource.setCoordPropertiesVisible(true);
+          source.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "0");
+          source.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "0");
+        } else {
+          visSource.setCoordPropertiesVisible(false);
+        }
+      }
+
+      // Capture same-container info before removal (removal shifts indices)
+      MockContainer sourceContainer = source.getContainer();
+      boolean sameContainer = (sourceContainer == targetContainer);
+      int sourceIdx = sameContainer ? targetContainer.getChildren().indexOf(source) : -1;
+
+      // Remove from current container (permanentlyDeleted=false: it's a move, not a delete)
+      sourceContainer.removeComponent(source, false);
+
+      // Adjust for same-container index shift caused by the removal
+      if (sameContainer && sourceIdx < insertIndex) {
+        insertIndex--;
+      }
+
+      // Re-insert at the new position
+      if (insertIndex >= targetContainer.getChildren().size()) {
+        targetContainer.addComponent(source);
+      } else {
+        targetContainer.addComponent(source, insertIndex);
+      }
+
+      // For non-visible components, rebuild the non-visible panel to match children order
+      if (source instanceof MockNonVisibleComponent) {
+        rebuildNonVisiblePanel(targetContainer);
+      }
+    }
+
+    /**
+     * Rebuilds the non-visible components panel in the order that non-visible components appear
+     * in the given container's children list.
+     */
+    private void rebuildNonVisiblePanel(MockContainer form) {
+      for (MockComponent child : form.getChildren()) {
+        if (child instanceof MockNonVisibleComponent) {
+          MockComponent.this.editor.getNonVisibleComponentsPanel().removeComponent(child);
+        }
+      }
+      for (MockComponent child : form.getChildren()) {
+        if (child instanceof MockNonVisibleComponent) {
+          MockComponent.this.editor.getNonVisibleComponentsPanel().addComponent(child);
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns true if {@code ancestor} is a strict ancestor (parent, grandparent, etc.) of
+   * {@code component} in the component containment hierarchy.
+   */
+  private static boolean isAncestorOf(MockComponent ancestor, MockComponent component) {
+    MockContainer parent = component.getContainer();
+    while (parent != null) {
+      if (parent == ancestor) {
+        return true;
+      }
+      parent = parent.getContainer();
+    }
+    return false;
+  }
 
 }

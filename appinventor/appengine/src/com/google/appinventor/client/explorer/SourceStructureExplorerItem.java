@@ -43,4 +43,23 @@ public interface SourceStructureExplorerItem {
    * Invoked when the source structure explorer's Delete button is clicked.
    */
   void delete();
+
+  /**
+   * Returns true if this item can be dragged to reorder it in the tree.
+   */
+  boolean canDrag();
+
+  /**
+   * Returns true if this item is a container that can receive child components.
+   */
+  boolean isContainer();
+
+  /**
+   * Moves this item relative to the given target.
+   *
+   * @param target the drop target item
+   * @param position -1 to insert before target, 0 to insert as last child of target (target must
+   *                 be a container), 1 to insert after target
+   */
+  void moveTo(SourceStructureExplorerItem target, int position);
 }

@@ -79,6 +79,20 @@ public final class BlockSelectorBox extends Box {
     @Override
     public void delete() {
     }
+
+    @Override
+    public boolean canDrag() {
+      return false;
+    }
+
+    @Override
+    public boolean isContainer() {
+      return false;
+    }
+
+    @Override
+    public void moveTo(SourceStructureExplorerItem target, int position) {
+    }
   }
 
   // Singleton block selector box instance
