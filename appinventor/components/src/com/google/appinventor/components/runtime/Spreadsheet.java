@@ -235,7 +235,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       defaultValue = "")
   @SimpleProperty(description = "The JSON File with credentials for the Service Account")
   public void CredentialsJson(String credentialsPath) {
-    this.credentialsPath = credentialsPath;
+    this.credentialsPath = credentialsPath == null ? "" : credentialsPath;
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
