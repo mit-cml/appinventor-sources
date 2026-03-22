@@ -13,6 +13,9 @@
 goog.provide('AI.Blockly.ReplMgr');
 goog.provide('AI.Blockly.ReplStateObj');
 
+goog.require('goog.crypt.Sha1');
+goog.require('goog.crypt.Hmac');
+
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Util');
 goog.require('AI.Events');
@@ -342,11 +345,11 @@ Blockly.ReplMgr.putYail = (function() {
     };
     var engine = {
         // Enqueue form for the phone
-        'putYail' : async function(code, block, success, failure) {
+        'putYail' : function(code, block, success, failure) {
             context = this;
             rs = top.ReplState;
             if (code === undefined) {      // This is a kludge. It lets us call putYail without args
-                await engine.pollphone();
+                engine.pollphone();
                 return;                    // in order to setup the context variable above.
             }
             if (rs === undefined || rs === null) {
@@ -380,10 +383,10 @@ Blockly.ReplMgr.putYail = (function() {
                 'failure' : failure,
                 'block' : block
             });
-            await engine.pollphone(); // Trigger callback side
+            engine.pollphone(); // Trigger callback side
         },
         // putAsset: Like putYail but uses a different queue
-        'putAsset' : async function(code, block, success, failure) {
+        'putAsset' : function(code, block, success, failure) {
             rs = top.ReplState;
             if (rs === undefined || rs === null) {
                 console.log('putAsset: replState not set yet.');
@@ -410,7 +413,7 @@ Blockly.ReplMgr.putYail = (function() {
                 'failure' : failure,
                 'block' : block
             });
-            await engine.pollphone(); // Trigger callback side
+            engine.pollphone(); // Trigger callback side
         },
         'webrtcstart' : function() {
             var RefreshAssets = top.AssetManager_refreshAssets;
@@ -599,7 +602,7 @@ Blockly.ReplMgr.putYail = (function() {
             };
             return (chunker);
         })(),
-        'pollphone' : async function() {
+        'pollphone' : function() {
             // Let's ensure the queues exist
             if (!rs.phoneState.assetQueue) {
                 rs.phoneState.assetQueue = [];
@@ -734,7 +737,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
             var encoder = new URLSearchParams();
             console.log('Low Level Sending: ' + work.code)
-            encoder.append('mac', await Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
+            encoder.append('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
             encoder.append('seq', rs.seq_count);
             encoder.append('code', work.code);
             encoder.append('blockid', blockid);
@@ -744,12 +747,12 @@ Blockly.ReplMgr.putYail = (function() {
                 rs.seq_count += 1;
                 rs.phoneState.ioRunning = false; // I/O is virtually done
                 if (rs.phoneState.initialized) {
-                    await engine.pollphone(); // And on to the next!
+                    engine.pollphone(); // And on to the next!
                 }
             } else {
                 conn = new XMLHttpRequest();
                 conn.open('POST', rs.url, true);
-                conn.onreadystatechange = async function() {
+                conn.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
                         var json = JSON.parse(this.response);
                         if (json.status != 'OK') {
@@ -763,7 +766,7 @@ Blockly.ReplMgr.putYail = (function() {
                         rs.seq_count += 1;
                         if (rs.phoneState.initialized) { // Only continue if we are still initialized
                             rs.phoneState.ioRunning = false;
-                            await engine.pollphone(); // And on to the next!
+                            engine.pollphone(); // And on to the next!
                         }
                     } else {
                         if (this.readyState == 4) {
@@ -849,7 +852,7 @@ Blockly.ReplMgr.putYail = (function() {
             top.ConnectProgressBar_hide();
             engine.reset();
         },
-        "checkversionupgrade" : async function(fatal, installer, force) {
+        "checkversionupgrade" : function(fatal, installer, force) {
             var dialog;
             var cancelButton;
             if (force) {
@@ -863,12 +866,12 @@ Blockly.ReplMgr.putYail = (function() {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK,
                                                     Blockly.Msg.REPL_COMPANION_OUT_OF_DATE + (emulator?Blockly.Msg.REPL_EMULATORS:Blockly.Msg.REPL_DEVICES) + Blockly.Msg.REPL_APPROVE_UPDATE,
-                                                        Blockly.Msg.REPL_OK, false, cancelButton, 0, async function(response) {
+                                                        Blockly.Msg.REPL_OK, false, cancelButton, 0, function(response) {
                     dialog.hide();
                     if (response != Blockly.Msg.REPL_NOT_NOW) {
                         context.triggerUpdate();
                     } else {
-                        await engine.pollphone();
+                        engine.pollphone();
                     }
                 });
             } else if (fatal) {
@@ -876,7 +879,7 @@ Blockly.ReplMgr.putYail = (function() {
                 engine.resetcompanion();
             } else {
                 dialog = new Blockly.Util.Dialog(Blockly.Msg.REPL_COMPANION_VERSION_CHECK, Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE, Blockly.Msg.REPL_DISMISS, false, null, 1, function() { dialog.hide();});
-                await engine.pollphone();
+                engine.pollphone();
             }
         }
     };
@@ -1375,7 +1378,7 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = async function(already, chromebook, emulator, usb, loopback) {
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopback) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1416,7 +1419,7 @@ Blockly.ReplMgr.startRepl = async function(already, chromebook, emulator, usb, l
                         top.ACCEPTABLE_COMPANION_PACKAGE +
                         ";end");
         }
-        rs.rendezvouscode = await this.sha1(rs.replcode);
+        rs.rendezvouscode = this.sha1(rs.replcode);
         rs.seq_count = 1;          // used for the creating the hmac mac
         rs.count = 0;
         if (!chromebook) {
@@ -1827,25 +1830,15 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
     return retval;
 };
 
-Blockly.ReplMgr.hmac = async function(input) {
-    const key = await crypto.subtle.importKey(
-        'raw',
-        new Uint8Array(this.string_to_bytes(top.ReplState.replcode)),
-        { name: 'HMAC', hash: 'SHA-1' },
-        false,
-        ['sign']
-    );
-    const signature = await crypto.subtle.sign(
-        'HMAC',
-        key,
-        new Uint8Array(this.string_to_bytes(input))
-    );
-    return(this.bytes_to_hexstring(Array.from(new Uint8Array(signature))));
+Blockly.ReplMgr.hmac = function(input) {
+    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(top.ReplState.replcode), 64);
+    return(this.bytes_to_hexstring(googhash.getHmac(this.string_to_bytes(input))));
 };
 
-Blockly.ReplMgr.sha1 = async function(input) {
-    const hashBuffer = await crypto.subtle.digest('SHA-1', new Uint8Array(this.string_to_bytes(input)));
-    return(this.bytes_to_hexstring(Array.from(new Uint8Array(hashBuffer))));
+Blockly.ReplMgr.sha1 = function(input) {
+    var hasher = new goog.crypt.Sha1();
+    hasher.update(this.string_to_bytes(input));
+    return(this.bytes_to_hexstring(hasher.digest()));
 };
 
 Blockly.ReplMgr.string_to_bytes = function(input) {
