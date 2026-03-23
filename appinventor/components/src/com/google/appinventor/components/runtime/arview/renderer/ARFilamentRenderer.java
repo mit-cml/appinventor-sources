@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.opengl.Matrix;
 import android.util.Log;
-import android.view.Choreographer;
 import android.view.Surface;
 
 import com.google.android.filament.Camera;
@@ -31,6 +30,7 @@ import com.google.android.filament.gltfio.ResourceLoader;
 import com.google.appinventor.components.runtime.ComponentContainer;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ar.ARNodeBase;
+import com.google.appinventor.components.runtime.ar.ModelNode;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
@@ -50,9 +50,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * THREADING MODEL:
  *
  *   FilamentRenderThread — a dedicated HandlerThread that owns all Filament
- *   objects and the render loop. Choreographer is obtained from this thread's
- *   looper so its vsync callbacks fire here, never on the main thread or the
- *   GL thread.
+ *   objects and the render loop.
+ *   sync with frame by calling renderFrame
  *
  *   GL thread (GLSurfaceView) — calls updateFrame() each frame to hand off
  *   fresh ARCore matrices and the current node list. This is a non-blocking
@@ -68,11 +67,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *   On the main thread it freezes the entire UI. On FilamentRenderThread it
  *   blocks nothing that matters — camera and UI run freely at full frame rate.
  *
- * CHOREOGRAPHER NOTE:
- *   Choreographer.getInstance() returns the instance for the calling thread's
- *   looper. By calling it from FilamentRenderThread, vsync callbacks fire
- *   on that thread, giving Filament its own vsync-locked render cadence with
- *   no interference from other threads.
  */
 public class ARFilamentRenderer {
 
@@ -175,61 +169,55 @@ public class ARFilamentRenderer {
 
     private final Form form;
 
-    // -------------------------------------------------------------------------
-    // Choreographer render loop — runs on FilamentRenderThread
-    // -------------------------------------------------------------------------
+    public void renderSynchronous(List<ARNode> nodes,
+                                  float[] viewMatrix,
+                                  float[] projMatrix,
+                                  List<Plane> planes) {
+        if (!engineReady || !swapChainReady || destroyed) return;
+        if (filamentHandler == null) return;
 
-    private final Choreographer.FrameCallback renderCallback =
-        new Choreographer.FrameCallback() {
-            @Override
-            public void doFrame(long frameTimeNanos) {
-                // Reschedule immediately — keep the vsync loop alive
-                Choreographer.getInstance().postFrameCallback(this);
+        // Copy matrices before posting — GL thread arrays may be reused
+        final float[] viewCopy = new float[16];
+        final float[] projCopy = new float[16];
+        System.arraycopy(viewMatrix, 0, viewCopy, 0, 16);
+        System.arraycopy(projMatrix, 0, projCopy, 0, 16);
+        final List<ARNode> nodesCopy = new ArrayList<>(nodes);
+        final List<Plane> planesCopy = new ArrayList<>(planes);
 
-                if (!engineReady || !swapChainReady || destroyed) return;
+        // Use CountDownLatch to block GL thread until Filament finishes
+        java.util.concurrent.CountDownLatch latch =
+            new java.util.concurrent.CountDownLatch(1);
 
-                // Consume any pending depth update
-                DepthUpdate depth;
-                synchronized (depthLock) {
-                    depth = pendingDepthUpdate;
-                    pendingDepthUpdate = null;
-                }
-                if (depth != null) {
-                    applyDepthUpdate(depth);
-                }
-
-                float[] viewMatrix;
-                float[] projMatrix;
-                List<ARNode> nodes;
-
+        filamentHandler.post(() -> {
+            try {
                 synchronized (matrixLock) {
-                    if (!matricesReady) return;
-                    viewMatrix = new float[16];
-                    projMatrix = new float[16];
-                    System.arraycopy(sharedView, 0, viewMatrix, 0, 16);
-                    System.arraycopy(sharedProj, 0, projMatrix, 0, 16);
-                    nodes = new ArrayList<>(sharedNodes);
+                    trackingPlanes = planesCopy;
+                    sharedNodes = nodesCopy;
                 }
-
-                updateCameraFromARCore(viewMatrix, projMatrix);
-
-                if (!nodes.isEmpty()) {
-                    loadAndPositionNodes(nodes);
-                    updateAnimations();
-                }
+                updateCameraFromARCore(viewCopy, projCopy);
+                loadAndPositionNodes(nodesCopy);
+                updateAnimations();
 
                 long timestamp = System.nanoTime();
-                try {
-                    if (renderer.beginFrame(swapChain, timestamp)) {
-                        renderer.render(view);
-                        renderer.endFrame();
-                    }
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Render error: " + e.getMessage(), e);
-                    safeEndFrame();
+                if (renderer.beginFrame(swapChain, timestamp)) {
+                    renderer.render(view);
+                    renderer.endFrame();
                 }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Render error: " + e.getMessage(), e);
+                safeEndFrame();
+            } finally {
+                latch.countDown();
             }
-        };
+        });
+
+        try {
+            // Wait max 16ms — one frame budget
+            latch.await(16, java.util.concurrent.TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -294,11 +282,6 @@ public class ARFilamentRenderer {
                 engineReady = true;
                 Log.d(LOG_TAG, "Engine initialization complete");
 
-                // Start Choreographer loop ON FilamentRenderThread
-                // Choreographer.getInstance() returns the instance for this
-                // thread's looper — callbacks fire here, not on main thread
-                Choreographer.getInstance().postFrameCallback(renderCallback);
-                Log.d(LOG_TAG, "Choreographer started on FilamentRenderThread");
 
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Engine init failed: " + e.getMessage(), e);
@@ -436,8 +419,6 @@ public class ARFilamentRenderer {
         if (filamentHandler == null) return;
 
         filamentHandler.post(() -> {
-            // Stop Choreographer first — no more render calls after this
-            Choreographer.getInstance().removeFrameCallback(renderCallback);
 
             if (engine == null) return;
 
@@ -698,8 +679,9 @@ public class ARFilamentRenderer {
 
         // planeFinder is null if occlusion isn't enabled for either depth or plane-based occlusion
         if (!depthDataReceived && planeFinder != null && !base.isBeingDragged) {
+            float sphereRadius = ((ARNodeBase) node).getCollisionRadius();
             com.google.ar.core.Plane occludingPlane =
-                planeFinder.findOccludingPlane(t, lastCameraWorldPos);
+                planeFinder.findOccludingPlane(t, lastCameraWorldPos, sphereRadius);
             if (occludingPlane != null) {
                 float[] hideMatrix = new float[16];
                 Matrix.setIdentityM(hideMatrix, 0);
@@ -755,14 +737,24 @@ public class ARFilamentRenderer {
             if (e != asset.getRoot()) scene.addEntity(e);
         }
         resourceLoader.loadResources(asset);
-        nodeAssetMap.put(node, asset);
 
-        Log.d(LOG_TAG, "Loaded: " + path
-            + " (" + asset.getEntities().length + " entities)");
-
-        if (depthDataReceived && occlusionMaterialInstance != null) {
-            applyOcclusionToAsset(asset, engine.getRenderableManager());
+        try {
+            com.google.android.filament.Box aabb = asset.getBoundingBox();
+            float[] halfExtent = aabb.getHalfExtent();
+            float radius = (float) Math.sqrt(
+                halfExtent[0] * halfExtent[0] +
+                    halfExtent[1] * halfExtent[1] +
+                    halfExtent[2] * halfExtent[2]);
+            ((ARNodeBase) node).setCollisionRadius(radius);
+            ((ARNodeBase) node).updateCollisionShape();
+            Log.d(LOG_TAG, "ModelNode collision radius from mesh: " + radius + "m");
+        } catch (Exception e) {
+            Log.w(LOG_TAG, "Could not compute mesh bounds: " + e.getMessage());
         }
+
+
+        nodeAssetMap.put(node, asset);
+        // rest of method continues...
     }
 
     // -------------------------------------------------------------------------
