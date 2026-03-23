@@ -626,11 +626,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     public void updatePhysics() {
         float currentTime = System.currentTimeMillis();
+        if (lastPhysicsUpdateTime == 0) {
+            lastPhysicsUpdateTime = currentTime; // initialize on first frame
+            return;
+        }
         float deltaTime = (currentTime - lastPhysicsUpdateTime) / 1000.0f;
-        deltaTime = Math.max(deltaTime, 1.0f / 60.0f); //
+        deltaTime = Math.min(deltaTime, 1.0f / 30.0f); // cap at 30fps worth — not floor
         lastPhysicsUpdateTime = currentTime;
 
-        // Update each node's physics
         for (ARNode node : arNodes) {
             if (((ARNodeBase)node).EnablePhysics()) {
                 ((ARNodeBase)node).updateSimplePhysics(deltaTime);
@@ -1226,26 +1229,58 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     private float getCollisionRadius(ARNodeBase node) {
         return node.getCollisionRadius(); // scale already applied
-    }
 
-    // In ARView3D update loop
+    }private int collisionLogThrottle = 0;
+
     private void updateCollisions() {
-        List<ARNode> nodes = arNodes;
+        int totalChecks = 0;
+        int actualCollisions = 0;
+        int skipped = 0;
 
         for (int i = 0; i < arNodes.size(); i++) {
-            for (int j = i + 1; j < nodes.size(); j++) {
-                ARNode nodeA = nodes.get(i);
-                ARNode nodeB = nodes.get(j);
-                if (!((ARNodeBase)nodeA).EnablePhysics()) continue;
-                if (!((ARNodeBase)nodeB).EnablePhysics()) continue;
-                if (checkCollision(nodeA, nodeB)) {
-                    handleCollision(nodeA, nodeB);
+            for (int j = i + 1; j < arNodes.size(); j++) {
+                ARNodeBase a = (ARNodeBase) arNodes.get(i);
+                ARNodeBase b = (ARNodeBase) arNodes.get(j);
+
+                // log why pairs are skipped
+                if (!a.EnablePhysics() && !b.EnablePhysics()) {
+                    skipped++;
+                    continue;
                 }
+
+                totalChecks++;
+                float dist = a.collisionDistance(b);
+                float minDist = a.getCollisionVolume().getEffectiveRadius()
+                    + b.getCollisionVolume().getEffectiveRadius();
+
+                if (dist < minDist) {
+                    actualCollisions++;
+                    // log every actual collision
+                    Log.d(LOG_TAG, "COLLISION: " + a.NodeType() + " vs " + b.NodeType()
+                        + " dist=" + dist + " minDist=" + minDist
+                        + " aPhysics=" + a.EnablePhysics()
+                        + " bPhysics=" + b.EnablePhysics()
+                        + " aDragged=" + a.isBeingDragged
+                        + " bDragged=" + b.isBeingDragged
+                        + " aVel=(" + a.currentVelocity[0] + "," + a.currentVelocity[2] + ")"
+                        + " bVel=(" + b.currentVelocity[0] + "," + b.currentVelocity[2] + ")");
+                }
+
+                a.separateFrom(b);
             }
         }
-    }
-    // Add this debug logging to your collision detection when objects should be colliding
 
+        // log summary every 60 frames — not every frame
+        collisionLogThrottle++;
+        if (collisionLogThrottle >= 60) {
+            collisionLogThrottle = 0;
+            Log.i(LOG_TAG, "Collision summary: nodes=" + arNodes.size()
+                + " totalChecks=" + totalChecks
+                + " actualCollisions=" + actualCollisions
+                + " skippedNoPhysics=" + skipped
+                + " checksPerFrame=" + totalChecks);
+        }
+    }
 
     private void handleCollision(ARNode nodeA, ARNode nodeB) {
         // Separate objects first
