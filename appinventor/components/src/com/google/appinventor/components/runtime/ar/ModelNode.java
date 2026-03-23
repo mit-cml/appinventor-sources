@@ -44,8 +44,21 @@ import android.util.Log;
 
     private String tex = Form.ASSETS_PREFIX + "Palette.png";
 
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
+        defaultValue = "10")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+    public void CollisionRadius(float cm) {
+      collisionRadius = UnitHelper.centimetersToMeters(cm);
+      updateCollisionShape();
+    }
+
+    public float CollisionRadius() {
+      return UnitHelper.metersToCentimeters(collisionRadius);
+    }
+
     public ModelNode(final ARNodeContainer container) {
       super(container);
+      collisionRadius = 0.1f;
       Texture(tex);
       container.addNode(this);
     }
@@ -107,6 +120,12 @@ import android.util.Log;
   @SimpleEvent(description = "Collision event detected between object and another object")
   public void ObjectCollidedWithObject(ARNode otherNode) {
       // eg play an animation or something by default?
+  }
+
+  @Override
+  public void updateCollisionShape() {
+    collisionVolume = new SphereVolume(
+        collisionRadius * Scale());
   }
 
 

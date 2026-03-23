@@ -20,13 +20,7 @@ import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.ar.core.*;
 import android.util.Log;
 import android.graphics.PointF;
-import android.view.MotionEvent;
 import com.google.ar.core.exceptions.NotTrackingException;
-import com.google.ar.core.exceptions.ResourceExhaustedException;
-
-import java.util.List;
-import java.util.Collection;
-import java.util.UUID;
 
 
 @SimpleObject
@@ -34,10 +28,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   // Core container and AR properties
   protected ARView3D arView = null;
   protected Anchor anchor = null;
+
+  // In ARNodeBase — replace getModelBounds() with:
+  protected float collisionRadius = 0.05f; // default in meters
+
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
-  protected float[] fromPropertyRotation = {0,0,0,1};
+  protected float[] fromPropertyRotation = {0f, 0f, 0f, 1f};
   protected float[] pendingPosition = null;
-  protected float[] pendingRotation = {0,0,0,1};
+  protected float[] pendingRotation = {0f, 0f, 0f, 1f};
   protected float scale = 1.0f;
   protected Session session = null;
   protected String texture = "";
@@ -47,6 +45,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   // Enhanced Physics Properties
   protected String collisionShape = "sphere";
+
+  protected CollisionVolume collisionVolume = new SphereVolume(collisionRadius);
+
   protected float staticFriction = 0.1f;
   protected float dynamicFriction = 0.1f;
   protected float restitution = 0.1f;
@@ -66,6 +67,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected PointF lastDragLocation = new PointF(0, 0);
   protected Object originalMaterial = null;
   protected float[] lastFingerPosition ;
+  public float[] dragVelocity = {0, 0, 0};
+  protected long lastDragTime = 0;
+
 
   protected float[] currentVelocity = {0, 0, 0};
 
@@ -86,7 +90,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   protected long dragStartTime;
 
-  protected float[] currentRotationQuaternion = {0, 0, 0, 1};
+  protected float[] currentRotationQuaternion = {0f, 0f, 0f, 1f};
 
   // The world matrix is the single source of truth during simulation
   public float[] currentWorldMatrix = null;
@@ -107,14 +111,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     if (currentWorldMatrix == null) currentWorldMatrix = new float[16];
     anchor.getPose().toMatrix(currentWorldMatrix, 0);
     currentRotationQuaternion = anchor.getPose().getRotationQuaternion().clone();
-
-
   }
 
   @SuppressWarnings("WeakerAccess")
   protected ARNodeBase(ARNodeContainer container) {
     // Enhanced initialization
     setupInitialProperties();
+    updateCollisionShape();
   }
 
   private void setupInitialProperties() {
@@ -140,7 +143,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   except when being dragged
    */
   public void updateSimplePhysics(float deltaTime) {
-    if (!EnablePhysics() || isBeingDragged) return;
+    if (!EnablePhysics() ) return;
 
     if (currentWorldMatrix == null) return;
 
@@ -206,6 +209,19 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       }
     }
 
+  }
+
+
+  public void setCollisionRadius(float meters) {
+    this.collisionRadius = meters;
+  }
+
+  public float getCollisionRadius() {
+    return collisionRadius * Scale();
+  }
+
+  public CollisionVolume getCollisionVolume() {
+    return collisionVolume;
   }
 
   /* note, in meters */
@@ -394,12 +410,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   @Override
   public float[] getModelBounds() {
-      float radiusInMeters = 0.025f; // 2.5cm radius
-      float heightInMeters = 0.1f;   // 10cm height
-      return new float[]{radiusInMeters * 2, heightInMeters, radiusInMeters * 2};
+    float diameter = collisionRadius * 2; //TODO  check - radius or width
+    return new float[]{diameter, diameter, diameter};
   }
-
-
 
   @Override
   @SimpleEvent(description = "Collision event detected")
@@ -755,6 +768,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       initWorldMatrixFromAnchor();
       // Also set ground level from anchor's plane Y
       GROUND_LEVEL = a.getPose().ty();
+      updateCollisionShape();
       Log.d("ARNodeBase", NodeType() + " anchor set, groundLevel=" + GROUND_LEVEL);
     }
   }
@@ -1196,6 +1210,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
 // Physics update methods
+@Override
+public void updateCollisionShape() {
+  // Base class — nothing to do, subclasses override
+  }
 
   protected void updatePhysicsMaterial() {
     if (enablePhysics) {
@@ -1227,10 +1245,97 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     return collisionShape;
   }
 
-  protected void updateCollisionShape() {
-    if (enablePhysics) {
-      Log.d("ARNodeBase", "Updating collision shape - override in subclass");
+  // In ARNodeBase:
+
+  protected float collisionDistance(ARNodeBase other) {
+    return vectorDistance(getCurrentPosition(), other.getCurrentPosition());
+  }
+
+  protected float[] collisionNormal(ARNodeBase other) {
+    float[] posA = getCurrentPosition();
+    float[] posB = other.getCurrentPosition();
+    float d = collisionDistance(other);
+    if (d < 0.0001f) return new float[]{1, 0, 0};
+    return new float[]{
+        (posB[0]-posA[0])/d,
+        (posB[1]-posA[1])/d,
+        (posB[2]-posA[2])/d
+    };
+  }
+
+  public void separateFrom(ARNodeBase other) {
+    float minDist = getCollisionVolume().getEffectiveRadius()
+        + other.getCollisionVolume().getEffectiveRadius();
+    float dist = collisionDistance(other);
+    if (dist >= minDist) return;
+    if (dist < 0.0001f) dist = 0.0001f;
+
+    float overlap = (minDist - dist) + 0.001f;
+    float[] n = collisionNormal(other);
+
+    if (isBeingDragged) {
+      float[] posB = other.getCurrentPosition();
+      other.setCurrentPosition(new float[]{
+          posB[0] + n[0] * overlap,
+          posB[1],
+          posB[2] + n[2] * overlap
+      });
+      // Apply drag-velocity-based impulse
+      float dragSpeed = dragVelocity[0]*n[0] + dragVelocity[2]*n[2];
+      float effectiveSpeed = Math.max(dragSpeed, 0.8f);
+      float restitution = (Restitution() + other.Restitution()) * 0.5f;
+      float impulse = (1 + restitution) * effectiveSpeed
+          / (1f/Mass() + 1f/other.Mass());
+      other.currentVelocity[0] += (impulse / other.Mass()) * n[0];
+      other.currentVelocity[1] = 0;
+      other.currentVelocity[2] += (impulse / other.Mass()) * n[2];
+
+    } else if (other.isBeingDragged) {
+      float[] posA = getCurrentPosition();
+      setCurrentPosition(new float[]{
+          posA[0] - n[0] * overlap,
+          posA[1],
+          posA[2] - n[2] * overlap
+      });
+      float dragSpeed = other.dragVelocity[0]*(-n[0]) + other.dragVelocity[2]*(-n[2]);
+      float effectiveSpeed = Math.max(dragSpeed, 0.8f);
+      float restitution = (Restitution() + other.Restitution()) * 0.5f;
+      float impulse = (1 + restitution) * effectiveSpeed
+          / (1f/Mass() + 1f/other.Mass());
+      currentVelocity[0] -= (impulse / Mass()) * n[0];
+      currentVelocity[1] = 0;
+      currentVelocity[2] -= (impulse / Mass()) * n[2];
+
+    } else {
+      float half = overlap * 0.5f;
+      float[] posA = getCurrentPosition();
+      float[] posB = other.getCurrentPosition();
+      setCurrentPosition(new float[]{posA[0]-n[0]*half, posA[1], posA[2]-n[2]*half});
+      other.setCurrentPosition(new float[]{posB[0]+n[0]*half, posB[1], posB[2]+n[2]*half});
+      applyCollisionImpulse(other, n);
     }
+  }
+
+  protected void applyCollisionImpulse(ARNodeBase other, float[] n) {
+    float restitution = (Restitution() + other.Restitution()) * 0.5f;
+
+    float relVelN =
+        (other.currentVelocity[0] - currentVelocity[0]) * n[0] +
+            (other.currentVelocity[1] - currentVelocity[1]) * n[1] +
+            (other.currentVelocity[2] - currentVelocity[2]) * n[2];
+
+    if (relVelN > 0) return; // already separating
+
+    float impulse = -(1 + restitution) * relVelN
+        / (1f / Mass() + 1f / other.Mass());
+
+    currentVelocity[0] -= (impulse / Mass()) * n[0];
+    currentVelocity[1] -= (impulse / Mass()) * n[1];
+    currentVelocity[2] -= (impulse / Mass()) * n[2];
+
+    other.currentVelocity[0] += (impulse / other.Mass()) * n[0];
+    other.currentVelocity[1] += (impulse / other.Mass()) * n[1];
+    other.currentVelocity[2] += (impulse / other.Mass()) * n[2];
   }
 
 // MARK: - Enhanced Gesture Properties
@@ -1433,7 +1538,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   public void InitialRotation(String rFromProperty) {
     String[] rotationAray = rFromProperty.split(",");
-    float[] rotation = {0f, 0f, 0f};
+    float[] rotation = {0f, 0f, 0f, 1f};
 
     for (int i = 0; i < rotationAray.length; i++) { //&& i < 3 why?
       try {
@@ -1462,9 +1567,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected void updateScale() {
     // Override in subclasses to implement scaling
     Log.d("ARNodeBase", "Scale update requested: " + scale);
-    if (enablePhysics) {
+    //if (enablePhysics) {
       updateCollisionShape();
-    }
+   // }
   }
 
   @Override
@@ -1652,11 +1757,25 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       };
 
       setCurrentPosition(newPos);
+
+      long now = System.currentTimeMillis();
+      if (lastDragTime > 0) {
+        float dt = (now - lastDragTime) / 1000f;
+        if (dt > 0.0001f) {
+          dragVelocity[0] = (groundProjection[0] - lastFingerPosition[0]) / dt;
+          dragVelocity[1] = 0;
+          dragVelocity[2] = (groundProjection[2] - lastFingerPosition[2]) / dt;
+        }
+      }
+      lastDragTime = now;
     }
     Log.d("ARNodeBase", "updating drag for " + NodeType()
         + " at " + arrayToString(getCurrentPosition())
         + " groundLevel=" + GROUND_LEVEL);
     lastFingerPosition = groundProjection.clone();
+
+
+
   }
 
 

@@ -152,6 +152,7 @@ public final class AR3DFactory {
 
      float[] getVisualBounds();
      float[] getModelBounds();
+     void updateCollisionShape();
      // NOTE: uncomment should we want to allow nonuniform scaling
      // float XScale();
      //

@@ -1003,7 +1003,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
 
             // Project node center to screen space
-            float[] worldPos = node.Anchor().getPose().getTranslation();
+            float[] worldPos = ((ARNodeBase) node).getCurrentPosition();
             Log.i(LOG_TAG, "World position: (" + worldPos[0] + ", " + worldPos[1] + ", " + worldPos[2] + ")");
 
             float[] screenPos = worldToScreen(worldPos, vpMatrix);
@@ -1079,26 +1079,37 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return new float[]{screenX, screenY};
     }
 
-    // Enhanced getNodeScreenRadius logging
     private float getNodeScreenRadius(ARNode node, float[] worldPos) {
         float baseRadius = 60f;
-        Log.i(LOG_TAG, "Base radius: " + baseRadius);
 
         if (node instanceof SphereNode) {
             SphereNode sphere = (SphereNode) node;
-            float worldRadius = sphere.RadiusInCentimeters() * sphere.Scale();
-            Log.i(LOG_TAG, "Sphere world radius: " + worldRadius + " cm");
+            // Convert to meters for projection
+            float worldRadiusMeters = sphere.RadiusInCentimeters()
+                * ARNodeBase.UnitHelper.centimetersToMeters(1f) * sphere.Scale();
 
-            float approximateScreenRadius = worldRadius * 0.01f;
-            Log.i(LOG_TAG, "Approximate screen radius: " + approximateScreenRadius);
+            // Project radius to screen space using distance from camera
+            float[] cameraPos = lastCamera.getPose().getTranslation();
+            float distToNode = vectorDistance(worldPos, cameraPos);
 
-            baseRadius = Math.max(baseRadius, approximateScreenRadius);
-            Log.i(LOG_TAG, "Max of base and sphere radius: " + baseRadius);
+            // Approximate screen pixels from world radius
+            float fovScale = currentViewportHeight / 2f; // rough projection scale
+            float screenRadius = (worldRadiusMeters / distToNode) * fovScale;
+
+            baseRadius = Math.max(baseRadius, screenRadius);
+        } else {
+            // ModelNode — use collision radius for hit testing
+            float worldRadiusMeters = ((ARNodeBase) node).getCollisionRadius();
+            float[] cameraPos = lastCamera.getPose().getTranslation();
+            float distToNode = vectorDistance(worldPos, cameraPos);
+            float fovScale = currentViewportHeight / 2f;
+            float screenRadius = (worldRadiusMeters / distToNode) * fovScale;
+            baseRadius = Math.max(baseRadius, screenRadius);
         }
 
-        Log.i(LOG_TAG, "Final node radius: " + baseRadius + " pixels");
         return baseRadius;
     }
+
     protected float vectorDistance(float[] a, float[] b) {
         float dx = a[0] - b[0];
         float dy = a[1] - b[1];
@@ -1208,7 +1219,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return new float[]{position[0],position[1], position[2]};
     }
 
-
+    private float getCollisionRadius(ARNodeBase node) {
+        return node.getCollisionRadius(); // scale already applied
+    }
 
     // In ARView3D update loop
     private void updateCollisions() {
@@ -1227,121 +1240,25 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
     // Add this debug logging to your collision detection when objects should be colliding
-    private boolean checkCollision(ARNode nodeA, ARNode nodeB) {
-        float[] posA = ((ARNodeBase)nodeA).getCurrentPosition();
-        float[] posB = ((ARNodeBase)nodeB).getCurrentPosition();
 
-        float distance = vectorDistance(posA, posB);
-
-        // Get the bounding box dimensions in meters
-        float[] boundsA = nodeA.getVisualBounds();
-        float[] boundsB = nodeB.getVisualBounds();
-
-        // Add detailed debugging for close objects
-        if (distance < 0.3f) { // Within 30cm - should show collision details
-            Log.i(LOG_TAG, "=== CLOSE OBJECTS DEBUG ===");
-            if (nodeA instanceof SphereNode) {
-                SphereNode sphereA = (SphereNode) nodeA;
-                Log.i(LOG_TAG, "NodeA - RadiusCM: " + sphereA.RadiusInCentimeters() + ", Scale: " + sphereA.Scale());
-                Log.i(LOG_TAG, "NodeA - Expected visual radius: " + (sphereA.RadiusInCentimeters() * 0.01f * sphereA.Scale()) + "m");
-            }
-            if (nodeB instanceof SphereNode) {
-                SphereNode sphereB = (SphereNode) nodeB;
-                Log.i(LOG_TAG, "NodeB - RadiusCM: " + sphereB.RadiusInCentimeters() + ", Scale: " + sphereB.Scale());
-                Log.i(LOG_TAG, "NodeB - Expected visual radius: " + (sphereB.RadiusInCentimeters() * 0.01f * sphereB.Scale()) + "m");
-            }
-        }
-
-        // Calculate half-extents
-        float[] halfExtentsA = {boundsA[0] / 2, boundsA[1] / 2, boundsA[2] / 2};
-        float[] halfExtentsB = {boundsB[0] / 2, boundsB[1] / 2, boundsB[2] / 2};
-
-        boolean xOverlap = Math.abs(posA[0] - posB[0]) < (halfExtentsA[0] + halfExtentsB[0]);
-        boolean yOverlap = Math.abs(posA[1] - posB[1]) < (halfExtentsA[1] + halfExtentsB[1]);
-        boolean zOverlap = Math.abs(posA[2] - posB[2]) < (halfExtentsA[2] + halfExtentsB[2]);
-
-        boolean collision = xOverlap && yOverlap && zOverlap;
-
-        // Log collision analysis for close objects
-        if (distance < 0.3f) {
-            Log.i(LOG_TAG, "Distance: " + distance + "m, Collision: " + collision);
-            Log.i(LOG_TAG, "Visual bounds A: (" + boundsA[0] + ", " + boundsA[1] + ", " + boundsA[2] + ")");
-            Log.i(LOG_TAG, "Visual bounds B: (" + boundsB[0] + ", " + boundsB[1] + ", " + boundsB[2] + ")");
-            Log.i(LOG_TAG, "Sum of radii approx: " + (halfExtentsA[0] + halfExtentsB[0]) + "m");
-
-            if (distance < (halfExtentsA[0] + halfExtentsB[0]) && !collision) {
-                Log.w(LOG_TAG, "*** SPHERES SHOULD BE COLLIDING BUT AABB FAILED ***");
-                Log.w(LOG_TAG, "Consider using sphere collision for SphereNodes");
-            }
-        }
-
-        return collision;
-    }
 
     private void handleCollision(ARNode nodeA, ARNode nodeB) {
         // Separate objects first
-        separateCollidingNodes(nodeA, nodeB);
+        ((ARNodeBase) nodeA).separateFrom((ARNodeBase) nodeB);
 
         // Delayed notification to avoid physics interference
          nodeA.ObjectCollidedWithObject(nodeB);
          nodeB.ObjectCollidedWithObject(nodeA);
-
-           // dispatchCollisionEvent(nodeA, nodeB);
     }
 
-    private void separateCollidingNodes(ARNode nodeA, ARNode nodeB) {
-        float[] posA = ((ARNodeBase)nodeA).getCurrentPosition();
-        float[] posB = ((ARNodeBase)nodeB).getCurrentPosition();
-
-        // Get the bounding box dimensions for both nodes
-        float[] boundsA = nodeA.getVisualBounds();
-        float[] boundsB = nodeB.getVisualBounds();
-
-        // Calculate overlap in each axis
-        float[] overlap = new float[3];
-        overlap[0] = (boundsA[0] + boundsB[0]) / 2 - Math.abs(posA[0] - posB[0]);
-        overlap[1] = (boundsA[1] + boundsB[1]) / 2 - Math.abs(posA[1] - posB[1]);
-        overlap[2] = (boundsA[2] + boundsB[2]) / 2 - Math.abs(posA[2] - posB[2]);
-
-        // Find the axis with minimum overlap (shortest separation distance)
-        int minAxis = 0;
-        if (overlap[1] < overlap[minAxis]) minAxis = 1;
-        if (overlap[2] < overlap[minAxis]) minAxis = 2;
-
-        // Calculate separation distance - need to separate by FULL overlap plus a small gap
-        float separationDistance = overlap[minAxis] + 0.01f; // Add 1cm gap to prevent immediate re-collision
-
-        Log.i(LOG_TAG, "Overlap on axis " + minAxis + ": " + overlap[minAxis] + "m");
-        Log.i(LOG_TAG, "Total separation distance: " + separationDistance + "m");
-
-        // Calculate separation vector - each object moves half the total distance
-        float[] separation = new float[3];
-        float halfSeparation = separationDistance * 0.5f;
-
-        // Determine separation direction based on relative positions
-        if (posA[minAxis] < posB[minAxis]) {
-            separation[minAxis] = -halfSeparation;  // Move A in negative direction
-        } else {
-            separation[minAxis] = halfSeparation;   // Move A in positive direction
-        }
-
-        // Apply separation (move objects apart equally)
-        float[] newPosA = ((ARNodeBase)nodeA).vectorAdd(posA, separation);
-        float[] newPosB = ((ARNodeBase)nodeB).vectorSubtract(posB, separation);
-
-        ((ARNodeBase)nodeA).setCurrentPosition(newPosA);
-        ((ARNodeBase)nodeB).setCurrentPosition(newPosB);
-
-        Log.i(LOG_TAG, "Separated nodes on axis " + minAxis + " by total distance " + separationDistance + "m");
-        Log.i(LOG_TAG, "Each node moved " + halfSeparation + "m");
-
-        // Verify separation worked
-        float newDistance = Math.abs(newPosA[minAxis] - newPosB[minAxis]);
-        float requiredDistance = (boundsA[minAxis] + boundsB[minAxis]) / 2;
-        Log.i(LOG_TAG, "New distance on axis " + minAxis + ": " + newDistance + "m (required: " + requiredDistance + "m)");
+    private boolean checkCollision(ARNode nodeA, ARNode nodeB) {
+        ARNodeBase a = (ARNodeBase) nodeA;
+        ARNodeBase b = (ARNodeBase) nodeB;
+        return a.getCollisionVolume().intersects(
+            b.getCollisionVolume(),
+            a.getCurrentPosition(),
+            b.getCurrentPosition());
     }
-
-
 
     // Configure ARCore session
     private void configureSession() {

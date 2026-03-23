@@ -41,9 +41,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private String texture = Form.ASSETS_PREFIX + "Palette.png";
   private String behaviorName = "rolling";
   private ARNodeContainer _container;
-
-  private float radius = 0.05f; // stored in meters
-
   // Physics constants
   private float dragStartDamping = 0.1f;
   private float dragStartAngularDamping = 0.01f;
@@ -109,24 +106,31 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   @Override
   @SimpleProperty(description = "The radius of the sphere in centimeters.")
   public float RadiusInCentimeters() {
-    return UnitHelper.metersToCentimeters(radius);
+    return UnitHelper.metersToCentimeters(collisionRadius);
   }
 
   @Override
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void RadiusInCentimeters(float radiusInCentimeters) {
-    this.radius = UnitHelper.centimetersToMeters(Math.abs(radiusInCentimeters));
+    collisionRadius = UnitHelper.centimetersToMeters(Math.abs(radiusInCentimeters));
+    Scale(collisionRadius); // visual size = desired radius in meters
     updateSphereMesh();
+    updateCollisionShape(); // SphereVolume(Scale()) = SphereVolume(collisionRadius)
   }
-
   private void updateSphereMesh() {
     // Update the sphere mesh with new radius
-    Log.i("SphereNode", "Updating sphere mesh with radius: " + radius + "m");
+    Log.i("SphereNode", "Updating sphere mesh with radius: " + collisionRadius + "m");
     // Implementation would depend on your 3D rendering system
   }
 
   // MARK: - Enhanced Collision Handling
+  @Override
+  public void updateCollisionShape() {
+
+    collisionVolume = new SphereVolume(Scale());
+    Log.i("SphereNode", "collision radius: " + collisionRadius + "m");
+  }
 
 
   @Override
@@ -162,8 +166,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   @Override
   public float[] getModelBounds() {
-    float radiusInMeters = RadiusInCentimeters() * 0.01f; // Convert cm to meters
-    float diameter = 2 * radiusInMeters * 10;  //try this
+    float radiusInMeters =  collisionRadius; // Convert cm to meters
+    float diameter = 2 * radiusInMeters;
     return new float[]{diameter, diameter, diameter};
   }
 
@@ -174,14 +178,13 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
     float oldScale = Scale();
     float newScale = oldScale * Math.abs(scalar);
-
-    // Update physics immediately if enabled to maintain bottom position
     if (EnablePhysics()) {
-      float previousSize = radius * Scale();
+      float previousSize = collisionRadius * Scale();
       // Adjust Y position to maintain ground contact
       float[] currentPos = getCurrentPosition();
-      currentPos[1] = currentPos[1] - previousSize + (radius * newScale);
+      currentPos[1] = currentPos[1] - previousSize + (collisionRadius * newScale);
       setCurrentPosition(currentPos);
+      reanchorAtCurrentPosition(planeFinder); // ← add this
     }
 
     Scale(newScale);
@@ -194,7 +197,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
     float oldScale = Scale();
     float newScale = oldScale * Math.abs(scalar);
-    float newActualRadius = radius * newScale;
+    float newActualRadius = collisionRadius * newScale;
 
     float minRadius = 0.01f;
     float maxRadius = 20.0f;
@@ -216,13 +219,14 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       EnablePhysics(false);
 
       // Update position to maintain bottom contact
-      float previousSize = radius * Scale();
+      float previousSize = collisionRadius * Scale();
       float[] currentPos = getCurrentPosition();
-      currentPos[1] = currentPos[1] - previousSize + (radius * newScale);
+      currentPos[1] = currentPos[1] - previousSize + (collisionRadius * newScale);
       setCurrentPosition(currentPos);
 
       // Apply scaling
       Scale(newScale);
+      reanchorAtCurrentPosition(planeFinder);
 
       // Restore physics
       Mass(savedMass);
@@ -247,10 +251,10 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   private void debugCollisionShape() {
     float visualScale = Scale();
-    float calculatedRadius = radius * visualScale;
+    float calculatedRadius = collisionRadius * visualScale;
 
     Log.i("SphereNode", "=== COLLISION SHAPE DEBUG ===");
-    Log.i("SphereNode", "Internal radius: " + radius + "m");
+    Log.i("SphereNode", "Internal radius: " + collisionRadius + "m");
     Log.i("SphereNode", "Visual scale: " + visualScale);
     Log.i("SphereNode", "Calculated collision radius: " + calculatedRadius + "m");
     Log.i("SphereNode", "Has physics: " + EnablePhysics());
@@ -289,8 +293,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
         lastFingerPosition = groundProjection.clone();
         return;
       }
+      applyRealisticRolling(movement);
     }
-
     super.updateDrag(groundProjection); // handles position update
   }
 
@@ -316,8 +320,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
     if (distance <= 0.0001f) return;
 
-    // Physics-accurate rolling: distance = radius × angle
-    float ballRadius = RadiusInCentimeters() * Scale();
+    float ballRadius = collisionVolume.getEffectiveRadius();
     float rollAngle = distance / ballRadius;
 
     // Rotation axis perpendicular to movement
@@ -330,15 +333,16 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     Log.d("SphereNode", "Before rolling: " + arrayToString(rotation));
     rotation = multiplyQuaternions(rollRotation, rotation);
     Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
+
+    setCurrentRotation(rotation);
   }
-  @Override
+
   public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
     float speed = (float) Math.sqrt(
         releaseVelocity.x * releaseVelocity.x
             + releaseVelocity.y * releaseVelocity.y);
 
-    if (speed < NORMAL_ROLLING_SPEED) return;
-
+    if (speed < NORMAL_ROLLING_SPEED) return;  // ← 1200 threshold, too high
 
     float[] right   = cameraVectors != null ? cameraVectors.right   : new float[]{1,0,0};
     float[] forward = cameraVectors != null ? cameraVectors.forward : new float[]{0,0,-1};
@@ -462,7 +466,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
   private void setupSpherePhysics() {
     // Create sphere collision shape with current radius and scale
-    float actualRadius = radius * Scale();
+    float actualRadius = collisionRadius * Scale();
 
     // Setup physics body with calculated properties
     // Implementation depends on your physics system (ARCore/Sceneform)
@@ -482,8 +486,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     Log.i("SphereNode", "Position: " + arrayToString(currentPos));
     Log.i("SphereNode", "Has physics: " + EnablePhysics());
     Log.i("SphereNode", "Mass: " + Mass());
-    Log.i("SphereNode", "Ball radius: " + radius);
-    Log.i("SphereNode", "Ball radius * scale: " + (radius * Scale()));
+    Log.i("SphereNode", "Ball radius: " + collisionRadius);
+    Log.i("SphereNode", "Ball radius * scale: " + (collisionRadius * Scale()));
     Log.i("SphereNode", "Scale: " + Scale());
     Log.i("SphereNode", "Static Friction: " + StaticFriction());
     Log.i("SphereNode", "Dynamic Friction: " + DynamicFriction());
@@ -508,7 +512,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
     // Adjust Y position for sphere physics
     if (EnablePhysics()) {
-      float ballRadius = radius * Scale();
+      float ballRadius = collisionRadius * Scale();
       float[] translation = targetPose.getTranslation();
       translation[1] += ballRadius; // Place sphere on surface, not embedded
       targetPose = new Pose(translation, targetPose.getRotationQuaternion());
