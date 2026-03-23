@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.ar;
 import android.view.*;
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
+import static com.google.appinventor.components.runtime.ar.SphereNode.SPHERE_OBJ_RADIUS;
 
 import android.app.Activity;
 import android.opengl.GLES30;
@@ -505,11 +506,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         for (Plane plane : planes) {
             ARDetectedPlane arplane = new DetectedPlane(plane);
-            Log.i("has tracking arplane", arplane.toString());
             PlaneDetected(arplane); //dispatch
-            Log.d(LOG_TAG, "Plane tracking state: " + plane.getTrackingState() +
-                ", type: " + plane.getType() +
-                ", extent: " + plane.getExtentX() + "x" + plane.getExtentZ());
         }
     }
 
@@ -1078,36 +1075,44 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         return new float[]{screenX, screenY};
     }
-
     private float getNodeScreenRadius(ARNode node, float[] worldPos) {
-        float baseRadius = 60f;
+        float[] invView = new float[16];
+        android.opengl.Matrix.invertM(invView, 0, lastViewMatrix, 0);
+        float[] cameraPos = {invView[12], invView[13], invView[14]};
+        float distToCamera = ((ARNodeBase) node).vectorDistance(worldPos, cameraPos);
+
+        if (distToCamera < 0.001f) return 100f;
+
+        float visualRadiusMeters;
 
         if (node instanceof SphereNode) {
-            SphereNode sphere = (SphereNode) node;
-            // Convert to meters for projection
-            float worldRadiusMeters = sphere.RadiusInCentimeters()
-                * ARNodeBase.UnitHelper.centimetersToMeters(1f) * sphere.Scale();
+            // sphere.obj has local radius 0.5
+            visualRadiusMeters = SPHERE_OBJ_RADIUS * node.Scale();
 
-            // Project radius to screen space using distance from camera
-            float[] cameraPos = lastCamera.getPose().getTranslation();
-            float distToNode = vectorDistance(worldPos, cameraPos);
+        } else if (node instanceof ModelNode) {
+            // use collision radius as best available size approximation
+            visualRadiusMeters = ((ModelNode) node).collisionRadius * node.Scale();
 
-            // Approximate screen pixels from world radius
-            float fovScale = currentViewportHeight / 2f; // rough projection scale
-            float screenRadius = (worldRadiusMeters / distToNode) * fovScale;
-
-            baseRadius = Math.max(baseRadius, screenRadius);
         } else {
-            // ModelNode — use collision radius for hit testing
-            float worldRadiusMeters = ((ARNodeBase) node).getCollisionRadius();
-            float[] cameraPos = lastCamera.getPose().getTranslation();
-            float distToNode = vectorDistance(worldPos, cameraPos);
-            float fovScale = currentViewportHeight / 2f;
-            float screenRadius = (worldRadiusMeters / distToNode) * fovScale;
-            baseRadius = Math.max(baseRadius, screenRadius);
+            // BoxNode and others — use visual bounds bounding sphere
+            float[] bounds = node.getVisualBounds();
+            float w = bounds[0] * 0.5f;
+            float h = bounds[1] * 0.5f;
+            float d = bounds[2] * 0.5f;
+            visualRadiusMeters = (float) Math.sqrt(w*w + h*h + d*d);
         }
 
-        return baseRadius;
+        float fovScale = lastProjMatrix[5];
+        float screenRadius = (visualRadiusMeters / distToCamera)
+            * fovScale
+            * (currentViewportHeight * 0.5f);
+
+        Log.d(LOG_TAG, "getNodeScreenRadius: type=" + node.NodeType()
+            + " visualRadius=" + visualRadiusMeters
+            + "m dist=" + distToCamera
+            + "m screenRadius=" + screenRadius + "px");
+
+        return screenRadius;
     }
 
     protected float vectorDistance(float[] a, float[] b) {
@@ -1319,7 +1324,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Log.i(LOG_TAG, "Depth not supported");
     }
 
-    private Plane findOccludingPlane(float[] nodeWorldPos, float[] cameraWorldPos) {
+    private Plane findOccludingPlane(float[] nodeWorldPos, float[] cameraWorldPos, float sphereRadius) {
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
 
         // Ray from camera through sphere
@@ -1338,7 +1343,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         for (Plane plane : planes) {
             if (plane.getTrackingState() != TrackingState.TRACKING) continue;
 
-            Log.i(LOG_TAG, "occluding plane test rayDir " + rayDir[0] + ", " + rayDir[1] + ", " + rayDir[2]);
             if (plane.getExtentX() < 0.3f || plane.getExtentZ() < 0.3f) continue;
 
             // Get plane normal from pose matrix column 1 (local Y axis)
@@ -1361,7 +1365,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
             // Intersection must be between camera and sphere
             if (t < 0.05f || t > distanceToSphere - 0.05f) continue;
-
+            if (t < 0.05f || t > distanceToSphere - sphereRadius) continue;
             // Intersection point in world space
             float[] hitPoint = {
                 cameraWorldPos[0] + t * rayDir[0],

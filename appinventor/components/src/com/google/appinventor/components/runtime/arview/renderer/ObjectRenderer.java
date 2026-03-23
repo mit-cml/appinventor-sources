@@ -383,8 +383,11 @@ public class ObjectRenderer {
       // Plane-based occlusion — only active when depth is not available
       if (!occlusionEnabledByDepth && planeFinder != null) {
         Log.i("ObjRenderer", "Depth not supported, setting PlaneFinder");
+        float sphereRadius = (arNode instanceof SphereNode)
+            ? ((SphereNode) arNode).Scale()
+            : 0.05f;
         com.google.ar.core.Plane occludingPlane =
-            planeFinder.findOccludingPlane(sphereWorldPos, cameraWorldPos);
+            planeFinder.findOccludingPlane(sphereWorldPos, cameraWorldPos, sphereRadius);
         if (occludingPlane != null) {
           // Extract plane normal from pose matrix column 1 (local Y axis)
           float[] poseMatrix = new float[16];

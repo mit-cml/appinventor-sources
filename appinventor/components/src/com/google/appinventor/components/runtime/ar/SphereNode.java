@@ -40,6 +40,9 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private String objectModel = Form.ASSETS_PREFIX + "sphere.obj";
   private String texture = Form.ASSETS_PREFIX + "Palette.png";
   private String behaviorName = "rolling";
+
+  public static final float SPHERE_OBJ_RADIUS = 0.5f;
+
   private ARNodeContainer _container;
   // Physics constants
   private float dragStartDamping = 0.1f;
@@ -113,11 +116,14 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void RadiusInCentimeters(float radiusInCentimeters) {
-    collisionRadius = UnitHelper.centimetersToMeters(Math.abs(radiusInCentimeters));
-    Scale(collisionRadius); // visual size = desired radius in meters
+    float desiredRadiusMeters = UnitHelper.centimetersToMeters(Math.abs(radiusInCentimeters));
+    // Scale needed so that 0.5 * Scale = desiredRadiusMeters
+    Scale(desiredRadiusMeters / SPHERE_OBJ_RADIUS);
+    collisionRadius = desiredRadiusMeters;
     updateSphereMesh();
-    updateCollisionShape(); // SphereVolume(Scale()) = SphereVolume(collisionRadius)
-  }
+    updateCollisionShape();
+    }
+
   private void updateSphereMesh() {
     // Update the sphere mesh with new radius
     Log.i("SphereNode", "Updating sphere mesh with radius: " + collisionRadius + "m");
@@ -127,8 +133,10 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   // MARK: - Enhanced Collision Handling
   @Override
   public void updateCollisionShape() {
-
-    collisionVolume = new SphereVolume(Scale());
+    // sphere.obj is a unit sphere — visual radius = Scale() exactly
+    // collision radius must equal visual radius
+    float visualRadius = SPHERE_OBJ_RADIUS * Scale();
+    collisionVolume = new SphereVolume(visualRadius);
     Log.i("SphereNode", "collision radius: " + collisionRadius + "m");
   }
 
@@ -347,15 +355,10 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     float[] right   = cameraVectors != null ? cameraVectors.right   : new float[]{1,0,0};
     float[] forward = cameraVectors != null ? cameraVectors.forward : new float[]{0,0,-1};
 
-    Log.d("SphereNode", "Screen: (" + releaseVelocity.x + ", " + releaseVelocity.y + ")");
-    Log.d("SphereNode", "Camera right: (" + right[0] + ", " + right[1] + ", " + right[2] +
-        "), forward: (" + forward[0] + ", " + forward[1] + ", " + forward[2] + ")");
-
-    float scale = 0.002f ; //* getBehaviorMomentumMultiplier();
+    float scale = 0.002f;
     float sx =  releaseVelocity.x * scale;
     float sy = -releaseVelocity.y * scale;
 
-    // Write directly into currentVelocity — physics loop picks it up next tick
     currentVelocity[0] = right[0] * sx + forward[0] * sy;
     currentVelocity[1] = 0;
     currentVelocity[2] = right[2] * sx + forward[2] * sy;
