@@ -965,12 +965,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), false, true);
+                    a.detach(); // detach the temporary anchor — node creates its own
+                    break; // ← only create one node per tap
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
                     Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
+                    a.detach(); // detach the temporary anchor — node creates its own
+                    break; // ← only create one node per tap
                 } else if (mostRecentTrackable instanceof Point && useSimulatedDepth) {
                     Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
+                    a.detach(); // detach the temporary anchor — node creates its own
+                    break; // ← only create one node per tap
                 } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
                     || (mostRecentTrackable instanceof DepthPoint)) {
 
