@@ -143,15 +143,22 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   except when being dragged
    */
   public void updateSimplePhysics(float deltaTime) {
-    if (!EnablePhysics() ) return;
-
+    if (!EnablePhysics() || isBeingDragged) return;
     if (currentWorldMatrix == null) return;
+    if (anchor == null) return;
 
     currentVelocity[1] += GRAVITY * deltaTime;
     currentVelocity[1] = Math.max(currentVelocity[1], -50f);
 
     float[] currentPos = getCurrentPosition(); // reads matrix now, not anchor
 
+
+    if (Math.abs(currentPos[0]) > 10 || Math.abs(currentPos[2]) > 10) {
+      currentVelocity[0] = 0;
+      currentVelocity[1] = 0;
+      currentVelocity[2] = 0;
+      return;
+    }
     if (currentPos[0] == 0 && currentPos[1] == 0 && currentPos[2] == 0) {
       if (anchor != null) initWorldMatrixFromAnchor();
       return;
@@ -258,8 +265,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     currentWorldMatrix[12] = position[0];
     currentWorldMatrix[13] = position[1];
     currentWorldMatrix[14] = position[2];
-    Log.i("ARNODEBASE", "current position is " + currentWorldMatrix[12] + ", " + currentWorldMatrix[13] + ", " + currentWorldMatrix[14]);
-  }
+   }
 
   // Called at drag end — single anchor creation, then done
   public void reanchorAtCurrentPosition(NearestPlaneFinder planeFinder) {
@@ -1272,6 +1278,7 @@ public void updateCollisionShape() {
 
     float overlap = (minDist - dist) + 0.001f;
     float[] n = collisionNormal(other);
+    float MAX_IMPULSE_SPEED = 3.0f;
 
     if (isBeingDragged) {
       float[] posB = other.getCurrentPosition();
@@ -1280,15 +1287,24 @@ public void updateCollisionShape() {
           posB[1],
           posB[2] + n[2] * overlap
       });
-      // Apply drag-velocity-based impulse
       float dragSpeed = dragVelocity[0]*n[0] + dragVelocity[2]*n[2];
       float effectiveSpeed = Math.max(dragSpeed, 0.8f);
       float restitution = (Restitution() + other.Restitution()) * 0.5f;
       float impulse = (1 + restitution) * effectiveSpeed
           / (1f/Mass() + 1f/other.Mass());
-      other.currentVelocity[0] += (impulse / other.Mass()) * n[0];
+      other.currentVelocity[0] = clamp(
+          other.currentVelocity[0] + (impulse / other.Mass()) * n[0],
+          -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
       other.currentVelocity[1] = 0;
-      other.currentVelocity[2] += (impulse / other.Mass()) * n[2];
+      other.currentVelocity[2] = clamp(
+          other.currentVelocity[2] + (impulse / other.Mass()) * n[2],
+          -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+
+      Log.d("separateFrom", "IMPULSE applied to " + other.NodeType()
+          + " dragVelocity=(" + dragVelocity[0] + "," + dragVelocity[2] + ")"
+          + " effectiveSpeed=" + effectiveSpeed
+          + " resultVel=(" + other.currentVelocity[0] + "," + other.currentVelocity[2] + ")"
+          + " otherPhysics=" + other.EnablePhysics());
 
     } else if (other.isBeingDragged) {
       float[] posA = getCurrentPosition();
@@ -1302,9 +1318,19 @@ public void updateCollisionShape() {
       float restitution = (Restitution() + other.Restitution()) * 0.5f;
       float impulse = (1 + restitution) * effectiveSpeed
           / (1f/Mass() + 1f/other.Mass());
-      currentVelocity[0] -= (impulse / Mass()) * n[0];
+      currentVelocity[0] = clamp(
+          currentVelocity[0] - (impulse / Mass()) * n[0],
+          -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
       currentVelocity[1] = 0;
-      currentVelocity[2] -= (impulse / Mass()) * n[2];
+      currentVelocity[2] = clamp(
+          currentVelocity[2] - (impulse / Mass()) * n[2],
+          -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+
+      Log.d("separateFrom", "IMPULSE applied to OTHER " + other.NodeType()
+          + " dragVelocity=(" + dragVelocity[0] + "," + dragVelocity[2] + ")"
+          + " effectiveSpeed=" + effectiveSpeed
+          + " resultVel=(" + other.currentVelocity[0] + "," + other.currentVelocity[2] + ")"
+          + " otherPhysics=" + other.EnablePhysics());
 
     } else {
       float half = overlap * 0.5f;
@@ -1316,26 +1342,30 @@ public void updateCollisionShape() {
     }
   }
 
-  protected void applyCollisionImpulse(ARNodeBase other, float[] n) {
-    float restitution = (Restitution() + other.Restitution()) * 0.5f;
+  private float clamp(float value, float min, float max) {
+    return Math.max(min, Math.min(max, value));
+  }
 
+  protected void applyCollisionImpulse(ARNodeBase other, float[] n) {
+    float MAX_IMPULSE_SPEED = 3.0f;
+    float restitution = (Restitution() + other.Restitution()) * 0.5f;
     float relVelN =
         (other.currentVelocity[0] - currentVelocity[0]) * n[0] +
             (other.currentVelocity[1] - currentVelocity[1]) * n[1] +
             (other.currentVelocity[2] - currentVelocity[2]) * n[2];
 
-    if (relVelN > 0) return; // already separating
+    if (relVelN > 0) return;
 
     float impulse = -(1 + restitution) * relVelN
         / (1f / Mass() + 1f / other.Mass());
 
-    currentVelocity[0] -= (impulse / Mass()) * n[0];
-    currentVelocity[1] -= (impulse / Mass()) * n[1];
-    currentVelocity[2] -= (impulse / Mass()) * n[2];
+    currentVelocity[0] = clamp(currentVelocity[0] - (impulse/Mass())*n[0], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+    currentVelocity[1] = clamp(currentVelocity[1] - (impulse/Mass())*n[1], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+    currentVelocity[2] = clamp(currentVelocity[2] - (impulse/Mass())*n[2], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
 
-    other.currentVelocity[0] += (impulse / other.Mass()) * n[0];
-    other.currentVelocity[1] += (impulse / other.Mass()) * n[1];
-    other.currentVelocity[2] += (impulse / other.Mass()) * n[2];
+    other.currentVelocity[0] = clamp(other.currentVelocity[0] + (impulse/other.Mass())*n[0], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+    other.currentVelocity[1] = clamp(other.currentVelocity[1] + (impulse/other.Mass())*n[1], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+    other.currentVelocity[2] = clamp(other.currentVelocity[2] + (impulse/other.Mass())*n[2], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
   }
 
 // MARK: - Enhanced Gesture Properties
@@ -1715,12 +1745,18 @@ public void updateCollisionShape() {
   // ARNodeBase — complete version
   @Override
   public void startDrag(PointF fingerLocation) {
+
+
     isBeingDragged = true;
     lastFingerPosition = null;  // reset so first updateDrag has no delta
     dragStartLocation.set(fingerLocation.x, fingerLocation.y);
     dragStartTime = System.currentTimeMillis();
 
     // Zero velocity so physics doesn't fight drag on any node type
+    dragVelocity[0] = 0;  // ← add this
+    dragVelocity[1] = 0;
+    dragVelocity[2] = 0;
+    lastDragTime = 0;      // ← and this
     currentVelocity[0] = 0;
     currentVelocity[1] = 0;
     currentVelocity[2] = 0;
@@ -1787,7 +1823,7 @@ public void updateCollisionShape() {
   public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
     if (!isBeingDragged) return;
 
-    isBeingDragged = false;          // once, here
+    isBeingDragged = false;
     lastFingerPosition = null;
 
     reanchorAtCurrentPosition(planeFinder);
