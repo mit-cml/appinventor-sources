@@ -7,7 +7,6 @@ package com.google.appinventor.components.runtime.ar;
 
 import android.os.Looper;
 import com.google.appinventor.components.annotations.*;
-import com.google.appinventor.components.common.ARComponentConstants;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
@@ -18,7 +17,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import com.google.ar.core.Pose;
 import com.google.ar.core.Trackable;
-import com.google.ar.core.TrackingState;
 import com.google.ar.core.Session;
 import android.util.Log;
 import android.graphics.PointF;
@@ -314,13 +312,13 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     // Sphere-specific: update ground level to drop surface
     if (anchor != null) {
       setGroundLevel(anchor.getPose().ty());
+      //applyRealisticVelocity
     }
 
     // Sphere-specific: restore sphere appearance (different from base material restore)
     restoreOriginalAppearance();
   }
 
-  /* enable sphereNodes to roll */
   private void applyRealisticRolling(float[] movement) {
     float[] horizontalMovement = {movement[0], 0, movement[2]};
     float distance = vectorLength(horizontalMovement);
@@ -363,7 +361,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     currentVelocity[1] = 0;
     currentVelocity[2] = right[2] * sx + forward[2] * sy;
   }
-
 
   @Override
   protected void showDragEffect() {

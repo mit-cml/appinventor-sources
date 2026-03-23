@@ -16,9 +16,11 @@ public class SphereVolume extends CollisionVolume {
     float rB = other.getEffectiveRadius();
     float minDist = rA + rB;
     float dist = distance(posA, posB);
-    Log.d("SphereVolume", "intersects: dist=" + dist + " minDist=" + minDist
-        + " rA=" + rA + " rB=" + rB);
-    return dist < minDist;
+    if (dist < minDist) {
+      Log.d("SphereVolume", "CONTACT: dist=" + dist + " minDist=" + minDist);
+      return true;
+    }
+    return false;
   }
 
   @Override
