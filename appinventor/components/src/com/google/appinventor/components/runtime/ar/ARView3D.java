@@ -296,6 +296,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 ARNode targetNode = findClosestNode(e.getX(), e.getY());
                 Log.i(LOG_TAG, "on Down " + targetNode);
                 if (targetNode != null && targetNode.PanToMove()) {
+
+                    if (currentlyDraggedNode != null && currentlyDraggedNode != targetNode) {
+                        ((ARNodeBase) currentlyDraggedNode).isBeingDragged = false;
+                    }
                     currentlyDraggedNode = targetNode;
                     // Start drag immediately
                     if (currentlyDraggedNode instanceof ARNodeBase) {
@@ -399,10 +403,28 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             }
 
             if (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP
-                || event.getActionMasked() == MotionEvent.ACTION_UP) {
+                || event.getActionMasked() == MotionEvent.ACTION_UP
+                || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+
                 previousTwoFingerAngle = 0f;
                 if (event.getPointerCount() <= 2) {
                     activeGesture = ActiveGesture.NONE;
+                }
+
+                // end drag on finger lift
+                if (event.getActionMasked() == MotionEvent.ACTION_UP
+                    || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                    if (currentlyDraggedNode instanceof ARNodeBase) {
+                        ((ARNodeBase) currentlyDraggedNode).handleAdvancedGestureUpdate(
+                            new PointF(event.getX(), event.getY()),
+                            new PointF(0, 0),
+                            new PointF(0, 0),
+                            null,
+                            getCurrentCameraVectors(),
+                            "ended"
+                        );
+                    }
+                    currentlyDraggedNode = null;
                 }
             }
 
