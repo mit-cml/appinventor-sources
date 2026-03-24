@@ -172,7 +172,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private float invisibleFloor = -1.0f;
     private boolean groundDetected = false;
     private int detectedPlaneType = 1;
-    private float lastPhysicsUpdateTime = 0.0f;
+    private long lastPhysicsUpdateTime = 0;
 
     private Surface pendingFilamentSurface = null;
     private int pendingFilamentWidth  = 0;
@@ -647,7 +647,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     public void updatePhysics() {
-        float currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
         if (lastPhysicsUpdateTime == 0) {
             lastPhysicsUpdateTime = currentTime; // initialize on first frame
             return;
@@ -657,10 +657,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         lastPhysicsUpdateTime = currentTime;
 
         for (ARNode node : arNodes) {
-            if (((ARNodeBase)node).EnablePhysics()) {
-                ((ARNodeBase)node).updateSimplePhysics(deltaTime);
+            ARNodeBase base = (ARNodeBase) node;
+            if (base.EnablePhysics()) {
+                float speed = vectorLength(base.currentVelocity);
+                if (speed > 0.01f) {
+                    Log.d(LOG_TAG, "updatePhysics: " + base.NodeType()
+                        + " vel=(" + base.currentVelocity[0]
+                        + "," + base.currentVelocity[2] + ")"
+                        + " dragged=" + base.isBeingDragged);
+                }
+                base.updateSimplePhysics(deltaTime);
             }
         }
+    }
+
+    protected float vectorLength(float[] vector) {
+        return (float) Math.sqrt(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
     }
 
     public Plane getNearestPlane(float posX, float posZ) {

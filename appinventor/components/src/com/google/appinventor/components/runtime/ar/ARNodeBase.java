@@ -74,7 +74,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] currentVelocity = {0, 0, 0};
 
   private boolean onGround = false;
-  protected float GROUND_LEVEL = -1.2f; // Default ground level
+  public float GROUND_LEVEL = -1.2f; // Default ground level
   private static final float GRAVITY = -9.81f; // m/s²
 
   protected boolean isCurrentlyColliding = false;
@@ -168,19 +168,20 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     currentPos[1] += currentVelocity[1] * deltaTime;
     currentPos[2] += currentVelocity[2] * deltaTime;
 
+
     float objectBottom = currentPos[1];
     if (this instanceof SphereNode) {
-      objectBottom -= ((SphereNode) this).RadiusInCentimeters()
-          * UnitHelper.centimetersToMeters(1f) * Scale();
+      // visual radius = 0.5 * Scale() for sphere.obj
+      objectBottom -= SphereNode.SPHERE_OBJ_RADIUS * Scale();
+    } else {
+      objectBottom -= collisionRadius * Scale();
     }
 
     if (objectBottom <= GROUND_LEVEL) {
       if (this instanceof SphereNode) {
-        float r = ((SphereNode) this).RadiusInCentimeters()
-            * UnitHelper.centimetersToMeters(1f) * Scale();
-        currentPos[1] = GROUND_LEVEL + r;
+        currentPos[1] = GROUND_LEVEL + (SphereNode.SPHERE_OBJ_RADIUS * Scale());
       } else {
-        currentPos[1] = GROUND_LEVEL;
+        currentPos[1] = GROUND_LEVEL + (collisionRadius * Scale());
       }
 
       if (currentVelocity[1] < 0) {
