@@ -137,7 +137,7 @@ public class PropertiesUtil {
     // Configure properties
     for (ComponentDatabaseInterface.PropertyDefinition property : propertyDefinitions) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          property.getCaption(), property.getCategory(), property.getEditorType(), property.getEditorArgs(),
+          property.getCaption(), property.getCategory(), property.getEditorType(), property.getEditorArgs(),property.getDescription(),
           PropertiesUtil.createPropertyEditor(property.getEditorType(), property.getDefaultValue(), editor,
           property.getEditorArgs()));
       /*OdeLog.log("Property Caption: " + property.getCaption() + ", "

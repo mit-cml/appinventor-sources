@@ -623,6 +623,45 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     properties.addProperty(name, defaultValue, ComponentTranslationTable.getPropertyName(caption),
         ComponentTranslationTable.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
   }
+  
+  /**
+   * Extended version of addProperty to support extension metadata descriptions.
+   * Falls back to metadata when translation lookup fails.
+   */
+  public final void addProperty(String name, String defaultValue, String caption, String category,
+                               String editorType, String[] editorArgs, String description, PropertyEditor editor) {
+
+    String propertyDesc = ComponentTranslationTable.getPropertyDescription(name 
+      + "PropertyDescriptions");
+
+    // Step 1: component-specific lookup
+    if (propertyDesc.equals(name + "PropertyDescriptions")) {
+      propertyDesc = ComponentTranslationTable.getPropertyDescription(
+          (type.equals("Form") ? "Screen" : type) + "." + name + "PropertyDescriptions");
+    }
+
+    // Step 2: fallback for extensions
+    if ((propertyDesc.equals(name + "PropertyDescriptions") ||
+        propertyDesc.equals((type.equals("Form") ? "Screen" : type) + "." + name + "PropertyDescriptions"))
+        && description != null) {
+
+      propertyDesc = description;
+    }
+
+    int propertyType = EditableProperty.TYPE_NORMAL;
+    if (!isPropertyPersisted(name)) {
+      propertyType |= EditableProperty.TYPE_NONPERSISTED;
+    }
+    if (!isPropertyVisible(name)) {
+      propertyType |= EditableProperty.TYPE_INVISIBLE;
+    }
+    if (isPropertyforYail(name)) {
+      propertyType |= EditableProperty.TYPE_DOYAIL;
+    }
+
+    properties.addProperty(name,defaultValue,ComponentTranslationTable.getPropertyName(caption),
+        ComponentTranslationTable.getCategoryName(category), propertyDesc, editor, propertyType, editorType, editorArgs);
+  }
 
   /**
    * Returns the component name.
