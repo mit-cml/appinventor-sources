@@ -870,11 +870,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 List<ARNode> modelNodes = sort(arNodes,
                     new String[]{"ModelNode"});
 
+                // After session.update() gives you fresh viewMatrix:
+
                 if (!modelNodes.isEmpty()) {
-                    // In ARView3D.onDrawFrame, collect planes on GL thread and pass to Filament:
                     List<Plane> trackingPlanes = new ArrayList<>(
                         session.getAllTrackables(Plane.class));
-                    arFilamentRenderer.updateFrame(modelNodes, viewMatrix, projectionMatrix, trackingPlanes);
+                    arFilamentRenderer.renderSynchronous(modelNodes, viewMatrix, projectionMatrix, trackingPlanes);
                 }
                 for (ARNode n : modelNodes) {
                     float[] pos = n.Anchor() != null ?
