@@ -739,19 +739,35 @@ public class ARFilamentRenderer {
         resourceLoader.loadResources(asset);
 
         try {
+            // Reset transform to identity before reading bounds
+            TransformManager tm = engine.getTransformManager();
+            int rootInstance = tm.getInstance(asset.getRoot());
+            float[] identity = new float[16];
+            android.opengl.Matrix.setIdentityM(identity, 0);
+            tm.setTransform(rootInstance, identity);
+
             com.google.android.filament.Box aabb = asset.getBoundingBox();
             float[] halfExtent = aabb.getHalfExtent();
             float radius = (float) Math.sqrt(
                 halfExtent[0] * halfExtent[0] +
                     halfExtent[1] * halfExtent[1] +
                     halfExtent[2] * halfExtent[2]);
+
             ((ARNodeBase) node).setCollisionRadius(radius);
             ((ARNodeBase) node).updateCollisionShape();
-            Log.d(LOG_TAG, "ModelNode collision radius from mesh: " + radius + "m");
+
+            ARNodeBase base = (ARNodeBase) node;
+            float visualRadius = radius * base.Scale();
+            float[] pos = base.getCurrentPosition();
+            if (pos[1] <= base.GROUND_LEVEL + 0.01f) {
+                // only adjust if still at ground level — not already offset
+                pos[1] = base.GROUND_LEVEL + visualRadius;
+                base.setCurrentPosition(pos);
+            }
+
         } catch (Exception e) {
             Log.w(LOG_TAG, "Could not compute mesh bounds: " + e.getMessage());
         }
-
 
         nodeAssetMap.put(node, asset);
         // rest of method continues...
