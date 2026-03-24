@@ -705,7 +705,12 @@ public class YaVersion {
   // - Added "every component" block.
   // For BLOCKS_LANGUAGE_VERSION 37
   // - Add pull-downs for the ChatBot provider and model
-  public static final int BLOCKS_LANGUAGE_VERSION = 37;
+  // For BLOCKS_LANGUAGE_VERSION 37
+  // - Added matrices and its operations
+  // For BLOCKS_LANGUAGE_VERSION 38
+  // - Control: run-in-background & run-after-period were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 38;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -915,7 +920,9 @@ public class YaVersion {
   // - The ConverseWithImage method was added
   // For CHATBOT_COMPONENT_VERSION 4:
   // - Added CreateImage and GotResponseWithImage blocks
-  public static final int CHATBOT_COMPONENT_VERSION = 4;
+  // For CHATBOT_COMPONENT_VERSION 5:
+  // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
+  public static final int CHATBOT_COMPONENT_VERSION = 5;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1401,7 +1408,12 @@ public class YaVersion {
   public static final int SLIDER_COMPONENT_VERSION = 3;
 
   // For SPINNER_COMPONENT_VERSION 1:
-  public static final int SPINNER_COMPONENT_VERSION = 1;
+  // - Initial version.
+  // For SPINNER_COMPONENT_VERSION 2:
+  // - Added BackgroundColor, Enabled, Image, ShowFeedback properties
+  // - Added TextSize, TextColor, TextAlignment, TextBold, TextItalic, TextTypeface properties
+  // - Added TouchUp and TouchDown events
+  public static final int SPINNER_COMPONENT_VERSION = 2;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
@@ -1433,14 +1445,14 @@ public class YaVersion {
   // - The FinishedAddCol event was renamed to FinishedAddColumn
   // - The RemoveCol method was renamed to RemoveColumn
   // - The FinishedRemoveCol event was renamed to FinishedRemoveColumn
-
   // For SPREADSHEET_COMPONENT_VERSION 3:
   // - Added the AddSheet block
   // - Added the FinishedAddSheet event
   // - Added the DeleteSheet block
   // - Added the FinishedDeleteSheet event
-
-  public static final int SPREADSHEET_COMPONENT_VERSION = 3;
+  // For SPREADSHEET_COMPONNET_VERSION 4:
+  // - The ListSheets and GotSheetList blocks were added.
+  public static final int SPREADSHEET_COMPONENT_VERSION = 4;
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
@@ -1721,12 +1733,12 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.75dar4";
-  public static final String EMULATOR_UPDATE_URL = "/companions/Emulator.apk";
-  public static final String COMPANION_UPDATE_URL = "/companions/MITAI2Companion.asc";
-  public static final String COMPANION_UPDATE_URL1 = "/companions/MITAI2Companion.apk";
-  public static final String COMPANION_UPDATE_EMULATOR_URL = "/companions/Emulator.asc";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.75", "2.75dar4", "2.75dar4u" };
+  public static final String PREFERRED_COMPANION = "2.78";
+  public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
+  public static final String COMPANION_UPDATE_URL = "";
+  public static final String COMPANION_UPDATE_URL1 = "";
+  public static final String COMPANION_UPDATE_EMULATOR_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.78", "2.78u" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

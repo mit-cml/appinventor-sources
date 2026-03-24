@@ -86,7 +86,7 @@ public final class BlockSelectorBox extends Box {
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
 
   private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(
-      Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Dictionaries", "Colors",
+      Arrays.asList("Control", "Logic", "Math", "Matrices", "Text", "Lists", "Dictionaries", "Colors",
           "Variables", "Procedures"));
 
   private static final Images images = Ode.getImageBundle();
@@ -148,6 +148,11 @@ public final class BlockSelectorBox extends Box {
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
+
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.blockSelectorAriaLabel());
+    sourceStructureExplorer.getElement().setAttribute("aria-live", "polite");
+    sourceStructureExplorer.getElement().setAttribute("aria-atomic", "false");
   }
 
   /**
@@ -171,7 +176,9 @@ public final class BlockSelectorBox extends Box {
     }
     rootItem = new TreeItem(new HTML("<span>" + MESSAGES.builtinBlocksLabel() + "</span>"));
     for (final BlocksCategory category : getSubsetDrawerNames(language, form)) {
-      TreeItem itemNode = new TreeItem(new HTML("<span>" + new Image(category.getImage()) +
+      Image categoryImage = new Image(category.getImage());
+      categoryImage.setAltText(category.getName() + " blocks");
+      TreeItem itemNode = new TreeItem(new HTML("<span>" + categoryImage +
           category.getName() + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override

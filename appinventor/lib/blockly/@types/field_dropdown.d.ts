@@ -55,6 +55,13 @@ export declare class FieldDropdown extends Field<string> {
     private selectedOption;
     clickTarget_: SVGElement | null;
     /**
+     * The y offset from the top of the field to the top of the image, if an image
+     * is selected.
+     */
+    protected static IMAGE_Y_OFFSET: number;
+    /** The total vertical padding above and below an image. */
+    protected static IMAGE_Y_PADDING: number;
+    /**
      * @param menuGenerator A non-empty array of options for a dropdown list, or a
      *     function which generates these options. Also accepts Field.SKIP_SETUP
      *     if you wish to skip setup (only used by subclasses that want to handle
@@ -148,6 +155,7 @@ export declare class FieldDropdown extends Field<string> {
      * @param newValue The input value.
      * @returns A valid language-neutral option, or null if invalid.
      */
+    protected doClassValidation_(newValue: string): string | null | undefined;
     protected doClassValidation_(newValue?: string): string | null;
     /**
      * Update the value of this dropdown field.
@@ -195,6 +203,33 @@ export declare class FieldDropdown extends Field<string> {
      * @internal
      */
     static fromJson(options: FieldDropdownFromJsonConfig): FieldDropdown;
+    /**
+     * Factor out common words in statically defined options.
+     * Create prefix and/or suffix labels.
+     */
+    protected trimOptions(options: MenuOption[]): {
+        options: MenuOption[];
+        prefix?: string;
+        suffix?: string;
+    };
+    /**
+     * Use the calculated prefix and suffix lengths to trim all of the options in
+     * the given array.
+     *
+     * @param options Array of option tuples:
+     *     (human-readable text or image, language-neutral name).
+     * @param prefixLength The length of the common prefix.
+     * @param suffixLength The length of the common suffix
+     * @returns A new array with all of the option text trimmed.
+     */
+    private applyTrim;
+    /**
+     * Validates the data structure to be processed as an options list.
+     *
+     * @param options The proposed dropdown options.
+     * @throws {TypeError} If proposed options are incorrectly structured.
+     */
+    protected validateOptions(options: MenuOption[]): void;
 }
 /**
  * Definition of a human-readable image dropdown option.

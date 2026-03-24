@@ -8,6 +8,7 @@ package com.google.appinventor.client.style.neo;
 import com.google.appinventor.client.TopPanel;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
+import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -34,6 +35,8 @@ public class TopPanelNeo extends TopPanel {
   DropDownItem deleteAccountItem;
   @UiField
   FlowPanel links;
+  @UiField protected TextButton myProjects;
+  @UiField protected TextButton viewTrash;
 
   @Override
   public void bindUI() {
@@ -47,5 +50,7 @@ public class TopPanelNeo extends TopPanel {
     super.accountButton = accountButton;
     super.deleteAccountItem = deleteAccountItem;
     super.links = links;
+    super.myProjects = myProjects;
+    super.viewTrash = viewTrash;
   }
 }

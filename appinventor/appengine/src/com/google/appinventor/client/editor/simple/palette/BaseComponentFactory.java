@@ -289,19 +289,21 @@ public class BaseComponentFactory implements ComponentFactory {
   }
 
   private Image getImageFromPath(String iconPath, String packageName) {
+    Image image;
     if (iconPath.startsWith("aiwebres/") && packageName != null) {
       // icon for extension
-      Image image = new Image(StorageUtil.getFileUrl(editor.getProjectId(),
+      image = new Image(StorageUtil.getFileUrl(editor.getProjectId(),
           "assets/external_comps/" + packageName + "/" + iconPath));
       image.setWidth("16px");
       image.setHeight("16px");
-      return image;
-    }
-    if (bundledImages.containsKey(iconPath)) {
-      return new Image(bundledImages.get(iconPath));
+    } else if (bundledImages.containsKey(iconPath)) {
+      image = new Image(bundledImages.get(iconPath));
     } else {
-      return new Image(iconPath);
+      image = new Image(iconPath);
     }
+    // Set alt text for accessibility - will be updated with component name later
+    image.setAltText("component icon");
+    return image;
   }
 
   private String getLicenseUrlFromPath(String licensePath, String packageName) {

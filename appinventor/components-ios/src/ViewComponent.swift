@@ -91,7 +91,7 @@ import Foundation
   }
 
   open func onAttach() {
-    guard attachedToWindow else {
+    guard Visible else {
       return
     }
     guard let container = _container else {

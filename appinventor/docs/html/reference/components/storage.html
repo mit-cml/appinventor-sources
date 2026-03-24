@@ -407,7 +407,7 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dt id="Spreadsheet.CredentialsJson" class="text"><em>CredentialsJson</em></dt>
   <dd>The JSON File with credentials for the Service Account</dd>
   <dt id="Spreadsheet.SpreadsheetID" class="text"><em>SpreadsheetID</em></dt>
-  <dd>The ID for the Google Sheets file you want to edit. You can find the spreadsheetID in the URL of the Google Sheets file.</dd>
+  <dd>The ID for the Google Sheets file you want to edit. You can find the spreadsheetID in the URL of the Google Sheets file. Look for the part between ‘/d/’ and ‘/edit’ in the URL, e.g. in https://docs.google.com/spreadsheets/d/1234abcd/edit the ID is ‘1234abcd’.</dd>
 </dl>
 
 <h3 id="Spreadsheet-Events">Events</h3>
@@ -463,6 +463,8 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dt id="Spreadsheet.GotSheetData">GotSheetData(<em class="list">sheetData</em>)</dt>
   <dd>The callback event for the <a href="#Spreadsheet.ReadSheet"><code class="highlighter-rouge">ReadSheet</code></a> block. The <code class="highlighter-rouge">sheetData</code> is a
  list of rows.</dd>
+  <dt id="Spreadsheet.GotSheetList">GotSheetList(<em class="list">sheetNames</em>)</dt>
+  <dd>The callback event for the ListSheets block, called once the list of sheets has been retrieved.</dd>
 </dl>
 
 <h3 id="Spreadsheet-Methods">Methods</h3>
@@ -493,6 +495,8 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>Converts the integer representation of rows and columns for the corners of
  the range to A1-Notation used in Google Sheets. For example, selecting the
  range from row 1, col 2 to row 3, col 4 corresponds to the string “B1:D3”.</dd>
+  <dt id="Spreadsheet.ListSheets" class="method"><i></i> ListSheets()</dt>
+  <dd>Lists the names of all sheets in the spreadsheet. Triggers the GotSheetList callback event with a list of sheet names.</dd>
   <dt id="Spreadsheet.ReadCell" class="method"><i></i> ReadCell(<em class="text">sheetName</em>,<em class="text">cellReference</em>)</dt>
   <dd>On the page with the provided sheetName, reads the cell at the given
  cellReference and triggers the <a href="#Spreadsheet.GotCellData"><code class="highlighter-rouge">GotCellData</code></a> callback event. The
