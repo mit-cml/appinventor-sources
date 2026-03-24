@@ -2036,6 +2036,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                     + "Please use the 'defaultValue' attribute within @DesignerProperty instead!",
                 ve);
           }
+          ensureSinglePair(dv, ve, javaTypeToYailType(typeMirror));
           property.defaultValue = dv.value();
           if (dv.type() != null && !dv.type().isEmpty()) {
             property.defaultValueType = dv.type();
@@ -2416,12 +2417,26 @@ public abstract class ComponentProcessor extends AbstractProcessor {
               "Default values cannot be assigned to Event parameters because they are values provided by the component!",
               varElem);
         }
+        ensureSinglePair(dv, varElem, javaTypeToYailType(type));
         param.defaultValue = dv.value();
         if (dv.type() != null && !dv.type().isEmpty()) {
           param.defaultValueType = dv.type();
         }
       }
       return param;
+    }
+  }
+
+  private void ensureSinglePair(DefaultValue dv, VariableElement ve, String type) {
+    if (dv.value() != null && !dv.value().isEmpty() && (type.equals("dictionary") || "dictionary".equals(dv.type()))) {
+      String[] pairs = dv.value().split(",");
+      for (String pair : pairs) {
+        String trimmed = pair.trim();
+        String[] parts = trimmed.split(":", 2);
+        if (parts.length < 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
+          messager.printMessage(Kind.ERROR, "Each dictionary entry must be a 'key:value' pair. Problem found in: '" + trimmed + "'", ve);
+        }
+      }
     }
   }
 
