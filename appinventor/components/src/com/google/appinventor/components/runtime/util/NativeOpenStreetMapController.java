@@ -586,13 +586,16 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   }
 
   @Override
-  public void panTo(double latitude, double longitude, int zoom, double seconds) {
+public void panTo(double latitude, double longitude, int zoom, double seconds) {
+
+    view.getController().setZoom(zoom);   
+
     view.getController().animateTo(new GeoPoint(latitude, longitude));
-    if (view.getController().zoomTo((double) zoom)) {
-      Animation animation = view.getAnimation();
-      if (animation != null) {
-        animation.setDuration((long) (1000 * seconds));
-      }
+
+    Animation animation = view.getAnimation();
+
+    if (animation != null) {
+        animation.setDuration((long)(1000 * seconds)):
     }
   }
 
