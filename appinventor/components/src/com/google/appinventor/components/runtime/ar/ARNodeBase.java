@@ -72,6 +72,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 
   protected float[] currentVelocity = {0, 0, 0};
+  public float[] angularVelocity = {0, 0, 0};
 
   private boolean onGround = false;
   public float GROUND_LEVEL = -1.2f; // Default ground level
@@ -191,14 +192,55 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
         }
       }
 
-      currentVelocity[0] *= (1.0f - StaticFriction() * deltaTime * 10f);
-      currentVelocity[2] *= (1.0f - StaticFriction() * deltaTime * 10f);
+      currentVelocity[0] *= (1.0f - StaticFriction() * deltaTime);
+      currentVelocity[2] *= (1.0f - StaticFriction() * deltaTime );
     }
 
     setCurrentPosition(currentPos); // writes to matrix, no ARCore
+// derive sphere rotation from linear velocity — v/r relationship
+    if (this instanceof SphereNode) {
+      float radius = SphereNode.SPHERE_OBJ_RADIUS * Scale();
+      angularVelocity[0] = currentVelocity[2] / radius;
+      angularVelocity[2] = -currentVelocity[0] / radius;
+      angularVelocity[1] = 0;
+    }
+
+// apply rotation from angular velocity
+    float angSpeed = (float) Math.sqrt(
+        angularVelocity[0] * angularVelocity[0] +
+            angularVelocity[1] * angularVelocity[1] +
+            angularVelocity[2] * angularVelocity[2]);
+
+    if (angSpeed > 0.001f) {
+      float[] axis = {
+          angularVelocity[0] / angSpeed,
+          angularVelocity[1] / angSpeed,
+          angularVelocity[2] / angSpeed
+      };
+      float angle = angSpeed * deltaTime;
+      float[] deltaRot = createQuaternionFromAxisAngle(axis, angle);
+      float[] current = getCurrentRotation();
+      setCurrentRotation(multiplyQuaternions(deltaRot, current));
+
+      // only dampen for non-sphere nodes
+      if (!(this instanceof SphereNode)) {
+        float angularDamp = 1.0f - (0.5f * deltaTime);
+        angularVelocity[0] *= angularDamp;
+        angularVelocity[1] *= angularDamp;
+        angularVelocity[2] *= angularDamp;
+      }
+    }
 
     // Detect rest and sync anchor for drift correction
     float speed = vectorLength(currentVelocity);
+
+    if (speed > 0.01f) {
+      Log.d("ARNodeBase", "updateSimplePhysics: " + NodeType()
+          + " vel=(" + currentVelocity[0] + "," + currentVelocity[2] + ")"
+          + " pos=" + arrayToString(getCurrentPosition())
+          + " ground=" + GROUND_LEVEL
+          + " dt=" + deltaTime);
+    }
     if (speed < 0.01f && objectBottom <= GROUND_LEVEL + 0.01f) {
       currentVelocity[0] = 0;
       currentVelocity[1] = 0;
@@ -216,9 +258,30 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
         }
       }
     }
-
   }
 
+  protected float[] createQuaternionFromAxisAngle(float[] axis, float angle) {
+    float halfAngle = angle * 0.5f;
+    float sin = (float) Math.sin(halfAngle);
+    float cos = (float) Math.cos(halfAngle);
+
+    return new float[]{
+        axis[0] * sin,  // x
+        axis[1] * sin,  // y
+        axis[2] * sin,  // z
+        cos             // w
+    };
+  }
+
+  // Quaternion multiply — in ARView3D or a shared math utility
+  public float[] multiplyQuaternions(float[] a, float[] b) {
+    return new float[]{
+        a[3]*b[0] + a[0]*b[3] + a[1]*b[2] - a[2]*b[1],
+        a[3]*b[1] - a[0]*b[2] + a[1]*b[3] + a[2]*b[0],
+        a[3]*b[2] + a[0]*b[1] - a[1]*b[0] + a[2]*b[3],
+        a[3]*b[3] - a[0]*b[0] - a[1]*b[1] - a[2]*b[2]
+    };
+  }
 
   public void setCollisionRadius(float meters) {
     this.collisionRadius = meters;
@@ -282,8 +345,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
           : null;
 
       if (nearest != null) {
-        newAnchor = nearest.createAnchor(
-            new Pose(pos, new float[]{0, 0, 0, 1}));
+        if (nearest.getTrackingState() != TrackingState.TRACKING) {
+          newAnchor = session.createAnchor(
+              new Pose(pos, new float[]{0, 0, 0, 1}));
+        } else {
+          newAnchor = nearest.createAnchor(
+              new Pose(pos, new float[]{0, 0, 0, 1}));
+        }
       } else {
         newAnchor = session.createAnchor(
             new Pose(pos, new float[]{0, 0, 0, 1}));
@@ -293,9 +361,12 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       if (anchor != null) anchor.detach();
       anchor = newAnchor;
 
+    } catch (com.google.ar.core.exceptions.FatalException e) {
+      Log.w("ARNodeBase", "Reanchor skipped — ARCore fatal state");
     } catch (NotTrackingException e) {
-      // Creation failed — old anchor untouched, node stays visible
-      Log.w("ARNodeBase", "Re-anchor deferred — tracking lost during drag end");
+      Log.w("ARNodeBase", "Reanchor deferred — tracking lost");
+    } catch (Exception e) {
+      Log.w("ARNodeBase", "Reanchor failed: " + e.getMessage());
     }
   }
 
@@ -775,6 +846,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       initWorldMatrixFromAnchor();
       // Also set ground level from anchor's plane Y
       GROUND_LEVEL = a.getPose().ty();
+      if (this instanceof SphereNode) {
+        currentWorldMatrix[13] = GROUND_LEVEL + (SphereNode.SPHERE_OBJ_RADIUS * Scale());
+      }
       updateCollisionShape();
       Log.d("ARNodeBase", NodeType() + " anchor set, groundLevel=" + GROUND_LEVEL);
     }
@@ -1301,6 +1375,10 @@ public void updateCollisionShape() {
           other.currentVelocity[2] + (impulse / other.Mass()) * n[2],
           -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
 
+      // after applying linear impulse to other node in separateFrom
+      other.angularVelocity[0] += n[2] * (impulse / other.Mass());
+      other.angularVelocity[2] -= n[0] * (impulse / other.Mass());
+
       Log.d("separateFrom", "IMPULSE applied to " + other.NodeType()
           + " dragVelocity=(" + dragVelocity[0] + "," + dragVelocity[2] + ")"
           + " effectiveSpeed=" + effectiveSpeed
@@ -1343,7 +1421,7 @@ public void updateCollisionShape() {
     }
   }
 
-  private float clamp(float value, float min, float max) {
+  protected float clamp(float value, float min, float max) {
     return Math.max(min, Math.min(max, value));
   }
 
@@ -1367,6 +1445,10 @@ public void updateCollisionShape() {
     other.currentVelocity[0] = clamp(other.currentVelocity[0] + (impulse/other.Mass())*n[0], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
     other.currentVelocity[1] = clamp(other.currentVelocity[1] + (impulse/other.Mass())*n[1], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
     other.currentVelocity[2] = clamp(other.currentVelocity[2] + (impulse/other.Mass())*n[2], -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+
+    // after applying linear impulse to other node in separateFrom
+    other.angularVelocity[0] += n[2] * (impulse / other.Mass());
+    other.angularVelocity[2] -= n[0] * (impulse / other.Mass());
   }
 
 // MARK: - Enhanced Gesture Properties
@@ -1827,14 +1909,16 @@ public void updateCollisionShape() {
     isBeingDragged = false;
     lastFingerPosition = null;
 
-    reanchorAtCurrentPosition(planeFinder);
-
-    if (EnablePhysics() && fingerVelocity != null) {
-      applyReleaseVelocity(fingerVelocity, cameraVectors);
+    if (EnablePhysics()) {
+      // apply release velocity — physics takes over from here
+      // do NOT reanchor — physics will reanchor when node comes to rest
+      applyReleaseVelocity();
     } else {
+      // no physics — reanchor to lock position in place
       currentVelocity[0] = 0;
       currentVelocity[1] = 0;
       currentVelocity[2] = 0;
+      reanchorAtCurrentPosition(planeFinder);
     }
 
     restoreOriginalMaterial();
@@ -1842,7 +1926,7 @@ public void updateCollisionShape() {
   }
 
 
-  public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
+  public void applyReleaseVelocity() {
 
   }
 

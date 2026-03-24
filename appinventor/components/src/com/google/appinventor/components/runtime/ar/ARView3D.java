@@ -1767,17 +1767,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         };
 
         // Apply delta to current rotation
-        base.setCurrentRotation(multiplyQuaternions(deltaQ, currentQ));
-    }
-
-    // Quaternion multiply — in ARView3D or a shared math utility
-    private float[] multiplyQuaternions(float[] a, float[] b) {
-        return new float[]{
-            a[3]*b[0] + a[0]*b[3] + a[1]*b[2] - a[2]*b[1],
-            a[3]*b[1] - a[0]*b[2] + a[1]*b[3] + a[2]*b[0],
-            a[3]*b[2] + a[0]*b[1] - a[1]*b[0] + a[2]*b[3],
-            a[3]*b[3] - a[0]*b[0] - a[1]*b[1] - a[2]*b[2]
-        };
+        base.setCurrentRotation(base.multiplyQuaternions(deltaQ, currentQ));
     }
 
     // @Override

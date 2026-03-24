@@ -190,7 +190,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       float[] currentPos = getCurrentPosition();
       currentPos[1] = currentPos[1] - previousSize + (collisionRadius * newScale);
       setCurrentPosition(currentPos);
-      reanchorAtCurrentPosition(planeFinder); // ← add this
     }
 
     Scale(newScale);
@@ -232,7 +231,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
 
       // Apply scaling
       Scale(newScale);
-      reanchorAtCurrentPosition(planeFinder);
+
 
       // Restore physics
       Mass(savedMass);
@@ -308,14 +307,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   @Override
   public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
     super.endDrag(fingerVelocity, cameraVectors);
-
-    // Sphere-specific: update ground level to drop surface
-    if (anchor != null) {
-      setGroundLevel(anchor.getPose().ty());
-      //applyRealisticVelocity
-    }
-
-    // Sphere-specific: restore sphere appearance (different from base material restore)
     restoreOriginalAppearance();
   }
 
@@ -343,24 +334,29 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     setCurrentRotation(rotation);
   }
 
-  public void applyReleaseVelocity(PointF releaseVelocity, CameraVectors cameraVectors) {
+  @Override
+  public void applyReleaseVelocity() {
     float speed = (float) Math.sqrt(
-        releaseVelocity.x * releaseVelocity.x
-            + releaseVelocity.y * releaseVelocity.y);
+        dragVelocity[0] * dragVelocity[0] +
+            dragVelocity[2] * dragVelocity[2]);
 
-    if (speed < NORMAL_ROLLING_SPEED) return;  // ← 1200 threshold, too high
+    if (speed < 0.1f) return;
 
-    float[] right   = cameraVectors != null ? cameraVectors.right   : new float[]{1,0,0};
-    float[] forward = cameraVectors != null ? cameraVectors.forward : new float[]{0,0,-1};
+    // heavier objects are harder to fling — scale by inverse mass
+    // baseMass = 0.1f is the default rolling sphere
+    float baseMass = 0.1f;
+    float massScale = baseMass / Mass(); // heavy=1.0 → 0.1x velocity, light=0.04 → 2.5x velocity
 
-    float scale = 0.002f;
-    float sx =  releaseVelocity.x * scale;
-    float sy = -releaseVelocity.y * scale;
-
-    currentVelocity[0] = right[0] * sx + forward[0] * sy;
+    float MAX_RELEASE_SPEED = 3.0f;
+    currentVelocity[0] = clamp(dragVelocity[0] * massScale, -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
     currentVelocity[1] = 0;
-    currentVelocity[2] = right[2] * sx + forward[2] * sy;
+    currentVelocity[2] = clamp(dragVelocity[2] * massScale, -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
+
+    Log.d("SphereNode", "Release velocity: ("
+        + currentVelocity[0] + ", " + currentVelocity[2] + ")"
+        + " speed=" + speed + " mass=" + Mass() + " massScale=" + massScale);
   }
+
 
   @Override
   protected void showDragEffect() {
@@ -420,27 +416,6 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     return new float[]{vector[0] / length, vector[1] / length, vector[2] / length};
   }
 
-  private float[] createQuaternionFromAxisAngle(float[] axis, float angle) {
-    float halfAngle = angle * 0.5f;
-    float sin = (float) Math.sin(halfAngle);
-    float cos = (float) Math.cos(halfAngle);
-
-    return new float[]{
-        axis[0] * sin,  // x
-        axis[1] * sin,  // y
-        axis[2] * sin,  // z
-        cos             // w
-    };
-  }
-
-  private float[] multiplyQuaternions(float[] q1, float[] q2) {
-    return new float[]{
-        q1[3] * q2[0] + q1[0] * q2[3] + q1[1] * q2[2] - q1[2] * q2[1], // x
-        q1[3] * q2[1] - q1[0] * q2[2] + q1[1] * q2[3] + q1[2] * q2[0], // y
-        q1[3] * q2[2] + q1[0] * q2[1] - q1[1] * q2[0] + q1[2] * q2[3], // z
-        q1[3] * q2[3] - q1[0] * q2[0] - q1[1] * q2[1] - q1[2] * q2[2]  // w
-    };
-  }
 
   private float[] multiplyVector(float[] vector, float scalar) {
     return new float[]{vector[0] * scalar, vector[1] * scalar, vector[2] * scalar};

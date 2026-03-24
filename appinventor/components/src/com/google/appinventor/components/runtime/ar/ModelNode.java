@@ -91,6 +91,26 @@ import android.util.Log;
       "<code>[min, max]</code> where mine and max are <code>[x, y, z]</code>.")
     public List<YailList> BoundingBox() { return new ArrayList<YailList>(); }
 
+  @Override
+  public void applyReleaseVelocity() {
+    // dragVelocity is in world space meters/second — use directly
+    float speed = (float) Math.sqrt(
+        dragVelocity[0] * dragVelocity[0] +
+            dragVelocity[2] * dragVelocity[2]);
+
+    // minimum threshold in m/s — much more reasonable than screen pixels
+    if (speed < 0.1f) return;
+
+    // cap to prevent flying off
+    float MAX_RELEASE_SPEED = 3.0f;
+    currentVelocity[0] = clamp(dragVelocity[0], -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
+    currentVelocity[1] = 0;
+    currentVelocity[2] = clamp(dragVelocity[2], -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
+
+    Log.d("SphereNode", "Release velocity applied: ("
+        + currentVelocity[0] + ", " + currentVelocity[2] + ")"
+        + " speed=" + speed);
+  }
 
   @Override
   @SimpleFunction(description = "move a capsule node properties at the " +
