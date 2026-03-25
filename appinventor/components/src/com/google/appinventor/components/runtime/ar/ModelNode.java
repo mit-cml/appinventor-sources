@@ -42,20 +42,20 @@ import android.util.Log;
     private String tex = Form.ASSETS_PREFIX + "Palette.png";
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
-        defaultValue = "10")
+        defaultValue = ".2")
     @SimpleProperty(category = PropertyCategory.BEHAVIOR)
-    public void CollisionRadius(float cm) {
-      collisionRadius = UnitHelper.centimetersToMeters(cm);
+    public void CollisionRadius(float m) {
+      collisionRadius = m;
       updateCollisionShape();
     }
 
     public float CollisionRadius() {
-      return UnitHelper.metersToCentimeters(collisionRadius);
+      return collisionRadius;
     }
 
     public ModelNode(final ARNodeContainer container) {
       super(container);
-      collisionRadius = 0.1f;
+      collisionRadius = 0.5f;
       Texture(tex);
       container.addNode(this);
     }

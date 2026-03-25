@@ -1964,8 +1964,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         enableOcclusion = occlusion;
     }
 
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "get invisible floor at y in centimeters, if present")
-    public float locationOfInvisibleFloorInCentimeters() {
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "get invisible floor at y in meters, if present")
+    public float locationOfInvisibleFloorInMeters() {
         return invisibleFloor;
     }
 

@@ -412,7 +412,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   @Override
-  @SimpleFunction(description = "Rotates the node to look at the (x,y,z) position in centimeters.")
+  @SimpleFunction(description = "Rotates the node to look at the (x,y,z) position in meters.")
   public void LookAtPosition(float x, float y, float z) {
     if (anchor == null) {
       Log.w("ARNodeBase", "Cannot look at position - no anchor");
@@ -421,9 +421,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
     float[] myPos = anchor.getPose().getTranslation();
     float[] targetPos = {
-        UnitHelper.centimetersToMeters(x),
-        UnitHelper.centimetersToMeters(y),
-        UnitHelper.centimetersToMeters(z)
+       x,
+       y,
+       z
     };
 
     // Calculate direction vector
@@ -889,7 +889,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     float[] position = {0f, 0f, 0f};
     for (int i = 0; i < positionFloatArray.length; i++) {
       try {
-        position[i] = UnitHelper.metersToCentimeters(positionFloatArray[i]);
+        position[i] = positionFloatArray[i];
         Log.i("ARNodeBase", "Initial position: " + positionFloatArray[i]);
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + positionFloatArray[i]);
@@ -899,7 +899,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "Set the initial position pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, 10 places the object at x of 0, y of 0 and z of 10 centimeters",
+  @SimpleProperty(description = "Set the initial position pose of the object from property. Format is a comma-separated list of 3 coordinates: x, y, z such that 0, 0, .5 places the object at x of 0, y of 0 and z of half a meter",
       category = PropertyCategory.APPEARANCE)
   public void InitialPosition(String positionFromProperty) {
     String[] positionArray = positionFromProperty.split(",");
@@ -907,7 +907,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
     for (int i = 0; i < positionArray.length; i++) {
       try {
-        position[i] = UnitHelper.centimetersToMeters(Float.parseFloat(positionArray[i]));
+        position[i] = Float.parseFloat(positionArray[i]);
         Log.i("ARNodeBase", "Initial position: " + position[i]);
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + positionArray[i]);
@@ -1498,18 +1498,17 @@ public void updateCollisionShape() {
   @SimpleProperty(description = "The x position in centimeters of the node.")
   public float XPosition() {
     if (anchor != null) {
-      return UnitHelper.metersToCentimeters(getCurrentPosition()[0]);
+      return getCurrentPosition()[0];
     }
-    return UnitHelper.metersToCentimeters(fromPropertyPosition[0]);
+    return fromPropertyPosition[0];
   }
 
   @Override
   @SimpleProperty
   public void XPosition(float xPosition) {
-    float xMeters = UnitHelper.centimetersToMeters(xPosition);
-    fromPropertyPosition[0] = xMeters; // keep in sync for serialization
+    fromPropertyPosition[0] = xPosition; // keep in sync for serialization
     float[] currentPos = getCurrentPosition();
-    currentPos[0] = xMeters;
+    currentPos[0] = xPosition;
     setCurrentPosition(currentPos);
     reanchorAtCurrentPosition(planeFinder);
   }
@@ -1518,18 +1517,17 @@ public void updateCollisionShape() {
   @SimpleProperty(description = "The y position in centimeters of the node.")
   public float YPosition() {
     if (anchor != null) {
-      return UnitHelper.metersToCentimeters(getCurrentPosition()[1]);
+      return getCurrentPosition()[1];
     }
-    return UnitHelper.metersToCentimeters(fromPropertyPosition[1]);
+    return fromPropertyPosition[1];
   }
 
   @Override
   @SimpleProperty
   public void YPosition(float yPosition) {
-    float yMeters = UnitHelper.centimetersToMeters(yPosition);
-    fromPropertyPosition[1] = yMeters;
+    fromPropertyPosition[1] = yPosition;
     float[] currentPos = getCurrentPosition();
-    currentPos[1] = yMeters;
+    currentPos[1] = yPosition;
     setCurrentPosition(currentPos);
     reanchorAtCurrentPosition(planeFinder);
   }
@@ -1537,18 +1535,17 @@ public void updateCollisionShape() {
   @SimpleProperty(description = "The z position in centimeters of the node.")
   public float ZPosition() {
     if (anchor != null) {
-      return UnitHelper.metersToCentimeters(getCurrentPosition()[2]);
+      return getCurrentPosition()[2];
     }
-    return UnitHelper.metersToCentimeters(fromPropertyPosition[2]);
+    return fromPropertyPosition[2];
   }
 
   @Override
   @SimpleProperty
   public void ZPosition(float zPosition) {
-    float zMeters = UnitHelper.centimetersToMeters(zPosition);
-    fromPropertyPosition[2] = zMeters;
+    fromPropertyPosition[2] = zPosition;
     float[] currentPos = getCurrentPosition();
-    currentPos[2] = zMeters;
+    currentPos[2] = zPosition;
     setCurrentPosition(currentPos);
     reanchorAtCurrentPosition(planeFinder);
   }
@@ -1781,11 +1778,11 @@ public void updateCollisionShape() {
 // MARK: - Enhanced Distance Calculations
 
   @Override
-  @SimpleFunction(description = "Calculates the distance, in centimeters, between two nodes.")
+  @SimpleFunction(description = "Calculates the distance, in meters, between two nodes.")
   public float DistanceToNode(ARNode node) {
     float[] myPos = getCurrentPosition();
     float[] otherPos = ((ARNodeBase) node).getCurrentPosition();
-    return UnitHelper.metersToCentimeters(vectorDistance(myPos, otherPos));
+    return vectorDistance(myPos, otherPos);
   }
 
   @Override
@@ -1983,12 +1980,7 @@ public void updateCollisionShape() {
     }
 
     followingMarker = imageMarker;
-    // Set offset position
-    float[] offsetMeters = {
-        UnitHelper.centimetersToMeters(x),
-        UnitHelper.centimetersToMeters(y),
-        UnitHelper.centimetersToMeters(z)
-    };
+
     // Implementation depends on ARImageMarker interface
     Log.i("ARNodeBase", "Started following image marker with offset");
   }
