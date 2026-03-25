@@ -43,6 +43,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * ARFilamentRenderer — renders animated glTF models using Filament 1.9.11.
@@ -80,6 +82,12 @@ public class ARFilamentRenderer {
     private Handler       filamentHandler;
 
     // -------------------------------------------------------------------------
+    // Background I/O thread pool — file reads only, never Filament API
+    // -------------------------------------------------------------------------
+
+    private final ExecutorService loadExecutor = Executors.newFixedThreadPool(2);
+
+    // -------------------------------------------------------------------------
     // Filament core — only touched on FilamentRenderThread
     // -------------------------------------------------------------------------
 
@@ -101,6 +109,10 @@ public class ARFilamentRenderer {
     private MaterialProvider materialProvider;
 
     private final Map<ARNode, FilamentAsset> nodeAssetMap = new ConcurrentHashMap<>();
+
+    // model path → raw bytes — read once, shared across all nodes using the same model
+    private final Map<String, ByteBuffer> modelBufferCache = new ConcurrentHashMap<>();
+
 
     // -------------------------------------------------------------------------
     // Depth occlusion — only touched on FilamentRenderThread
@@ -161,6 +173,9 @@ public class ARFilamentRenderer {
     private volatile boolean destroyed      = false;
     private volatile boolean animationEnabled = true;
 
+    // Prevents frame queuing — if previous render not done, skip this frame
+    private volatile boolean renderInFlight = false;
+
     private float animationTime = 0f; // only on FilamentRenderThread
 
     private int viewportWidth  = 1;
@@ -171,7 +186,6 @@ public class ARFilamentRenderer {
 
     private final Form form;
 
-    private volatile boolean renderInFlight = false;
 
     public void renderSynchronous(List<ARNode> nodes,
                                   float[] viewMatrix,
@@ -251,11 +265,7 @@ public class ARFilamentRenderer {
             try {
                 loadNativeLibraries();
 
-                // Engine.create() with no args — Filament manages its own
-                // EGL context internally on its backend thread
                 engine = Engine.create();
-                Log.d(LOG_TAG, "Engine created on FilamentRenderThread");
-
                 renderer = engine.createRenderer();
                 scene    = engine.createScene();
                 view     = engine.createView();
@@ -365,11 +375,9 @@ public class ARFilamentRenderer {
     public void updateARCoreDepth(ByteBuffer depthData, float[] uvTransform,
                                   float near, float far,
                                   int depthWidth, int depthHeight) {
-        // Copy the buffer — ARCore may reclaim it after this call returns
         ByteBuffer copy = ByteBuffer.allocateDirect(depthData.remaining());
         copy.put(depthData);
         copy.rewind();
-
         synchronized (depthLock) {
             pendingDepthUpdate = new DepthUpdate(
                 copy, uvTransform, near, far, depthWidth, depthHeight);
@@ -420,6 +428,10 @@ public class ARFilamentRenderer {
         if (destroyed) return;
         destroyed = true;
 
+        loadExecutor.shutdownNow();
+        modelBufferCache.clear();
+        loadingNodes.clear();
+
         if (filamentHandler == null) return;
 
         filamentHandler.post(() -> {
@@ -460,7 +472,6 @@ public class ARFilamentRenderer {
             Log.d(LOG_TAG, "Filament destroyed");
         });
 
-        // Give the destruction post a moment to execute, then stop thread
         filamentThread.quitSafely();
         filamentThread = null;
         filamentHandler = null;
@@ -530,8 +541,6 @@ public class ARFilamentRenderer {
                     .build(engine);
 
                 occlusionAppliedToAllAssets = false;
-                Log.d(LOG_TAG, "Depth texture: "
-                    + depth.width + "x" + depth.height);
             }
 
             depth.data.rewind();
@@ -591,7 +600,6 @@ public class ARFilamentRenderer {
         for (FilamentAsset asset : nodeAssetMap.values()) {
             applyOcclusionToAsset(asset, rm);
         }
-        Log.d(LOG_TAG, "Occlusion applied to all assets");
     }
 
     private void applyOcclusionToAsset(FilamentAsset asset, RenderableManager rm) {
@@ -637,27 +645,18 @@ public class ARFilamentRenderer {
     }
 
     // -------------------------------------------------------------------------
-    // Node processing
+    // Node processing — runs on FilamentRenderThread
     // -------------------------------------------------------------------------
 
     private void loadAndPositionNodes(Collection<ARNode> nodes) {
         for (ARNode node : nodes) {
 
             if (!shouldRender(node)) continue;
+
             if (!nodeAssetMap.containsKey(node) && !loadingNodes.contains(node)) {
                 if (((ARNodeBase) node).currentWorldMatrix == null) continue;
-
                 loadingNodes.add(node);  // guard against re-entry
-                // Load async — DON'T block the render call
-                filamentHandler.post(() -> {
-                    try {
-                        loadModelForNode(node);
-                    } catch (IOException e) {
-                        Log.w(LOG_TAG, "Load failed: " + node.Model());
-                    } finally {
-                        loadingNodes.remove(node);
-                    }
-                });
+                loadModelForNode(node); // manages its own threading internally
             }
             FilamentAsset asset = nodeAssetMap.get(node);
             if (asset != null && ((ARNodeBase)node).currentWorldMatrix != null) {
@@ -675,7 +674,6 @@ public class ARFilamentRenderer {
             && !node.Model().isEmpty();
     }
 
-    /* update the model w/r to scale (first) and rotation */
     private void applyNodeTransform(ARNode node, FilamentAsset asset) {
         TransformManager tm = engine.getTransformManager();
         int rootInstance = tm.getInstance(asset.getRoot());
@@ -684,9 +682,8 @@ public class ARFilamentRenderer {
         ARNodeBase base = (ARNodeBase) node;
         float[] t = base.getCurrentPosition();
 
-        // planeFinder is null if occlusion isn't enabled for either depth or plane-based occlusion
         if (!depthDataReceived && planeFinder != null && !base.isBeingDragged) {
-            float sphereRadius = ((ARNodeBase) node).getCollisionRadius();
+            float sphereRadius = base.getCollisionRadius();
             com.google.ar.core.Plane occludingPlane =
                 planeFinder.findOccludingPlane(t, lastCameraWorldPos, sphereRadius);
             if (occludingPlane != null) {
@@ -720,61 +717,130 @@ public class ARFilamentRenderer {
         modelMatrix[14] = t[2];
 
         tm.setTransform(rootInstance, modelMatrix);
-
     }
+
     // -------------------------------------------------------------------------
-    // Model loading
+    // Model loading — I/O on loadExecutor, GPU work on FilamentRenderThread
     // -------------------------------------------------------------------------
 
-    private void loadModelForNode(ARNode node) throws IOException {
-        String path = node.Model();
-        Log.d(LOG_TAG, "Loading: " + path);
+    /**
+     * Initiates async loading for a node. File I/O runs on loadExecutor;
+     * GPU asset creation runs on FilamentRenderThread.
+     *
+     * modelBufferCache ensures each unique model path is read from disk only once.
+     * ByteBuffer.duplicate() shares backing memory — no copy per node.
+     *
+     * Caller must add node to loadingNodes before calling this method.
+     */
+    private void loadModelForNode(ARNode node) {
+        final String path = node.Model();
 
-        ByteBuffer buffer = readAsset(path, false);
-        if (buffer == null) throw new IOException("Not found: " + path);
+        loadExecutor.submit(() -> {
+            try {
+                // check cache first — read file only if not already cached
+                ByteBuffer buffer = modelBufferCache.get(path);
+                if (buffer == null) {
+                    buffer = readAsset(path, false);
+                    if (buffer == null) {
+                        Log.w(LOG_TAG, "Asset not found: " + path);
+                        loadingNodes.remove(node);
+                        return;
+                    }
+                    modelBufferCache.put(path, buffer);
+                    Log.d(LOG_TAG, "Cached model buffer: " + path
+                        + " (" + buffer.capacity() + " bytes)");
+                } else {
+                    Log.d(LOG_TAG, "Reusing cached buffer for: " + path);
+                }
 
-        FilamentAsset asset = assetLoader.createAssetFromBinary(buffer);
-        if (asset == null) throw new IOException("AssetLoader failed: " + path);
+                // duplicate shares backing array — no memory copy
+                final ByteBuffer nodeBuf = buffer.duplicate();
+                nodeBuf.rewind();
 
-        scene.addEntity(asset.getRoot());
-        for (int e : asset.getEntities()) {
-            if (e != asset.getRoot()) scene.addEntity(e);
-        }
-        resourceLoader.loadResources(asset);
+                // GPU work must run on FilamentRenderThread
+                filamentHandler.post(() -> {
+                    try {
+                        createAssetOnRenderThread(node, nodeBuf, path);
+                    } finally {
+                        loadingNodes.remove(node);
+                    }
+                });
 
+            } catch (Exception e) {
+                Log.w(LOG_TAG, "Load failed for " + path + ": " + e.getMessage());
+                loadingNodes.remove(node);
+            }
+        });
+    }
+
+    /**
+     * Creates FilamentAsset from buffer and sets up the node.
+     * Must run on FilamentRenderThread — all Filament API calls here.
+     */
+    private void createAssetOnRenderThread(ARNode node, ByteBuffer buffer, String path) {
         try {
-            // Reset transform to identity before reading bounds
-            TransformManager tm = engine.getTransformManager();
-            int rootInstance = tm.getInstance(asset.getRoot());
-            float[] identity = new float[16];
-            android.opengl.Matrix.setIdentityM(identity, 0);
-            tm.setTransform(rootInstance, identity);
-
-            com.google.android.filament.Box aabb = asset.getBoundingBox();
-            float[] halfExtent = aabb.getHalfExtent();
-            float radius = (float) Math.sqrt(
-                halfExtent[0] * halfExtent[0] +
-                    halfExtent[1] * halfExtent[1] +
-                    halfExtent[2] * halfExtent[2]);
-
-            ((ARNodeBase) node).setCollisionRadius(radius);
-            ((ARNodeBase) node).updateCollisionShape();
-
-            ARNodeBase base = (ARNodeBase) node;
-            float visualRadius = radius * base.Scale();
-            float[] pos = base.getCurrentPosition();
-            if (pos[1] <= base.GROUND_LEVEL + 0.01f) {
-                // only adjust if still at ground level — not already offset
-                pos[1] = base.GROUND_LEVEL + visualRadius;
-                base.setCurrentPosition(pos);
+            FilamentAsset asset = assetLoader.createAssetFromBinary(buffer);
+            if (asset == null) {
+                Log.e(LOG_TAG, "AssetLoader failed: " + path);
+                return;
             }
 
-        } catch (Exception e) {
-            Log.w(LOG_TAG, "Could not compute mesh bounds: " + e.getMessage());
-        }
+            scene.addEntity(asset.getRoot());
+            for (int e : asset.getEntities()) {
+                if (e != asset.getRoot()) scene.addEntity(e);
+            }
+            resourceLoader.loadResources(asset);
 
-        nodeAssetMap.put(node, asset);
-        // rest of method continues...
+            // compute bounding sphere and set collision radius + Y offset for ModelNode
+            if (node instanceof ModelNode) {
+                try {
+                    TransformManager tm = engine.getTransformManager();
+                    int rootInstance = tm.getInstance(asset.getRoot());
+                    float[] identity = new float[16];
+                    android.opengl.Matrix.setIdentityM(identity, 0);
+                    tm.setTransform(rootInstance, identity);
+
+                    com.google.android.filament.Box aabb = asset.getBoundingBox();
+                    float[] halfExtent = aabb.getHalfExtent();
+                    float radius = (float) Math.sqrt(
+                        halfExtent[0] * halfExtent[0] +
+                            halfExtent[1] * halfExtent[1] +
+                            halfExtent[2] * halfExtent[2]);
+
+                    ARNodeBase base = (ARNodeBase) node;
+                    base.setCollisionRadius(radius);
+                    base.updateCollisionShape();
+
+                    // lift model center above ground — can only be done after mesh is measured
+                    float[] pos = base.getCurrentPosition();
+                    if (pos[1] <= base.GROUND_LEVEL + 0.01f) {
+                        pos[1] = base.GROUND_LEVEL + (radius * base.Scale());
+                        base.setCurrentPosition(pos);
+                    }
+
+                    Log.d(LOG_TAG, "ModelNode bounds: radius=" + radius + "m"
+                        + " halfExtents=(" + halfExtent[0]
+                        + "," + halfExtent[1]
+                        + "," + halfExtent[2] + ")"
+                        + " adjustedY=" + pos[1]);
+
+                } catch (Exception e) {
+                    Log.w(LOG_TAG, "Bounds computation failed: " + e.getMessage());
+                }
+            }
+
+            nodeAssetMap.put(node, asset);
+
+            if (depthDataReceived && occlusionMaterialInstance != null) {
+                applyOcclusionToAsset(asset, engine.getRenderableManager());
+            }
+
+            Log.d(LOG_TAG, "Loaded: " + path
+                + " (" + asset.getEntities().length + " entities)");
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Asset creation failed for " + path + ": " + e.getMessage());
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -802,12 +868,15 @@ public class ARFilamentRenderer {
             ? MediaUtil.getAssetsIgnoreCaseInputStream(form, name)
             : form.openAsset(name);
         if (is == null) throw new IOException("Not found: " + name);
-        byte[] bytes = is.readAllBytes();
-        is.close();
-        ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
-        buf.put(bytes);
-        buf.rewind();
-        return buf;
+        try {
+            byte[] bytes = is.readAllBytes();
+            ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
+            buf.put(bytes);
+            buf.rewind();
+            return buf;
+        } finally {
+            is.close();
+        }
     }
 
     // -------------------------------------------------------------------------
