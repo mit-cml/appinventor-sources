@@ -106,6 +106,13 @@ import java.util.zip.ZipOutputStream;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import com.google.appengine.api.ThreadManager;
 
 import javax.annotation.Nullable;
 
@@ -141,6 +148,8 @@ public class ObjectifyStorageIo implements StorageIo {
   private static final String PROJECT_OWNER_CACHE_KEY_PREFIX = "cf452c52-839a-48e2-a3fc-ef77c87e09c2";
 
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
+
+  private static final int EXPORT_PARALLEL_GCS_READS = 20;
 
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
@@ -1614,6 +1623,24 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   /**
+   * Returns a ThreadFactory suitable for the current environment.
+   * In an App Engine request context, uses ThreadManager to obtain a request-scoped
+   * factory. Falls back to the default JVM factory in test/dev environments where
+   * ThreadManager is unavailable.
+   */
+  private static java.util.concurrent.ThreadFactory getThreadFactory() {
+    try {
+      java.util.concurrent.ThreadFactory tf = ThreadManager.currentRequestThreadFactory();
+      if (tf != null) {
+        return tf;
+      }
+    } catch (Exception e) {
+      // Not in App Engine request context (e.g., dev server or tests)
+    }
+    return Executors.defaultThreadFactory();
+  }
+
+  /**
    * Reads a single file from GCS with retry logic for transient NPE failures.
    * Thread-safe — can be called concurrently from multiple threads.
    *
@@ -1970,6 +1997,58 @@ public class ObjectifyStorageIo implements StorageIo {
       }
       // Process the file contents outside of the job since we can't read
       // blobs in the job.
+
+      // Prefetch GCS file contents in parallel to reduce export latency.
+      // Each GCS object requires metadata + channel read HTTP round-trips,
+      // so reading N assets sequentially takes N × RTT. Parallel reads overlap these.
+      Map<String, byte[]> gcsContents = new ConcurrentHashMap<>();
+      List<FileData> gcsFiles = new ArrayList<>();
+      for (FileData fd : fileData) {
+        if (isTrue(fd.isGCS)) {
+          gcsFiles.add(fd);
+        }
+      }
+      if (!gcsFiles.isEmpty()) {
+        int parallelism = Math.min(gcsFiles.size(), EXPORT_PARALLEL_GCS_READS);
+        ExecutorService gcsPool = Executors.newFixedThreadPool(parallelism,
+            getThreadFactory());
+        try {
+          List<Future<?>> gcsFutures = new ArrayList<>();
+          for (FileData fd : gcsFiles) {
+            gcsFutures.add(gcsPool.submit(() -> {
+              try {
+                byte[] data = readGcsFile(fd.role, fd.gcsName, fatalError);
+                gcsContents.put(fd.fileName, data);
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            }));
+          }
+          for (Future<?> f : gcsFutures) {
+            try {
+              f.get(30, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+              f.cancel(true);
+              throw new IOException("GCS read timed out", e);
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+              throw new IOException("GCS read interrupted", e);
+            } catch (Exception e) {
+              Throwable cause = e.getCause();
+              if (cause instanceof RuntimeException && cause.getCause() instanceof IOException) {
+                throw (IOException) cause.getCause();
+              }
+              if (cause instanceof IOException) {
+                throw (IOException) cause;
+              }
+              throw new IOException("GCS parallel read failed: " + e.getMessage(), e);
+            }
+          }
+        } finally {
+          gcsPool.shutdownNow();
+        }
+      }
+
       for (FileData fd : fileData) {
         fileName = fd.fileName;
         byte[] data = null;
@@ -1984,62 +2063,7 @@ public class ObjectifyStorageIo implements StorageIo {
                 collectProjectErrorInfo(userId, projectId, fileName), e);
           }
         } else if (isTrue(fd.isGCS)) {
-          try {
-            int count;
-            boolean npfHappened = false;
-            boolean recovered = false;
-            for (count = 0; count < 5; count++) {
-              GcsFilename gcsFileName = new GcsFilename(getGcsBucketToUse(fd.role), fd.gcsName);
-              int bytesRead = 0;
-              int fileSize = 0;
-              ByteBuffer resultBuffer;
-              try {
-                fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
-                resultBuffer = ByteBuffer.allocate(fileSize);
-                GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
-                try {
-                  while (bytesRead < fileSize) {
-                    bytesRead += readChannel.read(resultBuffer);
-                    if (bytesRead < fileSize) {
-                      if (DEBUG) {
-                        LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
-                      }
-                    }
-                  }
-                  recovered = true;
-                  data = resultBuffer.array();
-                  break;        // We got the data, break out of the loop!
-                } finally {
-                  readChannel.close();
-                }
-              } catch (NullPointerException e) {
-                // This happens if the object in GCS is non-existent, which would happen
-                // when people uploaded a zero length object. As of this change, we now
-                // store zero length objects into GCS, but there are plenty of older objects
-                // that are missing in GCS.
-                LOG.log(Level.WARNING, "exportProjectFile: NPF recorded for " + fd.gcsName);
-                npfHappened = true;
-                resultBuffer = ByteBuffer.allocate(0);
-                data = resultBuffer.array();
-              }
-            }
-
-            // report out on how things went above
-            if (npfHappened) {    // We lost at least once
-              if (recovered) {
-                LOG.log(Level.WARNING, "recovered from NPF in exportProjectFile filename = " + fd.gcsName +
-                  " count = " + count);
-              } else {
-                LOG.log(Level.WARNING, "FATAL NPF in exportProjectFile filename = " + fd.gcsName);
-                if (fatalError) {
-                  throw new IOException("FATAL Error reading file from GCS filename = " + fd.gcsName);
-                }
-              }
-            }
-          } catch (IOException e) {
-            throw CrashReport.createAndLogError(LOG, null,
-              collectProjectErrorInfo(userId, projectId, fileName), e);
-          }
+          data = gcsContents.get(fd.fileName);
         } else {
           data = fd.content;
           if (fileName.endsWith(".properties") && locallyCachedApp == true) {
