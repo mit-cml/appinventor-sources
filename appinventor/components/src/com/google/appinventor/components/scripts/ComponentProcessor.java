@@ -59,6 +59,7 @@ import java.lang.reflect.Type;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -2036,9 +2037,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
                     + "Please use the 'defaultValue' attribute within @DesignerProperty instead!",
                 ve);
           }
-          ensureSinglePair(dv, ve, javaTypeToYailType(typeMirror));
+          ensureEachPair(dv, ve, javaTypeToYailType(typeMirror));
           property.defaultValue = dv.value();
-          if (dv.type() != null && !dv.type().isEmpty()) {
+          if (dv.type() != null && !dv.type().trim().isEmpty()) {
+            checkForAllowedTypes(dv.type().trim(), ve);
             property.defaultValueType = dv.type();
           }
         }
@@ -2417,9 +2419,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
               "Default values cannot be assigned to Event parameters because they are values provided by the component!",
               varElem);
         }
-        ensureSinglePair(dv, varElem, javaTypeToYailType(type));
+        ensureEachPair(dv, varElem, javaTypeToYailType(type));
         param.defaultValue = dv.value();
-        if (dv.type() != null && !dv.type().isEmpty()) {
+        if (dv.type() != null && !dv.type().trim().isEmpty()) {
+          checkForAllowedTypes(dv.type().trim(), varElem);
           param.defaultValueType = dv.type();
         }
       }
@@ -2427,16 +2430,24 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
   }
 
-  private void ensureSinglePair(DefaultValue dv, VariableElement ve, String type) {
-    if (dv.value() != null && !dv.value().isEmpty() && (type.equals("dictionary") || "dictionary".equals(dv.type()))) {
+  private void ensureEachPair(DefaultValue dv, VariableElement ve, String type) {
+    if (dv.value() != null && !dv.value().trim().isEmpty()
+        && (type.equals("dictionary") || "dictionary".equals(dv.type().trim()))) {
       String[] pairs = dv.value().split(",");
       for (String pair : pairs) {
         String trimmed = pair.trim();
         String[] parts = trimmed.split(":", 2);
-        if (parts.length < 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
+        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
           messager.printMessage(Kind.ERROR, "Each dictionary entry must be a 'key:value' pair. Problem found in: '" + trimmed + "'", ve);
         }
       }
+    }
+  }
+
+  private void checkForAllowedTypes(String type, VariableElement ve) {
+    List<String> allowedTypes = Arrays.asList("text", "number", "boolean", "list", "color", "dictionary");
+    if (!allowedTypes.contains(type)) {
+      messager.printMessage(Kind.ERROR, "'" + type + "' is not allowed! Allowed types are: text, number, boolean, list, color, dictionary", ve);
     }
   }
 
