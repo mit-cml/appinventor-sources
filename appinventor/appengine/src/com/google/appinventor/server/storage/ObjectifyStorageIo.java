@@ -598,13 +598,15 @@ public class ObjectifyStorageIo implements StorageIo {
     return projectId.t;
   }
 
-  /*
-   *  Creates and returns a new FileData object with the specified fields.
-   *  Does not check for the existence of the object and does not update
-   *  the database.
+  /**
+   * Creates a FileData object with metadata only — no GCS I/O.
+   * Calls useGCSforFile() to determine storage location. For GCS files,
+   * sets isGCS=true and gcsName but does NOT write content to GCS.
+   * For inline files, stores content directly in FileData.content.
+   * Caller checks isGCS to decide whether to schedule a parallel GCS write.
    */
-  private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
-    String userId, String fileName, byte[] content) throws ObjectifyException, IOException {
+  private FileData createRawFileMetadata(Key<ProjectData> projectKey, FileData.RoleEnum role,
+      String userId, String fileName, byte[] content) throws ObjectifyException {
     validateGCS();
     FileData file = new FileData();
     file.fileName = fileName;
@@ -614,12 +616,22 @@ public class ObjectifyStorageIo implements StorageIo {
     if (useGCSforFile(fileName, content.length)) {
       file.isGCS = true;
       file.gcsName = makeGCSfileName(fileName, projectKey.getId());
-      GcsOutputChannel outputChannel =
-        gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(file.role), file.gcsName), GcsFileOptions.getDefaultInstance());
-      outputChannel.write(ByteBuffer.wrap(content));
-      outputChannel.close();
     } else {
       file.content = content;
+    }
+    return file;
+  }
+
+  /*
+   *  Creates and returns a new FileData object with the specified fields.
+   *  Does not check for the existence of the object and does not update
+   *  the database.
+   */
+  private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
+    String userId, String fileName, byte[] content) throws ObjectifyException, IOException {
+    FileData file = createRawFileMetadata(projectKey, role, userId, fileName, content);
+    if (isTrue(file.isGCS)) {
+      writeGcsFile(file.role, file.gcsName, content);
     }
     return file;
   }
@@ -1659,6 +1671,17 @@ public class ObjectifyStorageIo implements StorageIo {
       }
     }
     return data;
+  }
+
+  /**
+   * Writes a single file to GCS.
+   * Thread-safe — can be called concurrently from multiple threads.
+   */
+  private void writeGcsFile(FileData.RoleEnum role, String gcsName, byte[] content) throws IOException {
+    GcsOutputChannel outputChannel =
+        gcsService.createOrReplace(new GcsFilename(getGcsBucketToUse(role), gcsName), GcsFileOptions.getDefaultInstance());
+    outputChannel.write(ByteBuffer.wrap(content));
+    outputChannel.close();
   }
 
   // Make a GCS file name
