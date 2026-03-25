@@ -127,6 +127,8 @@ public class ARFilamentRenderer {
     private final float[] sharedView    = new float[16];
     private final float[] sharedProj    = new float[16];
     private List<ARNode>  sharedNodes   = new ArrayList<>();
+    private final Set<ARNode> loadingNodes =
+        Collections.newSetFromMap(new ConcurrentHashMap<>());
     private boolean       matricesReady = false;
 
     // Depth update — written by GL thread, consumed by FilamentRenderThread
@@ -169,24 +171,24 @@ public class ARFilamentRenderer {
 
     private final Form form;
 
+    private volatile boolean renderInFlight = false;
+
     public void renderSynchronous(List<ARNode> nodes,
                                   float[] viewMatrix,
                                   float[] projMatrix,
                                   List<Plane> planes) {
         if (!engineReady || !swapChainReady || destroyed) return;
         if (filamentHandler == null) return;
+        if (renderInFlight) return;  // skip frame — previous not done yet
 
-        // Copy matrices before posting — GL thread arrays may be reused
+        renderInFlight = true;
+
         final float[] viewCopy = new float[16];
         final float[] projCopy = new float[16];
         System.arraycopy(viewMatrix, 0, viewCopy, 0, 16);
         System.arraycopy(projMatrix, 0, projCopy, 0, 16);
         final List<ARNode> nodesCopy = new ArrayList<>(nodes);
         final List<Plane> planesCopy = new ArrayList<>(planes);
-
-        // Use CountDownLatch to block GL thread until Filament finishes
-        java.util.concurrent.CountDownLatch latch =
-            new java.util.concurrent.CountDownLatch(1);
 
         filamentHandler.post(() -> {
             try {
@@ -198,6 +200,14 @@ public class ARFilamentRenderer {
                 loadAndPositionNodes(nodesCopy);
                 updateAnimations();
 
+                // Also consume any pending depth update here
+                DepthUpdate depth;
+                synchronized (depthLock) {
+                    depth = pendingDepthUpdate;
+                    pendingDepthUpdate = null;
+                }
+                if (depth != null) applyDepthUpdate(depth);
+
                 long timestamp = System.nanoTime();
                 if (renderer.beginFrame(swapChain, timestamp)) {
                     renderer.render(view);
@@ -207,16 +217,10 @@ public class ARFilamentRenderer {
                 Log.e(LOG_TAG, "Render error: " + e.getMessage(), e);
                 safeEndFrame();
             } finally {
-                latch.countDown();
+                renderInFlight = false;  // always release, even on exception
             }
         });
-
-        try {
-            // Wait max 16ms — one frame budget
-            latch.await(16, java.util.concurrent.TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // No latch — GL thread returns immediately, camera feed never stalls
     }
 
     // -------------------------------------------------------------------------
@@ -640,23 +644,26 @@ public class ARFilamentRenderer {
         for (ARNode node : nodes) {
 
             if (!shouldRender(node)) continue;
-            if (!nodeAssetMap.containsKey(node)) {
-                // Only attempt load if node has a valid matrix
+            if (!nodeAssetMap.containsKey(node) && !loadingNodes.contains(node)) {
                 if (((ARNodeBase) node).currentWorldMatrix == null) continue;
-                try {
-                    Log.e(LOG_TAG, "Trying to loading node " + node.Model());
-                    loadModelForNode(node);
-                } catch (IOException e) {
-                    continue;
-                }
+
+                loadingNodes.add(node);  // guard against re-entry
+                // Load async — DON'T block the render call
+                filamentHandler.post(() -> {
+                    try {
+                        loadModelForNode(node);
+                    } catch (IOException e) {
+                        Log.w(LOG_TAG, "Load failed: " + node.Model());
+                    } finally {
+                        loadingNodes.remove(node);
+                    }
+                });
             }
             FilamentAsset asset = nodeAssetMap.get(node);
-            if (asset != null) {
-                ARNodeBase base = (ARNodeBase) node;
+            if (asset != null && ((ARNodeBase)node).currentWorldMatrix != null) {
                 // Render if we have a valid world matrix — don't require anchor tracking
-                if (base.currentWorldMatrix != null) {
-                    applyNodeTransform(node, asset);
-                }
+               applyNodeTransform(node, asset);
+
             }
         }
     }
@@ -714,9 +721,6 @@ public class ARFilamentRenderer {
 
         tm.setTransform(rootInstance, modelMatrix);
 
-        Log.d(LOG_TAG, String.format(
-            "applyNodeTransform: pos=[%.3f, %.3f, %.3f] scale=%.3f dragging=%b",
-            t[0], t[1], t[2], s, base.isBeingDragged));
     }
     // -------------------------------------------------------------------------
     // Model loading
@@ -798,8 +802,7 @@ public class ARFilamentRenderer {
             ? MediaUtil.getAssetsIgnoreCaseInputStream(form, name)
             : form.openAsset(name);
         if (is == null) throw new IOException("Not found: " + name);
-        byte[] bytes = new byte[is.available()];
-        is.read(bytes);
+        byte[] bytes = is.readAllBytes();
         is.close();
         ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
         buf.put(bytes);
