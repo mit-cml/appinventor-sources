@@ -110,6 +110,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import com.google.appengine.api.ThreadManager;
@@ -150,6 +151,7 @@ public class ObjectifyStorageIo implements StorageIo {
   private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
 
   private static final int EXPORT_PARALLEL_GCS_READS = 20;
+  private static final int IMPORT_PARALLEL_GCS_WRITES = 10;
 
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
 
@@ -511,6 +513,7 @@ public class ObjectifyStorageIo implements StorageIo {
     final String projectSettings) {
     final Result<Long> projectId = new Result<Long>();
     final List<FileData> addedFiles = new ArrayList<FileData>();
+    final Map<String, byte[]> gcsFileContents = new ConcurrentHashMap<>();
 
     try {
       // first job is on the project entity, creating the ProjectData object
@@ -541,20 +544,24 @@ public class ObjectifyStorageIo implements StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId.t);
           for (TextFile file : project.getSourceFiles()) {
             try {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId,
-                  file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
-            } catch (IOException e) { // GCS throws this
+              byte[] contentBytes = file.getContent().getBytes(DEFAULT_ENCODING);
+              FileData fd = createRawFileMetadata(projectKey, FileData.RoleEnum.SOURCE, userId,
+                  file.getFileName(), contentBytes);
+              addedFiles.add(fd);
+              if (isTrue(fd.isGCS)) {
+                gcsFileContents.put(fd.gcsName, contentBytes);
+              }
+            } catch (IOException e) {
               throw CrashReport.createAndLogError(LOG, null,
-                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
+                  collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
             }
           }
           for (RawFile file : project.getRawSourceFiles()) {
-            try {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, userId, file.getFileName(),
-                  file.getContent()));
-            } catch (IOException e) {
-              throw CrashReport.createAndLogError(LOG, null,
-                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
+            FileData fd = createRawFileMetadata(projectKey, FileData.RoleEnum.SOURCE, userId,
+                file.getFileName(), file.getContent());
+            addedFiles.add(fd);
+            if (isTrue(fd.isGCS)) {
+              gcsFileContents.put(fd.gcsName, file.getContent());
             }
           }
           datastore.put(addedFiles);  // batch put
@@ -574,6 +581,49 @@ public class ObjectifyStorageIo implements StorageIo {
                                        // production implementation of GCS does not touch the
                                        // datastore
 
+      // Write GCS files in parallel outside the transaction.
+      // This is safer than the previous approach where GCS writes happened
+      // inside the transaction callback — transaction retries could orphan GCS files.
+      if (!gcsFileContents.isEmpty()) {
+        int parallelism = Math.min(gcsFileContents.size(), IMPORT_PARALLEL_GCS_WRITES);
+        ExecutorService gcsPool = Executors.newFixedThreadPool(parallelism,
+            getThreadFactory());
+        try {
+          List<Future<?>> gcsFutures = new ArrayList<>();
+          for (Map.Entry<String, byte[]> entry : gcsFileContents.entrySet()) {
+            gcsFutures.add(gcsPool.submit(() -> {
+              try {
+                writeGcsFile(FileData.RoleEnum.SOURCE, entry.getKey(), entry.getValue());
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            }));
+          }
+          for (Future<?> f : gcsFutures) {
+            try {
+              f.get(30, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+              f.cancel(true);
+              throw new IOException("GCS write timed out", e);
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+              throw new IOException("GCS write interrupted", e);
+            } catch (Exception e) {
+              Throwable cause = e.getCause();
+              if (cause instanceof RuntimeException && cause.getCause() instanceof IOException) {
+                throw (IOException) cause.getCause();
+              }
+              if (cause instanceof IOException) {
+                throw (IOException) cause;
+              }
+              throw new IOException("GCS parallel write failed: " + e.getMessage(), e);
+            }
+          }
+        } finally {
+          gcsPool.shutdownNow();
+        }
+      }
+
       // second job is on the user entity
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -586,23 +636,22 @@ public class ObjectifyStorageIo implements StorageIo {
           datastore.put(upd);
         }
       }, true);
-    } catch (ObjectifyException e) {
+    } catch (ObjectifyException | IOException e) {
       for (FileData addedFile : addedFiles) {
-        if (isTrue(addedFile.isGCS)) {  // Do something
+        if (isTrue(addedFile.isGCS)) {
           if (addedFile.gcsName != null) {
             try {
               gcsService.delete(new GcsFilename(getGcsBucketToUse(addedFile.role), addedFile.gcsName));
             } catch (IOException ee) {
               LOG.log(Level.WARNING, "Unable to delete " + addedFile.gcsName +
-                " from GCS while aborting project creation.", ee);
+                  " from GCS while aborting project creation.", ee);
+            }
           }
         }
       }
-      // clear addedFiles in case we end up here more than once
       addedFiles.clear();
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId.t), e);
-      }
     }
     return projectId.t;
   }
@@ -1628,9 +1677,9 @@ public class ObjectifyStorageIo implements StorageIo {
    * factory. Falls back to the default JVM factory in test/dev environments where
    * ThreadManager is unavailable.
    */
-  private static java.util.concurrent.ThreadFactory getThreadFactory() {
+  private static ThreadFactory getThreadFactory() {
     try {
-      java.util.concurrent.ThreadFactory tf = ThreadManager.currentRequestThreadFactory();
+      ThreadFactory tf = ThreadManager.currentRequestThreadFactory();
       if (tf != null) {
         return tf;
       }
