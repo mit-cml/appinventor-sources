@@ -421,7 +421,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   // Don't access the verticalScrollbarWidth field directly. Use getVerticalScrollbarWidth().
   private static int verticalScrollbarWidth;
 
-  private MockFormLayout myLayout;
+  private MockSwitchableFormLayout myLayout;
+  private static final String PROPERTY_NAME_SCREEN_LAYOUT = "ScreenLayout";
 
   // flag to control attempting to enable/disable vertical
   // alignment when scrollable property is changed
@@ -906,6 +907,17 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     }
   }
 
+  private void setScreenLayoutProperty(String mode) {
+    boolean isAbsolute = "Absolute".equals(mode);
+    myLayout.setAbsoluteMode(isAbsolute);
+    // Show or hide Left/Top coordinate properties on all direct children.
+    for (MockComponent child : getChildren()) {
+      if (child instanceof MockVisibleComponent) {
+        ((MockVisibleComponent) child).setCoordPropertiesVisible(isAbsolute);
+      }
+    }
+  }
+
   private void setScrollableProperty(String text) {
     if (hasProperty(PROPERTY_NAME_HEIGHT)) {
       final boolean scrollable = Boolean.parseBoolean(text);
@@ -1365,10 +1377,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       setAccentColor(newValue);
       fireDesignPreviewChange();
     } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
-      myLayout.setHAlignmentFlags(newValue);
+      myLayout.getLinearLayout().setHAlignmentFlags(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
-      myLayout.setVAlignmentFlags(newValue);
+      myLayout.getLinearLayout().setVAlignmentFlags(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_SCREEN_LAYOUT)) {
+      setScreenLayoutProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {
       setTitleVisibleProperty(newValue);

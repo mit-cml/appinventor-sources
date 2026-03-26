@@ -1075,7 +1075,9 @@ public class YaVersion {
   // - Add DefaultFileScope designer property.
   // For FORM_COMPONENT_VERSION 31:
   // - The default theme was changed to Device Default.
-  public static final int FORM_COMPONENT_VERSION = 31;
+  // For FORM_COMPONENT_VERSION 32:
+  // - Added ScreenLayout property for absolute/free positioning mode.
+  public static final int FORM_COMPONENT_VERSION = 32;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

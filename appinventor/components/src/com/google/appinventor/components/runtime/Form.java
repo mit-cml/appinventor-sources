@@ -200,6 +200,9 @@ public class Form extends AppInventorCompatActivity
   // Layout
   private LinearLayout viewLayout;
 
+  // Absolute positioning layout (non-null when ScreenLayout == "Absolute")
+  private ConstraintViewLayout absoluteViewLayout = null;
+
   // translates App Inventor alignment codes to Android gravity
   private AlignmentUtil alignmentSetter;
 
@@ -1257,6 +1260,67 @@ public class Form extends AppInventorCompatActivity
     recomputeLayout();
   }
 
+  /**
+   * Returns the active view layout: the ConstraintViewLayout when ScreenLayout is "Absolute",
+   * otherwise the standard LinearLayout.
+   */
+  private Layout getActiveViewLayout() {
+    if (absoluteViewLayout != null) {
+      return absoluteViewLayout;
+    }
+    return viewLayout;
+  }
+
+  /**
+   * Returns the current ScreenLayout mode.
+   *
+   * @return "Absolute" or "Linear"
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Returns the screen layout mode.")
+  public String ScreenLayout() {
+    return absoluteViewLayout != null ? "Absolute" : "Linear";
+  }
+
+  /**
+   * Sets the layout mode for this screen. When set to "Absolute", components can be placed
+   * at any (x, y) position using their Left and Top properties. When set to "Linear"
+   * (the default), components stack vertically as normal.
+   *
+   * @param mode  "Absolute" or "Linear"
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_CHOICES,
+      editorArgs = {"Linear", "Absolute"},
+      defaultValue = "Linear")
+  @SimpleProperty
+  public void ScreenLayout(String mode) {
+    if ("Absolute".equals(mode)) {
+      if (absoluteViewLayout == null) {
+        absoluteViewLayout = new ConstraintViewLayout(this);
+        // Migrate any children already attached to the linear layout.
+        viewLayout.getLayoutManager().removeAllViews();
+        for (Component child : allChildren) {
+          if (child instanceof AndroidViewComponent) {
+            absoluteViewLayout.migrateComponent((AndroidViewComponent) child);
+          }
+        }
+        recomputeLayout();
+      }
+    } else {
+      if (absoluteViewLayout != null) {
+        // Migrate children back to the linear layout.
+        absoluteViewLayout.getLayoutManager().removeAllViews();
+        for (Component child : allChildren) {
+          if (child instanceof AndroidViewComponent) {
+            viewLayout.add((AndroidViewComponent) child);
+          }
+        }
+        absoluteViewLayout = null;
+        recomputeLayout();
+      }
+    }
+  }
+
   private void recomputeLayout() {
 
     Log.d(LOG_TAG, "recomputeLayout called");
@@ -1293,7 +1357,7 @@ public class Form extends AppInventorCompatActivity
     } else {
       frameLayout = new FrameLayout(this);
     }
-    frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
+    frameLayout.addView(getActiveViewLayout().getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -2372,8 +2436,7 @@ public class Form extends AppInventorCompatActivity
 
   @Override
   public void $add(AndroidViewComponent component) {
-
-    viewLayout.add(component);
+    getActiveViewLayout().add(component);
     allChildren.add(component);
   }
 
@@ -2413,8 +2476,12 @@ public class Form extends AppInventorCompatActivity
 
     component.setLastWidth(width);
 
-    // A form is a vertical layout.
-    ViewUtil.setChildWidthForVerticalLayout(component.getView(), width);
+    if (absoluteViewLayout != null) {
+      ViewUtil.setChildWidthForConstraintLayout(component.getView(), width);
+    } else {
+      // A form is a vertical layout.
+      ViewUtil.setChildWidthForVerticalLayout(component.getView(), width);
+    }
   }
 
   @Override
@@ -2436,12 +2503,19 @@ public class Form extends AppInventorCompatActivity
 
     component.setLastHeight(height);
 
-    // A form is a vertical layout.
-    ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
+    if (absoluteViewLayout != null) {
+      ViewUtil.setChildHeightForConstraintLayout(component.getView(), height);
+    } else {
+      // A form is a vertical layout.
+      ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
+    }
   }
 
   @Override
   public void setChildNeedsLayout(AndroidViewComponent component) {
+    if (absoluteViewLayout != null) {
+      absoluteViewLayout.updateComponentPosition(component);
+    }
     // not needed for linear layout
   }
 
@@ -2664,10 +2738,15 @@ public class Form extends AppInventorCompatActivity
   public void clear() {
     Log.d(LOG_TAG, "Form " + formName + " clear called");
     viewLayout.getLayoutManager().removeAllViews();
+    if (absoluteViewLayout != null) {
+      absoluteViewLayout.getLayoutManager().removeAllViews();
+      absoluteViewLayout = null;
+    }
     if (frameLayout != null) {
       frameLayout.removeAllViews();
       frameLayout = null;
     }
+    allChildren.clear();
     // Set all screen properties to default values.
     defaultPropertyValues();
     onStopListeners.clear();

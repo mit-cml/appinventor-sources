@@ -168,10 +168,8 @@ final class MockAbsoluteLayout extends MockLayout {
       LayoutInfo childLayoutInfo = relativeLayoutInfo.layoutInfoMap.get(child);
 
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
-        // If the child's width is set to fill parent, we want to shift the child's top
-        // left corner to be on the left frame so that it fills the parent entirely.
-        // Then we set its width to be the same as the parent layout's width
-        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "0");
+        // If the child's width is set to fill parent, use the full layout width for rendering
+        // but do NOT reset the Left property — that would corrupt the saved position.
         childLayoutInfo.width = layoutWidth;
       } else if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childWidth = (- (childLayoutInfo.width - MockVisibleComponent.LENGTH_PERCENT_TAG))
@@ -182,10 +180,8 @@ final class MockAbsoluteLayout extends MockLayout {
       }
 
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
-        // If the child's height is set to fill parent, we want to shift the child's top
-        // left corner to be on the top frame so that it fills the parent entirely.
-        // Then we set its height to be the same as the parent layout's height
-        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "0");
+        // If the child's height is set to fill parent, use the full layout height for rendering
+        // but do NOT reset the Top property — that would corrupt the saved position.
         childLayoutInfo.height = layoutHeight;
       } else if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childHeight = (- (childLayoutInfo.height - MockVisibleComponent.LENGTH_PERCENT_TAG))
