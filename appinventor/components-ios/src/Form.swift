@@ -59,6 +59,9 @@ let kMinimumToastWait = 10.0
   private var _tapGesture: UITapGestureRecognizer? = nil
   private var _relativeLayout: RelativeLayout? = nil
   private var _absoluteContainerView: UIView? = nil
+  // Track width/height constraints we explicitly set so we only remove ours, not system intrinsic ones
+  private var _childWidthConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  private var _childHeightConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -228,21 +231,31 @@ let kMinimumToastWait = 10.0
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
     if _relativeLayout != nil {
+      // Deactivate only the constraint we previously set (not system/intrinsic constraints)
+      let key = ObjectIdentifier(component)
+      _childWidthConstraints[key]?.isActive = false
+      _childWidthConstraints.removeValue(forKey: key)
       if width <= kLengthPercentTag {
-        let childWidth = Width * Int32(-(width - kLengthPercentTag)) / 100
+        let childWidth = logicalWidth * Int32(-(width - kLengthPercentTag)) / 100
         component._lastSetWidth = width
-        NSLayoutConstraint.activate([component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))])
+        let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
+        NSLayoutConstraint.activate([c])
+        _childWidthConstraints[key] = c
       } else if width == kLengthPreferred {
         component._lastSetWidth = width
-        component.view.constraints.filter { $0.firstAttribute == .width }.forEach { $0.isActive = false }
+        // No explicit constraint — let Auto Layout use intrinsic content size
       } else if width == kLengthFillParent {
         component._lastSetWidth = width
         if let container = _absoluteContainerView {
-          NSLayoutConstraint.activate([component.view.widthAnchor.constraint(equalTo: container.widthAnchor)])
+          let c = component.view.widthAnchor.constraint(equalTo: container.widthAnchor)
+          NSLayoutConstraint.activate([c])
+          _childWidthConstraints[key] = c
         }
       } else {
         component._lastSetWidth = width
-        NSLayoutConstraint.activate([component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))])
+        let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
+        NSLayoutConstraint.activate([c])
+        _childWidthConstraints[key] = c
       }
       return
     }
@@ -260,21 +273,31 @@ let kMinimumToastWait = 10.0
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
     if _relativeLayout != nil {
+      // Deactivate only the constraint we previously set (not system/intrinsic constraints)
+      let key = ObjectIdentifier(component)
+      _childHeightConstraints[key]?.isActive = false
+      _childHeightConstraints.removeValue(forKey: key)
       if height <= kLengthPercentTag {
-        let childHeight = Height * Int32(-(height - kLengthPercentTag)) / 100
+        let childHeight = logicalHeight * Int32(-(height - kLengthPercentTag)) / 100
         component._lastSetHeight = height
-        NSLayoutConstraint.activate([component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))])
+        let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
+        NSLayoutConstraint.activate([c])
+        _childHeightConstraints[key] = c
       } else if height == kLengthPreferred {
         component._lastSetHeight = height
-        component.view.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
+        // No explicit constraint — let Auto Layout use intrinsic content size
       } else if height == kLengthFillParent {
         component._lastSetHeight = height
         if let container = _absoluteContainerView {
-          NSLayoutConstraint.activate([component.view.heightAnchor.constraint(equalTo: container.heightAnchor)])
+          let c = component.view.heightAnchor.constraint(equalTo: container.heightAnchor)
+          NSLayoutConstraint.activate([c])
+          _childHeightConstraints[key] = c
         }
       } else {
         component._lastSetHeight = height
-        NSLayoutConstraint.activate([component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))])
+        let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
+        NSLayoutConstraint.activate([c])
+        _childHeightConstraints[key] = c
       }
       return
     }
@@ -346,6 +369,14 @@ let kMinimumToastWait = 10.0
     return _scaleFrameLayout
   }
 
+  private var logicalWidth: Int32 {
+    return _compatibilityMode ? Int32(CGFloat(Width) / _scaleFrameLayout.scale) : Width
+  }
+
+  private var logicalHeight: Int32 {
+    return _compatibilityMode ? Int32(CGFloat(Height) / _scaleFrameLayout.scale) : Height
+  }
+
   @objc open func clear() {
     let subviews = view.subviews
     for subview in subviews {
@@ -356,6 +387,8 @@ let kMinimumToastWait = 10.0
     _absoluteContainerView?.removeFromSuperview()
     _relativeLayout = nil
     _absoluteContainerView = nil
+    _childWidthConstraints.removeAll()
+    _childHeightConstraints.removeAll()
     initThunks.removeAllObjects()
     clearComponents()
     defaultPropertyValues()
@@ -385,7 +418,7 @@ let kMinimumToastWait = 10.0
   }
 
   private func resetConstraints() {
-    _scaleFrameLayout.removeConstraints(_constraints)
+    view.removeConstraints(_constraints)
     _constraints.removeAll()
     if ShowStatusBar && !TitleVisible {
       _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height))
@@ -805,11 +838,14 @@ let kMinimumToastWait = 10.0
           }
         }
         recomputeLayout()
+        onAttach()
       } else {
         guard _relativeLayout != nil else { return }
         _absoluteContainerView?.removeFromSuperview()
         _relativeLayout = nil
         _absoluteContainerView = nil
+        _childWidthConstraints.removeAll()
+        _childHeightConstraints.removeAll()
         for child in _components {
           if let child = child as? ViewComponent {
             _linearView.addItem(LinearViewItem(child.view))
