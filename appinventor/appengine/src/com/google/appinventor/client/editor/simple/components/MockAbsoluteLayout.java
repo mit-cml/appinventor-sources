@@ -37,7 +37,7 @@ final class MockAbsoluteLayout extends MockLayout {
   private static final String DROP_TARGET_AREA_COLOR = "#0000ff";
 
   // Snap / guideline constants — snapEnabled state lives in MockContainer for cross-package access
-  private static final int SNAP_THRESHOLD = 8;
+  private static final int SNAP_THRESHOLD = 16;
   private static final int GRID_SIZE = 8;
   private static final String ALIGNMENT_COLOR = "#ff0000";
   private static final String CENTER_COLOR = "#0000ff";
@@ -128,6 +128,13 @@ final class MockAbsoluteLayout extends MockLayout {
   private int lastSnappedLeft;
   private int lastSnappedTop;
   private boolean hasSnappedPosition;
+
+  // Drag geometry — cached once on drag-enter to avoid re-reading modified CSS
+  private int dragOffsetX;
+  private int dragOffsetY;
+  private int dragWidth;
+  private int dragHeight;
+  private boolean dragGeometryCached;
 
   /**
    * Creates a new relative layout.
@@ -234,44 +241,63 @@ final class MockAbsoluteLayout extends MockLayout {
 
   /**
    * Sets the component being dragged over this layout, for use in snap calculations.
-   * For palette drags the source is not a MockComponent, so currentDragSource stays null
-   * (meaning no sibling exclusion needed — the component isn't in the layout yet).
+   * Caches drag geometry (offset, size) from the drag widget CSS immediately, before any
+   * ghost-snapping modifies those values on subsequent mouse-move events.
    */
   void setDragSource(DragSource source) {
     currentDragSource = (source instanceof MockComponent) ? (MockComponent) source : null;
     hasSnappedPosition = false;
+    dragGeometryCached = false;
+    dragOffsetX = 0;
+    dragOffsetY = 0;
+    dragWidth = 0;
+    dragHeight = 0;
   }
 
   /**
    * Called during drag with the source available, enabling snap and guideline logic.
+   * Updates the drag ghost to show the projected snap landing position.
    */
   void onDragContinueWithSource(int x, int y, DragSource source) {
     setDropTargetAreaBoundsAndShow();
+
+    Widget dw = source.getDragWidget();
+
+    // Cache drag geometry once from the unmodified CSS, before we start moving the ghost.
+    if (!dragGeometryCached && dw != null) {
+      dragOffsetX = -parsePx(DOM.getStyleAttribute(dw.getElement(), "left"));
+      dragOffsetY = -parsePx(DOM.getStyleAttribute(dw.getElement(), "top"));
+      dragWidth = dw.getOffsetWidth();
+      dragHeight = dw.getOffsetHeight();
+      dragGeometryCached = true;
+    }
+
     if (!MockContainer.absoluteLayoutSnapEnabled) {
       hideGuidelines();
+      // Restore ghost to natural cursor-follow position
+      if (dw != null) {
+        dw.getElement().getStyle().setLeft(-dragOffsetX, PX);
+        dw.getElement().getStyle().setTop(-dragOffsetY, PX);
+      }
       return;
     }
 
-    Widget dw = source.getDragWidget();
-    int offsetX = 0, offsetY = 0, dragWidth = 0, dragHeight = 0;
-    if (dw != null) {
-      offsetX = parsePx(DOM.getStyleAttribute(dw.getElement(), "left"));
-      offsetY = parsePx(DOM.getStyleAttribute(dw.getElement(), "top"));
-      // The style is set as -offsetX, so offsetX = -parsedValue
-      offsetX = -offsetX;
-      offsetY = -offsetY;
-      dragWidth = dw.getOffsetWidth();
-      dragHeight = dw.getOffsetHeight();
-    }
-
-    int candidateLeft = x - offsetX;
-    int candidateTop = y - offsetY;
+    int candidateLeft = x - dragOffsetX;
+    int candidateTop = y - dragOffsetY;
 
     SnapResult result = calculateSnap(candidateLeft, candidateTop, dragWidth, dragHeight);
     lastSnappedLeft = result.left;
     lastSnappedTop = result.top;
     hasSnappedPosition = true;
     showGuidelines(result.guidelines);
+
+    // Move the drag ghost to show exactly where the component will land on drop.
+    // Ghost CSS left/top encodes offset from cursor; snapped left = cursor.x - x_in_container + snappedLeft.
+    // Since x is cursor relative to container: ghostLeft = snappedLeft - x (i.e. snapped - cursor offset).
+    if (dw != null) {
+      dw.getElement().getStyle().setLeft(result.left - x, PX);
+      dw.getElement().getStyle().setTop(result.top - y, PX);
+    }
   }
 
   private static int parsePx(String s) {
@@ -490,6 +516,7 @@ final class MockAbsoluteLayout extends MockLayout {
     hideGuidelines();
     currentDragSource = null;
     hasSnappedPosition = false;
+    dragGeometryCached = false;
   }
 
   @Override
