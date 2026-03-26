@@ -33,6 +33,7 @@ public class DesignToolbarNeo extends DesignToolbar {
   public void bindUI() {
     DesignToolbarUiBinderNeo uibinder = GWT.create(DesignToolbarUiBinderNeo.class);
     populateToolbar(uibinder.createAndBindUi(this));
+    addButtonStyleName(WIDGET_NAME_SNAP_TOGGLE, "ode-SnapToggle");
 
     boolean isAvailable = !Ode.getInstance().getOneProjectMode();
 

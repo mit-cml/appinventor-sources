@@ -115,7 +115,7 @@ public class DesignToolbar extends Toolbar {
 
   private static final String WIDGET_NAME_TUTORIAL_TOGGLE = "TutorialToggle";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
-  private static final String WIDGET_NAME_SNAP_TOGGLE = "SnapToggle";
+  protected static final String WIDGET_NAME_SNAP_TOGGLE = "SnapToggle";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
@@ -188,6 +188,7 @@ public class DesignToolbar extends Toolbar {
   public void bindUI() {
     DesignToolbarUiBinder uibinder = GWT.create(DesignToolbarUiBinder.class);
     populateToolbar(uibinder.createAndBindUi(this));
+    addButtonStyleName(WIDGET_NAME_SNAP_TOGGLE, "ode-SnapToggle");
   }
 
   private void doSwitchScreen(final long projectId, final String screenName, final View view) {
