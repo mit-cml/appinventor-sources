@@ -1350,34 +1350,36 @@ public void updateCollisionShape() {
     float dist = collisionDistance(other);
     if (dist >= minDist) return;
     if (dist < 0.0001f) dist = 0.0001f;
-
+    float ANGULAR_SCALE = 2f;
     float overlap = (minDist - dist) + 0.001f;
-    float[] n = collisionNormal(other);
+    float[] collNormal = collisionNormal(other);
     float MAX_IMPULSE_SPEED = 3.0f;
 
     if (isBeingDragged) {
       float[] posB = other.getCurrentPosition();
       other.setCurrentPosition(new float[]{
-          posB[0] + n[0] * overlap,
+          posB[0] + collNormal[0] * overlap,
           posB[1],
-          posB[2] + n[2] * overlap
+          posB[2] + collNormal[2] * overlap
       });
-      float dragSpeed = dragVelocity[0]*n[0] + dragVelocity[2]*n[2];
+      float dragSpeed = dragVelocity[0]*collNormal[0] + dragVelocity[2]*collNormal[2];
       float effectiveSpeed = Math.max(dragSpeed, 0.8f);
       float restitution = (Restitution() + other.Restitution()) * 0.5f;
       float impulse = (1 + restitution) * effectiveSpeed
           / (1f/Mass() + 1f/other.Mass());
       other.currentVelocity[0] = clamp(
-          other.currentVelocity[0] + (impulse / other.Mass()) * n[0],
+          other.currentVelocity[0] + (impulse / other.Mass()) * collNormal[0],
           -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
       other.currentVelocity[1] = 0;
       other.currentVelocity[2] = clamp(
-          other.currentVelocity[2] + (impulse / other.Mass()) * n[2],
+          other.currentVelocity[2] + (impulse / other.Mass()) * collNormal[2],
           -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
 
-      // after applying linear impulse to other node in separateFrom
-      other.angularVelocity[0] += n[2] * (impulse / other.Mass());
-      other.angularVelocity[2] -= n[0] * (impulse / other.Mass());
+      float radius = other.getCollisionVolume().getEffectiveRadius();
+      float angularScale = ANGULAR_SCALE; // increase this for faster spin
+      other.angularVelocity[0] += collNormal[2] * (impulse / (other.Mass() * radius)) * angularScale;
+      other.angularVelocity[2] -= collNormal[0] * (impulse / (other.Mass() * radius)) * angularScale;
+
 
       Log.d("separateFrom", "IMPULSE applied to " + other.NodeType()
           + " dragVelocity=(" + dragVelocity[0] + "," + dragVelocity[2] + ")"
@@ -1388,22 +1390,27 @@ public void updateCollisionShape() {
     } else if (other.isBeingDragged) {
       float[] posA = getCurrentPosition();
       setCurrentPosition(new float[]{
-          posA[0] - n[0] * overlap,
+          posA[0] - collNormal[0] * overlap,
           posA[1],
-          posA[2] - n[2] * overlap
+          posA[2] - collNormal[2] * overlap
       });
-      float dragSpeed = other.dragVelocity[0]*(-n[0]) + other.dragVelocity[2]*(-n[2]);
+      float dragSpeed = other.dragVelocity[0]*(-collNormal[0]) + other.dragVelocity[2]*(-collNormal[2]);
       float effectiveSpeed = Math.max(dragSpeed, 0.8f);
       float restitution = (Restitution() + other.Restitution()) * 0.5f;
       float impulse = (1 + restitution) * effectiveSpeed
           / (1f/Mass() + 1f/other.Mass());
       currentVelocity[0] = clamp(
-          currentVelocity[0] - (impulse / Mass()) * n[0],
+          currentVelocity[0] - (impulse / Mass()) * collNormal[0],
           -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
       currentVelocity[1] = 0;
       currentVelocity[2] = clamp(
-          currentVelocity[2] - (impulse / Mass()) * n[2],
+          currentVelocity[2] - (impulse / Mass()) * collNormal[2],
           -MAX_IMPULSE_SPEED, MAX_IMPULSE_SPEED);
+
+      float radius = getCollisionVolume().getEffectiveRadius();
+      float angularScale = ANGULAR_SCALE;
+      angularVelocity[0] -= collNormal[2] * (impulse / (Mass() * radius)) * angularScale;
+      angularVelocity[2] += collNormal[0] * (impulse / (Mass() * radius)) * angularScale;
 
       Log.d("separateFrom", "IMPULSE applied to OTHER " + other.NodeType()
           + " dragVelocity=(" + dragVelocity[0] + "," + dragVelocity[2] + ")"
@@ -1415,9 +1422,19 @@ public void updateCollisionShape() {
       float half = overlap * 0.5f;
       float[] posA = getCurrentPosition();
       float[] posB = other.getCurrentPosition();
-      setCurrentPosition(new float[]{posA[0]-n[0]*half, posA[1], posA[2]-n[2]*half});
-      other.setCurrentPosition(new float[]{posB[0]+n[0]*half, posB[1], posB[2]+n[2]*half});
-      applyCollisionImpulse(other, n);
+      setCurrentPosition(new float[]{posA[0]-collNormal[0]*half, posA[1], posA[2]-collNormal[2]*half});
+      other.setCurrentPosition(new float[]{posB[0]+collNormal[0]*half, posB[1], posB[2]+collNormal[2]*half});
+      applyCollisionImpulse(other, collNormal);
+
+      float radiusA = getCollisionVolume().getEffectiveRadius();
+      float radiusB = other.getCollisionVolume().getEffectiveRadius();
+      float angularScale = ANGULAR_SCALE;
+      float relSpeed = vectorLength(currentVelocity) + vectorLength(other.currentVelocity);
+      angularVelocity[0] -= collNormal[2] * relSpeed / (Mass() * radiusA) * angularScale;
+      angularVelocity[2] += collNormal[0] * relSpeed / (Mass() * radiusA) * angularScale;
+      other.angularVelocity[0] += collNormal[2] * relSpeed / (other.Mass() * radiusB) * angularScale;
+      other.angularVelocity[2] -= collNormal[0] * relSpeed / (other.Mass() * radiusB) * angularScale;
+
     }
   }
 
