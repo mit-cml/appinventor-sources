@@ -67,33 +67,63 @@ open class RelativeLayout: Layout {
     let y = component.Top
     let view = component.view
 
-      
-    if x <= NOT_VALID || y <= NOT_VALID {
+    if x == NOT_VALID || y == NOT_VALID {
       return  // Position not yet set
     }
-  
+
+    // Resolve percent-encoded coordinates to pixel constants.
+    let leftConstant: CGFloat
+    if x <= Int(kLengthPercentTag) {
+      let parentWidth = layoutManager.bounds.width
+      if parentWidth == 0 {
+        // Parent not yet measured; retry after the next layout pass.
+        DispatchQueue.main.async { [weak self] in
+          self?.updateComponentPosition(component: component)
+        }
+        return
+      }
+      let percent = -(x - Int(kLengthPercentTag))
+      leftConstant = parentWidth * CGFloat(percent) / 100.0
+    } else {
+      leftConstant = CGFloat(x)
+    }
+
+    let topConstant: CGFloat
+    if y <= Int(kLengthPercentTag) {
+      let parentHeight = layoutManager.bounds.height
+      if parentHeight == 0 {
+        DispatchQueue.main.async { [weak self] in
+          self?.updateComponentPosition(component: component)
+        }
+        return
+      }
+      let percent = -(y - Int(kLengthPercentTag))
+      topConstant = parentHeight * CGFloat(percent) / 100.0
+    } else {
+      topConstant = CGFloat(y)
+    }
+
     // Ensure view is a child of layoutManager before setting constraints
     if view.superview !== layoutManager {
       layoutManager.addSubview(view)
       view.translatesAutoresizingMaskIntoConstraints = false
     }
-  
-    
+
     // Remove any existing constraints
     layoutManager.removeConstraints(layoutManager.constraints.filter {
         ($0.firstItem as? UIView) == view || ($0.secondItem as? UIView) == view
     })
     // Create new constraints
-    let leftConstraint = view.leftAnchor.constraint(equalTo: layoutManager.leftAnchor, constant: CGFloat(x))
-    let topConstraint = view.topAnchor.constraint(equalTo: layoutManager.topAnchor, constant: CGFloat(y))
-  
+    let leftConstraint = view.leftAnchor.constraint(equalTo: layoutManager.leftAnchor, constant: leftConstant)
+    let topConstraint = view.topAnchor.constraint(equalTo: layoutManager.topAnchor, constant: topConstant)
+
     // Activate them
     NSLayoutConstraint.activate([leftConstraint, topConstraint])
-  
+
     // Force layout update
     layoutManager.setNeedsLayout()
     layoutManager.layoutIfNeeded()
-    
+
     view.setNeedsLayout()
   }
     

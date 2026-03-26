@@ -160,7 +160,18 @@ final class MockAbsoluteLayout extends MockLayout {
       }
       Ode.CLog("parent length: " + layoutWidth);
       Ode.CLog("parent height: " + layoutHeight);
-      if (! withinLayoutBounds(coords.getX(), coords.getY())) {
+
+      // Resolve percent-encoded coordinates to pixel positions for rendering and bounds checking.
+      int x = coords.getX();
+      int y = coords.getY();
+      if (x <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        x = -(x - MockVisibleComponent.LENGTH_PERCENT_TAG) * layoutWidth / 100;
+      }
+      if (y <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        y = -(y - MockVisibleComponent.LENGTH_PERCENT_TAG) * layoutHeight / 100;
+      }
+
+      if (!withinLayoutBounds(x, y)) {
         child.setVisible(false);
         continue;
       }
@@ -194,8 +205,6 @@ final class MockAbsoluteLayout extends MockLayout {
       if (child instanceof MockContainer) {
         ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
       }
-      int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
-      int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
       container.setChildSizeAndPosition(child, childLayoutInfo, x, y);
     }
 
@@ -242,9 +251,20 @@ final class MockAbsoluteLayout extends MockLayout {
         // It's just being moved from one container to another.
         srcContainer.removeComponent(source, false);
       }
+
+      // In Responsive mode, convert pixel drop coordinates to percent encoding so the
+      // component repositions proportionally on any screen size.
+      int storedLeft = leftMargin;
+      int storedTop = topMargin;
+      if (layoutWidth > 0 && layoutHeight > 0
+          && "Responsive".equals(container.getForm().getPropertyValue("Sizing"))) {
+        storedLeft = MockVisibleComponent.LENGTH_PERCENT_TAG - (leftMargin * 100 / layoutWidth);
+        storedTop = MockVisibleComponent.LENGTH_PERCENT_TAG - (topMargin * 100 / layoutHeight);
+      }
+
       try {
-        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "" + leftMargin);
-        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "" + topMargin);
+        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "" + storedLeft);
+        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "" + storedTop);
       } catch (Exception e) {
         return false;
       }

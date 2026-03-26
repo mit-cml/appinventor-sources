@@ -62,8 +62,16 @@ public class ConstraintViewLayout implements Layout {
     }
     int x = component.Left();
     int y = component.Top();
-    if (x == ComponentConstants.DEFAULT_X_Y) x = 0;
-    if (y == ComponentConstants.DEFAULT_X_Y) y = 0;
+
+    int leftPx = resolveLeft(x, view);
+    int topPx = resolveTop(y, view);
+    if (leftPx == -1 || topPx == -1) {
+      // Parent not yet measured; retry after next layout pass.
+      layoutManager.post(new Runnable() {
+        @Override public void run() { updateComponentPosition(component); }
+      });
+      return;
+    }
 
     int index = layoutManager.indexOfChild(view);
     // Preserve current width/height (may have been set by setChildWidth/HeightForConstraintLayout).
@@ -74,10 +82,40 @@ public class ConstraintViewLayout implements Layout {
     ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(old.width, old.height);
     params.leftToLeft = ConstraintSet.PARENT_ID;
     params.topToTop = ConstraintSet.PARENT_ID;
-    params.leftMargin = ViewUtil.calculatePixels(view, x);
-    params.topMargin = ViewUtil.calculatePixels(view, y);
+    params.leftMargin = leftPx;
+    params.topMargin = topPx;
     layoutManager.removeViewAt(index);
     layoutManager.addView(view, index, params);
+  }
+
+  /**
+   * Resolves the Left coordinate to pixels.
+   * Returns -1 if the parent has not yet been measured (caller should defer via post).
+   */
+  private int resolveLeft(int x, View view) {
+    if (x == ComponentConstants.DEFAULT_X_Y) return 0;
+    if (x <= Component.LENGTH_PERCENT_TAG) {
+      int parentWidth = layoutManager.getWidth();
+      if (parentWidth == 0) return -1;
+      int percent = -(x - Component.LENGTH_PERCENT_TAG);
+      return parentWidth * percent / 100;
+    }
+    return ViewUtil.calculatePixels(view, x);
+  }
+
+  /**
+   * Resolves the Top coordinate to pixels.
+   * Returns -1 if the parent has not yet been measured (caller should defer via post).
+   */
+  private int resolveTop(int y, View view) {
+    if (y == ComponentConstants.DEFAULT_X_Y) return 0;
+    if (y <= Component.LENGTH_PERCENT_TAG) {
+      int parentHeight = layoutManager.getHeight();
+      if (parentHeight == 0) return -1;
+      int percent = -(y - Component.LENGTH_PERCENT_TAG);
+      return parentHeight * percent / 100;
+    }
+    return ViewUtil.calculatePixels(view, y);
   }
 
   /**
@@ -96,15 +134,23 @@ public class ConstraintViewLayout implements Layout {
 
     int x = component.Left();
     int y = component.Top();
-    if (x == ComponentConstants.DEFAULT_X_Y) x = 0;
-    if (y == ComponentConstants.DEFAULT_X_Y) y = 0;
+
+    int leftPx = resolveLeft(x, view);
+    int topPx = resolveTop(y, view);
+    boolean deferred = (leftPx == -1 || topPx == -1);
 
     ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     params.leftToLeft = ConstraintSet.PARENT_ID;
     params.topToTop = ConstraintSet.PARENT_ID;
-    params.leftMargin = ViewUtil.calculatePixels(view, x);
-    params.topMargin = ViewUtil.calculatePixels(view, y);
+    params.leftMargin = deferred ? 0 : leftPx;
+    params.topMargin = deferred ? 0 : topPx;
     layoutManager.addView(view, params);
+
+    if (deferred) {
+      layoutManager.post(new Runnable() {
+        @Override public void run() { updateComponentPosition(component); }
+      });
+    }
   }
 }

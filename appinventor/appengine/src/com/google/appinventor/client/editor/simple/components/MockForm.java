@@ -424,6 +424,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private MockSwitchableFormLayout myLayout;
   private static final String PROPERTY_NAME_SCREEN_LAYOUT = "ScreenLayout";
 
+  // Tracks the last-applied Sizing value so setSizingProperty() can detect changes and convert
+  // children's Left/Top between fixed-dp and percent encodings when in Absolute layout mode.
+  private String currentSizing = "Responsive";
+
   // flag to control attempting to enable/disable vertical
   // alignment when scrollable property is changed
   private boolean initialized = false;
@@ -968,6 +972,53 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING, sizingProperty);
+    }
+
+    // When switching between Responsive and Fixed while in Absolute layout mode, convert
+    // children's Left/Top between percent encoding and fixed dp values.
+    // Only do this after the project has loaded — during load the properties are replayed in
+    // order and there are no children to convert yet, and we must not corrupt saved values.
+    boolean wasResponsive = "Responsive".equals(currentSizing);
+    boolean nowResponsive = "Responsive".equals(sizingProperty);
+    if (wasResponsive != nowResponsive && editor.isLoadComplete()
+        && "Absolute".equals(getPropertyValue(PROPERTY_NAME_SCREEN_LAYOUT))) {
+      int canvasW = myLayout.getLayoutWidth();
+      int canvasH = myLayout.getLayoutHeight();
+      if (canvasW > 0 && canvasH > 0) {
+        for (MockComponent child : getChildren()) {
+          if (child instanceof MockVisibleComponent
+              && child.hasProperty(MockVisibleComponent.PROPERTY_NAME_LEFT)) {
+            convertChildPosition((MockVisibleComponent) child,
+                wasResponsive, nowResponsive, canvasW, canvasH);
+          }
+        }
+      }
+    }
+    currentSizing = sizingProperty;
+  }
+
+  private void convertChildPosition(MockVisibleComponent child, boolean fromResponsive,
+      boolean toResponsive, int canvasW, int canvasH) {
+    try {
+      int left = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
+      int top  = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
+      if (fromResponsive && !toResponsive) {
+        // percent → dp: decode the percent value against the canvas size
+        if (left <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+          left = -(left - MockVisibleComponent.LENGTH_PERCENT_TAG) * canvasW / 100;
+        }
+        if (top <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+          top = -(top - MockVisibleComponent.LENGTH_PERCENT_TAG) * canvasH / 100;
+        }
+      } else {
+        // dp → percent: encode as percent of canvas size
+        left = MockVisibleComponent.LENGTH_PERCENT_TAG - (left * 100 / canvasW);
+        top  = MockVisibleComponent.LENGTH_PERCENT_TAG - (top  * 100 / canvasH);
+      }
+      child.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "" + left);
+      child.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP,  "" + top);
+    } catch (NumberFormatException e) {
+      // Skip children whose Left/Top values can't be parsed (shouldn't happen in practice).
     }
   }
 

@@ -110,19 +110,48 @@ public abstract class MockVisibleComponent extends MockComponent {
   }
 
   /**
-   * Creates a text property editor that throws an exception if an invalid
-   * number is entered.
+   * Creates a text property editor for Left/Top coordinates that:
+   * - accepts plain integers ("80") or percent strings ("25%")
+   * - displays percent-encoded values (e.g. -1025) as "25%" in the panel
    *
-   * @return a text property editor object with an overridden validate method
+   * When the user types "25%", onPropertyChange converts the stored "25%" string to the
+   * encoded integer (-1025) via changeProperty before any other code sees the raw value.
    */
   private static TextPropertyEditor makeCoordTextPropertyEditor() {
     return new TextPropertyEditor() {
       @Override
-      protected void validate(String text) throws InvalidTextException {
+      protected void updateValue() {
+        String raw = property.getValue();
         try {
-          Integer.valueOf(text);
+          int v = Integer.parseInt(raw);
+          if (v <= LENGTH_PERCENT_TAG) {
+            int pct = -(v - LENGTH_PERCENT_TAG);
+            textEdit.setText(pct + "%");
+            return;
+          }
         } catch (NumberFormatException e) {
-          throw new InvalidTextException("invalid coordinate provided: " + text);
+          // fall through to default display
+        }
+        textEdit.setText(raw);
+      }
+
+      @Override
+      protected void validate(String text) throws InvalidTextException {
+        if (text.endsWith("%")) {
+          try {
+            int pct = Integer.parseInt(text.substring(0, text.length() - 1));
+            if (pct < 0 || pct > 100) {
+              throw new InvalidTextException("percent must be between 0 and 100: " + text);
+            }
+          } catch (NumberFormatException e) {
+            throw new InvalidTextException("invalid coordinate provided: " + text);
+          }
+        } else {
+          try {
+            Integer.valueOf(text);
+          } catch (NumberFormatException e) {
+            throw new InvalidTextException("invalid coordinate provided: " + text);
+          }
         }
       }
     };
@@ -198,8 +227,26 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_LEFT)) {
+      if (newValue.endsWith("%")) {
+        try {
+          int pct = Integer.parseInt(newValue.substring(0, newValue.length() - 1));
+          changeProperty(PROPERTY_NAME_LEFT, "" + (LENGTH_PERCENT_TAG - pct));
+          return;
+        } catch (NumberFormatException e) {
+          // malformed — fall through to refreshForm
+        }
+      }
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TOP)) {
+      if (newValue.endsWith("%")) {
+        try {
+          int pct = Integer.parseInt(newValue.substring(0, newValue.length() - 1));
+          changeProperty(PROPERTY_NAME_TOP, "" + (LENGTH_PERCENT_TAG - pct));
+          return;
+        } catch (NumberFormatException e) {
+          // malformed — fall through to refreshForm
+        }
+      }
       refreshForm();
     }
   }
