@@ -31,6 +31,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
   protected final MockLayout layout;
 
+  // Snap toggle state for absolute layout mode — shared across all instances
+  public static boolean absoluteLayoutSnapEnabled = true;
+
   // List of components within the container
   protected final List<MockComponent> children;
 
@@ -340,6 +343,19 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     return willAcceptComponentType(type);
   }
 
+  /**
+   * Returns the active MockAbsoluteLayout for this container, if any.
+   * Handles both direct MockAbsoluteLayout and the switchable form wrapper.
+   */
+  private MockAbsoluteLayout getActiveAbsoluteLayout() {
+    if (layout instanceof MockAbsoluteLayout) {
+      return (MockAbsoluteLayout) layout;
+    } else if (layout instanceof MockSwitchableFormLayout) {
+      return ((MockSwitchableFormLayout) layout).getAbsoluteLayoutIfActive();
+    }
+    return null;
+  }
+
   // TODO(user): Draw a colored border around the edges of the container
   //                    area while an eligible component is hovering over it.
   @Override
@@ -347,13 +363,22 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     boolean accept = acceptableSource(source);
     if (accept) {
       layout.onDragEnter(x, y);
+      MockAbsoluteLayout absLayout = getActiveAbsoluteLayout();
+      if (absLayout != null) {
+        absLayout.setDragSource(source);
+      }
     }
     return accept;
   }
 
   @Override
   public final void onDragContinue(DragSource source, int x, int y) {
-    layout.onDragContinue(x, y);
+    MockAbsoluteLayout absLayout = getActiveAbsoluteLayout();
+    if (absLayout != null) {
+      absLayout.onDragContinueWithSource(x, y, source);
+    } else {
+      layout.onDragContinue(x, y);
+    }
   }
 
   @Override

@@ -40,6 +40,9 @@
        ui:field="sendToGalleryItem" align="center">
       <actions:SendToGalleryAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="SnapToggle" caption="{messages.snapToggleButton}" align="right">
+      <ya:ToggleSnapAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name ="Console Toggle" caption="{messages.toggleConsoleButton}" ui:field="toggleConsoleItem" align="right">
       <ya:ToggleConsoleAction />
     </ai:ToolbarItem>

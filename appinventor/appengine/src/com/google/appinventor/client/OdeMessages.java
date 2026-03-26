@@ -171,6 +171,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button for toggling the console panel")
   String toggleConsoleButton();
 
+  @DefaultMessage("Snap: ON")
+  @Description("Label of the button for toggling snap alignment in absolute layout mode")
+  String snapToggleButton();
+
   @DefaultMessage("Connect")
   @Description("Label of the button for selecting phone connection")
   String connectButton();

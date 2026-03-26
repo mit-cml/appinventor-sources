@@ -41,6 +41,14 @@ final class MockSwitchableFormLayout extends MockLayout {
   }
 
   /**
+   * Returns the active MockAbsoluteLayout if the layout is currently in absolute mode,
+   * or null if in linear mode.
+   */
+  MockAbsoluteLayout getAbsoluteLayoutIfActive() {
+    return (activeDelegate == absoluteLayout) ? absoluteLayout : null;
+  }
+
+  /**
    * Switches the active layout mode.
    *
    * @param useAbsolute  true to switch to absolute positioning, false for linear stacking

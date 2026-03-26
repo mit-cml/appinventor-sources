@@ -14,10 +14,15 @@ import com.google.appinventor.client.Ode;
 
 import com.google.appinventor.components.common.ComponentConstants;
 
+import com.google.appinventor.client.widgets.dnd.DragSource;
+
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Widget;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +35,12 @@ final class MockAbsoluteLayout extends MockLayout {
 
   // The color of the drop-target area's border
   private static final String DROP_TARGET_AREA_COLOR = "#0000ff";
+
+  // Snap / guideline constants — snapEnabled state lives in MockContainer for cross-package access
+  private static final int SNAP_THRESHOLD = 8;
+  private static final int GRID_SIZE = 8;
+  private static final String ALIGNMENT_COLOR = "#ff0000";
+  private static final String CENTER_COLOR = "#0000ff";
 
   /**
    * Defines the x and y coordinates of a component inside relative layout.
@@ -79,8 +90,44 @@ final class MockAbsoluteLayout extends MockLayout {
     }
   }
 
+  private enum GuidelineType { HORIZONTAL, VERTICAL }
+
+  private static class GuidelineSpec {
+    final GuidelineType type;
+    final int value;
+    final String color;
+
+    GuidelineSpec(GuidelineType type, int value, String color) {
+      this.type = type;
+      this.value = value;
+      this.color = color;
+    }
+  }
+
+  private static class SnapResult {
+    final int left;
+    final int top;
+    final List<GuidelineSpec> guidelines;
+
+    SnapResult(int left, int top, List<GuidelineSpec> guidelines) {
+      this.left = left;
+      this.top = top;
+      this.guidelines = guidelines;
+    }
+  }
+
   // The DIV element that displays the drop-target area.
   private Element dropTargetArea; // lazily initialized
+
+  // Guideline overlay infrastructure
+  private Element guidelineOverlay; // lazily initialized transparent full-size div
+  private final List<Element> activeGuidelineElements = new ArrayList<>();
+
+  // Snap state for the current drag
+  private MockComponent currentDragSource;
+  private int lastSnappedLeft;
+  private int lastSnappedTop;
+  private boolean hasSnappedPosition;
 
   /**
    * Creates a new relative layout.
@@ -119,6 +166,60 @@ final class MockAbsoluteLayout extends MockLayout {
     setDropTargetAreaVisible(true);
   }
 
+  private void ensureGuidelineOverlay() {
+    if (guidelineOverlay == null) {
+      guidelineOverlay = DOM.createDiv();
+      Style style = guidelineOverlay.getStyle();
+      style.setPosition(ABSOLUTE);
+      style.setLeft(0, PX);
+      style.setTop(0, PX);
+      style.setProperty("pointerEvents", "none");
+      style.setZIndex(1000);
+      style.setVisibility(HIDDEN);
+      DOM.appendChild(container.getRootPanel().getElement(), guidelineOverlay);
+    }
+  }
+
+  private void showGuidelines(List<GuidelineSpec> specs) {
+    ensureGuidelineOverlay();
+    // Remove previously added guideline child elements
+    for (Element e : activeGuidelineElements) {
+      guidelineOverlay.removeChild(e);
+    }
+    activeGuidelineElements.clear();
+
+    for (GuidelineSpec spec : specs) {
+      Element line = DOM.createDiv();
+      Style s = line.getStyle();
+      s.setPosition(ABSOLUTE);
+      s.setBackgroundColor(spec.color);
+      if (spec.type == GuidelineType.VERTICAL) {
+        s.setLeft(spec.value, PX);
+        s.setTop(0, PX);
+        s.setWidth(1, PX);
+        s.setHeight(layoutHeight, PX);
+      } else {
+        s.setTop(spec.value, PX);
+        s.setLeft(0, PX);
+        s.setHeight(1, PX);
+        s.setWidth(layoutWidth, PX);
+      }
+      guidelineOverlay.appendChild(line);
+      activeGuidelineElements.add(line);
+    }
+    guidelineOverlay.getStyle().setVisibility(VISIBLE);
+  }
+
+  private void hideGuidelines() {
+    if (guidelineOverlay != null) {
+      for (Element e : activeGuidelineElements) {
+        guidelineOverlay.removeChild(e);
+      }
+      activeGuidelineElements.clear();
+      guidelineOverlay.getStyle().setVisibility(HIDDEN);
+    }
+  }
+
   /**
    * Converts the child's position properties into a {@link Coordinates} object.
    *
@@ -129,6 +230,160 @@ final class MockAbsoluteLayout extends MockLayout {
     int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
     int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
     return new Coordinates(x, y);
+  }
+
+  /**
+   * Sets the component being dragged over this layout, for use in snap calculations.
+   * For palette drags the source is not a MockComponent, so currentDragSource stays null
+   * (meaning no sibling exclusion needed — the component isn't in the layout yet).
+   */
+  void setDragSource(DragSource source) {
+    currentDragSource = (source instanceof MockComponent) ? (MockComponent) source : null;
+    hasSnappedPosition = false;
+  }
+
+  /**
+   * Called during drag with the source available, enabling snap and guideline logic.
+   */
+  void onDragContinueWithSource(int x, int y, DragSource source) {
+    setDropTargetAreaBoundsAndShow();
+    if (!MockContainer.absoluteLayoutSnapEnabled) {
+      hideGuidelines();
+      return;
+    }
+
+    Widget dw = source.getDragWidget();
+    int offsetX = 0, offsetY = 0, dragWidth = 0, dragHeight = 0;
+    if (dw != null) {
+      offsetX = parsePx(DOM.getStyleAttribute(dw.getElement(), "left"));
+      offsetY = parsePx(DOM.getStyleAttribute(dw.getElement(), "top"));
+      // The style is set as -offsetX, so offsetX = -parsedValue
+      offsetX = -offsetX;
+      offsetY = -offsetY;
+      dragWidth = dw.getOffsetWidth();
+      dragHeight = dw.getOffsetHeight();
+    }
+
+    int candidateLeft = x - offsetX;
+    int candidateTop = y - offsetY;
+
+    SnapResult result = calculateSnap(candidateLeft, candidateTop, dragWidth, dragHeight);
+    lastSnappedLeft = result.left;
+    lastSnappedTop = result.top;
+    hasSnappedPosition = true;
+    showGuidelines(result.guidelines);
+  }
+
+  private static int parsePx(String s) {
+    if (s != null && s.endsWith("px")) {
+      try {
+        return Integer.parseInt(s.substring(0, s.length() - 2));
+      } catch (NumberFormatException e) {
+        return 0;
+      }
+    }
+    return 0;
+  }
+
+  private int snapToGrid(int value) {
+    return Math.round((float) value / GRID_SIZE) * GRID_SIZE;
+  }
+
+  private SnapResult calculateSnap(int candidateLeft, int candidateTop,
+      int dragWidth, int dragHeight) {
+    List<GuidelineSpec> guidelines = new ArrayList<>();
+    int sl = snapToGrid(candidateLeft);
+    int st = snapToGrid(candidateTop);
+    boolean hasVSnap = false;
+    boolean hasHSnap = false;
+
+    // Screen center checks (blue)
+    int scX = layoutWidth / 2;
+    int scY = layoutHeight / 2;
+    int dcX = candidateLeft + dragWidth / 2;
+    int dcY = candidateTop + dragHeight / 2;
+
+    if (Math.abs(dcX - scX) <= SNAP_THRESHOLD) {
+      sl = scX - dragWidth / 2;
+      hasVSnap = true;
+      guidelines.add(new GuidelineSpec(GuidelineType.VERTICAL, scX, CENTER_COLOR));
+    }
+    if (Math.abs(dcY - scY) <= SNAP_THRESHOLD) {
+      st = scY - dragHeight / 2;
+      hasHSnap = true;
+      guidelines.add(new GuidelineSpec(GuidelineType.HORIZONTAL, scY, CENTER_COLOR));
+    }
+
+    // Sibling component checks (red) — find closest within threshold across all siblings
+    int bestDeltaX = SNAP_THRESHOLD + 1;
+    int bestSnapLeft = sl;
+    int bestLineX = 0;
+    int bestDeltaY = SNAP_THRESHOLD + 1;
+    int bestSnapTop = st;
+    int bestLineY = 0;
+
+    for (MockComponent sibling : container.getChildren()) {
+      if (sibling == currentDragSource || !sibling.isVisibleComponent()) {
+        continue;
+      }
+      int sibL = container.getRootPanel().getWidgetLeft(sibling);
+      int sibT = container.getRootPanel().getWidgetTop(sibling);
+      int sibR = sibL + sibling.getOffsetWidth();
+      int sibB = sibT + sibling.getOffsetHeight();
+      int sibCX = (sibL + sibR) / 2;
+      int sibCY = (sibT + sibB) / 2;
+      int dragR = candidateLeft + dragWidth;
+      int dragCX = candidateLeft + dragWidth / 2;
+      int dragB = candidateTop + dragHeight;
+      int dragCY = candidateTop + dragHeight / 2;
+
+      if (!hasVSnap) {
+        // left-left
+        int d = Math.abs(candidateLeft - sibL);
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibL; bestLineX = sibL; }
+        // left-right
+        d = Math.abs(candidateLeft - sibR);
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibR; bestLineX = sibR; }
+        // right-right
+        d = Math.abs(dragR - sibR);
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibR - dragWidth; bestLineX = sibR; }
+        // right-left
+        d = Math.abs(dragR - sibL);
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibL - dragWidth; bestLineX = sibL; }
+        // center-center
+        d = Math.abs(dragCX - sibCX);
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibCX - dragWidth / 2; bestLineX = sibCX; }
+      }
+
+      if (!hasHSnap) {
+        // top-top
+        int d = Math.abs(candidateTop - sibT);
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibT; bestLineY = sibT; }
+        // top-bottom
+        d = Math.abs(candidateTop - sibB);
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibB; bestLineY = sibB; }
+        // bottom-bottom
+        d = Math.abs(dragB - sibB);
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibB - dragHeight; bestLineY = sibB; }
+        // bottom-top
+        d = Math.abs(dragB - sibT);
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibT - dragHeight; bestLineY = sibT; }
+        // center-center
+        d = Math.abs(dragCY - sibCY);
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibCY - dragHeight / 2; bestLineY = sibCY; }
+      }
+    }
+
+    if (!hasVSnap && bestDeltaX <= SNAP_THRESHOLD) {
+      sl = bestSnapLeft;
+      guidelines.add(new GuidelineSpec(GuidelineType.VERTICAL, bestLineX, ALIGNMENT_COLOR));
+    }
+    if (!hasHSnap && bestDeltaY <= SNAP_THRESHOLD) {
+      st = bestSnapTop;
+      guidelines.add(new GuidelineSpec(GuidelineType.HORIZONTAL, bestLineY, ALIGNMENT_COLOR));
+    }
+
+    return new SnapResult(sl, st, guidelines);
   }
 
   @Override
@@ -232,14 +487,28 @@ final class MockAbsoluteLayout extends MockLayout {
   @Override
   void onDragLeave() {
     setDropTargetAreaVisible(false);
+    hideGuidelines();
+    currentDragSource = null;
+    hasSnappedPosition = false;
   }
 
   @Override
   boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
-    int leftMargin = x - offsetX;
-    int topMargin = y - offsetY;
+    int leftMargin;
+    int topMargin;
+
+    if (MockContainer.absoluteLayoutSnapEnabled && hasSnappedPosition) {
+      leftMargin = lastSnappedLeft;
+      topMargin = lastSnappedTop;
+    } else {
+      leftMargin = x - offsetX;
+      topMargin = y - offsetY;
+    }
 
     setDropTargetAreaVisible(false);
+    hideGuidelines();
+    currentDragSource = null;
+    hasSnappedPosition = false;
 
     // another way to do this is to allow the top-left corner of the dropped
     // component to be outside the arrangement, in which case we can just take
@@ -284,6 +553,9 @@ final class MockAbsoluteLayout extends MockLayout {
   void dispose() {
     if (dropTargetArea != null) {
       container.getRootPanel().getElement().removeChild(dropTargetArea);
+    }
+    if (guidelineOverlay != null) {
+      container.getRootPanel().getElement().removeChild(guidelineOverlay);
     }
   }
 }
