@@ -73,8 +73,8 @@ import java.util.stream.Collectors;
 
 @SimpleObject
 @UsesLibraries({"ar-core.jar", "ar-core.aar", "obj-0.3.0.jar",
-        "filament-v1.9.11-android.jar",
-        "gltfio-v1.9.11-android.jar"})
+        "filament-v1.9.20-android.jar",
+        "gltfio-v1.9.20-android.jar"})
 @UsesNativeLibraries(
         v7aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
         v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
@@ -172,6 +172,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private float invisibleFloor = -1.0f;
     private boolean groundDetected = false;
     private int detectedPlaneType = 1;
+
+    int maxPlanesToDispatch = 5; //throttle
+    int count = 0;
+
     private long lastPhysicsUpdateTime = 0;
 
     private Surface pendingFilamentSurface = null;
@@ -519,16 +523,15 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
-
-
-
     public void emitPlaneDetectedEvent() {
         Collection<Plane> planes = session.getAllTrackables(Plane.class);
         Log.d(LOG_TAG, "Number of planes detected: " + planes.size());
 
         for (Plane plane : planes) {
             ARDetectedPlane arplane = new DetectedPlane(plane);
-            PlaneDetected(arplane); //dispatch
+            if (plane.getTrackingState() != TrackingState.TRACKING) continue;
+            if (count++ >= maxPlanesToDispatch) break;
+            PlaneDetected(arplane); //throttle the amount of planes detected
         }
     }
 
@@ -763,6 +766,15 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             } catch (com.google.ar.core.exceptions.SessionPausedException e) {
                 // Session not yet resumed — skip this frame
                 return;
+            } /*catch (com.google.ar.core.exceptions.FatalException e) {
+                Log.e(LOG_TAG, "ARCore FatalException — recreating session", e);
+                // Post session recreation to main thread
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    restartARSession();  // pause + resume session
+                });
+                return;  // skip this frame
+            } */catch (Exception e) {
+                Log.e(LOG_TAG, "onDrawFrame error: " + e.getMessage(), e);
             }
 
             // OpenGL draws — camera feed, planes, sphere/box/capsule
@@ -2049,7 +2061,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleProperty(description = "The list of Nodes added to the ARView3D.")
     public List<ARNode> Nodes() {
-        return new ArrayList<ARNode>();
+        return new java.util.concurrent.CopyOnWriteArrayList<ARNode>();
     }
 
     @SimpleProperty(description = "The list of DetectedPlanes added to the ARView3D.")
@@ -2194,7 +2206,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleFunction(description = "Create an ImageMarker with an url string")
     public ImageMarker CreateImageMarker(String image) {
         ImageMarker imageMarker = new ImageMarker(this);
-        imageMarker.imageUrl = image;
+        imageMarker.Image(image);
         return imageMarker;
     }
 
@@ -2216,8 +2228,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleFunction(description = "returnImageMarker after snapshot url is made")
     public ImageMarker ImageForMarkerCreated(String url, String name, float width){
         ImageMarker iM = new ImageMarker(this); //url
-        iM.imageUrl = url;
-        iM.name = name;
+        iM.Image(url);
+        //iM.Name(name);
         iM.PhysicalWidthInCentimeters(width);
         return iM;
     }
@@ -2458,17 +2470,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleFunction(description = "Create a new ModelNode with default properties at the specified (x,y,z) position.")
     public ModelNode CreateModelNode(float x, float y, float z, String modelObjectString) {
         if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
+        try {
+            ModelNode modelNode = new ModelNode(this);
+            modelNode.Model(modelObjectString);
 
-        ModelNode modelNode = new ModelNode(this);
-        modelNode.Model(modelObjectString);
+            float[] position = {x, y, z};
+            float[] rotation = {0, 0, 0, 1};
+            Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
+            Log.i("creating Model node, anchor is", myAnchor.toString());
+            modelNode.Anchor(myAnchor);
 
-        float[] position = {x, y, z};
-        float[] rotation = {0, 0, 0, 1};
-        Anchor myAnchor = session.createAnchor(new Pose(position, rotation));
-        Log.i("creating Model node, anchor is", myAnchor.toString());
-        modelNode.Anchor(myAnchor);
-
-        return modelNode;
+            return modelNode;
+        } catch (com.google.ar.core.exceptions.FatalException e) {
+            Log.e(LOG_TAG, "ARCore fatal — cannot create anchor: " + e.getMessage());
+            // Post session restart to handler
+            //new Handler(Looper.getMainLooper()).post(this::restartARSession);
+            return null;
+        }
     }
 
     @SimpleFunction(description = "Create a new ModelNode with geo coords, if available")
