@@ -71,6 +71,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * Project editor for Young Android projects. Each instance corresponds to
  * one project that has been opened in this App Inventor session.
@@ -430,6 +432,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   /*
    * Returns the BlocksEditor for the given form name in this project
    */
+  @JsMethod
   public BlocksEditor<?, ?> getBlocksFileEditor(String formName) {
     if (editorMap.containsKey(formName)) {
       return editorMap.get(formName).blocksEditor;
@@ -440,6 +443,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   /*
    * Returns the YaFormEditor for the given form name in this project
    */
+  @JsMethod
   public DesignerEditor<?, ?, ?, ?, ?> getFormFileEditor(String formName) {
     if (editorMap.containsKey(formName)) {
       return editorMap.get(formName).formEditor;

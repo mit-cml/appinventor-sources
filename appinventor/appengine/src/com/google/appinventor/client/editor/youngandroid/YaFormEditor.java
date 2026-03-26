@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
@@ -48,6 +49,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import jsinterop.annotations.JsMethod;
 
 /**
  * Editor for Young Android Form (.scm) files.
@@ -122,6 +125,11 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         return dropTargets.toArray(new DropTarget[dropTargets.size()]);
       }
     };
+  }
+
+  @Override
+  public Map<String, MockComponent> getComponentsDb() {
+    return componentsDb;
   }
 
   @Override
@@ -315,6 +323,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         content, JSON_PARSER);
     try {
       root = createMockForm(propertiesObject.getProperties().get("Properties").asObject());
+      componentsDb.put("0", root);
     } catch(ComponentNotFoundException e) {
       Ode.getInstance().recordCorruptProject(getProjectId(), getProjectRootNode().getName(),
           e.getMessage());
@@ -530,4 +539,43 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     }
   }
 
+  /**
+   * Gets the mock component of the given UUID.
+   * 
+   * 
+   * @param UUID the component UUID
+   * @return the MockComponent of the specified UUID
+   */
+  @JsMethod
+  public MockComponent getComponentByUuid(String uuid) {
+    LOG.info("componentsDb keys: " + componentsDb.keySet());
+    MockComponent component = componentsDb.get(uuid);
+    if (component == null) {
+      throw new IllegalStateException("No component exists with UUID \"" + uuid + "\"");
+    }
+    return component;
+  }
+
+  /**
+   * Converts JSON string to JSON object needed to create component.
+   * 
+   * @param JSON string of component properties
+   * @return the JSON object of JSON string
+   */
+  @JsMethod 
+  public JSONObject parseJsonString(String jsonString) {
+    return JSON_PARSER.parse(jsonString).asObject();
+  }
+
+  /**
+   * Creates mock component from JSON propeties object.
+   * 
+   * @param JSON object of component properties
+   * @return Mock Component with properties in JSON object
+   */
+  @JsMethod
+  public MockComponent createMockComponentFromJson(JSONObject propertiesObject) {
+    MockForm rootForm = getForm();
+    return createMockComponent(propertiesObject, rootForm, MockForm.TYPE);
+  }
 }
