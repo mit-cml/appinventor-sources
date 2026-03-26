@@ -57,6 +57,8 @@ let kMinimumToastWait = 10.0
   private var _highContrast = false
   private var _backGesture: UIGestureRecognizer? = nil
   private var _tapGesture: UITapGestureRecognizer? = nil
+  private var _relativeLayout: RelativeLayout? = nil
+  private var _absoluteContainerView: UIView? = nil
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -196,7 +198,11 @@ let kMinimumToastWait = 10.0
 
   open func add(_ component: ViewComponent) {
     _components.append(component)
-    _linearView.addItem(LinearViewItem(component.view))
+    if let rl = _relativeLayout {
+      rl.add(component)
+    } else {
+      _linearView.addItem(LinearViewItem(component.view))
+    }
     view.setNeedsLayout()
     view.setNeedsUpdateConstraints()
   }
@@ -221,6 +227,25 @@ let kMinimumToastWait = 10.0
   }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
+    if _relativeLayout != nil {
+      if width <= kLengthPercentTag {
+        let childWidth = Width * Int32(-(width - kLengthPercentTag)) / 100
+        component._lastSetWidth = width
+        NSLayoutConstraint.activate([component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))])
+      } else if width == kLengthPreferred {
+        component._lastSetWidth = width
+        component.view.constraints.filter { $0.firstAttribute == .width }.forEach { $0.isActive = false }
+      } else if width == kLengthFillParent {
+        component._lastSetWidth = width
+        if let container = _absoluteContainerView {
+          NSLayoutConstraint.activate([component.view.widthAnchor.constraint(equalTo: container.widthAnchor)])
+        }
+      } else {
+        component._lastSetWidth = width
+        NSLayoutConstraint.activate([component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))])
+      }
+      return
+    }
     if width <= kLengthPercentTag {
       _linearView.setWidth(of: component.view, to: Length(percent: width, of: _scaleFrameLayout))
     } else if width == kLengthPreferred {
@@ -234,6 +259,25 @@ let kMinimumToastWait = 10.0
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
+    if _relativeLayout != nil {
+      if height <= kLengthPercentTag {
+        let childHeight = Height * Int32(-(height - kLengthPercentTag)) / 100
+        component._lastSetHeight = height
+        NSLayoutConstraint.activate([component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))])
+      } else if height == kLengthPreferred {
+        component._lastSetHeight = height
+        component.view.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
+      } else if height == kLengthFillParent {
+        component._lastSetHeight = height
+        if let container = _absoluteContainerView {
+          NSLayoutConstraint.activate([component.view.heightAnchor.constraint(equalTo: container.heightAnchor)])
+        }
+      } else {
+        component._lastSetHeight = height
+        NSLayoutConstraint.activate([component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))])
+      }
+      return
+    }
     if height <= kLengthPercentTag {
       _linearView.setHeight(of: component.view, to: Length(percent: height, of: _scaleFrameLayout))
     } else if height == kLengthPreferred {
@@ -269,6 +313,9 @@ let kMinimumToastWait = 10.0
   }
 
   open func isVisible(component: ViewComponent) -> Bool {
+    if _relativeLayout != nil {
+      return !component.view.isHidden && component.view.superview != nil
+    }
     return _linearView.contains(component.view)
   }
 
@@ -277,12 +324,22 @@ let kMinimumToastWait = 10.0
     if visibility == visible {
       return
     }
-    if visibility {
+    if _relativeLayout != nil {
+      component.view.isHidden = !visibility
+      if visibility {
+        setChildWidth(of: component, to: component._lastSetWidth)
+        setChildHeight(of: component, to: component._lastSetHeight)
+      }
+    } else if visibility {
       _linearView.setVisibility(of: component.view, to: true)
       component.onAttach()
     } else {
       _linearView.setVisibility(of: component.view, to: false)
     }
+  }
+
+  open func setChildNeedsLayout(component: ViewComponent) {
+    _relativeLayout?.updateComponentPosition(component: component)
   }
 
   open var scaleFrameLayout: ScaleFrameLayout {
@@ -296,6 +353,9 @@ let kMinimumToastWait = 10.0
     }
     _linearView.resetView()
     _linearView.removeAllItems()
+    _absoluteContainerView?.removeFromSuperview()
+    _relativeLayout = nil
+    _absoluteContainerView = nil
     initThunks.removeAllObjects()
     clearComponents()
     defaultPropertyValues()
@@ -303,6 +363,7 @@ let kMinimumToastWait = 10.0
 
   private func recomputeLayout() {
     _linearView.removeFromSuperview()
+    _absoluteContainerView?.removeFromSuperview()
     _scaleFrameLayout.removeFromSuperview()
     _linearView.accessibilityIdentifier = "Form root view"
     if _compatibilityMode {
@@ -311,11 +372,15 @@ let kMinimumToastWait = 10.0
       _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(origin: .zero, size: view.frame.size))
     }
     _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
-    _linearView.scrollEnabled = _scrollable
-    _scaleFrameLayout.addSubview(_linearView)
+    if let container = _absoluteContainerView {
+      _scaleFrameLayout.addSubview(container)
+    } else {
+      _linearView.scrollEnabled = _scrollable
+      _scaleFrameLayout.addSubview(_linearView)
+      _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
+      _linearView.verticalAlignment = VerticalGravity(rawValue: _verticalAlignment)!
+    }
     view.addSubview(_scaleFrameLayout)
-    _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
-    _linearView.verticalAlignment = VerticalGravity(rawValue: _verticalAlignment)!
     resetConstraints()
   }
 
@@ -330,10 +395,11 @@ let kMinimumToastWait = 10.0
     _constraints.append(_scaleFrameLayout.leadingAnchor.constraint(equalTo: view.leadingAnchor))
     _constraints.append(_scaleFrameLayout.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
     _constraints.append(_scaleFrameLayout.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
-    _constraints.append(_linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor))
-    _constraints.append(_linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
-    _constraints.append(_linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor))
-    _constraints.append(_linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor))
+    let rootChild: UIView = _absoluteContainerView ?? _linearView
+    _constraints.append(rootChild.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor))
+    _constraints.append(rootChild.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
+    _constraints.append(rootChild.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor))
+    _constraints.append(rootChild.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor))
     view.addConstraints(_constraints)
   }
 
@@ -504,12 +570,20 @@ let kMinimumToastWait = 10.0
         // Already using this image
         return
       } else if path != "", let image = AssetManager.shared.imageFromPath(path: path) {
-        _linearView.image = image
         _backgroundImage = path
+        if let container = _absoluteContainerView {
+          container.backgroundColor = UIColor(patternImage: image)
+        } else {
+          _linearView.image = image
+        }
       } else {
         _backgroundImage = ""
-        _linearView.image = nil
-        _linearView.backgroundColor = argbToColor(_backgroundColor)
+        if let container = _absoluteContainerView {
+          container.backgroundColor = argbToColor(_backgroundColor)
+        } else {
+          _linearView.image = nil
+          _linearView.backgroundColor = argbToColor(_backgroundColor)
+        }
       }
     }
   }
@@ -700,6 +774,49 @@ let kMinimumToastWait = 10.0
     set(scrollable) {
       _scrollable = scrollable
       recomputeLayout()
+    }
+  }
+
+  @objc open var ScreenLayout: String {
+    get {
+      return _relativeLayout != nil ? "Absolute" : "Linear"
+    }
+    set(mode) {
+      if mode == "Absolute" {
+        guard _relativeLayout == nil else { return }
+        let rl = RelativeLayout(preferredEmptyWidth: Int(view.bounds.width),
+                                preferredEmptyHeight: Int(view.bounds.height))
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(rl.getLayoutManager())
+        rl.getLayoutManager().translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+          rl.getLayoutManager().topAnchor.constraint(equalTo: container.topAnchor),
+          rl.getLayoutManager().leftAnchor.constraint(equalTo: container.leftAnchor),
+          rl.getLayoutManager().rightAnchor.constraint(equalTo: container.rightAnchor),
+          rl.getLayoutManager().bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+        _relativeLayout = rl
+        _absoluteContainerView = container
+        _linearView.removeAllItems()
+        for child in _components {
+          if let child = child as? ViewComponent {
+            rl.add(child)
+          }
+        }
+        recomputeLayout()
+      } else {
+        guard _relativeLayout != nil else { return }
+        _absoluteContainerView?.removeFromSuperview()
+        _relativeLayout = nil
+        _absoluteContainerView = nil
+        for child in _components {
+          if let child = child as? ViewComponent {
+            _linearView.addItem(LinearViewItem(child.view))
+          }
+        }
+        recomputeLayout()
+      }
     }
   }
 
