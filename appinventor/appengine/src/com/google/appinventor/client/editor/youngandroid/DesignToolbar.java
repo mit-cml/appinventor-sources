@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 public class DesignToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
   protected ToolbarItem backArrow;
+  protected ToolbarItem projectPermissions;
 
   /*
    * A EditorPair groups together the designer and blocks editor for an
