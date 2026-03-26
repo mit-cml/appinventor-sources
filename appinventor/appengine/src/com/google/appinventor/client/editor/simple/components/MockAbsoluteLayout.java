@@ -107,11 +107,16 @@ final class MockAbsoluteLayout extends MockLayout {
   private static class SnapResult {
     final int left;
     final int top;
+    final String storedLeft;   // non-null only on left-left snap: sibling's stored Left value
+    final String storedTop;    // non-null only on top-top snap:  sibling's stored Top value
     final List<GuidelineSpec> guidelines;
 
-    SnapResult(int left, int top, List<GuidelineSpec> guidelines) {
+    SnapResult(int left, int top, String storedLeft, String storedTop,
+        List<GuidelineSpec> guidelines) {
       this.left = left;
       this.top = top;
+      this.storedLeft = storedLeft;
+      this.storedTop = storedTop;
       this.guidelines = guidelines;
     }
   }
@@ -128,6 +133,7 @@ final class MockAbsoluteLayout extends MockLayout {
   private int lastSnappedLeft;
   private int lastSnappedTop;
   private boolean hasSnappedPosition;
+  private SnapResult lastSnapResult;
 
   // Drag geometry — cached once on drag-enter to avoid re-reading modified CSS
   private int dragOffsetX;
@@ -247,6 +253,7 @@ final class MockAbsoluteLayout extends MockLayout {
   void setDragSource(DragSource source) {
     currentDragSource = (source instanceof MockComponent) ? (MockComponent) source : null;
     hasSnappedPosition = false;
+    lastSnapResult = null;
     dragGeometryCached = false;
     dragOffsetX = 0;
     dragOffsetY = 0;
@@ -288,6 +295,7 @@ final class MockAbsoluteLayout extends MockLayout {
     SnapResult result = calculateSnap(candidateLeft, candidateTop, dragWidth, dragHeight);
     lastSnappedLeft = result.left;
     lastSnappedTop = result.top;
+    lastSnapResult = result;
     hasSnappedPosition = true;
     showGuidelines(result.guidelines);
 
@@ -347,6 +355,8 @@ final class MockAbsoluteLayout extends MockLayout {
     int bestDeltaY = SNAP_THRESHOLD + 1;
     int bestSnapTop = st;
     int bestLineY = 0;
+    String bestStoredLeft = null;
+    String bestStoredTop = null;
 
     for (MockComponent sibling : container.getChildren()) {
       if (sibling == currentDragSource || !sibling.isVisibleComponent()) {
@@ -364,52 +374,66 @@ final class MockAbsoluteLayout extends MockLayout {
       int dragCY = candidateTop + dragHeight / 2;
 
       if (!hasVSnap) {
-        // left-left
+        // left-left: copy sibling's stored Left to avoid percent round-trip error
         int d = Math.abs(candidateLeft - sibL);
-        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibL; bestLineX = sibL; }
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibL; bestLineX = sibL;
+          bestStoredLeft = sibling.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT); }
         // left-right
         d = Math.abs(candidateLeft - sibR);
-        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibR; bestLineX = sibR; }
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibR; bestLineX = sibR;
+          bestStoredLeft = null; }
         // right-right
         d = Math.abs(dragR - sibR);
-        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibR - dragWidth; bestLineX = sibR; }
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibR - dragWidth; bestLineX = sibR;
+          bestStoredLeft = null; }
         // right-left
         d = Math.abs(dragR - sibL);
-        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibL - dragWidth; bestLineX = sibL; }
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibL - dragWidth; bestLineX = sibL;
+          bestStoredLeft = null; }
         // center-center
         d = Math.abs(dragCX - sibCX);
-        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibCX - dragWidth / 2; bestLineX = sibCX; }
+        if (d < bestDeltaX) { bestDeltaX = d; bestSnapLeft = sibCX - dragWidth / 2; bestLineX = sibCX;
+          bestStoredLeft = null; }
       }
 
       if (!hasHSnap) {
-        // top-top
+        // top-top: copy sibling's stored Top to avoid percent round-trip error
         int d = Math.abs(candidateTop - sibT);
-        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibT; bestLineY = sibT; }
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibT; bestLineY = sibT;
+          bestStoredTop = sibling.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP); }
         // top-bottom
         d = Math.abs(candidateTop - sibB);
-        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibB; bestLineY = sibB; }
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibB; bestLineY = sibB;
+          bestStoredTop = null; }
         // bottom-bottom
         d = Math.abs(dragB - sibB);
-        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibB - dragHeight; bestLineY = sibB; }
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibB - dragHeight; bestLineY = sibB;
+          bestStoredTop = null; }
         // bottom-top
         d = Math.abs(dragB - sibT);
-        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibT - dragHeight; bestLineY = sibT; }
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibT - dragHeight; bestLineY = sibT;
+          bestStoredTop = null; }
         // center-center
         d = Math.abs(dragCY - sibCY);
-        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibCY - dragHeight / 2; bestLineY = sibCY; }
+        if (d < bestDeltaY) { bestDeltaY = d; bestSnapTop = sibCY - dragHeight / 2; bestLineY = sibCY;
+          bestStoredTop = null; }
       }
     }
 
     if (!hasVSnap && bestDeltaX <= SNAP_THRESHOLD) {
       sl = bestSnapLeft;
       guidelines.add(new GuidelineSpec(GuidelineType.VERTICAL, bestLineX, ALIGNMENT_COLOR));
+    } else {
+      bestStoredLeft = null;
     }
     if (!hasHSnap && bestDeltaY <= SNAP_THRESHOLD) {
       st = bestSnapTop;
       guidelines.add(new GuidelineSpec(GuidelineType.HORIZONTAL, bestLineY, ALIGNMENT_COLOR));
+    } else {
+      bestStoredTop = null;
     }
 
-    return new SnapResult(sl, st, guidelines);
+    return new SnapResult(sl, st, bestStoredLeft, bestStoredTop, guidelines);
   }
 
   @Override
@@ -524,7 +548,10 @@ final class MockAbsoluteLayout extends MockLayout {
     int leftMargin;
     int topMargin;
 
-    if (MockContainer.absoluteLayoutSnapEnabled && hasSnappedPosition) {
+    boolean wasSnapped = MockContainer.absoluteLayoutSnapEnabled && hasSnappedPosition;
+    SnapResult snapResult = lastSnapResult;
+
+    if (wasSnapped) {
       leftMargin = lastSnappedLeft;
       topMargin = lastSnappedTop;
     } else {
@@ -536,6 +563,7 @@ final class MockAbsoluteLayout extends MockLayout {
     hideGuidelines();
     currentDragSource = null;
     hasSnappedPosition = false;
+    lastSnapResult = null;
 
     // another way to do this is to allow the top-left corner of the dropped
     // component to be outside the arrangement, in which case we can just take
@@ -550,17 +578,36 @@ final class MockAbsoluteLayout extends MockLayout {
 
       // In Responsive mode, convert pixel drop coordinates to percent encoding so the
       // component repositions proportionally on any screen size.
-      int storedLeft = leftMargin;
-      int storedTop = topMargin;
-      if (layoutWidth > 0 && layoutHeight > 0
-          && "Responsive".equals(container.getForm().getPropertyValue("Sizing"))) {
-        storedLeft = MockVisibleComponent.LENGTH_PERCENT_TAG - (leftMargin * 100 / layoutWidth);
-        storedTop = MockVisibleComponent.LENGTH_PERCENT_TAG - (topMargin * 100 / layoutHeight);
+      // For left-left / top-top snaps, copy the sibling's stored value directly to avoid
+      // the percent round-trip rounding error that would shift the component by a few pixels.
+      String sizing = container.getForm().getPropertyValue("Sizing");
+      boolean responsive = layoutWidth > 0 && layoutHeight > 0 && "Responsive".equals(sizing);
+
+      String newLeft;
+      if (wasSnapped && snapResult != null && snapResult.storedLeft != null) {
+        newLeft = snapResult.storedLeft;
+      } else {
+        int sl = responsive
+            ? MockVisibleComponent.LENGTH_PERCENT_TAG
+                - Math.round((float) leftMargin * 100 / layoutWidth)
+            : leftMargin;
+        newLeft = "" + sl;
+      }
+
+      String newTop;
+      if (wasSnapped && snapResult != null && snapResult.storedTop != null) {
+        newTop = snapResult.storedTop;
+      } else {
+        int st = responsive
+            ? MockVisibleComponent.LENGTH_PERCENT_TAG
+                - Math.round((float) topMargin * 100 / layoutHeight)
+            : topMargin;
+        newTop = "" + st;
       }
 
       try {
-        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "" + storedLeft);
-        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "" + storedTop);
+        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, newLeft);
+        source.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, newTop);
       } catch (Exception e) {
         return false;
       }

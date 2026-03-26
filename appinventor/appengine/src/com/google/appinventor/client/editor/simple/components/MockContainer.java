@@ -406,16 +406,13 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
 
     // handle change of visibility of x and y coordinate properties if
     // component is visible
-    if (this instanceof MockAbsoluteArrangement
-        && sourceComponent instanceof MockVisibleComponent) {
-      ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(true);
+    if (sourceComponent instanceof MockVisibleComponent) {
+      boolean destIsAbsolute = getActiveAbsoluteLayout() != null;
+      ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(destIsAbsolute);
       if (editor instanceof YaFormEditor) {
-        updatePropertiesPanel = true;
-      }
-    } else if (sourceComponent instanceof MockVisibleComponent) {
-      ((MockVisibleComponent) sourceComponent).setCoordPropertiesVisible(false);
-      if (sourceContainer instanceof MockAbsoluteArrangement) {
-        if (editor instanceof YaFormEditor) {
+        MockAbsoluteLayout srcAbsLayout = (sourceContainer != null)
+            ? sourceContainer.getActiveAbsoluteLayout() : null;
+        if (destIsAbsolute || srcAbsLayout != null) {
           updatePropertiesPanel = true;
         }
       }
