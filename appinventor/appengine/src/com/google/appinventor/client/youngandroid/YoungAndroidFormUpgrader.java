@@ -921,6 +921,11 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // CheckedColor and UncheckedColor properties were added in version 3.
+      // No automatic upgrade needed - new properties will use default values.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
