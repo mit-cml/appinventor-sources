@@ -1397,7 +1397,7 @@ public class YaVersion {
   // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
   public static final int REGRESSION_COMPONENT_VERSION = 2;
 
-  public static final int SHARING_COMPONENT_VERSION = 1;
+  public static final int SHARING_COMPONENT_VERSION = 2;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
