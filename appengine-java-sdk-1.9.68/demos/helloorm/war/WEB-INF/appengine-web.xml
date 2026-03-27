@@ -1,0 +1,11 @@
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application>helloorm</application>
+  <version>1</version>
+  <threadsafe>true</threadsafe>
+
+  <static-files/>
+  <system-properties>
+    <property name="helloorm.persistence.standard" value="JPA"/>
+  </system-properties>
+  <resource-files/>
+</appengine-web-app>
