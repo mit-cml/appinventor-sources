@@ -15,6 +15,7 @@ goog.provide('AI.Blockly.WorkspaceSvg');
 
 goog.require('AI.Blockly.ExportBlocksImage');
 goog.require('AI.Blockly.SaveFile');
+goog.require('AI.Blockly.Util.xml');
 goog.require('AI.Blockly.Versioning');
 goog.require('AI.Blockly.WarningHandler');
 goog.require('AI.Blockly.WarningIndicator');
@@ -67,6 +68,136 @@ Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
  */
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
 
+var ASSET_DRAG_TYPE = 'application/x-appinventor-asset';
+
+/**
+ * Returns true if the data transfer payload includes the given MIME type.
+ * @param {?DataTransfer} dataTransfer The browser drop payload.
+ * @param {string} type The type to check.
+ * @return {boolean} True if the payload contains the type.
+ */
+var hasDragType = function(dataTransfer, type) {
+  return dataTransfer && dataTransfer.types && dataTransfer.types.indexOf(type) >= 0;
+};
+
+/**
+ * Returns the currently dragged asset name from data transfer or global state.
+ * @param {DragEvent} e The drag/drop event.
+ * @return {string} The asset name or empty string if unavailable.
+ */
+var getDraggedAssetName = function(e) {
+  if (e.dataTransfer) {
+    var dataName = e.dataTransfer.getData(ASSET_DRAG_TYPE);
+    if (dataName) {
+      return dataName;
+    }
+  }
+  return window.__aiAssetDragName || '';
+};
+
+/**
+ * Converts a drag event into workspace coordinates.
+ * @param {Blockly.WorkspaceSvg} workspace The drop target workspace.
+ * @param {DragEvent} e The drag event.
+ * @return {{x: number, y: number}} Workspace coordinates.
+ */
+var dropPointToWorkspaceCoordinates = function(workspace, e) {
+  var metrics = workspace.getMetrics();
+  var point = Blockly.utils.browserEvents.mouseToSvg(
+      e, workspace.getParentSvg(), workspace.getInverseScreenCTM());
+  point.x = (point.x + metrics.viewLeft) / workspace.scale;
+  point.y = (point.y + metrics.viewTop) / workspace.scale;
+  return point;
+};
+
+/**
+ * Creates an XML document for a helpers_assets block pre-configured with the
+ * given asset name.
+ * @param {string} assetName The asset to pre-select.
+ * @return {!Element} XML with a single helpers_assets block.
+ */
+var createAssetHelperXml = function(assetName) {
+  var xml = Blockly.Util.xml.blockTypeToXML('helpers_assets');
+  var blockNode = xml.firstChild;
+  var field = document.createElement('field');
+  field.setAttribute('name', 'ASSET');
+  field.appendChild(document.createTextNode(assetName));
+  blockNode.appendChild(field);
+  return xml;
+};
+
+/**
+ * Creates an asset helper block at the given point.
+ * @param {Blockly.WorkspaceSvg} workspace The drop target workspace.
+ * @param {{x: number, y: number}} point The point to place the block.
+ * @param {string} assetName The asset to pre-select on the helper block.
+ */
+var createAssetHelperBlock = function(workspace, point, assetName) {
+  if (!assetName || workspace.getAssetList().indexOf(assetName) < 0) {
+    return null;
+  }
+  var xml = createAssetHelperXml(assetName);
+  var block = /** @type {Blockly.BlockSvg} */ (
+      Blockly.Xml.domToBlock(xml.firstChild, workspace));
+  block.moveBy(point.x, point.y);
+  block.initSvg();
+  workspace.requestRender(block);
+  return block;
+};
+
+/**
+ * Creates a transient preview block used while dragging an asset over the
+ * workspace.
+ * @param {Blockly.WorkspaceSvg} workspace The target workspace.
+ * @param {{x: number, y: number}} point The position for the preview.
+ * @param {string} assetName The dragged asset name.
+ * @return {?Blockly.BlockSvg} The preview block.
+ */
+var createAssetDragPreviewBlock = function(workspace, point, assetName) {
+  if (!assetName || workspace.getAssetList().indexOf(assetName) < 0) {
+    return null;
+  }
+  var xml = createAssetHelperXml(assetName);
+  var previewBlock = /** @type {Blockly.BlockSvg} */ (
+      Blockly.Xml.domToBlock(xml.firstChild, workspace));
+  previewBlock.moveBy(point.x, point.y);
+  previewBlock.setMovable(false);
+  previewBlock.setDeletable(false);
+  previewBlock.setEditable(false);
+  previewBlock.initSvg();
+  workspace.requestRender(previewBlock);
+  var svgRoot = previewBlock.getSvgRoot && previewBlock.getSvgRoot();
+  if (svgRoot) {
+    svgRoot.style.opacity = '0.7';
+    svgRoot.style.pointerEvents = 'none';
+  }
+  return previewBlock;
+};
+
+/**
+ * Moves an existing preview block to the new workspace point.
+ * @param {Blockly.BlockSvg} previewBlock The preview block.
+ * @param {{x: number, y: number}} point The destination point.
+ */
+var updateAssetDragPreviewBlock = function(previewBlock, point) {
+  var xy = previewBlock.getRelativeToSurfaceXY();
+  previewBlock.moveBy(point.x - xy.x, point.y - xy.y);
+};
+
+/**
+ * Disposes a preview block if it exists.
+ * @param {?Blockly.BlockSvg} previewBlock The preview block.
+ */
+var disposeAssetDragPreviewBlock = function(previewBlock) {
+  if (!previewBlock) {
+    return;
+  }
+  if (previewBlock.isDisposed && previewBlock.isDisposed()) {
+    return;
+  }
+  previewBlock.dispose(false);
+};
+
 Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
   if (func.isWrapped) {
     return func;
@@ -74,58 +205,122 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
     var f = function() {
       var self = /** @type {Blockly.WorkspaceSvg} */ (this);
       var result = func.apply(this, Array.prototype.slice.call(arguments));
+      var assetDragPreviewBlock = null;
+      var assetDragAssetName = null;
+      var clearAssetDragPreview = function() {
+        disposeAssetDragPreviewBlock(assetDragPreviewBlock);
+        assetDragPreviewBlock = null;
+        assetDragAssetName = null;
+      };
+      var maybeUpdateAssetDragPreview = function(e) {
+        var assetName = getDraggedAssetName(e);
+        if (!assetName || self.getAssetList().indexOf(assetName) < 0) {
+          clearAssetDragPreview();
+          return;
+        }
+        var point = dropPointToWorkspaceCoordinates(self, e);
+        if (!assetDragPreviewBlock || assetDragAssetName !== assetName) {
+          clearAssetDragPreview();
+          assetDragPreviewBlock = createAssetDragPreviewBlock(self, point, assetName);
+          assetDragAssetName = assetDragPreviewBlock ? assetName : null;
+        } else {
+          updateAssetDragPreviewBlock(assetDragPreviewBlock, point);
+        }
+      };
+      var maybeClearAssetDragPreviewOnLeave = function(e) {
+        if (!assetDragPreviewBlock) {
+          return;
+        }
+        var rect = result.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right ||
+            e.clientY < rect.top || e.clientY > rect.bottom) {
+          clearAssetDragPreview();
+        }
+      };
       // BEGIN: Configure drag and drop of blocks images to workspace
       result.addEventListener('dragenter', function(e) {
-        if (e.dataTransfer.types.indexOf('Files') >= 0 ||
-            e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
-          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
-          e.dataTransfer.dropEffect = 'copy';
+        if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE) ||
+            hasDragType(e.dataTransfer, 'Files') ||
+            hasDragType(e.dataTransfer, 'text/uri-list')) {
+          if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE)) {
+            e.dataTransfer.dropEffect = 'move';
+            // Asset drags use a block preview instead of a full workspace tint.
+            self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
+            maybeUpdateAssetDragPreview(e);
+          } else {
+            e.dataTransfer.dropEffect = 'copy';
+            self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+            clearAssetDragPreview();
+          }
           e.preventDefault();
         }
       }, true);
       result.addEventListener('dragover', function(e) {
-        if (e.dataTransfer.types.indexOf('Files') >= 0 ||
-            e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
-          self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
-          e.dataTransfer.dropEffect = 'copy';
+        if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE) ||
+            hasDragType(e.dataTransfer, 'Files') ||
+            hasDragType(e.dataTransfer, 'text/uri-list')) {
+          if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE)) {
+            e.dataTransfer.dropEffect = 'move';
+            self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
+            maybeUpdateAssetDragPreview(e);
+          } else {
+            e.dataTransfer.dropEffect = 'copy';
+            self.svgBackground_.style.fill = 'rgba(0, 255, 0, 0.3)';
+            clearAssetDragPreview();
+          }
           e.preventDefault();
         }
       }, true);
       result.addEventListener('dragleave', function(e) {
+        maybeClearAssetDragPreviewOnLeave(e);
         self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
       }, true);
       result.addEventListener('dragexit', function(e) {
+        maybeClearAssetDragPreviewOnLeave(e);
         self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
       }, true);
       result.addEventListener('drop', function(e) {
         self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
-        if (e.dataTransfer.types.indexOf('Files') >= 0) {
+        if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE)) {
+          var assetName = getDraggedAssetName(e);
+          if (assetName) {
+            e.preventDefault();
+            var point = dropPointToWorkspaceCoordinates(self, e);
+            if (assetDragPreviewBlock) {
+              clearAssetDragPreview();
+            }
+            var block = createAssetHelperBlock(self, point, assetName);
+            if (block) {
+              block.select();
+            }
+          } else {
+            clearAssetDragPreview();
+          }
+        } else if (hasDragType(e.dataTransfer, 'Files')) {
+          clearAssetDragPreview();
           if (e.dataTransfer.files.item(0).type === 'image/png') {
             e.preventDefault();
-            var metrics = Blockly.common.getMainWorkspace().getMetrics();
-            var point = Blockly.utils.browserEvents.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
-            point.x = (point.x + metrics.viewLeft) / self.scale;
-            point.y = (point.y + metrics.viewTop) / self.scale;
-            Blockly.importPngAsBlock(self, point, e.dataTransfer.files.item(0));
+            var pngPoint = dropPointToWorkspaceCoordinates(self, e);
+            Blockly.importPngAsBlock(self, pngPoint, e.dataTransfer.files.item(0));
           }
-        } else if (e.dataTransfer.types.indexOf('text/uri-list') >= 0) {
-          var data = e.dataTransfer.getData('text/uri-list')
+        } else if (hasDragType(e.dataTransfer, 'text/uri-list')) {
+          clearAssetDragPreview();
+          var data = e.dataTransfer.getData('text/uri-list');
           if (data.match(/\.png$/)) {
             e.preventDefault();
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
               if (xhr.readyState === 4 && xhr.status === 200) {
-                var metrics = Blockly.common.getMainWorkspace().getMetrics();
-                var point = Blockly.utils.browserEvents.mouseToSvg(e, self.getParentSvg(), self.getInverseScreenCTM());
-                point.x = (point.x + metrics.viewLeft) / self.scale;
-                point.y = (point.y + metrics.viewTop) / self.scale;
-                Blockly.importPngAsBlock(self, point, xhr.response);
+                var pngPoint = dropPointToWorkspaceCoordinates(self, e);
+                Blockly.importPngAsBlock(self, pngPoint, xhr.response);
               }
             };
             xhr.responseType = 'blob';
             xhr.open('GET', data, true);
             xhr.send();
           }
+        } else {
+          clearAssetDragPreview();
         }
       });
       // END: Configure drag and drop of blocks images to workspace

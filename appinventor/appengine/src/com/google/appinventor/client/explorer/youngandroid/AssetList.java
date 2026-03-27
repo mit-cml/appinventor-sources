@@ -20,6 +20,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetN
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -137,13 +138,14 @@ public class AssetList extends Composite implements ProjectChangeListener {
       for (ProjectNode node : assetsFolder.getChildren()) {
         // Add the name to the tree. We need to enclose it in a span
         // because the CSS style for selection specifies a span.
-        String nodeName = node.getName();
+        String assetName = node.getName();
+        String nodeName = assetName;
         if (nodeName.length() > 20)
           nodeName = nodeName.substring(0, 8) + "..." + nodeName.substring(nodeName.length() - 9,
               nodeName.length());
 
         String fileSuffix = node.getProjectId() + "/" + node.getFileId();
-        String treeItemText = "<span style='cursor: pointer'>";
+        String treeItemText = "<span style='cursor: grab'>";
         if (StorageUtil.isImageFile(fileSuffix)) {
           treeItemText += new Image(images.mediaIconImg());
         } else if (StorageUtil.isAudioFile(fileSuffix )) {
@@ -156,6 +158,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         // keep a pointer from the tree item back to the actual node
         treeItem.setUserObject(node);
         assetList.addItem(treeItem);
+        configureDraggable(treeItem.getElement(), assetName);
       }
     }
   }
@@ -206,6 +209,57 @@ public class AssetList extends Composite implements ProjectChangeListener {
       refreshAssetList();
     }
   }
+
+  private static native void configureDraggable(Element el, String assetName)/*-{
+    function setCursor(root, cursor) {
+      root.style.cursor = cursor;
+      if (root.querySelectorAll) {
+        var descendants = root.querySelectorAll('*');
+        for (var i = 0; i < descendants.length; i++) {
+          descendants[i].style.cursor = cursor;
+        }
+      }
+    }
+    if (!el) {
+      return;
+    }
+    el.setAttribute('draggable', 'true');
+    el.setAttribute('data-assetname', assetName);
+    setCursor(el, 'grab');
+    if (el.getAttribute('data-ai-assetdrag') == 'true') {
+      return;
+    }
+    el.setAttribute('data-ai-assetdrag', 'true');
+    el.addEventListener('dragstart', function(e) {
+      var name = this.getAttribute('data-assetname');
+      this.classList.add('ode-AssetItem-dragging');
+      setCursor(this, 'grabbing');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.clearData();
+      e.dataTransfer.setData('application/x-appinventor-asset', name);
+      $wnd.__aiAssetDragName = name;
+      if (e.dataTransfer.setDragImage) {
+        var dragGhost = $wnd.__aiAssetDragGhost;
+        if (!dragGhost) {
+          dragGhost = $doc.createElement('img');
+          dragGhost.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+          dragGhost.style.position = 'fixed';
+          dragGhost.style.top = '-1000px';
+          dragGhost.style.left = '-1000px';
+          $doc.body.appendChild(dragGhost);
+          $wnd.__aiAssetDragGhost = dragGhost;
+        }
+        e.dataTransfer.setDragImage(dragGhost, 0, 0);
+      }
+    });
+    el.addEventListener('dragend', function() {
+      this.classList.remove('ode-AssetItem-dragging');
+      setCursor(this, 'grab');
+      if ($wnd.__aiAssetDragName === this.getAttribute('data-assetname')) {
+        $wnd.__aiAssetDragName = null;
+      }
+    });
+  }-*/;
 
   public Tree getTree() {
     return assetList;
