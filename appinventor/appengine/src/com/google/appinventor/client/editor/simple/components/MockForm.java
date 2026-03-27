@@ -762,10 +762,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
         "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
-        new YoungAndroidLengthPropertyEditor());
+        new YoungAndroidLengthPropertyEditor(), null);
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
         "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
-        new YoungAndroidLengthPropertyEditor());
+        new YoungAndroidLengthPropertyEditor(), null);
   }
 
   @Override

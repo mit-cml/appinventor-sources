@@ -599,9 +599,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * @param editorType  editor type for the property
    * @param editorArgs  additional editor arguments
    * @param editor  property editor
+   * @param description property description for use in the ui. Used as a fallback when no translation is found.
    */
   public final void addProperty(String name, String defaultValue, String caption, String category,
-                                String editorType, String[] editorArgs, PropertyEditor editor) {
+                                String editorType, String[] editorArgs, PropertyEditor editor, String description) {
 
     String propertyDesc = ComponentTranslationTable.getPropertyDescription(name
       + "PropertyDescriptions");
@@ -609,38 +610,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       propertyDesc = ComponentTranslationTable.getPropertyDescription((type.equals("Form")
           ? "Screen" : type) + "." + propertyDesc);
     }
-
-    int propertyType = EditableProperty.TYPE_NORMAL;
-    if (!isPropertyPersisted(name)) {
-      propertyType |= EditableProperty.TYPE_NONPERSISTED;
-    }
-    if (!isPropertyVisible(name)) {
-      propertyType |= EditableProperty.TYPE_INVISIBLE;
-    }
-    if (isPropertyforYail(name)) {
-      propertyType |= EditableProperty.TYPE_DOYAIL;
-    }
-    properties.addProperty(name, defaultValue, ComponentTranslationTable.getPropertyName(caption),
-        ComponentTranslationTable.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
-  }
-  
-  /**
-   * Extended version of addProperty to support extension metadata descriptions.
-   * Falls back to metadata when translation lookup fails.
-   */
-  public final void addProperty(String name, String defaultValue, String caption, String category,
-                               String editorType, String[] editorArgs, String description, PropertyEditor editor) {
-
-    String propertyDesc = ComponentTranslationTable.getPropertyDescription(name 
-      + "PropertyDescriptions");
-
-    // Step 1: component-specific lookup
-    if (propertyDesc.equals(name + "PropertyDescriptions")) {
-      propertyDesc = ComponentTranslationTable.getPropertyDescription(
-          (type.equals("Form") ? "Screen" : type) + "." + name + "PropertyDescriptions");
-    }
-
-    // Step 2: fallback for extensions
+    // Fallback for extension metadata
     if ((propertyDesc.equals(name + "PropertyDescriptions") ||
         propertyDesc.equals((type.equals("Form") ? "Screen" : type) + "." + name + "PropertyDescriptions"))
         && description != null) {
@@ -658,11 +628,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     if (isPropertyforYail(name)) {
       propertyType |= EditableProperty.TYPE_DOYAIL;
     }
-
-    properties.addProperty(name,defaultValue,ComponentTranslationTable.getPropertyName(caption),
-        ComponentTranslationTable.getCategoryName(category), propertyDesc, editor, propertyType, editorType, editorArgs);
+    properties.addProperty(name, defaultValue, ComponentTranslationTable.getPropertyName(caption),
+        ComponentTranslationTable.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
   }
-
+  
   /**
    * Returns the component name.
    * <p>
@@ -1339,7 +1308,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
             (DesignerEditor<?, ?, ?, ?, ?>) editor, property.getEditorArgs());
         addProperty(property.getName(), property.getDefaultValue(), property.getCaption(),
             property.getCategory(), property.getEditorType(),
-            property.getEditorArgs(), propertyEditor);
+            property.getEditorArgs(), propertyEditor, null);
       }
     }
 
