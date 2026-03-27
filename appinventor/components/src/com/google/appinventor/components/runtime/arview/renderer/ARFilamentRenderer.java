@@ -187,6 +187,16 @@ public class ARFilamentRenderer {
     private final Map<String, ArrayDeque<FilamentInstance>> instancePoolCache
         = new ConcurrentHashMap<>();
 
+
+    private final List<ARParticleEmitter> particleEmitters = new ArrayList<>();
+
+    // Public method to add an emitter:
+    public void addParticleEmitter(ARParticleEmitter emitter) {
+        if (filamentHandler == null) return;
+        filamentHandler.post(() -> particleEmitters.add(emitter));
+    }
+
+
     // How many instances to pre-allocate per unique model path.
 // Tune this to your max expected count per model.
     private static final int MAX_INSTANCES_PER_MODEL = 20;
@@ -229,6 +239,14 @@ public class ARFilamentRenderer {
     // Pending depth update — GL thread writes, FilamentRenderThread consumes
     // Guarded by depthLock
     // -------------------------------------------------------------------------
+    public void removeParticleEmitter(ARParticleEmitter emitter) {
+        if (filamentHandler == null) return;
+        filamentHandler.post(() -> {
+            particleEmitters.remove(emitter);
+            emitter.destroy();
+        });
+    }
+
 
     private static final class DepthUpdate {
         final ByteBuffer data;
@@ -319,11 +337,18 @@ public class ARFilamentRenderer {
                 loadAndPositionNodes(nodesCopy);
                 updateAnimations();
 
+                /* CSB TODO
+                float dt = 1f / 60f;  // or track real delta
+                for (ARParticleEmitter emitter : particleEmitters) {
+                    emitter.update(dt);
+                }*/
                 DepthUpdate depth;
                 synchronized (depthLock) {
                     depth = pendingDepthUpdate;
                     pendingDepthUpdate = null;
                 }
+
+
                 if (depth != null) applyDepthUpdate(depth);
 
                 // Sync viewport to SwapChain dimensions — guards resize mismatches
@@ -930,9 +955,7 @@ public class ARFilamentRenderer {
             int rootEntity;
 
             if (primary == null) {
-                // ── First node for this path — full GPU upload + pre-allocate pool ──
-
-                // Allocate the instance array upfront — size determines max instances
+                // ── First node — full GPU upload + pre-allocate pool ──
                 FilamentInstance[] instances = new FilamentInstance[MAX_INSTANCES_PER_MODEL];
 
                 buffer.rewind();
@@ -942,94 +965,64 @@ public class ARFilamentRenderer {
                     return;
                 }
 
-                // Add primary asset entities to scene
                 scene.addEntity(primary.getRoot());
                 for (int e : primary.getEntities()) {
                     if (e != primary.getRoot()) scene.addEntity(e);
                 }
-
-                // loadResources uploads textures — called once, shared by all instances
                 resourceLoader.loadResources(primary);
-
                 assetCache.put(path, primary);
 
-                // Build the pool from the pre-allocated instances.
-                // instances[0] is typically the primary's own instance — skip it
-                // and use primary.getRoot() for the first node directly.
+                // Do NOT use primary.getRoot() directly for any node — instances[0].getRoot()
+                // is the same entity and would cause two nodes to share a transform.
                 ArrayDeque<FilamentInstance> pool = new ArrayDeque<>();
                 for (FilamentInstance inst : instances) {
-                    if (inst != null) {
-                        pool.add(inst);
-                    }
+                    if (inst != null) pool.add(inst);
                 }
                 instancePoolCache.put(path, pool);
 
-                // First node uses the primary asset root directly
-                rootEntity = primary.getRoot();
-
-                computeBoundsAndAdjustY(node, primary, primary.getRoot());
-
-                if (depthDataReceived && occlusionMaterialInstance != null) {
-                    applyOcclusionToEntities(primary.getEntities(),
-                        engine.getRenderableManager());
-                }
-
                 Log.d(LOG_TAG, "GPU upload: " + path
-                    + " poolSize=" + pool.size()
-                    + " entities=" + primary.getEntities().length);
+                    + " poolSize=" + pool.size());
+            }
 
-            } else {
-                // ── Subsequent node — pull from pre-allocated pool ────────────────
+            // ── Both first and subsequent nodes pull from the pool ──
+            ArrayDeque<FilamentInstance> pool = instancePoolCache.get(path);
+            FilamentInstance instance = (pool != null) ? pool.poll() : null;
 
-                ArrayDeque<FilamentInstance> pool = instancePoolCache.get(path);
-                FilamentInstance instance = (pool != null) ? pool.poll() : null;
+            if (instance == null) {
+                Log.w(LOG_TAG, "Instance pool exhausted: " + path);
+                // fallback unchanged...
+                return;
+            }
 
-                if (instance == null) {
-                    // Pool exhausted — fall back to a fresh asset load
-                    Log.w(LOG_TAG, "Instance pool exhausted for: " + path
-                        + " — falling back to createAssetFromBinary");
-                    buffer.rewind();
-                    FilamentAsset fallback = assetLoader.createAssetFromBinary(buffer);
-                    if (fallback == null) {
-                        Log.e(LOG_TAG, "Fallback createAssetFromBinary failed: " + path);
-                        return;
-                    }
-                    scene.addEntity(fallback.getRoot());
-                    for (int e : fallback.getEntities()) {
-                        if (e != fallback.getRoot()) scene.addEntity(e);
-                    }
-                    resourceLoader.loadResources(fallback);
-                    rootEntity = fallback.getRoot();
-                    // Track separately — this fallback asset needs its own destroy
-                    nodeAssetMap.put(node, fallback);
-                    computeBoundsAndAdjustY(node, fallback, fallback.getRoot());
-                    nodeRootEntity.put(node, rootEntity);
-                    return;
-                }
+            // Add this instance's entities to scene
+            scene.addEntity(instance.getRoot());
+            for (int e : instance.getEntities()) {
+                if (e != instance.getRoot()) scene.addEntity(e);
+            }
 
-                // Add this instance's entities to the scene
-                scene.addEntity(instance.getRoot());
-                for (int e : instance.getEntities()) {
-                    if (e != instance.getRoot()) scene.addEntity(e);
-                }
+            rootEntity = instance.getRoot();
+            nodeInstanceMap.put(node, instance);
 
-                nodeInstanceMap.put(node, instance);
-                rootEntity = instance.getRoot();
+            computeBoundsAndAdjustY(node, primary, rootEntity);
 
-                computeBoundsAndAdjustY(node, primary, instance.getRoot());
-
-                Log.d(LOG_TAG, "Instance from pool: " + path
-                    + " remaining=" + pool.size());
+            if (depthDataReceived && occlusionMaterialInstance != null) {
+                applyOcclusionToEntities(instance.getEntities(),
+                    engine.getRenderableManager());
             }
 
             nodeRootEntity.put(node, rootEntity);
             nodeAssetMap.put(node, primary);
+
+            Log.d(LOG_TAG, "Instance assigned: " + path
+                + " root=" + rootEntity
+                + " remaining=" + pool.size());
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "createNodeOnRenderThread failed: " + path
                 + " — " + e.getMessage(), e);
         }
     }
+
     /**
      * Computes bounding sphere radius and adjusts Y above ground level.
      *
