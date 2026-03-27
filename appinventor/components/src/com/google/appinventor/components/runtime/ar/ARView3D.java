@@ -168,6 +168,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final float[] lastViewMatrix = new float[16];
     private final float[] lastProjMatrix = new float[16];
 
+    private FloorPlaneManager floorManager;
+
     private float GROUND_LEVEL = -1.0f;
     private float invisibleFloor = -1.0f;
     private boolean groundDetected = false;
@@ -183,6 +185,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private int pendingFilamentHeight = 0;
 
     private List<ARNode> arNodes = Nodes();
+    /*private final List<ARParticleEmitter> activeEmitters = new ArrayList<>();*/
 
     public ARView3D(final ComponentContainer container) {
         super(container);
@@ -670,8 +673,71 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         + " dragged=" + base.isBeingDragged);
                 }
                 base.updateSimplePhysics(deltaTime);
+
+                if (floorManager.isFloorDetected()) {
+                    applyFloorCollision(base);
+                }
+
+                if (speed > 0.01f) {
+                    Log.d(LOG_TAG, "updatePhysics: " + base.NodeType()
+                        + " vel=(" + base.currentVelocity[0]
+                        + "," + base.currentVelocity[2] + ")"
+                        + " y=" + base.getCurrentPosition()[1]
+                        + " floor=" + floorManager.getFloorY());
+                }
             }
         }
+    }
+
+    /**
+     * Keep physics objects above the detected floor.
+     * Applies bounce/friction on floor contact.
+     */
+    private void applyFloorCollision(ARNodeBase node) {
+        float[] pos = node.getCurrentPosition();
+        float[] vel = node.currentVelocity;
+        float radius = node.getCollisionRadius();
+        float floorY = floorManager.getFloorY();
+
+        // Bottom of object
+        float bottomY = pos[1] - radius;
+
+        // Check if penetrating floor
+        if (bottomY < floorY) {
+            // Correct position - place on floor
+            pos[1] = floorY + radius;
+            node.setCurrentPosition(pos);
+
+            // Apply bounce physics
+            if (vel[1] < 0) {  // Moving downward
+                float restitution = 0.3f;  // Bounce factor (0=no bounce, 1=perfect bounce)
+                vel[1] = -vel[1] * restitution;
+
+                // If velocity is very small, stop bouncing
+                if (Math.abs(vel[1]) < 0.1f) {
+                    vel[1] = 0f;
+
+                    // Apply friction to horizontal movement when resting on floor
+                    float friction = 0.95f;
+                    vel[0] *= friction;
+                    vel[2] *= friction;
+                }
+
+                Log.d(LOG_TAG, "Floor collision: " + node.NodeType()
+                    + " bounce vel=" + vel[1]);
+            }
+        }
+    }
+
+    public boolean isFloorReady() {
+        return floorManager.isFloorDetected();
+    }
+
+    /**
+     * Get the detected floor plane for placing objects.
+     */
+    public Plane getFloorPlane() {
+        return floorManager.getFloorPlane();
     }
 
     protected float vectorLength(float[] vector) {
@@ -696,33 +762,41 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return nearest;
     }
 
+    // Replace your existing updateGroundLevelFromPlanes with this enhanced version
     private void updateGroundLevelFromPlanes() {
-        if (groundDetected) return; // only need to do this once
 
-        float lowestY = Float.MAX_VALUE;
-        Plane bestPlane = null;
+        // Update floor manager continuously (it handles smoothing internally)
+        Collection<Plane> planes = session.getAllTrackables(Plane.class);
+        float[] lcp = new float[3];
+        lastCamera.getPose().getTranslation(lcp, 0);
+        floorManager.updateFloorPlane(planes, lcp);
 
-        for (Plane plane : session.getAllTrackables(Plane.class)) {
-            if (plane.getTrackingState() != TrackingState.TRACKING) continue;
-            if (plane.getType() != Plane.Type.HORIZONTAL_UPWARD_FACING) continue;
-            // Minimum size filter — ignore tiny noise planes
-            if (plane.getExtentX() * plane.getExtentZ() < 0.25f) continue;
+        // Update GROUND_LEVEL when floor is detected
+        if (floorManager.isFloorDetected()) {
+            float newFloorY = floorManager.getFloorY();
 
-            float planeY = plane.getCenterPose().ty();
-            if (planeY < lowestY) {
-                lowestY = planeY;
-                bestPlane = plane;
-            }
-        }
+            if (!groundDetected) {
+                // First detection
+                GROUND_LEVEL = newFloorY;
+                groundDetected = true;
+                Log.d(LOG_TAG, "Ground level first detected at: " + GROUND_LEVEL);
 
-        if (bestPlane != null) {
-            GROUND_LEVEL = lowestY;
-            groundDetected = true;
-            Log.d(LOG_TAG, "Ground level confirmed at: " + GROUND_LEVEL);
+                // Update all existing nodes
+                for (ARNode node : arNodes) {
+                    if (node instanceof ARNodeBase) {
+                        ((ARNodeBase) node).setGroundLevel(GROUND_LEVEL);
+                    }
+                }
+            } else {
+                // Continuous smooth updates (important for physics accuracy)
+                GROUND_LEVEL = newFloorY;
 
-            for (ARNode node : arNodes) {
-                ARNodeBase base = (ARNodeBase) node;
-                base.setGroundLevel(GROUND_LEVEL);
+                // Keep nodes updated with current floor height
+                for (ARNode node : arNodes) {
+                    if (node instanceof ARNodeBase) {
+                        ((ARNodeBase) node).setGroundLevel(GROUND_LEVEL);
+                    }
+                }
             }
         }
     }
@@ -853,6 +927,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             setDefaultPositions(arNodes);
             drawPlanesAndPoints(render, lastCamera, lastFrame,
                 viewMatrix, projectionMatrix);
+            // ✅ Update floor detection continuously (removed the groundDetected check)
+            updateGroundLevelFromPlanes();
+
             updatePhysics();
             updateCollisions();
 
@@ -912,7 +989,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             planeRenderer       = new PlaneRenderer(arViewRender);
             pointCloudRenderer  = new PointCloudRenderer(arViewRender);
             objRenderer         = new ObjectRenderer(arViewRender);
-
 
             arFilamentRenderer = new ARFilamentRenderer(this.container);
             arFilamentRenderer.initializeEngine(); // Phase 1
@@ -1372,6 +1448,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
         }
 
+        floorManager = new FloorPlaneManager();
+
+
         boolean isGeospatialSupported =
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
         Log.i(LOG_TAG, "ARCore: geospatial supported ? " + isGeospatialSupported);
@@ -1616,24 +1695,85 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     public void onClear() {
-        for (Anchor anchor : session.getAllAnchors()) {
-            anchor.detach();
-        }
-        for (ARNode node : arNodes) {
-            arNodes.remove(node);
-        }
-        if (arFilamentRenderer != null) {
-            arFilamentRenderer.clearAllNodes();
-        }
-        onPause();
-        if (session != null) {
-            try {
-                session.resume();
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to resume AR session", e);
-            }
-        }
+        Log.d(LOG_TAG, "onClear() - clear all models and trackables");
 
+        onPause();
+
+        try {
+            // Clear Filament scene (visual cleanup)
+            if (arFilamentRenderer != null) {
+                arFilamentRenderer.clearAllNodes();
+                Log.d(LOG_TAG, "Filament nodes cleared");
+            }
+
+            // Detach ARCore anchors (tracking cleanup)
+            if (session != null) {
+                int anchorCount = session.getAllAnchors().size();
+                for (Anchor anchor : session.getAllAnchors()) {
+                    anchor.detach();
+                }
+                Log.d(LOG_TAG, "Detached " + anchorCount + " anchors");
+            }
+
+            //  Clear app-level node tracking
+            int nodeCount = arNodes.size();
+            arNodes.clear();
+            Log.d(LOG_TAG, "Cleared " + nodeCount + " nodes");
+
+            floorManager.reset();
+            groundDetected = false;
+            GROUND_LEVEL = -1f;
+
+            // Resume session with fresh state
+            if (session != null) {
+                session.resume();
+                Log.d(LOG_TAG, "Session resumed - tracking reset");
+            }
+
+            // Optional: notify listeners
+            if (container.$form() instanceof ReplForm) {
+                ((ReplForm) container.$form()).runOnUiThread(() -> {
+                    EventDispatcher.dispatchEvent(this, "SceneCleared");
+                });
+            }
+
+        } catch (CameraNotAvailableException e) {
+            Log.e(LOG_TAG, "Camera unavailable during clear", e);
+           // handleCameraError();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error during onClear", e);
+        }
+    }
+
+    /* clear memory */
+    public void onFullReset() {
+        Log.d(LOG_TAG, "onFullReset() - complete teardown");
+
+        onPause();
+
+        try {
+            // Full reset - destroys GPU assets
+            if (arFilamentRenderer != null) {
+                arFilamentRenderer.resetScene(true);  // true = clear GPU cache
+            }
+
+            if (session != null) {
+                for (Anchor anchor : session.getAllAnchors()) {
+                    anchor.detach();
+                }
+            }
+
+            arNodes.clear();
+
+            if (session != null) {
+                session.resume();
+            }
+
+            Log.d(LOG_TAG, "Full reset complete - GPU memory freed");
+
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error during full reset", e);
+        }
     }
 
     @Override
