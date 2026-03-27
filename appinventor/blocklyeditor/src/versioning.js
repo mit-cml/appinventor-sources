@@ -3098,7 +3098,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 31:
     // - The default theme was changed in the designer. No block changes required.
-    31: "noUpgrade"
+    31: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 32:
+    // - The ScreenLayout property was added. No block changes required.
+    32: "noUpgrade"
 
   }, // End Screen
 
