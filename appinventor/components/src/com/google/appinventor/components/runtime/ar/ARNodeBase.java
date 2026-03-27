@@ -139,7 +139,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   // MARK: - Enhanced Basic Properties
-
+  private void clearVelocities(){
+    currentVelocity[0] = 0;
+    currentVelocity[1] = 0;
+    currentVelocity[2] = 0;
+    angularVelocity[0] = 0;
+    angularVelocity[1] = 0;
+    angularVelocity[2] = 0;
+  }
   /* if the node has EnablePhysics, then make node must be on the ground and is subject to gravity
   except when being dragged
    */
@@ -155,9 +162,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
 
     if (Math.abs(currentPos[0]) > 10 || Math.abs(currentPos[2]) > 10) {
-      currentVelocity[0] = 0;
-      currentVelocity[1] = 0;
-      currentVelocity[2] = 0;
+      clearVelocities();
       return;
     }
     if (currentPos[0] == 0 && currentPos[1] == 0 && currentPos[2] == 0) {
@@ -242,9 +247,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
           + " dt=" + deltaTime);
     }
     if (speed < 0.01f && objectBottom <= GROUND_LEVEL + 0.01f) {
-      currentVelocity[0] = 0;
-      currentVelocity[1] = 0;
-      currentVelocity[2] = 0;
+      clearVelocities();
 
       // Only re-anchor if position has drifted from anchor
       // avoids unnecessary anchor creation when already at rest
@@ -1854,9 +1857,7 @@ public void updateCollisionShape() {
     dragVelocity[1] = 0;
     dragVelocity[2] = 0;
     lastDragTime = 0;      // ← and this
-    currentVelocity[0] = 0;
-    currentVelocity[1] = 0;
-    currentVelocity[2] = 0;
+    clearVelocities();
 
     if (originalMaterial == null) {
       originalMaterial = getCurrentMaterial();
@@ -1929,9 +1930,7 @@ public void updateCollisionShape() {
       applyReleaseVelocity();
     } else {
       // no physics — reanchor to lock position in place
-      currentVelocity[0] = 0;
-      currentVelocity[1] = 0;
-      currentVelocity[2] = 0;
+      clearVelocities();
       reanchorAtCurrentPosition(planeFinder);
     }
 

@@ -965,10 +965,6 @@ public class ARFilamentRenderer {
                     return;
                 }
 
-                scene.addEntity(primary.getRoot());
-                for (int e : primary.getEntities()) {
-                    if (e != primary.getRoot()) scene.addEntity(e);
-                }
                 resourceLoader.loadResources(primary);
                 assetCache.put(path, primary);
 
@@ -1157,11 +1153,173 @@ public class ARFilamentRenderer {
     }
 
     // -------------------------------------------------------------------------
-    // Safety
+    // resettting
     // -------------------------------------------------------------------------
+    /**
+     * Resets all model nodes and scene state.
+     * Call this when ARCore session is paused/reset.
+     *
+     * @param clearAssetCache if true, clears GPU resources (full reset)
+     *                        if false, keeps assets cached (soft reset)
+     */
+    /**
+     * Resets all model nodes and scene state.
+     * Call this when ARCore session is paused/reset.
+     *
+     * @param clearAssetCache if true, clears GPU resources (full reset)
+     *                        if false, keeps assets cached (soft reset)
+     */
+    public void resetScene(final boolean clearAssetCache) {
+        if (filamentHandler == null) return;
+
+        filamentHandler.post(() -> {
+            Log.d(LOG_TAG, "Resetting scene, clearAssetCache=" + clearAssetCache);
+
+            // 1. Remove all instances from scene and return to pools
+            for (Map.Entry<ARNode, FilamentInstance> entry : nodeInstanceMap.entrySet()) {
+                FilamentInstance inst = entry.getValue();
+                scene.remove(inst.getRoot());
+                for (int e : inst.getEntities()) {
+                    if (e != inst.getRoot()) scene.remove(e);
+                }
+
+                // Return instance to pool if not doing full clear
+                if (!clearAssetCache) {
+                    String path = entry.getKey().Model();
+                    ArrayDeque<FilamentInstance> pool = instancePoolCache.get(path);
+                    if (pool != null) {
+                        pool.add(inst);
+                    }
+                }
+            }
+
+            // 2. Remove primary assets from scene
+            for (FilamentAsset asset : assetCache.values()) {
+                scene.remove(asset.getRoot());
+                for (int e : asset.getEntities()) {
+                    if (e != asset.getRoot()) scene.remove(e);
+                }
+            }
+
+            // 3. Clear node tracking maps
+            nodeRootEntity.clear();
+            nodeInstanceMap.clear();
+            nodeAssetMap.clear();
+            loadingNodes.clear();
+
+            // 4. Full clear: destroy assets and pools
+            if (clearAssetCache) {
+                for (FilamentAsset asset : assetCache.values()) {
+                    assetLoader.destroyAsset(asset);  // Destroys asset + all its instances
+                }
+                assetCache.clear();
+                instancePoolCache.clear();
+                modelBufferCache.clear();
+
+                Log.d(LOG_TAG, "Full reset: all assets destroyed");
+            } else {
+                Log.d(LOG_TAG, "Soft reset: " + assetCache.size() + " assets cached, pools ready");
+            }
+
+            // 5. Reset depth/occlusion state
+            depthDataReceived = false;
+            occlusionAppliedToAllAssets = false;
+            if (arDepthTexture != null) {
+                engine.destroyTexture(arDepthTexture);
+                arDepthTexture = null;
+            }
+
+            // 6. Reset animation time
+            animationTime = 0f;
+
+            // 7. Clear particle emitters
+            for (ARParticleEmitter emitter : particleEmitters) {
+                emitter.destroy();
+            }
+            particleEmitters.clear();
+
+            // 8. Clear tracking planes
+            synchronized (matrixLock) {
+                trackingPlanes.clear();
+                sharedNodes.clear();
+                matricesReady = false;
+            }
+
+            // 9. Clear pending depth updates
+            synchronized (depthLock) {
+                pendingDepthUpdate = null;
+            }
+
+            Log.d(LOG_TAG, "Scene reset complete");
+        });
+    }
 
     private void safeEndFrame() {
         try { if (renderer != null) renderer.endFrame(); }
         catch (Exception ignored) { }
+    }
+
+    /**
+     * Removes all nodes from the scene but keeps assets/instances cached.
+     * Perfect for ARCore session pause/resume - nodes can be instantly re-added.
+     */
+    public void clearAllNodes() {
+        if (filamentHandler == null) return;
+
+        filamentHandler.post(() -> {
+            Log.d(LOG_TAG, "Clearing all nodes");
+
+            // Remove all instance nodes from scene, return to pools
+            for (Map.Entry<ARNode, FilamentInstance> entry : nodeInstanceMap.entrySet()) {
+                FilamentInstance inst = entry.getValue();
+                scene.remove(inst.getRoot());
+                for (int e : inst.getEntities()) {
+                    if (e != inst.getRoot()) scene.remove(e);
+                }
+
+                // Return to pool
+                String path = entry.getKey().Model();
+                ArrayDeque<FilamentInstance> pool = instancePoolCache.get(path);
+                if (pool != null) {
+                    pool.add(inst);
+                }
+            }
+
+            // Remove primary assets from scene (but keep them cached)
+            for (FilamentAsset asset : assetCache.values()) {
+                scene.remove(asset.getRoot());
+                for (int e : asset.getEntities()) {
+                    if (e != asset.getRoot()) scene.remove(e);
+                }
+            }
+
+            // Clear tracking
+            nodeRootEntity.clear();
+            nodeInstanceMap.clear();
+            nodeAssetMap.clear();
+            loadingNodes.clear();
+
+            // Reset state
+            depthDataReceived = false;
+            occlusionAppliedToAllAssets = false;
+            animationTime = 0f;
+
+            synchronized (matrixLock) {
+                trackingPlanes.clear();
+                sharedNodes.clear();
+            }
+
+            Log.d(LOG_TAG, "Nodes cleared. Assets cached: " + assetCache.size()
+                + ", pool status: " + getPoolStatus());
+        });
+    }
+
+    private String getPoolStatus() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, ArrayDeque<FilamentInstance>> entry : instancePoolCache.entrySet()) {
+            String name = entry.getKey().substring(entry.getKey().lastIndexOf('/') + 1);
+            sb.append(name).append(":").append(entry.getValue().size()).append(" ");
+        }
+        return sb.toString();
     }
 }

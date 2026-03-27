@@ -1616,17 +1616,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     public void onClear() {
-        onPause();
-
-        for (ARNode node : arNodes) {
-            ((ARNodeBase)node).Anchor(null);
-            node = null;
-            node = null;
+        for (Anchor anchor : session.getAllAnchors()) {
+            anchor.detach();
         }
-
+        for (ARNode node : arNodes) {
+            arNodes.remove(node);
+        }
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.clearAllNodes();
+        }
+        onPause();
         if (session != null) {
-            session.close();
-            session = null;
+            try {
+                session.resume();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to resume AR session", e);
+            }
         }
 
     }
@@ -1644,7 +1649,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Delete")
-    public void onDelete() {
+    public void onDelete(ARNode node) {
+        arNodes.remove(node);
     }
 
     @SimpleFunction(description = "Load scene from storage")
