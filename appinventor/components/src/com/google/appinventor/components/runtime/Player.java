@@ -9,6 +9,7 @@ package com.google.appinventor.components.runtime;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 
+import android.util.Log;
 import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
@@ -419,7 +420,38 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Vibrate(long milliseconds) {
-    vibe.vibrate(milliseconds);
+
+  if (vibe == null || milliseconds <= 0) {
+    return;
+  }
+
+  if (!vibe.hasVibrator()) {
+    Log.w("Player", "Device does not support vibration");
+    return;
+  }
+
+  try {
+
+    if (android.os.Build.VERSION.SDK_INT >= 26) {
+
+      android.os.VibrationEffect effect =
+          android.os.VibrationEffect.createOneShot(
+              milliseconds,
+              android.os.VibrationEffect.DEFAULT_AMPLITUDE);
+
+      vibe.vibrate(effect);
+
+    } else {
+
+      vibe.vibrate(milliseconds);
+
+    }
+
+    } catch (Exception e) {
+
+     Log.w("Player", "Vibration failed: " + e.getMessage());
+
+    }
   }
 
   @SimpleEvent(description = "The PlayerError event is no longer used. " +
