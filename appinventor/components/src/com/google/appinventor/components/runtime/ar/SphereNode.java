@@ -335,6 +335,18 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   }
 
   @Override
+  protected void receiveCollisionImpulse(ARNodeBase striker, float[] normal, float impulse) {
+    // Linear response from base
+    super.receiveCollisionImpulse(striker, normal, impulse);
+
+    // Rolling angular response — sphere spins from the hit
+    float radius = collisionVolume.getEffectiveRadius();
+    float angularScale = 0.3f;
+    angularVelocity[0] = currentVelocity[2] / radius * angularScale;
+    angularVelocity[2] = -currentVelocity[0] / radius * angularScale;
+  }
+
+  @Override
   public void applyReleaseVelocity() {
     float speed = (float) Math.sqrt(
         dragVelocity[0] * dragVelocity[0] +

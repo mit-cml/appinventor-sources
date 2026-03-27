@@ -124,7 +124,33 @@ import android.util.Log;
     Log.i("created Model Anchor!", " ");
   }
 
-  //CSB: this needs to be set up in Android, but this is for blockly interp
+  /* CSB todo: should we require that the object collision block call this or is EnablePhysics and all-in-one? */
+  @Override
+  protected void receiveCollisionImpulse(ARNodeBase striker, float[] normal, float impulse) {
+    // Linear response from base — allow Y so pins can fly
+    super.receiveCollisionImpulse(striker, normal, impulse);
+
+    // Toppling torque — tip the node away from the striker
+    float[] strikerPos = striker.getCurrentPosition();
+    float[] myPos = getCurrentPosition();
+
+    // Contact point is near the base; CoM is at roughly half the node height
+    float nodeHalfHeight = collisionRadius; // tune per model
+    float contactY = Math.min(strikerPos[1], myPos[1]);
+    float torqueArm = (myPos[1] + nodeHalfHeight) - contactY;
+    torqueArm = Math.max(torqueArm, 0.05f); // minimum so glancing hits still topple
+
+    float toppleScale = 1.2f; // tune this
+    angularVelocity[0] += normal[2] * (impulse * torqueArm / Mass()) * toppleScale;
+    angularVelocity[2] -= normal[0] * (impulse * torqueArm / Mass()) * toppleScale;
+
+    // Small Y spin so nodes don't always fall in the exact same direction
+    angularVelocity[1] += (normal[0] * normal[2]) * (impulse / Mass()) * 0.2f;
+
+    Log.d("ModelNode", "Topple impulse: torqueArm=" + torqueArm
+        + " angVel=(" + angularVelocity[0] + "," + angularVelocity[2] + ")");
+  }
+
   @Override
   @SimpleEvent(description = "Collision event detected")
   public void CollisionDetected() {}
