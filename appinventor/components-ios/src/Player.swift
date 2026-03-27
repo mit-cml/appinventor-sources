@@ -12,6 +12,7 @@
 
 import Foundation
 import AVFoundation
+import AudioToolbox
 
 private let kMaxPlayDelayRetries: Int32 = 10
 private let kPlayDelayLength = TimeInterval(0.050)
@@ -196,7 +197,21 @@ open class Player: NonvisibleComponent, LifecycleDelegate, AVAudioPlayerDelegate
   }
   
   @objc open func Vibrate(_ duration: Int32) {
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+
+    if duration <= 0 {
+      return
+    }
+
+     let vibrationLength: Int32 = 300
+     let repeatCount = max(1, duration / vibrationLength)
+
+     for i in 0..<repeatCount {
+
+     DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+     }
+
+    }
   }
 
   // MARK: Events
