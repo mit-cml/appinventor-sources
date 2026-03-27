@@ -973,41 +973,65 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       // Thrown if we've already registered the CSS. This should only happen in unit tests.
     }
   }
-  var options = {
-    'toolbox': {
-      'kind': 'flyoutToolbox',
-      'contents': []
-    },
-    'readOnly': readOnly,
-    'rtl': rtl,
-    'collapse': true,
+ var options = {
+  'toolbox': {
+    'kind': 'flyoutToolbox',
+    'contents': []
+  },
+  'readOnly': readOnly,
+  'rtl': rtl,
+  'collapse': true,
+  'scrollbars': true,
+
+  'move': {
     'scrollbars': true,
-    'trashcan': true,
-    'comments': true,
-    'disable': true,
-    'media': './static/media/',
-    'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
-    'zoom': {'controls': true, 'wheel': true, 'scaleSpeed': 1.1, 'maxScale': 3, 'minScale': 0.1},
-    plugins: {
-      blockDragger: ScrollBlockDragger,
-      metricsManager: ScrollMetricsManager,
-      connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
-      [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
-    },
-    useDoubleClick: true,
-    bumpNeighbours: true,
-    multiselectIcon: {
-      hideIcon: false,
-      enabledIcon: 'static/images/select.svg',
-      disabledIcon: 'static/images/unselect.svg',
-    },
-    multiselectCopyPaste: {
-      crossTab: true,
-      menu: true,
-    },
-    renderer: 'geras2_renderer',
-  };
+    'drag': true,
+    'wheel': true
+  },
+
+  'trashcan': true,
+  'comments': true,
+  'disable': true,
+  'media': './static/media/',
+  'grid': {'spacing': '20', 'length': '5', 'snap': false, 'colour': '#ccc'},
+
+  'zoom': {
+    'controls': true,
+    'wheel': true,
+    'pinch': true,
+    'scaleSpeed': 1.1,
+    'maxScale': 3,
+    'minScale': 0.1
+  },
+
+  plugins: {
+    blockDragger: ScrollBlockDragger,
+    metricsManager: ScrollMetricsManager,
+    connectionPreviewer: decoratePreviewer(Blockly.InsertionMarkerPreviewer),
+    [Blockly.registry.Type.CONNECTION_CHECKER]: 'CustomizableConnectionChecker',
+  },
+
+  useDoubleClick: true,
+  bumpNeighbours: true,
+  multiselectIcon: {
+    hideIcon: false,
+    enabledIcon: 'static/images/select.svg',
+    disabledIcon: 'static/images/unselect.svg',
+  },
+  multiselectCopyPaste: {
+    crossTab: true,
+    menu: true,
+  },
+  renderer: 'geras2_renderer',
+};
   var workspace = Blockly.inject(container, options);
+  container.addEventListener("touchstart", function(e) {
+  e.preventDefault();
+}, { passive: false });
+
+container.addEventListener("touchmove", function(e) {
+  e.preventDefault();
+}, { passive: false });
   AI.Blockly.multiselect = Multiselect;
   var multiselectPlugin = new AI.Blockly.multiselect(workspace);
   multiselectPlugin.init(options);
