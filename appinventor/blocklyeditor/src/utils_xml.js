@@ -246,7 +246,7 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
       });
     }
     xmlString += '</block>';
-  } else if (typeStr === 'text' || typeStr === 'textArea' || typeStr === 'string' || typeStr === 'choices') {
+  } else if (typeStr === 'text' || typeStr === 'textArea' || typeStr === 'string') {
     xmlString += '<block type="text"><field name="TEXT">' + valueStr + '</field></block>';
   } else {
     // Return null is the type is unknown
