@@ -1,0 +1,15 @@
+{
+    "name": "Java 8 and Google Cloud SDK",
+    "build": {
+      "dockerfile": "Dockerfile"
+    },
+    "settings": {
+      "java.home": "/usr/lib/jvm/java-8-openjdk-amd64"
+    },
+    "extensions": [
+      "vscjava.vscode-java-pack", // Java support
+      "ms-azuretools.vscode-docker" // Docker support
+    ],
+    "postCreateCommand": "gcloud --version" // Verifies gcloud is installed
+  }
+  
