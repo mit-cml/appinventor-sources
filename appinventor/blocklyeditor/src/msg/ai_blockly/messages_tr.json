@@ -19,6 +19,7 @@
     "Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "Bu görsel, projede mevcut olmayan eklentiler gerektiren aşağıdaki bloklara atıfta bulunmaktadır:\n\n",
     "Blockly.Msg.ERROR_PARSING_XML": "Hata: PNG dosyasından XML parse edilemedi. Lütfen tekrar deneyin.",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "çağır ",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "Ekle",
     "Blockly.Msg.LANG_TEXT_SEGMENT_INPUT_START": "Başla",
     "Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT": "-de",
     "Blockly.Msg.REPL_COMPANION_WRONG_PACKAGE": "Kullandığınız AI Companion, App Inventor'un farklı bir örneği için oluşturuldu. Doğru bilgi edinmek için, Yardım -> Tamamlayıcı Bilgileri menüsü altında App Inventor ekranında bakın.",
