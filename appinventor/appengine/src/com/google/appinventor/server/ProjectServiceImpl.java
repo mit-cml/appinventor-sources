@@ -692,7 +692,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     if (sessionId.equals("force")) { // If we are forcing our way -- no check
       return;
     }
-    if (!storedSessionId.equals(sessionId))
+    if (storedSessionId == null || !storedSessionId.equals(sessionId))
       if (AppInventorFeatures.requireOneLogin()) {
         throw new InvalidSessionException("A more recent login has occurred since we started. No further changes will be saved.");
       }
