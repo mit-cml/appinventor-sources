@@ -1,7 +1,7 @@
 /* -*- mode: javascript; js-indent-level 2; -*- */
 /**
  * @license
- * Copyright © 2016-2021 Massachusetts Institute of Technology. All rights reserved.
+ * Copyright © 2016-2026 Massachusetts Institute of Technology. All rights reserved.
  */
 
 /**
@@ -513,6 +513,12 @@ Blockly.ComponentDatabase.prototype.processParameters = function(paramData) {
     var param = {};
     param.name = datum.name;
     param.type = datum.type;
+    if (datum.defaultValue !== undefined) {
+     param.defaultValue = datum.defaultValue; 
+    }
+    if (datum.defaultValueType !== undefined) {
+      param.defaultValueType = datum.defaultValueType;
+    }
     param.helperKey = this.processHelper(datum.helper);
     params.push(param);
   }
