@@ -370,7 +370,9 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     if (editable) {
       // Dispose of any callers.
       //Blockly.Procedures.disposeCallers(name, workspace);
-      AI.Blockly.AIProcedure.removeProcedureValues(name, workspace);
+      // Skip callers in this procedure's own body so their argument blocks are
+      // not detached and left orphaned before this definition is disposed.
+      AI.Blockly.AIProcedure.removeProcedureValues(name, workspace, this);
     }
 
     // Call parent's destructor.
