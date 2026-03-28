@@ -2039,9 +2039,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           }
           ensureEachPair(dv, ve, javaTypeToYailType(typeMirror));
           property.defaultValue = dv.value();
-          if (dv.type() != null && !dv.type().trim().isEmpty()) {
-            checkForAllowedTypes(dv.type().trim(), ve);
-            property.defaultValueType = dv.type();
+          if (dv.type() != null && !dv.type().getType().trim().isEmpty()) {
+            property.defaultValueType = dv.type().getType();
           }
         }
       }
@@ -2421,9 +2420,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
         ensureEachPair(dv, varElem, javaTypeToYailType(type));
         param.defaultValue = dv.value();
-        if (dv.type() != null && !dv.type().trim().isEmpty()) {
-          checkForAllowedTypes(dv.type().trim(), varElem);
-          param.defaultValueType = dv.type();
+        if (dv.type() != null && !dv.type().getType().trim().isEmpty()) {
+          param.defaultValueType = dv.type().getType();
         }
       }
       return param;
@@ -2432,7 +2430,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   private void ensureEachPair(DefaultValue dv, VariableElement ve, String type) {
     if (dv.value() != null && !dv.value().trim().isEmpty()
-        && (type.equals("dictionary") || "dictionary".equals(dv.type().trim()))) {
+        && (type.equals("dictionary") || "dictionary".equals(dv.type().getType().trim()))) {
       String[] pairs = dv.value().split(",");
       for (String pair : pairs) {
         String trimmed = pair.trim();
@@ -2441,13 +2439,6 @@ public abstract class ComponentProcessor extends AbstractProcessor {
           messager.printMessage(Kind.ERROR, "Each dictionary entry must be a 'key:value' pair. Problem found in: '" + trimmed + "'", ve);
         }
       }
-    }
-  }
-
-  private void checkForAllowedTypes(String type, VariableElement ve) {
-    List<String> allowedTypes = Arrays.asList("text", "number", "boolean", "list", "color", "dictionary");
-    if (!allowedTypes.contains(type)) {
-      messager.printMessage(Kind.ERROR, "'" + type + "' is not allowed! Allowed types are: text, number, boolean, list, color, dictionary", ve);
     }
   }
 

@@ -10,6 +10,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.google.appinventor.components.common.DefaultValueType;
+
 /**
  * This annotation lets us attach a default block to a component's parameter
  * directly in the Blocks Drawer. Instead of dragging out an empty block and
@@ -39,7 +41,7 @@ public @interface DefaultValue {
    * * This is optional. Usually, the system figures out the block type from
    * the parameter itself. You only need to set this manually if the parameter
    * is an Object (any) and you want a specific block type to show up.
-   * * Allowed types: text, number, boolean, color, list, dictionary.
+   * * Allowed types: Text, Number, Boolean, Color, List, Dictionary.
    */
-  String type() default "";
+  DefaultValueType type() default DefaultValueType.Unknown;
 }
