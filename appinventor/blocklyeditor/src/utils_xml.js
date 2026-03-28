@@ -222,6 +222,9 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
       if (param.defaultValueType !== undefined && param.defaultValueType === 'number') {
         blockType = 'math_number';
         fieldName = 'NUM';
+      } else if (param.defaultValueType !== undefined && param.defaultValueType === 'color') {
+        blockType = 'color_white';
+        fieldName = 'COLOR';
       }
       items.forEach((item, idx) => {
         xmlString += '<value name="ADD' + idx + '">' +
