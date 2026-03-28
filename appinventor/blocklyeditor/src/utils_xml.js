@@ -182,9 +182,9 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
     // Not a DesignerProperty, take param type.
     typeStr = param.type;
   }
-  if ((typeStr === 'any' || typeStr === 'unknown') && param.valueType !== undefined) {
-    // Take the optional valueType if defined
-    typeStr = param.valueType;
+  if ((typeStr === 'any' || typeStr === 'unknown') && param.defaultValueType !== undefined) {
+    // Take the optional defaultValueType if defined and only when the param type is 'any' or 'unknown'
+    typeStr = param.defaultValueType;
   }
 
   var valueStr = String(param.defaultValue);
@@ -219,7 +219,7 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
       xmlString += '<mutation items="' + items.length + '"></mutation>';
       var blockType = 'text';
       var fieldName = 'TEXT';
-      if (param.valueType !== undefined && param.valueType === 'number') {
+      if (param.defaultValueType !== undefined && param.defaultValueType === 'number') {
         blockType = 'math_number';
         fieldName = 'NUM';
       }

@@ -516,8 +516,8 @@ Blockly.ComponentDatabase.prototype.processParameters = function(paramData) {
     if (datum.defaultValue !== undefined) {
      param.defaultValue = datum.defaultValue; 
     }
-    if (datum.valueType !== undefined) {
-      param.valueType = datum.valueType;
+    if (datum.defaultValueType !== undefined) {
+      param.defaultValueType = datum.defaultValueType;
     }
     param.helperKey = this.processHelper(datum.helper);
     params.push(param);

@@ -303,7 +303,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       json.put("defaultValue", prop.getDefaultValue());
     }
     if (prop.getDefaultValueType() != null && !prop.getDefaultValueType().isEmpty()) {
-      json.put("valueType", prop.getDefaultValueType());
+      json.put("defaultValueType", prop.getDefaultValueType());
     }
     return json;
   }
@@ -347,7 +347,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
         param.put("defaultValue", p.defaultValue);
       }
       if (p.defaultValueType != null && !p.defaultValueType.isEmpty()) {
-        param.put("valueType", p.defaultValueType);
+        param.put("defaultValueType", p.defaultValueType);
       }
       json.put(param);
     }
