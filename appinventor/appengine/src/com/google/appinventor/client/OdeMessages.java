@@ -4236,6 +4236,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String FormatTimeMethods();
 
+  @DefaultMessage("ChangeTimezone")
+  @Description("")
+  String ChangeTimezoneMethods();
+
+  @DefaultMessage("Timezones")
+  @Description("")
+  String TimezonesMethods();
+
   @DefaultMessage("GetMillis")
   @Description("")
   String GetMillisMethods();
