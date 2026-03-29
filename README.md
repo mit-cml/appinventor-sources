@@ -275,3 +275,15 @@ For better performance, consider using the manual instructions above.
 ## Need Help?
 
 Join [our community](https://community.appinventor.mit.edu/).
+
+
+## 🚀 Contribution Note
+
+This project is actively maintained and welcomes new contributors.
+
+If you're a beginner:
+- Start with "help wanted" issues
+- Improve documentation
+- Add comments to code
+
+Happy contributing! 🎉
