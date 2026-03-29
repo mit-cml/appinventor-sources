@@ -382,9 +382,14 @@ public final class MockListView extends MockVisibleComponent {
     if (url == null) {
       // text was not recognized as an asset. Just display the icon for this type of component.
       image.setUrl(getIconImage().getUrl());
-    } else {
-      image.setUrl(url);
-    }    
+  } else {
+  image.setUrl(url);
+
+  // fallback if image fails
+  image.addErrorHandler(event -> {
+    image.setUrl("https://via.placeholder.com/80");
+  });
+}    
     container.setSize(widthValue, heightValue);
     image.setSize("100%", "100%");
     image.getElement().getStyle().setProperty("objectFit", "contain");
