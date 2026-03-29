@@ -272,9 +272,21 @@ Note 2: If it seems like none of the dependencies are installed in the VM, run `
 
 For better performance, consider using the manual instructions above.
 
-## Need Help?
+## ❓ Need Help?
 
-Join [our community](https://community.appinventor.mit.edu/).
+If you need help getting started or contributing:
+
+- 💬 Join the community forum: https://community.appinventor.mit.edu/
+- 🐛 Check "help wanted" issues on GitHub
+- 📚 Read the official documentation carefully
+- 🤝 Ask questions before starting large changes
+
+### 💡 Tips for Beginners
+- Start with small contributions (docs, comments, minor fixes)
+- Communicate clearly with maintainers
+- Follow contribution guidelines
+
+We welcome all contributors! 🚀
 
 
 ## 🚀 Contribution Note
