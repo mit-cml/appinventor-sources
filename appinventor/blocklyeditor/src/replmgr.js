@@ -453,7 +453,7 @@ Blockly.ReplMgr.putYail = (function() {
                                         console.log("addIceCandidate: candidate = " + JSON.stringify(candidate));
                                         webrtcpeer.addIceCandidate(candidate)["catch"](function(e) {
                                             console.error(e);
-                                            webrtcerror(true, Bockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + e);
+                                            webrtcerror(true, Blockly.Msg.REPL_WEBRTC_CONNECTION_ERROR + "\n" + e);
                                         });
                                     } else {
                                         console.log("Seen nonce " + nonce);
