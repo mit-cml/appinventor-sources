@@ -839,7 +839,7 @@ Blockly.Blocks.component_method = {
           .setCheck(check);
 
       if (oldInputValues[i] && input.connection) {
-        Blockly.icons.MutatorIcon.reconnect(oldInputValues[i].outputConnection, this, 'ARG' + i);
+        oldInputValues[i].outputConnection.reconnect(this, 'ARG' + i);
       }
     }
 
@@ -888,8 +888,6 @@ Blockly.Blocks.component_method = {
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
-      //var title = this.inputList[0].titleRow[0];
-      //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1258,7 +1256,7 @@ Blockly.Blocks.component_set_get = {
 
     if (oldInput) {
       this.getInput('VALUE').init();
-      Blockly.icons.MutatorIcon.reconnect(oldInput.outputConnection, this, 'VALUE');
+      oldInput.outputConnection.reconnect(this, 'VALUE');
     }
 
     //for non-generic blocks, set the value of the component drop down
@@ -1365,8 +1363,6 @@ Blockly.Blocks.component_set_get = {
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
-      //var title = this.inputList[0].titleRow[0];
-      //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1529,8 +1525,6 @@ Blockly.Blocks.component_component_block = {
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
-      //var title = this.inputList[0].titleRow[0];
-      //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
       return true;
     }
@@ -1604,9 +1598,11 @@ Blockly.Blocks['component_all_component_block'] = {
   typeblock : function() {
     var componentDb = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
+    const seenTypes = new Set();
 
     componentDb.forEachInstance(function(instance) {
-      if (instance.typeName != "Form") {
+      if (instance.typeName != "Form" && !seenTypes.has(instance.typeName)) {
+        seenTypes.add(instance.typeName);
         tb.push({
           translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_EVERY_COMPONENT_TITLE_EVERY +
               " " + componentDb.getInternationalizedComponentType(instance.typeName),
@@ -1617,9 +1613,6 @@ Blockly.Blocks['component_all_component_block'] = {
       }
     });
 
-    goog.array.removeDuplicates(tb, null, function(t) {
-      return t.mutatorAttributes.component_type;
-    });
     return tb;
   },
 

@@ -32,6 +32,7 @@ export declare class Options {
     pathToMedia: string;
     hasCategories: boolean;
     moveOptions: MoveOptions;
+    /** @deprecated  January 2019 */
     hasScrollbars: boolean;
     hasTrashcan: boolean;
     maxTrashcanContents: number;
@@ -86,7 +87,7 @@ export declare class Options {
      * @param hasCategories Whether the workspace has categories or not.
      * @returns Normalized move options.
      */
-    private static parseMoveOptions_;
+    private static parseMoveOptions;
     /**
      * Parse the user-specified zoom options, using reasonable defaults where
      * behaviour is unspecified.  See zoom documentation:
@@ -95,7 +96,7 @@ export declare class Options {
      * @param options Dictionary of options.
      * @returns Normalized zoom options.
      */
-    private static parseZoomOptions_;
+    private static parseZoomOptions;
     /**
      * Parse the user-specified grid options, using reasonable defaults where
      * behaviour is unspecified. See grid documentation:
@@ -104,7 +105,7 @@ export declare class Options {
      * @param options Dictionary of options.
      * @returns Normalized grid options.
      */
-    private static parseGridOptions_;
+    private static parseGridOptions;
     /**
      * Parse the user-specified theme options, using the classic theme as a
      * default. https://developers.google.com/blockly/guides/configure/web/themes
@@ -112,7 +113,7 @@ export declare class Options {
      * @param options Dictionary of options.
      * @returns A Blockly Theme.
      */
-    private static parseThemeOptions_;
+    private static parseThemeOptions;
 }
 export declare namespace Options {
     interface GridOptions {

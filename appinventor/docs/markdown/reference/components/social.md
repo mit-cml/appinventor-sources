@@ -628,7 +628,7 @@ None
 : The number that the message will be sent to when the SendMessage method is called.  The 
  number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, 
  and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces
- should not be included.
+ should not be included. Multiple numbers can be included if separated by commas.
 
 {:id="Texting.ReceivingEnabled" .number} *ReceivingEnabled*
 : If set to 1 (OFF) no messages will be received. If set to 2 (FOREGROUND) or 3 (ALWAYS) the

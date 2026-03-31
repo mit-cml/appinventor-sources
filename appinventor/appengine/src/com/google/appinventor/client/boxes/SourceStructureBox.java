@@ -44,6 +44,9 @@ public class SourceStructureBox extends Box implements ISourceStructureBox {
     SUBINSTANCE = new SourceStructureBoxFilter(this);
 
     setContent(SUBINSTANCE.getSourceStructureExplorer());
+
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.sourceStructureAriaLabel());
   }
 
   /**

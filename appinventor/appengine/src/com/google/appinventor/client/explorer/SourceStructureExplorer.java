@@ -26,6 +26,7 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.aria.client.Roles;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -82,6 +83,7 @@ public class SourceStructureExplorer extends Composite {
     tree = new EventCaptureTree(Ode.getImageBundle());
     tree.setAnimationEnabled(true);
     tree.setScrollOnSelectEnabled(false);
+    Roles.getTreeRole().set(tree.getElement());
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
       @Override
       public void onClose(CloseEvent<TreeItem> event) {

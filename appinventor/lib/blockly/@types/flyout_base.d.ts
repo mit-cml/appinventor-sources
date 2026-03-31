@@ -3,16 +3,17 @@
  * Copyright 2011 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { BlockSvg } from './block_svg.js';
+import { BlockSvg } from './block_svg.js';
 import { DeleteArea } from './delete_area.js';
 import { FlyoutButton } from './flyout_button.js';
+import { IAutoHideable } from './interfaces/i_autohideable.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
 import type { Options } from './options.js';
+import * as blocks from './serialization/blocks.js';
 import { Coordinate } from './utils/coordinate.js';
 import { Svg } from './utils/svg.js';
 import * as toolbox from './utils/toolbox.js';
 import { WorkspaceSvg } from './workspace_svg.js';
-import { IAutoHideable } from './interfaces/i_autohideable.js';
 declare enum FlyoutItemType {
     BLOCK = "block",
     BUTTON = "button"
@@ -120,6 +121,10 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      */
     protected buttons_: FlyoutButton[];
     /**
+     * List of visible buttons and blocks.
+     */
+    protected contents: FlyoutItem[];
+    /**
      * List of event listeners.
      */
     private listeners;
@@ -145,7 +150,7 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
     /**
      * Whether the flyout is visible.
      */
-    private isVisible_;
+    private visible;
     /**
      * Whether the workspace containing this flyout is visible.
      */
@@ -260,6 +265,12 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
     /** Automatically hides the flyout if it is an autoclosing flyout. */
     autoHide(onlyClosePopups: boolean): void;
     /**
+     * Get the target workspace inside the flyout.
+     *
+     * @returns The target workspace inside the flyout.
+     */
+    getTargetWorkspace(): WorkspaceSvg;
+    /**
      * Is the flyout visible?
      *
      * @returns True if visible.
@@ -279,6 +290,18 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      * @param visible Whether the container is visible.
      */
     setContainerVisible(visible: boolean): void;
+    /**
+     * Get the list of buttons and blocks of the current flyout.
+     *
+     * @returns The array of flyout buttons and blocks.
+     */
+    getContents(): FlyoutItem[];
+    /**
+     * Store the list of buttons and blocks on the flyout.
+     *
+     * @param contents - The array of items for the flyout.
+     */
+    setContents(contents: FlyoutItem[]): void;
     /**
      * Update the display property of the flyout based whether it thinks it should
      * be visible and whether its containing workspace is visible.
@@ -489,6 +512,13 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      * @returns The new block in the main workspace.
      */
     private placeNewBlock;
+    /**
+     * Serialize a block to JSON.
+     *
+     * @param block The block to serialize.
+     * @returns A serialized representation of the block.
+     */
+    protected serializeBlock(block: BlockSvg): blocks.State;
     /**
      * Positions a block on the target workspace.
      *

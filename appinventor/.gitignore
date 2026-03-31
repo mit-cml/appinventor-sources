@@ -70,3 +70,5 @@ fastlane/test_output
 
 iOSInjectionProject/
 AICompanionApp.xcconfig
+.bundle/
+docs/markdown/vendor/

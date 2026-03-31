@@ -223,9 +223,16 @@ public abstract class MockVisibleComponent extends MockComponent {
     }
 
     this.coordPropertiesVisible = value;
-    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
-    x.setType(type);
-    y.setType(type);
+    // Toggle only the TYPE_INVISIBLE bit, preserving other bits (e.g. TYPE_DOYAIL).
+    // Replacing the whole type would strip TYPE_DOYAIL, causing Left/Top to be omitted
+    // from the YAIL sent to the companion after a drag-drop.
+    if (value) {
+      x.setType(x.getType() & ~EditableProperty.TYPE_INVISIBLE);
+      y.setType(y.getType() & ~EditableProperty.TYPE_INVISIBLE);
+    } else {
+      x.setType(x.getType() | EditableProperty.TYPE_INVISIBLE);
+      y.setType(y.getType() | EditableProperty.TYPE_INVISIBLE);
+    }
   }
 
   /**

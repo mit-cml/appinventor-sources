@@ -197,6 +197,8 @@
     <!-- https://example.com/something. -->
     <property name="ode.base" value="" />
 
+    <property name="stoken.key" value="changeme"/>
+
     <!-- AI Agent configuration -->
     <property name="ai.agent.available" value="false" />
     <property name="ai.agent.provider" value="anthropic" />

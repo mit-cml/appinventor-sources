@@ -21,7 +21,7 @@ export declare class RenderedConnection extends Connection {
     private readonly dbOpposite;
     private readonly offsetInBlock;
     private trackedState;
-    private highlightPath;
+    private highlighted;
     /** Connection this connection connects to.  Null if not connected. */
     targetConnection: RenderedConnection | null;
     /**
@@ -60,10 +60,15 @@ export declare class RenderedConnection extends Connection {
      * Move the block(s) belonging to the connection to a point where they don't
      * visually interfere with the specified connection.
      *
-     * @param staticConnection The connection to move away from.
+     * @param superiorConnection The connection to move away from. The provided
+     *     connection should be the superior connection and should not be
+     *     connected to this connection.
+     * @param initiatedByThis Whether or not the block group that was manipulated
+     *     recently causing bump checks is associated with the inferior
+     *     connection. Defaults to false.
      * @internal
      */
-    bumpAwayFrom(staticConnection: RenderedConnection): void;
+    bumpAwayFrom(superiorConnection: RenderedConnection, initiatedByThis?: boolean): void;
     /**
      * Change the connection's coordinates.
      *
@@ -130,6 +135,8 @@ export declare class RenderedConnection extends Connection {
     highlight(): void;
     /** Remove the highlighting around this connection. */
     unhighlight(): void;
+    /** Returns true if this connection is highlighted, false otherwise. */
+    isHighlighted(): boolean;
     /**
      * Set whether this connections is tracked in the database or not.
      *
@@ -160,11 +167,11 @@ export declare class RenderedConnection extends Connection {
      * Bumps this connection away from the other connection. Called when an
      * attempted connection fails.
      *
-     * @param otherConnection Connection that this connection failed to connect
-     *     to.
+     * @param superiorConnection Connection that this connection failed to connect
+     *     to. The provided connection should be the superior connection.
      * @internal
      */
-    onFailedConnect(otherConnection: Connection): void;
+    onFailedConnect(superiorConnection: Connection): void;
     /**
      * Disconnect two blocks that are connected by this connection.
      *

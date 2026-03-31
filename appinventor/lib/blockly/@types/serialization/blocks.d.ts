@@ -27,6 +27,7 @@ export interface State {
     movable?: boolean;
     editable?: boolean;
     enabled?: boolean;
+    disabledReasons?: string[];
     inline?: boolean;
     data?: string;
     extraState?: any;

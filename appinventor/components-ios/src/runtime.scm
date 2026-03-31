@@ -22,6 +22,7 @@
 (define *testing* #f)
 (define-alias SimpleForm <com.google.appinventor.components.runtime.Form>)
 (define-alias AssetFetcher <AIComponentKit.AssetFetcher>)
+(define-alias YailProcedure <AIComponentKit.YailProcedure>)
 (define-alias OptionHelper <AIComponentKit.OptionHelper>)
 
 (define-syntax call-with-output-string
@@ -1714,6 +1715,26 @@ Dictionary implementation.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;Yail Procedure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (create-yail-procedure x)
+  (YailProcedure:create x))
+
+(define (create-yail-procedure-with-name x)
+  (YailProcedure:createWithName x))
+
+(define (call-yail-procedure procedure . args)
+  (YailProcedure:callProcedure procedure args))
+
+(define (call-yail-procedure-input-list procedure inputlist)
+  (YailProcedure:callProcedure procedure inputlist))
+
+(define (num-args-yail-procedure procedure)
+  (YailProcedure:numArgs procedure))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; End of Yail Procedure
 #|
 Matrix implementation.
 
@@ -1723,6 +1744,7 @@ Matrix implementation.
 - get matrix cell       (yail-matrix-get-cell yail-matrix row col)
 - set matrix cell       (yail-matrix-set-cell yail-matrix row col value)
 - is YailMatrix?        (yail-matrix? x)
+- get matrix dimensions         (yail-matrix-get-dims matrix)
 - get matrix inverse    (yail-matrix-inverse matrix)
 - get matrix transpose  (yail-matrix-transpose matrix)
 - matrix add            (yail-matrix-add matrix1 matrix2)
@@ -1751,6 +1773,9 @@ Matrix implementation.
 
 (define (yail-matrix? x)
   (instance? x SchemeKit.YailMatrix))
+
+(define (yail-matrix-get-dims matrix)
+  (invoke matrix 'getDimensions'))
 
 (define (yail-matrix-inverse matrix)
   (invoke 'SchemeKit.YailMatrix 'inverse:error: matrix))

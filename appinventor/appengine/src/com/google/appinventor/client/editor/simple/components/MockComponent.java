@@ -168,12 +168,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       topInvisible.addFocusHandler(new FocusHandler() {
         @Override
         public void onFocus(FocusEvent event) {
-          okButton.setFocus(true); 
+          okButton.setFocus(true);
         }
       });
       bottomInvisible.addFocusHandler(new FocusHandler() {
         public void onFocus(FocusEvent event) {
-          newNameTextBox.setFocus(true); 
+          newNameTextBox.setFocus(true);
         }
       });
 
@@ -350,6 +350,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     this.editor = editor;
     this.type = type;
     this.iconImage = iconImage;
+    if (iconImage != null) {
+      iconImage.getElement().setAttribute("alt", "component icon");
+    }
     this.handlers = new HandlerManager(this);
     COMPONENT_DATABASE = editor.getComponentDatabase();
     componentDefinition = COMPONENT_DATABASE.getComponentDefinition(type);
@@ -891,7 +894,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // Note: We create a ClippedImagePrototype because we need something that can be
     // used to get HTML for the iconImage. AbstractImagePrototype requires
     // an ImageResource, which we don't necessarily have.
-    TreeItem itemNode = new TreeItem(
+
+    final TreeItem itemNode = new TreeItem(
         new HTML("<span>" + iconImage.getElement().getString() + SafeHtmlUtils.htmlEscapeAllowEntities(getName()) + "</span>")) {
       @Override
       protected Focusable getFocusable() {
@@ -899,6 +903,21 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       }
     };
     itemNode.setUserObject(sourceStructureExplorerItem);
+
+    // Set alt text on the icon image for accessibility
+    // Use Scheduler to defer until DOM is attached
+    final String altText = getName() + " " + getVisibleTypeName();
+    com.google.gwt.core.client.Scheduler.get().scheduleDeferred(new com.google.gwt.core.client.Scheduler.ScheduledCommand() {
+      @Override
+      public void execute() {
+        com.google.gwt.dom.client.Element element = itemNode.getElement();
+        com.google.gwt.dom.client.NodeList<com.google.gwt.dom.client.Element> imgs = element.getElementsByTagName("img");
+        if (imgs.getLength() > 0) {
+          imgs.getItem(0).setAttribute("alt", altText);
+        }
+      }
+    });
+
     return itemNode;
   }
 

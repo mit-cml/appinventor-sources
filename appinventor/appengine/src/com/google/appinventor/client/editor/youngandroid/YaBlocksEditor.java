@@ -60,6 +60,7 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
           new BlocksCategory("Control", IMAGES.control()),
           new BlocksCategory("Logic", IMAGES.logic()),
           new BlocksCategory("Math", IMAGES.math()),
+          new BlocksCategory("Matrices", IMAGES.matrices()),
           new BlocksCategory("Text", IMAGES.text()),
           new BlocksCategory("Lists", IMAGES.lists()),
           new BlocksCategory("Dictionaries", IMAGES.dictionaries()),

@@ -14,6 +14,7 @@ import com.google.appinventor.client.editor.simple.components.MockComponentsUtil
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
+import com.google.appinventor.client.utils.ImageAccessibility;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -61,6 +62,8 @@ public class SimplePaletteItem extends DragSourcePanel {
 
     Image image = new Image(scd.getImage().getUrl());
     image.setStylePrimaryName("ode-SimplePaletteItem-icon");
+    String altText = ComponentTranslationTable.getComponentName(scd.getName()) + " component";
+    ImageAccessibility.setAltText(image, altText);
     panel.add(image);
     panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
     panel.setCellWidth(image, "30px");

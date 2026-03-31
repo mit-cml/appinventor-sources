@@ -13,8 +13,6 @@
 
 goog.provide('AI.Blockly.Block');
 
-goog.require('goog.asserts');
-
 Blockly.Block.mutationToDom = function() {
   var container = details.mutationToDomFunc ? details.mutationToDomFunc()
     : document.createElement('mutation');
@@ -64,26 +62,30 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
     if (field instanceof Blockly.Field) {
       this.appendField(field);
     } else {
-      goog.asserts.assert(Array.isArray(field));
+      if (!Array.isArray(field)) {
+        throw Error('Field must be a Field or a tuple.');
+      }
       this.appendField(field[1], field[0]);
     }
   }
 
   // Validate the msg at the start and the dummy alignment at the end,
   // and remove the latter.
-  goog.asserts.assertString(msg);
+  if (typeof msg !== 'string') {
+    throw Error('Message must be a string.');
+  }
   var dummyAlign = arguments[arguments.length - 1];
-  goog.asserts.assert(
-      dummyAlign === Blockly.inputs.Align.LEFT ||
+  if (!(dummyAlign === Blockly.inputs.Align.LEFT ||
       dummyAlign === Blockly.inputs.Align.CENTRE ||
-      dummyAlign === Blockly.inputs.Align.RIGHT,
-      'Illegal final argument "%d" is not an alignment.', dummyAlign);
+      dummyAlign === Blockly.inputs.Align.RIGHT)) {
+    throw Error(`Illegal final argument "${dummyAlign}" is not an alignment.`);
+  }
   arguments.length = arguments.length - 1;
 
   var tokens = msg.split(this.interpolateMsg.SPLIT_REGEX_);
   var fields = [];
   for (var i = 0; i < tokens.length; i += 2) {
-    var text = goog.string.trim(tokens[i]);
+    var text = tokens[i].trim();
     var input = undefined;
     if (text) {
       fields.push(new Blockly.FieldLabel(text));
@@ -93,10 +95,9 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
       // Numeric field.
       var number = parseInt(symbol.substring(1), 10);
       var tuple = arguments[number];
-      goog.asserts.assertArray(tuple,
-          'Message symbol "%s" is out of range.', symbol);
-      goog.asserts.assertArray(tuple,
-          'Argument "%s" is not a tuple.', symbol);
+      if (!Array.isArray(tuple)) {
+        throw Error(`Argument "${symbol}" is not a tuple.`);
+      }
       if (tuple[1] instanceof Blockly.Field) {
         fields.push([tuple[0], tuple[1]]);
       } else {
@@ -124,8 +125,9 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
 
   // Verify that all inputs were used.
   for (var i = 1; i < arguments.length - 1; i++) {
-    goog.asserts.assert(arguments[i] === null,
-        'Input "%%s" not used in message: "%s"', i, msg);
+    if (arguments[i] !== null) {
+      throw Error(`Input "%${i}" not used in message: "${msg}"`);
+    }
   }
   // Make the inputs inline unless there is only one input and
   // no text follows it.
@@ -155,7 +157,7 @@ Blockly.Block.prototype.walk = function(callback) {
   function doWalk(block, depth) {
     callback(block, depth);
     block.inputList.forEach(function(input) {
-      if ((input.type === Blockly.INPUT_VALUE || input.type === Blockly.NEXT_STATEMENT) &&
+      if ((input.type === Blockly.inputs.inputTypes.VALUE || input.type === Blockly.inputs.inputTypes.STATEMENT) &&
           input.connection && input.connection.targetBlock()) {
         doWalk(input.connection.targetBlock(), depth + 1);
       }
@@ -177,45 +179,3 @@ Blockly.Block.prototype.domToMutation = null;
  */
 Blockly.Block.prototype.mutationToDom = null;
 
-/**
- * Create a human-readable text representation of this block and any children.
- * @param {number=} opt_maxLength Truncate the string to this length.
- * @param {string=} opt_emptyToken The placeholder string used to denote an
- *     empty field. If not specified, '?' is used.
- * @return {string} Text of block.
- */
-Blockly.Block.prototype.toString = function(opt_maxLength, opt_emptyToken) {
-  // This function is overridden so that it doesn't use the collapsed shortcut.
-  var text = '';
-  var emptyFieldPlaceholder = opt_emptyToken || '?';
-  for (var i = 0, input;
-       (input = this.inputList[i]) &&
-       // We always want to go over if possible so that it shows the ellipsis.
-       // +1 is to account for a trailing space.
-       (!opt_maxLength || text.length <= opt_maxLength + 1);
-       i++) {
-
-    if (input.name == Blockly.BlockSvg.COLLAPSED_INPUT_NAME) {
-      continue;
-    }
-    for (var j = 0, field; (field = input.fieldRow[j]); j++) {
-      text += field.getText() + ' ';
-    }
-    if (input.connection) {
-      var child = input.connection.targetBlock();
-      if (child) {
-        var charsLeft = opt_maxLength ? opt_maxLength - text.length : undefined;
-        text += child.toString(charsLeft, opt_emptyToken) + ' ';
-      } else {
-        text += emptyFieldPlaceholder + ' ';
-      }
-    }
-  }
-  text = goog.string.trim(text) || '???';
-  if (opt_maxLength) {
-    // TODO (Blockly): Improve truncation so that text from this block is
-    //  given priority.
-    text = goog.string.truncate(text, opt_maxLength);
-  }
-  return text;
-};
