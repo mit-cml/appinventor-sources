@@ -163,7 +163,7 @@
       {
         "tool": "write_block",
         "arguments": {
-          "yail": "(def-return (p$double $num)\n  (set-this-form)\n  (call-yail-primitive *\n    (*list-for-runtime* (lexical-value $num) 2)\n    '(number number)\n    \"*\"))"
+          "yail": "(def-return (p$double $num)\n  (call-yail-primitive *\n    (*list-for-runtime* (lexical-value $num) 2)\n    '(number number)\n    \"*\"))"
         }
       }
     ]
