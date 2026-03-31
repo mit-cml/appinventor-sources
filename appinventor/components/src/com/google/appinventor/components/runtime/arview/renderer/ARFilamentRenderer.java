@@ -162,6 +162,8 @@ public class ARFilamentRenderer {
     /** Level 1: disk cache — path → raw GLB bytes. Written by loadExecutor. */
     private final Map<String, ByteBuffer>    modelBufferCache = new ConcurrentHashMap<>();
 
+    private ByteBuffer depthBufferCache = null;
+
     /** Level 2: GPU cache — path → primary FilamentAsset. FilamentRenderThread only. */
     private final Map<String, FilamentAsset> assetCache       = new ConcurrentHashMap<>();
 
@@ -187,6 +189,7 @@ public class ARFilamentRenderer {
     private final Map<String, ArrayDeque<FilamentInstance>> instancePoolCache
         = new ConcurrentHashMap<>();
 
+    private final Map<ARNode, Long> nodeLastRenderedAt = new ConcurrentHashMap<>();
 
     private final List<ARParticleEmitter> particleEmitters = new ArrayList<>();
 
@@ -235,6 +238,8 @@ public class ARFilamentRenderer {
     private List<ARNode>  sharedNodes = new ArrayList<>();
     private boolean       matricesReady = false;
 
+    private final List<ARNode> nodesCopyBuffer  = new ArrayList<>(32);
+    private final List<Plane>  planesCopyBuffer = new ArrayList<>(16);
     // -------------------------------------------------------------------------
     // Pending depth update — GL thread writes, FilamentRenderThread consumes
     // Guarded by depthLock
@@ -323,18 +328,22 @@ public class ARFilamentRenderer {
         final float[] projCopy  = new float[16];
         System.arraycopy(viewMatrix, 0, viewCopy, 0, 16);
         System.arraycopy(projMatrix, 0, projCopy, 0, 16);
-        final List<ARNode> nodesCopy  = new ArrayList<>(nodes);
-        final List<Plane>  planesCopy = new ArrayList<>(planes);
+
+
+        nodesCopyBuffer.clear();
+        nodesCopyBuffer.addAll(nodes);
+        planesCopyBuffer.clear();
+        planesCopyBuffer.addAll(planes);
 
         filamentHandler.post(() -> {
             try {
                 synchronized (matrixLock) {
-                    trackingPlanes = planesCopy;
-                    sharedNodes    = nodesCopy;
+                    trackingPlanes = planesCopyBuffer;
+                    sharedNodes    = nodesCopyBuffer;
                 }
 
                 updateCameraFromARCore(viewCopy, projCopy);
-                loadAndPositionNodes(nodesCopy);
+                loadAndPositionNodes(nodesCopyBuffer);
                 updateAnimations();
 
                 /* CSB TODO
@@ -483,12 +492,17 @@ public class ARFilamentRenderer {
     public void updateARCoreDepth(ByteBuffer depthData, float[] uvTransform,
                                   float near, float far,
                                   int depthWidth, int depthHeight) {
-        ByteBuffer copy = ByteBuffer.allocateDirect(depthData.remaining());
-        copy.put(depthData);
-        copy.rewind();
+
+        int size = depthData.remaining();
+        if (depthBufferCache == null || depthBufferCache.capacity() < size) {
+            depthBufferCache = ByteBuffer.allocateDirect(size);
+        }
+        depthBufferCache.clear();
+        depthBufferCache.put(depthData);
+        depthBufferCache.rewind();
         synchronized (depthLock) {
             pendingDepthUpdate = new DepthUpdate(
-                copy, uvTransform, near, far, depthWidth, depthHeight);
+                depthBufferCache, uvTransform, near, far, depthWidth, depthHeight);
         }
     }
 
@@ -845,6 +859,7 @@ public class ARFilamentRenderer {
         Integer rootEntity = nodeRootEntity.get(node);
         if (rootEntity == null) return;
 
+        nodeLastRenderedAt.put(node, System.nanoTime());
         TransformManager tm = engine.getTransformManager();
         int tmInst = tm.getInstance(rootEntity);
         if (tmInst == 0) return;
@@ -932,6 +947,64 @@ public class ARFilamentRenderer {
         });
     }
 
+    private float distanceToCamera(float[] pos) {
+        float dx = pos[0] - lastCameraWorldPos[0];
+        float dy = pos[1] - lastCameraWorldPos[1];
+        float dz = pos[2] - lastCameraWorldPos[2];
+        return (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
+    }
+    /**
+     * Finds the least-recently-used node sharing {@code path}, removes it from
+     * the scene, and returns its instance ready for reassignment.
+     *
+     * The evicted node is fully removed from all tracking maps so the caller
+     * node can claim the instance cleanly. The evicted node will be reloaded
+     * the next time loadAndPositionNodes() sees it — which is instant because
+     * the GPU data is still cached.
+     *
+     * @return a recycled FilamentInstance, or null if nothing is evictable.
+     */
+    private FilamentInstance evictLRUInstance(String path) {
+        ARNode lruNode = null;
+        float  farthest  = -1.5f;
+
+        for (Map.Entry<ARNode, FilamentAsset> entry : nodeAssetMap.entrySet()) {
+            ARNode candidate = entry.getKey();
+            // Only consider nodes that actually use an instance (not primary bare asset)
+            if (!nodeInstanceMap.containsKey(candidate)) continue;
+            // Only consider nodes using this model path
+            if (!path.equals(candidate.Model())) continue;
+
+            long t = nodeLastRenderedAt.getOrDefault(candidate, 0L);
+            float [] pos = ((ARNodeBase) candidate).getCurrentPosition();
+            float dist = distanceToCamera(pos);
+            if (dist > farthest) {
+                farthest = dist;
+                lruNode  = candidate;
+            }
+        }
+
+        if (lruNode == null) return null;
+
+        // Pull the instance out of the evicted node's tracking
+        FilamentInstance recycled = nodeInstanceMap.remove(lruNode);
+        nodeRootEntity.remove(lruNode);
+        nodeAssetMap.remove(lruNode);
+        nodeLastRenderedAt.remove(lruNode);
+        loadingNodes.remove(lruNode);
+
+        // Remove its entities from the scene (geometry stays on GPU)
+        scene.remove(recycled.getRoot());
+        for (int e : recycled.getEntities()) {
+            if (e != recycled.getRoot()) scene.remove(e);
+        }
+
+        Log.d(LOG_TAG, "Evicted LRU node: " + lruNode
+            + " lastSeen=" + farthest + " path=" + path);
+
+        return recycled;  // caller adds it back to scene immediately
+    }
+
     /**
      * Phase 2 — FilamentRenderThread (GPU work only).
      *
@@ -985,9 +1058,13 @@ public class ARFilamentRenderer {
             FilamentInstance instance = (pool != null) ? pool.poll() : null;
 
             if (instance == null) {
-                Log.w(LOG_TAG, "Instance pool exhausted: " + path);
-                // fallback unchanged...
-                return;
+                // Pool exhausted — evict the least-recently-used node for this model path
+                instance = evictLRUInstance(path);
+                if (instance == null) {
+                    Log.e(LOG_TAG, "Instance pool exhausted AND eviction failed: " + path);
+                    return;
+                }
+                Log.d(LOG_TAG, "Pool exhausted, recycled LRU instance: " + path);
             }
 
             // Add this instance's entities to scene
@@ -1298,6 +1375,16 @@ public class ARFilamentRenderer {
             nodeInstanceMap.clear();
             nodeAssetMap.clear();
             loadingNodes.clear();
+
+            // Free disk buffer cache
+            modelBufferCache.clear();
+
+// Free depth buffer
+            if (arDepthTexture != null) {
+                engine.destroyTexture(arDepthTexture);
+                arDepthTexture = null;
+            }
+            depthBufferCache = null;  // let it get GC'd
 
             // Reset state
             depthDataReceived = false;
