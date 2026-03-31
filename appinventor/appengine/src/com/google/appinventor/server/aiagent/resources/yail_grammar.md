@@ -422,11 +422,8 @@ Primitives marked **STATEMENT** are void — they mutate in place and have no ou
 | `yail-list-to-csv-table` | To CSV table |
 | `yail-list-to-csv-row` | To CSV row |
 | `yail-list-sort` | Sort list |
-| `yail-list-sort-comparator` | Sort with comparator |
 | `yail-list-but-first` | All except first |
 | `yail-list-but-last` | All except last |
-| `yail-list-first-element` | First item |
-| `yail-list-rest` | Rest of list |
 | `yail-list-slice` | Slice list |
 | `yail-list-empty?` | Is list empty? |
 | `yail-alist-lookup` | Lookup in list of pairs |
