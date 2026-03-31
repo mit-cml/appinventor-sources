@@ -1491,7 +1491,33 @@ AI.YailToBlocks.PRIMITIVE_MAP_ = {
   'close-screen-with-plain-text': {block: 'controls_closeScreenWithPlainText', arity: 1},
   'close-application': {block: 'controls_closeApplication', arity: 0},
   'get-start-value': {block: 'controls_getStartValue', arity: 0},
-  'get-plain-start-text': {block: 'controls_getPlainStartText', arity: 0}
+  'get-plain-start-text': {block: 'controls_getPlainStartText', arity: 0},
+
+  // Matrices
+  'make-yail-matrix-multidim': {block: 'matrices_create_multidim', arity: 2},
+  'yail-matrix-get-row': {block: 'matrices_get_row', arity: 2},
+  'yail-matrix-get-column': {block: 'matrices_get_column', arity: 2},
+  'yail-matrix-get-dims': {block: 'matrices_get_dims', arity: 1},
+  'yail-matrix-get-cell': {block: 'matrices_get_cell', arity: 'variadic', fixedInputs: 1},
+  'yail-matrix-set-cell!': {block: 'matrices_set_cell', arity: 'variadic', fixedInputs: 2},
+  'yail-matrix-add': {block: 'matrices_add', arity: 'variadic'},
+  'yail-matrix-subtract': {block: 'matrices_subtract', arity: 2},
+  'yail-matrix-multiply': {block: 'matrices_multiply', arity: 'variadic'},
+  'yail-matrix-power': {block: 'matrices_power', arity: 2},
+  'yail-matrix-inverse': {block: 'matrices_operations', mode: 'INVERSE', arity: 1},
+  'yail-matrix-transpose': {block: 'matrices_operations', mode: 'TRANSPOSE', arity: 1},
+  'yail-matrix-rotate-left': {block: 'matrices_operations', mode: 'ROTATE_LEFT', arity: 1},
+  'yail-matrix-rotate-right': {block: 'matrices_operations', mode: 'ROTATE_RIGHT', arity: 1},
+  'yail-matrix?': {block: 'matrices_is_matrix', arity: 1},
+
+  // Control — new async blocks
+  'run-in-background': {block: 'controls_run_in_background', arity: 2},
+  'run-after-period': {block: 'controls_run_after_period', arity: 2},
+
+  // Procedures — anonymous
+  'num-args-yail-procedure': {block: 'procedures_numArgs', arity: 1},
+  'create-yail-procedure-with-name': {block: 'procedures_getWithName', arity: 1},
+  'call-yail-procedure-input-list': {block: 'procedures_callanonnoreturn_inputlist', arity: 2}
 };
 
 /** @private */
@@ -1516,6 +1542,197 @@ AI.YailToBlocks.convertPrimitive_ = function(workspace, node, asExpression) {
       return AI.YailToBlocks.convertExpression_(workspace, args[0]);
     }
     return AI.YailToBlocks.makeNumberBlock_(workspace, 0);
+  }
+
+  // make-yail-matrix uses FieldNumber fields, not input connections.
+  // YAIL: (call-yail-primitive make-yail-matrix
+  //          (*list-for-runtime* rows cols v00 v01 ... vNN)
+  //          '(number ...) "create a matrix")
+  if (primName === 'make-yail-matrix') {
+    var args = [];
+    if (els.length > 2 && AI.SExprParser.isForm(els[2], '*list-for-runtime*')) {
+      var argList = els[2].elements;
+      for (var a = 1; a < argList.length; a++) args.push(argList[a]);
+    }
+    var rows = (args.length > 0 && args[0].type === 'number') ? args[0].value : 2;
+    var cols = (args.length > 1 && args[1].type === 'number') ? args[1].value : 2;
+    var block = workspace.newBlock('matrices_create');
+    var matrixValues = [];
+    for (var r = 0; r < rows; r++) {
+      matrixValues[r] = [];
+      for (var c = 0; c < cols; c++) {
+        var idx = 2 + r * cols + c;
+        matrixValues[r][c] = (idx < args.length && args[idx].type === 'number')
+            ? args[idx].value : 0;
+      }
+    }
+    var mutation = document.createElement('mutation');
+    mutation.setAttribute('rows', String(rows));
+    mutation.setAttribute('cols', String(cols));
+    mutation.setAttribute('matrix', JSON.stringify(matrixValues));
+    block.domToMutation(mutation);
+    block.initSvg();
+    return block;
+  }
+
+  // call-yail-procedure-input-list: expression variant overrides PRIMITIVE_MAP_
+  if (primName === 'call-yail-procedure-input-list' && asExpression) {
+    var args = [];
+    if (els.length > 2 && AI.SExprParser.isForm(els[2], '*list-for-runtime*')) {
+      var argList = els[2].elements;
+      for (var a = 1; a < argList.length; a++) args.push(argList[a]);
+    }
+    var block = workspace.newBlock('procedures_callanonreturn_inputlist');
+    block.initSvg();
+    if (args.length > 0) {
+      var procBlock = AI.YailToBlocks.convertExpression_(workspace, args[0]);
+      if (procBlock && block.getInput('PROCEDURE')) {
+        block.getInput('PROCEDURE').connection.connect(procBlock.outputConnection);
+      }
+    }
+    if (args.length > 1) {
+      var listBlock = AI.YailToBlocks.convertExpression_(workspace, args[1]);
+      if (listBlock && block.getInput('INPUTLIST')) {
+        block.getInput('INPUTLIST').connection.connect(listBlock.outputConnection);
+      }
+    }
+    return block;
+  }
+
+  // call-yail-procedure: variadic — first arg is procedure, rest are call args.
+  // Statement variant: procedures_callanonnoreturn (previousConnection)
+  // Expression variant: procedures_callanonreturn (outputConnection)
+  if (primName === 'call-yail-procedure') {
+    var args = [];
+    if (els.length > 2 && AI.SExprParser.isForm(els[2], '*list-for-runtime*')) {
+      var argList = els[2].elements;
+      for (var a = 1; a < argList.length; a++) args.push(argList[a]);
+    }
+    var callArgCount = args.length - 1;  // exclude procedure arg
+    var blockType = asExpression
+        ? 'procedures_callanonreturn'
+        : 'procedures_callanonnoreturn';
+    var block = workspace.newBlock(blockType);
+    if (callArgCount > 0 && block.domToMutation) {
+      var mutation = document.createElement('mutation');
+      mutation.setAttribute('items', String(callArgCount));
+      block.domToMutation(mutation);
+    }
+    block.initSvg();
+    // Connect procedure expression
+    if (args.length > 0) {
+      var procBlock = AI.YailToBlocks.convertExpression_(workspace, args[0]);
+      if (procBlock && block.getInput('PROCEDURE')) {
+        block.getInput('PROCEDURE').connection.connect(procBlock.outputConnection);
+      }
+    }
+    // Connect call arguments (ARG0, ARG1, ...)
+    for (var i = 1; i < args.length; i++) {
+      var argBlock = AI.YailToBlocks.convertExpression_(workspace, args[i]);
+      var inputName = 'ARG' + (i - 1);
+      if (argBlock && block.getInput(inputName)) {
+        block.getInput(inputName).connection.connect(argBlock.outputConnection);
+      }
+    }
+    return block;
+  }
+
+  // create-yail-procedure: two cases based on argument form.
+  // Case 1: (lambda ($p1 $p2) body) → anonymous procedure definition block
+  // Case 2: (get-var p$name) → procedure-by-dropdown block
+  if (primName === 'create-yail-procedure') {
+    var args = [];
+    if (els.length > 2 && AI.SExprParser.isForm(els[2], '*list-for-runtime*')) {
+      var argList = els[2].elements;
+      for (var a = 1; a < argList.length; a++) args.push(argList[a]);
+    }
+    if (args.length === 0) return null;
+    var firstArg = args[0];
+
+    // Case 2: (get-var p$name) → procedures_getWithDropdown
+    if (AI.SExprParser.isForm(firstArg, 'get-var')) {
+      var varName = firstArg.elements[1].name || '';
+      var procName = varName.replace(/^p\$/, '');
+      var block = workspace.newBlock('procedures_getWithDropdown');
+      block.initSvg();
+      if (block.getField('PROCNAME')) {
+        block.setFieldValue(procName, 'PROCNAME');
+      }
+      return block;
+    }
+
+    // Case 1: (lambda ($p1 $p2 ...) body) → anonymous procedure def
+    if (AI.SExprParser.isForm(firstArg, 'lambda')) {
+      var lambdaEls = firstArg.elements;
+      // lambdaEls[0] = 'lambda' symbol
+      // lambdaEls[1] = parameter list (may be empty list)
+      // lambdaEls[2] = body
+      var paramNames = [];
+      if (lambdaEls.length > 1 && lambdaEls[1].type === 'list') {
+        for (var p = 0; p < lambdaEls[1].elements.length; p++) {
+          var pName = lambdaEls[1].elements[p].name || '';
+          paramNames.push(pName.replace(/^\$(?:param_)?/, ''));
+        }
+      }
+      var bodyNode = lambdaEls.length > 2 ? lambdaEls[2] : null;
+
+      // Heuristic: if body is a statement form, use no-return; otherwise return.
+      var isStatement = false;
+      if (bodyNode) {
+        var bodyHead = AI.SExprParser.formHead(bodyNode);
+        if (bodyHead === 'begin' || bodyHead === 'set-var!'
+            || bodyHead === 'set-and-coerce-property!'
+            || bodyHead === 'call-component-method'
+            || bodyHead === 'set-lexical!'
+            || bodyHead === 'while' || bodyHead === 'foreach'
+            || bodyHead === 'forrange' || bodyHead === 'let') {
+          isStatement = true;
+        }
+        // Also check: if with begin branches
+        if (bodyHead === 'if' && bodyNode.elements.length > 2) {
+          var branch = bodyNode.elements[2];
+          if (AI.SExprParser.isForm(branch, 'begin')) {
+            isStatement = true;
+          }
+        }
+      }
+
+      var blockType = isStatement
+          ? 'procedures_defanonnoreturn'
+          : 'procedures_defanonreturn';
+      var block = workspace.newBlock(blockType);
+
+      // Set up parameters via updateParams_
+      if (paramNames.length > 0 && block.updateParams_) {
+        block.updateParams_(paramNames);
+      }
+      block.initSvg();
+
+      // Connect body
+      if (bodyNode) {
+        if (isStatement) {
+          // Statement body → connect to STACK input
+          var bodyBlock = AI.YailToBlocks.convertBeginToStatements_(
+              workspace, bodyNode);
+          if (bodyBlock && block.getInput('STACK')) {
+            block.getInput('STACK').connection.connect(
+                bodyBlock.previousConnection);
+          }
+        } else {
+          // Expression body → connect to RETURN input
+          var bodyBlock = AI.YailToBlocks.convertExpression_(
+              workspace, bodyNode);
+          if (bodyBlock && block.getInput('RETURN')) {
+            block.getInput('RETURN').connection.connect(
+                bodyBlock.outputConnection);
+          }
+        }
+      }
+      return block;
+    }
+
+    // Fallback: unknown argument form — treat as expression
+    return AI.YailToBlocks.convertExpression_(workspace, firstArg);
   }
 
   var info = AI.YailToBlocks.PRIMITIVE_MAP_[primName];

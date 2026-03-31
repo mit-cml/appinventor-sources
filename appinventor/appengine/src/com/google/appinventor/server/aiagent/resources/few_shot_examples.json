@@ -180,5 +180,37 @@
         }
       }
     ]
+  },
+  {
+    "description": "Create a matrix and read a cell value",
+    "user": "Create a 2x2 identity matrix and show the value at row 1, column 1 when Button1 is clicked",
+    "assistant_text": "I'll create a 2x2 identity matrix as a global variable and add a click handler that displays the cell at (1,1).",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(def g$identity\n  (call-yail-primitive make-yail-matrix\n    (*list-for-runtime* 2 2 1 0 0 1)\n    '(number number number number number number)\n    \"create a matrix\"))"
+        }
+      },
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-event Button1 Click ()\n  (set-this-form)\n  (set-and-coerce-property! 'Label1 'Text\n    (call-yail-primitive yail-matrix-get-cell\n      (*list-for-runtime* (get-var g$identity) 1 1)\n      '(matrix number number)\n      \"get matrix cell\")\n    'text))"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Anonymous procedure with delayed execution",
+    "user": "Make Button1 show 'Wait...' immediately and then show 'Done!' after 3 seconds",
+    "assistant_text": "I'll set the label to 'Wait...' on click, then use an anonymous procedure with run-after-period to update it after 3 seconds.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-event Button1 Click ()\n  (set-this-form)\n  (set-and-coerce-property! 'Label1 'Text \"Wait...\" 'text)\n  (call-yail-primitive run-after-period\n    (*list-for-runtime* 3000\n      (call-yail-primitive create-yail-procedure\n        (*list-for-runtime* (lambda ()\n          (set-and-coerce-property! 'Label1 'Text \"Done!\" 'text)))\n        '(any) \"create procedure\"))\n    '(any any) \"run after period\"))"
+        }
+      }
+    ]
   }
 ]

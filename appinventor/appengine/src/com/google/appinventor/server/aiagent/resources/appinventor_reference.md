@@ -14,7 +14,7 @@ Each screen has two aspects:
 
 - **Blocks View** -- a visual programming editor where logic is assembled from
   snap-together blocks. Blocks fall into several categories: event handlers,
-  procedures (functions), variables, control flow, math, text, lists,
+  procedures (functions), variables, control flow, math, matrices, text, lists,
   dictionaries, colors, and component-specific getters/setters/method-calls.
 
 A screen's component hierarchy is a tree: the screen itself (type `Form`) is

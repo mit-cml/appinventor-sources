@@ -14,7 +14,7 @@ When you receive error feedback about failed `write_block` operations, follow th
 
 ## Code Style Rules
 
-**Statement primitives cannot be used as values.** Primitives ending with `!` that mutate data in place (`yail-list-set-item!`, `yail-list-remove-item!`, `yail-list-insert-item!`, `yail-list-append!`, `yail-list-add-to-list!`, `yail-dictionary-set-pair`, `yail-dictionary-delete-pair`, `yail-dictionary-recursive-set`, `yail-dictionary-combine-dicts`) are **statement blocks** — they have no output connector and **CANNOT** be nested inside expressions. They must appear as standalone statements in a `begin`, event handler body, or procedure body. When you need to mutate a collection and then use it as a value, use `let` to bind the collection to a local variable, mutate it with the statement primitive, then reference the variable.
+**Statement primitives cannot be used as values.** Primitives ending with `!` that mutate data in place (`yail-list-set-item!`, `yail-list-remove-item!`, `yail-list-insert-item!`, `yail-list-append!`, `yail-list-add-to-list!`, `yail-dictionary-set-pair`, `yail-dictionary-delete-pair`, `yail-dictionary-recursive-set`, `yail-dictionary-combine-dicts`, `yail-matrix-set-cell!`) are **statement blocks** — they have no output connector and **CANNOT** be nested inside expressions. They must appear as standalone statements in a `begin`, event handler body, or procedure body. When you need to mutate a collection and then use it as a value, use `let` to bind the collection to a local variable, mutate it with the statement primitive, then reference the variable.
 
 ```scheme
 ;; BAD — yail-list-append! is a statement, cannot be used as a value
@@ -496,6 +496,29 @@ When using `yail-dictionary-walk`, you can use the ALL wildcard to match all key
 (static-field com.google.appinventor.components.runtime.util.YailDictionary 'ALL)
 ```
 
+#### Matrix Primitives
+
+Primitives marked **STATEMENT** are void — they mutate in place and have no output connector. They cannot be nested inside expressions; use them only as standalone statements.
+
+| Primitive | Description |
+|-----------|-------------|
+| `make-yail-matrix` | Create matrix from rows, cols, and cell values |
+| `make-yail-matrix-multidim` | Create multidimensional matrix from dimension list |
+| `yail-matrix-get-row` | Get a row as a list |
+| `yail-matrix-get-column` | Get a column as a list |
+| `yail-matrix-get-cell` | Get cell value (variadic indices for n-D) |
+| `yail-matrix-set-cell!` | **STATEMENT** — Set cell value (variadic indices) |
+| `yail-matrix-get-dims` | Get dimensions as a list |
+| `yail-matrix-add` | Matrix addition (variadic) |
+| `yail-matrix-subtract` | Matrix subtraction |
+| `yail-matrix-multiply` | Matrix multiplication (variadic, supports scalar) |
+| `yail-matrix-power` | Matrix exponentiation |
+| `yail-matrix-inverse` | Matrix inverse |
+| `yail-matrix-transpose` | Transpose matrix |
+| `yail-matrix-rotate-left` | Rotate left 90 degrees |
+| `yail-matrix-rotate-right` | Rotate right 90 degrees |
+| `yail-matrix?` | Is it a matrix? |
+
 #### Color Primitives
 | Primitive | Description |
 |-----------|-------------|
@@ -686,6 +709,22 @@ Multiple local variables:
 ```
 Exits the enclosing `foreach`, `forrange`, or `while` loop.
 
+### Run In Background
+```scheme
+(call-yail-primitive run-in-background
+  (*list-for-runtime* <procedure-expression> <callback-expression>)
+  '(any any) "run in background")
+```
+Runs the first procedure in a background thread. When it completes, the callback procedure is called. Both arguments must be procedure values (use anonymous procedures or `get-var p$name`).
+
+### Run After Period
+```scheme
+(call-yail-primitive run-after-period
+  (*list-for-runtime* <millis-expression> <procedure-expression>)
+  '(any any) "run after period")
+```
+Runs the procedure after a delay of the given number of milliseconds. Note: **millis comes first**, procedure second.
+
 ### Evaluate But Ignore (execute expression, discard result)
 ```scheme
 (begin <expression> "ignored")
@@ -746,6 +785,85 @@ YAIL has **no** `null` literal, keyword, or "nothing" block. Do not use `null`, 
 ((get-var p$procedureName) <arg1> <arg2> ...)
 ```
 (Same syntax; context determines if return value is used.)
+
+## Anonymous Procedures
+
+Anonymous procedures (lambdas) create first-class procedure values that can be stored in variables, passed as arguments, and called dynamically.
+
+### Create Anonymous Procedure (no return value)
+```scheme
+(call-yail-primitive create-yail-procedure
+  (*list-for-runtime* (lambda ($param1 $param2 ...)
+    <body-statements>))
+  '(any) "create procedure")
+```
+- The body contains **statement** forms (same rules as `def` procedures)
+- This is an **expression** — it returns a procedure value
+
+### Create Anonymous Procedure (with return value)
+```scheme
+(call-yail-primitive create-yail-procedure
+  (*list-for-runtime* (lambda ($param1 $param2 ...)
+    <return-expression>))
+  '(any) "create procedure")
+```
+- The body is a single **expression** that computes the return value
+- This is an **expression** — it returns a procedure value
+
+### Call Anonymous Procedure (no return, statement)
+```scheme
+(call-yail-primitive call-yail-procedure
+  (*list-for-runtime* <procedure-expression> <arg1> <arg2> ...)
+  '(any any any ...) "call procedure")
+```
+- The first argument is the procedure value; remaining arguments are passed to it
+- This form is a **statement** when the procedure has no return value
+- The type list has one `any` per argument (including the procedure itself)
+
+### Call Anonymous Procedure (with return, expression)
+```scheme
+(call-yail-primitive call-yail-procedure
+  (*list-for-runtime* <procedure-expression> <arg1> <arg2> ...)
+  '(any any any ...) "call procedure")
+```
+- Same YAIL as the no-return variant — context determines whether it is a statement or expression
+- Use as an **expression** when the procedure returns a value
+
+### Call Anonymous Procedure With Input List (no return)
+```scheme
+(call-yail-primitive call-yail-procedure-input-list
+  (*list-for-runtime* <procedure-expression> <list-expression>)
+  '(any any) "call procedure(with input list)")
+```
+- Calls the procedure with arguments taken from a list
+- This form is a **statement** when the procedure has no return value
+
+### Call Anonymous Procedure With Input List (with return)
+Same YAIL form, used as an **expression** when the procedure returns a value.
+
+### Get Number of Arguments
+```scheme
+(call-yail-primitive num-args-yail-procedure
+  (*list-for-runtime* <procedure-expression>)
+  '(any) "get number of arguments")
+```
+Returns the number of parameters the procedure expects.
+
+### Get Procedure by Name (text)
+```scheme
+(call-yail-primitive create-yail-procedure-with-name
+  (*list-for-runtime* <text-expression>)
+  '(any) "get procedure")
+```
+Looks up a named procedure by its name as a text string and returns it as a value.
+
+### Get Named Procedure as Value (dropdown)
+```scheme
+(call-yail-primitive create-yail-procedure
+  (*list-for-runtime* (get-var p$procedureName))
+  '(any) "get procedure")
+```
+Gets a reference to a named procedure. Note: this uses the same `create-yail-procedure` primitive but with a `(get-var p$...)` argument instead of a `(lambda ...)` argument.
 
 ## Screen Operations
 
@@ -1006,6 +1124,48 @@ Primitives marked **STATEMENT** are void — they mutate in place, have no outpu
 | `close-screen-with-value` | `value` | `(any)` | close screen returning value |
 | `close-screen-with-plain-text` | `text` | `(text)` | close screen returning plain text |
 
+### Matrix Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `make-yail-matrix` | `rows cols v00 v01 ... vNN` | `(number number number ...)` | create matrix (flat row-major values) |
+| `make-yail-matrix-multidim` | `dimList initialValue` | `(list number)` | create n-D matrix |
+| `yail-matrix-get-row` | `matrix rowIndex` | `(matrix number)` | get row as list |
+| `yail-matrix-get-column` | `matrix colIndex` | `(matrix number)` | get column as list |
+| `yail-matrix-get-cell` | `matrix idx1 idx2 ...` | `(matrix number number ...)` | get cell (variadic indices) |
+| `yail-matrix-set-cell!` | `matrix value idx1 idx2 ...` | `(matrix number number ...)` | **STATEMENT** — set cell (**value BEFORE indices**) |
+| `yail-matrix-get-dims` | `matrix` | `(matrix)` | get dimensions as list |
+| `yail-matrix-add` | `mat1 mat2 ...` | `(matrix matrix ...)` | addition (variadic) |
+| `yail-matrix-subtract` | `matA matB` | `(matrix matrix)` | subtraction |
+| `yail-matrix-multiply` | `mat1 val2 ...` | `(matrix any ...)` | multiplication (**subsequent args can be matrix or scalar**) |
+| `yail-matrix-power` | `matrix exponent` | `(matrix number)` | exponentiation |
+| `yail-matrix-inverse` | `matrix` | `(matrix)` | inverse |
+| `yail-matrix-transpose` | `matrix` | `(matrix)` | transpose |
+| `yail-matrix-rotate-left` | `matrix` | `(matrix)` | rotate left 90 degrees |
+| `yail-matrix-rotate-right` | `matrix` | `(matrix)` | rotate right 90 degrees |
+| `yail-matrix?` | `value` | `(any)` | is matrix check |
+
+> **Note:** `yail-matrix-set-cell!` argument order is `(matrix, value, idx1, idx2, ...)` — the value comes BEFORE the indices. This differs from list's `yail-list-set-item!` which takes `(list, index, value)`.
+
+> **Note:** `yail-matrix-multiply` uses `(matrix any ...)` types because the second and subsequent operands can be either matrices (matrix multiplication) or numbers (scalar multiplication).
+
+> **Note:** `yail-matrix-set-cell!` is a **STATEMENT** — it mutates in place and has no output connector. Do NOT nest it inside expressions. Use the same pattern as list statement primitives: mutate in a `let`/`begin`, then reference the variable.
+
+### Anonymous Procedure Primitives
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `create-yail-procedure` | `(lambda ($params) body)` | `(any)` | create anonymous procedure |
+| `create-yail-procedure` | `(get-var p$name)` | `(any)` | get named procedure as value |
+| `create-yail-procedure-with-name` | `textName` | `(any)` | get procedure by text name |
+| `call-yail-procedure` | `proc arg1 arg2 ...` | `(any any ...)` | call procedure (**proc FIRST**) |
+| `call-yail-procedure-input-list` | `proc argList` | `(any any)` | call procedure with input list |
+| `num-args-yail-procedure` | `proc` | `(any)` | get argument count |
+| `run-in-background` | `proc callback` | `(any any)` | run in background |
+| `run-after-period` | `millis proc` | `(any any)` | run after delay (**millis FIRST**) |
+
+> **Note:** `run-after-period` takes millis BEFORE the procedure — `(millis, procedure)`. This is the opposite of `run-in-background` which takes `(procedure, callback)`.
+
 ### Critical Notes
 
 1. **`string-substring` uses LENGTH**: The third argument is the length of the substring, NOT an end index. Example: `(call-yail-primitive string-substring (*list-for-runtime* "hello" 1 3) '(text number number) "segment")` returns `"hel"`.
@@ -1019,6 +1179,10 @@ Primitives marked **STATEMENT** are void — they mutate in place, have no outpu
 5. **Variadic primitives**: `string-append`, `make-yail-list`, `make-yail-dictionary`, `+`, `-`, `*` can take 2 or more arguments. The types list must have a matching number of type entries.
 
 6. **Statement primitives are NOT values**: Mutating primitives (`yail-list-append!`, `yail-list-add-to-list!`, `yail-list-set-item!`, `yail-list-remove-item!`, `yail-list-insert-item!`, `yail-dictionary-set-pair`, `yail-dictionary-delete-pair`, `yail-dictionary-recursive-set`, `yail-dictionary-combine-dicts`) are statement blocks with no output. They **CANNOT** be used as arguments to other expressions — doing so produces disconnected blocks. Use `let` to bind the collection, mutate it with the statement primitive, then reference the variable.
+
+7. **`yail-matrix-set-cell!` is a STATEMENT**: Like list mutation primitives, `yail-matrix-set-cell!` mutates in place and cannot be nested in expressions. Its argument order is `(matrix, value, idx1, idx2, ...)` — the value comes before the dimension indices.
+
+8. **Anonymous procedure YAIL is the same for statement and expression**: `call-yail-procedure` generates identical YAIL whether it returns a value or not. In statement context (inside `begin`, event handler body), it produces a statement block. In expression context (inside property set, argument to another call), it produces an expression block.
 
 ---
 
@@ -1160,3 +1324,77 @@ Process input differently based on a check:
           '(text text))))))
 ```
 Note: procedure calls `((get-var p$name) args...)` can be nested as arguments to other calls. `call-component-method` return values can be used directly as arguments.
+
+### Creating and accessing a matrix
+```scheme
+;; Create a 2x3 matrix with literal values
+(def g$myMatrix
+  (call-yail-primitive make-yail-matrix
+    (*list-for-runtime* 2 3 1 2 3 4 5 6)
+    '(number number number number number number number number)
+    "create a matrix"))
+
+;; Get the value at row 1, column 2
+(define-event Button1 Click ()
+  (set-this-form)
+  (set-and-coerce-property! 'Label1 'Text
+    (call-yail-primitive yail-matrix-get-cell
+      (*list-for-runtime* (get-var g$myMatrix) 1 2)
+      '(matrix number number)
+      "get matrix cell")
+    'text))
+```
+
+### Matrix arithmetic and set cell
+```scheme
+;; Add two matrices and store result
+(define-event AddButton Click ()
+  (set-this-form)
+  (set-var! g$result
+    (call-yail-primitive yail-matrix-add
+      (*list-for-runtime* (get-var g$matA) (get-var g$matB))
+      '(matrix matrix) "yail-matrix-add")))
+
+;; Set a cell value (STATEMENT — standalone, not nested)
+(define-event SetButton Click ()
+  (set-this-form)
+  (call-yail-primitive yail-matrix-set-cell!
+    (*list-for-runtime* (get-var g$myMatrix) 99 1 2)
+    '(matrix number number number) "set matrix cell"))
+```
+
+### Anonymous procedure stored in variable
+```scheme
+;; Create an anonymous procedure that doubles a number
+(def g$doubler
+  (call-yail-primitive create-yail-procedure
+    (*list-for-runtime* (lambda ($x)
+      (call-yail-primitive *
+        (*list-for-runtime* (lexical-value $x) 2)
+        '(number number) "*")))
+    '(any) "create procedure"))
+
+;; Call it
+(define-event Button1 Click ()
+  (set-this-form)
+  (set-and-coerce-property! 'Label1 'Text
+    (call-yail-primitive call-yail-procedure
+      (*list-for-runtime* (get-var g$doubler) 21)
+      '(any any) "call procedure")
+    'text))
+```
+
+### Run after delay
+```scheme
+;; Show a notification after 2 seconds
+(define-event Button1 Click ()
+  (set-this-form)
+  (call-yail-primitive run-after-period
+    (*list-for-runtime* 2000
+      (call-yail-primitive create-yail-procedure
+        (*list-for-runtime* (lambda ()
+          (call-component-method 'Notifier1 'ShowAlert
+            (*list-for-runtime* "Time's up!") '(text))))
+        '(any) "create procedure"))
+    '(any any) "run after period"))
+```
