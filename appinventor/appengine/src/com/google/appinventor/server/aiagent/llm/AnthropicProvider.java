@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.server.aiagent.AIDebug;
+import com.google.appinventor.server.aiagent.StreamBuffer;
 
 /**
  * LLM provider implementation for the Anthropic Messages API (Claude).
@@ -66,8 +67,8 @@ public class AnthropicProvider implements LLMProvider {
   @Override
   public LLMResponse chat(String systemPrompt, List<String> contextMessages,
       String userMessage, List<LLMTool> tools, String providerRef,
-      List<ChatMessage> history, ReadOnlyToolResolver resolver)
-      throws LLMProviderException {
+      List<ChatMessage> history, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     // Build the messages array from history + current user message
     JSONArray messages = buildMessages(history, contextMessages, userMessage);
@@ -88,7 +89,7 @@ public class AnthropicProvider implements LLMProvider {
             + requestBody.toString(2));
       }
 
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Anthropic response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -216,7 +217,7 @@ public class AnthropicProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -268,7 +269,7 @@ public class AnthropicProvider implements LLMProvider {
             + requestBody.toString(2));
       }
 
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Anthropic continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -528,8 +529,18 @@ public class AnthropicProvider implements LLMProvider {
   /**
    * Makes an HTTP POST to the Anthropic Messages API with automatic retry
    * and exponential backoff for transient errors (429 rate-limit, 5xx).
+   *
+   * @param requestBody the JSON request body
+   * @param streamBuffer if non-null, streaming is enabled and text deltas are
+   *                     pushed to the buffer as they arrive
    */
-  private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
+  private JSONObject callApi(JSONObject requestBody, StreamBuffer streamBuffer)
+      throws LLMProviderException {
+    boolean streaming = streamBuffer != null;
+    if (streaming) {
+      requestBody.put("stream", true);
+    }
+
     long backoffMs = INITIAL_BACKOFF_MS;
     LLMProviderException lastException = null;
 
@@ -569,12 +580,17 @@ public class AnthropicProvider implements LLMProvider {
         }
 
         int statusCode = conn.getResponseCode();
-        String responseText = readResponse(conn, statusCode);
 
         if (statusCode >= 200 && statusCode < 300) {
-          return new JSONObject(responseText);
+          if (streaming) {
+            return readStreamingResponse(conn, streamBuffer);
+          } else {
+            String responseText = readResponse(conn, statusCode);
+            return new JSONObject(responseText);
+          }
         }
 
+        String responseText = readResponse(conn, statusCode);
         LOG.warning("Anthropic API error (HTTP " + statusCode + "): " + responseText);
 
         // Retry on 429 (rate limit) and 5xx (server errors)
@@ -661,6 +677,223 @@ public class AnthropicProvider implements LLMProvider {
     }
     reader.close();
     return sb.toString();
+  }
+
+  /**
+   * Reads an Anthropic streaming (SSE) response and reconstructs a JSON object
+   * compatible with the non-streaming Messages API format so that the existing
+   * response-parsing logic works unchanged.
+   *
+   * <p>Text deltas are pushed to the {@link StreamBuffer} as they arrive so
+   * the client can display incremental output.
+   *
+   * <p>The reconstructed JSON has the shape:
+   * <pre>{@code
+   * {
+   *   "id": "msg_...",
+   *   "content": [
+   *     {"type": "text", "text": "..."},
+   *     {"type": "tool_use", "id": "...", "name": "...", "input": {...}}
+   *   ],
+   *   "stop_reason": "end_turn" | "tool_use",
+   *   "usage": {"input_tokens": N, "output_tokens": N}
+   * }
+   * }</pre>
+   */
+  private JSONObject readStreamingResponse(HttpURLConnection conn, StreamBuffer streamBuffer)
+      throws IOException, LLMProviderException {
+    BufferedReader reader = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+
+    // State accumulated across SSE events.
+    // We use single-element arrays for messageId, messageModel, and
+    // stopReason so that helper methods can mutate them.
+    String[] messageId = { null };
+    String[] messageModel = { null };
+    String[] stopReason = { "end_turn" };
+    JSONObject usage = new JSONObject();
+
+    // Content blocks indexed by position.  Each entry is either a text block
+    // (StringBuilder for accumulated text) or a tool_use block (with id,
+    // name, and a StringBuilder for partial JSON input).
+    List<Object[]> contentBlocks = new ArrayList<>();
+
+    String currentEvent = null;
+
+    try {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        // SSE format: blank lines separate events
+        if (line.isEmpty()) {
+          currentEvent = null;
+          continue;
+        }
+
+        if (line.startsWith("event:")) {
+          currentEvent = line.substring("event:".length()).trim();
+          continue;
+        }
+
+        if (line.startsWith("data:") && currentEvent != null) {
+          String dataStr = line.substring("data:".length()).trim();
+          if (dataStr.isEmpty()) {
+            continue;
+          }
+
+          try {
+            JSONObject data = new JSONObject(dataStr);
+
+            if ("message_start".equals(currentEvent)) {
+              JSONObject message = data.optJSONObject("message");
+              if (message != null) {
+                messageId[0] = message.optString("id", messageId[0]);
+                messageModel[0] = message.optString("model", messageModel[0]);
+                JSONObject msgUsage = message.optJSONObject("usage");
+                if (msgUsage != null) {
+                  mergeUsage(usage, msgUsage);
+                }
+              }
+            } else if ("content_block_start".equals(currentEvent)) {
+              handleContentBlockStart(data, contentBlocks);
+            } else if ("content_block_delta".equals(currentEvent)) {
+              handleContentBlockDelta(data, contentBlocks, streamBuffer);
+            } else if ("message_delta".equals(currentEvent)) {
+              JSONObject delta = data.optJSONObject("delta");
+              if (delta != null) {
+                String sr = delta.optString("stop_reason", null);
+                if (sr != null) {
+                  stopReason[0] = sr;
+                }
+              }
+              JSONObject deltaUsage = data.optJSONObject("usage");
+              if (deltaUsage != null) {
+                mergeUsage(usage, deltaUsage);
+              }
+            }
+            // message_stop and content_block_stop require no special handling
+          } catch (JSONException e) {
+            LOG.log(Level.WARNING, "Skipping unparseable SSE data: " + dataStr, e);
+          }
+
+          continue;
+        }
+        // Ignore other SSE fields (id:, retry:, comments starting with :)
+      }
+    } finally {
+      reader.close();
+      streamBuffer.markDone();
+    }
+
+    // Reconstruct the full response JSON
+    JSONObject result = new JSONObject();
+    if (messageId[0] != null) {
+      result.put("id", messageId[0]);
+    }
+    if (messageModel[0] != null) {
+      result.put("model", messageModel[0]);
+    }
+    result.put("stop_reason", stopReason[0]);
+    if (usage.length() > 0) {
+      result.put("usage", usage);
+    }
+
+    JSONArray content = new JSONArray();
+    for (Object[] block : contentBlocks) {
+      String type = (String) block[0];
+      if ("text".equals(type)) {
+        content.put(new JSONObject()
+            .put("type", "text")
+            .put("text", ((StringBuilder) block[1]).toString()));
+      } else if ("tool_use".equals(type)) {
+        JSONObject toolBlock = new JSONObject();
+        toolBlock.put("type", "tool_use");
+        toolBlock.put("id", (String) block[1]);
+        toolBlock.put("name", (String) block[2]);
+        String inputJsonStr = ((StringBuilder) block[3]).toString();
+        try {
+          toolBlock.put("input", new JSONObject(inputJsonStr));
+        } catch (JSONException e) {
+          LOG.warning("Failed to parse accumulated tool_use input JSON: " + inputJsonStr);
+          toolBlock.put("input", new JSONObject());
+        }
+        content.put(toolBlock);
+      }
+    }
+    result.put("content", content);
+
+    return result;
+  }
+
+  /**
+   * Handles a {@code content_block_start} SSE event by initializing a new
+   * content block in the tracking list.
+   */
+  private void handleContentBlockStart(JSONObject data, List<Object[]> contentBlocks) {
+    int index = data.optInt("index", contentBlocks.size());
+    JSONObject block = data.optJSONObject("content_block");
+    if (block == null) {
+      return;
+    }
+    String type = block.optString("type", "");
+
+    // Ensure the list is large enough
+    while (contentBlocks.size() <= index) {
+      contentBlocks.add(null);
+    }
+
+    if ("text".equals(type)) {
+      String initialText = block.optString("text", "");
+      contentBlocks.set(index, new Object[] { "text", new StringBuilder(initialText) });
+    } else if ("tool_use".equals(type)) {
+      String id = block.optString("id", "");
+      String name = block.optString("name", "");
+      contentBlocks.set(index, new Object[] { "tool_use", id, name, new StringBuilder() });
+    }
+  }
+
+  /**
+   * Handles a {@code content_block_delta} SSE event by appending to the
+   * appropriate content block.
+   */
+  private void handleContentBlockDelta(JSONObject data, List<Object[]> contentBlocks,
+      StreamBuffer streamBuffer) {
+    int index = data.optInt("index", -1);
+    if (index < 0 || index >= contentBlocks.size() || contentBlocks.get(index) == null) {
+      return;
+    }
+
+    JSONObject delta = data.optJSONObject("delta");
+    if (delta == null) {
+      return;
+    }
+
+    String deltaType = delta.optString("type", "");
+    Object[] block = contentBlocks.get(index);
+    String blockType = (String) block[0];
+
+    if ("text_delta".equals(deltaType) && "text".equals(blockType)) {
+      String text = delta.optString("text", "");
+      ((StringBuilder) block[1]).append(text);
+      streamBuffer.appendText(text);
+    } else if ("input_json_delta".equals(deltaType) && "tool_use".equals(blockType)) {
+      String partialJson = delta.optString("partial_json", "");
+      ((StringBuilder) block[3]).append(partialJson);
+    }
+  }
+
+  /**
+   * Merges usage fields from a source object into the accumulator.
+   */
+  private static void mergeUsage(JSONObject accumulator, JSONObject source) {
+    for (Object keyObj : source.keySet()) {
+      String key = keyObj.toString();
+      if (source.get(key) instanceof Number) {
+        int existing = accumulator.optInt(key, 0);
+        accumulator.put(key, existing + source.getInt(key));
+      } else {
+        accumulator.put(key, source.get(key));
+      }
+    }
   }
 
   /**

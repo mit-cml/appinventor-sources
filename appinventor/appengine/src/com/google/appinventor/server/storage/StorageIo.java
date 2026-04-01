@@ -763,29 +763,13 @@ public interface StorageIo {
    */
   void deleteAIConversationMessages(String conversationId);
 
-  /**
-   * Updates the AI request status in memcache (for progress polling).
-   *
-   * @param projectId   the project whose status to update
-   * @param status      the status message
-   * @param ttlSeconds  time-to-live in seconds
-   */
-  void updateAIRequestStatus(long projectId, String status);
-
-  /**
-   * Clears the AI request status from memcache.
-   *
-   * @param projectId the project whose status to clear
-   */
-  void clearAIRequestStatus(long projectId);
-
-  /**
-   * Gets the current AI request status from memcache.
-   *
-   * @param projectId the project to check status for
-   * @return the status string, or empty string if not found
-   */
-  String getAIRequestStatus(long projectId);
+  // --- AI Stream Buffer ---
+  void initAIStreamBuffer(long projectId);
+  void appendAIStreamChunk(long projectId, String chunk);
+  List<String> consumeAIStreamChunks(long projectId);
+  void markAIStreamDone(long projectId);
+  boolean isAIStreamDone(long projectId);
+  void clearAIStreamBuffer(long projectId);
 
 }
 

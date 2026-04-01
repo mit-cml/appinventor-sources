@@ -2895,10 +2895,8 @@ public class ObjectifyStorageIo implements StorageIo {
   // ---------- AI Agent conversation storage ----------
 
   private static final String AI_CONV_CACHE_KEY_PREFIX = "ai_conv:";
-  private static final String AI_STATUS_CACHE_KEY_PREFIX = "ai_status:";
 
   private static final int CONVERSATION_TTL_SECONDS = 24 * 60 * 60; // 24 hours
-  private static final int STATUS_TTL_SECONDS = 5 * 60; // 5 minutes
 
   @Override
   public void saveAIConversationState(long projectId, AIConversationState state) {
@@ -3005,21 +3003,93 @@ public class ObjectifyStorageIo implements StorageIo {
     }
   }
 
-  @Override
-  public void updateAIRequestStatus(long projectId, String status) {
-    memcache.put(AI_STATUS_CACHE_KEY_PREFIX + projectId, status,
-        Expiration.byDeltaSeconds(STATUS_TTL_SECONDS));
+  // --- AI Stream Buffer ---
+  private static final String AI_STREAM_PREFIX = "ai_stream:";
+  private static final int STREAM_TTL_SECONDS = 60;
+
+  private String streamKey(long projectId, String suffix) {
+    return AI_STREAM_PREFIX + projectId + ":" + suffix;
   }
 
   @Override
-  public void clearAIRequestStatus(long projectId) {
-    memcache.delete(AI_STATUS_CACHE_KEY_PREFIX + projectId);
+  public void initAIStreamBuffer(long projectId) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Object oldWc = memcache.get(streamKey(projectId, "wc"));
+    if (oldWc != null) {
+      long oldCount = Long.parseLong(oldWc.toString());
+      List<String> keysToDelete = new ArrayList<>();
+      for (long i = 0; i <= oldCount; i++) {
+        keysToDelete.add(streamKey(projectId, "chunk:" + i));
+      }
+      keysToDelete.add(streamKey(projectId, "done"));
+      memcache.deleteAll(keysToDelete);
+    }
+    memcache.put(streamKey(projectId, "wc"), 0L, exp);
+    memcache.put(streamKey(projectId, "rc"), 0L, exp);
   }
 
   @Override
-  public String getAIRequestStatus(long projectId) {
-    Object status = memcache.get(AI_STATUS_CACHE_KEY_PREFIX + projectId);
-    return status != null ? status.toString() : "";
+  public void appendAIStreamChunk(long projectId, String chunk) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Long index = memcache.increment(streamKey(projectId, "wc"), 1, 0L);
+    memcache.put(streamKey(projectId, "chunk:" + index), chunk, exp);
+  }
+
+  @Override
+  public List<String> consumeAIStreamChunks(long projectId) {
+    Object wcObj = memcache.get(streamKey(projectId, "wc"));
+    Object rcObj = memcache.get(streamKey(projectId, "rc"));
+    if (wcObj == null || rcObj == null) {
+      return Collections.emptyList();
+    }
+    long wc = Long.parseLong(wcObj.toString());
+    long rc = Long.parseLong(rcObj.toString());
+    if (rc >= wc) {
+      return Collections.emptyList();
+    }
+    List<String> keys = new ArrayList<>();
+    for (long i = rc + 1; i <= wc; i++) {
+      keys.add(streamKey(projectId, "chunk:" + i));
+    }
+    Map<String, Object> results = memcache.getAll(keys);
+    List<String> chunks = new ArrayList<>();
+    for (String key : keys) {
+      Object val = results.get(key);
+      if (val != null) {
+        chunks.add(val.toString());
+      }
+    }
+    memcache.put(streamKey(projectId, "rc"), wc,
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+    return chunks;
+  }
+
+  @Override
+  public void markAIStreamDone(long projectId) {
+    memcache.put(streamKey(projectId, "done"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamDone(long projectId) {
+    return memcache.get(streamKey(projectId, "done")) != null;
+  }
+
+  @Override
+  public void clearAIStreamBuffer(long projectId) {
+    Object wcObj = memcache.get(streamKey(projectId, "wc"));
+    long wc = 0;
+    if (wcObj != null) {
+      wc = Long.parseLong(wcObj.toString());
+    }
+    List<String> keys = new ArrayList<>();
+    keys.add(streamKey(projectId, "wc"));
+    keys.add(streamKey(projectId, "rc"));
+    keys.add(streamKey(projectId, "done"));
+    for (long i = 0; i <= wc; i++) {
+      keys.add(streamKey(projectId, "chunk:" + i));
+    }
+    memcache.deleteAll(keys);
   }
 
 }

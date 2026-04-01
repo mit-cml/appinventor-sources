@@ -22,6 +22,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
+import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
@@ -113,8 +114,10 @@ public class AIAgentEngine {
         + ", screen=" + screenName + ", mode=" + mode
         + ", msgLen=" + userMessage.length());
 
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
-      conversationManager.updateStatus(projectId, "Building context...");
+      streamBuffer.init();
+      streamBuffer.appendStatus("Building context...");
 
       // Get or create conversation (resets on provider change)
       ConversationInit init = initConversation(projectId);
@@ -155,12 +158,12 @@ public class AIAgentEngine {
       conversationManager.storeMessage(conv.getConversationId(),
           MessageRole.USER, userMessage, true);
 
-      conversationManager.updateStatus(projectId, "Calling AI...");
+      streamBuffer.appendStatus("Calling AI...");
 
       // Call LLM (context messages are sent as separate turns by the provider)
       LLMResponse llmResponse = provider.chat(
           systemPrompt, contextMessages, userMessage, tools, conv.getProviderRef(),
-          history, resolver);
+          history, resolver, streamBuffer);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -201,11 +204,11 @@ public class AIAgentEngine {
 
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error", e);
-      conversationManager.clearStatus(projectId);
+      streamBuffer.clear();
       return errorResponse(e.getUserFacingMessage());
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent", e);
-      conversationManager.clearStatus(projectId);
+      streamBuffer.clear();
       return errorResponse("An unexpected error occurred. Please try again.");
     }
   }
@@ -230,13 +233,15 @@ public class AIAgentEngine {
     AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
         + ", screen=" + screenName + ", mode=" + mode);
 
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
-      conversationManager.updateStatus(projectId, "Continuing AI response...");
+      streamBuffer.init();
+      streamBuffer.appendStatus("Continuing AI response...");
 
       // Load conversation state from memcache
       AIConversationState conv = conversationManager.getConversation(projectId);
       if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
-        conversationManager.clearStatus(projectId);
+        streamBuffer.clear();
         return errorResponse("No continuation state available. Please start a new request.");
       }
 
@@ -257,11 +262,11 @@ public class AIAgentEngine {
       conversationManager.storeMessage(conv.getConversationId(),
           MessageRole.USER, "[Continuation requested]", false);
 
-      conversationManager.updateStatus(projectId, "Calling AI...");
+      streamBuffer.appendStatus("Calling AI...");
 
       // Call the continuation method with updated state
       LLMResponse llmResponse = provider.continueWithToolResults(
-          providerRef, tools, resolver);
+          providerRef, tools, resolver, streamBuffer);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -288,11 +293,11 @@ public class AIAgentEngine {
 
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error in continuation", e);
-      conversationManager.clearStatus(projectId);
+      streamBuffer.clear();
       return errorResponse(e.getUserFacingMessage());
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent continuation", e);
-      conversationManager.clearStatus(projectId);
+      streamBuffer.clear();
       return errorResponse("An unexpected error occurred. Please try again.");
     }
   }
@@ -320,7 +325,10 @@ public class AIAgentEngine {
         + ", projectId=" + projectId + ", results=" + results.size()
         + ", retryAttempt=" + retryAttempt + ", totalTools=" + totalTools);
 
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
+      streamBuffer.init();
+
       // Count per-status totals for the status message.
       // Use totalTools from the client when available — on subsequent retries
       // the results list shrinks (only failed/skipped ops are re-emitted).
@@ -334,12 +342,12 @@ public class AIAgentEngine {
 
       String retryInfo = failedCount + " out of " + totalCount + " tools failed"
           + (retryAttempt > 0 ? ", retry attempt " + retryAttempt : "");
-      conversationManager.updateStatus(projectId, "Analyzing errors (" + retryInfo + ")...");
+      streamBuffer.appendStatus("Analyzing errors (" + retryInfo + ")...");
 
       // Load conversation state
       AIConversationState conv = conversationManager.getConversation(projectId);
       if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
-        conversationManager.clearStatus(projectId);
+        streamBuffer.clear();
         return errorResponse("No conversation state available. Please start a new request.");
       }
 
@@ -389,12 +397,12 @@ public class AIAgentEngine {
       conversationManager.storeMessage(conv.getConversationId(),
           MessageRole.USER, "[Execution error feedback] " + feedback, false);
 
-      conversationManager.updateStatus(projectId, "Calling AI (" + retryInfo + ")...");
+      streamBuffer.appendStatus("Calling AI (" + retryInfo + ")...");
 
       // Retry LLM with the error feedback
       LLMResponse llmResponse = provider.chat(
           systemPrompt, contextMessages, feedback, tools, conv.getProviderRef(),
-          history, resolver);
+          history, resolver, streamBuffer);
 
       // Parse, enforce, save, and build response
       ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
@@ -408,11 +416,11 @@ public class AIAgentEngine {
 
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error in error retry", e);
-      conversationManager.clearStatus(projectId);
+      streamBuffer.clear();
       return errorResponse(e.getUserFacingMessage());
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in error retry", e);
-      conversationManager.clearStatus(projectId);
+      streamBuffer.clear();
       return errorResponse("An unexpected error occurred during retry. Please try again.");
     }
   }
@@ -440,8 +448,9 @@ public class AIAgentEngine {
     return result;
   }
 
-  public String getRequestStatus(long projectId) {
-    return storageIo.getAIRequestStatus(projectId);
+  public AIStreamStatus getRequestStatus(long projectId) {
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
+    return streamBuffer.consume();
   }
 
   public String getProjectAIMode(String userId, long projectId) {
@@ -596,7 +605,7 @@ public class AIAgentEngine {
           MessageRole.ASSISTANT, historyText, true);
     }
 
-    conversationManager.clearStatus(projectId);
+    new StreamBuffer(storageIo, projectId).clear();
 
     boolean hasMore = llmResponse.hasMore() && !parsed.operations.isEmpty();
     AIAgentResponse response = new AIAgentResponse(

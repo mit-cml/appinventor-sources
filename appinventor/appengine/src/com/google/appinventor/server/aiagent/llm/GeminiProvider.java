@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.server.aiagent.AIDebug;
+import com.google.appinventor.server.aiagent.StreamBuffer;
 
 /**
  * LLM provider implementation for the Google Gemini (Generative Language) API.
@@ -67,8 +68,8 @@ public class GeminiProvider implements LLMProvider {
   @Override
   public LLMResponse chat(String systemPrompt, List<String> contextMessages,
       String userMessage, List<LLMTool> tools, String providerRef,
-      List<ChatMessage> history, ReadOnlyToolResolver resolver)
-      throws LLMProviderException {
+      List<ChatMessage> history, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     // Build the contents array from history + current user message
     JSONArray contents = buildContents(history, contextMessages, userMessage);
@@ -127,7 +128,7 @@ public class GeminiProvider implements LLMProvider {
         AIDebug.log(LOG, "Gemini request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
       }
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Gemini response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -268,7 +269,7 @@ public class GeminiProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -336,7 +337,7 @@ public class GeminiProvider implements LLMProvider {
         AIDebug.log(LOG, "Gemini continue request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
       }
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Gemini continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -577,12 +578,24 @@ public class GeminiProvider implements LLMProvider {
   }
 
   /**
-   * Makes an HTTP POST to the Gemini generateContent API with automatic retry
-   * and exponential backoff for transient errors (429 rate-limit, 5xx).
+   * Makes an HTTP POST to the Gemini API with automatic retry and exponential
+   * backoff for transient errors (429 rate-limit, 5xx).
+   *
+   * <p>When {@code streamBuffer} is non-null the streaming endpoint
+   * ({@code streamGenerateContent?alt=sse}) is used and partial text tokens
+   * are pushed to the buffer as they arrive.  The returned JSON object is a
+   * merged representation of all SSE events that the existing
+   * {@code parseResponse()} / candidate-parsing code can consume unchanged.
+   *
+   * @param requestBody  the JSON request payload
+   * @param streamBuffer if non-null, enables streaming mode
+   * @return the (possibly merged) JSON response
    */
-  private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
+  private JSONObject callApi(JSONObject requestBody, StreamBuffer streamBuffer)
+      throws LLMProviderException {
     long backoffMs = INITIAL_BACKOFF_MS;
     LLMProviderException lastException = null;
+    boolean streaming = streamBuffer != null;
 
     for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       if (attempt > 0) {
@@ -600,7 +613,13 @@ public class GeminiProvider implements LLMProvider {
 
       HttpURLConnection conn = null;
       try {
-        String endpoint = API_BASE + model + ":generateContent?key=" + apiKey;
+        String endpoint;
+        if (streaming) {
+          endpoint = API_BASE + model
+              + ":streamGenerateContent?alt=sse&key=" + apiKey;
+        } else {
+          endpoint = API_BASE + model + ":generateContent?key=" + apiKey;
+        }
         URL url = new URL(endpoint);
         conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -619,12 +638,16 @@ public class GeminiProvider implements LLMProvider {
         }
 
         int statusCode = conn.getResponseCode();
-        String responseText = readResponse(conn, statusCode);
 
         if (statusCode >= 200 && statusCode < 300) {
+          if (streaming) {
+            return readStreamingResponse(conn, streamBuffer);
+          }
+          String responseText = readResponse(conn, statusCode);
           return new JSONObject(responseText);
         }
 
+        String responseText = readResponse(conn, statusCode);
         LOG.warning("Gemini API error (HTTP " + statusCode + "): " + responseText);
 
         // Retry on 429 (rate limit) and 5xx (server errors)
@@ -683,6 +706,183 @@ public class GeminiProvider implements LLMProvider {
     throw new LLMProviderException(
         "Gemini API failed after " + MAX_RETRIES + " retries",
         "The AI service is currently unavailable. Please try again later.");
+  }
+
+  /**
+   * Reads a streaming SSE response from the Gemini
+   * {@code streamGenerateContent?alt=sse} endpoint.
+   *
+   * <p>Each SSE event is a {@code data:} line whose payload is a partial
+   * {@code GenerateContentResponse}.  Text parts are streamed to the
+   * {@link StreamBuffer} as they arrive; function-call parts are accumulated
+   * silently.  After all events have been consumed the buffer is marked done
+   * and a single merged {@code GenerateContentResponse} JSON object is
+   * returned so that the existing candidate-parsing code works unchanged.
+   *
+   * <p>Gemini may also return the response as a JSON array
+   * ({@code [{...},{...}]}) instead of line-by-line SSE.  This method
+   * detects and handles both formats.
+   */
+  private JSONObject readStreamingResponse(HttpURLConnection conn,
+      StreamBuffer streamBuffer) throws IOException {
+
+    BufferedReader reader = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+
+    // Accumulate all text parts and all non-text parts across events.
+    StringBuilder fullText = new StringBuilder();
+    JSONArray nonTextParts = new JSONArray();
+    JSONObject lastUsageMetadata = null;
+    String lastFinishReason = null;
+
+    // We also buffer the entire raw response so we can fall back to
+    // JSON-array parsing if no SSE data lines are found.
+    StringBuilder rawBuffer = new StringBuilder();
+    boolean sawDataLine = false;
+
+    try {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        rawBuffer.append(line).append('\n');
+
+        // SSE format: lines starting with "data: " carry the JSON payload.
+        // Blank lines and lines starting with ":" (comments) are ignored.
+        if (!line.startsWith("data:")) {
+          continue;
+        }
+        sawDataLine = true;
+
+        String jsonPayload = line.substring("data:".length()).trim();
+        if (jsonPayload.isEmpty() || "[DONE]".equals(jsonPayload)) {
+          continue;
+        }
+
+        try {
+          JSONObject event = new JSONObject(jsonPayload);
+          processStreamEvent(event, fullText, nonTextParts, streamBuffer);
+
+          // Capture usage metadata and finish reason from the last event
+          JSONObject um = event.optJSONObject("usageMetadata");
+          if (um != null) {
+            lastUsageMetadata = um;
+          }
+          JSONArray candidates = event.optJSONArray("candidates");
+          if (candidates != null && candidates.length() > 0) {
+            String fr = candidates.getJSONObject(0).optString("finishReason", null);
+            if (fr != null) {
+              lastFinishReason = fr;
+            }
+          }
+        } catch (JSONException e) {
+          LOG.warning("Skipping malformed SSE data: " + e.getMessage());
+        }
+      }
+    } finally {
+      reader.close();
+    }
+
+    // Fall back to JSON array format if no SSE data lines were found.
+    if (!sawDataLine) {
+      String raw = rawBuffer.toString().trim();
+      if (raw.startsWith("[")) {
+        try {
+          JSONArray arr = new JSONArray(raw);
+          for (int i = 0; i < arr.length(); i++) {
+            JSONObject event = arr.getJSONObject(i);
+            processStreamEvent(event, fullText, nonTextParts, streamBuffer);
+
+            JSONObject um = event.optJSONObject("usageMetadata");
+            if (um != null) {
+              lastUsageMetadata = um;
+            }
+            JSONArray candidates = event.optJSONArray("candidates");
+            if (candidates != null && candidates.length() > 0) {
+              String fr = candidates.getJSONObject(0).optString("finishReason", null);
+              if (fr != null) {
+                lastFinishReason = fr;
+              }
+            }
+          }
+        } catch (JSONException e) {
+          LOG.warning("Streaming response was neither SSE nor JSON array: "
+              + e.getMessage());
+          // Try parsing as a single JSON object (non-streaming fallback)
+          streamBuffer.markDone();
+          return new JSONObject(raw);
+        }
+      } else {
+        // Single JSON object (non-streaming fallback)
+        streamBuffer.markDone();
+        return new JSONObject(raw);
+      }
+    }
+
+    streamBuffer.markDone();
+
+    // Build a merged GenerateContentResponse that looks like a normal
+    // (non-streaming) response so the caller's candidate-parsing works.
+    JSONArray mergedParts = new JSONArray();
+    if (fullText.length() > 0) {
+      mergedParts.put(new JSONObject().put("text", fullText.toString()));
+    }
+    for (int i = 0; i < nonTextParts.length(); i++) {
+      mergedParts.put(nonTextParts.get(i));
+    }
+
+    JSONObject mergedContent = new JSONObject();
+    mergedContent.put("role", "model");
+    mergedContent.put("parts", mergedParts);
+
+    JSONObject mergedCandidate = new JSONObject();
+    mergedCandidate.put("content", mergedContent);
+    if (lastFinishReason != null) {
+      mergedCandidate.put("finishReason", lastFinishReason);
+    }
+
+    JSONObject mergedResponse = new JSONObject();
+    mergedResponse.put("candidates", new JSONArray().put(mergedCandidate));
+    if (lastUsageMetadata != null) {
+      mergedResponse.put("usageMetadata", lastUsageMetadata);
+    }
+
+    return mergedResponse;
+  }
+
+  /**
+   * Processes a single streaming event JSON object.  Text parts are sent to
+   * the stream buffer and appended to {@code fullText}.  Non-text parts
+   * (e.g. function calls) are accumulated into {@code nonTextParts}.
+   */
+  private void processStreamEvent(JSONObject event, StringBuilder fullText,
+      JSONArray nonTextParts, StreamBuffer streamBuffer) {
+
+    JSONArray candidates = event.optJSONArray("candidates");
+    if (candidates == null || candidates.length() == 0) {
+      return;
+    }
+
+    JSONObject candidate = candidates.getJSONObject(0);
+    JSONObject content = candidate.optJSONObject("content");
+    if (content == null) {
+      return;
+    }
+
+    JSONArray parts = content.optJSONArray("parts");
+    if (parts == null) {
+      return;
+    }
+
+    for (int i = 0; i < parts.length(); i++) {
+      JSONObject part = parts.getJSONObject(i);
+      if (part.has("text")) {
+        String text = part.getString("text");
+        fullText.append(text);
+        streamBuffer.appendText(text);
+      } else {
+        // Accumulate non-text parts (functionCall, etc.) without streaming
+        nonTextParts.put(part);
+      }
+    }
   }
 
   /**

@@ -1,0 +1,29 @@
+package com.google.appinventor.shared.rpc.aiagent;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+import java.io.Serializable;
+
+/**
+ * Status update returned by {@link AIAgentService#getRequestStatus}.
+ * Contains incremental text deltas and status updates from the streaming LLM response.
+ */
+public class AIStreamStatus implements IsSerializable, Serializable {
+  private static final long serialVersionUID = 1L;
+
+  private String statusText;
+  private String textDelta;
+  private boolean done;
+
+  // Required no-arg constructor for GWT serialization
+  public AIStreamStatus() {}
+
+  public AIStreamStatus(String statusText, String textDelta, boolean done) {
+    this.statusText = statusText;
+    this.textDelta = textDelta;
+    this.done = done;
+  }
+
+  public String getStatusText() { return statusText; }
+  public String getTextDelta() { return textDelta; }
+  public boolean isDone() { return done; }
+}

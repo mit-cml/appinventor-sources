@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.aiagent.llm;
 
+import com.google.appinventor.server.aiagent.StreamBuffer;
+
 import java.util.List;
 
 /**
@@ -43,7 +45,7 @@ public interface LLMProvider {
    */
   LLMResponse chat(String systemPrompt, List<String> contextMessages, String userMessage,
       List<LLMTool> tools, String providerRef, List<ChatMessage> history,
-      ReadOnlyToolResolver resolver) throws LLMProviderException;
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException;
 
   /**
    * Continues a conversation after operation tool calls have been applied.
@@ -62,7 +64,7 @@ public interface LLMProvider {
    * @throws LLMProviderException if the API call fails
    */
   LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver) throws LLMProviderException;
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException;
 
   /**
    * Returns true if this provider is stateless (does not use providerRef

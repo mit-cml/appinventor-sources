@@ -63,9 +63,9 @@ public interface AIAgentService extends RemoteService {
    * Lightweight -- reads from Memcache only, no Datastore access.
    *
    * @param projectId the project to check status for
-   * @return current status message, or null/empty if no request is in progress
+   * @return current stream status with text deltas and done flag
    */
-  String getRequestStatus(long projectId);
+  AIStreamStatus getRequestStatus(long projectId);
 
   /**
    * Report client-side execution or validation results to the server so

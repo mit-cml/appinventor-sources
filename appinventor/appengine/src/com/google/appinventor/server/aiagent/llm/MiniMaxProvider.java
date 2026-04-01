@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.server.aiagent.AIDebug;
+import com.google.appinventor.server.aiagent.StreamBuffer;
 
 /**
  * LLM provider implementation for the MiniMax Chat Completions API.
@@ -68,8 +69,8 @@ public class MiniMaxProvider implements LLMProvider {
   @Override
   public LLMResponse chat(String systemPrompt, List<String> contextMessages,
       String userMessage, List<LLMTool> tools, String providerRef,
-      List<ChatMessage> history, ReadOnlyToolResolver resolver)
-      throws LLMProviderException {
+      List<ChatMessage> history, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     // Build the messages array from history + current user message
     JSONArray messages = buildMessages(systemPrompt, history, contextMessages, userMessage);
@@ -81,6 +82,9 @@ public class MiniMaxProvider implements LLMProvider {
       requestBody.put("model", model);
       requestBody.put("messages", messages);
       requestBody.put("max_tokens", MAX_TOKENS);
+      if (streamBuffer != null) {
+        requestBody.put("stream", true);
+      }
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
@@ -89,7 +93,7 @@ public class MiniMaxProvider implements LLMProvider {
             + requestBody.toString(2));
       }
 
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "MiniMax response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -204,7 +208,7 @@ public class MiniMaxProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -242,6 +246,9 @@ public class MiniMaxProvider implements LLMProvider {
       requestBody.put("model", model);
       requestBody.put("messages", messages);
       requestBody.put("max_tokens", MAX_TOKENS);
+      if (streamBuffer != null) {
+        requestBody.put("stream", true);
+      }
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
@@ -250,7 +257,7 @@ public class MiniMaxProvider implements LLMProvider {
             + requestBody.toString(2));
       }
 
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "MiniMax continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -523,8 +530,15 @@ public class MiniMaxProvider implements LLMProvider {
   /**
    * Makes an HTTP POST to the MiniMax Chat Completions API with automatic
    * retry and exponential backoff for transient errors (429 rate-limit, 5xx).
+   *
+   * <p>When {@code streamBuffer} is non-null the request is expected to
+   * include {@code "stream": true} and the response will be read as an
+   * SSE event stream. Text deltas are pushed to the stream buffer in
+   * real time and the full response JSON is reconstructed from the
+   * accumulated deltas.
    */
-  private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
+  private JSONObject callApi(JSONObject requestBody, StreamBuffer streamBuffer)
+      throws LLMProviderException {
     long backoffMs = INITIAL_BACKOFF_MS;
     LLMProviderException lastException = null;
 
@@ -563,6 +577,11 @@ public class MiniMaxProvider implements LLMProvider {
         }
 
         int statusCode = conn.getResponseCode();
+
+        if (statusCode >= 200 && statusCode < 300 && streamBuffer != null) {
+          return readStreamingResponse(conn, streamBuffer);
+        }
+
         String responseText = readResponse(conn, statusCode);
 
         if (statusCode >= 200 && statusCode < 300) {
@@ -655,6 +674,182 @@ public class MiniMaxProvider implements LLMProvider {
     }
     reader.close();
     return sb.toString();
+  }
+
+  /**
+   * Reads an SSE streaming response from the MiniMax Chat Completions API.
+   *
+   * <p>MiniMax uses the OpenAI-compatible SSE format for streaming:
+   * <ul>
+   *   <li>Each event line starts with {@code data: } followed by a JSON object</li>
+   *   <li>Text tokens appear in {@code choices[0].delta.content}</li>
+   *   <li>Tool calls appear in {@code choices[0].delta.tool_calls} and are
+   *       accumulated across multiple chunks (arguments arrive incrementally)</li>
+   *   <li>The final data event has {@code choices[0].finish_reason} set
+   *       (e.g. "stop" or "tool_calls")</li>
+   *   <li>The stream ends with the sentinel line {@code data: [DONE]}</li>
+   * </ul>
+   *
+   * <p>Text deltas are pushed to the {@link StreamBuffer} in real time.
+   * All deltas are accumulated to reconstruct a complete non-streaming-style
+   * response JSON that can be processed by the existing parsing logic.
+   *
+   * @param conn          the open HTTP connection with an SSE response
+   * @param streamBuffer  the buffer to push text deltas to
+   * @return a reconstructed JSON object matching the non-streaming response format
+   * @throws IOException if reading the response fails
+   */
+  private JSONObject readStreamingResponse(HttpURLConnection conn, StreamBuffer streamBuffer)
+      throws IOException {
+    // Accumulated state for reconstructing the full response
+    String responseId = null;
+    String responseModel = null;
+    StringBuilder contentBuilder = new StringBuilder();
+    String finishReason = null;
+    // Tool call accumulation: indexed by tool call index
+    JSONArray accumulatedToolCalls = new JSONArray();
+
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        // Skip empty lines (SSE event separators)
+        if (line.isEmpty()) {
+          continue;
+        }
+        // Only process data lines
+        if (!line.startsWith("data: ")) {
+          continue;
+        }
+        String data = line.substring(6).trim();
+
+        // Skip the [DONE] sentinel
+        if ("[DONE]".equals(data)) {
+          break;
+        }
+
+        JSONObject chunk;
+        try {
+          chunk = new JSONObject(data);
+        } catch (JSONException e) {
+          LOG.warning("MiniMax streaming: failed to parse SSE data: " + data);
+          continue;
+        }
+
+        // Capture top-level fields from the first chunk
+        if (responseId == null) {
+          responseId = chunk.optString("id", null);
+        }
+        if (responseModel == null) {
+          responseModel = chunk.optString("model", null);
+        }
+
+        JSONArray choices = chunk.optJSONArray("choices");
+        if (choices == null || choices.length() == 0) {
+          continue;
+        }
+
+        JSONObject choice = choices.getJSONObject(0);
+
+        // Capture finish_reason when it appears
+        String fr = choice.optString("finish_reason", null);
+        if (fr != null && !"null".equals(fr)) {
+          finishReason = fr;
+        }
+
+        JSONObject delta = choice.optJSONObject("delta");
+        if (delta == null) {
+          continue;
+        }
+
+        // Accumulate text content
+        String content = delta.optString("content", null);
+        if (content != null && !"null".equals(content)) {
+          contentBuilder.append(content);
+          streamBuffer.appendText(content);
+        }
+
+        // Accumulate tool calls (they arrive incrementally across chunks)
+        JSONArray deltaToolCalls = delta.optJSONArray("tool_calls");
+        if (deltaToolCalls != null) {
+          for (int i = 0; i < deltaToolCalls.length(); i++) {
+            JSONObject dtc = deltaToolCalls.getJSONObject(i);
+            int index = dtc.optInt("index", i);
+
+            // Ensure we have a slot for this tool call index
+            while (accumulatedToolCalls.length() <= index) {
+              accumulatedToolCalls.put(JSONObject.NULL);
+            }
+
+            Object existing = accumulatedToolCalls.opt(index);
+            if (existing == null || existing == JSONObject.NULL) {
+              // First chunk for this tool call -- initialize it
+              JSONObject tc = new JSONObject();
+              tc.put("id", dtc.optString("id", ""));
+              tc.put("type", dtc.optString("type", "function"));
+              JSONObject fn = dtc.optJSONObject("function");
+              if (fn != null) {
+                tc.put("function", new JSONObject()
+                    .put("name", fn.optString("name", ""))
+                    .put("arguments", fn.optString("arguments", "")));
+              } else {
+                tc.put("function", new JSONObject()
+                    .put("name", "")
+                    .put("arguments", ""));
+              }
+              accumulatedToolCalls.put(index, tc);
+            } else {
+              // Subsequent chunk -- merge incremental data
+              JSONObject tc = (JSONObject) existing;
+              String id = dtc.optString("id", null);
+              if (id != null && !id.isEmpty()) {
+                tc.put("id", id);
+              }
+              JSONObject fn = dtc.optJSONObject("function");
+              if (fn != null) {
+                JSONObject existingFn = tc.getJSONObject("function");
+                String name = fn.optString("name", null);
+                if (name != null && !name.isEmpty()) {
+                  existingFn.put("name", name);
+                }
+                String args = fn.optString("arguments", null);
+                if (args != null) {
+                  existingFn.put("arguments",
+                      existingFn.optString("arguments", "") + args);
+                }
+              }
+            }
+          }
+        }
+      }
+    } finally {
+      streamBuffer.markDone();
+    }
+
+    // Reconstruct the full response in the same format as a non-streaming response
+    JSONObject message = new JSONObject();
+    message.put("role", "assistant");
+    String fullContent = contentBuilder.toString();
+    message.put("content", fullContent.isEmpty() ? JSONObject.NULL : fullContent);
+    if (accumulatedToolCalls.length() > 0) {
+      message.put("tool_calls", accumulatedToolCalls);
+    }
+
+    JSONObject choiceObj = new JSONObject();
+    choiceObj.put("index", 0);
+    choiceObj.put("message", message);
+    choiceObj.put("finish_reason", finishReason != null ? finishReason : "stop");
+
+    JSONObject response = new JSONObject();
+    if (responseId != null) {
+      response.put("id", responseId);
+    }
+    if (responseModel != null) {
+      response.put("model", responseModel);
+    }
+    response.put("choices", new JSONArray().put(choiceObj));
+
+    return response;
   }
 
   /**

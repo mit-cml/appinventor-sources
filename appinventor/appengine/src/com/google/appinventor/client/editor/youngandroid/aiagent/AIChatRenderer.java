@@ -25,6 +25,10 @@ public class AIChatRenderer {
   private final FlowPanel chatHistory;
   private final ScrollPanel chatScrollPanel;
 
+  private String streamingTextAccumulator = "";
+  private FlowPanel streamingWrapper = null;
+  private HTML streamingMessageHtml = null;
+
   /**
    * Constructs a renderer for the given chat history and scroll panels.
    *
@@ -80,6 +84,69 @@ public class AIChatRenderer {
    */
   public void clear() {
     chatHistory.clear();
+  }
+
+  /**
+   * Starts a new streaming AI message bubble. The bubble is added to
+   * the chat history immediately with empty content; subsequent calls
+   * to {@link #appendStreamingText} fill it incrementally.
+   */
+  public void startStreamingBubble() {
+    streamingTextAccumulator = "";
+    streamingWrapper = createMessageBubble(
+        MESSAGES.aiChatAiLabel(), "", false);
+    FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
+    streamingMessageHtml = (HTML) bubble.getWidget(1);
+    chatHistory.add(streamingWrapper);
+    scrollToBottom();
+  }
+
+  /**
+   * Appends a text delta to the in-progress streaming bubble.
+   * Handles incomplete Markdown code fences by temporarily closing them
+   * so the rendered HTML stays valid.
+   *
+   * @param delta the new text chunk to append
+   */
+  public void appendStreamingText(String delta) {
+    if (streamingMessageHtml == null) return;
+    streamingTextAccumulator += delta;
+    String textToRender = streamingTextAccumulator;
+    int fenceCount = countOccurrences(textToRender, "```");
+    if (fenceCount % 2 != 0) {
+      textToRender += "\n```";
+    }
+    streamingMessageHtml.setHTML(markdownToSafeHtml(textToRender));
+    scrollToBottom();
+  }
+
+  /**
+   * Finalizes the streaming bubble with the complete AI response text.
+   * Resets all streaming state.
+   *
+   * @param finalText the complete AI response text
+   */
+  public void finalizeStreamingBubble(String finalText) {
+    if (streamingMessageHtml != null) {
+      streamingMessageHtml.setHTML(markdownToSafeHtml(finalText));
+      scrollToBottom();
+    }
+    streamingWrapper = null;
+    streamingMessageHtml = null;
+    streamingTextAccumulator = "";
+  }
+
+  /**
+   * Counts non-overlapping occurrences of a substring.
+   */
+  private static int countOccurrences(String text, String sub) {
+    int count = 0;
+    int idx = 0;
+    while ((idx = text.indexOf(sub, idx)) != -1) {
+      count++;
+      idx += sub.length();
+    }
+    return count;
   }
 
   /**

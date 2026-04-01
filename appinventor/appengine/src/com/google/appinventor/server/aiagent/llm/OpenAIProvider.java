@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.server.aiagent.AIDebug;
+import com.google.appinventor.server.aiagent.StreamBuffer;
 
 /**
  * LLM provider implementation for the OpenAI Responses API.
@@ -66,8 +67,8 @@ public class OpenAIProvider implements LLMProvider {
   @Override
   public LLMResponse chat(String systemPrompt, List<String> contextMessages,
       String userMessage, List<LLMTool> tools, String providerRef,
-      List<ChatMessage> history, ReadOnlyToolResolver resolver)
-      throws LLMProviderException {
+      List<ChatMessage> history, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONArray toolDefs = buildToolDefinitions(tools);
     String responseId = extractResponseId(providerRef);
@@ -169,7 +170,9 @@ public class OpenAIProvider implements LLMProvider {
         AIDebug.log(LOG, "OpenAI request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
       }
-      JSONObject responseJson = callApi(requestBody);
+      // Only stream on the final-looking iterations (first or text-only);
+      // pass streamBuffer so callApi can enable SSE when appropriate.
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -270,7 +273,7 @@ public class OpenAIProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -328,7 +331,7 @@ public class OpenAIProvider implements LLMProvider {
         AIDebug.log(LOG, "OpenAI continue request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
       }
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -572,8 +575,23 @@ public class OpenAIProvider implements LLMProvider {
   /**
    * Makes an HTTP POST to the OpenAI Responses API with automatic retry
    * and exponential backoff for transient errors (429 rate-limit, 5xx).
+   *
+   * <p>When {@code streamBuffer} is non-null, streaming is enabled: the
+   * request includes {@code "stream": true} and the response is read as
+   * Server-Sent Events (SSE). Text deltas are pushed to the buffer in
+   * real time, and the full response JSON (from the {@code response.completed}
+   * event) is returned for normal parsing.
+   *
+   * @param requestBody  the JSON request body
+   * @param streamBuffer optional streaming buffer; may be null
    */
-  private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
+  private JSONObject callApi(JSONObject requestBody, StreamBuffer streamBuffer)
+      throws LLMProviderException {
+    boolean streaming = streamBuffer != null;
+    if (streaming) {
+      requestBody.put("stream", true);
+    }
+
     long backoffMs = INITIAL_BACKOFF_MS;
     LLMProviderException lastException = null;
 
@@ -612,12 +630,19 @@ public class OpenAIProvider implements LLMProvider {
         }
 
         int statusCode = conn.getResponseCode();
-        String responseText = readResponse(conn, statusCode);
 
         if (statusCode >= 200 && statusCode < 300) {
-          return new JSONObject(responseText);
+          if (streaming) {
+            String fullResponse = readStreamingResponse(conn, streamBuffer);
+            return new JSONObject(fullResponse);
+          } else {
+            String responseText = readResponse(conn, statusCode);
+            return new JSONObject(responseText);
+          }
         }
 
+        // Error path — always read the full (non-streaming) error body
+        String responseText = readResponse(conn, statusCode);
         LOG.warning("OpenAI API error (HTTP " + statusCode + "): " + responseText);
 
         // Retry on 429 (rate limit) and 5xx (server errors)
@@ -706,6 +731,112 @@ public class OpenAIProvider implements LLMProvider {
     }
     reader.close();
     return sb.toString();
+  }
+
+  /**
+   * Reads a streaming (SSE) response from the OpenAI Responses API.
+   *
+   * <p>The SSE stream consists of lines in the format:
+   * <pre>
+   *   event: &lt;type&gt;
+   *   data: &lt;json&gt;
+   * </pre>
+   *
+   * <p>Key event types handled:
+   * <ul>
+   *   <li>{@code response.output_text.delta} — text token delta; streamed to
+   *       the buffer via {@link StreamBuffer#appendText(String)}</li>
+   *   <li>{@code response.completed} — contains the full response object;
+   *       extracted and returned so the caller can parse it normally</li>
+   *   <li>{@code response.done} — end-of-stream signal</li>
+   * </ul>
+   *
+   * <p>The {@code [DONE]} sentinel that may appear as the last data line is
+   * safely skipped.
+   *
+   * @param conn         the HTTP connection with an active SSE stream
+   * @param streamBuffer the buffer to push text deltas into
+   * @return the full response JSON string from the {@code response.completed} event
+   * @throws IOException if reading the stream fails
+   * @throws LLMProviderException if the stream ends without a completed response
+   */
+  private String readStreamingResponse(HttpURLConnection conn, StreamBuffer streamBuffer)
+      throws IOException, LLMProviderException {
+    BufferedReader reader = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+
+    String fullResponseJson = null;
+    String currentEventType = null;
+    String line;
+
+    try {
+      while ((line = reader.readLine()) != null) {
+        // SSE blank line marks the end of an event block
+        if (line.isEmpty()) {
+          currentEventType = null;
+          continue;
+        }
+
+        // Parse event type
+        if (line.startsWith("event: ")) {
+          currentEventType = line.substring(7).trim();
+          continue;
+        }
+
+        // Parse data payload
+        if (line.startsWith("data: ")) {
+          String data = line.substring(6);
+
+          // Handle [DONE] sentinel
+          if ("[DONE]".equals(data.trim())) {
+            break;
+          }
+
+          if (currentEventType == null) {
+            continue;
+          }
+
+          try {
+            if ("response.output_text.delta".equals(currentEventType)) {
+              JSONObject deltaObj = new JSONObject(data);
+              String delta = deltaObj.optString("delta", "");
+              if (!delta.isEmpty()) {
+                streamBuffer.appendText(delta);
+              }
+            } else if ("response.completed".equals(currentEventType)) {
+              // The data payload for response.completed is the full response object
+              JSONObject completedWrapper = new JSONObject(data);
+              JSONObject response = completedWrapper.optJSONObject("response");
+              if (response != null) {
+                fullResponseJson = response.toString();
+              } else {
+                // Some API versions put the response at the top level
+                fullResponseJson = data;
+              }
+            }
+            // Other event types (response.output_item.added,
+            // response.function_call_arguments.delta, response.output_item.done,
+            // response.done, etc.) are intentionally ignored — we don't need to
+            // stream tool call arguments, and the response.completed event
+            // provides the full response for parsing.
+          } catch (JSONException e) {
+            LOG.log(Level.FINE, "Failed to parse SSE data for event '"
+                + currentEventType + "': " + data, e);
+          }
+        }
+      }
+    } finally {
+      reader.close();
+      streamBuffer.markDone();
+    }
+
+    if (fullResponseJson == null) {
+      throw new LLMProviderException(
+          "OpenAI streaming response ended without a response.completed event",
+          "The AI response stream ended unexpectedly. Please try again.");
+    }
+
+    return fullResponseJson;
   }
 
   /**

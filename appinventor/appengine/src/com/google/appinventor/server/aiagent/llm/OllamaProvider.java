@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appinventor.server.aiagent.AIDebug;
+import com.google.appinventor.server.aiagent.StreamBuffer;
 
 /**
  * LLM provider implementation for the Ollama local inference server.
@@ -75,8 +76,8 @@ public class OllamaProvider implements LLMProvider {
   @Override
   public LLMResponse chat(String systemPrompt, List<String> contextMessages,
       String userMessage, List<LLMTool> tools, String providerRef,
-      List<ChatMessage> history, ReadOnlyToolResolver resolver)
-      throws LLMProviderException {
+      List<ChatMessage> history, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     // Build the messages array
     JSONArray messages = buildMessages(systemPrompt, history, contextMessages, userMessage);
@@ -87,7 +88,7 @@ public class OllamaProvider implements LLMProvider {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
       requestBody.put("messages", messages);
-      requestBody.put("stream", false);
+      requestBody.put("stream", streamBuffer != null);
       requestBody.put("options", new JSONObject().put("num_predict", NUM_PREDICT));
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
@@ -97,7 +98,7 @@ public class OllamaProvider implements LLMProvider {
             + requestBody.toString(2));
       }
 
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Ollama response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -206,7 +207,7 @@ public class OllamaProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver) throws LLMProviderException {
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -243,7 +244,7 @@ public class OllamaProvider implements LLMProvider {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
       requestBody.put("messages", messages);
-      requestBody.put("stream", false);
+      requestBody.put("stream", streamBuffer != null);
       requestBody.put("options", new JSONObject().put("num_predict", NUM_PREDICT));
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
@@ -253,7 +254,7 @@ public class OllamaProvider implements LLMProvider {
             + requestBody.toString(2));
       }
 
-      JSONObject responseJson = callApi(requestBody);
+      JSONObject responseJson = callApi(requestBody, streamBuffer);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Ollama continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
@@ -497,8 +498,13 @@ public class OllamaProvider implements LLMProvider {
   /**
    * Makes an HTTP POST to the Ollama chat API with automatic retry
    * and exponential backoff for transient errors (429 rate-limit, 5xx).
+   *
+   * @param requestBody   the JSON request body
+   * @param streamBuffer  if non-null, read the response as a stream and push
+   *                      text deltas to the buffer as they arrive
    */
-  private JSONObject callApi(JSONObject requestBody) throws LLMProviderException {
+  private JSONObject callApi(JSONObject requestBody, StreamBuffer streamBuffer)
+      throws LLMProviderException {
     long backoffMs = INITIAL_BACKOFF_MS;
     LLMProviderException lastException = null;
 
@@ -541,6 +547,11 @@ public class OllamaProvider implements LLMProvider {
         }
 
         int statusCode = conn.getResponseCode();
+
+        if (statusCode >= 200 && statusCode < 300 && streamBuffer != null) {
+          return readStreamingResponse(conn, streamBuffer);
+        }
+
         String responseText = readResponse(conn, statusCode);
 
         if (statusCode >= 200 && statusCode < 300) {
@@ -626,6 +637,52 @@ public class OllamaProvider implements LLMProvider {
     }
     reader.close();
     return sb.toString();
+  }
+
+  /**
+   * Reads an Ollama streaming response (line-delimited JSON, not SSE).
+   *
+   * <p>Each line is a complete JSON object. Lines with {@code "done":false}
+   * contain incremental text in {@code message.content}; the final line with
+   * {@code "done":true} contains the complete response including any tool calls.
+   *
+   * @param conn          the open HTTP connection with a streaming response
+   * @param streamBuffer  the buffer to push text deltas to
+   * @return the final JSON object (the line where {@code done} is {@code true})
+   * @throws IOException  if reading the response fails
+   */
+  private JSONObject readStreamingResponse(HttpURLConnection conn, StreamBuffer streamBuffer)
+      throws IOException {
+    JSONObject finalResponse = null;
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.isEmpty()) {
+          continue;
+        }
+        JSONObject chunk = new JSONObject(line);
+        boolean done = chunk.optBoolean("done", false);
+        if (!done) {
+          // Intermediate chunk — stream the text delta to the client
+          JSONObject message = chunk.optJSONObject("message");
+          if (message != null) {
+            String content = message.optString("content", "");
+            streamBuffer.appendText(content);
+          }
+        } else {
+          // Final chunk — this is the complete response
+          finalResponse = chunk;
+        }
+      }
+    } finally {
+      streamBuffer.markDone();
+    }
+    if (finalResponse == null) {
+      // Shouldn't happen with a well-formed Ollama response, but be safe
+      finalResponse = new JSONObject().put("done", true);
+    }
+    return finalResponse;
   }
 
   /**

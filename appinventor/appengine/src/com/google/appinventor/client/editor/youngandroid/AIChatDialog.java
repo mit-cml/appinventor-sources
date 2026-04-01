@@ -417,6 +417,21 @@ public class AIChatDialog extends DialogBox
   }
 
   @Override
+  public void startStreamingBubble() {
+    renderer.startStreamingBubble();
+  }
+
+  @Override
+  public void appendStreamingText(String delta) {
+    renderer.appendStreamingText(delta);
+  }
+
+  @Override
+  public void finalizeStreamingBubble(String finalText) {
+    renderer.finalizeStreamingBubble(finalText);
+  }
+
+  @Override
   public void showOperationPreview(AIAgentResponse response) {
     operationPreview.clear();
 

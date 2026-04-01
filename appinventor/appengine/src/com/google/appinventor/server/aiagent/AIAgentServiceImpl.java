@@ -14,6 +14,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
+import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
 
@@ -135,12 +136,12 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
   }
 
   @Override
-  public String getRequestStatus(long projectId) {
+  public AIStreamStatus getRequestStatus(long projectId) {
     String userId = userInfoProvider.getUserId();
     try {
       storageIo.assertUserHasProject(userId, projectId);
     } catch (SecurityException e) {
-      return "error";
+      return new AIStreamStatus("error", null, true);
     }
     return engine.getRequestStatus(projectId);
   }

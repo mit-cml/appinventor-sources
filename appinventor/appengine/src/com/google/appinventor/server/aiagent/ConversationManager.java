@@ -63,7 +63,7 @@ public class ConversationManager {
   public void clearConversation(long projectId) {
     AIConversationState conv = getConversation(projectId);
     storageIo.clearAIConversationState(projectId);
-    clearStatus(projectId);
+    storageIo.clearAIStreamBuffer(projectId);
 
     // Delete stored messages from Datastore
     if (conv != null) {
@@ -90,16 +90,6 @@ public class ConversationManager {
 
   public List<ChatMessage> loadConversation(String conversationId) {
     return storageIo.loadAIConversationMessages(conversationId);
-  }
-
-  // ---------- Status updates ----------
-
-  public void updateStatus(long projectId, String status) {
-    storageIo.updateAIRequestStatus(projectId, status);
-  }
-
-  public void clearStatus(long projectId) {
-    storageIo.clearAIRequestStatus(projectId);
   }
 
   // ---------- Operation summaries (static) ----------

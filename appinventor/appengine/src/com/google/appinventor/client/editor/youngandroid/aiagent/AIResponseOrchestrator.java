@@ -17,6 +17,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
+import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 import com.google.appinventor.client.editor.youngandroid.aiagent.executor.AIOperationExecutor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
@@ -45,8 +46,11 @@ public class AIResponseOrchestrator {
   /** RPC timeout for processRequest (12 minutes, must exceed server-side read timeout). */
   private static final int RPC_TIMEOUT_MS = 720000;
 
-  /** Polling interval for request status (1 second). */
-  private static final int POLL_INTERVAL_MS = 1000;
+  /** Fast polling interval for streaming text deltas (250ms). */
+  private static final int POLL_INTERVAL_FAST_MS = 250;
+
+  /** Slow polling interval for initial status checks (1 second). */
+  private static final int POLL_INTERVAL_SLOW_MS = 1000;
 
   /** Maximum number of client-side validation retries before showing the error. */
   private static final int MAX_VALIDATION_RETRIES = 5;
@@ -60,6 +64,9 @@ public class AIResponseOrchestrator {
   public interface ChatCallback {
     void addUserMessage(String text);
     void addAiMessage(String text);
+    void startStreamingBubble();
+    void appendStreamingText(String delta);
+    void finalizeStreamingBubble(String finalText);
     void showOperationPreview(AIAgentResponse response);
     void hideOperationPreview();
     void setRequestInFlight(boolean inFlight);
@@ -77,6 +84,7 @@ public class AIResponseOrchestrator {
   private AIAgentResponse pendingResponse;
   private Timer pollingTimer;
   private boolean requestInFlight;
+  private boolean streamingActive;
   private int validationRetryCount;
   private int executionRetryCount;
   private boolean autoAcceptAll;
@@ -443,9 +451,17 @@ public class AIResponseOrchestrator {
     List<AIOperation> operations = response.getOperations();
     boolean hasOps = operations != null && !operations.isEmpty();
 
-    // Display the AI message only when there are no pending operations.
+    // Finalize streaming bubble or display the AI message.
     String aiMessage = response.getAiMessage();
-    if (aiMessage != null && !aiMessage.isEmpty() && !hasOps) {
+    if (streamingActive) {
+      // Streaming was active — always finalize with the canonical text,
+      // regardless of whether operations are present (text was already visible).
+      if (aiMessage != null && !aiMessage.isEmpty()) {
+        callback.finalizeStreamingBubble(aiMessage);
+      }
+      streamingActive = false;
+    } else if (aiMessage != null && !aiMessage.isEmpty() && !hasOps) {
+      // No streaming — show message only when there are no pending operations.
       callback.addAiMessage(aiMessage);
     }
 
@@ -689,12 +705,10 @@ public class AIResponseOrchestrator {
    * to display intermediate progress while a request is in flight.
    */
   private void startPollingStatus() {
+    stopPollingStatus();
+    streamingActive = false;
     callback.setStatusText(MESSAGES.aiChatThinking());
     callback.setStatusVisible(true);
-
-    if (pollingTimer != null) {
-      pollingTimer.cancel();
-    }
 
     pollingTimer = new Timer() {
       @Override
@@ -705,23 +719,36 @@ public class AIResponseOrchestrator {
           return;
         }
 
-        aiAgentService.getRequestStatus(projectId, new OdeAsyncCallback<String>() {
-          @Override
-          public void onSuccess(String status) {
-            if (status != null && !status.isEmpty()) {
-              callback.setStatusText(status);
-            }
-          }
+        aiAgentService.getRequestStatus(projectId,
+            new OdeAsyncCallback<AIStreamStatus>() {
+              @Override
+              public void onSuccess(AIStreamStatus status) {
+                if (status == null) return;
+                if (status.getStatusText() != null) {
+                  callback.setStatusText(status.getStatusText());
+                }
+                if (status.getTextDelta() != null) {
+                  if (!streamingActive) {
+                    streamingActive = true;
+                    callback.startStreamingBubble();
+                    pollingTimer.cancel();
+                    pollingTimer.scheduleRepeating(POLL_INTERVAL_FAST_MS);
+                  }
+                  callback.appendStreamingText(status.getTextDelta());
+                }
+                if (status.isDone()) {
+                  stopPollingStatus();
+                }
+              }
 
-          @Override
-          public void onFailure(Throwable caught) {
-            // Silently ignore polling failures; the main request callback
-            // handles real errors.
-          }
-        });
+              @Override
+              public void onFailure(Throwable caught) {
+                // Polling failure is non-fatal
+              }
+            });
       }
     };
-    pollingTimer.scheduleRepeating(POLL_INTERVAL_MS);
+    pollingTimer.scheduleRepeating(POLL_INTERVAL_SLOW_MS);
   }
 
   /**
