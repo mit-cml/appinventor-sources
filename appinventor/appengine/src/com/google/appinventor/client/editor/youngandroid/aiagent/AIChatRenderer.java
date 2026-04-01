@@ -28,6 +28,7 @@ public class AIChatRenderer {
   private String streamingTextAccumulator = "";
   private FlowPanel streamingWrapper = null;
   private HTML streamingMessageHtml = null;
+  private HTML typingIndicator = null;
 
   /**
    * Constructs a renderer for the given chat history and scroll panels.
@@ -97,9 +98,10 @@ public class AIChatRenderer {
         MESSAGES.aiChatAiLabel(), "", false);
     FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
     streamingMessageHtml = (HTML) bubble.getWidget(1);
-    // Apply streaming visual indicator
-    bubble.getElement().getStyle().setProperty("background", "#f0f0f0");
-    bubble.getElement().getStyle().setProperty("borderLeft", "3px solid #90b4d6");
+    // Add typing indicator (three bouncing dots) below the message text
+    typingIndicator = new HTML(
+        "<div class='ai-typing-indicator'><span></span><span></span><span></span></div>");
+    bubble.add(typingIndicator);
     chatHistory.add(streamingWrapper);
     scrollToBottom();
   }
@@ -131,10 +133,11 @@ public class AIChatRenderer {
    */
   public void finalizeStreamingBubble(String finalText) {
     if (streamingMessageHtml != null) {
-      // Revert to completed bubble style
-      FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
-      bubble.getElement().getStyle().setProperty("background", "#e8e8e8");
-      bubble.getElement().getStyle().clearProperty("borderLeft");
+      // Remove typing indicator and set final content
+      if (typingIndicator != null) {
+        typingIndicator.removeFromParent();
+        typingIndicator = null;
+      }
       streamingMessageHtml.setHTML(markdownToSafeHtml(finalText));
       scrollToBottom();
     }
