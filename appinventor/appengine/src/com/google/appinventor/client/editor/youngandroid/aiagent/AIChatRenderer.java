@@ -97,6 +97,9 @@ public class AIChatRenderer {
         MESSAGES.aiChatAiLabel(), "", false);
     FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
     streamingMessageHtml = (HTML) bubble.getWidget(1);
+    // Apply streaming visual indicator
+    bubble.getElement().getStyle().setProperty("background", "#f0f0f0");
+    bubble.getElement().getStyle().setProperty("borderLeft", "3px solid #90b4d6");
     chatHistory.add(streamingWrapper);
     scrollToBottom();
   }
@@ -128,6 +131,10 @@ public class AIChatRenderer {
    */
   public void finalizeStreamingBubble(String finalText) {
     if (streamingMessageHtml != null) {
+      // Revert to completed bubble style
+      FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
+      bubble.getElement().getStyle().setProperty("background", "#e8e8e8");
+      bubble.getElement().getStyle().clearProperty("borderLeft");
       streamingMessageHtml.setHTML(markdownToSafeHtml(finalText));
       scrollToBottom();
     }
