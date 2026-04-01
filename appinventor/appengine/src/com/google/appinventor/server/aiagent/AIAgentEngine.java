@@ -109,7 +109,8 @@ public class AIAgentEngine {
    */
   public AIAgentResponse processRequest(String userId, long projectId, String screenName,
       String userMessage, String blocksYail, String currentView, String mode,
-      String screenComponentsJson, String projectSnapshot, String blockWarnings) {
+      String screenComponentsJson, String projectSnapshot, String blockWarnings,
+      String locale, String languageDisplayName) {
     AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
         + ", screen=" + screenName + ", mode=" + mode
         + ", msgLen=" + userMessage.length());
@@ -128,7 +129,8 @@ public class AIAgentEngine {
       String systemPrompt = contextBuilder.build();
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
-          screenComponentsJson, projectSnapshot, blockWarnings);
+          screenComponentsJson, projectSnapshot, blockWarnings,
+          locale, languageDisplayName);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
@@ -229,7 +231,8 @@ public class AIAgentEngine {
    */
   public AIAgentResponse continueRequest(String userId, long projectId, String screenName,
       String blocksYail, String currentView, String mode,
-      String screenComponentsJson, String projectSnapshot, String blockWarnings) {
+      String screenComponentsJson, String projectSnapshot, String blockWarnings,
+      String locale, String languageDisplayName) {
     AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
         + ", screen=" + screenName + ", mode=" + mode);
 
@@ -320,7 +323,7 @@ public class AIAgentEngine {
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
       List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
-      String blockWarnings) {
+      String blockWarnings, String locale, String languageDisplayName) {
     AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
         + ", projectId=" + projectId + ", results=" + results.size()
         + ", retryAttempt=" + retryAttempt + ", totalTools=" + totalTools);
@@ -390,7 +393,8 @@ public class AIAgentEngine {
       String systemPrompt = contextBuilder.build();
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
-          screenComponentsJson, projectSnapshot, blockWarnings);
+          screenComponentsJson, projectSnapshot, blockWarnings,
+          locale, languageDisplayName);
 
       // Save error feedback to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.

@@ -16,10 +16,12 @@ public class ModeModule extends ContextModule {
 
   @Override
   public String build(ContextParams params) {
-    return buildModeInstructions(params.getMode(), params.getCurrentView());
+    return buildModeInstructions(params.getMode(), params.getCurrentView(),
+        params.getLocale(), params.getLanguageDisplayName());
   }
 
-  private String buildModeInstructions(String mode, String currentView) {
+  private String buildModeInstructions(String mode, String currentView,
+      String locale, String languageDisplayName) {
     StringBuilder sb = new StringBuilder();
     sb.append("[Current mode and view — supersedes any previous mode instructions]\n\n");
     sb.append("## Mode: ").append(mode).append("\n\n");
@@ -66,6 +68,21 @@ public class ModeModule extends ContextModule {
         sb.append("- After `switch_screen` is confirmed, continue ")
             .append("with the operations that require the new screen.\n");
       }
+    }
+
+    // Language instruction
+    if (locale != null && !locale.isEmpty()
+        && !"en".equals(locale) && !"default".equals(locale)) {
+      sb.append("\n### Language\n");
+      sb.append("The user's interface language is ");
+      if (languageDisplayName != null && !languageDisplayName.isEmpty()) {
+        sb.append(languageDisplayName).append(" (").append(locale).append(")");
+      } else {
+        sb.append(locale);
+      }
+      sb.append(". By default, respond in this language. ")
+          .append("However, if the user writes in a different language, ")
+          .append("respond in the language they are using.\n");
     }
 
     return sb.toString();

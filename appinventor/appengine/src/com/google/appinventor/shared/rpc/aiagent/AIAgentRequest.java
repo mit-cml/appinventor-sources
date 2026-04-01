@@ -23,6 +23,8 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String screenComponentsJson;
   private String projectSnapshot;
   private String blockWarnings;
+  private String locale;
+  private String languageDisplayName;
   private int retryAttempt;
   private int totalTools;
 
@@ -182,6 +184,29 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setBlockWarnings(String blockWarnings) {
     this.blockWarnings = blockWarnings;
+  }
+
+  /**
+   * Returns the user's interface locale code (e.g., "es_ES", "pt_BR", "ja").
+   */
+  public String getLocale() {
+    return locale;
+  }
+
+  public void setLocale(String locale) {
+    this.locale = locale;
+  }
+
+  /**
+   * Returns the native display name of the user's interface language
+   * (e.g., "Español", "日本語").
+   */
+  public String getLanguageDisplayName() {
+    return languageDisplayName;
+  }
+
+  public void setLanguageDisplayName(String languageDisplayName) {
+    this.languageDisplayName = languageDisplayName;
   }
 
   /**

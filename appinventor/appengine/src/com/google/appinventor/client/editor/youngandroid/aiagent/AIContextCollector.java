@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -51,6 +52,15 @@ public class AIContextCollector {
     AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
         blocksYail, currentView, screenComponentsJson, projectSnapshot);
     request.setBlockWarnings(getCurrentBlocksWarningsAndErrors());
+
+    // Set user's interface language for locale-aware AI responses
+    String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
+    request.setLocale("default".equals(localeName) ? "en" : localeName);
+    String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+    if (displayName != null && !displayName.isEmpty()) {
+      request.setLanguageDisplayName(displayName);
+    }
+
     return request;
   }
 

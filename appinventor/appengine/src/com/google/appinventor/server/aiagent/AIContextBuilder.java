@@ -136,14 +136,19 @@ public class AIContextBuilder {
    * @param projectSnapshot      project metadata JSON from the client
    * @param blockWarnings        JSON with block warnings/errors from the client
    *                             (may be null or empty)
+   * @param locale               the user's interface locale code (e.g. "es_ES"),
+   *                             may be null
+   * @param languageDisplayName  the native display name (e.g. "Español"),
+   *                             may be null
    * @return list of context message strings
    */
   public List<String> buildContextMessages(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView,
       String screenComponentsJson, String projectSnapshot,
-      String blockWarnings) {
+      String blockWarnings, String locale, String languageDisplayName) {
     ContextParams params = new ContextParams(userId, projectId, screenName, mode,
-        blocksYail, currentView, screenComponentsJson, projectSnapshot, blockWarnings);
+        blocksYail, currentView, screenComponentsJson, projectSnapshot, blockWarnings,
+        locale, languageDisplayName);
     List<String> messages = new ArrayList<>();
 
     // Message 1: Mode and view
