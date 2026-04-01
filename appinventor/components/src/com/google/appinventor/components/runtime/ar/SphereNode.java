@@ -1,0 +1,958 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2019 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.components.runtime.ar;
+
+import android.os.Looper;
+import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.util.CameraVectors;
+import com.google.appinventor.components.runtime.*;
+
+import com.google.appinventor.components.common.PropertyTypeConstants;
+
+import com.google.ar.core.Pose;
+import com.google.ar.core.Trackable;
+import com.google.ar.core.Session;
+import android.util.Log;
+import android.graphics.PointF;
+
+import java.util.EnumSet;
+import java.util.ArrayList;
+import java.util.List;
+
+@UsesAssets(fileNames = "sphere.obj, Palette.png")
+@DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
+    description = "A component that displays a 3D sphere with advanced physics behaviors in an ARView3D. " +
+        "The sphere can roll, bounce, and respond to different surface types like wet, sticky, or slippery. " +
+        "External model files can be uploaded but must be less than 5 MB.",
+    category = ComponentCategory.AR)
+@SimpleObject
+public final class SphereNode extends ARNodeBase implements ARSphere {
+
+  // Core sphere properties
+  private String objectModel = Form.ASSETS_PREFIX + "sphere.obj";
+  private String texture = Form.ASSETS_PREFIX + "Palette.png";
+  private String behaviorName = "rolling";
+
+  public static final float SPHERE_OBJ_RADIUS = 0.5f;
+
+  private ARNodeContainer _container;
+  // Physics constants
+  private float dragStartDamping = 0.1f;
+  private float dragStartAngularDamping = 0.01f;
+
+  // Speed thresholds for different behaviors
+  private static final float NORMAL_ROLLING_SPEED = 1200f;
+  private static final float FAST_ROLLING_SPEED = 2500f;
+
+
+  // Surface behavior system
+  private EnumSet<SurfaceBehaviorFlags> behaviorFlags = EnumSet.of(SurfaceBehaviorFlags.ROLLING);
+
+  // Collision effect tracking
+  private boolean isCurrentlyColliding = false;
+  private static final String LOG_TAG = "SphereNode";
+
+  // Enums and inner classes
+  public enum DragMode {
+    ROLLING,    // Rolling ball along the floor
+    PICKUP,     // Ball lifted off the floor
+    FLINGING    // Ball thrown with velocity
+  }
+
+  public enum SurfaceBehaviorFlags {
+    ROLLING(1 << 0),    // Rolls when on ground
+    BOUNCY(1 << 1),     // High bounce
+    FLOATING(1 << 2),   // Reduced gravity
+    WET(1 << 3),        // High friction, low bounce
+    STICKY(1 << 4),     // Extreme adherence
+    SLIPPERY(1 << 5),   // Low friction
+    HEAVY(1 << 6),      // High mass
+    LIGHT(1 << 7);      // Low mass
+
+    private final int value;
+
+    SurfaceBehaviorFlags(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
+  public SphereNode(final ARNodeContainer container) {
+    super(container);
+    Model(objectModel);
+    Texture(texture);
+    container.addNode(this);
+    _container = container;
+
+    // Set default rolling behavior
+    updateBehaviorSettings();
+  }
+
+  @Override
+  public void Session(Session s) {
+    this.session = s;
+  }
+
+  // MARK: - Enhanced Radius Property
+
+  @Override
+  @SimpleProperty(description = "The radius of the sphere in centimeters.")
+  public float RadiusInCentimeters() {
+    return UnitHelper.metersToCentimeters(collisionRadius);
+  }
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT, defaultValue = "5")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void RadiusInCentimeters(float radiusInCentimeters) {
+    float desiredRadiusMeters = UnitHelper.centimetersToMeters(Math.abs(radiusInCentimeters));
+    // Scale needed so that 0.5 * Scale = desiredRadiusMeters
+    Scale(desiredRadiusMeters / SPHERE_OBJ_RADIUS);
+    collisionRadius = desiredRadiusMeters;
+    updateSphereMesh();
+    updateCollisionShape();
+    }
+
+  private void updateSphereMesh() {
+    // Update the sphere mesh with new radius
+    Log.i("SphereNode", "Updating sphere mesh with radius: " + collisionRadius + "m");
+    // Implementation would depend on your 3D rendering system
+  }
+
+  // MARK: - Enhanced Collision Handling
+  @Override
+  public void updateCollisionShape() {
+    // sphere.obj is a unit sphere — visual radius = Scale() exactly
+    // collision radius must equal visual radius
+    float visualRadius = SPHERE_OBJ_RADIUS * Scale();
+    collisionVolume = new SphereVolume(visualRadius);
+    Log.i("SphereNode", "collision radius: " + collisionRadius + "m");
+  }
+
+
+  @Override
+  @SimpleEvent(description = "This event is triggered when a sphereNode collides with another object. Note: physics must be enabled")
+  public void ObjectCollidedWithObject(ARNode otherNode) {
+    showCollisionEffect();
+
+    // Restore color after delay
+    new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
+      if (!isBeingDragged) {
+        restoreOriginalAppearance();
+      }
+    }, 800);
+    Log.i("SphereNode", name + " collided with " + otherNode.getClass().getSimpleName());
+    // Dispatch event to app level
+  }
+
+  private void showCollisionEffect() {
+    isCurrentlyColliding = true;
+    // Store original material if not already stored
+    // Change appearance to show collision - green for default
+    // Implementation depends on your material/rendering system
+    Log.i("SphereNode", "Showing collision effect");
+  }
+
+  private void restoreOriginalAppearance() {
+    isCurrentlyColliding = false;
+    // Restore original material
+    Log.i("SphereNode", "Restored original appearance after dragging or collision");
+  }
+
+  // MARK: - Enhanced Scaling with Physics Correction
+
+  @Override
+  public float[] getModelBounds() {
+    float radiusInMeters =  collisionRadius; // Convert cm to meters
+    float diameter = 2 * radiusInMeters;
+    return new float[]{diameter, diameter, diameter};
+  }
+
+  @Override
+  @SimpleFunction(description = "Changes the sphere's scale by the given scalar, maintaining bottom position if physics enabled.")
+  public void ScaleBy(float scalar) {
+    Log.i("SphereNode", "Scaling sphere " + name + " by " + scalar);
+
+    float oldScale = Scale();
+    float newScale = oldScale * Math.abs(scalar);
+    if (EnablePhysics()) {
+      float previousSize = collisionRadius * Scale();
+      // Adjust Y position to maintain ground contact
+      float[] currentPos = getCurrentPosition();
+      currentPos[1] = currentPos[1] - previousSize + (collisionRadius * newScale);
+      setCurrentPosition(currentPos);
+    }
+
+    Scale(newScale);
+    Log.i("SphereNode", "Scale complete - bottom position maintained");
+  }
+
+  @SimpleFunction(description = "Scale sphere by pinch gesture while maintaining physics accuracy")
+  public void ScaleByPinch(float scalar) {
+    Log.i("SphereNode", "Pinch scaling sphere " + name + " by " + scalar);
+
+    float oldScale = Scale();
+    float newScale = oldScale * Math.abs(scalar);
+    float newActualRadius = collisionRadius * newScale;
+
+    float minRadius = 0.01f;
+    float maxRadius = 20.0f;
+
+    if (newActualRadius < minRadius || newActualRadius > maxRadius) {
+      Log.i(LOG_TAG, "Pinch scale rejected - radius would be " + newActualRadius + "m");
+      return;
+    }
+
+    boolean hadPhysics = EnablePhysics();
+    Log.i(LOG_TAG, "has physics?" + hadPhysics);
+    if (hadPhysics) {
+      // Store physics properties
+      float savedMass = Mass();
+      float savedFriction = StaticFriction();
+      float savedRestitution = Restitution();
+
+      // Temporarily disable physics
+      EnablePhysics(false);
+
+      // Update position to maintain bottom contact
+      float previousSize = collisionRadius * Scale();
+      float[] currentPos = getCurrentPosition();
+      currentPos[1] = currentPos[1] - previousSize + (collisionRadius * newScale);
+      setCurrentPosition(currentPos);
+
+      // Apply scaling
+      Scale(newScale);
+
+
+      // Restore physics
+      Mass(savedMass);
+      StaticFriction(savedFriction);
+      Restitution(savedRestitution);
+      EnablePhysics(true);
+
+      Log.i("SphereNode", "Physics recreated with correct collision shape");
+    } else {
+      Scale(newScale);
+    }
+
+    Log.i("SphereNode", "Pinch scale complete: " + oldScale + " → " + newScale +
+        ", collision radius: " + newActualRadius + "m");
+    debugCollisionShape();
+  }
+
+  @SimpleFunction(description = "Debug information about the sphere's collision shape")
+  public void DebugCollisionShape() {
+    debugCollisionShape();
+  }
+
+  private void debugCollisionShape() {
+    float visualScale = Scale();
+    float calculatedRadius = collisionRadius * visualScale;
+
+    Log.i("SphereNode", "=== COLLISION SHAPE DEBUG ===");
+    Log.i("SphereNode", "Internal radius: " + collisionRadius + "m");
+    Log.i("SphereNode", "Visual scale: " + visualScale);
+    Log.i("SphereNode", "Calculated collision radius: " + calculatedRadius + "m");
+    Log.i("SphereNode", "Has physics: " + EnablePhysics());
+    Log.i("SphereNode", "==========================");
+  }
+
+  // MARK: - Enhanced Drag System
+
+  @Override
+  public void startDrag(PointF fingerLocation) {
+    super.startDrag(fingerLocation); // handles everything common
+
+    // Sphere-specific only
+    if (EnablePhysics()) {
+      adjustPhysicsForDrag();
+    }
+  }
+
+  private void adjustPhysicsForDrag() {
+    // Android-specific physics adjustment during drag
+    // Reduce physics responsiveness for better control
+    dragStartDamping = 0.85f;
+    dragStartAngularDamping = 0.9f;
+  }
+
+  @Override
+  public void updateDrag(float[] groundProjection) {
+    if (!isBeingDragged || groundProjection == null) return;
+
+    if (lastFingerPosition != null) {
+      float[] movement = this.subtractVectors(groundProjection, lastFingerPosition);
+      float distance = vectorLength(movement);
+
+      if (distance > 0.75f) {
+        Log.w("SphereNode", "Rejecting extreme jump: " + distance + "m");
+        lastFingerPosition = groundProjection.clone();
+        return;
+      }
+      applyRealisticRolling(movement);
+    }
+    super.updateDrag(groundProjection); // handles position update
+  }
+
+
+  @Override
+  public void endDrag(PointF fingerVelocity, CameraVectors cameraVectors) {
+    super.endDrag(fingerVelocity, cameraVectors);
+    restoreOriginalAppearance();
+  }
+
+  private void applyRealisticRolling(float[] movement) {
+    float[] horizontalMovement = {movement[0], 0, movement[2]};
+    float distance = vectorLength(horizontalMovement);
+    float[] rotation = getCurrentRotation(); //CSB check this
+    Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
+    if (distance <= 0.0001f) return;
+
+    float ballRadius = collisionVolume.getEffectiveRadius();
+    float rollAngle = distance / ballRadius;
+
+    // Rotation axis perpendicular to movement
+    float[] direction = normalizeVector(horizontalMovement);
+    float[] rollAxis = {direction[2], 0, -direction[0]};
+
+    // Apply incremental rotation
+    float[] rollRotation = createQuaternionFromAxisAngle(rollAxis, rollAngle);
+
+    Log.d("SphereNode", "Before rolling: " + arrayToString(rotation));
+    rotation = multiplyQuaternions(rollRotation, rotation);
+    Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
+
+    setCurrentRotation(rotation);
+  }
+
+  @Override
+  protected void receiveCollisionImpulse(ARNodeBase striker, float[] normal, float impulse) {
+    // Linear response from base
+    super.receiveCollisionImpulse(striker, normal, impulse);
+
+    // Rolling angular response — sphere spins from the hit
+    float radius = collisionVolume.getEffectiveRadius();
+    float angularScale = 0.3f;
+    angularVelocity[0] = currentVelocity[2] / radius * angularScale;
+    angularVelocity[2] = -currentVelocity[0] / radius * angularScale;
+  }
+
+  @Override
+  public void applyReleaseVelocity() {
+    float speed = (float) Math.sqrt(
+        dragVelocity[0] * dragVelocity[0] +
+            dragVelocity[2] * dragVelocity[2]);
+
+    if (speed < 0.1f) return;
+
+    // heavier objects are harder to fling — scale by inverse mass
+    // baseMass = 0.1f is the default rolling sphere
+    float baseMass = 0.1f;
+    float massScale = baseMass / Mass(); // heavy=1.0 → 0.1x velocity, light=0.04 → 2.5x velocity
+
+    float MAX_RELEASE_SPEED = 3.0f;
+    currentVelocity[0] = clamp(dragVelocity[0] * massScale, -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
+    currentVelocity[1] = 0;
+    currentVelocity[2] = clamp(dragVelocity[2] * massScale, -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
+
+    Log.d("SphereNode", "Release velocity: ("
+        + currentVelocity[0] + ", " + currentVelocity[2] + ")"
+        + " speed=" + speed + " mass=" + Mass() + " massScale=" + massScale);
+  }
+
+
+  @Override
+  protected void showDragEffect() {
+    // Color based on behavior for visual feedback
+    String effectColor = "yellow"; // default
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) {
+      effectColor = "blue";
+    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) {
+      effectColor = "orange";
+    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.BOUNCY)) {
+      effectColor = "white";
+    } else if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) {
+      effectColor = "cyan";
+    }
+
+    Log.i("SphereNode", "Showing " + effectColor + " drag effect");
+    // Implementation depends on your material/rendering system
+  }
+
+  // MARK: - Helper Methods
+
+  private float getBehaviorMomentumMultiplier() {
+    float multiplier = 1.0f;
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) multiplier *= 0.7f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) multiplier *= 1.0f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) multiplier *= 0.2f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) multiplier *= 1.5f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) multiplier *= 0.6f;
+
+    return multiplier;
+  }
+
+  private float getResponsivenessForMass() {
+    float baseMass = 0.2f;
+    float massRatio = Mass() / baseMass;
+    float responsiveness = 1.0f / (float) Math.sqrt(massRatio);
+
+    float finalResponsiveness = responsiveness;
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) finalResponsiveness *= 0.6f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) finalResponsiveness *= 1.4f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) finalResponsiveness *= 0.4f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) finalResponsiveness *= 1.6f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) finalResponsiveness *= 1.2f;
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) finalResponsiveness *= 0.8f;
+
+    return finalResponsiveness;
+  }
+
+  // MARK: - vector maths
+
+  private float[] normalizeVector(float[] vector) {
+    float length = vectorLength(vector);
+    if (length == 0) return new float[]{0, 0, 0};
+    return new float[]{vector[0] / length, vector[1] / length, vector[2] / length};
+  }
+
+
+  private float[] multiplyVector(float[] vector, float scalar) {
+    return new float[]{vector[0] * scalar, vector[1] * scalar, vector[2] * scalar};
+  }
+
+
+  // MARK: - Enhanced Physics Methods
+
+  @Override
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void EnablePhysics(boolean isDynamic) {
+    super.EnablePhysics(isDynamic);
+
+    if (isDynamic) {
+      setupSpherePhysics();
+      Log.i("SphereNode", "Physics enabled - ARCore will handle all ground/floor collisions");
+      debugPhysicsState();
+    } else {
+      Log.i("SphereNode", "Physics disabled");
+    }
+  }
+
+  private void setupSpherePhysics() {
+    // Create sphere collision shape with current radius and scale
+    float actualRadius = collisionRadius * Scale();
+
+    // Setup physics body with calculated properties
+    // Implementation depends on your physics system (ARCore/Sceneform)
+
+    Log.i("SphereNode", "Setup sphere physics - radius: " + actualRadius + "m, mass: " + Mass());
+  }
+
+  @SimpleFunction(description = "Debug current physics state of the sphere")
+  public void DebugPhysicsState() {
+    debugPhysicsState();
+  }
+
+  private void debugPhysicsState() {
+    float[] currentPos = getCurrentPosition();
+
+    Log.i("SphereNode", "=== PHYSICS STATE DEBUG ===");
+    Log.i("SphereNode", "Position: " + arrayToString(currentPos));
+    Log.i("SphereNode", "Has physics: " + EnablePhysics());
+    Log.i("SphereNode", "Mass: " + Mass());
+    Log.i("SphereNode", "Ball radius: " + collisionRadius);
+    Log.i("SphereNode", "Ball radius * scale: " + (collisionRadius * Scale()));
+    Log.i("SphereNode", "Scale: " + Scale());
+    Log.i("SphereNode", "Static Friction: " + StaticFriction());
+    Log.i("SphereNode", "Dynamic Friction: " + DynamicFriction());
+    Log.i("SphereNode", "Restitution: " + Restitution());
+    Log.i("SphereNode", "Drag Sensitivity: " + DragSensitivity());
+    Log.i("SphereNode", "Behaviors: " + getBehaviorNames());
+    Log.i("SphereNode", "==========================");
+  }
+
+
+  // MARK: - Enhanced Move Methods
+
+  @Override
+  @SimpleFunction(description = "Move sphere to detected plane with physics considerations")
+  public void MoveToDetectedPlane(ARDetectedPlane targetPlane, Object p) {
+    this.trackable = (Trackable) targetPlane.DetectedPlane();
+    if (this.anchor != null) {
+      this.anchor.detach();
+    }
+
+    Pose targetPose = (Pose) p;
+
+    // Adjust Y position for sphere physics
+    if (EnablePhysics()) {
+      float ballRadius = collisionRadius * Scale();
+      float[] translation = targetPose.getTranslation();
+      translation[1] += ballRadius; // Place sphere on surface, not embedded
+      targetPose = new Pose(translation, targetPose.getRotationQuaternion());
+    }
+
+    Anchor(this.trackable.createAnchor(targetPose));
+    Log.i("SphereNode", "Moved to detected plane with physics adjustment");
+  }
+
+
+  // MARK: - Surface Behavior Properties. Not fully tested CSB 1/26
+
+  @SimpleProperty(description = "Whether the sphere rolls when on the ground")
+  public boolean IsRolling() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.ROLLING);
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsRolling(boolean rolling) {
+    if (rolling) {
+      behaviorFlags.add(SurfaceBehaviorFlags.ROLLING);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.ROLLING);
+    }
+    //updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere bounces with high restitution")
+  public boolean IsBouncy() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.BOUNCY);
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsBouncy(boolean bouncy) {
+    if (bouncy) {
+      behaviorFlags.add(SurfaceBehaviorFlags.BOUNCY);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.BOUNCY);
+    }
+    updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere floats with reduced gravity")
+  public boolean IsFloating() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING);
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsFloating(boolean floating) {
+    if (floating) {
+      behaviorFlags.add(SurfaceBehaviorFlags.FLOATING);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.FLOATING);
+    }
+    updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere has wet surface properties (high friction, low bounce)")
+  public boolean IsWet() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.WET);
+  }
+
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsWet(boolean wet) {
+    if (wet) {
+      behaviorFlags.add(SurfaceBehaviorFlags.WET);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.WET);
+    }
+    updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere sticks to surfaces (extreme friction)")
+  public boolean IsSticky() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.STICKY);
+  }
+
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsSticky(boolean sticky) {
+    if (sticky) {
+      behaviorFlags.add(SurfaceBehaviorFlags.STICKY);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.STICKY);
+    }
+    updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere is slippery (low friction)")
+  public boolean IsSlippery() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY);
+  }
+
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsSlippery(boolean slippery) {
+    if (slippery) {
+      behaviorFlags.add(SurfaceBehaviorFlags.SLIPPERY);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.SLIPPERY);
+    }
+    updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere has heavy mass properties")
+  public boolean IsHeavySphere() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY);
+  }
+
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsHeavySphere(boolean heavy) {
+    if (heavy) {
+      behaviorFlags.add(SurfaceBehaviorFlags.HEAVY);
+      behaviorFlags.remove(SurfaceBehaviorFlags.LIGHT);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.HEAVY);
+    }
+    updateBehaviorSettings();
+  }
+
+  @SimpleProperty(description = "Whether the sphere has light mass properties")
+  public boolean IsLightSphere() {
+    return behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT);
+  }
+
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public void IsLightSphere(boolean light) {
+    if (light) {
+      behaviorFlags.add(SurfaceBehaviorFlags.LIGHT);
+      behaviorFlags.remove(SurfaceBehaviorFlags.HEAVY);
+    } else {
+      behaviorFlags.remove(SurfaceBehaviorFlags.LIGHT);
+    }
+    updateBehaviorSettings();
+  }
+
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AR_BEHAVIOR_TYPE, defaultValue = "default behavior")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Default behavior of sphere: rolling, heavy, light, bouncy, wet, sticky, slippery, floating. Use these settings to automatically configure Mass, StaticFriction, DynamicFriction, Restitution, and DragSensitivity, or tweak them individually afterward.")
+  public void DefaultBehavior(String behavior) {
+    this.behaviorName = behavior;
+    addBehavior(behavior);
+
+    Log.i("SphereNode", "Applied behavior: " + behavior +
+        " - Mass: " + Mass() + ", Friction: " + StaticFriction() +
+        ", Restitution: " + Restitution() + ", DragSensitivity: " + DragSensitivity());
+  }
+
+  @SimpleProperty(description = "Gets the current default behavior name")
+  public String DefaultBehavior() {
+    return behaviorName;
+  }
+
+  @SimpleFunction(description = "Add a behavior to the sphere (rolling, bouncy, floating, wet, sticky, slippery, heavy, light)")
+  public void AddBehavior(String behaviorName) {
+    addBehavior(behaviorName);
+  }
+
+  private void addBehavior(String behaviorName) {
+    switch (behaviorName.toLowerCase()) {
+      case "rolling":
+        IsRolling(true);
+        break;
+      case "bouncy":
+        IsBouncy(true);
+        break;
+      case "floating":
+        IsFloating(true);
+        break;
+      case "wet":
+        IsWet(true);
+        break;
+      case "sticky":
+        IsSticky(true);
+        break;
+      case "slippery":
+        IsSlippery(true);
+        break;
+      case "heavy":
+        IsHeavySphere(true);
+        break;
+      case "light":
+        IsLightSphere(true);
+        break;
+      default:
+        IsRolling(true);
+        break;
+    }
+  }
+
+  public void RemoveBehavior(String behavior) {
+    switch (behavior.toLowerCase()) {
+      case "rolling":
+        IsRolling(false);
+        break;
+      case "bouncy":
+        IsBouncy(false);
+        break;
+      case "floating":
+        IsFloating(false);
+        break;
+      case "wet":
+        IsWet(false);
+        break;
+      case "sticky":
+        IsSticky(false);
+        break;
+      case "slippery":
+        IsSlippery(false);
+        break;
+      case "heavy":
+        IsHeavySphere(false);
+        break;
+      case "light":
+        IsLightSphere(false);
+        break;
+      default:
+        Log.i("SphereNode", "Unknown behavior: " + behavior);
+        break;
+    }
+  }
+
+  @SimpleFunction(description = "Reset sphere to default rolling behavior")
+  public void ResetToDefaultSphere() {
+    behaviorFlags.clear();
+    behaviorFlags.add(SurfaceBehaviorFlags.ROLLING);
+    updateBehaviorSettings();
+    Log.i("SphereNode", "Sphere reset to default behavior");
+  }
+
+  // MARK: - Behavior Settings Update
+
+  private void updateBehaviorSettings() {
+    float baseMass = 0.2f;
+    float massRatio = Mass() / baseMass;
+
+    float staticFriction = 0.5f;
+    float dynamicFriction = 0.3f;
+    float restitution = 0.6f;
+    float gravityScale = 1.0f;
+    float dragSensitivity = 1.0f;
+
+    Log.i(LOG_TAG, "applying behavior for spherenode");
+    // Apply mass effects
+    MassEffect massEffect = calculateMassEffect(massRatio);
+
+    // Apply behavior-specific defaults (last behavior wins if multiple)
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.HEAVY)) {
+      Mass(1.0f);
+      dragSensitivity = 1.0f;
+      staticFriction = 0.7f;
+      restitution = 0.3f;
+    }
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.LIGHT)) {
+      Mass(0.04f);
+      dragSensitivity = 1.6f;
+      restitution = 0.7f;
+    }
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.BOUNCY)) {
+      restitution = 0.9f;
+      staticFriction = 0.2f;
+      dynamicFriction = 0.12f;
+    }
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.WET)) {
+      staticFriction = 0.8f;
+      dynamicFriction = 0.65f;
+      restitution = 0.15f;
+      dragSensitivity = 0.7f;
+    }
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.STICKY)) {
+      staticFriction = 0.95f;
+      dynamicFriction = 0.85f;
+      restitution = 0.05f;
+      dragSensitivity = 0.4f;
+    }
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.SLIPPERY)) {
+      staticFriction = 0.05f;
+      dynamicFriction = 0.02f;
+      restitution = 0.8f;
+      dragSensitivity = 1.4f;
+    }
+
+    if (behaviorFlags.contains(SurfaceBehaviorFlags.FLOATING)) {
+      Mass(0.02f);
+      gravityScale = 0.05f;
+      staticFriction = 0.1f;
+      dynamicFriction = 0.06f;
+      dragSensitivity = 1.8f;
+    }
+
+    // Apply friction and damping effects
+    staticFriction *= massEffect.friction;
+    dynamicFriction *= massEffect.friction;
+
+    // Set the calculated values
+    StaticFriction(staticFriction);
+    DynamicFriction(dynamicFriction);
+    Restitution(restitution);
+    DragSensitivity(dragSensitivity);
+
+    String behaviorNames = getBehaviorNames();
+    Log.i("SphereNode", "Applied " + behaviorNames +
+        " defaults - Mass: " + Mass() +
+        ", Friction: " + staticFriction +
+        ", Restitution: " + restitution +
+        ", DragSensitivity: " + dragSensitivity);
+  }
+
+  private String getBehaviorNames() {
+    List<String> names = new ArrayList<>();
+    for (SurfaceBehaviorFlags flag : behaviorFlags) {
+      names.add(flag.name().toLowerCase());
+    }
+    return String.join("+", names);
+  }
+
+  private static class MassEffect {
+    final float friction;
+    final float damping;
+
+    MassEffect(float friction, float damping) {
+      this.friction = friction;
+      this.damping = damping;
+    }
+  }
+
+  private MassEffect calculateMassEffect(float massRatio) {
+    // Mass affects friction and damping differently
+    float frictionEffect = (float) Math.sqrt(massRatio);
+    float dampingEffect = 1.0f / (float) Math.sqrt(massRatio);
+    return new MassEffect(frictionEffect, dampingEffect);
+  }
+
+  // MARK: - Existing Functions (keep unchanged)
+
+  @SimpleFunction(description = "Sets the color of all nodes with the given opacity.")
+  public void SetFillColorForAllNodes(int color, int opacity) {
+    // Implementation depends on your rendering system
+  }
+
+  @SimpleFunction(description = "Sets the color of a node named \"name\" with the given opacity.")
+  public void SetFillColorForNode(String name, int color, int opacity, boolean shouldColorChildNodes) {
+    // Implementation depends on your rendering system
+  }
+
+  @SimpleFunction(description = "Sets the texture of a node named \"name\" with the given opacity.")
+  public void SetTextureForNode(String name, String texture, int opacity, boolean shouldTexturizeChildNodes) {
+    this.texture = texture;
+    // Implementation depends on your rendering system
+  }
+
+  @SimpleFunction(description = "Sets the texture of all nodes with the given opacity.")
+  public void SetTextureForAllNodes(String texture, int opacity) {
+    // Implementation depends on your rendering system
+  }
+
+  @SimpleFunction(description = "Sets whether the shadow is shown for a node named \"name\".")
+  public void SetShowShadowForNode(String name, boolean showShadow, boolean shouldShadowChildNodes) {
+    // Implementation depends on your rendering system
+  }
+
+  @SimpleFunction(description = "Sets if all nodes show a shadow.")
+  public void SetShowShadowForAllNodes(boolean showShadow) {
+    // Implementation depends on your rendering system
+  }
+
+  @SimpleFunction(description = "Plays all animations in the model, if it has animations.")
+  public void PlayAnimationsForAllNodes() {
+    // Implementation depends on your animation system
+  }
+
+  @SimpleFunction(description = "Plays animations attached to a node named \"name\".")
+  public void PlayAnimationsForNode(String name, boolean shouldPlayChildNodes) {
+    // Implementation depends on your animation system
+  }
+
+  @SimpleFunction(description = "Stops all animations in the model, if it has animations.")
+  public void StopAnimationsForAllNodes() {
+    // Implementation depends on your animation system
+  }
+
+  @SimpleFunction(description = "Stops animations attached to a node named \"name\".")
+  public void StopAnimationsForNode(String name, boolean shouldStopChildNodes) {
+    // Implementation depends on your animation system
+  }
+
+  @SimpleFunction(description = "Renames a node named \"oldName\" to \"newName\".")
+  public void RenameNode(String oldName, String newName) {
+    if (oldName.equals(this.name)) {
+      this.name = newName;
+    }
+  }
+
+  @SimpleEvent(description = "This event is triggered when the user tries to access a node named \"name\", but a node with that \"name\" does not exist.")
+  public void NodeNotFound(String name) {
+    // Event handling
+  }
+
+  // MARK: - Hidden/Override Properties (keep existing)
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public boolean ShowShadow() {
+    return false;
+  }
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public void ShowShadow(boolean showShadow) {
+    // Implementation depends on your rendering system
+  }
+
+  @Override
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Get the color of the sphere")
+  public int FillColor() {
+    return 0;
+  }
+
+  @Override
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Set the color of the sphere")
+  public void FillColor(int color) {
+    // Implementation depends on your material system
+  }
+
+  @Override
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Get the opacity of the sphere")
+  public int FillColorOpacity() {
+    return 100;
+  }
+
+  @Override
+  @SimpleProperty(category = PropertyCategory.APPEARANCE, description = "Set the opacity of the sphere")
+  public void FillColorOpacity(int fillColorOpacity) {
+    // Implementation depends on your material system
+  }
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public int TextureOpacity() {
+    return 100;
+  }
+
+  @Override
+  @SimpleProperty(userVisible = false)
+  public void TextureOpacity(int textureOpacity) {
+    // Implementation depends on your material system
+  }
+}

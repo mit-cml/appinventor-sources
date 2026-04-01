@@ -15,6 +15,18 @@ License: MIT (see LICENSE for details)
 
 from __future__ import with_statement
 
+
+# Replacement for deprecated cgi module
+import html
+import urllib.parse
+from io import BytesIO
+def parse_qs(qs):
+    return urllib.parse.parse_qs(qs)
+def parse_qsl(qs):
+    return urllib.parse.parse_qsl(qs)
+def escape(s):
+    return html.escape(s)
+
 __author__ = 'Marcel Hellkamp'
 __version__ = '0.12.13'
 __license__ = 'MIT'
@@ -35,13 +47,19 @@ if __name__ == '__main__':
     if _cmd_options.server and _cmd_options.server.startswith('gevent'):
         import gevent.monkey; gevent.monkey.patch_all()
 
-import base64, cgi, email.utils, functools, hmac, imp, itertools, mimetypes,\
+import base64, email.utils, functools, hmac, itertools, types, mimetypes,\
         os, re, subprocess, sys, tempfile, threading, time, warnings
 
 from datetime import date as datedate, datetime, timedelta
 from tempfile import TemporaryFile
 from traceback import format_exc, print_exc
-from inspect import getargspec
+try:from inspect import getfullargspec as getargspec
+except ImportError:
+    try: from inspect import getfullargspec as getargspec
+    except ImportError:
+        try: from inspect import getfullargspec as getargspecexcept
+        except ImportError:
+            from inspect import getfullargspec as getargspec
 from unicodedata import normalize
 
 
@@ -84,7 +102,7 @@ if py3k:
     from urllib.parse import urlencode, quote as urlquote, unquote as urlunquote
     urlunquote = functools.partial(urlunquote, encoding='latin1')
     from http.cookies import SimpleCookie
-    from collections import MutableMapping as DictMixin
+    from collections.abc import MutableMapping as DictMixin
     import pickle
     from io import BytesIO
     from configparser import ConfigParser
@@ -111,7 +129,7 @@ else: # 2.x
         def next(it): return it.next()
         bytes = str
     else: # 2.6, 2.7
-        from collections import MutableMapping as DictMixin
+        from collections.abc import MutableMapping as DictMixin
     unicode = unicode
     json_loads = json_lds
     eval(compile('def _raise(*a): raise a[0], a[1], a[2]', '<py3fix>', 'exec'))
@@ -548,7 +566,7 @@ class Route(object):
         ''' Return a list of argument names the callback (most likely) accepts
             as keyword arguments. If the callback is a decorated function, try
             to recover the original function before inspection. '''
-        return getargspec(self.get_undecorated_callback())[0]
+        return getfullargspec(self.get_undecorated_callback())[0]
 
     def get_config(self, key, default=None):
         ''' Lookup a config field and return its value, first checking the
@@ -1779,7 +1797,7 @@ class _ImportRedirect(object):
         ''' Create a virtual package that redirects imports (see PEP 302). '''
         self.name = name
         self.impmask = impmask
-        self.module = sys.modules.setdefault(name, imp.new_module(name))
+        self.module = sys.modules.setdefault(name, types.ModuleType(name))
         self.module.__dict__.update({'__file__': __file__, '__path__': [],
                                     '__all__': [], '__loader__': self})
         sys.meta_path.append(self)
@@ -2637,7 +2655,7 @@ def yieldroutes(func):
         d(x=5, y=6) -> '/d' and '/d/<x>' and '/d/<x>/<y>'
     """
     path = '/' + func.__name__.replace('__','/').lstrip('/')
-    spec = getargspec(func)
+    spec = getfullargspec(func)
     argc = len(spec[0]) - len(spec[3] or [])
     path += ('/<%s>' * argc) % tuple(spec[0][:argc])
     yield path
