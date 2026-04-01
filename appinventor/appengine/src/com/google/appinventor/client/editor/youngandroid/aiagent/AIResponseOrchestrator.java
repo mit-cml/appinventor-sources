@@ -493,9 +493,9 @@ public class AIResponseOrchestrator {
           if (resultJson != null) {
             String error = extractValidationError(resultJson);
             if (error != null) {
-              // Include the failing YAIL so the LLM can see and fix its mistake
+              // Include the failing block code so the LLM can see and fix its mistake
               errors.put(i, "write_block validation failed: " + error
-                  + "\nFailing YAIL: " + yail);
+                  + "\nFailing block code: " + yail);
             }
           }
         }
