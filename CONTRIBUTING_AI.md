@@ -653,11 +653,18 @@ sequenceDiagram
 
 ## Error Handling and Retry
 
-The system has two distinct retry loops that operate independently:
+The system has three retry mechanisms that operate independently:
 
 ```mermaid
 flowchart TD
-    Resp["AIAgentResponse received"]
+    LLMResp["LLM response received<br/>(server-side)"]
+    NCheck{"Editing mode +<br/>text only,<br/>no tool calls?"}
+    Nudge["Retry with nudge<br/>(1 attempt)"]
+    NResult{"Retry produced<br/>tool calls?"}
+    UseRetry["Use retry response"]
+    UseOrig["Keep original text,<br/>take retry providerRef"]
+
+    Resp["AIAgentResponse<br/>sent to client"]
     VCheck{"Block validation<br/>errors?"}
     VRetry{"validation retries<br/>< 5?"}
     VReport["reportExecutionErrors()<br/><i>Send failing YAIL + errors to LLM</i>"]
@@ -671,6 +678,12 @@ flowchart TD
     Done["Done"]
     Fail["Show error to user"]
 
+    LLMResp --> NCheck
+    NCheck -->|yes| Nudge --> NResult
+    NCheck -->|no| Resp
+    NResult -->|yes| UseRetry --> Resp
+    NResult -->|no| UseOrig --> Resp
+
     Resp --> VCheck
     VCheck -->|no| Preview
     VCheck -->|yes| VRetry
@@ -682,6 +695,17 @@ flowchart TD
     ERetry -->|yes| EReport -->|"LLM corrects"| Resp
     ERetry -->|no| Fail
 ```
+
+### Narration Retry (server-side, 1 attempt)
+
+Some LLMs respond with text describing what they *would* do instead of actually calling tools. In editing modes (ScreenEditor/ProjectEditor), `AIAgentEngine.processRequest()` detects this pattern -- text-only response with zero tool calls -- and retries once with a nudge asking the model to reassess whether tools are needed.
+
+- **Trigger**: editing mode + non-empty text + zero raw tool calls + zero parsed operations.
+- **Nudge message**: asks the LLM to use tools if the user's request requires changes, or respond with text only if it was a question.
+- **If the retry produces tool calls**: the retry's text and operations replace the original response. The narration and nudge are persisted to Datastore as non-displayed messages to keep history roles alternating.
+- **If the retry is also text-only**: the original response text is kept (it's a natural reply to the user, not contaminated by the nudge). The retry's `providerRef` is used so stateful providers stay in sync. The narration/nudge exchange is not persisted.
+- **Stateful providers** (OpenAI, Gemini): the retry chains via `providerRef`; context messages are not re-sent (already in the provider's server-side state).
+- **Stateless providers** (Anthropic): the narration is appended to a temporary in-memory history copy so the LLM sees its failed attempt; context messages are re-sent.
 
 ### Validation Retries (up to 5)
 
