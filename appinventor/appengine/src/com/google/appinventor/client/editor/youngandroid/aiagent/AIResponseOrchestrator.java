@@ -458,6 +458,12 @@ public class AIResponseOrchestrator {
       // regardless of whether operations are present (text was already visible).
       if (aiMessage != null && !aiMessage.isEmpty()) {
         callback.finalizeStreamingBubble(aiMessage);
+        if (hasOps) {
+          // Text is already visible in the finalized streaming bubble.
+          // Clear it so applyOperations() doesn't add it again as a
+          // deferred message.
+          response.setAiMessage(null);
+        }
       }
       streamingActive = false;
     } else if (aiMessage != null && !aiMessage.isEmpty() && !hasOps) {
