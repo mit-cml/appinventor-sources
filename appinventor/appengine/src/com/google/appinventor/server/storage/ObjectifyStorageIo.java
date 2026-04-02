@@ -2107,7 +2107,7 @@ public class ObjectifyStorageIo implements StorageIo {
     // get the first one. we don't expect this to happen
     UserData userData = datastore.query(UserData.class).filter("email", inputemail).get();
     if (userData == null) {     // Mixed case didn't work, try lower case
-      userData = datastore.query(UserData.class).filter("email", email).get();
+      userData = datastore.query(UserData.class).filter("emaillower", email).get();
       if (userData == null) {
         throw new NoSuchElementException("Couldn't find a user with email " + inputemail);
       }
