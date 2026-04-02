@@ -835,11 +835,17 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
 
     // Save old parameters so we can restore them on failure.
     var oldParams = block.arguments_ ? block.arguments_.slice() : [];
+    var paramsChanged =
+        !Blockly.LexicalVariable.stringListsEqual(params, block.arguments_);
 
-    // Update parameters if they changed.
-    if (!Blockly.LexicalVariable.stringListsEqual(params, block.arguments_)) {
+    // Update the definition block's parameters so the new body can
+    // reference them (e.g. lexical-value nodes for new param names).
+    // Defer mutateCallers until after the body is successfully built —
+    // mutateCallers rewires every caller's ARG inputs and the
+    // disconnected argument blocks can't be recovered if we need to
+    // roll back.
+    if (paramsChanged) {
       block.updateParams_(params);
-      Blockly.Procedures.mutateCallers(block);
     }
 
     // Detach the existing body (kept alive for rollback) and build the
@@ -850,10 +856,9 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
     try {
       AI.YailToBlocks.connectProcedureBody_(workspace, block, bodyForms, isReturn);
     } catch (bodyError) {
-      // Restore old parameters.
-      if (!Blockly.LexicalVariable.stringListsEqual(oldParams, block.arguments_)) {
+      // Restore old parameters on the definition block.
+      if (paramsChanged) {
         block.updateParams_(oldParams);
-        Blockly.Procedures.mutateCallers(block);
       }
       // Reconnect old body.
       if (savedBody) {
@@ -862,7 +867,11 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
       throw bodyError;
     }
 
-    // New body connected successfully — dispose old body blocks.
+    // Body built successfully — now safe to update callers and dispose
+    // the old body.
+    if (paramsChanged) {
+      Blockly.Procedures.mutateCallers(block);
+    }
     if (savedBody) {
       AI.YailToBlocks.disposeDetachedBlocks_(savedBody);
     }
