@@ -201,6 +201,19 @@
     ]
   },
   {
+    "description": "Arithmetic with TextBox input (auto-coercion, no string->number needed)",
+    "user": "When AddButton is clicked, add the numbers from NumberBox1 and NumberBox2 and show the result in ResultLabel",
+    "assistant_text": "I'll add a click handler for AddButton that reads both text boxes, adds them, and displays the result.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-event AddButton Click ()\n  (set-this-form)\n  (set-and-coerce-property! 'ResultLabel 'Text\n    (call-yail-primitive string-append\n      (*list-for-runtime* \"Result: \"\n        (call-yail-primitive +\n          (*list-for-runtime* (get-property 'NumberBox1 'Text) (get-property 'NumberBox2 'Text))\n          '(number number) \"+\"))\n      '(text any) \"join\")\n    'text))"
+        }
+      }
+    ]
+  },
+  {
     "description": "Anonymous procedure with delayed execution",
     "user": "Make Button1 show 'Wait...' immediately and then show 'Done!' after 3 seconds",
     "assistant_text": "I'll set the label to 'Wait...' on click, then use an anonymous procedure with run-after-period to update it after 3 seconds.",

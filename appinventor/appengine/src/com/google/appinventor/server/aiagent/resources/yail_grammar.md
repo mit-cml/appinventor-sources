@@ -1181,6 +1181,20 @@ Primitives marked **STATEMENT** are void — they mutate in place, have no outpu
 
 8. **Anonymous procedure YAIL is the same for statement and expression**: `call-yail-procedure` generates identical YAIL whether it returns a value or not. In statement context (inside `begin`, event handler body), it produces a statement block. In expression context (inside property set, argument to another call), it produces an expression block.
 
+9. **No `string->number` or type-conversion primitives.** YAIL has **no** `string->number`, `number->string`, `string-to-number`, or similar conversion primitives. Math primitives (`+`, `-`, `*`, `yail-divide`, etc.) **automatically coerce** text arguments to numbers at runtime. To do arithmetic with TextBox input, pass the text value directly to the math primitive with `'(number number)` types — YAIL handles the conversion:
+```scheme
+;; CORRECT — pass TextBox text directly, use '(number number) types
+(call-yail-primitive +
+  (*list-for-runtime* (get-property 'NumberBox1 'Text) (get-property 'NumberBox2 'Text))
+  '(number number) "+")
+
+;; WRONG — string->number does not exist
+(call-yail-primitive string->number
+  (*list-for-runtime* (get-property 'NumberBox1 'Text))
+  '(text) "convert")
+```
+Similarly, when setting a text property to a number result, the coercion to text happens automatically via `'text` in the `set-and-coerce-property!` type argument.
+
 ---
 
 ## Real-World Examples
