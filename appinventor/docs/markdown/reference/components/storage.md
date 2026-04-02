@@ -308,7 +308,7 @@ Spreadsheet is a non-visible component for storing and receiving data from
 
  Instructions on how to create the Service Account, as well as where to find
  other relevant information for using the Google Sheets Component, can be
- found <a href='/reference/other/googlesheets-api-setup.html'>here</a>.
+ found <a href='https://docs.google.com/document/d/10PcV0WGgtedebzxn1H1tu58BP1cSFOIVSUGPwVQ_rsQ/edit?tab=t.0'>here</a>.
 
  Row and column numbers are 1-indexed.
 
