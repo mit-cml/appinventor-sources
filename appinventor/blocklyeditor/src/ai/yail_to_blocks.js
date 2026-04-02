@@ -270,6 +270,80 @@ AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
 };
 
 /**
+ * Find an existing top-level block by its YAIL identifier string,
+ * without disposing it.  Returns the block or null if not found.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {string} identifier e.g. "define-event Button1 Click"
+ * @return {?Blockly.Block}
+ * @private
+ */
+AI.YailToBlocks.findBlockByIdentifier_ = function(workspace, identifier) {
+  var tokens = identifier.trim().split(/\s+/);
+  if (tokens.length === 0) return null;
+
+  var formType = tokens[0];
+  var topBlocks = workspace.getTopBlocks(false);
+
+  switch (formType) {
+    case 'define-event':
+      if (tokens.length < 3) return null;
+      var componentName = tokens[1];
+      var eventName = tokens[2];
+      for (var i = 0; i < topBlocks.length; i++) {
+        var block = topBlocks[i];
+        if (block.type === 'component_event' && block.instanceName === componentName
+            && block.eventName === eventName) {
+          return block;
+        }
+      }
+      return null;
+
+    case 'define-generic-event':
+      if (tokens.length < 3) return null;
+      var typeName = tokens[1];
+      var eventName = tokens[2];
+      for (var i = 0; i < topBlocks.length; i++) {
+        var block = topBlocks[i];
+        if (block.type === 'component_event' && block.isGeneric
+            && block.typeName === typeName && block.eventName === eventName) {
+          return block;
+        }
+      }
+      return null;
+
+    case 'def':
+    case 'def-return':
+      if (tokens.length < 2) return null;
+      var name = tokens[1].replace(/[()]/g, '');
+      if (name.startsWith('g$')) {
+        var varName = name.substring(2);
+        for (var i = 0; i < topBlocks.length; i++) {
+          var block = topBlocks[i];
+          if (block.type === 'global_declaration'
+              && block.getFieldValue('NAME') === varName) {
+            return block;
+          }
+        }
+      } else if (name.startsWith('p$')) {
+        var procName = name.substring(2);
+        for (var i = 0; i < topBlocks.length; i++) {
+          var block = topBlocks[i];
+          if ((block.type === 'procedures_defnoreturn'
+               || block.type === 'procedures_defreturn')
+              && block.getFieldValue('NAME') === procName) {
+            return block;
+          }
+        }
+      }
+      return null;
+
+    default:
+      return null;
+  }
+};
+
+/**
  * Find an existing procedure definition block by name.
  * @param {!Blockly.WorkspaceSvg} workspace
  * @param {string} procName The procedure name (without p$ prefix).
@@ -325,6 +399,73 @@ AI.YailToBlocks.clearInputBlocks_ = function(block, inputName) {
     }
   } else {
     // Value input: dispose the target (recursively disposes its children).
+    target.dispose(false);
+  }
+};
+
+/**
+ * Disconnect the block tree connected to a given input WITHOUT disposing it.
+ * Returns the root block so the caller can reconnect or dispose it later.
+ *
+ * @param {!Blockly.Block} block The parent block.
+ * @param {string} inputName The name of the input to detach.
+ * @return {?Blockly.Block} The detached root block, or null if nothing was connected.
+ * @private
+ */
+AI.YailToBlocks.detachInputBlocks_ = function(block, inputName) {
+  var input = block.getInput(inputName);
+  if (!input || !input.connection) return null;
+  var target = input.connection.targetBlock();
+  if (!target) return null;
+  input.connection.disconnect();
+  return target;
+};
+
+/**
+ * Reconnect a previously detached block tree to an input.
+ *
+ * @param {!Blockly.Block} block The parent block.
+ * @param {string} inputName The name of the input.
+ * @param {!Blockly.Block} target The detached block to reconnect.
+ * @private
+ */
+AI.YailToBlocks.reattachInputBlocks_ = function(block, inputName, target) {
+  var input = block.getInput(inputName);
+  if (!input || !input.connection) return;
+  if (target.previousConnection) {
+    input.connection.connect(target.previousConnection);
+  } else if (target.outputConnection) {
+    input.connection.connect(target.outputConnection);
+  }
+};
+
+/**
+ * Dispose a previously detached block tree.  For statement inputs the
+ * whole next-connection chain is disposed.
+ *
+ * @param {!Blockly.Block} target The root of the detached tree.
+ * @private
+ */
+AI.YailToBlocks.disposeDetachedBlocks_ = function(target) {
+  if (!target || target.disposed) return;
+  // Walk next-connection chain for statement blocks.
+  if (target.previousConnection) {
+    var stmts = [];
+    var current = target;
+    while (current) {
+      stmts.push(current);
+      current = current.getNextBlock();
+    }
+    for (var i = stmts.length - 1; i >= 0; i--) {
+      if (stmts[i].previousConnection && stmts[i].previousConnection.isConnected()) {
+        stmts[i].previousConnection.disconnect();
+      }
+      if (stmts[i].nextConnection && stmts[i].nextConnection.isConnected()) {
+        stmts[i].nextConnection.disconnect();
+      }
+      stmts[i].dispose(false);
+    }
+  } else {
     target.dispose(false);
   }
 };
@@ -471,8 +612,14 @@ AI.YailToBlocks.convertEventHandler_ = function(workspace, node) {
     }
   }
 
-  // Delete existing event handler if any
-  AI.YailToBlocks.deleteBlock(workspace, 'define-event ' + componentName + ' ' + eventName);
+  // Find existing event handler — but don't delete yet.  We defer
+  // disposal until the replacement is fully built so that a conversion
+  // error doesn't destroy the user's original handler.
+  var existingId = 'define-event ' + componentName + ' ' + eventName;
+  var existingBlock = AI.YailToBlocks.findBlockByIdentifier_(workspace, existingId);
+  if (existingBlock) {
+    AI.YailToBlocks.lastDeletedPosition_ = existingBlock.getRelativeToSurfaceXY();
+  }
 
   // Get the component type from the workspace's component database
   var componentDb = workspace.getComponentDatabase();
@@ -520,6 +667,11 @@ AI.YailToBlocks.convertEventHandler_ = function(workspace, node) {
     }
   }
 
+  // Replacement fully built — now safe to dispose the old block.
+  if (existingBlock) {
+    existingBlock.dispose(true);
+  }
+
   block.render();
   return block;
 };
@@ -552,9 +704,12 @@ AI.YailToBlocks.convertGenericEventHandler_ = function(workspace, node) {
     }
   }
 
-  // Delete existing generic event handler if any
-  AI.YailToBlocks.deleteBlock(workspace,
-      'define-generic-event ' + typeName + ' ' + eventName);
+  // Find existing — defer disposal until replacement is fully built.
+  var existingId = 'define-generic-event ' + typeName + ' ' + eventName;
+  var existingBlock = AI.YailToBlocks.findBlockByIdentifier_(workspace, existingId);
+  if (existingBlock) {
+    AI.YailToBlocks.lastDeletedPosition_ = existingBlock.getRelativeToSurfaceXY();
+  }
 
   // Create the event block with mutation (generic = true)
   var block = workspace.newBlock('component_event');
@@ -592,6 +747,11 @@ AI.YailToBlocks.convertGenericEventHandler_ = function(workspace, node) {
     }
   }
 
+  // Replacement fully built — now safe to dispose the old block.
+  if (existingBlock) {
+    existingBlock.dispose(true);
+  }
+
   block.render();
   return block;
 };
@@ -607,8 +767,12 @@ AI.YailToBlocks.convertGlobalVar_ = function(workspace, node) {
   var varName = els[1].name.substring(2); // strip g$
   var initValue = els[2];
 
-  // Delete existing variable if any
-  AI.YailToBlocks.deleteBlock(workspace, 'def g$' + varName);
+  // Find existing — defer disposal until replacement is fully built.
+  var existingBlock = AI.YailToBlocks.findBlockByIdentifier_(
+      workspace, 'def g$' + varName);
+  if (existingBlock) {
+    AI.YailToBlocks.lastDeletedPosition_ = existingBlock.getRelativeToSurfaceXY();
+  }
 
   var block = workspace.newBlock('global_declaration');
   block.setFieldValue(varName, 'NAME');
@@ -618,6 +782,11 @@ AI.YailToBlocks.convertGlobalVar_ = function(workspace, node) {
   var valueBlock = AI.YailToBlocks.convertExpression_(workspace, initValue);
   if (valueBlock && block.getInput('VALUE')) {
     block.getInput('VALUE').connection.connect(valueBlock.outputConnection);
+  }
+
+  // Replacement fully built — now safe to dispose the old block.
+  if (existingBlock) {
+    existingBlock.dispose(true);
   }
 
   block.render();
@@ -660,20 +829,43 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
     var block = existingBlock;
     AI.YailToBlocks.lastDeletedPosition_ = block.getRelativeToSurfaceXY();
 
+    // Mark BEFORE modifying so the error-cleanup path in convert() won't
+    // dispose this pre-existing block if the body rebuild throws.
+    block.aiUpdatedInPlace_ = true;
+
+    // Save old parameters so we can restore them on failure.
+    var oldParams = block.arguments_ ? block.arguments_.slice() : [];
+
     // Update parameters if they changed.
     if (!Blockly.LexicalVariable.stringListsEqual(params, block.arguments_)) {
       block.updateParams_(params);
       Blockly.Procedures.mutateCallers(block);
     }
 
-    // Mark BEFORE clearing so the error-cleanup path in convert() won't
-    // dispose this pre-existing block if connectProcedureBody_ throws.
-    block.aiUpdatedInPlace_ = true;
-
-    // Clear the existing body and connect the new one.
+    // Detach the existing body (kept alive for rollback) and build the
+    // new one.  If the new body throws, reconnect the old body so the
+    // procedure isn't left empty.
     var bodyInputName = isReturn ? 'RETURN' : 'STACK';
-    AI.YailToBlocks.clearInputBlocks_(block, bodyInputName);
-    AI.YailToBlocks.connectProcedureBody_(workspace, block, bodyForms, isReturn);
+    var savedBody = AI.YailToBlocks.detachInputBlocks_(block, bodyInputName);
+    try {
+      AI.YailToBlocks.connectProcedureBody_(workspace, block, bodyForms, isReturn);
+    } catch (bodyError) {
+      // Restore old parameters.
+      if (!Blockly.LexicalVariable.stringListsEqual(oldParams, block.arguments_)) {
+        block.updateParams_(oldParams);
+        Blockly.Procedures.mutateCallers(block);
+      }
+      // Reconnect old body.
+      if (savedBody) {
+        AI.YailToBlocks.reattachInputBlocks_(block, bodyInputName, savedBody);
+      }
+      throw bodyError;
+    }
+
+    // New body connected successfully — dispose old body blocks.
+    if (savedBody) {
+      AI.YailToBlocks.disposeDetachedBlocks_(savedBody);
+    }
 
     block.render();
     return block;
