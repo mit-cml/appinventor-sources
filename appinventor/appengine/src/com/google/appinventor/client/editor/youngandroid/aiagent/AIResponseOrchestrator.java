@@ -737,7 +737,15 @@ public class AIResponseOrchestrator {
                   callback.appendStreamingText(status.getTextDelta());
                 }
                 if (status.isDone()) {
-                  stopPollingStatus();
+                  // Stream complete, but the RPC response may still be in
+                  // flight (server-side parsing, tool-use loop iterations,
+                  // Datastore writes).  Stop polling but keep the status
+                  // indicator visible — it will be hidden when the RPC
+                  // response arrives via stopPollingStatus().
+                  if (pollingTimer != null) {
+                    pollingTimer.cancel();
+                    pollingTimer = null;
+                  }
                 }
               }
 
