@@ -25,6 +25,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
 
 import org.json.JSONArray;
@@ -195,6 +196,72 @@ public class AIAgentEngine {
       }
 
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+
+      // Narration detection: if the LLM returned text without any tool calls
+      // in an editing mode, retry once with a nudge.  This catches models that
+      // describe what they would do instead of actually calling the tools.
+      boolean isEditingMode = !AI_AGENT_MODE_ADVISOR.equals(mode);
+      boolean isNarrationOnly = parsed.operations.isEmpty()
+          && llmResponse.getRawToolCalls().isEmpty()
+          && !assistantText.isEmpty();
+      if (isEditingMode && isNarrationOnly) {
+        AIDebug.log(LOG, "Narration detected in " + mode
+            + " mode — retrying with tool-use nudge");
+
+        // For stateless providers, build a temporary history that includes the
+        // narration so the LLM sees its own failed attempt.
+        if (provider.isStateless()) {
+          history = new ArrayList<>(history);
+          history.add(new ChatMessage("assistant", assistantText));
+        }
+
+        String nudge = "Your response did not include any tool calls. "
+            + "If the user's message requires changes to the project, "
+            + "use the appropriate tools now. If it was a question or "
+            + "conversational message, you may respond with text only.";
+
+        // Stateful providers already have context from the first call;
+        // re-sending it would create duplicates.
+        List<String> retryContext = provider.isStateless() ? contextMessages : null;
+
+        streamBuffer.init();
+        streamBuffer.appendStatus("Preparing response...");
+
+        LLMResponse retryResponse = provider.chat(
+            systemPrompt, retryContext, nudge, tools,
+            llmResponse.getProviderRef(), history, resolver, streamBuffer);
+
+        if (AIDebug.enabled()) {
+          AIDebug.log(LOG, "Narration retry: toolCalls="
+              + retryResponse.getRawToolCalls().size()
+              + ", textLen=" + (retryResponse.getText() != null
+                  ? retryResponse.getText().length() : 0));
+        }
+
+        ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView);
+        boolean retryActed = !retryParsed.operations.isEmpty()
+            || !retryResponse.getRawToolCalls().isEmpty();
+
+        if (retryActed) {
+          // Retry produced tool calls — use its results.  Persist the
+          // narration exchange so history keeps alternating roles.
+          conversationManager.storeMessage(conv.getConversationId(),
+              MessageRole.ASSISTANT, assistantText, false);
+          conversationManager.storeMessage(conv.getConversationId(),
+              MessageRole.USER, nudge, false);
+
+          llmResponse = retryResponse;
+          parsed = retryParsed;
+          assistantText = retryResponse.getText() != null ? retryResponse.getText() : "";
+        } else {
+          // Retry also text-only — the model legitimately had nothing to
+          // act on.  Keep the original text (clean reply to the user) but
+          // take the retry's providerRef so stateful providers stay in sync.
+          llmResponse = new LLMResponse(llmResponse.getText(),
+              llmResponse.getRawToolCalls(), retryResponse.getProviderRef(),
+              llmResponse.hasMore());
+        }
+      }
 
       AIDebug.log(LOG, "Final response: operations=" + parsed.operations.size()
           + ", errors=" + parsed.errors.size()
