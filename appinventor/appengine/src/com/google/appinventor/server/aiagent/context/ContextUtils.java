@@ -141,6 +141,42 @@ public final class ContextUtils {
   }
 
   /**
+   * Strip HTML for tutorial content extraction. Unlike {@link #stripHtml},
+   * this method removes {@code <head>}, {@code <script>}, {@code <style>},
+   * {@code <nav>}, {@code <footer>}, and {@code <header>} elements with
+   * their contents, then strips remaining tags while preserving paragraph
+   * structure.
+   */
+  public static String stripHtmlForTutorial(String html) {
+    if (html == null || html.isEmpty()) {
+      return "";
+    }
+    // 1. Remove elements that carry site chrome or non-content data.
+    //    Pattern.DOTALL so . matches newlines within elements.
+    String text = html;
+    for (String tag : new String[]{"head", "script", "style", "nav", "footer", "header"}) {
+      text = text.replaceAll("(?is)<" + tag + "[^>]*>.*?</" + tag + ">", "\n");
+    }
+    // 2. Replace block-level closing tags with newlines to preserve structure.
+    text = text.replaceAll("(?i)</(p|div|li|tr|h[1-6]|blockquote|section|article|main)>", "\n");
+    text = text.replaceAll("(?i)<br\\s*/?>", "\n");
+    // 3. Remove all remaining HTML tags.
+    text = text.replaceAll("<[^>]+>", " ");
+    // 4. Decode common HTML entities.
+    text = text.replace("&amp;", "&")
+               .replace("&lt;", "<")
+               .replace("&gt;", ">")
+               .replace("&quot;", "\"")
+               .replace("&#39;", "'")
+               .replace("&nbsp;", " ");
+    // 5. Collapse runs of whitespace within lines, then collapse 3+ newlines to 2.
+    text = text.replaceAll("[ \\t]+", " ");
+    text = text.replaceAll(" *\\n *", "\n");
+    text = text.replaceAll("\\n{3,}", "\n\n");
+    return text.trim();
+  }
+
+  /**
    * Truncate to the first sentence (period followed by whitespace or end),
    * capped at 150 characters.
    */

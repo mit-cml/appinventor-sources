@@ -13,6 +13,7 @@ import com.google.appinventor.server.aiagent.context.ModeModule;
 import com.google.appinventor.server.aiagent.context.ProjectModule;
 import com.google.appinventor.server.aiagent.context.ReferenceModule;
 import com.google.appinventor.server.aiagent.context.ScreenModule;
+import com.google.appinventor.server.aiagent.context.TutorialModule;
 import com.google.appinventor.server.aiagent.llm.LLMTool;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -56,6 +57,13 @@ public class AIContextBuilder {
 
   private static final Logger LOG = Logger.getLogger(AIContextBuilder.class.getName());
 
+  /**
+   * Controls whether tutorial context is included in LLM requests.
+   * When {@code true}, if the project has a TutorialURL set, the tutorial
+   * page content is fetched and included as an additional context message.
+   */
+  static final boolean INCLUDE_TUTORIAL_CONTEXT = true;
+
   // Context modules
   private final ReferenceModule referenceModule = new ReferenceModule();
   private final CatalogModule catalogModule = new CatalogModule();
@@ -64,11 +72,15 @@ public class AIContextBuilder {
   private final ModeModule modeModule = new ModeModule();
   private final ProjectModule projectModule = new ProjectModule();
   private final ScreenModule screenModule = new ScreenModule();
+  private final TutorialContentCache tutorialContentCache;
+  private final TutorialModule tutorialModule;
 
   private final StorageIo storageIo;
 
   public AIContextBuilder(StorageIo storageIo) {
     this.storageIo = storageIo;
+    this.tutorialContentCache = new TutorialContentCache(storageIo);
+    this.tutorialModule = new TutorialModule(tutorialContentCache);
   }
 
   StorageIo getStorageIo() {
@@ -165,6 +177,15 @@ public class AIContextBuilder {
     String screenCtx = screenModule.build(params);
     messages.add(screenCtx);
     AIDebug.log(LOG, "Context message 3 (screen): " + screenCtx.length() + " chars");
+
+    // Message 4: Tutorial context (if enabled and active)
+    if (INCLUDE_TUTORIAL_CONTEXT) {
+      String tutorialCtx = tutorialModule.build(params);
+      if (tutorialCtx != null) {
+        messages.add(tutorialCtx);
+        AIDebug.log(LOG, "Context message 4 (tutorial): " + tutorialCtx.length() + " chars");
+      }
+    }
 
     return messages;
   }

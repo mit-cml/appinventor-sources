@@ -281,6 +281,14 @@ public class AIContextCollector {
         json.append(",\"accentColor\":").append(AIJsonUtils.jsonString(accentColor));
       }
 
+      // Tutorial URL
+      String tutorialURL = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+      if (tutorialURL != null && !tutorialURL.isEmpty()) {
+        json.append(",\"tutorialURL\":").append(AIJsonUtils.jsonString(tutorialURL));
+      }
+
       // Screen names
       json.append(",\"screenNames\":[");
       String screenSep = "";

@@ -59,6 +59,7 @@ flowchart TB
 | `ModeEnforcer.java` | Validates operations against the active AI mode (Advisor/ScreenEditor/ProjectEditor) |
 | `AIToolNames.java` | Constants for tool names sent to the LLM |
 | `AIDebug.java` | Debug logging utilities |
+| `TutorialContentCache.java` | Fetches tutorial HTML, strips to text, caches in memory (8h TTL, max 100 entries) |
 
 ### Context Modules -- `server/aiagent/context/`
 
@@ -73,6 +74,7 @@ Each module extends `ContextModule` and contributes one section of the LLM syste
 | `ExamplesModule` | Few-shot examples for in-context learning |
 | `ReferenceModule` | App Inventor reference guide |
 | `ModeModule` | Mode-specific instructions and constraints |
+| `TutorialModule` | Tutorial content and pedagogical instructions (when TutorialURL is set) |
 
 To add a new context section, create a class extending `ContextModule`, implement `build(ContextParams)`, and register it in `AIContextBuilder`.
 
@@ -145,6 +147,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `appinventor_reference.md` | System prompt reference guide for the LLM |
 | `yail_grammar.md` | YAIL syntax documentation for block generation |
 | `few_shot_examples.json` | Few-shot examples for in-context learning |
+| `tutorial_instructions.md` | Pedagogical instructions for tutorial-aware mode |
 
 ### I18n -- `blocklyeditor/src/msg/ai_blockly/`
 
@@ -167,7 +170,7 @@ Context is assembled from two sources: the **client** collects live editor state
 | `blocksYail` | `BlocksEditor.getBlocksYail()` | YAIL for all blocks on the current screen (event handlers, globals, procedures) |
 | `currentView` | `DesignToolbar.getCurrentView()` | `"Designer"` or `"Blocks"` |
 | `screenComponentsJson` | `YaFormEditor.getPropertiesJson()` | Live component tree with property values |
-| `projectSnapshot` | Built inline | JSON with app name, version, theme, sizing, colors, screen names, assets, extensions, and screen summaries (ProjectEditor mode only) |
+| `projectSnapshot` | Built inline | JSON with app name, version, theme, sizing, colors, tutorial URL, screen names, assets, extensions, and screen summaries (ProjectEditor mode only) |
 | `blockWarnings` | `BlocksEditor.getBlocksWarningsAndErrors()` | JSON with warnings/errors from the Blockly workspace |
 | `locale` | `LocaleInfo.getCurrentLocale()` | User's interface locale (e.g. `"es"`) |
 | `languageDisplayName` | `LocaleInfo.getLocaleNativeDisplayName()` | Native language name (e.g. `"Espanol"`) |
@@ -191,14 +194,16 @@ flowchart LR
         M1["Message 1: ModeModule<br/><i>Mode instructions + view rules</i>"]
         M2["Message 2: ProjectModule<br/><i>Metadata, screens, assets,<br/>extensions, screen summaries</i>"]
         M3["Message 3: ScreenModule<br/><i>Component tree + blocks YAIL</i>"]
+        M4["Message 4: TutorialModule<br/><i>Tutorial content + pedagogical<br/>instructions (if TutorialURL set)</i>"]
     end
 
     L1 --> L2 --> L3 --> L4
-    M1 --> M2 --> M3
+    M1 --> M2 --> M3 --> M4
 ```
 
 - The **system prompt** layers are cached after first build (they are static across requests).
 - The **context messages** are built fresh per-request and sent as separate user messages before the user's actual message. Crucially, `ProjectModule` and `ScreenModule` parse the **client-provided JSON** (projectSnapshot, screenComponentsJson, blocksYail) rather than reading from `StorageIo`. This means the LLM always sees exactly what the user sees -- including unsaved changes.
+- **Message 4 (TutorialModule)** is only included when `AIContextBuilder.INCLUDE_TUTORIAL_CONTEXT` is `true` and the project has a non-empty `TutorialURL`. The tutorial page content is fetched via HTTP by `TutorialContentCache` and cached in memory (8h TTL). When active, the LLM receives pedagogical instructions (from `tutorial_instructions.md`) alongside the full tutorial text, shifting its behavior to guide users step-by-step rather than doing everything at once.
 
 ### Why a Client/Server Hybrid?
 
