@@ -47,6 +47,19 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
     Blockly.Events.disable();
     var createdBlocks = [];
     var upsertPositions = [];  // parallel: saved position or null per block
+
+    // Track EVERY block created during conversion so the error handler
+    // can clean up all of them — not just completed top-level roots.
+    // Without this, blocks created during a partially-failed
+    // convertTopLevel_ call leak into the workspace as orphans.
+    var allNewBlocks = [];
+    var origNewBlock = workspace.newBlock;
+    workspace.newBlock = function(type, opt_id) {
+      var b = origNewBlock.call(workspace, type, opt_id);
+      allNewBlocks.push(b);
+      return b;
+    };
+
     try {
       var lastBlockId = null;
       for (var i = 0; i < ast.length; i++) {
@@ -62,20 +75,22 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
         }
       }
     } catch (e) {
-      // Clean up any blocks created before the error so broken
+      // Clean up ALL blocks created during this conversion so broken
       // half-initialized blocks don't persist in the workspace.
-      for (var j = 0; j < createdBlocks.length; j++) {
+      // Dispose in reverse order so children are disposed before parents,
+      // avoiding double-dispose of already-connected descendants.
+      for (var j = allNewBlocks.length - 1; j >= 0; j--) {
         try {
-          // Don't dispose blocks that were updated in place — they existed
-          // before this conversion and destroying them would break callers.
-          if (!createdBlocks[j].aiUpdatedInPlace_) {
-            createdBlocks[j].dispose(false);
+          if (!allNewBlocks[j].disposed && !allNewBlocks[j].aiUpdatedInPlace_) {
+            allNewBlocks[j].dispose(false);
           }
         } catch (ignore) {}
       }
+      workspace.newBlock = origNewBlock;
       Blockly.Events.enable();
       return {success: false, error: e.message, blockId: null};
     }
+    workspace.newBlock = origNewBlock;
     Blockly.Events.enable();
 
     // Render ALL blocks including descendants, following the same pattern
@@ -651,13 +666,14 @@ AI.YailToBlocks.convertProcedure_ = function(workspace, node, isReturn) {
       Blockly.Procedures.mutateCallers(block);
     }
 
+    // Mark BEFORE clearing so the error-cleanup path in convert() won't
+    // dispose this pre-existing block if connectProcedureBody_ throws.
+    block.aiUpdatedInPlace_ = true;
+
     // Clear the existing body and connect the new one.
     var bodyInputName = isReturn ? 'RETURN' : 'STACK';
     AI.YailToBlocks.clearInputBlocks_(block, bodyInputName);
     AI.YailToBlocks.connectProcedureBody_(workspace, block, bodyForms, isReturn);
-
-    // Mark so the error-cleanup path in convert() won't dispose this block.
-    block.aiUpdatedInPlace_ = true;
 
     block.render();
     return block;
