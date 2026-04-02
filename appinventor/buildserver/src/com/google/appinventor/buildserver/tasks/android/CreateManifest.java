@@ -193,21 +193,19 @@ public class CreateManifest implements AndroidTask {
         }
       }
 
+      // Add the platform-specific cap for WRITE_EXTERNAL_STORAGE as a regular permission
+      // constraint so it can be merged with extension-provided constraints.
+      if (!context.isForCompanion() && !context.usesLegacyFileAccess() && minSdk < 29) {
+        permissionConstraints.put("android.permission.WRITE_EXTERNAL_STORAGE",
+            new PermissionConstraint<>("android.permission.WRITE_EXTERNAL_STORAGE",
+                "maxSdkVersion", 29));
+      }
+
       for (String permission : permissions) {
-        if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
-          out.write("  <uses-permission android:name=\"" + permission + "\"");
-
-          // we don't need these permissions post KitKat, but we do need them for the companion
-          if (!context.isForCompanion() && !context.usesLegacyFileAccess() && minSdk < 29) {
-            out.write(" android:maxSdkVersion=\"29\"");
-          }
-
-        } else {
-          out.write("  <uses-permission android:name=\""
-              // replace %packageName% with the actual packageName
-              + permission.replace("%packageName%", packageName)
-              + "\"");
-        }
+        out.write("  <uses-permission android:name=\""
+            // replace %packageName% with the actual packageName
+            + permission.replace("%packageName%", packageName)
+            + "\"");
         outputPermissionConstraints(out, permissionConstraints, permission);
         out.write(" />");
       }
