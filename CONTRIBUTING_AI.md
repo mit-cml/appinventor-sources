@@ -925,6 +925,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **Message length limit: 2000 characters.** Enforced server-side with control character stripping.
 - **Rate limit: configurable** (default 10 req/min per user). Enforced via in-memory timestamps in `AIAgentServiceImpl`.
 - **Context is never cached client-side.** Every request rebuilds the full editor state snapshot.
+- **Tutorial context is gated by `AIContextBuilder.INCLUDE_TUTORIAL_CONTEXT`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Set to `false` to disable without other code changes.
 
 ---
 
