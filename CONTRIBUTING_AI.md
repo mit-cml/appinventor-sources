@@ -692,6 +692,38 @@ flowchart TD
 - Per-operation results are sent: succeeded, failed (with error), skipped.
 - LLM sees exactly what worked and what didn't, and can adjust.
 
+### Server-Side Retry Handling
+
+When the client calls `reportExecutionErrors()`, here is what happens on the server (`AIAgentEngine.reportExecutionErrors()`):
+
+1. **Categorize results.** The `AIOperationResult` DTOs are split into three lists: succeeded summaries, failed details (with error messages), and skipped summaries.
+
+2. **Build feedback message.** `LLMResponseParser.buildExecutionErrorFeedback()` assembles a structured text message with three labeled sections:
+   - "ALREADY APPLIED successfully (do NOT re-emit these)" -- succeeded ops
+   - "FAILED during execution" -- failed ops with error details
+   - "SKIPPED (never executed, halted after the failure above)" -- skipped ops
+   - Closing instruction: "fix the failed operation(s) and re-emit ONLY the failed and skipped operations"
+
+3. **Send as a new user message.** The feedback is stored in conversation history (as a non-display message) and sent to the LLM via `provider.chat()` as the user message, with fresh context messages built from the client's updated editor state. The LLM sees the full current project state plus the error feedback.
+
+4. **`retryAttempt` and `totalTools`** are passed from the client and used for the status display (`"3 out of 8 tools failed, retry attempt 2"`). `totalTools` preserves the original batch size since subsequent retries only re-emit failed/skipped operations.
+
+5. **Parse and enforce as usual.** The LLM's corrected response goes through the same `parseAndEnforce()` pipeline -- unknown tools, mode violations, etc. are caught the same way as on a first request.
+
+### Server-Side Parse Errors (LLMResponseParser)
+
+Before mode enforcement, `LLMResponseParser.parseToolCalls()` validates each raw tool call:
+
+| Check | What happens on failure |
+|-------|------------------------|
+| Unknown tool name | Error added: `"Unknown tool: <name>"`. The tool call is dropped. |
+| Malformed JSON arguments | Error added: `"Malformed JSON arguments for <name>"`. Dropped. |
+| Missing required field | Error added: `"Missing required field '<field>' for <name>"`. Dropped. |
+| Type coercion failure | Error added: `"Type coercion failed for <name>"`. Dropped. |
+| Read-only tool (lookup_*) | Silently skipped (already resolved server-side by the provider). |
+
+Parse errors are collected into the `AIAgentResponse.errors` list and shown to the user. The dropped tool calls are also tracked as `PARSE_REJECTED` in `ToolCallStatus`, which is written into the continuation state so that `continueWithToolResults()` sends `"REJECTED: <error>"` instead of `"Done."` for those calls -- the LLM sees its mistake in the tool result.
+
 ### Rejection Flow
 
 When the user clicks Reject, the orchestrator sends a feedback message (`"The user rejected the proposed operations. Please suggest alternatives."`) as a regular `processRequest()` call. The LLM sees the rejection in conversation history and can propose a different approach.
