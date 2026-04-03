@@ -206,7 +206,18 @@
     <property name="ai.agent.api.key" value="" />
     <property name="ai.agent.base.url" value="" />
     <property name="ai.agent.rate.limit" value="10" />
-    <property name="ai.agent.debug" value="false" />
+    <property name="ai.agent.debug" value="true" />
+
+    <!-- Bedrock provider configuration (only needed when ai.agent.provider=bedrock) -->
+    <property name="ai.agent.provider.bedrock.region" value="us-east-1" />
+    <property name="ai.agent.provider.bedrock.access.key" value="" />
+    <property name="ai.agent.provider.bedrock.secret.key" value="" />
+    <property name="ai.agent.provider.bedrock.session.token" value="" />
+
+    <!-- Vertex provider configuration (only needed when ai.agent.provider=vertex) -->
+    <property name="ai.agent.provider.vertex.project" value="" />
+    <property name="ai.agent.provider.vertex.region" value="us-central1" />
+    <property name="ai.agent.provider.vertex.service.account" value="" />
 
   </system-properties>
 </appengine-web-app>

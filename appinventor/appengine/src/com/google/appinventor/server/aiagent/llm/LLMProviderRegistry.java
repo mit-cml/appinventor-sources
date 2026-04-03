@@ -18,10 +18,13 @@ import java.util.logging.Logger;
  * <p>Provider selection and configuration are driven by system properties
  * (set in appengine-web.xml), accessed through the {@link Flag} mechanism:
  * <ul>
- *   <li>{@code ai.agent.provider} -- provider name (anthropic, openai, gemini, ollama, minimax)</li>
+ *   <li>{@code ai.agent.provider} -- provider name (anthropic, anthropic-compatible,
+ *       openai, gemini, ollama, minimax, openrouter, openai-compatible, bedrock, vertex)</li>
  *   <li>{@code ai.agent.api.key} -- API key for the selected provider</li>
  *   <li>{@code ai.agent.model} -- model name override</li>
- *   <li>{@code ai.agent.base.url} -- base URL override (primarily for Ollama)</li>
+ *   <li>{@code ai.agent.base.url} -- base URL override (for compatible providers, Ollama)</li>
+ *   <li>{@code ai.agent.provider.bedrock.*} -- Bedrock-specific config (region, access key, etc.)</li>
+ *   <li>{@code ai.agent.provider.vertex.*} -- Vertex-specific config (project, region, service account)</li>
  * </ul>
  */
 public class LLMProviderRegistry {
@@ -37,6 +40,24 @@ public class LLMProviderRegistry {
   private static final Flag<String> BASE_URL_FLAG =
       Flag.createFlag("ai.agent.base.url", "");
 
+  // Bedrock-specific flags
+  private static final Flag<String> BEDROCK_REGION_FLAG =
+      Flag.createFlag("ai.agent.provider.bedrock.region", "us-east-1");
+  private static final Flag<String> BEDROCK_ACCESS_KEY_FLAG =
+      Flag.createFlag("ai.agent.provider.bedrock.access.key", "");
+  private static final Flag<String> BEDROCK_SECRET_KEY_FLAG =
+      Flag.createFlag("ai.agent.provider.bedrock.secret.key", "");
+  private static final Flag<String> BEDROCK_SESSION_TOKEN_FLAG =
+      Flag.createFlag("ai.agent.provider.bedrock.session.token", "");
+
+  // Vertex-specific flags
+  private static final Flag<String> VERTEX_PROJECT_FLAG =
+      Flag.createFlag("ai.agent.provider.vertex.project", "");
+  private static final Flag<String> VERTEX_REGION_FLAG =
+      Flag.createFlag("ai.agent.provider.vertex.region", "us-central1");
+  private static final Flag<String> VERTEX_SERVICE_ACCOUNT_FLAG =
+      Flag.createFlag("ai.agent.provider.vertex.service.account", "");
+
   /** Default model names per provider. */
   private static final Map<String, String> DEFAULT_MODELS = new HashMap<>();
 
@@ -46,6 +67,11 @@ public class LLMProviderRegistry {
     DEFAULT_MODELS.put("gemini", "gemini-2.0-flash");
     DEFAULT_MODELS.put("ollama", "llama3.1");
     DEFAULT_MODELS.put("minimax", "MiniMax-M2");
+    DEFAULT_MODELS.put("bedrock", "anthropic.claude-sonnet-4-20250514-v1:0");
+    DEFAULT_MODELS.put("vertex", "gemini-2.0-flash");
+    DEFAULT_MODELS.put("openrouter", "anthropic/claude-sonnet-4");
+    DEFAULT_MODELS.put("openai-compatible", "");
+    DEFAULT_MODELS.put("anthropic-compatible", "");
   }
 
   /**
@@ -78,7 +104,12 @@ public class LLMProviderRegistry {
     switch (providerName) {
       case "anthropic":
         validateApiKey(apiKey, "Anthropic");
-        return new AnthropicProvider(apiKey, model);
+        return new AnthropicCompatibleProvider(apiKey, model, baseUrl);
+
+      case "anthropic-compatible":
+        validateApiKey(apiKey, "Anthropic-Compatible");
+        validateBaseUrl(baseUrl, "Anthropic-Compatible");
+        return new AnthropicCompatibleProvider(apiKey, model, baseUrl);
 
       case "openai":
         validateApiKey(apiKey, "OpenAI");
@@ -96,13 +127,45 @@ public class LLMProviderRegistry {
 
       case "minimax":
         validateApiKey(apiKey, "MiniMax");
+        if (baseUrl != null && !baseUrl.isEmpty()) {
+          return new OpenAIChatCompletionsProvider(apiKey, model, baseUrl);
+        }
         return new MiniMaxProvider(apiKey, model);
+
+      case "openrouter":
+        validateApiKey(apiKey, "OpenRouter");
+        return new OpenRouterProvider(apiKey, model);
+
+      case "openai-compatible":
+        validateApiKey(apiKey, "OpenAI-Compatible");
+        validateBaseUrl(baseUrl, "OpenAI-Compatible");
+        return new OpenAIChatCompletionsProvider(apiKey, model, baseUrl);
+
+      case "bedrock":
+        validateApiKey(BEDROCK_ACCESS_KEY_FLAG.get(), "Bedrock (access key)");
+        validateApiKey(BEDROCK_SECRET_KEY_FLAG.get(), "Bedrock (secret key)");
+        return new BedrockProvider(
+            BEDROCK_ACCESS_KEY_FLAG.get(),
+            BEDROCK_SECRET_KEY_FLAG.get(),
+            BEDROCK_SESSION_TOKEN_FLAG.get(),
+            BEDROCK_REGION_FLAG.get(),
+            model);
+
+      case "vertex":
+        validateApiKey(VERTEX_PROJECT_FLAG.get(), "Vertex (project)");
+        validateApiKey(VERTEX_SERVICE_ACCOUNT_FLAG.get(), "Vertex (service account)");
+        return new VertexProvider(
+            VERTEX_PROJECT_FLAG.get(),
+            VERTEX_REGION_FLAG.get(),
+            VERTEX_SERVICE_ACCOUNT_FLAG.get(),
+            model);
 
       default:
         throw new LLMProviderException(
             "Unknown LLM provider: " + providerName,
             "The configured AI provider is not supported. "
-                + "Supported providers: anthropic, openai, gemini, ollama, minimax.");
+                + "Supported providers: anthropic, anthropic-compatible, openai, gemini, "
+                + "ollama, minimax, openrouter, openai-compatible, bedrock, vertex.");
     }
   }
 
@@ -125,6 +188,17 @@ public class LLMProviderRegistry {
               + ". Set the ai.agent.api.key system property.",
           "The AI agent is not configured. Please ask your administrator "
               + "to set up the API key.");
+    }
+  }
+
+  private static void validateBaseUrl(String baseUrl, String providerName)
+      throws LLMProviderException {
+    if (baseUrl == null || baseUrl.isEmpty()) {
+      throw new LLMProviderException(
+          "No base URL configured for " + providerName
+              + ". Set the ai.agent.base.url system property.",
+          "The AI agent is not configured. Please ask your administrator "
+              + "to set up the provider URL.");
     }
   }
 }

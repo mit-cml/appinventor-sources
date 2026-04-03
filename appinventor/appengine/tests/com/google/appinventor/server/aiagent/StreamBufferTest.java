@@ -1,7 +1,8 @@
 package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.common.testutils.TestUtils;
-import com.google.appinventor.server.storage.ObjectifyStorageIo;
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -21,7 +22,7 @@ public class StreamBufferTest extends TestCase {
               .setBackingStoreLocation(APPENGINE_GENERATED_DIR),
           new LocalMemcacheServiceTestConfig());
 
-  private ObjectifyStorageIo storageIo;
+  private StorageIo storageIo;
   private StreamBuffer buffer;
 
   @Override
@@ -29,7 +30,7 @@ public class StreamBufferTest extends TestCase {
     super.setUp();
     System.setProperty("appengine.generated.dir", APPENGINE_GENERATED_DIR);
     helper.setUp();
-    storageIo = new ObjectifyStorageIo();
+    storageIo = StorageIoInstanceHolder.getInstance();
     buffer = new StreamBuffer(storageIo, PROJECT_ID);
   }
 
