@@ -2127,6 +2127,32 @@ AI.YailToBlocks.getInputNames_ = function(info, argCount, block) {
 /** @private */
 AI.YailToBlocks.convertIf_ = function(workspace, node, asExpression) {
   var els = node.elements;
+
+  // In expression context, use controls_choose (the expression-valued if
+  // block).  controls_choose has no elseif mutator, so nested if chains
+  // produce nested choose blocks — each ELSERETURN slot holds the next
+  // choose.  We handle this recursively rather than flattening, because
+  // convertExpression_ on the else branch will re-enter convertIf_ for
+  // any nested (if ...) form.
+  if (asExpression && els.length > 3) {
+    var block = workspace.newBlock('controls_choose');
+    block.initSvg();
+
+    var condBlock = AI.YailToBlocks.convertExpression_(workspace, els[1]);
+    if (condBlock && block.getInput('TEST')) {
+      block.getInput('TEST').connection.connect(condBlock.outputConnection);
+    }
+    var thenBlock = AI.YailToBlocks.convertExpression_(workspace, els[2]);
+    if (thenBlock && block.getInput('THENRETURN')) {
+      block.getInput('THENRETURN').connection.connect(thenBlock.outputConnection);
+    }
+    var elseBlock = AI.YailToBlocks.convertExpression_(workspace, els[3]);
+    if (elseBlock && block.getInput('ELSERETURN')) {
+      block.getInput('ELSERETURN').connection.connect(elseBlock.outputConnection);
+    }
+    return block;
+  }
+
   // (if condition (begin then...) (begin else...))
   // Unwrap nested if chains into elseif
 
@@ -2152,27 +2178,7 @@ AI.YailToBlocks.convertIf_ = function(workspace, node, asExpression) {
     }
   }
 
-  // In expression context with simple if/then/else, use controls_choose
-  if (asExpression && conditions.length === 1 && elseBody) {
-    var block = workspace.newBlock('controls_choose');
-    block.initSvg();
-
-    var condBlock = AI.YailToBlocks.convertExpression_(workspace, conditions[0]);
-    if (condBlock && block.getInput('TEST')) {
-      block.getInput('TEST').connection.connect(condBlock.outputConnection);
-    }
-    var thenBlock = AI.YailToBlocks.convertExpression_(workspace, bodies[0]);
-    if (thenBlock && block.getInput('THENRETURN')) {
-      block.getInput('THENRETURN').connection.connect(thenBlock.outputConnection);
-    }
-    var elseBlock = AI.YailToBlocks.convertExpression_(workspace, elseBody);
-    if (elseBlock && block.getInput('ELSERETURN')) {
-      block.getInput('ELSERETURN').connection.connect(elseBlock.outputConnection);
-    }
-    return block;
-  }
-
-  // Statement context or complex if/elseif chains: use controls_if
+  // Statement context: use controls_if
   var block = workspace.newBlock('controls_if');
   var mutation = document.createElement('mutation');
   var elseifCount = conditions.length - 1;
