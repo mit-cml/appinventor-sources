@@ -133,12 +133,24 @@ public class AIChatRenderer {
    */
   public void finalizeStreamingBubble(String finalText) {
     if (streamingMessageHtml != null) {
-      // Remove typing indicator and set final content
+      // Remove typing indicator
       if (typingIndicator != null) {
         typingIndicator.removeFromParent();
         typingIndicator = null;
       }
-      streamingMessageHtml.setHTML(markdownToSafeHtml(finalText));
+      if (finalText != null && !finalText.isEmpty()) {
+        // Canonical text from the server — use it as the final content
+        streamingMessageHtml.setHTML(markdownToSafeHtml(finalText));
+      } else if (streamingTextAccumulator.isEmpty()) {
+        // No text at all (streaming started but no deltas arrived) —
+        // remove the empty bubble rather than leaving a blank message
+        if (streamingWrapper != null) {
+          streamingWrapper.removeFromParent();
+        }
+      }
+      // When finalText is empty but streamingTextAccumulator has content,
+      // the text was already rendered by appendStreamingText(); just
+      // remove the typing indicator (done above) and keep it as-is.
       scrollToBottom();
     }
     streamingWrapper = null;

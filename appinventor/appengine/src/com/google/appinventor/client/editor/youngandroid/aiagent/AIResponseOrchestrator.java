@@ -454,16 +454,15 @@ public class AIResponseOrchestrator {
     // Finalize streaming bubble or display the AI message.
     String aiMessage = response.getAiMessage();
     if (streamingActive) {
-      // Streaming was active — always finalize with the canonical text,
-      // regardless of whether operations are present (text was already visible).
-      if (aiMessage != null && !aiMessage.isEmpty()) {
-        callback.finalizeStreamingBubble(aiMessage);
-        if (hasOps) {
-          // Text is already visible in the finalized streaming bubble.
-          // Clear it so applyOperations() doesn't add it again as a
-          // deferred message.
-          response.setAiMessage(null);
-        }
+      // Always finalize the streaming bubble to remove the typing indicator.
+      // When aiMessage is null/empty, the renderer keeps whatever text was
+      // already accumulated from streaming deltas.
+      callback.finalizeStreamingBubble(aiMessage);
+      if (hasOps && aiMessage != null && !aiMessage.isEmpty()) {
+        // Text is already visible in the finalized streaming bubble.
+        // Clear it so applyOperations() doesn't add it again as a
+        // deferred message.
+        response.setAiMessage(null);
       }
       streamingActive = false;
     } else if (aiMessage != null && !aiMessage.isEmpty() && !hasOps) {
