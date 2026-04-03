@@ -240,9 +240,13 @@ final class MockAbsoluteLayout extends MockLayout {
    * @return the top left coordinates of the child component
    */
   private Coordinates getCoordinatesOfChild(MockComponent child) {
-    int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
-    int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
-    return new Coordinates(x, y);
+    try {
+      int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
+      int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
+      return new Coordinates(x, y);
+    } catch (NumberFormatException e) {
+      return new Coordinates(0, 0);
+    }
   }
 
   /**
