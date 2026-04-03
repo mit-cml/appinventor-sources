@@ -39,6 +39,8 @@ public class LLMProviderRegistry {
       Flag.createFlag("ai.agent.model", "");
   private static final Flag<String> BASE_URL_FLAG =
       Flag.createFlag("ai.agent.base.url", "");
+  private static final Flag<String> REASONING_EFFORT_FLAG =
+      Flag.createFlag("ai.agent.reasoning.effort", "");
 
   // Bedrock-specific flags
   private static final Flag<String> BEDROCK_REGION_FLAG =
@@ -90,6 +92,7 @@ public class LLMProviderRegistry {
     String apiKey = API_KEY_FLAG.get();
     String model = MODEL_FLAG.get();
     String baseUrl = BASE_URL_FLAG.get();
+    String reasoningEffort = REASONING_EFFORT_FLAG.get();
 
     // Use default model if none specified
     if (model == null || model.isEmpty()) {
@@ -104,20 +107,20 @@ public class LLMProviderRegistry {
     switch (providerName) {
       case "anthropic":
         validateApiKey(apiKey, "Anthropic");
-        return new AnthropicCompatibleProvider(apiKey, model, baseUrl);
+        return new AnthropicCompatibleProvider(apiKey, model, baseUrl, reasoningEffort);
 
       case "anthropic-compatible":
         validateApiKey(apiKey, "Anthropic-Compatible");
         validateBaseUrl(baseUrl, "Anthropic-Compatible");
-        return new AnthropicCompatibleProvider(apiKey, model, baseUrl);
+        return new AnthropicCompatibleProvider(apiKey, model, baseUrl, reasoningEffort);
 
       case "openai":
         validateApiKey(apiKey, "OpenAI");
-        return new OpenAIProvider(apiKey, model);
+        return new OpenAIProvider(apiKey, model, reasoningEffort);
 
       case "gemini":
         validateApiKey(apiKey, "Gemini");
-        return new GeminiProvider(apiKey, model);
+        return new GeminiProvider(apiKey, model, reasoningEffort);
 
       case "ollama":
         if (baseUrl == null || baseUrl.isEmpty()) {
@@ -149,7 +152,8 @@ public class LLMProviderRegistry {
             BEDROCK_SECRET_KEY_FLAG.get(),
             BEDROCK_SESSION_TOKEN_FLAG.get(),
             BEDROCK_REGION_FLAG.get(),
-            model);
+            model,
+            reasoningEffort);
 
       case "vertex":
         validateApiKey(VERTEX_PROJECT_FLAG.get(), "Vertex (project)");
@@ -158,7 +162,8 @@ public class LLMProviderRegistry {
             VERTEX_PROJECT_FLAG.get(),
             VERTEX_REGION_FLAG.get(),
             VERTEX_SERVICE_ACCOUNT_FLAG.get(),
-            model);
+            model,
+            reasoningEffort);
 
       default:
         throw new LLMProviderException(

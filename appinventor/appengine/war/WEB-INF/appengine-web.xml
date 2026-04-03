@@ -203,6 +203,7 @@
     <property name="ai.agent.available" value="false" />
     <property name="ai.agent.provider" value="anthropic" />
     <property name="ai.agent.model" value="claude-sonnet-4-20250514" />
+    <property name="ai.agent.reasoning.effort" value="" />
     <property name="ai.agent.api.key" value="" />
     <property name="ai.agent.base.url" value="" />
     <property name="ai.agent.rate.limit" value="10" />

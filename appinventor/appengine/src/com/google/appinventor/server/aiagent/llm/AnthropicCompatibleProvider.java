@@ -54,18 +54,23 @@ public class AnthropicCompatibleProvider implements LLMProvider {
   protected final String apiKey;
   protected final String model;
   protected final String baseUrl;
+  protected final String reasoningEffort;
 
   /**
    * Creates a new Anthropic-compatible provider.
    *
-   * @param apiKey  the API key
-   * @param model   the model name (e.g. "claude-sonnet-4-20250514")
-   * @param baseUrl the base URL of the API endpoint; if null or empty, defaults
-   *                to {@code "https://api.anthropic.com"}
+   * @param apiKey          the API key
+   * @param model           the model name (e.g. "claude-sonnet-4-20250514")
+   * @param baseUrl         the base URL of the API endpoint; if null or empty, defaults
+   *                        to {@code "https://api.anthropic.com"}
+   * @param reasoningEffort reasoning effort level (e.g. "low", "medium", "high"),
+   *                        or empty/null to use the model's default
    */
-  AnthropicCompatibleProvider(String apiKey, String model, String baseUrl) {
+  AnthropicCompatibleProvider(String apiKey, String model, String baseUrl,
+      String reasoningEffort) {
     this.apiKey = apiKey;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     if (baseUrl == null || baseUrl.isEmpty()) {
       this.baseUrl = "https://api.anthropic.com";
     } else {
@@ -134,6 +139,11 @@ public class AnthropicCompatibleProvider implements LLMProvider {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
       requestBody.put("max_tokens", getMaxTokens());
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        requestBody.put("thinking", new JSONObject()
+            .put("type", "adaptive")
+            .put("effort", reasoningEffort));
+      }
       requestBody.put("system", systemPrompt);
       requestBody.put("messages", messages);
       if (toolDefs.length() > 0) {
@@ -314,6 +324,11 @@ public class AnthropicCompatibleProvider implements LLMProvider {
       JSONObject requestBody = new JSONObject();
       requestBody.put("model", model);
       requestBody.put("max_tokens", getMaxTokens());
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        requestBody.put("thinking", new JSONObject()
+            .put("type", "adaptive")
+            .put("effort", reasoningEffort));
+      }
       requestBody.put("system", systemPrompt);
       requestBody.put("messages", messages);
       if (toolDefs.length() > 0) {

@@ -48,16 +48,20 @@ public class GeminiProvider implements LLMProvider {
 
   private final String apiKey;
   private final String model;
+  private final String reasoningEffort;
 
   /**
    * Creates a new Gemini provider.
    *
-   * @param apiKey the Gemini API key
-   * @param model  the model name (e.g. "gemini-2.0-flash")
+   * @param apiKey          the Gemini API key
+   * @param model           the model name (e.g. "gemini-2.0-flash")
+   * @param reasoningEffort reasoning effort level (e.g. "low", "medium", "high"),
+   *                        or empty/null to use the model's default
    */
-  GeminiProvider(String apiKey, String model) {
+  GeminiProvider(String apiKey, String model, String reasoningEffort) {
     this.apiKey = apiKey;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
   }
 
   @Override
@@ -101,6 +105,10 @@ public class GeminiProvider implements LLMProvider {
       // Generation config
       JSONObject generationConfig = new JSONObject();
       generationConfig.put("maxOutputTokens", MAX_OUTPUT_TOKENS);
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        generationConfig.put("thinkingConfig", new JSONObject()
+            .put("thinkingLevel", reasoningEffort.toUpperCase()));
+      }
       requestBody.put("generationConfig", generationConfig);
 
       // Include provider ref for stateful continuation

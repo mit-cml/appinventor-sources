@@ -13,8 +13,8 @@ package com.google.appinventor.server.aiagent.llm;
  */
 public class AnthropicProvider extends AnthropicCompatibleProvider {
 
-  AnthropicProvider(String apiKey, String model) {
-    super(apiKey, model, "https://api.anthropic.com");
+  AnthropicProvider(String apiKey, String model, String reasoningEffort) {
+    super(apiKey, model, "https://api.anthropic.com", reasoningEffort);
   }
 
   @Override

@@ -50,21 +50,25 @@ class BedrockProvider implements LLMProvider {
   private final AwsSigV4Signer signer;
   private final String region;
   private final String model;
+  private final String reasoningEffort;
 
   /**
    * Creates a new Bedrock provider.
    *
-   * @param accessKey    AWS access key ID
-   * @param secretKey    AWS secret access key
-   * @param sessionToken AWS session token (may be null or empty)
-   * @param region       AWS region (e.g. "us-east-1")
-   * @param model        Bedrock model ID (e.g. "anthropic.claude-sonnet-4-20250514-v1:0")
+   * @param accessKey       AWS access key ID
+   * @param secretKey       AWS secret access key
+   * @param sessionToken    AWS session token (may be null or empty)
+   * @param region          AWS region (e.g. "us-east-1")
+   * @param model           Bedrock model ID (e.g. "anthropic.claude-sonnet-4-20250514-v1:0")
+   * @param reasoningEffort reasoning effort level (e.g. "low", "medium", "high"),
+   *                        or empty/null to use the model's default
    */
   BedrockProvider(String accessKey, String secretKey, String sessionToken,
-      String region, String model) {
+      String region, String model, String reasoningEffort) {
     this.signer = new AwsSigV4Signer(accessKey, secretKey, sessionToken, region, "bedrock");
     this.region = region;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
   }
 
   @Override
@@ -505,6 +509,12 @@ class BedrockProvider implements LLMProvider {
     body.put("inferenceConfig", new JSONObject().put("maxTokens", MAX_TOKENS));
     if (toolDefs.length() > 0) {
       body.put("toolConfig", new JSONObject().put("tools", toolDefs));
+    }
+    if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+      body.put("additionalModelRequestFields", new JSONObject()
+          .put("thinking", new JSONObject()
+              .put("type", "adaptive")
+              .put("effort", reasoningEffort)));
     }
     return body;
   }

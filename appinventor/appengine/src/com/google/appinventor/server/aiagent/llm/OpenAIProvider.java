@@ -47,16 +47,20 @@ public class OpenAIProvider implements LLMProvider {
 
   private final String apiKey;
   private final String model;
+  private final String reasoningEffort;
 
   /**
    * Creates a new OpenAI provider.
    *
-   * @param apiKey the OpenAI API key
-   * @param model  the model name (e.g. "gpt-4o")
+   * @param apiKey          the OpenAI API key
+   * @param model           the model name (e.g. "gpt-4o")
+   * @param reasoningEffort reasoning effort level (e.g. "low", "medium", "high"),
+   *                        or empty/null to use the model's default
    */
-  OpenAIProvider(String apiKey, String model) {
+  OpenAIProvider(String apiKey, String model, String reasoningEffort) {
     this.apiKey = apiKey;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
   }
 
   @Override
@@ -151,6 +155,11 @@ public class OpenAIProvider implements LLMProvider {
       requestBody.put("model", model);
       requestBody.put("max_output_tokens", MAX_TOKENS);
       requestBody.put("truncation", "auto");
+
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        requestBody.put("reasoning",
+            new JSONObject().put("effort", reasoningEffort));
+      }
 
       if (systemPrompt != null && !systemPrompt.isEmpty()) {
         requestBody.put("instructions", systemPrompt);
@@ -315,6 +324,11 @@ public class OpenAIProvider implements LLMProvider {
       requestBody.put("model", model);
       requestBody.put("max_output_tokens", MAX_TOKENS);
       requestBody.put("truncation", "auto");
+
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        requestBody.put("reasoning",
+            new JSONObject().put("effort", reasoningEffort));
+      }
 
       if (systemPrompt != null && !systemPrompt.isEmpty()) {
         requestBody.put("instructions", systemPrompt);

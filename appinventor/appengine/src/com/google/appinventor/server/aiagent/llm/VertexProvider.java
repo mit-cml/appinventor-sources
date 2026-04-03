@@ -50,6 +50,7 @@ class VertexProvider implements LLMProvider {
   private final String project;
   private final String region;
   private final String model;
+  private final String reasoningEffort;
   private final GcpAuthHelper authHelper;
 
   /**
@@ -59,13 +60,16 @@ class VertexProvider implements LLMProvider {
    * @param region             the GCP region (e.g. "us-central1")
    * @param serviceAccountPath path to the service account JSON key file
    * @param model              the model name (e.g. "gemini-2.0-flash")
+   * @param reasoningEffort    reasoning effort level (e.g. "low", "medium", "high"),
+   *                           or empty/null to use the model's default
    * @throws LLMProviderException if the service account file cannot be loaded
    */
-  VertexProvider(String project, String region, String serviceAccountPath, String model)
-      throws LLMProviderException {
+  VertexProvider(String project, String region, String serviceAccountPath, String model,
+      String reasoningEffort) throws LLMProviderException {
     this.project = project;
     this.region = region;
     this.model = model;
+    this.reasoningEffort = reasoningEffort;
     this.authHelper = new GcpAuthHelper(serviceAccountPath);
   }
 
@@ -110,6 +114,10 @@ class VertexProvider implements LLMProvider {
       // Generation config
       JSONObject generationConfig = new JSONObject();
       generationConfig.put("maxOutputTokens", MAX_OUTPUT_TOKENS);
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        generationConfig.put("thinkingConfig", new JSONObject()
+            .put("thinkingLevel", reasoningEffort.toUpperCase()));
+      }
       requestBody.put("generationConfig", generationConfig);
 
       // Include provider ref for stateful continuation
@@ -340,6 +348,10 @@ class VertexProvider implements LLMProvider {
 
       JSONObject generationConfig = new JSONObject();
       generationConfig.put("maxOutputTokens", MAX_OUTPUT_TOKENS);
+      if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
+        generationConfig.put("thinkingConfig", new JSONObject()
+            .put("thinkingLevel", reasoningEffort.toUpperCase()));
+      }
       requestBody.put("generationConfig", generationConfig);
 
       if (AIDebug.enabled()) {
