@@ -84,11 +84,18 @@ To add a new context section, create a class extending `ContextModule`, implemen
 |------|---------|
 | `LLMProvider.java` | Interface: `chat()`, `continueWithToolResults()`, `isStateless()` |
 | `LLMProviderRegistry.java` | Factory: selects provider from `ai.agent.provider` system property |
-| `AnthropicProvider.java` | Stateless -- sends full history on each call |
-| `OpenAIProvider.java` | Stateful -- uses `response_id` for continuation |
-| `GeminiProvider.java` | Stateful -- session-based continuation |
-| `OllamaProvider.java` | Local model support, configurable base URL |
-| `MiniMaxProvider.java` | Alternative cloud provider |
+| `OpenAIChatCompletionsProvider.java` | Base class for OpenAI Chat Completions compatible providers |
+| `AnthropicCompatibleProvider.java` | Full implementation for Anthropic Messages API compatible providers |
+| `AnthropicProvider.java` | Thin subclass: Anthropic API endpoint |
+| `OpenAIProvider.java` | Standalone: OpenAI Responses API (stateful via `response_id`) |
+| `GeminiProvider.java` | Standalone: Google Gemini API (stateful) |
+| `OllamaProvider.java` | Standalone: local Ollama models, configurable base URL |
+| `MiniMaxProvider.java` | Thin subclass: MiniMax endpoint (OpenAI chat/completions format) |
+| `OpenRouterProvider.java` | Thin subclass: OpenRouter endpoint + routing headers |
+| `BedrockProvider.java` | Standalone: AWS Bedrock Converse API + SigV4 auth |
+| `VertexProvider.java` | Standalone: Google Vertex AI generateContent + OAuth |
+| `AwsSigV4Signer.java` | AWS Signature V4 request signing helper |
+| `GcpAuthHelper.java` | GCP service account JWT/OAuth token management |
 | `LLMResponse.java` | Response DTO (text, tool calls, provider ref, hasMore flag) |
 | `LLMTool.java` | Tool definition sent to LLM |
 | `ChatMessage.java` | Role + content message for conversation history |
@@ -139,6 +146,13 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `ProjectOperationValidator.java` | Validates project-level operations |
 | `DesignerOperationValidator.java` | Validates component operations |
 | `BlockOperationValidator.java` | Validates block operations against Blockly engine |
+
+### Blockly AI -- `blocklyeditor/src/ai/`
+
+| File | Purpose |
+|------|---------|
+| `yail_to_blocks.js` | Converts YAIL S-expressions into Blockly blocks with viewport-aware positioning and component grouping |
+| `sexpr_parser.js` | S-expression parser for YAIL |
 
 ### Resources -- `server/aiagent/resources/`
 
@@ -339,6 +353,16 @@ flowchart LR
 Phase 1 is **async** (screen switches involve RPC callbacks). Phases 2-5 are **synchronous**. On any failure, the executor **halts** -- remaining operations are marked as skipped. There is no rollback.
 
 After all sync phases complete, `blocksEditor.sendComponentData(true)` forces a Companion YAIL update so the device reflects the changes immediately.
+
+### Block Positioning
+
+When `WRITE_BLOCK` creates new blocks, `AI.YailToBlocks.convert()` in `blocklyeditor/src/ai/yail_to_blocks.js` handles positioning with three layered strategies:
+
+1. **Viewport-aware free-space placement (always active):** Scans existing top-level blocks visible in the viewport, places new blocks below the lowest one. If the user scrolled to empty space, blocks appear there instead.
+2. **Component grouping (gated by `AI.YailToBlocks.GROUP_BY_COMPONENT`):** Event handlers are placed near existing handlers for the same component, derived from the block's `instance_name` mutation attribute. Falls back to free-space when no group exists.
+3. **Horizontal overlap avoidance:** After computing a position, blocks are shifted rightward if they would overlap an existing block's bounding box.
+
+Replaced blocks (upserts) always return to their original position regardless of these strategies.
 
 ### Solo Operations
 
@@ -771,39 +795,63 @@ When the user clicks Reject, the orchestrator sends a feedback message (`"The us
 <property name="ai.agent.base.url" value="" />
 <property name="ai.agent.rate.limit" value="10" />
 <property name="ai.agent.debug" value="false" />
+
+<!-- Bedrock-specific (only when ai.agent.provider=bedrock) -->
+<property name="ai.agent.provider.bedrock.region" value="us-east-1" />
+<property name="ai.agent.provider.bedrock.access.key" value="" />
+<property name="ai.agent.provider.bedrock.secret.key" value="" />
+<property name="ai.agent.provider.bedrock.session.token" value="" />
+
+<!-- Vertex-specific (only when ai.agent.provider=vertex) -->
+<property name="ai.agent.provider.vertex.project" value="" />
+<property name="ai.agent.provider.vertex.region" value="us-central1" />
+<property name="ai.agent.provider.vertex.service.account" value="" />
 ```
 
 | Property | Default | Description |
 |----------|---------|-------------|
 | `ai.agent.available` | `true` | Feature toggle |
-| `ai.agent.provider` | `anthropic` | Provider name: `anthropic`, `openai`, `gemini`, `ollama`, `minimax` |
-| `ai.agent.model` | (per-provider) | Model override. Defaults: `claude-sonnet-4-20250514`, `gpt-4o`, `gemini-2.0-flash`, `llama3.1`, `MiniMax-M2` |
+| `ai.agent.provider` | `anthropic` | Provider name: `anthropic`, `anthropic-compatible`, `openai`, `gemini`, `ollama`, `minimax`, `openrouter`, `openai-compatible`, `bedrock`, `vertex` |
+| `ai.agent.model` | (per-provider) | Model override. Defaults: `claude-sonnet-4-20250514`, `gpt-4o`, `gemini-2.0-flash`, `llama3.1`, `MiniMax-M2`, `anthropic.claude-sonnet-4-20250514-v1:0` (bedrock), `anthropic/claude-sonnet-4` (openrouter) |
 | `ai.agent.api.key` | (empty) | API key for the selected provider |
-| `ai.agent.base.url` | (empty) | Base URL override (required for Ollama, optional for others) |
+| `ai.agent.base.url` | (empty) | Base URL override (required for `ollama`, `openai-compatible`, `anthropic-compatible`; optional for `anthropic`, `minimax`) |
 | `ai.agent.rate.limit` | `10` | Max requests per user per minute |
 | `ai.agent.debug` | `false` | Enable verbose debug logging |
+| `ai.agent.provider.bedrock.region` | `us-east-1` | AWS region for Bedrock |
+| `ai.agent.provider.bedrock.access.key` | (empty) | AWS access key ID |
+| `ai.agent.provider.bedrock.secret.key` | (empty) | AWS secret access key |
+| `ai.agent.provider.bedrock.session.token` | (empty) | Optional STS session token |
+| `ai.agent.provider.vertex.project` | (empty) | GCP project ID |
+| `ai.agent.provider.vertex.region` | `us-central1` | GCP region |
+| `ai.agent.provider.vertex.service.account` | (empty) | Path to service account JSON key file |
 
 ### Stateful vs. Stateless Providers
 
 ```mermaid
 flowchart LR
-    subgraph "Stateless (Anthropic)"
+    subgraph "Stateless (Anthropic, Bedrock, MiniMax, OpenRouter, Ollama, compatible)"
         A1["chat(): full history + new message"]
         A2["continueWithToolResults(): full history + synthetic results"]
         A3["providerRef unused"]
     end
 
-    subgraph "Stateful (OpenAI, Gemini)"
+    subgraph "Stateful (OpenAI, Gemini, Vertex)"
         B1["chat(): new message only"]
         B2["continueWithToolResults(): synthetic results + providerRef"]
         B3["providerRef = response_id or session ref"]
     end
 ```
 
-- **Stateless** (Anthropic): Full conversation history is sent on every call. Each call is self-contained.
-- **Stateful** (OpenAI, Gemini): The provider maintains server-side state. A `providerRef` (response ID, session reference) is passed back for continuation.
+- **Stateless** (Anthropic, Bedrock, MiniMax, OpenRouter, Ollama, compatible providers): Full conversation history is sent on every call. Each call is self-contained.
+- **Stateful** (OpenAI, Gemini, Vertex): The provider maintains server-side state. A `providerRef` (response ID, session reference, cached contents) is passed back for continuation.
 
 ### Adding a New Provider
+
+If the new provider uses the **OpenAI Chat Completions** format (`/v1/chat/completions` with `tool_calls` array, SSE streaming with `[DONE]`), extend `OpenAIChatCompletionsProvider` -- override `getEndpoint()`, `getHeaders()`, and `getProviderName()`. See `MiniMaxProvider` or `OpenRouterProvider` for examples.
+
+If the new provider uses the **Anthropic Messages** format (`tool_use`/`tool_result` content blocks), extend `AnthropicCompatibleProvider` -- same override pattern. See `AnthropicProvider` for the example.
+
+For providers with a unique API format, implement `LLMProvider` from scratch:
 
 1. Create `YourProvider.java` in `server/aiagent/llm/` implementing `LLMProvider`.
 2. Implement `chat()` -- handle the tool-use loop for read-only tools internally (max 5 iterations).
