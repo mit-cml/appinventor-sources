@@ -2977,7 +2977,19 @@ AI.YailToBlocks.validate = function(yailString) {
     }
     return {valid: true, error: null};
   } catch (e) {
-    return {valid: false, error: e.message};
+    var msg = e.message;
+    // When the error is about unterminated lists, add the exact paren
+    // deficit so the LLM knows how many closing parens to add.
+    if (msg.indexOf('Unterminated list') !== -1 ||
+        msg.indexOf('missing closing parenthesis') !== -1) {
+      var deficit = AI.SExprParser.countParenDeficit(yailString);
+      if (deficit > 0) {
+        msg += '. You are missing ' + deficit + ' closing parenthes'
+            + (deficit === 1 ? 'is' : 'es')
+            + ' — add ' + deficit + ' more ) at the end.';
+      }
+    }
+    return {valid: false, error: msg};
   }
 };
 

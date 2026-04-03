@@ -361,6 +361,24 @@ AI.SExprParser.isForm = function(node, name) {
 };
 
 /**
+ * Count the parenthesis deficit in a token stream: opens minus closes.
+ * A positive number means that many closing parens are missing.
+ * @param {string} input The YAIL string.
+ * @return {number} The deficit (opens - closes).
+ */
+AI.SExprParser.countParenDeficit = function(input) {
+  var tokens = AI.SExprParser.tokenize(input);
+  var TT = AI.SExprParser.TokenType;
+  var opens = 0;
+  var closes = 0;
+  for (var i = 0; i < tokens.length; i++) {
+    if (tokens[i].type === TT.LPAREN) opens++;
+    else if (tokens[i].type === TT.RPAREN) closes++;
+  }
+  return opens - closes;
+};
+
+/**
  * Get the symbol name of the first element of a list node, or null.
  * @param {Object} node
  * @return {?string}
