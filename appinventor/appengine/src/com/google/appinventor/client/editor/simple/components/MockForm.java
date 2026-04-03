@@ -920,6 +920,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
         ((MockVisibleComponent) child).setCoordPropertiesVisible(isAbsolute);
       }
     }
+    // Enable the snap toggle only when in Absolute layout mode.
+    com.google.appinventor.client.editor.youngandroid.DesignToolbar toolbar =
+        com.google.appinventor.client.Ode.getInstance().getDesignToolbar();
+    toolbar.updateSnapButtonState(isAbsolute);
+    if (isAbsolute) {
+      toolbar.updateSnapButton(absoluteLayoutSnapEnabled);
+    }
   }
 
   private void setScrollableProperty(String text) {

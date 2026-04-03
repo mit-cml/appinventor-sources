@@ -36,12 +36,13 @@
                     align="center">
       <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="SnapToggle" caption="{messages.snapToggleButton}"
+                    tooltip="{messages.snapToggleDisabledTooltip}" enabled="false" align="center">
+      <ya:ToggleSnapAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
        ui:field="sendToGalleryItem" align="center">
       <actions:SendToGalleryAction />
-    </ai:ToolbarItem>
-    <ai:ToolbarItem name="SnapToggle" caption="{messages.snapToggleButton}" align="right">
-      <ya:ToggleSnapAction />
     </ai:ToolbarItem>
     <ai:ToolbarItem name ="Console Toggle" caption="{messages.toggleConsoleButton}" ui:field="toggleConsoleItem" align="right">
       <ya:ToggleConsoleAction />

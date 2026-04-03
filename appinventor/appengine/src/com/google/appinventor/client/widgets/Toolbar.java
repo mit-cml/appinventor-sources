@@ -177,6 +177,33 @@ public class Toolbar extends FlowPanel {
   }
 
   /**
+   * Replaces the Material icon on a button's UP face.
+   * Has no effect on buttons that use plain-text labels instead of icons.
+   *
+   * @param widgetName name of button
+   * @param iconName   Material icon ligature (e.g. "grid_on", "grid_off")
+   */
+  public void setButtonIcon(String widgetName, String iconName) {
+    TextButton button = buttonMap.get(widgetName);
+    if (button != null) {
+      button.getUpFace().setHTML("<i class=\"material-icons\">" + iconName + "</i>");
+    }
+  }
+
+  /**
+   * Sets the tooltip (title attribute) for a button.
+   *
+   * @param widgetName name of button
+   * @param tooltip tooltip text
+   */
+  public void setButtonTooltip(String widgetName, String tooltip) {
+    TextButton button = buttonMap.get(widgetName);
+    if (button != null) {
+      button.setTitle(tooltip);
+    }
+  }
+
+  /**
    * Sets text for button
    *
    * @param widgetName name of button
