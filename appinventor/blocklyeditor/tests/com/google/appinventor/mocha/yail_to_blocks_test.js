@@ -436,4 +436,228 @@ suite('YAIL to Blocks Converter', function() {
       chai.assert.isNotNull(body, 'replaced event should have body');
     });
   });
+
+  // ================================================================
+  // 7. Block positioning
+  // ================================================================
+  suite('Block positioning', function() {
+
+    test('New block is placed below existing blocks in viewport', function() {
+      var result1 = AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form))');
+      chai.assert.isTrue(result1.success);
+
+      var existingBlock = findTopBlock(this.workspace, 'component_event');
+      chai.assert.isNotNull(existingBlock);
+      var existingXY = existingBlock.getRelativeToSurfaceXY();
+      var existingHeight = existingBlock.getHeightWidth().height;
+
+      var result2 = AI.YailToBlocks.convert(this.workspace, '(def g$score 0)');
+      chai.assert.isTrue(result2.success);
+
+      var newBlock = findTopBlock(this.workspace, 'global_declaration');
+      chai.assert.isNotNull(newBlock);
+      var newXY = newBlock.getRelativeToSurfaceXY();
+
+      chai.assert.isAtLeast(newXY.y, existingXY.y + existingHeight,
+          'new block should be placed below existing block');
+    });
+
+    test('Multiple new blocks in one batch do not overlap each other', function() {
+      var yail = '(def g$a 1)\n(def g$b 2)\n(def g$c 3)';
+      var result = AI.YailToBlocks.convert(this.workspace, yail);
+      chai.assert.isTrue(result.success);
+
+      var topBlocks = this.workspace.getTopBlocks(false);
+      chai.assert.lengthOf(topBlocks, 3);
+
+      topBlocks.sort(function(a, b) {
+        return a.getRelativeToSurfaceXY().y - b.getRelativeToSurfaceXY().y;
+      });
+
+      for (var i = 1; i < topBlocks.length; i++) {
+        var prevBottom = topBlocks[i - 1].getRelativeToSurfaceXY().y +
+            topBlocks[i - 1].getHeightWidth().height;
+        var currTop = topBlocks[i].getRelativeToSurfaceXY().y;
+        chai.assert.isAtLeast(currTop, prevBottom,
+            'block ' + i + ' should not overlap block ' + (i - 1));
+      }
+    });
+
+    test('Upsert preserves original position', function() {
+      var result1 = AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form))');
+      chai.assert.isTrue(result1.success);
+
+      var block1 = findTopBlock(this.workspace, 'component_event');
+      var origXY = block1.getRelativeToSurfaceXY();
+
+      var result2 = AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form)\n' +
+          '  (call-component-method \'Notifier1 \'ShowAlert ' +
+          '(*list-for-runtime* "updated") \'(text)))');
+      chai.assert.isTrue(result2.success);
+
+      var block2 = findTopBlock(this.workspace, 'component_event');
+      var newXY = block2.getRelativeToSurfaceXY();
+
+      chai.assert.equal(newXY.x, origXY.x, 'upsert X should match original');
+      chai.assert.equal(newXY.y, origXY.y, 'upsert Y should match original');
+    });
+
+  test('Component grouping: event placed near same component', function() {
+    var result1 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Button1 Click () (set-this-form))');
+    chai.assert.isTrue(result1.success);
+
+    var clickBlock = findTopBlock(this.workspace, 'component_event');
+    var clickXY = clickBlock.getRelativeToSurfaceXY();
+
+    var result2 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Label1 Initialize () (set-this-form))');
+    chai.assert.isTrue(result2.success);
+
+    var result3 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Button1 LongClick () (set-this-form))');
+    chai.assert.isTrue(result3.success);
+
+    var topBlocks = this.workspace.getTopBlocks(false);
+    var longClickBlock = null;
+    for (var i = 0; i < topBlocks.length; i++) {
+      var m = topBlocks[i].mutationToDom ? topBlocks[i].mutationToDom() : null;
+      if (m && m.getAttribute('instance_name') === 'Button1' &&
+          m.getAttribute('event_name') === 'LongClick') {
+        longClickBlock = topBlocks[i];
+        break;
+      }
+    }
+    chai.assert.isNotNull(longClickBlock, 'LongClick block should exist');
+
+    var longClickXY = longClickBlock.getRelativeToSurfaceXY();
+    chai.assert.equal(longClickXY.x, clickXY.x,
+        'grouped block should align horizontally with group');
+
+    var clickBottom = clickXY.y + clickBlock.getHeightWidth().height;
+    chai.assert.isAtLeast(longClickXY.y, clickBottom,
+        'grouped block should be below its group');
+  });
+
+  test('Component grouping: global var uses free-space (no grouping)', function() {
+    var result1 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Button1 Click () (set-this-form))');
+    chai.assert.isTrue(result1.success);
+
+    var result2 = AI.YailToBlocks.convert(this.workspace, '(def g$counter 0)');
+    chai.assert.isTrue(result2.success);
+
+    var globalBlock = findTopBlock(this.workspace, 'global_declaration');
+    chai.assert.isNotNull(globalBlock);
+
+    var clickBlock = findTopBlock(this.workspace, 'component_event');
+    var clickXY = clickBlock.getRelativeToSurfaceXY();
+    var globalXY = globalBlock.getRelativeToSurfaceXY();
+
+    var clickBottom = clickXY.y + clickBlock.getHeightWidth().height;
+    chai.assert.isAtLeast(globalXY.y, clickBottom,
+        'global should be below existing block');
+  });
+
+  test('Component grouping: toggle off disables grouping', function() {
+    var origToggle = AI.YailToBlocks.GROUP_BY_COMPONENT;
+    AI.YailToBlocks.GROUP_BY_COMPONENT = false;
+    try {
+      var result1 = AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form))');
+      chai.assert.isTrue(result1.success);
+
+      var clickBlock = findTopBlock(this.workspace, 'component_event');
+      var clickXY = clickBlock.getRelativeToSurfaceXY();
+
+      var result2 = AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 LongClick () (set-this-form))');
+      chai.assert.isTrue(result2.success);
+
+      var topBlocks = this.workspace.getTopBlocks(false);
+      var longClickBlock = null;
+      for (var i = 0; i < topBlocks.length; i++) {
+        var m = topBlocks[i].mutationToDom ? topBlocks[i].mutationToDom() : null;
+        if (m && m.getAttribute('instance_name') === 'Button1' &&
+            m.getAttribute('event_name') === 'LongClick') {
+          longClickBlock = topBlocks[i];
+          break;
+        }
+      }
+      chai.assert.isNotNull(longClickBlock);
+
+      var longClickXY = longClickBlock.getRelativeToSurfaceXY();
+      var clickBottom = clickXY.y + clickBlock.getHeightWidth().height;
+      chai.assert.isAtLeast(longClickXY.y, clickBottom,
+          'block should still not overlap even with grouping off');
+    } finally {
+      AI.YailToBlocks.GROUP_BY_COMPONENT = origToggle;
+    }
+  });
+
+  test('Horizontal overlap avoidance: block shifts right when position is occupied', function() {
+    // Create a Button1.Click handler
+    var result1 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Button1 Click () (set-this-form))');
+    chai.assert.isTrue(result1.success);
+
+    // Create a Label1.Initialize handler — will go to free-space below Button1
+    var result2 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Label1 Initialize () (set-this-form))');
+    chai.assert.isTrue(result2.success);
+
+    // Move Button1.Click so its bottom overlaps Label1's Y band
+    var clickBlock = findTopBlock(this.workspace, 'component_event');
+    var labelBlock = null;
+    var topBlocks = this.workspace.getTopBlocks(false);
+    for (var i = 0; i < topBlocks.length; i++) {
+      var m = topBlocks[i].mutationToDom ? topBlocks[i].mutationToDom() : null;
+      if (m && m.getAttribute('instance_name') === 'Label1') {
+        labelBlock = topBlocks[i];
+        break;
+      }
+    }
+    chai.assert.isNotNull(labelBlock);
+
+    var labelXY = labelBlock.getRelativeToSurfaceXY();
+    var labelHW = labelBlock.getHeightWidth();
+
+    // Move Button1.Click to overlap horizontally AND vertically with Label1
+    clickBlock.moveTo(new Blockly.utils.Coordinate(labelXY.x, labelXY.y));
+
+    // Now create Button1.LongClick — grouping will try to place below
+    // Button1.Click, which is now at the same position as Label1.
+    // avoidOverlap_ should shift it right to avoid Label1.
+    var result3 = AI.YailToBlocks.convert(this.workspace,
+        '(define-event Button1 LongClick () (set-this-form))');
+    chai.assert.isTrue(result3.success);
+
+    // Find the LongClick block
+    topBlocks = this.workspace.getTopBlocks(false);
+    var longClickBlock = null;
+    for (var i = 0; i < topBlocks.length; i++) {
+      var m = topBlocks[i].mutationToDom ? topBlocks[i].mutationToDom() : null;
+      if (m && m.getAttribute('instance_name') === 'Button1' &&
+          m.getAttribute('event_name') === 'LongClick') {
+        longClickBlock = topBlocks[i];
+        break;
+      }
+    }
+    chai.assert.isNotNull(longClickBlock);
+
+    var longClickXY = longClickBlock.getRelativeToSurfaceXY();
+    var longClickHW = longClickBlock.getHeightWidth();
+
+    // Verify no 2D overlap with Label1
+    var noOverlap = longClickXY.x >= labelXY.x + labelHW.width ||
+        longClickXY.x + longClickHW.width <= labelXY.x ||
+        longClickXY.y >= labelXY.y + labelHW.height ||
+        longClickXY.y + longClickHW.height <= labelXY.y;
+    chai.assert.isTrue(noOverlap,
+        'LongClick should not overlap with Label1 block');
+  });
+  });
 });

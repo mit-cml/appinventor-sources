@@ -26,6 +26,15 @@ goog.require('AI.SExprParser');
 AI.YailToBlocks.lastDeletedPosition_ = null;
 
 /**
+ * When true, new event-handler blocks are placed near existing blocks
+ * for the same component instance.  When false (or for blocks without
+ * a component, such as globals and procedures), free-space placement
+ * is used instead.
+ * @type {boolean}
+ */
+AI.YailToBlocks.GROUP_BY_COMPONENT = true;
+
+/**
  * Convert a YAIL string into Blockly blocks and add them to the workspace.
  *
  * @param {!Blockly.WorkspaceSvg} workspace The target workspace.
@@ -109,14 +118,31 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
     Blockly.renderManagement.triggerQueuedRenders();
 
     // Position blocks — dimensions are now accurate after rendering.
-    // New blocks are centered horizontally in the viewport.
     // Upsert blocks go back to their original position.
+    // New blocks are placed below the lowest existing block visible
+    // in the viewport, avoiding overlap.
     var SPACING = 30;
     var metrics = workspace.getMetrics();
     var viewCenterX = metrics.viewLeft +
         metrics.viewWidth / (2 * workspace.scale);
     var viewTop = metrics.viewTop / workspace.scale;
-    var nextY = viewTop + 20;
+    var viewBottom = viewTop + metrics.viewHeight / workspace.scale;
+
+    // Scan existing blocks for the lowest one visible in the viewport.
+    var existingBlocks = workspace.getTopBlocks(false);
+    var freeSpaceY = viewTop + 20;  // default if no visible blocks
+    for (var e = 0; e < existingBlocks.length; e++) {
+      var eb = existingBlocks[e];
+      var exy = eb.getRelativeToSurfaceXY();
+      var ehw = eb.getHeightWidth();
+      var eBottom = exy.y + ehw.height;
+      // Does this block intersect the viewport vertically?
+      if (exy.y < viewBottom && eBottom > viewTop) {
+        if (eBottom + SPACING > freeSpaceY) {
+          freeSpaceY = eBottom + SPACING;
+        }
+      }
+    }
 
     for (var k = 0; k < createdBlocks.length; k++) {
       var block = createdBlocks[k];
@@ -125,10 +151,33 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
         block.moveTo(
             new Blockly.utils.Coordinate(upsertPos.x, upsertPos.y));
       } else {
-        var bw = block.getHeightWidth().width;
-        var x = viewCenterX - bw / 2;
-        block.moveTo(new Blockly.utils.Coordinate(x, nextY));
-        nextY += block.getHeightWidth().height + SPACING;
+        var hw = block.getHeightWidth();
+        var placed = false;
+        // Try component grouping.
+        if (AI.YailToBlocks.GROUP_BY_COMPONENT) {
+          var groupPos = AI.YailToBlocks.findGroupPosition_(
+              workspace, block, SPACING);
+          if (groupPos) {
+            var pos = AI.YailToBlocks.avoidOverlap_(
+                workspace, groupPos.x, groupPos.y,
+                hw.width, hw.height, SPACING, block);
+            block.moveTo(pos);
+            placed = true;
+            // Advance freeSpaceY past this block so subsequent free-space
+            // placements don't overlap with the group-placed block.
+            var groupBottom = pos.y + hw.height + SPACING;
+            if (groupBottom > freeSpaceY) freeSpaceY = groupBottom;
+          }
+        }
+        // Fall back to free-space placement.
+        if (!placed) {
+          var x = viewCenterX - hw.width / 2;
+          var pos = AI.YailToBlocks.avoidOverlap_(
+              workspace, x, freeSpaceY,
+              hw.width, hw.height, SPACING, block);
+          block.moveTo(pos);
+          freeSpaceY = pos.y + hw.height + SPACING;
+        }
       }
     }
 
@@ -3101,4 +3150,87 @@ AI.YailToBlocks.validateDefHead_ = function(node, isReturn) {
         error: formName + ': unexpected second element type: '
             + second.type};
   }
+};
+
+/**
+ * Find a position near existing blocks for the same component.
+ * Returns null if the block has no component association or no
+ * group members exist on the workspace.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {!Blockly.Block} newBlock The block to position.
+ * @param {number} spacing Vertical gap between blocks.
+ * @return {?Blockly.utils.Coordinate} Position, or null if no group found.
+ * @private
+ */
+AI.YailToBlocks.findGroupPosition_ = function(workspace, newBlock, spacing) {
+  // Not all block types define mutationToDom (e.g. global_declaration).
+  var mutation = newBlock.mutationToDom ? newBlock.mutationToDom() : null;
+  if (!mutation) return null;
+  var instanceName = mutation.getAttribute('instance_name');
+  if (!instanceName) return null;
+
+  // Query live workspace so blocks placed earlier in the same batch
+  // are visible (getTopBlocks reads the current workspace state).
+  var topBlocks = workspace.getTopBlocks(false);
+  var maxBottom = -Infinity;
+  var groupX = null;
+
+  for (var i = 0; i < topBlocks.length; i++) {
+    var eb = topBlocks[i];
+    if (eb === newBlock || eb.id === newBlock.id) continue;
+    var ebMutation = eb.mutationToDom ? eb.mutationToDom() : null;
+    if (!ebMutation) continue;
+    if (ebMutation.getAttribute('instance_name') !== instanceName) continue;
+
+    var xy = eb.getRelativeToSurfaceXY();
+    var hw = eb.getHeightWidth();
+    var bottom = xy.y + hw.height;
+    if (bottom > maxBottom) {
+      maxBottom = bottom;
+      groupX = xy.x;
+    }
+  }
+
+  if (groupX === null) return null;
+  return new Blockly.utils.Coordinate(groupX, maxBottom + spacing);
+};
+
+/**
+ * Adjust a proposed block position to avoid overlapping existing blocks.
+ * Shifts the block rightward past any overlapping blocks.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {number} x Proposed X coordinate.
+ * @param {number} y Proposed Y coordinate.
+ * @param {number} width Block width.
+ * @param {number} height Block height.
+ * @param {number} spacing Gap to leave between blocks.
+ * @param {!Blockly.Block} currentBlock Block being positioned (excluded).
+ * @return {!Blockly.utils.Coordinate} Adjusted position.
+ * @private
+ */
+AI.YailToBlocks.avoidOverlap_ = function(
+    workspace, x, y, width, height, spacing, currentBlock) {
+  var topBlocks = workspace.getTopBlocks(false);
+  // Iteratively shift right past overlapping blocks.  Bounded to avoid
+  // infinite loops in degenerate layouts.
+  for (var attempt = 0; attempt < 20; attempt++) {
+    var overlap = false;
+    for (var i = 0; i < topBlocks.length; i++) {
+      var eb = topBlocks[i];
+      if (eb === currentBlock || eb.id === currentBlock.id) continue;
+      var exy = eb.getRelativeToSurfaceXY();
+      var ehw = eb.getHeightWidth();
+      // 2D bounding-box overlap test.
+      if (x < exy.x + ehw.width && x + width > exy.x &&
+          y < exy.y + ehw.height && y + height > exy.y) {
+        x = exy.x + ehw.width + spacing;
+        overlap = true;
+        break;  // re-check from start with new x
+      }
+    }
+    if (!overlap) break;
+  }
+  return new Blockly.utils.Coordinate(x, y);
 };
