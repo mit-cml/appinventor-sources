@@ -916,6 +916,10 @@ public class AnthropicCompatibleProvider implements LLMProvider {
     if ("text".equals(type)) {
       String initialText = block.optString("text", "");
       contentBlocks.set(index, new Object[] { "text", new StringBuilder(initialText) });
+    } else if ("thinking".equals(type)) {
+      String initialThinking = block.optString("thinking", "");
+      contentBlocks.set(index,
+          new Object[] { "thinking", new StringBuilder(initialThinking) });
     } else if ("tool_use".equals(type)) {
       String id = block.optString("id", "");
       String name = block.optString("name", "");
@@ -947,6 +951,10 @@ public class AnthropicCompatibleProvider implements LLMProvider {
       String text = delta.optString("text", "");
       ((StringBuilder) block[1]).append(text);
       streamBuffer.appendText(text);
+    } else if ("thinking_delta".equals(deltaType) && "thinking".equals(blockType)) {
+      String thinking = delta.optString("thinking", "");
+      ((StringBuilder) block[1]).append(thinking);
+      streamBuffer.appendThinking(thinking);
     } else if ("input_json_delta".equals(deltaType) && "tool_use".equals(blockType)) {
       String partialJson = delta.optString("partial_json", "");
       ((StringBuilder) block[3]).append(partialJson);

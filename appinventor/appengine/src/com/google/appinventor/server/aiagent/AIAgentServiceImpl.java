@@ -141,7 +141,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     try {
       storageIo.assertUserHasProject(userId, projectId);
     } catch (SecurityException e) {
-      return new AIStreamStatus("error", null, true);
+      return new AIStreamStatus("error", null, null, true);
     }
     return engine.getRequestStatus(projectId);
   }

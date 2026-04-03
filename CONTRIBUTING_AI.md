@@ -53,7 +53,7 @@ flowchart TB
 | `AIAgentServiceImpl.java` | Servlet layer: authentication, rate limiting, input validation, delegates to engine |
 | `AIContextBuilder.java` | Assembles the full LLM context from modular context modules |
 | `ConversationManager.java` | Conversation lifecycle: Memcache state (24h TTL) + Datastore message persistence |
-| `StreamBuffer.java` | Writes LLM text tokens to Memcache for client polling |
+| `StreamBuffer.java` | Writes LLM text/thinking tokens to Memcache for client polling |
 | `LLMResponseParser.java` | Parses LLM tool calls into typed `AIOperation` objects |
 | `AIToolResolver.java` | Resolves read-only tool calls (component/screen lookups) |
 | `ModeEnforcer.java` | Validates operations against the active AI mode (Advisor/ScreenEditor/ProjectEditor) |
@@ -114,7 +114,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `AIOperation.java` | Single operation: type enum + JSON payload string |
 | `AIOperationResult.java` | Execution result: succeeded/failed/skipped with error details |
 | `AIConversationMessage.java` | Message for chat history display |
-| `AIStreamStatus.java` | Streaming poll response: status text, text delta, done flag |
+| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag |
 
 ### Client -- `client/editor/youngandroid/aiagent/`
 
@@ -667,8 +667,9 @@ sequenceDiagram
 
 ### Key Details
 
-- Chunks are prefixed with `"s:"` (status) or `"t:"` (text) in Memcache.
-- `consume()` separates and concatenates chunks per type, returning the **last** status and **accumulated** text since the previous poll.
+- Chunks are prefixed with `"s:"` (status), `"t:"` (text), or `"k:"` (thinking/reasoning) in Memcache.
+- `consume()` separates and concatenates chunks per type, returning the **last** status, **accumulated** text, and **accumulated** thinking since the previous poll.
+- When `ai.agent.reasoning.effort` is set, providers stream reasoning/thinking tokens via `streamBuffer.appendThinking()`. The client renders these in a collapsible `<details>` panel above the response text (open while streaming, auto-collapsed on completion).
 - **250ms** (fast) -- during active streaming (switched after first text delta arrives).
 - **1000ms** (slow) -- initial wait, post-operation completion.
 - **RPC timeout: 720,000ms** (12 min) -- must exceed the server's LLM read timeout.
@@ -813,6 +814,7 @@ When the user clicks Reject, the orchestrator sends a feedback message (`"The us
 | `ai.agent.available` | `true` | Feature toggle |
 | `ai.agent.provider` | `anthropic` | Provider name: `anthropic`, `anthropic-compatible`, `openai`, `gemini`, `ollama`, `minimax`, `openrouter`, `openai-compatible`, `bedrock`, `vertex` |
 | `ai.agent.model` | (per-provider) | Model override. Defaults: `claude-sonnet-4-20250514`, `gpt-4o`, `gemini-2.0-flash`, `llama3.1`, `MiniMax-M2`, `anthropic.claude-sonnet-4-20250514-v1:0` (bedrock), `anthropic/claude-sonnet-4` (openrouter) |
+| `ai.agent.reasoning.effort` | (empty) | Reasoning/thinking effort level. Empty = use model default. Values vary by provider: OpenAI (`low`, `medium`, `high`, `xhigh`), Anthropic (`low`, `medium`, `high`), Gemini (`LOW`, `MEDIUM`, `HIGH`). When set, also enables thinking content streaming to the UI. |
 | `ai.agent.api.key` | (empty) | API key for the selected provider |
 | `ai.agent.base.url` | (empty) | Base URL override (required for `ollama`, `openai-compatible`, `anthropic-compatible`; optional for `anthropic`, `minimax`) |
 | `ai.agent.rate.limit` | `10` | Max requests per user per minute |
@@ -860,7 +862,8 @@ For providers with a unique API format, implement `LLMProvider` from scratch:
 5. Register in `LLMProviderRegistry`:
    - Add a default model in `DEFAULT_MODELS`.
    - Add a `case` in the `get()` switch.
-6. Accept a `StreamBuffer` parameter and call `streamBuffer.appendText()` / `streamBuffer.appendStatus()` during streaming.
+6. Accept a `StreamBuffer` parameter and call `streamBuffer.appendText()` / `streamBuffer.appendThinking()` / `streamBuffer.appendStatus()` during streaming.
+7. Accept a `reasoningEffort` constructor parameter (from `ai.agent.reasoning.effort`). Map it to the provider's native reasoning/thinking parameter if supported (e.g. OpenAI `reasoning.effort` + `reasoning.summary`, Anthropic `thinking.effort`, Gemini `thinkingConfig.thinkingLevel` + `includeThoughts`).
 
 ---
 

@@ -32,6 +32,13 @@ public class StreamBuffer {
     }
   }
 
+  /** Append a thinking/reasoning delta from the LLM. */
+  public void appendThinking(String text) {
+    if (text != null && !text.isEmpty()) {
+      storageIo.appendAIStreamChunk(projectId, "k:" + text);
+    }
+  }
+
   /** Append a status update (e.g., "Building context..."). */
   public void appendStatus(String status) {
     if (status != null && !status.isEmpty()) {
@@ -59,6 +66,7 @@ public class StreamBuffer {
     boolean done = storageIo.isAIStreamDone(projectId);
 
     StringBuilder textBuilder = null;
+    StringBuilder thinkingBuilder = null;
     String lastStatus = null;
 
     for (String chunk : chunks) {
@@ -67,6 +75,11 @@ public class StreamBuffer {
           textBuilder = new StringBuilder();
         }
         textBuilder.append(chunk.substring(2));
+      } else if (chunk.startsWith("k:")) {
+        if (thinkingBuilder == null) {
+          thinkingBuilder = new StringBuilder();
+        }
+        thinkingBuilder.append(chunk.substring(2));
       } else if (chunk.startsWith("s:")) {
         lastStatus = chunk.substring(2);
       }
@@ -75,6 +88,7 @@ public class StreamBuffer {
     return new AIStreamStatus(
         lastStatus,
         textBuilder != null ? textBuilder.toString() : null,
+        thinkingBuilder != null ? thinkingBuilder.toString() : null,
         done
     );
   }

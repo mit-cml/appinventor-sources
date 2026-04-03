@@ -107,7 +107,8 @@ public class GeminiProvider implements LLMProvider {
       generationConfig.put("maxOutputTokens", MAX_OUTPUT_TOKENS);
       if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
         generationConfig.put("thinkingConfig", new JSONObject()
-            .put("thinkingLevel", reasoningEffort.toUpperCase()));
+            .put("thinkingLevel", reasoningEffort.toUpperCase())
+            .put("includeThoughts", true));
       }
       requestBody.put("generationConfig", generationConfig);
 
@@ -884,8 +885,12 @@ public class GeminiProvider implements LLMProvider {
       JSONObject part = parts.getJSONObject(i);
       if (part.has("text")) {
         String text = part.getString("text");
-        fullText.append(text);
-        streamBuffer.appendText(text);
+        if (part.optBoolean("thought", false)) {
+          streamBuffer.appendThinking(text);
+        } else {
+          fullText.append(text);
+          streamBuffer.appendText(text);
+        }
       } else {
         // Accumulate non-text parts (functionCall, etc.) without streaming
         nonTextParts.put(part);

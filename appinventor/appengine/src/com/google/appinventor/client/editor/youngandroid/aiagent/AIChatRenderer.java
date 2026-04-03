@@ -26,8 +26,11 @@ public class AIChatRenderer {
   private final ScrollPanel chatScrollPanel;
 
   private String streamingTextAccumulator = "";
+  private String streamingThinkingAccumulator = "";
   private FlowPanel streamingWrapper = null;
   private HTML streamingMessageHtml = null;
+  private HTML streamingThinkingHtml = null;
+  private FlowPanel streamingThinkingPanel = null;
   private HTML typingIndicator = null;
 
   /**
@@ -94,6 +97,7 @@ public class AIChatRenderer {
    */
   public void startStreamingBubble() {
     streamingTextAccumulator = "";
+    streamingThinkingAccumulator = "";
     streamingWrapper = createMessageBubble(
         MESSAGES.aiChatAiLabel(), "", false);
     FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
@@ -126,6 +130,39 @@ public class AIChatRenderer {
   }
 
   /**
+   * Appends a thinking/reasoning delta to the in-progress streaming bubble.
+   * Thinking content is displayed in a collapsible details panel above the
+   * main response text, allowing users to inspect the model's reasoning.
+   *
+   * @param delta the new thinking text chunk to append
+   */
+  public void appendStreamingThinking(String delta) {
+    if (streamingWrapper == null) return;
+    FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
+
+    // Create the thinking panel on first thinking delta
+    if (streamingThinkingPanel == null) {
+      streamingThinkingPanel = new FlowPanel();
+      streamingThinkingPanel.addStyleName("ai-thinking-panel");
+      streamingThinkingHtml = new HTML();
+      streamingThinkingHtml.addStyleName("ai-thinking-content");
+      streamingThinkingPanel.add(streamingThinkingHtml);
+      // Insert before the message text (index 1 is the message HTML,
+      // index 0 is the role label)
+      bubble.insert(streamingThinkingPanel, 1);
+    }
+
+    streamingThinkingAccumulator += delta;
+    streamingThinkingHtml.setHTML(
+        "<details open class='ai-thinking-details'>"
+        + "<summary>Thinking\u2026</summary>"
+        + "<div class='ai-thinking-text'>"
+        + markdownToSafeHtml(streamingThinkingAccumulator)
+        + "</div></details>");
+    scrollToBottom();
+  }
+
+  /**
    * Finalizes the streaming bubble with the complete AI response text.
    * Resets all streaming state.
    *
@@ -151,11 +188,27 @@ public class AIChatRenderer {
       // When finalText is empty but streamingTextAccumulator has content,
       // the text was already rendered by appendStreamingText(); just
       // remove the typing indicator (done above) and keep it as-is.
+
+      // Collapse the thinking panel (switch from open to closed)
+      if (streamingThinkingHtml != null && !streamingThinkingAccumulator.isEmpty()) {
+        streamingThinkingHtml.setHTML(
+            "<details class='ai-thinking-details'>"
+            + "<summary>Thinking</summary>"
+            + "<div class='ai-thinking-text'>"
+            + markdownToSafeHtml(streamingThinkingAccumulator)
+            + "</div></details>");
+      } else if (streamingThinkingPanel != null
+          && streamingThinkingAccumulator.isEmpty()) {
+        streamingThinkingPanel.removeFromParent();
+      }
       scrollToBottom();
     }
     streamingWrapper = null;
     streamingMessageHtml = null;
+    streamingThinkingHtml = null;
+    streamingThinkingPanel = null;
     streamingTextAccumulator = "";
+    streamingThinkingAccumulator = "";
   }
 
   /**

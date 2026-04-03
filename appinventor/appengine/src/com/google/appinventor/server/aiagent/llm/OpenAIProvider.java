@@ -157,8 +157,9 @@ public class OpenAIProvider implements LLMProvider {
       requestBody.put("truncation", "auto");
 
       if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
-        requestBody.put("reasoning",
-            new JSONObject().put("effort", reasoningEffort));
+        requestBody.put("reasoning", new JSONObject()
+            .put("effort", reasoningEffort)
+            .put("summary", "auto"));
       }
 
       if (systemPrompt != null && !systemPrompt.isEmpty()) {
@@ -326,8 +327,9 @@ public class OpenAIProvider implements LLMProvider {
       requestBody.put("truncation", "auto");
 
       if (reasoningEffort != null && !reasoningEffort.isEmpty()) {
-        requestBody.put("reasoning",
-            new JSONObject().put("effort", reasoningEffort));
+        requestBody.put("reasoning", new JSONObject()
+            .put("effort", reasoningEffort)
+            .put("summary", "auto"));
       }
 
       if (systemPrompt != null && !systemPrompt.isEmpty()) {
@@ -816,6 +818,12 @@ public class OpenAIProvider implements LLMProvider {
               String delta = deltaObj.optString("delta", "");
               if (!delta.isEmpty()) {
                 streamBuffer.appendText(delta);
+              }
+            } else if ("response.reasoning.delta".equals(currentEventType)) {
+              JSONObject deltaObj = new JSONObject(data);
+              String delta = deltaObj.optString("delta", "");
+              if (!delta.isEmpty()) {
+                streamBuffer.appendThinking(delta);
               }
             } else if ("response.completed".equals(currentEventType)) {
               // The data payload for response.completed is the full response object

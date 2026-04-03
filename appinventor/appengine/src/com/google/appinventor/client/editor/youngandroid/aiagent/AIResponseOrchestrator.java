@@ -66,6 +66,7 @@ public class AIResponseOrchestrator {
     void addAiMessage(String text);
     void startStreamingBubble();
     void appendStreamingText(String delta);
+    void appendStreamingThinking(String delta);
     void finalizeStreamingBubble(String finalText);
     void showOperationPreview(AIAgentResponse response);
     void hideOperationPreview();
@@ -731,6 +732,15 @@ public class AIResponseOrchestrator {
                 if (status == null) return;
                 if (status.getStatusText() != null) {
                   callback.setStatusText(status.getStatusText());
+                }
+                if (status.getThinkingDelta() != null) {
+                  if (!streamingActive) {
+                    streamingActive = true;
+                    callback.startStreamingBubble();
+                    pollingTimer.cancel();
+                    pollingTimer.scheduleRepeating(POLL_INTERVAL_FAST_MS);
+                  }
+                  callback.appendStreamingThinking(status.getThinkingDelta());
                 }
                 if (status.getTextDelta() != null) {
                   if (!streamingActive) {

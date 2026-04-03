@@ -12,18 +12,22 @@ public class AIStreamStatus implements IsSerializable, Serializable {
 
   private String statusText;
   private String textDelta;
+  private String thinkingDelta;
   private boolean done;
 
   // Required no-arg constructor for GWT serialization
   public AIStreamStatus() {}
 
-  public AIStreamStatus(String statusText, String textDelta, boolean done) {
+  public AIStreamStatus(String statusText, String textDelta,
+      String thinkingDelta, boolean done) {
     this.statusText = statusText;
     this.textDelta = textDelta;
+    this.thinkingDelta = thinkingDelta;
     this.done = done;
   }
 
   public String getStatusText() { return statusText; }
   public String getTextDelta() { return textDelta; }
+  public String getThinkingDelta() { return thinkingDelta; }
   public boolean isDone() { return done; }
 }
