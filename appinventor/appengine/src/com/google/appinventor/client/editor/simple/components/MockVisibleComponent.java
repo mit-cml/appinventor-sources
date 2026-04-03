@@ -270,6 +270,10 @@ public abstract class MockVisibleComponent extends MockComponent {
       // the visibility of x and y coordinates strictly depends on whether the component
       // is placed inside an absolute arrangement or not
       return this.coordPropertiesVisible;
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)
+        || propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+      // Width/Height are hidden in Absolute mode (Left/Top take over positioning)
+      return !this.coordPropertiesVisible;
     }
     return super.isPropertyVisible(propertyName);
   }
@@ -360,6 +364,19 @@ public abstract class MockVisibleComponent extends MockComponent {
     } else {
       x.setType(x.getType() | EditableProperty.TYPE_INVISIBLE);
       y.setType(y.getType() | EditableProperty.TYPE_INVISIBLE);
+    }
+
+    // In Absolute mode, Width/Height are irrelevant for positioning — hide them.
+    EditableProperty w = properties.getProperty(PROPERTY_NAME_WIDTH);
+    EditableProperty h = properties.getProperty(PROPERTY_NAME_HEIGHT);
+    if (w != null && h != null) {
+      if (value) {
+        w.setType(w.getType() | EditableProperty.TYPE_INVISIBLE);
+        h.setType(h.getType() | EditableProperty.TYPE_INVISIBLE);
+      } else {
+        w.setType(w.getType() & ~EditableProperty.TYPE_INVISIBLE);
+        h.setType(h.getType() & ~EditableProperty.TYPE_INVISIBLE);
+      }
     }
   }
 

@@ -206,6 +206,13 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
 
     getRoot().fireComponentAdded(component);
+
+    // Sync coord/size property visibility to the current layout mode.
+    // onDrop handles the drag-drop path; this covers project load and click-add from palette.
+    if (component instanceof MockVisibleComponent) {
+      boolean destIsAbsolute = getActiveAbsoluteLayout() != null;
+      ((MockVisibleComponent) component).setCoordPropertiesVisible(destIsAbsolute);
+    }
   }
 
   /**
