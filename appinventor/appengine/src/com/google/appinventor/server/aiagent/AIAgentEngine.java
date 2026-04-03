@@ -91,6 +91,19 @@ public class AIAgentEngine {
     }
   }
 
+  /** Mutable holder for state that {@link #retryIfNarration} may update. */
+  static class NarrationRetryState {
+    LLMResponse llmResponse;
+    ParsedResult parsed;
+    String assistantText;
+
+    NarrationRetryState(LLMResponse llmResponse, ParsedResult parsed, String assistantText) {
+      this.llmResponse = llmResponse;
+      this.parsed = parsed;
+      this.assistantText = assistantText;
+    }
+  }
+
   // ---------- Public API: complex RPC methods ----------
 
   /**
@@ -198,70 +211,13 @@ public class AIAgentEngine {
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
 
       // Narration detection: if the LLM returned text without any tool calls
-      // in an editing mode, retry once with a nudge.  This catches models that
-      // describe what they would do instead of actually calling the tools.
-      boolean isEditingMode = !AI_AGENT_MODE_ADVISOR.equals(mode);
-      boolean isNarrationOnly = parsed.operations.isEmpty()
-          && llmResponse.getRawToolCalls().isEmpty()
-          && !assistantText.isEmpty();
-      if (isEditingMode && isNarrationOnly) {
-        AIDebug.log(LOG, "Narration detected in " + mode
-            + " mode — retrying with tool-use nudge");
-
-        // For stateless providers, build a temporary history that includes the
-        // narration so the LLM sees its own failed attempt.
-        if (provider.isStateless()) {
-          history = new ArrayList<>(history);
-          history.add(new ChatMessage("assistant", assistantText));
-        }
-
-        String nudge = "Your response did not include any tool calls. "
-            + "If the user's message requires changes to the project, "
-            + "use the appropriate tools now. If it was a question or "
-            + "conversational message, you may respond with text only.";
-
-        // Stateful providers already have context from the first call;
-        // re-sending it would create duplicates.
-        List<String> retryContext = provider.isStateless() ? contextMessages : null;
-
-        streamBuffer.init();
-        streamBuffer.appendStatus("Preparing response...");
-
-        LLMResponse retryResponse = provider.chat(
-            systemPrompt, retryContext, nudge, tools,
-            llmResponse.getProviderRef(), history, resolver, streamBuffer);
-
-        if (AIDebug.enabled()) {
-          AIDebug.log(LOG, "Narration retry: toolCalls="
-              + retryResponse.getRawToolCalls().size()
-              + ", textLen=" + (retryResponse.getText() != null
-                  ? retryResponse.getText().length() : 0));
-        }
-
-        ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView);
-        boolean retryActed = !retryParsed.operations.isEmpty()
-            || !retryResponse.getRawToolCalls().isEmpty();
-
-        if (retryActed) {
-          // Retry produced tool calls — use its results.  Persist the
-          // narration exchange so history keeps alternating roles.
-          conversationManager.storeMessage(conv.getConversationId(),
-              MessageRole.ASSISTANT, assistantText, false);
-          conversationManager.storeMessage(conv.getConversationId(),
-              MessageRole.USER, nudge, false);
-
-          llmResponse = retryResponse;
-          parsed = retryParsed;
-          assistantText = retryResponse.getText() != null ? retryResponse.getText() : "";
-        } else {
-          // Retry also text-only — the model legitimately had nothing to
-          // act on.  Keep the original text (clean reply to the user) but
-          // take the retry's providerRef so stateful providers stay in sync.
-          llmResponse = new LLMResponse(llmResponse.getText(),
-              llmResponse.getRawToolCalls(), retryResponse.getProviderRef(),
-              llmResponse.hasMore());
-        }
-      }
+      // in an editing mode, retry once with a nudge.
+      NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
+      retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
+          contextMessages, tools, history, conv, resolver, streamBuffer);
+      llmResponse = nrs.llmResponse;
+      parsed = nrs.parsed;
+      assistantText = nrs.assistantText;
 
       AIDebug.log(LOG, "Final response: operations=" + parsed.operations.size()
           + ", errors=" + parsed.errors.size()
@@ -353,6 +309,25 @@ public class AIAgentEngine {
       // Parse, enforce, save, and build response
       ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+
+      // Narration detection: catches LLMs that describe remaining work
+      // instead of calling tools after continuation (e.g. after
+      // toggle_editor switches to Blocks, the LLM narrates instead of
+      // emitting write_block).
+      List<ChatMessage> history = provider.isStateless()
+          ? conversationManager.loadConversation(conv.getConversationId())
+          : Collections.<ChatMessage>emptyList();
+      List<String> contextMessages = provider.isStateless()
+          ? contextBuilder.buildContextMessages(userId, projectId, screenName, mode,
+              blocksYail, currentView, screenComponentsJson, projectSnapshot,
+              blockWarnings, locale, languageDisplayName)
+          : null;
+      NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
+      retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
+          contextMessages, tools, history, conv, resolver, streamBuffer);
+      llmResponse = nrs.llmResponse;
+      parsed = nrs.parsed;
+      assistantText = nrs.assistantText;
 
       AIDebug.log(LOG, "Continue response: operations=" + parsed.operations.size()
           + ", errors=" + parsed.errors.size()
@@ -640,6 +615,93 @@ public class AIAgentEngine {
     statuses.removeAll(Collections.singleton(null));
 
     return new ParsedResult(accepted, allErrors, statuses);
+  }
+
+  /**
+   * Detects "narration-only" responses (text with no tool calls in an editing
+   * mode) and retries once with a nudge.  Mutates {@code state} in place if
+   * the retry produces tool calls.
+   *
+   * @param state           mutable holder for the current response state
+   * @param mode            the AI agent mode
+   * @param currentView     the active editor view
+   * @param provider        the LLM provider
+   * @param systemPrompt    the system prompt
+   * @param contextMessages context messages for stateless retry (may be null)
+   * @param tools           available tools
+   * @param history         conversation history for stateless retry
+   * @param conv            conversation state
+   * @param resolver        read-only tool resolver
+   * @param streamBuffer    stream buffer for status updates
+   */
+  void retryIfNarration(NarrationRetryState state, String mode, String currentView,
+      LLMProvider provider, String systemPrompt, List<String> contextMessages,
+      List<LLMTool> tools, List<ChatMessage> history, AIConversationState conv,
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer)
+      throws LLMProviderException {
+    boolean isEditingMode = !AI_AGENT_MODE_ADVISOR.equals(mode);
+    boolean isNarrationOnly = state.parsed.operations.isEmpty()
+        && state.llmResponse.getRawToolCalls().isEmpty()
+        && !state.assistantText.isEmpty();
+    if (!isEditingMode || !isNarrationOnly) {
+      return;
+    }
+
+    AIDebug.log(LOG, "Narration detected in " + mode
+        + " mode — retrying with tool-use nudge");
+
+    // For stateless providers, build a temporary history that includes the
+    // narration so the LLM sees its own failed attempt.
+    List<ChatMessage> retryHistory = history;
+    if (provider.isStateless()) {
+      retryHistory = new ArrayList<>(history);
+      retryHistory.add(new ChatMessage("assistant", state.assistantText));
+    }
+
+    String nudge = "Your response did not include any tool calls. "
+        + "If the user's message requires changes to the project, "
+        + "use the appropriate tools now. If it was a question or "
+        + "conversational message, you may respond with text only.";
+
+    // Stateful providers already have context; re-sending would duplicate.
+    List<String> retryContext = provider.isStateless() ? contextMessages : null;
+
+    streamBuffer.init();
+    streamBuffer.appendStatus("Preparing response...");
+
+    LLMResponse retryResponse = provider.chat(
+        systemPrompt, retryContext, nudge, tools,
+        state.llmResponse.getProviderRef(), retryHistory, resolver, streamBuffer);
+
+    if (AIDebug.enabled()) {
+      AIDebug.log(LOG, "Narration retry: toolCalls="
+          + retryResponse.getRawToolCalls().size()
+          + ", textLen=" + (retryResponse.getText() != null
+              ? retryResponse.getText().length() : 0));
+    }
+
+    ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView);
+    boolean retryActed = !retryParsed.operations.isEmpty()
+        || !retryResponse.getRawToolCalls().isEmpty();
+
+    if (retryActed) {
+      // Retry produced tool calls — use its results.  Persist the
+      // narration exchange so history keeps alternating roles.
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.ASSISTANT, state.assistantText, false);
+      conversationManager.storeMessage(conv.getConversationId(),
+          MessageRole.USER, nudge, false);
+      state.llmResponse = retryResponse;
+      state.parsed = retryParsed;
+      state.assistantText = retryResponse.getText() != null ? retryResponse.getText() : "";
+    } else {
+      // Retry also text-only — the model legitimately had nothing to
+      // act on.  Keep the original text but take the retry's providerRef
+      // so stateful providers stay in sync.
+      state.llmResponse = new LLMResponse(state.llmResponse.getText(),
+          state.llmResponse.getRawToolCalls(), retryResponse.getProviderRef(),
+          state.llmResponse.hasMore());
+    }
   }
 
   AIAgentResponse finalizeResponse(LLMResponse llmResponse, String assistantText,

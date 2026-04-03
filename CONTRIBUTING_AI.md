@@ -49,7 +49,7 @@ flowchart TB
 
 | File | Purpose |
 |------|---------|
-| `AIAgentEngine.java` | Core orchestration: context building, LLM calls, tool-use loop, response parsing, retry logic |
+| `AIAgentEngine.java` | Core orchestration: context building, LLM calls, tool-use loop, response parsing, narration retry (`retryIfNarration`), finalization |
 | `AIAgentServiceImpl.java` | Servlet layer: authentication, rate limiting, input validation, delegates to engine |
 | `AIContextBuilder.java` | Assembles the full LLM context from modular context modules |
 | `ConversationManager.java` | Conversation lifecycle: Memcache state (24h TTL) + Datastore message persistence |
@@ -722,7 +722,7 @@ flowchart TD
 
 ### Narration Retry (server-side, 1 attempt)
 
-Some LLMs respond with text describing what they *would* do instead of actually calling tools. In editing modes (ScreenEditor/ProjectEditor), `AIAgentEngine.processRequest()` detects this pattern -- text-only response with zero tool calls -- and retries once with a nudge asking the model to reassess whether tools are needed.
+Some LLMs respond with text describing what they *would* do instead of actually calling tools. In editing modes (ScreenEditor/ProjectEditor), both `processRequest()` and `continueRequest()` detect this pattern -- text-only response with zero tool calls -- and retry once with a nudge asking the model to reassess whether tools are needed. The shared logic lives in `AIAgentEngine.retryIfNarration()`. This is especially important for continuations after solo operations like `toggle_editor`, where the LLM may narrate ("Now I'll add the blocks...") instead of actually calling `write_block`.
 
 - **Trigger**: editing mode + non-empty text + zero raw tool calls + zero parsed operations.
 - **Nudge message**: asks the LLM to use tools if the user's request requires changes, or respond with text only if it was a question.
