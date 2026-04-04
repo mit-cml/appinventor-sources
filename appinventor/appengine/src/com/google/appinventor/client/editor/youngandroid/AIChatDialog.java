@@ -69,6 +69,9 @@ public class AIChatDialog extends DialogBox
   private final Label statusLabel;
   private final Label editModeWarning;
   private final FlowPanel autoAcceptPanel;
+  private final FlowPanel debugBanner;
+
+  private String conversationId;
 
   // Delegates
   private final AIChatRenderer renderer;
@@ -113,6 +116,18 @@ public class AIChatDialog extends DialogBox
     chatScrollPanel.getElement().getStyle().setProperty("borderRadius", "4px");
     chatScrollPanel.getElement().getStyle().setProperty("background", "#fafafa");
     chatScrollPanel.getElement().getStyle().setMarginBottom(6, Unit.PX);
+
+    // Debug-mode warning banner (inserted into chatHistory by showDebugBanner)
+    debugBanner = new FlowPanel();
+    debugBanner.getElement().getStyle().setProperty("border", "1px solid #ff9800");
+    debugBanner.getElement().getStyle().setProperty("borderRadius", "4px");
+    debugBanner.getElement().getStyle().setProperty("background", "#fff3e0");
+    debugBanner.getElement().getStyle().setPadding(6, Unit.PX);
+    debugBanner.getElement().getStyle().setMarginBottom(6, Unit.PX);
+    Label debugLabel = new Label(MESSAGES.aiChatDebugWarning());
+    debugLabel.getElement().getStyle().setColor("#e65100");
+    debugLabel.getElement().getStyle().setFontSize(11, Unit.PX);
+    debugBanner.add(debugLabel);
 
     mainPanel.add(chatScrollPanel);
 
@@ -409,6 +424,7 @@ public class AIChatDialog extends DialogBox
   public void addUserMessage(String text) {
     renderer.addUserMessage(text);
     editModeWarning.setVisible(false);
+    debugBanner.setVisible(false);
   }
 
   @Override
@@ -509,6 +525,21 @@ public class AIChatDialog extends DialogBox
     renderer.clear();
     updateEditModeWarning();
   }
+
+  @Override
+  public void showDebugBanner() {
+    debugBanner.setVisible(true);
+    if (debugBanner.getParent() != chatHistory) {
+      chatHistory.insert(debugBanner, 0);
+    }
+  }
+
+  @Override
+  public void setFeedbackContext(boolean debugEnabled, String conversationId) {
+    this.conversationId = conversationId;
+    renderer.setFeedbackContext(debugEnabled, conversationId);
+  }
+
 
   // ---- ResizeTarget implementation ----
 

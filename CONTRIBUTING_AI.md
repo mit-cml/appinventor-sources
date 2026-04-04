@@ -58,7 +58,7 @@ flowchart TB
 | `AIToolResolver.java` | Resolves read-only tool calls (component/screen lookups) |
 | `ModeEnforcer.java` | Validates operations against the active AI mode (Advisor/ScreenEditor/ProjectEditor) |
 | `AIToolNames.java` | Constants for tool names sent to the LLM |
-| `AIDebug.java` | Debug logging utilities |
+| `AIDebug.java` | Debug logging: per-request file output (dev) or dedicated logger (prod) |
 | `TutorialContentCache.java` | Fetches tutorial HTML, strips to text, caches in memory (8h TTL, max 100 entries) |
 
 ### Context Modules -- `server/aiagent/context/`
@@ -819,7 +819,8 @@ When the user clicks Reject, the orchestrator sends a feedback message (`"The us
 | `ai.agent.api.key` | (empty) | API key for the selected provider |
 | `ai.agent.base.url` | (empty) | Base URL override (required for `ollama`, `openai-compatible`, `anthropic-compatible`; optional for `anthropic`, `minimax`) |
 | `ai.agent.rate.limit` | `10` | Max requests per user per minute |
-| `ai.agent.debug` | `false` | Enable verbose debug logging |
+| `ai.agent.debug` | `false` | Enable debug logging. **Dev mode:** writes to `build/logs/aiagent/<conversationId>/<timestamp>.txt`. **Production:** routes to the `aiagent.debug` logger for external ingestion. Nothing goes to the console in either mode. |
+| `ai.agent.log.dir` | (auto-detected) | Override the base directory for dev-mode debug log files. When empty, derived automatically from the class location (typically `appengine/build/logs/aiagent/`). |
 | `ai.agent.provider.bedrock.region` | `us-east-1` | AWS region for Bedrock |
 | `ai.agent.provider.bedrock.access.key` | (empty) | AWS access key ID |
 | `ai.agent.provider.bedrock.secret.key` | (empty) | AWS secret access key |

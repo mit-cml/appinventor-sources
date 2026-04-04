@@ -125,10 +125,6 @@ public class AIAgentEngine {
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName) {
-    AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
-        + ", screen=" + screenName + ", mode=" + mode
-        + ", msgLen=" + userMessage.length());
-
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -138,6 +134,11 @@ public class AIAgentEngine {
       ConversationInit init = initConversation(projectId);
       AIConversationState conv = init.conv;
       boolean isNew = init.isNew;
+
+      AIDebug.beginRequest(conv.getConversationId());
+      AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
+          + ", screen=" + screenName + ", mode=" + mode
+          + ", msgLen=" + userMessage.length());
 
       // Build system prompt, context messages, and tools
       String systemPrompt = contextBuilder.build();
@@ -235,6 +236,8 @@ public class AIAgentEngine {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent", e);
       streamBuffer.clear();
       return errorResponse("An unexpected error occurred. Please try again.");
+    } finally {
+      AIDebug.endRequest();
     }
   }
 
@@ -256,9 +259,6 @@ public class AIAgentEngine {
       String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName) {
-    AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
-        + ", screen=" + screenName + ", mode=" + mode);
-
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -270,6 +270,10 @@ public class AIAgentEngine {
         streamBuffer.clear();
         return errorResponse("No continuation state available. Please start a new request.");
       }
+
+      AIDebug.beginRequest(conv.getConversationId());
+      AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
+          + ", screen=" + screenName + ", mode=" + mode);
 
       // Get provider and rebuild tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
@@ -344,6 +348,8 @@ public class AIAgentEngine {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent continuation", e);
       streamBuffer.clear();
       return errorResponse("An unexpected error occurred. Please try again.");
+    } finally {
+      AIDebug.endRequest();
     }
   }
 
@@ -366,10 +372,6 @@ public class AIAgentEngine {
       List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
       String blockWarnings, String locale, String languageDisplayName) {
-    AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
-        + ", projectId=" + projectId + ", results=" + results.size()
-        + ", retryAttempt=" + retryAttempt + ", totalTools=" + totalTools);
-
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -396,6 +398,11 @@ public class AIAgentEngine {
         return errorResponse("No conversation state available. Please start a new request.");
       }
 
+      AIDebug.beginRequest(conv.getConversationId());
+      AIDebug.log(LOG, "reportExecutionErrors: userId=" + userId
+          + ", projectId=" + projectId + ", results=" + results.size()
+          + ", retryAttempt=" + retryAttempt + ", totalTools=" + totalTools);
+
       // Extract structured results directly from typed DTOs.
       List<String> succeededSummaries = new ArrayList<>();
       List<String> failedDetails = new ArrayList<>();
@@ -420,7 +427,7 @@ public class AIAgentEngine {
 
       String feedback = LLMResponseParser.buildExecutionErrorFeedback(
           succeededSummaries, failedDetails, skippedSummaries);
-      LOG.info("Retrying LLM with client execution errors: " + feedback);
+      AIDebug.log(LOG, "Retrying LLM with client execution errors: " + feedback);
 
       // Get provider and tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
@@ -468,6 +475,8 @@ public class AIAgentEngine {
       LOG.log(Level.SEVERE, "Unexpected error in error retry", e);
       streamBuffer.clear();
       return errorResponse("An unexpected error occurred during retry. Please try again.");
+    } finally {
+      AIDebug.endRequest();
     }
   }
 
@@ -496,7 +505,15 @@ public class AIAgentEngine {
 
   public AIStreamStatus getRequestStatus(long projectId) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
-    return streamBuffer.consume();
+    AIStreamStatus status = streamBuffer.consume();
+    // Piggyback config fields on every status poll so the client can
+    // detect debug mode and build feedback links without a separate RPC.
+    status.setDebugEnabled(AIDebug.enabled());
+    AIConversationState conv = conversationManager.getConversation(projectId);
+    if (conv != null) {
+      status.setConversationId(conv.getConversationId());
+    }
+    return status;
   }
 
   public String getProjectAIMode(String userId, long projectId) {

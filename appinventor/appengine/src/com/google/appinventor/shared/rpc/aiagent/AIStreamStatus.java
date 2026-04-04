@@ -16,6 +16,10 @@ public class AIStreamStatus implements IsSerializable, Serializable {
   private boolean done;
   private boolean resetStreaming;
 
+  // AI agent configuration fields (populated on every status poll)
+  private boolean debugEnabled;
+  private String conversationId;
+
   // Required no-arg constructor for GWT serialization
   public AIStreamStatus() {}
 
@@ -33,4 +37,9 @@ public class AIStreamStatus implements IsSerializable, Serializable {
   public String getThinkingDelta() { return thinkingDelta; }
   public boolean isDone() { return done; }
   public boolean isResetStreaming() { return resetStreaming; }
+
+  public boolean isDebugEnabled() { return debugEnabled; }
+  public void setDebugEnabled(boolean debugEnabled) { this.debugEnabled = debugEnabled; }
+  public String getConversationId() { return conversationId; }
+  public void setConversationId(String conversationId) { this.conversationId = conversationId; }
 }

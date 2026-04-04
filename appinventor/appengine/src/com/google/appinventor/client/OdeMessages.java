@@ -6037,6 +6037,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Clickable text to disable auto-accept mode")
   String aiChatAutoAcceptDisable();
 
+  @DefaultMessage("Debug mode is active. Your conversations are being logged to improve "
+      + "the AI assistant. Please use the ''Share Feedback'' link on AI responses to "
+      + "report inaccurate or incorrect messages.")
+  @Description("Warning banner shown in the AI chat when debug mode is enabled")
+  String aiChatDebugWarning();
+
+  @DefaultMessage("Share Feedback")
+  @Description("Link text for sharing feedback about an AI response")
+  String aiChatShareFeedback();
+
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();

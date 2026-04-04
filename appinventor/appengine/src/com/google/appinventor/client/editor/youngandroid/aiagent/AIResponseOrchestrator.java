@@ -75,6 +75,10 @@ public class AIResponseOrchestrator {
     void setStatusVisible(boolean visible);
     void setAutoAcceptVisible(boolean visible);
     void clearChatHistory();
+    /** Shows the debug-mode warning banner in the chat area. */
+    void showDebugBanner();
+    /** Sets the feedback context for AI messages (links only shown in debug mode). */
+    void setFeedbackContext(boolean debugEnabled, String conversationId);
   }
 
   private final AIContextCollector contextCollector;
@@ -89,6 +93,7 @@ public class AIResponseOrchestrator {
   private int validationRetryCount;
   private int executionRetryCount;
   private boolean autoAcceptAll;
+  private boolean debugBannerShown;
 
   /** Original total number of tools in the batch, preserved across retries. */
   private int originalToolCount;
@@ -260,9 +265,11 @@ public class AIResponseOrchestrator {
   /**
    * Loads existing conversation history from the server.
    * Called when the dialog is opened to restore previous messages.
+   * Fetches config (debug flag, conversation ID) first so that feedback
+   * links are available when history messages are rendered.
    */
   public void loadExistingConversation() {
-    long projectId = contextCollector.getCurrentProjectId();
+    final long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
       return;
     }
@@ -271,6 +278,42 @@ public class AIResponseOrchestrator {
     callback.clearChatHistory();
     callback.hideOperationPreview();
 
+    // Fetch config first, then load history so feedback context is set
+    // before messages are rendered.
+    aiAgentService.getRequestStatus(projectId,
+        new OdeAsyncCallback<AIStreamStatus>() {
+          @Override
+          public void onSuccess(AIStreamStatus status) {
+            applyConfig(status);
+            loadHistory(projectId);
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            // Config fetch failed — still load history without feedback links.
+            loadHistory(projectId);
+          }
+        });
+  }
+
+  /**
+   * Applies configuration from an {@link AIStreamStatus} poll result.
+   * Shows the debug banner (once) and updates the feedback context.
+   */
+  private void applyConfig(AIStreamStatus status) {
+    if (status == null) {
+      return;
+    }
+    if (status.isDebugEnabled() && !debugBannerShown) {
+      debugBannerShown = true;
+      callback.showDebugBanner();
+    }
+    if (status.getConversationId() != null) {
+      callback.setFeedbackContext(status.isDebugEnabled(), status.getConversationId());
+    }
+  }
+
+  private void loadHistory(long projectId) {
     aiAgentService.getConversationHistory(projectId,
         new OdeAsyncCallback<List<AIConversationMessage>>(MESSAGES.aiChatLoadHistoryError()) {
           @Override
@@ -302,10 +345,29 @@ public class AIResponseOrchestrator {
       @Override
       public void onSuccess(Void result) {
         pendingResponse = null;
+        debugBannerShown = false;
         callback.clearChatHistory();
         callback.hideOperationPreview();
       }
     });
+  }
+
+  /**
+   * One-shot status poll to pick up the conversation ID and debug flag.
+   * Called after each response in case polling never fired (fast requests).
+   */
+  private void ensureFeedbackContext() {
+    long projectId = contextCollector.getCurrentProjectId();
+    if (projectId == 0) {
+      return;
+    }
+    aiAgentService.getRequestStatus(projectId,
+        new OdeAsyncCallback<AIStreamStatus>() {
+          @Override
+          public void onSuccess(AIStreamStatus status) {
+            applyConfig(status);
+          }
+        });
   }
 
   /**
@@ -438,6 +500,11 @@ public class AIResponseOrchestrator {
     requestInFlight = false;
     callback.setRequestInFlight(false);
     stopPollingStatus();
+    // Ensure feedback context is available — the request may have completed
+    // before the first status poll fired, so do a one-shot fetch.  The
+    // retroactive scan in setFeedbackContext will patch up any messages
+    // that were rendered before the conversation ID arrived.
+    ensureFeedbackContext();
     handleResponse(response);
   }
 
@@ -730,6 +797,10 @@ public class AIResponseOrchestrator {
               @Override
               public void onSuccess(AIStreamStatus status) {
                 if (status == null) return;
+                // Update config on every poll — picks up the conversation
+                // ID once the server creates it (first message in a new
+                // conversation) and ensures the debug banner is shown.
+                applyConfig(status);
                 if (status.getStatusText() != null) {
                   callback.setStatusText(status.getStatusText());
                 }
