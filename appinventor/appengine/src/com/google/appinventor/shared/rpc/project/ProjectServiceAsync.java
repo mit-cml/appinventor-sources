@@ -199,4 +199,9 @@ public interface ProjectServiceAsync {
    */
   void log(String message, AsyncCallback<Void> callback);
 
+  /**
+   * @see ProjectService#getProjectPermissionMetadata(long)
+   */
+  void getProjectPermissionMetadata(long projectId, AsyncCallback<PermissionMetadata> callback);
+
 }
