@@ -115,7 +115,7 @@ Blockly.Blocks['matrices_create_multidim'] = {
     this.appendValueInput('INITIAL')
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_INITIAL)
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_MATRICES_CREATE_MULTIDIM }]
@@ -146,11 +146,11 @@ Blockly.Blocks['matrices_get_cell'] = {
     this.appendValueInput('DIM0')
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('DIM1')
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
         .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "2")
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_CELL_TOOLTIP);
 
     this.setMutator(new Blockly.icons.MutatorIcon(['matrix_mutator_item_dim'], this));
@@ -173,14 +173,14 @@ Blockly.Blocks['matrices_get_cell'] = {
     var input = this.appendValueInput(this.repeatingInputName + '0')
     .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
     input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     this.itemCount_ = 1;
   },
   addInput: function(n) {
     var input = this.appendValueInput(this.repeatingInputName + n)
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
     input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + (n + 1))
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     return input;
   },
   updateContainerBlock: function(containerBlock) {
@@ -202,15 +202,15 @@ Blockly.Blocks['matrices_set_cell'] = {
     this.appendValueInput('VALUE')
       .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
       .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_VALUE)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('DIM0')
       .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
       .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.appendValueInput('DIM1')
       .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
       .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "2")
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_SET_CELL_TOOLTIP);
@@ -235,14 +235,14 @@ Blockly.Blocks['matrices_set_cell'] = {
     var input = this.appendValueInput(this.repeatingInputName + '0')
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
     input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + "1")
-         .setAlign(Blockly.ALIGN_RIGHT);
+         .setAlign(Blockly.inputs.Align.RIGHT);
     this.itemCount_ = 1;
   },
   addInput: function(n) {
     var input = this.appendValueInput(this.repeatingInputName + n)
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
     input.appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM + (n + 1))
-        .setAlign(Blockly.ALIGN_RIGHT);
+        .setAlign(Blockly.inputs.Align.RIGHT);
     return input;
   },
   updateContainerBlock: function(containerBlock) {
@@ -265,7 +265,7 @@ Blockly.Blocks['matrices_get_row'] = {
     this.appendValueInput('ROW')
       .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
       .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_ROW)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_ROW_TOOLTIP);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_GET_ROW}]
@@ -284,7 +284,7 @@ Blockly.Blocks['matrices_get_column'] = {
     this.appendValueInput('COLUMN')
       .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
       .appendField(Blockly.Msg.LANG_MATRICES_GET_INPUT_COLUMN)
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.inputs.Align.RIGHT);
     this.setTooltip(Blockly.Msg.LANG_MATRICES_GET_COLUMN_TOOLTIP);
   },
   typeblock: [{translatedName: Blockly.Msg.LANG_MATRICES_GET_COLUMN}]
