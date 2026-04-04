@@ -666,6 +666,7 @@ public class AIAgentEngine {
     // Stateful providers already have context; re-sending would duplicate.
     List<String> retryContext = provider.isStateless() ? contextMessages : null;
 
+    streamBuffer.resetStreaming();
     streamBuffer.init();
     streamBuffer.appendStatus("Preparing response...");
 

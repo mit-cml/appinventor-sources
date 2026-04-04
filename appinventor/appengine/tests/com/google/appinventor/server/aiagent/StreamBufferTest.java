@@ -114,4 +114,23 @@ public class StreamBufferTest extends TestCase {
     AIStreamStatus status = buffer.consume();
     assertNull(status.getTextDelta());
   }
+
+  public void testResetStreamingSignal() {
+    buffer.init();
+    buffer.appendText("narration text");
+    buffer.resetStreaming();
+    buffer.appendStatus("Preparing response...");
+    AIStreamStatus status = buffer.consume();
+    assertTrue(status.isResetStreaming());
+    assertEquals("Preparing response...", status.getStatusText());
+    assertNull(status.getTextDelta());
+  }
+
+  public void testResetStreamingNotSetByDefault() {
+    buffer.init();
+    buffer.appendText("normal text");
+    AIStreamStatus status = buffer.consume();
+    assertFalse(status.isResetStreaming());
+    assertEquals("normal text", status.getTextDelta());
+  }
 }

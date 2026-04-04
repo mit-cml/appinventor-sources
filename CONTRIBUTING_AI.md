@@ -114,7 +114,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `AIOperation.java` | Single operation: type enum + JSON payload string |
 | `AIOperationResult.java` | Execution result: succeeded/failed/skipped with error details |
 | `AIConversationMessage.java` | Message for chat history display |
-| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag |
+| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag, reset streaming flag |
 
 ### Client -- `client/editor/youngandroid/aiagent/`
 
@@ -667,7 +667,7 @@ sequenceDiagram
 
 ### Key Details
 
-- Chunks are prefixed with `"s:"` (status), `"t:"` (text), or `"k:"` (thinking/reasoning) in Memcache.
+- Chunks are prefixed with `"s:"` (status), `"t:"` (text), `"k:"` (thinking/reasoning), or `"r:"` (reset streaming) in Memcache.
 - `consume()` separates and concatenates chunks per type, returning the **last** status, **accumulated** text, and **accumulated** thinking since the previous poll.
 - When `ai.agent.reasoning.effort` is set, providers stream reasoning/thinking tokens via `streamBuffer.appendThinking()`. The client renders these in a collapsible `<details>` panel above the response text (open while streaming, auto-collapsed on completion).
 - **250ms** (fast) -- during active streaming (switched after first text delta arrives).
@@ -727,6 +727,7 @@ Some LLMs respond with text describing what they *would* do instead of actually 
 
 - **Trigger**: editing mode + non-empty text + zero raw tool calls + zero parsed operations.
 - **Nudge message**: asks the LLM to use tools if the user's request requires changes, or respond with text only if it was a question.
+- **Streaming reset**: before the retry LLM call, the server emits a `"r:"` (reset) chunk via `streamBuffer.resetStreaming()`, then clears the buffer with `init()`. When the client's polling handler receives `isResetStreaming()`, it finalizes the current streaming bubble (preserving the narration text the user was reading) and sets `streamingActive = false`. If the retry streams new text, it appears in a fresh bubble below the finalized narration.
 - **If the retry produces tool calls**: the retry's text and operations replace the original response. The narration and nudge are persisted to Datastore as non-displayed messages to keep history roles alternating.
 - **If the retry is also text-only**: the original response text is kept (it's a natural reply to the user, not contaminated by the nudge). The retry's `providerRef` is used so stateful providers stay in sync. The narration/nudge exchange is not persisted.
 - **Stateful providers** (OpenAI, Gemini): the retry chains via `providerRef`; context messages are not re-sent (already in the provider's server-side state).

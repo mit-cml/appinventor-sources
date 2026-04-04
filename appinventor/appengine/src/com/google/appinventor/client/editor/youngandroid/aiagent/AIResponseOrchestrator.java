@@ -733,6 +733,14 @@ public class AIResponseOrchestrator {
                 if (status.getStatusText() != null) {
                   callback.setStatusText(status.getStatusText());
                 }
+                if (status.isResetStreaming() && streamingActive) {
+                  // Narration retry: finalize the current bubble (keeps
+                  // accumulated text, removes typing dots) so the user
+                  // can still read it.  Reset streamingActive so the
+                  // retry's text deltas create a fresh bubble below.
+                  callback.finalizeStreamingBubble(null);
+                  streamingActive = false;
+                }
                 if (status.getThinkingDelta() != null) {
                   if (!streamingActive) {
                     streamingActive = true;

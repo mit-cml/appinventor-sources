@@ -46,6 +46,13 @@ public class StreamBuffer {
     }
   }
 
+  /** Emit a reset signal that tells the client to clear its streaming
+   * bubble (accumulated text, thinking, and typing indicator).
+   * Used before a narration retry so the retry streams into a clean slate. */
+  public void resetStreaming() {
+    storageIo.appendAIStreamChunk(projectId, "r:");
+  }
+
   /** Mark the stream as done (LLM response fully received). */
   public void markDone() {
     storageIo.markAIStreamDone(projectId);
@@ -68,6 +75,7 @@ public class StreamBuffer {
     StringBuilder textBuilder = null;
     StringBuilder thinkingBuilder = null;
     String lastStatus = null;
+    boolean reset = false;
 
     for (String chunk : chunks) {
       if (chunk.startsWith("t:")) {
@@ -80,6 +88,10 @@ public class StreamBuffer {
           thinkingBuilder = new StringBuilder();
         }
         thinkingBuilder.append(chunk.substring(2));
+      } else if (chunk.startsWith("r:")) {
+        reset = true;
+        textBuilder = null;
+        thinkingBuilder = null;
       } else if (chunk.startsWith("s:")) {
         lastStatus = chunk.substring(2);
       }
@@ -89,7 +101,8 @@ public class StreamBuffer {
         lastStatus,
         textBuilder != null ? textBuilder.toString() : null,
         thinkingBuilder != null ? thinkingBuilder.toString() : null,
-        done
+        done,
+        reset
     );
   }
 }
