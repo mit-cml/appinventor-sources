@@ -171,15 +171,17 @@ A `FeatureCollection` groups one or more map features together. Any events that 
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="FeatureCollection.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="FeatureCollection.Source" .text .ro} *Source*
 : Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.
 
 {:id="FeatureCollection.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="FeatureCollection.Visible" .boolean} *Visible*
 : Specifies whether the `FeatureCollection` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -432,8 +434,9 @@ A two-dimensional container that renders map tiles in the background and allows 
  [`PanTo`](#Map.PanTo) method.
 
 {:id="Map.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Map.LocationSensor" .component .wo} *LocationSensor*
 : Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
@@ -478,8 +481,9 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Specifies whether to show zoom controls or not.
 
 {:id="Map.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Map.UserLatitude" .number .ro .bo} *UserLatitude*
 : Returns the user's latitude if ShowUser is enabled.

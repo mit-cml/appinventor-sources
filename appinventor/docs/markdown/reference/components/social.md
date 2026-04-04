@@ -91,8 +91,9 @@ A button that, when clicked on, displays a list of the contacts to choose among.
  [`BackgroundColor`](#ContactPicker.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="ContactPicker.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="ContactPicker.PhoneNumber" .text .ro .bo} *PhoneNumber*
 : Returns the primary phone number associated with the selected contact, or the empty string if
@@ -128,8 +129,9 @@ A button that, when clicked on, displays a list of the contacts to choose among.
  integer.
 
 {:id="ContactPicker.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="ContactPicker.Visible" .boolean} *Visible*
 : Specifies whether the `ContactPicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -238,8 +240,9 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 : Specifies the color of the hint of the EmailPicker.
 
 {:id="EmailPicker.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="EmailPicker.Text" .text} *Text*
 : The text in the `EmailPicker`, which can be set by the programmer in the Designer or Blocks Editor,
@@ -256,8 +259,9 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
  integer.
 
 {:id="EmailPicker.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="EmailPicker.Visible" .boolean} *Visible*
 : Specifies whether the `EmailPicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -435,8 +439,9 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
  [`BackgroundColor`](#PhoneNumberPicker.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="PhoneNumberPicker.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="PhoneNumberPicker.PhoneNumber" .text .ro .bo} *PhoneNumber*
 : Returns the primary phone number associated with the selected contact, or the empty string if
@@ -472,8 +477,9 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
  integer.
 
 {:id="PhoneNumberPicker.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="PhoneNumberPicker.Visible" .boolean} *Visible*
 : Specifies whether the `PhoneNumberPicker` should be visible on the screen.  Value is `true`{:.logic.block}
