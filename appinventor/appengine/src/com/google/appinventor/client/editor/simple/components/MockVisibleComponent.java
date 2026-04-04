@@ -381,4 +381,22 @@ public abstract class MockVisibleComponent extends MockComponent {
   public boolean coordPropertiesVisible() {
     return this.coordPropertiesVisible;
   }
+
+  /**
+   * Returns the current rendered left pixel position of this component within its container,
+   * as laid out by the container's AbsolutePanel. Used for arrow-key nudge in Absolute mode.
+   */
+  public int getRenderedLeft() {
+    MockContainer container = getContainer();
+    return container == null ? 0 : container.getRootPanel().getWidgetLeft(this);
+  }
+
+  /**
+   * Returns the current rendered top pixel position of this component within its container,
+   * as laid out by the container's AbsolutePanel. Used for arrow-key nudge in Absolute mode.
+   */
+  public int getRenderedTop() {
+    MockContainer container = getContainer();
+    return container == null ? 0 : container.getRootPanel().getWidgetTop(this);
+  }
 }

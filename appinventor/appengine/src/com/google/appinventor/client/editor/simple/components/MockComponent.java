@@ -1006,6 +1006,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       case Event.ONCLICK:
         cancelBrowserEvent(event);
+        // Blur the component tree so arrow keys are not consumed by tree navigation
+        // and can be used for nudging the selected component in Absolute layout mode.
+        SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(false);
         select(event);
         break;
 
