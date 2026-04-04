@@ -117,6 +117,10 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
     }
     Blockly.renderManagement.triggerQueuedRenders();
 
+    // Optimize block widths — flip deep inline blocks to external inputs
+    // when the rendered block exceeds viewport width.
+    AI.YailToBlocks.optimizeBlockWidths_(workspace, createdBlocks);
+
     // Position blocks — dimensions are now accurate after rendering.
     // Upsert blocks go back to their original position.
     // New blocks are placed below the lowest existing block visible
@@ -198,6 +202,121 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
       Blockly.Events.enable();
     }
     return {success: false, error: e.message, blockId: null};
+  }
+};
+
+/**
+ * Find the deepest block eligible for inline-to-external flipping.
+ * Eligibility: (1) currently inline, (2) at least 2 value inputs have
+ * blocks connected, (3) at least one connected child is non-leaf.
+ * Depth counts only value-input connections (not statement/next).
+ *
+ * @param {!Blockly.Block} block The block to search from.
+ * @param {number} valueDepth Current depth along value-input chain.
+ * @param {number} maxDepth Maximum value-depth to consider. Candidates
+ *     deeper than this are skipped (used to escalate to shallower blocks
+ *     when deep flips are ineffective).
+ * @return {?{block: !Blockly.Block, depth: number, width: number}}
+ * @private
+ */
+AI.YailToBlocks.findDeepestEligibleBlock_ = function(block, valueDepth, maxDepth) {
+  var best = null;
+
+  // Recurse into value-input children (incrementing depth) and
+  // statement-input children (same depth — they nest vertically).
+  if (block.inputList) {
+    for (var i = 0; i < block.inputList.length; i++) {
+      var input = block.inputList[i];
+      var child = input.connection && input.connection.targetBlock();
+      if (!child) continue;
+      var childDepth = (input.type === Blockly.INPUT_VALUE)
+          ? valueDepth + 1
+          : valueDepth;
+      // Also recurse through statement stacks (next connections).
+      var current = child;
+      while (current) {
+        var result = AI.YailToBlocks.findDeepestEligibleBlock_(
+            current, childDepth, maxDepth);
+        if (result && (!best || result.depth > best.depth ||
+            (result.depth === best.depth &&
+             result.width > best.width))) {
+          best = result;
+        }
+        current = current.getNextBlock();
+      }
+    }
+  }
+
+  // Check if THIS block is eligible and within depth limit.
+  if (valueDepth <= maxDepth && block.getInputsInline()) {
+    var connectedValueCount = 0;
+    var hasNonLeafChild = false;
+    if (block.inputList) {
+      for (var i = 0; i < block.inputList.length; i++) {
+        var input = block.inputList[i];
+        if (input.type === Blockly.INPUT_VALUE) {
+          var child = input.connection && input.connection.targetBlock();
+          if (child) {
+            connectedValueCount++;
+            if (child.getChildren(false).length > 0) {
+              hasNonLeafChild = true;
+            }
+          }
+        }
+      }
+    }
+    if (connectedValueCount >= 2 && hasNonLeafChild) {
+      var hw = block.getHeightWidth();
+      if (!best || valueDepth > best.depth ||
+          (valueDepth === best.depth && hw.width > best.width)) {
+        best = {block: block, depth: valueDepth, width: hw.width};
+      }
+    }
+  }
+
+  return best;
+};
+
+/**
+ * Optimize block widths by flipping deep inline blocks to external inputs.
+ * Called after initial render and before positioning. Only affects blocks
+ * in the provided array (AI-generated blocks from the current conversion).
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace.
+ * @param {!Array<!Blockly.Block>} blocks The newly created top-level blocks.
+ * @private
+ */
+AI.YailToBlocks.optimizeBlockWidths_ = function(workspace, blocks) {
+  var metrics = workspace.getMetrics();
+  var maxWidth = metrics.viewWidth / workspace.scale;
+  var MAX_FLIPS = 3;
+  var MIN_REDUCTION = 0.2;  // minimum 20% width reduction per flip
+
+  for (var i = 0; i < blocks.length; i++) {
+    var block = blocks[i];
+    var flips = 0;
+    var maxCandidateDepth = Infinity;
+    while (flips < MAX_FLIPS) {
+      var hw = block.getHeightWidth();
+      if (hw.width <= maxWidth) break;
+      var prevWidth = hw.width;
+      var candidate = AI.YailToBlocks.findDeepestEligibleBlock_(
+          block, 0, maxCandidateDepth);
+      if (!candidate) break;
+      candidate.block.setInputsInline(false);
+      candidate.block.queueRender();
+      Blockly.renderManagement.triggerQueuedRenders();
+      flips++;
+      // If the flip didn't reduce width meaningfully, the flipped depth
+      // level is ineffective (e.g. the parent has many other wide inline
+      // children).  Skip remaining candidates at this depth and escalate
+      // to shallower blocks on the next iteration.
+      var newWidth = block.getHeightWidth().width;
+      if (newWidth > prevWidth * (1 - MIN_REDUCTION)) {
+        maxCandidateDepth = candidate.depth - 1;
+        if (maxCandidateDepth < 0) break;
+      }
+    }
   }
 };
 
