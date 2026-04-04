@@ -62,6 +62,9 @@ let kMinimumToastWait = 10.0
   // Track width/height constraints we explicitly set so we only remove ours, not system intrinsic ones
   private var _childWidthConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
   private var _childHeightConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  // Track trailing/bottom constraints for Fill Parent anchoring in Absolute mode
+  private var _childTrailingConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  private var _childBottomConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -236,22 +239,35 @@ let kMinimumToastWait = 10.0
       _childWidthConstraints[key]?.isActive = false
       _childWidthConstraints.removeValue(forKey: key)
       if width <= kLengthPercentTag {
+        // Deactivate any trailing constraint when switching away from Fill Parent
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
         let childWidth = logicalWidth * Int32(-(width - kLengthPercentTag)) / 100
         component._lastSetWidth = width
         let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
         NSLayoutConstraint.activate([c])
         _childWidthConstraints[key] = c
       } else if width == kLengthPreferred {
+        // Deactivate any trailing constraint when switching away from Fill Parent
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
         component._lastSetWidth = width
         // No explicit constraint — let Auto Layout use intrinsic content size
       } else if width == kLengthFillParent {
+        // Deactivate old trailing constraint before setting a new one
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
         component._lastSetWidth = width
+        // Anchor trailing edge to parent — fills from Left position to right edge (not full width).
         if let container = _absoluteContainerView {
-          let c = component.view.widthAnchor.constraint(equalTo: container.widthAnchor)
+          let c = component.view.trailingAnchor.constraint(equalTo: container.trailingAnchor)
           NSLayoutConstraint.activate([c])
-          _childWidthConstraints[key] = c
+          _childTrailingConstraints[key] = c
         }
       } else {
+        // Deactivate any trailing constraint when switching away from Fill Parent
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
         component._lastSetWidth = width
         let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
         NSLayoutConstraint.activate([c])
@@ -278,22 +294,36 @@ let kMinimumToastWait = 10.0
       _childHeightConstraints[key]?.isActive = false
       _childHeightConstraints.removeValue(forKey: key)
       if height <= kLengthPercentTag {
+        // Deactivate any bottom constraint when switching away from Fill Parent
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
         let childHeight = logicalHeight * Int32(-(height - kLengthPercentTag)) / 100
         component._lastSetHeight = height
         let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
         NSLayoutConstraint.activate([c])
         _childHeightConstraints[key] = c
       } else if height == kLengthPreferred {
+        // Deactivate any bottom constraint when switching away from Fill Parent
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
         component._lastSetHeight = height
         // No explicit constraint — let Auto Layout use intrinsic content size
       } else if height == kLengthFillParent {
+        // Deactivate old bottom constraint before setting a new one
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
         component._lastSetHeight = height
-        if let container = _absoluteContainerView {
-          let c = component.view.heightAnchor.constraint(equalTo: container.heightAnchor)
+        if !_scrollable, let container = _absoluteContainerView {
+          // Non-scrollable: anchor bottom edge to parent — fills from Top to bottom edge.
+          let c = component.view.bottomAnchor.constraint(equalTo: container.bottomAnchor)
           NSLayoutConstraint.activate([c])
-          _childHeightConstraints[key] = c
+          _childBottomConstraints[key] = c
         }
+        // Scrollable: bottom of screen is undefined — no constraint (behaves like Automatic).
       } else {
+        // Deactivate any bottom constraint when switching away from Fill Parent
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
         component._lastSetHeight = height
         let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
         NSLayoutConstraint.activate([c])
@@ -389,6 +419,8 @@ let kMinimumToastWait = 10.0
     _absoluteContainerView = nil
     _childWidthConstraints.removeAll()
     _childHeightConstraints.removeAll()
+    _childTrailingConstraints.removeAll()
+    _childBottomConstraints.removeAll()
     initThunks.removeAllObjects()
     clearComponents()
     defaultPropertyValues()
@@ -846,6 +878,8 @@ let kMinimumToastWait = 10.0
         _absoluteContainerView = nil
         _childWidthConstraints.removeAll()
         _childHeightConstraints.removeAll()
+        _childTrailingConstraints.removeAll()
+        _childBottomConstraints.removeAll()
         for child in _components {
           if let child = child as? ViewComponent {
             _linearView.addItem(LinearViewItem(child.view))

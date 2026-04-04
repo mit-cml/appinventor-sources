@@ -488,9 +488,8 @@ final class MockAbsoluteLayout extends MockLayout {
       LayoutInfo childLayoutInfo = relativeLayoutInfo.layoutInfoMap.get(child);
 
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
-        // If the child's width is set to fill parent, use the full layout width for rendering
-        // but do NOT reset the Left property — that would corrupt the saved position.
-        childLayoutInfo.width = layoutWidth;
+        // Fill Parent width: stretch from Left position to right edge of parent.
+        childLayoutInfo.width = layoutWidth - x;
       } else if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childWidth = (- (childLayoutInfo.width - MockVisibleComponent.LENGTH_PERCENT_TAG))
             * form.screenWidth / 100;
@@ -500,9 +499,8 @@ final class MockAbsoluteLayout extends MockLayout {
       }
 
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
-        // If the child's height is set to fill parent, use the full layout height for rendering
-        // but do NOT reset the Top property — that would corrupt the saved position.
-        childLayoutInfo.height = layoutHeight;
+        // Fill Parent height: stretch from Top position to bottom edge of parent.
+        childLayoutInfo.height = layoutHeight - y;
       } else if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childHeight = (- (childLayoutInfo.height - MockVisibleComponent.LENGTH_PERCENT_TAG))
             * form.usableScreenHeight / 100;
@@ -569,9 +567,12 @@ final class MockAbsoluteLayout extends MockLayout {
     hasSnappedPosition = false;
     lastSnapResult = null;
 
-    // another way to do this is to allow the top-left corner of the dropped
-    // component to be outside the arrangement, in which case we can just take
-    // max(0, topMargin) or max(0, leftMargin) and place the component normally
+    // A Fill Parent component spans the full container width, so the user may grab it far from
+    // its left edge. This makes offsetX large, causing leftMargin = x - offsetX to go negative.
+    // Negative margins are never valid — clamp to zero so the drop succeeds rather than spring-back.
+    leftMargin = Math.max(0, leftMargin);
+    topMargin = Math.max(0, topMargin);
+
     if (withinLayoutBounds(leftMargin, topMargin)) {
       MockContainer srcContainer = source.getContainer();
       if (srcContainer != null) {

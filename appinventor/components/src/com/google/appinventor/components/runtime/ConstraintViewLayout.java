@@ -84,6 +84,18 @@ public class ConstraintViewLayout implements Layout {
     params.topToTop = ConstraintSet.PARENT_ID;
     params.leftMargin = leftPx;
     params.topMargin = topPx;
+    // Preserve Fill Parent right/bottom anchors set by ViewUtil.setChildWidth/HeightForConstraintLayout.
+    if (old instanceof ConstraintLayout.LayoutParams) {
+      ConstraintLayout.LayoutParams oldCp = (ConstraintLayout.LayoutParams) old;
+      if (oldCp.rightToRight != ConstraintLayout.LayoutParams.UNSET) {
+        params.rightToRight = oldCp.rightToRight;
+        params.rightMargin = oldCp.rightMargin;
+      }
+      if (oldCp.bottomToBottom != ConstraintLayout.LayoutParams.UNSET) {
+        params.bottomToBottom = oldCp.bottomToBottom;
+        params.bottomMargin = oldCp.bottomMargin;
+      }
+    }
     layoutManager.removeViewAt(index);
     layoutManager.addView(view, index, params);
   }

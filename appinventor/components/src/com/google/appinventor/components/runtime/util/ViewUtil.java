@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.google.appinventor.components.runtime.Component;
 
@@ -249,12 +250,17 @@ public final class ViewUtil {
       switch (width) {
         case Component.LENGTH_PREFERRED:
           p.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+          p.rightToRight = ConstraintLayout.LayoutParams.UNSET;
           break;
         case Component.LENGTH_FILL_PARENT:
-          p.width = ConstraintLayout.LayoutParams.MATCH_PARENT;
+          // MATCH_CONSTRAINTS (0) + rightToRight=PARENT stretches from Left position to right edge.
+          p.width = 0;
+          p.rightToRight = ConstraintSet.PARENT_ID;
+          p.rightMargin = 0;
           break;
         default:
           p.width = calculatePixels(view, width);
+          p.rightToRight = ConstraintLayout.LayoutParams.UNSET;
           break;
       }
       view.requestLayout();
@@ -275,12 +281,17 @@ public final class ViewUtil {
       switch (height) {
         case Component.LENGTH_PREFERRED:
           p.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+          p.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
           break;
         case Component.LENGTH_FILL_PARENT:
-          p.height = ConstraintLayout.LayoutParams.MATCH_PARENT;
+          // MATCH_CONSTRAINTS (0) + bottomToBottom=PARENT stretches from Top position to bottom edge.
+          p.height = 0;
+          p.bottomToBottom = ConstraintSet.PARENT_ID;
+          p.bottomMargin = 0;
           break;
         default:
           p.height = calculatePixels(view, height);
+          p.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
           break;
       }
       view.requestLayout();

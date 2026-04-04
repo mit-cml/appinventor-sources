@@ -2504,7 +2504,11 @@ public class Form extends AppInventorCompatActivity
     component.setLastHeight(height);
 
     if (absoluteViewLayout != null) {
-      ViewUtil.setChildHeightForConstraintLayout(component.getView(), height);
+      // Fill Parent height on a scrollable screen is undefined (no bottom edge); fall back to Automatic.
+      int effectiveHeight = (height == LENGTH_FILL_PARENT && scrollable)
+          ? LENGTH_PREFERRED
+          : height;
+      ViewUtil.setChildHeightForConstraintLayout(component.getView(), effectiveHeight);
     } else {
       // A form is a vertical layout.
       ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
