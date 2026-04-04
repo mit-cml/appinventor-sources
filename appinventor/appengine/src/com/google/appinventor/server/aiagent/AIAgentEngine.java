@@ -52,6 +52,13 @@ public class AIAgentEngine {
 
   private static final Logger LOG = Logger.getLogger(AIAgentEngine.class.getName());
 
+  /**
+   * When {@code true}, the engine retries with a nudge message if the LLM
+   * responds with text only (no tool calls) in an editing mode.  Set to
+   * {@code false} to disable the narration retry entirely.
+   */
+  static final boolean RETRY_NARRATION = false;
+
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
   private final ConversationManager conversationManager;
@@ -656,6 +663,9 @@ public class AIAgentEngine {
       List<LLMTool> tools, List<ChatMessage> history, AIConversationState conv,
       ReadOnlyToolResolver resolver, StreamBuffer streamBuffer)
       throws LLMProviderException {
+    if (!RETRY_NARRATION) {
+      return;
+    }
     boolean isEditingMode = !AI_AGENT_MODE_ADVISOR.equals(mode);
     boolean isNarrationOnly = state.parsed.operations.isEmpty()
         && state.llmResponse.getRawToolCalls().isEmpty()
