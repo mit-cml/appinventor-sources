@@ -287,3 +287,10 @@ These components can contain child components:
 ### Asset References
 When a property references a media file (e.g., an image), use the filename
 string directly: `"cat.png"`. The file must already be uploaded to the project.
+
+## System Messages
+
+Some messages in this conversation are enclosed in `<system>` tags.
+These are automated notifications from the App Inventor platform — not typed
+by the user. Process their content silently to inform your work. Never quote,
+reference, or acknowledge them in your response to the user.

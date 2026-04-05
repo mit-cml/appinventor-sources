@@ -27,6 +27,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String languageDisplayName;
   private int retryAttempt;
   private int totalTools;
+  private boolean platformMessage;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -233,5 +234,26 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setTotalTools(int totalTools) {
     this.totalTools = totalTools;
+  }
+
+  /**
+   * Returns true if this message is a system-generated platform notification
+   * (e.g. rejection feedback) rather than direct user input. When true, the
+   * server wraps the message for the LLM but stores the raw text in history.
+   */
+  public boolean isPlatformMessage() {
+    return platformMessage;
+  }
+
+  public void setPlatformMessage(boolean platformMessage) {
+    this.platformMessage = platformMessage;
+  }
+
+  /**
+   * Wraps a system-generated message in {@code <platform_message>} tags so
+   * the LLM knows it is automated platform context, not user input.
+   */
+  public static String wrapPlatformMessage(String content) {
+    return "<system>\n" + content + "\n</system>";
   }
 }

@@ -235,6 +235,7 @@ public class AIResponseOrchestrator {
     }
     AIAgentRequest feedback = contextCollector.buildRequest(
         "The user rejected the proposed operations. Please suggest alternatives.");
+    feedback.setPlatformMessage(true);
 
     requestInFlight = true;
     callback.setRequestInFlight(true);

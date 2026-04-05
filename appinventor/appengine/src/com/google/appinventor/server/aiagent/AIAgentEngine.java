@@ -18,6 +18,7 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StoredData.MessageRole;
+import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
@@ -131,7 +132,7 @@ public class AIAgentEngine {
   public AIAgentResponse processRequest(String userId, long projectId, String screenName,
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
-      String locale, String languageDisplayName) {
+      String locale, String languageDisplayName, boolean isPlatformMessage) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -184,9 +185,12 @@ public class AIAgentEngine {
 
       streamBuffer.appendStatus("Calling AI...");
 
-      // Call LLM (context messages are sent as separate turns by the provider)
+      // Call LLM (context messages are sent as separate turns by the provider).
+      // Platform messages are wrapped so the LLM knows they are system-generated.
+      String llmMessage = isPlatformMessage
+          ? AIAgentRequest.wrapPlatformMessage(userMessage) : userMessage;
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, contextMessages, userMessage, tools, conv.getProviderRef(),
+          systemPrompt, contextMessages, llmMessage, tools, conv.getProviderRef(),
           history, resolver, streamBuffer);
 
       // Debug: raw LLM response
@@ -452,17 +456,18 @@ public class AIAgentEngine {
           screenComponentsJson, projectSnapshot, blockWarnings,
           locale, languageDisplayName);
 
-      // Save error feedback to history BEFORE calling the LLM,
+      // Save raw feedback to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
       conversationManager.storeMessage(conv.getConversationId(),
           MessageRole.USER, "[Execution error feedback] " + feedback, false);
 
       streamBuffer.appendStatus("Calling AI (" + retryInfo + ")...");
 
-      // Retry LLM with the error feedback
+      // Retry LLM with wrapped feedback — tags are for the LLM only, not stored
       LLMResponse llmResponse = provider.chat(
-          systemPrompt, contextMessages, feedback, tools, conv.getProviderRef(),
-          history, resolver, streamBuffer);
+          systemPrompt, contextMessages,
+          AIAgentRequest.wrapPlatformMessage(feedback),
+          tools, conv.getProviderRef(), history, resolver, streamBuffer);
 
       // Parse, enforce, save, and build response
       ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
@@ -698,8 +703,9 @@ public class AIAgentEngine {
     streamBuffer.appendStatus("Preparing response...");
 
     LLMResponse retryResponse = provider.chat(
-        systemPrompt, retryContext, nudge, tools,
-        state.llmResponse.getProviderRef(), retryHistory, resolver, streamBuffer);
+        systemPrompt, retryContext,
+        AIAgentRequest.wrapPlatformMessage(nudge),
+        tools, state.llmResponse.getProviderRef(), retryHistory, resolver, streamBuffer);
 
     if (AIDebug.enabled()) {
       AIDebug.log(LOG, "Narration retry: toolCalls="
