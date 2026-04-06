@@ -133,7 +133,7 @@ public final class AIDebug {
       // Production: log immediately with conversation context.
       RequestLog rl = CURRENT_REQUEST.get();
       if (rl != null) {
-        AI_LOGGER.info("[conv=" + rl.conversationId + "] " + line);
+        AI_LOGGER.info("[conv=" + rl.conversationId + "][msg=" + rl.timestamp + "] " + line);
       } else {
         AI_LOGGER.info(line);
       }
