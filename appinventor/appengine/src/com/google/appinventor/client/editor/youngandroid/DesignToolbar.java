@@ -283,6 +283,7 @@ public class DesignToolbar extends Toolbar {
             screen.screenName, new SwitchScreenAction(projectId, screen.screenName),
             new Image(Ode.getImageBundle().form())));
       }
+      setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, currentProject.currentScreen);
       String fauxProjectName = Ode.getInstance().getFauxProjectName();
       if (fauxProjectName != null && !fauxProjectName.isEmpty()) {
         projectNameLabel.setText(fauxProjectName);
@@ -317,6 +318,7 @@ public class DesignToolbar extends Toolbar {
       if (currentProject == project) {
         addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(name,
             name, new SwitchScreenAction(projectId, name), new Image(Ode.getImageBundle().form())));
+              setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, currentProject.currentScreen);
       }
     }
   }
@@ -389,6 +391,7 @@ public class DesignToolbar extends Toolbar {
         switchToScreen(projectId, YoungAndroidSourceNode.SCREEN1_FORM_NAME, View.DESIGNER);
       }
       removeDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, name);
+      setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, currentProject.currentScreen);
     }
     project.removeScreen(name);
   }
