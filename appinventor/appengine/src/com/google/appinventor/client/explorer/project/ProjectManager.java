@@ -206,4 +206,34 @@ public final class ProjectManager {
     Project project = projectsMap.get(projectId);
     return project != null && project.isInTrash();
   }
+
+  //line 212-238
+
+  /**
+   * Returns the number of projects.
+   *
+   * @return the number of projects
+   */
+  public int getMyProjectsCount() {
+    return getMyProjectsCount(true);
+  }
+
+  /**
+   * Returns the number of projects, optionally including those in the trash.
+   *
+   * @param includeTrash whether to include projects in the trash
+   * @return the number of projects
+   */
+  public int getMyProjectsCount(boolean includeTrash) {
+    if (includeTrash) {
+      return projectsMap.size();
+    }
+    int count = 0;
+    for (Project project : projectsMap.values()) {
+      if (!project.isInTrash()) {
+        count++;
+      }
+    }
+    return count;
+  }
 }
