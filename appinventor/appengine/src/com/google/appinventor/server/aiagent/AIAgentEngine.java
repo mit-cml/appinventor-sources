@@ -68,7 +68,10 @@ public class AIAgentEngine {
   private static final String CONTINUATION_SCOPE_INSTRUCTION =
       "[Continuation scope — read before proceeding]\n\n"
       + "You are continuing your response to the user's most recent request. "
-      + "Complete ONLY what is needed to fulfill that request. Do not:\n"
+      + "Complete ONLY what is needed to fulfill that request. If your changes "
+      + "introduced a bug or inconsistency (e.g. blocks referencing a deleted or "
+      + "renamed component, a failed write_block, or missing blocks for a newly "
+      + "added component), fix that specific issue — but nothing else. Do not:\n"
       + "- Refactor, reorganize, or \"clean up\" existing code beyond what was asked\n"
       + "- Undo or reverse changes made in previous turns of this conversation\n"
       + "- Add improvements, optimizations, or structural changes the user did not request\n\n"
