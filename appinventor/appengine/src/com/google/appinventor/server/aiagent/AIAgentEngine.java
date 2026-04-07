@@ -60,6 +60,21 @@ public class AIAgentEngine {
    */
   static final boolean RETRY_NARRATION = false;
 
+  /**
+   * Instruction appended to the context messages on every continuation call.
+   * Steers the model away from refactoring or undoing prior user-requested
+   * changes when it receives the fresh project state in a continuation.
+   */
+  private static final String CONTINUATION_SCOPE_INSTRUCTION =
+      "[Continuation scope — read before proceeding]\n\n"
+      + "You are continuing your response to the user's most recent request. "
+      + "Complete ONLY what is needed to fulfill that request. Do not:\n"
+      + "- Refactor, reorganize, or \"clean up\" existing code beyond what was asked\n"
+      + "- Undo or reverse changes made in previous turns of this conversation\n"
+      + "- Add improvements, optimizations, or structural changes the user did not request\n\n"
+      + "If you have fully completed the user's request, respond with text only "
+      + "— do not call any tools.";
+
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
   private final ConversationManager conversationManager;
@@ -312,6 +327,10 @@ public class AIAgentEngine {
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
           locale, languageDisplayName);
+      // Append a scoping instruction so the model stays focused on the
+      // user's request and does not refactor or undo prior changes.
+      contextMessages = new ArrayList<String>(contextMessages);
+      contextMessages.add(AIAgentRequest.wrapPlatformMessage(CONTINUATION_SCOPE_INSTRUCTION));
 
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());
