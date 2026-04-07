@@ -1279,6 +1279,38 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   /**
+   * Notify the positioning algorithm that certain blocks will be deleted
+   * later in the current execution batch, so new blocks should not try
+   * to avoid them.
+   *
+   * @param identifiersJson JSON array of YAIL identifier strings
+   */
+  public native void doSetPendingDeletions(String identifiersJson) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var identifiers = JSON.parse(identifiersJson);
+    $wnd.AI.YailToBlocks.setPendingDeletions(workspace, identifiers);
+  }-*/;
+
+  /**
+   * Clear the pending deletion set after the deletion phase completes.
+   */
+  public native void doClearPendingDeletions() /*-{
+    $wnd.AI.YailToBlocks.clearPendingDeletions();
+  }-*/;
+
+  /**
+   * Mark existing blocks that will be replaced by WRITE_BLOCK upserts,
+   * adding them to the pending deletion set for positioning.
+   *
+   * @param yailJsonArray JSON array of YAIL S-expression strings
+   */
+  public native void doAddPendingUpserts(String yailJsonArray) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var yailStrings = JSON.parse(yailJsonArray);
+    $wnd.AI.YailToBlocks.addPendingUpserts(workspace, yailStrings);
+  }-*/;
+
+  /**
    * Check whether a block with the given YAIL identifier exists.
    *
    * @param identifier YAIL identifier (e.g. "define-event Button1 Click")

@@ -253,9 +253,12 @@ public class AIOperationExecutor {
         return;
       }
       // Before writing new blocks (phase 3), tell the positioning algorithm
-      // which blocks will be deleted in phase 4 so it ignores them when
-      // computing free space.  This prevents gaps where removed blocks were.
+      // which blocks will be removed (phase 4 deletions) or replaced by
+      // upserts (phase 3 writes targeting existing blocks) so new block
+      // positioning ignores them.  This prevents gaps where large blocks
+      // are about to shrink or disappear.
       setPendingBlockDeletions(phase4);
+      addPendingBlockUpserts(phase3);
       try {
         if (!runSyncList(state, phase3, Arrays.asList(phase4, phase5))) {
           return;
@@ -409,6 +412,33 @@ public class AIOperationExecutor {
     }
     if (index > 0) {
       blocksEditor.setPendingDeletions(arr.toString());
+    }
+  }
+
+  /**
+   * Identifies WRITE_BLOCK operations that will upsert (replace) existing
+   * blocks and adds them to the pending set so their old dimensions are
+   * ignored during positioning.
+   */
+  private void addPendingBlockUpserts(List<AIOperation> writeOps) {
+    if (writeOps.isEmpty()) {
+      return;
+    }
+    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    if (blocksEditor == null) {
+      return;
+    }
+    JSONArray arr = new JSONArray();
+    int index = 0;
+    for (AIOperation op : writeOps) {
+      JSONObject json = JSONParser.parseStrict(op.getPayload()).isObject();
+      String yail = AIJsonUtils.getStringField(json, "yail");
+      if (yail != null) {
+        arr.set(index++, new JSONString(yail));
+      }
+    }
+    if (index > 0) {
+      blocksEditor.addPendingUpserts(arr.toString());
     }
   }
 

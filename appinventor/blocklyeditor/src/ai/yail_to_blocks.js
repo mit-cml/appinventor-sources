@@ -83,6 +83,88 @@ AI.YailToBlocks.blockExists = function(workspace, identifier) {
 };
 
 /**
+ * Mark existing blocks that will be replaced by WRITE_BLOCK upserts in
+ * the current batch.  Adds their IDs to {@code pendingDeletionIds_} so
+ * the positioning algorithm ignores them (they will be disposed and
+ * recreated at their original position during conversion).
+ *
+ * Must be called after {@code setPendingDeletions} so the set is
+ * already initialized.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The target workspace.
+ * @param {!Array<string>} yailStrings YAIL S-expression strings from
+ *     WRITE_BLOCK operations.
+ */
+AI.YailToBlocks.addPendingUpserts = function(workspace, yailStrings) {
+  if (!AI.YailToBlocks.pendingDeletionIds_) {
+    AI.YailToBlocks.pendingDeletionIds_ = {};
+  }
+  for (var i = 0; i < yailStrings.length; i++) {
+    try {
+      var asts = AI.SExprParser.parseAll(yailStrings[i]);
+      for (var j = 0; j < asts.length; j++) {
+        var id = AI.YailToBlocks.getUpsertIdentifier_(asts[j]);
+        if (id) {
+          var block = AI.YailToBlocks.findBlockByIdentifier_(workspace, id);
+          if (block) {
+            AI.YailToBlocks.pendingDeletionIds_[block.id] = true;
+          }
+        }
+      }
+    } catch (e) {
+      // Parse error — skip this YAIL string.
+    }
+  }
+};
+
+/**
+ * Extract the block identifier from a parsed YAIL AST node that would
+ * be used for upsert matching.  Returns null if the form type is not
+ * recognized or the node is malformed.
+ *
+ * @param {Object} node Parsed AST node.
+ * @return {?string} Identifier string compatible with findBlockByIdentifier_.
+ * @private
+ */
+AI.YailToBlocks.getUpsertIdentifier_ = function(node) {
+  var head = AI.SExprParser.formHead(node);
+  if (!head) return null;
+  var els = node.elements;
+  switch (head) {
+    case 'define-event':
+      if (els.length >= 3) {
+        return 'define-event ' +
+            (els[1].name || els[1].value) + ' ' +
+            (els[2].name || els[2].value);
+      }
+      return null;
+    case 'define-generic-event':
+      if (els.length >= 3) {
+        var typeName = AI.YailToBlocks.shortComponentType_(
+            els[1].name || String(els[1].value));
+        return 'define-generic-event ' + typeName + ' ' +
+            (els[2].name || els[2].value);
+      }
+      return null;
+    case 'def':
+    case 'def-return':
+      if (els.length < 2) return null;
+      var second = els[1];
+      if (second.type === 'symbol' && second.name &&
+          second.name.startsWith('g$')) {
+        return 'def ' + second.name;
+      }
+      if (second.type === 'list' && second.elements.length > 0) {
+        var sym = second.elements[0];
+        return 'def ' + (sym.name || String(sym.value));
+      }
+      return null;
+    default:
+      return null;
+  }
+};
+
+/**
  * Get top-level blocks for positioning, excluding any blocks that are
  * scheduled for deletion in the current batch.
  *

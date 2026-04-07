@@ -731,6 +731,33 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   /**
+   * Mark blocks for pending deletion so the placement algorithm ignores
+   * them when positioning new blocks.
+   *
+   * @param identifiersJson JSON array of YAIL identifier strings
+   */
+  public void setPendingDeletions(String identifiersJson) {
+    blocksArea.doSetPendingDeletions(identifiersJson);
+  }
+
+  /**
+   * Clear the pending deletion markers.
+   */
+  public void clearPendingDeletions() {
+    blocksArea.doClearPendingDeletions();
+  }
+
+  /**
+   * Mark existing blocks that will be replaced by WRITE_BLOCK upserts,
+   * adding them to the pending deletion set for positioning.
+   *
+   * @param yailJsonArray JSON array of YAIL S-expression strings
+   */
+  public void addPendingUpserts(String yailJsonArray) {
+    blocksArea.doAddPendingUpserts(yailJsonArray);
+  }
+
+  /**
    * Check whether a block with the given YAIL identifier exists.
    *
    * @param identifier YAIL identifier (e.g. "define-event Button1 Click")
