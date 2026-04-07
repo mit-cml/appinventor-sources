@@ -785,6 +785,18 @@ Parse errors are collected into the `AIAgentResponse.errors` list and shown to t
 
 When the user clicks Reject, the orchestrator sends a feedback message (`"The user rejected the proposed operations. Please suggest alternatives."`) as a regular `processRequest()` call. The LLM sees the rejection in conversation history and can propose a different approach.
 
+### Cancellation Flow
+
+When the user clicks Stop during an in-flight request:
+
+1. **Client**: `AIResponseOrchestrator.cancelRequest()` finalizes any active streaming bubble, calls `cancelInFlight()` to reset state, fires `cancelRequest(projectId)` RPC to the server, and shows "Request cancelled."
+2. **Server**: `AIAgentServiceImpl.cancelRequest()` sets a Memcache flag via `StreamBuffer.setCancelled()`.
+3. **LLM providers**: Each provider's SSE streaming loop checks `streamBuffer.isCancelled()` on every event. If cancelled, throws `StreamBuffer.CancelledException`.
+4. **Engine**: Catches `CancelledException`, stores a synthetic `"[Request cancelled]"` assistant message to keep history role-alternating, clears the stream buffer, and returns an empty response.
+5. **Client guard**: If the RPC response arrives after cancellation, `handleResponseWithValidation` checks `!requestInFlight` and silently discards it.
+
+Cancellation is best-effort: if the LLM call completes before the flag is checked, the response arrives normally but is discarded client-side.
+
 ---
 
 ## LLM Provider System

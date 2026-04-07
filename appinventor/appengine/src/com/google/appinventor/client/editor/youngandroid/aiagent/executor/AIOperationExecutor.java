@@ -7,14 +7,19 @@ package com.google.appinventor.client.editor.youngandroid.aiagent.executor;
 
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
+import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
 import com.google.appinventor.client.editor.youngandroid.aiagent.validator.AIOperationValidator;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -244,16 +249,24 @@ public class AIOperationExecutor {
   private void runSyncPhases(ExecutionState state, List<AIOperation> phase2,
       List<AIOperation> phase3, List<AIOperation> phase4, List<AIOperation> phase5) {
     try {
-      if (!runSyncList(state, phase2, phase3, phase4, phase5)) {
+      if (!runSyncList(state, phase2, Arrays.asList(phase3, phase4, phase5))) {
         return;
       }
-      if (!runSyncList(state, phase3, phase4, phase5)) {
-        return;
+      // Before writing new blocks (phase 3), tell the positioning algorithm
+      // which blocks will be deleted in phase 4 so it ignores them when
+      // computing free space.  This prevents gaps where removed blocks were.
+      setPendingBlockDeletions(phase4);
+      try {
+        if (!runSyncList(state, phase3, Arrays.asList(phase4, phase5))) {
+          return;
+        }
+        if (!runSyncList(state, phase4, Collections.singletonList(phase5))) {
+          return;
+        }
+      } finally {
+        clearPendingBlockDeletions();
       }
-      if (!runSyncList(state, phase4, phase5)) {
-        return;
-      }
-      runSyncList(state, phase5);
+      runSyncList(state, phase5, Collections.<List<AIOperation>>emptyList());
       state.finish();
     } finally {
       // Force a Companion YAIL update after all sync phases complete (or halt).
@@ -267,9 +280,8 @@ public class AIOperationExecutor {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private boolean runSyncList(ExecutionState state, List<AIOperation> current,
-      List<AIOperation>... remaining) {
+      List<List<AIOperation>> remaining) {
     for (int i = 0; i < current.size(); i++) {
       AIOperation op = current.get(i);
       if (isIdempotentSkip(op)) {
@@ -371,6 +383,39 @@ public class AIOperationExecutor {
         break;
       default:
         throw new IllegalStateException("Unexpected sync op type: " + op.getType());
+    }
+  }
+
+  /**
+   * Collects DELETE_BLOCK identifiers from the given phase and notifies
+   * the block positioning algorithm to ignore those blocks.
+   */
+  private void setPendingBlockDeletions(List<AIOperation> deleteOps) {
+    if (deleteOps.isEmpty()) {
+      return;
+    }
+    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    if (blocksEditor == null) {
+      return;
+    }
+    JSONArray arr = new JSONArray();
+    int index = 0;
+    for (AIOperation op : deleteOps) {
+      JSONObject json = JSONParser.parseStrict(op.getPayload()).isObject();
+      String block = AIJsonUtils.getStringField(json, "block");
+      if (block != null) {
+        arr.set(index++, new JSONString(block));
+      }
+    }
+    if (index > 0) {
+      blocksEditor.setPendingDeletions(arr.toString());
+    }
+  }
+
+  private void clearPendingBlockDeletions() {
+    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    if (blocksEditor != null) {
+      blocksEditor.clearPendingDeletions();
     }
   }
 }
