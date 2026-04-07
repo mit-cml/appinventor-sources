@@ -295,6 +295,12 @@ public class AIAgentEngine {
       String systemPrompt = contextBuilder.build();
       String providerRef = patchSystemPrompt(conv.getProviderRef(), systemPrompt);
 
+      // Build fresh context messages for the continuation call
+      List<String> contextMessages = contextBuilder.buildContextMessages(
+          userId, projectId, screenName, mode, blocksYail, currentView,
+          screenComponentsJson, projectSnapshot, blockWarnings,
+          locale, languageDisplayName);
+
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());
 
@@ -307,7 +313,7 @@ public class AIAgentEngine {
 
       // Call the continuation method with updated state
       LLMResponse llmResponse = provider.continueWithToolResults(
-          providerRef, tools, resolver, streamBuffer);
+          providerRef, tools, contextMessages, resolver, streamBuffer);
 
       // Debug: raw LLM response
       if (AIDebug.enabled()) {
@@ -332,14 +338,11 @@ public class AIAgentEngine {
       List<ChatMessage> history = provider.isStateless()
           ? conversationManager.loadConversation(conv.getConversationId())
           : Collections.<ChatMessage>emptyList();
-      List<String> contextMessages = provider.isStateless()
-          ? contextBuilder.buildContextMessages(userId, projectId, screenName, mode,
-              blocksYail, currentView, screenComponentsJson, projectSnapshot,
-              blockWarnings, locale, languageDisplayName)
-          : null;
+      // Stateful providers already have context; re-sending would duplicate.
+      List<String> retryContext = provider.isStateless() ? contextMessages : null;
       NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
       retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
-          contextMessages, tools, history, conv, resolver, streamBuffer);
+          retryContext, tools, history, conv, resolver, streamBuffer);
       llmResponse = nrs.llmResponse;
       parsed = nrs.parsed;
       assistantText = nrs.assistantText;
@@ -414,60 +417,52 @@ public class AIAgentEngine {
           + ", projectId=" + projectId + ", results=" + results.size()
           + ", retryAttempt=" + retryAttempt + ", totalTools=" + totalTools);
 
-      // Extract structured results directly from typed DTOs.
-      List<String> succeededSummaries = new ArrayList<>();
-      List<String> failedDetails = new ArrayList<>();
-      List<String> skippedSummaries = new ArrayList<>();
+      // Determine if this is a validation retry (no SKIPPED results means
+      // all operations were attempted — this is a validation pass, not
+      // a full execution).
+      boolean isValidationRetry = true;
       for (AIOperationResult r : results) {
-        switch (r.getStatus()) {
-          case SUCCEEDED:
-            succeededSummaries.add(r.getSummary());
-            break;
-          case FAILED:
-            String detail = r.getSummary();
-            if (r.getErrorDetail() != null && !r.getErrorDetail().isEmpty()) {
-              detail += " -- Error: " + r.getErrorDetail();
-            }
-            failedDetails.add(detail);
-            break;
-          case SKIPPED:
-            skippedSummaries.add(r.getSummary());
-            break;
+        if (r.getStatus() == AIOperationResult.Status.SKIPPED) {
+          isValidationRetry = false;
+          break;
         }
       }
 
-      String feedback = LLMResponseParser.buildExecutionErrorFeedback(
-          succeededSummaries, failedDetails, skippedSummaries);
-      AIDebug.log(LOG, "Retrying LLM with client execution errors: " + feedback);
-
-      // Get provider and tools
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
-      List<ChatMessage> history = Collections.emptyList();
-      if (provider.isStateless()) {
-        history = conversationManager.loadConversation(conv.getConversationId());
+      // Patch the continuation state's toolCallResults with client outcomes
+      String patchedRef = patchToolCallResults(
+          conv.getProviderRef(), results, isValidationRetry);
+      if (patchedRef == null) {
+        streamBuffer.clear();
+        return errorResponse(
+            "Missing tool call results in continuation state. Please start a new request.");
       }
-      ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
-      // Build system prompt and context messages with current blocks state
+      // Patch the system prompt into the continuation state
       String systemPrompt = contextBuilder.build();
+      patchedRef = patchSystemPrompt(patchedRef, systemPrompt);
+
+      // Build fresh context messages with current blocks state
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
           locale, languageDisplayName);
 
-      // Save raw feedback to history BEFORE calling the LLM,
-      // so it is persisted even if the LLM call fails.
-      conversationManager.storeMessage(conv.getConversationId(),
-          MessageRole.USER, "[Execution error feedback] " + feedback, false);
+      // Get provider, tools, and resolver
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+      ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
+
+      if (AIDebug.enabled()) {
+        AIDebug.log(LOG, "Patched tool call results (isValidationRetry="
+            + isValidationRetry + "): "
+            + patchedRef.substring(0, Math.min(patchedRef.length(), 500)));
+      }
 
       streamBuffer.appendStatus("Calling AI (" + retryInfo + ")...");
 
-      // Retry LLM with wrapped feedback — tags are for the LLM only, not stored
-      LLMResponse llmResponse = provider.chat(
-          systemPrompt, contextMessages,
-          AIAgentRequest.wrapPlatformMessage(feedback),
-          tools, conv.getProviderRef(), history, resolver, streamBuffer);
+      // Continue with patched tool results instead of starting a new chat
+      LLMResponse llmResponse = provider.continueWithToolResults(
+          patchedRef, tools, contextMessages, resolver, streamBuffer);
 
       // Parse, enforce, save, and build response
       ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
@@ -822,6 +817,60 @@ public class AIAgentEngine {
     } catch (Exception e) {
       LOG.warning("Failed to annotate tool call results: " + e.getMessage());
       return providerRef;
+    }
+  }
+
+  /**
+   * Patches the toolCallResults in the continuation state with client-side
+   * execution outcomes. Iterates the existing toolCallResults, skipping
+   * REJECTED entries (already resolved server-side), and maps each ACCEPTED
+   * entry to the corresponding client result by position.
+   */
+  static String patchToolCallResults(String providerRef,
+      List<AIOperationResult> clientResults, boolean isValidationRetry) {
+    if (providerRef == null || providerRef.isEmpty()) {
+      return null;
+    }
+    try {
+      JSONObject state = new JSONObject(providerRef);
+      JSONArray toolCallResults = state.optJSONArray("toolCallResults");
+      if (toolCallResults == null) {
+        return null;
+      }
+
+      int clientIdx = 0;
+      for (int i = 0; i < toolCallResults.length(); i++) {
+        JSONObject entry = toolCallResults.getJSONObject(i);
+        String currentResult = entry.optString("result", "");
+        if (currentResult.startsWith("REJECTED:")) {
+          continue;
+        }
+        if (clientIdx < clientResults.size()) {
+          AIOperationResult cr = clientResults.get(clientIdx);
+          switch (cr.getStatus()) {
+            case SUCCEEDED:
+              entry.put("result", isValidationRetry
+                  ? "Validated successfully. Pending application."
+                  : "Applied successfully.");
+              break;
+            case FAILED:
+              String detail = cr.getErrorDetail() != null
+                  ? cr.getErrorDetail() : "Unknown error";
+              entry.put("result", "FAILED: " + detail);
+              break;
+            case SKIPPED:
+              entry.put("result",
+                  "SKIPPED: execution halted after a prior failure.");
+              break;
+          }
+          clientIdx++;
+        }
+      }
+      state.put("toolCallResults", toolCallResults);
+      return state.toString();
+    } catch (Exception e) {
+      LOG.warning("Failed to patch tool call results: " + e.getMessage());
+      return null;
     }
   }
 

@@ -11,6 +11,7 @@ import com.google.appinventor.client.editor.youngandroid.aiagent.validator.AIOpe
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 
 import java.util.ArrayList;
@@ -184,6 +185,12 @@ public class AIOperationExecutor {
     }
 
     final AIOperation op = phase1.get(index);
+    if (isIdempotentSkip(op)) {
+      LOG.fine("Idempotent skip: " + op.getType() + " already applied");
+      state.markSucceeded(op);
+      runPhase1(state, phase1, index + 1, phase2, phase3, phase4, phase5);
+      return;
+    }
     try {
       String error = AIOperationValidator.validate(op);
       if (error != null) {
@@ -265,6 +272,11 @@ public class AIOperationExecutor {
       List<AIOperation>... remaining) {
     for (int i = 0; i < current.size(); i++) {
       AIOperation op = current.get(i);
+      if (isIdempotentSkip(op)) {
+        LOG.fine("Idempotent skip: " + op.getType() + " already applied");
+        state.markSucceeded(op);
+        continue;
+      }
       try {
         String error = AIOperationValidator.validate(op);
         if (error != null) {
@@ -294,9 +306,49 @@ public class AIOperationExecutor {
     return true;
   }
 
+  /**
+   * Returns {@code true} if the given operation has already been applied and
+   * can therefore be silently skipped.  This prevents cascading failures when
+   * the LLM retries a tool-call batch that partially succeeded.
+   */
+  private boolean isIdempotentSkip(AIOperation op) {
+    JSONObject json = JSONParser.parseStrict(op.getPayload()).isObject();
+
+    switch (op.getType()) {
+      case ADD_COMPONENT: {
+        String name = json.get("name").isString().stringValue();
+        return AIEditorState.componentExists(name);
+      }
+      case DELETE_COMPONENT: {
+        String name = json.get("name").isString().stringValue();
+        return !AIEditorState.componentExists(name);
+      }
+      case RENAME_COMPONENT: {
+        String oldName = json.get("old_name").isString().stringValue();
+        String newName = json.get("new_name").isString().stringValue();
+        boolean oldExists = AIEditorState.componentExists(oldName);
+        boolean newExists = AIEditorState.componentExists(newName);
+        return !oldExists && newExists;
+      }
+      case DELETE_BLOCK: {
+        String block = json.get("block").isString().stringValue();
+        return !AIEditorState.blockExists(block);
+      }
+      case CREATE_SCREEN: {
+        String screenName = json.get("screen_name").isString().stringValue();
+        return AIEditorState.screenExists(screenName);
+      }
+      case DELETE_SCREEN: {
+        String screenName = json.get("screen_name").isString().stringValue();
+        return !AIEditorState.screenExists(screenName);
+      }
+      default:
+        return false;
+    }
+  }
+
   private void dispatchSyncOp(AIOperation op) {
-    com.google.gwt.json.client.JSONObject json =
-        JSONParser.parseStrict(op.getPayload()).isObject();
+    JSONObject json = JSONParser.parseStrict(op.getPayload()).isObject();
 
     switch (op.getType()) {
       case ADD_COMPONENT:

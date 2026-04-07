@@ -82,7 +82,7 @@ To add a new context section, create a class extending `ContextModule`, implemen
 
 | File | Purpose |
 |------|---------|
-| `LLMProvider.java` | Interface: `chat()`, `continueWithToolResults()`, `isStateless()` |
+| `LLMProvider.java` | Interface: `chat()`, `continueWithToolResults(state, contextMessages, streamBuffer)`, `isStateless()` |
 | `LLMProviderRegistry.java` | Factory: selects provider from `ai.agent.provider` system property |
 | `OpenAIChatCompletionsProvider.java` | Base class for OpenAI Chat Completions compatible providers |
 | `AnthropicCompatibleProvider.java` | Full implementation for Anthropic Messages API compatible providers |
@@ -415,7 +415,7 @@ flowchart TD
     Show["Show operation preview"]
     Split["Split: valid ops preserved,<br/>invalid ops collected"]
     Retry{"retries < 5?"}
-    Report["reportExecutionErrors()<br/><i>Send failures + failing YAIL to LLM</i>"]
+    Report["reportExecutionErrors()<br/><i>Patch tool results + continueWithToolResults()</i>"]
     NewResp["LLM returns corrected ops"]
     Merge["Merge preserved valid ops<br/>+ new ops from LLM"]
     Strip["Strip invalid ops,<br/>add errors to response"]
@@ -432,9 +432,10 @@ flowchart TD
     Merge --> Show
 ```
 
-- **WRITE_BLOCK**: the YAIL is tested against the Blockly engine in a dry run (no blocks created). If the YAIL is malformed, the error message **and** the failing YAIL are sent back to the LLM so it can see and fix its mistake.
+- **WRITE_BLOCK**: the YAIL is tested against the Blockly engine in a dry run (no blocks created). If the YAIL is malformed, the error is reported as a native tool result (`"FAILED: <error>"`) so the LLM sees its mistake in the tool call's own result. Valid operations in the same batch receive `"Validated successfully. Pending application."`.
 - **DELETE_BLOCK**: the block identifier is validated via `BlocksEditor.validateDeleteId()`.
 - Valid operations from a mixed-result batch are **preserved across retries** (`preservedValidOps`) and merged back once the LLM fixes the failures.
+- Validation retries go through `reportExecutionErrors()` which patches the continuation state's tool results and calls `continueWithToolResults()` -- the same path used for execution retries.
 - Up to **5 validation retries** before falling back to stripping invalid operations.
 
 ### Stage 2: Per-Operation Validation (During Execution)
@@ -509,7 +510,8 @@ sequenceDiagram
 
     alt Validation fails
         C->>S: reportExecutionErrors(failures)
-        S->>L: Retry with error feedback
+        S->>S: patchToolCallResults() with outcomes
+        S->>L: continueWithToolResults(patched results + context)
         L-->>S: Corrected operations
         S-->>C: Updated AIAgentResponse
     end
@@ -526,7 +528,8 @@ sequenceDiagram
 
     alt Execution fails
         C->>S: reportExecutionErrors(results)
-        S->>L: Retry with error feedback
+        S->>S: patchToolCallResults() with outcomes
+        S->>L: continueWithToolResults(patched results + context)
         S-->>C: Corrected operations
     end
 
@@ -552,13 +555,13 @@ sequenceDiagram
 
 6. **Streaming to client.** During steps 3-5, text tokens are written to `StreamBuffer` (Memcache). The client polls every 250ms.
 
-7. **Client pre-validates blocks.** WRITE_BLOCK/DELETE_BLOCK operations are dry-run tested against Blockly. Failures trigger automatic LLM retries (up to 5).
+7. **Client pre-validates blocks.** WRITE_BLOCK/DELETE_BLOCK operations are dry-run tested against Blockly. Failures trigger automatic LLM retries via `reportExecutionErrors()` -> `continueWithToolResults()` (up to 5).
 
 8. **User reviews preview.** Color-coded operation list: green = add, red = delete, blue = modify.
 
 9. **User decides.** Apply / Reject / Apply & Accept All.
 
-10. **Execution.** `AIOperationExecutor` applies operations in 5 phases. On failure, `reportExecutionErrors()` triggers LLM retry (up to 3).
+10. **Execution.** `AIOperationExecutor` applies operations in 5 phases. On failure, `reportExecutionErrors()` patches tool results and triggers LLM retry via `continueWithToolResults()` (up to 3).
 
 11. **Continuation.** If `hasMore` is true, `continueRequest()` fetches the next batch.
 
@@ -692,14 +695,14 @@ flowchart TD
     Resp["AIAgentResponse<br/>sent to client"]
     VCheck{"Block validation<br/>errors?"}
     VRetry{"validation retries<br/>< 5?"}
-    VReport["reportExecutionErrors()<br/><i>Send failing YAIL + errors to LLM</i>"]
+    VReport["reportExecutionErrors()<br/><i>Patch tool results + continueWithToolResults()</i>"]
     VStrip["Strip invalid ops,<br/>merge preserved valid ops"]
     Preview["Show operation preview"]
     Apply["User clicks Apply"]
     Execute["AIOperationExecutor.execute()"]
     ECheck{"Execution<br/>succeeded?"}
     ERetry{"execution retries<br/>< 3?"}
-    EReport["reportExecutionErrors()<br/><i>Send succeeded/failed/skipped to LLM</i>"]
+    EReport["reportExecutionErrors()<br/><i>Patch tool results + continueWithToolResults()</i>"]
     Done["Done"]
     Fail["Show error to user"]
 
@@ -737,33 +740,32 @@ Some LLMs respond with text describing what they *would* do instead of actually 
 
 - Triggered when WRITE_BLOCK or DELETE_BLOCK fails client-side Blockly dry-run.
 - Valid operations from a mixed batch are **preserved** in `preservedValidOps`.
-- Only the failures are reported to the LLM with the failing YAIL code.
+- Failed operations get `"FAILED: <error>"` tool results; valid ones get `"Validated successfully. Pending application."`.
+- The patched tool results are sent via `continueWithToolResults()` so the LLM sees native per-tool-call feedback.
 - LLM returns corrected operations, which are re-validated.
 - After 5 attempts, remaining invalid ops are stripped and errors shown in preview.
 
 ### Execution Retries (up to 3)
 
 - Triggered when `AIOperationExecutor` fails during phased execution.
-- Per-operation results are sent: succeeded, failed (with error), skipped.
-- LLM sees exactly what worked and what didn't, and can adjust.
+- Per-operation tool results are patched: `"Applied successfully."`, `"FAILED: <error>"`, or `"SKIPPED: execution halted after a prior failure."`.
+- The LLM receives these as native tool results via `continueWithToolResults()` and sees exactly what worked and what didn't.
 
 ### Server-Side Retry Handling
 
 When the client calls `reportExecutionErrors()`, here is what happens on the server (`AIAgentEngine.reportExecutionErrors()`):
 
-1. **Categorize results.** The `AIOperationResult` DTOs are split into three lists: succeeded summaries, failed details (with error messages), and skipped summaries.
+1. **Patch tool call results.** The `patchToolCallResults()` helper iterates over the `AIOperationResult` DTOs from the client and patches the continuation state's `toolCallResults` map with per-tool-call outcome strings:
+   - `"Applied successfully."` -- the operation was applied without error.
+   - `"FAILED: <error message>"` -- the operation failed during execution, with the specific error.
+   - `"SKIPPED: execution halted after a prior failure."` -- the operation was never attempted because a preceding operation failed.
+   - `"Validated successfully. Pending application."` -- used during validation retries to indicate the operation passed dry-run validation but has not been applied yet.
 
-2. **Build feedback message.** `LLMResponseParser.buildExecutionErrorFeedback()` assembles a structured text message with three labeled sections:
-   - "ALREADY APPLIED successfully (do NOT re-emit these)" -- succeeded ops
-   - "FAILED during execution" -- failed ops with error details
-   - "SKIPPED (never executed, halted after the failure above)" -- skipped ops
-   - Closing instruction: "fix the failed operation(s) and re-emit ONLY the failed and skipped operations"
+2. **Continue via tool results.** The patched continuation state is sent to the LLM via `provider.continueWithToolResults()` with fresh context messages built from the client's updated editor state. The LLM sees its original tool calls paired with native tool results describing exactly what succeeded, failed, or was skipped -- there is no separate feedback "user message" and no `<system>` tag wrapping.
 
-3. **Send as a new user message.** The feedback is stored in conversation history (as a non-display message) and sent to the LLM via `provider.chat()` as the user message, with fresh context messages built from the client's updated editor state. The LLM sees the full current project state plus the error feedback.
+3. **`retryAttempt` and `totalTools`** are passed from the client and used for the status display (`"3 out of 8 tools failed, retry attempt 2"`). `totalTools` preserves the original batch size since subsequent retries only re-emit failed/skipped operations.
 
-4. **`retryAttempt` and `totalTools`** are passed from the client and used for the status display (`"3 out of 8 tools failed, retry attempt 2"`). `totalTools` preserves the original batch size since subsequent retries only re-emit failed/skipped operations.
-
-5. **Parse and enforce as usual.** The LLM's corrected response goes through the same `parseAndEnforce()` pipeline -- unknown tools, mode violations, etc. are caught the same way as on a first request.
+4. **Parse and enforce as usual.** The LLM's corrected response goes through the same `parseAndEnforce()` pipeline -- unknown tools, mode violations, etc. are caught the same way as on a first request.
 
 ### Server-Side Parse Errors (LLMResponseParser)
 
@@ -835,13 +837,13 @@ When the user clicks Reject, the orchestrator sends a feedback message (`"The us
 flowchart LR
     subgraph "Stateless (Anthropic, Bedrock, MiniMax, OpenRouter, Ollama, compatible)"
         A1["chat(): full history + new message"]
-        A2["continueWithToolResults(): full history + synthetic results"]
+        A2["continueWithToolResults(): full history + patched tool results + context messages"]
         A3["providerRef unused"]
     end
 
     subgraph "Stateful (OpenAI, Gemini, Vertex)"
         B1["chat(): new message only"]
-        B2["continueWithToolResults(): synthetic results + providerRef"]
+        B2["continueWithToolResults(): patched tool results + context messages + providerRef"]
         B3["providerRef = response_id or session ref"]
     end
 ```
@@ -859,7 +861,7 @@ For providers with a unique API format, implement `LLMProvider` from scratch:
 
 1. Create `YourProvider.java` in `server/aiagent/llm/` implementing `LLMProvider`.
 2. Implement `chat()` -- handle the tool-use loop for read-only tools internally (max 5 iterations).
-3. Implement `continueWithToolResults()` -- send synthetic `"Done."` results for pending tool calls.
+3. Implement `continueWithToolResults(continuationState, contextMessages, streamBuffer)` -- send the patched tool results from the continuation state to the LLM. The `contextMessages` parameter carries fresh context (project state, screen state, mode instructions) that the provider injects as user messages alongside the tool results so the LLM sees the latest editor state on every retry or continuation.
 4. Implement `isStateless()` -- return `true` if the provider doesn't support server-side conversation state.
 5. Register in `LLMProviderRegistry`:
    - Add a default model in `DEFAULT_MODELS`.
@@ -999,6 +1001,8 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **Max 5 tool-use iterations** per LLM call to prevent infinite loops.
 - **Max 5 validation retries** for block YAIL errors before stripping invalid operations.
 - **Max 3 execution error retries** before giving up and showing the error to the user.
+- **Execution and validation errors are communicated via native tool results, not user messages.** The `patchToolCallResults()` helper writes per-tool-call outcome strings (`"Applied successfully."`, `"FAILED: ..."`, `"SKIPPED: ..."`, `"Validated successfully. Pending application."`) into the continuation state, and the retry goes through `continueWithToolResults()`. This keeps error feedback in the tool result channel where the LLM naturally expects it.
+- **Client-side operations have idempotency guards.** Operations that have already been applied (e.g. a component that was already added) are detected and skipped rather than failing. This prevents spurious errors when the LLM re-emits operations that succeeded in a previous attempt.
 - **Message length limit: 2000 characters.** Enforced server-side with control character stripping.
 - **Rate limit: configurable** (default 10 req/min per user). Enforced via in-memory timestamps in `AIAgentServiceImpl`.
 - **Context is never cached client-side.** Every request rebuilds the full editor state snapshot.

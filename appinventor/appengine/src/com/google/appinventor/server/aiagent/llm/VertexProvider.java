@@ -287,7 +287,8 @@ class VertexProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
+      List<String> contextMessages, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -323,6 +324,24 @@ class VertexProvider implements LLMProvider {
     contents.put(new JSONObject()
         .put("role", "user")
         .put("parts", responseParts));
+
+    // Inject per-request context messages after tool results
+    if (contextMessages != null) {
+      for (String ctx : contextMessages) {
+        if (ctx != null && !ctx.isEmpty()) {
+          JSONArray ctxParts = new JSONArray();
+          ctxParts.put(new JSONObject().put("text", ctx));
+          contents.put(new JSONObject()
+              .put("role", "user")
+              .put("parts", ctxParts));
+          JSONArray ackParts = new JSONArray();
+          ackParts.put(new JSONObject().put("text", "Understood."));
+          contents.put(new JSONObject()
+              .put("role", "model")
+              .put("parts", ackParts));
+        }
+      }
+    }
 
     JSONArray toolDeclarations = buildToolDeclarations(tools);
 

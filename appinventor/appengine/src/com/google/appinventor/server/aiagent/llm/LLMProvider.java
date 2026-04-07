@@ -59,12 +59,16 @@ public interface LLMProvider {
    * @param continuationState the serialized conversation state from
    *                          {@link LLMResponse#getProviderRef()}
    * @param tools             the tool definitions (same as the original call)
+   * @param contextMessages   per-request context messages (e.g. mode instructions,
+   *                          current screen state) to inject after tool results;
+   *                          may be null or empty
    * @param resolver          callback for resolving read-only tool calls
    * @return the next LLM response (may have {@code hasMore = true} again)
    * @throws LLMProviderException if the API call fails
    */
   LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException;
+      List<String> contextMessages, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException;
 
   /**
    * Returns true if this provider is stateless (does not use providerRef

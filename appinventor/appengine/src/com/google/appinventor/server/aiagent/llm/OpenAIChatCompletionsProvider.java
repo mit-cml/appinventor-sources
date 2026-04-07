@@ -249,7 +249,8 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
+      List<String> contextMessages, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -277,6 +278,20 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
           .put("role", "tool")
           .put("tool_call_id", pending.getString("id"))
           .put("content", resultContent));
+    }
+
+    // Inject per-request context messages after tool results
+    if (contextMessages != null) {
+      for (String ctx : contextMessages) {
+        if (ctx != null && !ctx.isEmpty()) {
+          messages.put(new JSONObject()
+              .put("role", "user")
+              .put("content", ctx));
+          messages.put(new JSONObject()
+              .put("role", "assistant")
+              .put("content", "Understood."));
+        }
+      }
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);

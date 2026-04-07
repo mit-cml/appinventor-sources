@@ -203,7 +203,8 @@ class BedrockProvider implements LLMProvider {
 
   @Override
   public LLMResponse continueWithToolResults(String continuationState, List<LLMTool> tools,
-      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer) throws LLMProviderException {
+      List<String> contextMessages, ReadOnlyToolResolver resolver,
+      StreamBuffer streamBuffer) throws LLMProviderException {
 
     JSONObject state;
     try {
@@ -239,6 +240,22 @@ class BedrockProvider implements LLMProvider {
     messages.put(new JSONObject()
         .put("role", "user")
         .put("content", toolResultBlocks));
+
+    // Inject per-request context messages after tool results
+    if (contextMessages != null) {
+      for (String ctx : contextMessages) {
+        if (ctx != null && !ctx.isEmpty()) {
+          messages.put(new JSONObject()
+              .put("role", "user")
+              .put("content", new JSONArray().put(
+                  new JSONObject().put("text", ctx))));
+          messages.put(new JSONObject()
+              .put("role", "assistant")
+              .put("content", new JSONArray().put(
+                  new JSONObject().put("text", "Understood."))));
+        }
+      }
+    }
 
     JSONArray toolDefs = buildToolDefinitions(tools);
 

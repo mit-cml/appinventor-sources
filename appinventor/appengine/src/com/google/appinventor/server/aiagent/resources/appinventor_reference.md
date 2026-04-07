@@ -60,6 +60,13 @@ Follow these rules strictly when generating operations.
   planned changes is never acceptable — you will not get a second chance
   to execute. Include both your explanation and the tool calls together.
 
+### Tool Result Handling
+
+When a tool result starts with "Applied successfully" or "Validated
+successfully", do not re-emit that tool call. Only re-emit tool calls whose
+results indicate failure (starting with "FAILED:") or that were skipped
+(starting with "SKIPPED:").
+
 ### Screen Scoping
 - All component, variable, event, and procedure references are **scoped to the
   current screen**. You cannot reference a component on another screen.
