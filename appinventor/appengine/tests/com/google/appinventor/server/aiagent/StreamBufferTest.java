@@ -133,4 +133,39 @@ public class StreamBufferTest extends TestCase {
     assertFalse(status.isResetStreaming());
     assertEquals("normal text", status.getTextDelta());
   }
+
+  public void testSetCancelledAndIsCancelled() {
+    buffer.init();
+    assertFalse(buffer.isCancelled());
+    buffer.setCancelled();
+    assertTrue(buffer.isCancelled());
+  }
+
+  public void testCheckCancelledThrowsWhenCancelled() {
+    buffer.init();
+    buffer.setCancelled();
+    try {
+      buffer.checkCancelled();
+      fail("Expected CancelledException");
+    } catch (StreamBuffer.CancelledException e) {
+      // expected
+    }
+  }
+
+  public void testCheckCancelledDoesNotThrowWhenNotCancelled() {
+    buffer.init();
+    try {
+      buffer.checkCancelled();
+    } catch (StreamBuffer.CancelledException e) {
+      fail("Should not throw when not cancelled");
+    }
+  }
+
+  public void testInitClearsCancelledFlag() {
+    buffer.init();
+    buffer.setCancelled();
+    assertTrue(buffer.isCancelled());
+    buffer.init();
+    assertFalse(buffer.isCancelled());
+  }
 }

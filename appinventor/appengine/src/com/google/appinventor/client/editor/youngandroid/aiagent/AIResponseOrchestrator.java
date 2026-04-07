@@ -388,6 +388,40 @@ public class AIResponseOrchestrator {
   }
 
   /**
+   * Cancels the in-flight request: finalizes streaming UI, resets client
+   * state, and fires a server-side cancel RPC to abort LLM processing.
+   */
+  public void cancelRequest() {
+    if (!requestInFlight) {
+      return;
+    }
+
+    // Finalize streaming bubble so partial text is preserved.
+    if (streamingActive) {
+      callback.finalizeStreamingBubble(null);
+      streamingActive = false;
+    }
+
+    // Reset client state (stops polling, re-enables UI).
+    cancelInFlight();
+
+    // Fire server-side cancel RPC (fire-and-forget).
+    long projectId = contextCollector.getCurrentProjectId();
+    if (projectId != 0) {
+      aiAgentService.cancelRequest(projectId, new OdeAsyncCallback<Void>(
+          MESSAGES.aiChatSendError()) {
+        @Override
+        public void onSuccess(Void result) {
+          // Nothing to do — cancellation is best-effort.
+        }
+      });
+    }
+
+    // Show cancellation message.
+    callback.addAiMessage(MESSAGES.aiChatRequestCancelled());
+  }
+
+  /**
    * Resets the auto-accept-all flag without affecting other state.
    * Called when the dialog is closed or the active project changes.
    */
@@ -422,6 +456,11 @@ public class AIResponseOrchestrator {
    * all remaining failures are fixed (or retries are exhausted).</p>
    */
   private void handleResponseWithValidation(AIAgentResponse response) {
+    // Discard stale RPC responses that arrive after the user cancelled.
+    if (!requestInFlight) {
+      return;
+    }
+
     List<AIOperation> operations = response.getOperations();
 
     // Pre-validate WRITE_BLOCK and DELETE_BLOCK operations client-side

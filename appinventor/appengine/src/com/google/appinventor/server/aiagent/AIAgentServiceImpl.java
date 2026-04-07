@@ -147,6 +147,17 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     return engine.getRequestStatus(projectId);
   }
 
+  @Override
+  public void cancelRequest(long projectId) {
+    String userId = userInfoProvider.getUserId();
+    try {
+      storageIo.assertUserHasProject(userId, projectId);
+    } catch (SecurityException e) {
+      throw new SecurityException("You do not have access to this project.");
+    }
+    engine.cancelRequest(projectId);
+  }
+
   // ---------- Request validation ----------
 
   private static class RequestContext {

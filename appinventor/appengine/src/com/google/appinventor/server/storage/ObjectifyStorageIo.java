@@ -3022,10 +3022,12 @@ public class ObjectifyStorageIo implements StorageIo {
         keysToDelete.add(streamKey(projectId, "chunk:" + i));
       }
       keysToDelete.add(streamKey(projectId, "done"));
+      keysToDelete.add(streamKey(projectId, "cancelled"));
       memcache.deleteAll(keysToDelete);
     }
     memcache.put(streamKey(projectId, "wc"), 0L, exp);
     memcache.put(streamKey(projectId, "rc"), 0L, exp);
+    memcache.delete(streamKey(projectId, "cancelled"));
   }
 
   @Override
@@ -3090,6 +3092,22 @@ public class ObjectifyStorageIo implements StorageIo {
       keys.add(streamKey(projectId, "chunk:" + i));
     }
     memcache.deleteAll(keys);
+  }
+
+  @Override
+  public void setAIStreamCancelled(long projectId) {
+    memcache.put(streamKey(projectId, "cancelled"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamCancelled(long projectId) {
+    return memcache.get(streamKey(projectId, "cancelled")) != null;
+  }
+
+  @Override
+  public void clearAIStreamCancelled(long projectId) {
+    memcache.delete(streamKey(projectId, "cancelled"));
   }
 
 }

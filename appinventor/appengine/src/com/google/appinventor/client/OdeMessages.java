@@ -6047,6 +6047,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Link text for sharing feedback about an AI response")
   String aiChatShareFeedback();
 
+  @DefaultMessage("Stop")
+  @Description("Text on the stop button in the AI chat dialog, shown while a request is in flight")
+  String aiChatStopButton();
+
+  @DefaultMessage("Request cancelled.")
+  @Description("System message shown when the user cancels an in-flight AI request")
+  String aiChatRequestCancelled();
+
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();

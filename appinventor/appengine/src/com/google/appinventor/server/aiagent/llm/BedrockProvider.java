@@ -757,6 +757,9 @@ class BedrockProvider implements LLMProvider {
     try {
       String line;
       while ((line = reader.readLine()) != null) {
+        if (streamBuffer.isCancelled()) {
+          throw new StreamBuffer.CancelledException();
+        }
         if (line.isEmpty()) {
           continue;
         }

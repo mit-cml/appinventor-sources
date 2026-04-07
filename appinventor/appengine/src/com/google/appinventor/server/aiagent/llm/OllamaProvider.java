@@ -673,6 +673,9 @@ public class OllamaProvider implements LLMProvider {
         new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
       String line;
       while ((line = reader.readLine()) != null) {
+        if (streamBuffer.isCancelled()) {
+          throw new StreamBuffer.CancelledException();
+        }
         if (line.isEmpty()) {
           continue;
         }

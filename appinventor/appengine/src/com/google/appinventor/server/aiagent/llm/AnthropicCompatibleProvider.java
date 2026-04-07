@@ -810,6 +810,9 @@ public class AnthropicCompatibleProvider implements LLMProvider {
     try {
       String line;
       while ((line = reader.readLine()) != null) {
+        if (streamBuffer.isCancelled()) {
+          throw new StreamBuffer.CancelledException();
+        }
         // SSE format: blank lines separate events
         if (line.isEmpty()) {
           currentEvent = null;

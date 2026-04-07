@@ -68,6 +68,15 @@ public interface AIAgentService extends RemoteService {
   AIStreamStatus getRequestStatus(long projectId);
 
   /**
+   * Cancel an in-flight AI request for a project. Sets a cancellation flag
+   * in Memcache that the LLM provider checks during streaming to abort early.
+   * Best-effort: the request may complete before the flag is checked.
+   *
+   * @param projectId the project whose request should be cancelled
+   */
+  void cancelRequest(long projectId);
+
+  /**
    * Report client-side execution or validation results to the server so
    * the LLM can be retried with structured feedback.
    *

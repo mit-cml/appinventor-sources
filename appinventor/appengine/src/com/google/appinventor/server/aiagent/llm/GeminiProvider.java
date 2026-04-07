@@ -771,6 +771,9 @@ public class GeminiProvider implements LLMProvider {
     try {
       String line;
       while ((line = reader.readLine()) != null) {
+        if (streamBuffer.isCancelled()) {
+          throw new StreamBuffer.CancelledException();
+        }
         rawBuffer.append(line).append('\n');
 
         // SSE format: lines starting with "data: " carry the JSON payload.

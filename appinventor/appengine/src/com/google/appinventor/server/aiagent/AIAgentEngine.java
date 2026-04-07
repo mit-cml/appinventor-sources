@@ -239,6 +239,18 @@ public class AIAgentEngine {
       return finalizeResponse(llmResponse, assistantText, parsed,
           conv, projectId, isNew);
 
+    } catch (StreamBuffer.CancelledException e) {
+      LOG.info("Request cancelled by user for project " + projectId);
+      // Store synthetic assistant message to keep history role-alternating
+      // (user message was already stored before the LLM call).
+      AIConversationState conv = conversationManager.getConversation(projectId);
+      if (conv != null) {
+        conversationManager.storeMessage(conv.getConversationId(),
+            MessageRole.ASSISTANT, "[Request cancelled]", false);
+      }
+      new StreamBuffer(storageIo, projectId).clear();
+      return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+          Collections.<String>emptyList());
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error", e);
       streamBuffer.clear();
@@ -354,6 +366,18 @@ public class AIAgentEngine {
 
       return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false);
 
+    } catch (StreamBuffer.CancelledException e) {
+      LOG.info("Continuation cancelled by user for project " + projectId);
+      // Store synthetic assistant message to keep history role-alternating.
+      // Stateless providers (Anthropic) require strict role alternation.
+      AIConversationState cancelConv = conversationManager.getConversation(projectId);
+      if (cancelConv != null) {
+        conversationManager.storeMessage(cancelConv.getConversationId(),
+            MessageRole.ASSISTANT, "[Request cancelled]", false);
+      }
+      streamBuffer.clear();
+      return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+          Collections.<String>emptyList());
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error in continuation", e);
       streamBuffer.clear();
@@ -474,6 +498,11 @@ public class AIAgentEngine {
 
       return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false);
 
+    } catch (StreamBuffer.CancelledException e) {
+      LOG.info("Error retry cancelled by user for project " + projectId);
+      streamBuffer.clear();
+      return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+          Collections.<String>emptyList());
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error in error retry", e);
       streamBuffer.clear();
@@ -521,6 +550,14 @@ public class AIAgentEngine {
       status.setConversationId(conv.getConversationId());
     }
     return status;
+  }
+
+  /**
+   * Sets the cancellation flag for an in-flight request. The flag is stored
+   * in Memcache and checked by LLM providers during streaming.
+   */
+  public void cancelRequest(long projectId) {
+    new StreamBuffer(storageIo, projectId).setCancelled();
   }
 
   public String getProjectAIMode(String userId, long projectId) {

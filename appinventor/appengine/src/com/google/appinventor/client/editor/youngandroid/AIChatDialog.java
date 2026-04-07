@@ -400,8 +400,14 @@ public class AIChatDialog extends DialogBox
    * Validates input and delegates to the orchestrator.
    */
   private void doSendMessage() {
+    // If a request is in flight, clicking the button means "Stop".
+    if (orchestrator.isRequestInFlight()) {
+      orchestrator.cancelRequest();
+      return;
+    }
+
     String text = inputArea.getText().trim();
-    if (text.isEmpty() || orchestrator.isRequestInFlight()) {
+    if (text.isEmpty()) {
       return;
     }
 
@@ -501,8 +507,16 @@ public class AIChatDialog extends DialogBox
 
   @Override
   public void setRequestInFlight(boolean inFlight) {
-    sendButton.setEnabled(!inFlight);
     inputArea.setEnabled(!inFlight);
+    if (inFlight) {
+      sendButton.setText(MESSAGES.aiChatStopButton());
+      sendButton.getElement().getStyle().setProperty("background", "#d94a4a");
+      sendButton.setEnabled(true);
+    } else {
+      sendButton.setText(MESSAGES.aiChatSendButton());
+      sendButton.getElement().getStyle().setProperty("background", "#4a90d9");
+      sendButton.setEnabled(true);
+    }
   }
 
   @Override

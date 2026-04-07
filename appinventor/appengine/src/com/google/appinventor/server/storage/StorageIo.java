@@ -771,6 +771,10 @@ public interface StorageIo {
   boolean isAIStreamDone(long projectId);
   void clearAIStreamBuffer(long projectId);
 
+  void setAIStreamCancelled(long projectId);
+  boolean isAIStreamCancelled(long projectId);
+  void clearAIStreamCancelled(long projectId);
+
 }
 
 

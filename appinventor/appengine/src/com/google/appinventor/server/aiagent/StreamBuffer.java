@@ -23,6 +23,7 @@ public class StreamBuffer {
   /** Initialize or reset the buffer. Call once at the start of an LLM request. */
   public void init() {
     storageIo.initAIStreamBuffer(projectId);
+    storageIo.clearAIStreamCancelled(projectId);
   }
 
   /** Append a text delta from the LLM. */
@@ -56,6 +57,39 @@ public class StreamBuffer {
   /** Mark the stream as done (LLM response fully received). */
   public void markDone() {
     storageIo.markAIStreamDone(projectId);
+  }
+
+  /**
+   * Unchecked exception thrown when a cancellation is detected.
+   * Providers throw this from SSE loops; the engine catches it
+   * to return an empty response. Extends RuntimeException so it
+   * propagates without modifying the LLMProvider interface or
+   * any provider method signatures.
+   */
+  public static class CancelledException extends RuntimeException {
+    public CancelledException() {
+      super("Request cancelled by user");
+    }
+  }
+
+  /** Marks this request as cancelled in Memcache. */
+  public void setCancelled() {
+    storageIo.setAIStreamCancelled(projectId);
+  }
+
+  /** Returns true if this request has been cancelled. */
+  public boolean isCancelled() {
+    return storageIo.isAIStreamCancelled(projectId);
+  }
+
+  /**
+   * Throws {@link CancelledException} if this request has been cancelled.
+   * Call this at check points in long-running operations.
+   */
+  public void checkCancelled() {
+    if (isCancelled()) {
+      throw new CancelledException();
+    }
   }
 
   /** Clean up all buffer keys. Call after the RPC response is sent. */

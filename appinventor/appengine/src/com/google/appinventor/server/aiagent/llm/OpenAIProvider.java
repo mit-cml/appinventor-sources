@@ -799,6 +799,9 @@ public class OpenAIProvider implements LLMProvider {
 
     try {
       while ((line = reader.readLine()) != null) {
+        if (streamBuffer.isCancelled()) {
+          throw new StreamBuffer.CancelledException();
+        }
         // SSE blank line marks the end of an event block
         if (line.isEmpty()) {
           currentEventType = null;
