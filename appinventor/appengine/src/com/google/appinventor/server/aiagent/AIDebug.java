@@ -7,6 +7,8 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appinventor.server.flags.Flag;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +49,9 @@ public final class AIDebug {
   /** Dedicated logger for production AI debug output. */
   private static final Logger AI_LOGGER =
       Logger.getLogger("aiagent.debug");
+
+  /** Gson instance for structured logging in production. */
+  private static final Gson GSON = new Gson();
 
   /** Lazily-resolved base directory for dev-mode log files. */
   private static volatile File logBaseDir;
@@ -130,13 +135,17 @@ public final class AIDebug {
     String line = "[" + timestamp + "] " + msg;
 
     if (isProductionMode()) {
-      // Production: log immediately with conversation context.
+      // Production: emit structured JSON to stdout for Cloud Logging.
+      // Fields land in jsonPayload and are filterable in Logs Explorer.
       RequestLog rl = CURRENT_REQUEST.get();
+      JsonObject entry = new JsonObject();
+      entry.addProperty("severity", "INFO");
+      entry.addProperty("message", msg);
       if (rl != null) {
-        AI_LOGGER.info("[conv=" + rl.conversationId + "][msg=" + rl.timestamp + "] " + line);
-      } else {
-        AI_LOGGER.info(line);
+        entry.addProperty("conversationId", rl.conversationId);
+        entry.addProperty("messageId", rl.timestamp);
       }
+      System.out.println(GSON.toJson(entry));
     } else {
       // Development: buffer for file output on endRequest().
       RequestLog rl = CURRENT_REQUEST.get();
