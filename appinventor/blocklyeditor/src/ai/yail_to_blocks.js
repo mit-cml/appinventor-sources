@@ -35,6 +35,75 @@ AI.YailToBlocks.lastDeletedPosition_ = null;
 AI.YailToBlocks.GROUP_BY_COMPONENT = true;
 
 /**
+ * Set of Blockly block IDs that are scheduled for deletion later in the
+ * current execution batch.  Block positioning excludes these so new blocks
+ * don't avoid soon-to-be-removed blocks.
+ * @type {?Object<string, boolean>}
+ * @private
+ */
+AI.YailToBlocks.pendingDeletionIds_ = null;
+
+/**
+ * Mark blocks that will be deleted later in the current execution batch.
+ * Block positioning will ignore these blocks when computing free space.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The target workspace.
+ * @param {!Array<string>} identifiers YAIL identifier strings for blocks
+ *     that will be deleted (e.g. "define-event Button1 Click").
+ */
+AI.YailToBlocks.setPendingDeletions = function(workspace, identifiers) {
+  AI.YailToBlocks.pendingDeletionIds_ = {};
+  for (var i = 0; i < identifiers.length; i++) {
+    var block = AI.YailToBlocks.findBlockByIdentifier_(
+        workspace, identifiers[i]);
+    if (block) {
+      AI.YailToBlocks.pendingDeletionIds_[block.id] = true;
+    }
+  }
+};
+
+/**
+ * Clear the pending deletion set.  Called after the deletion phase
+ * completes (or in a finally block on error).
+ */
+AI.YailToBlocks.clearPendingDeletions = function() {
+  AI.YailToBlocks.pendingDeletionIds_ = null;
+};
+
+/**
+ * Check whether a block with the given YAIL identifier exists on the
+ * workspace.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace to search.
+ * @param {string} identifier YAIL identifier (e.g. "define-event Button1 Click").
+ * @return {boolean}
+ */
+AI.YailToBlocks.blockExists = function(workspace, identifier) {
+  return AI.YailToBlocks.findBlockByIdentifier_(workspace, identifier) !== null;
+};
+
+/**
+ * Get top-level blocks for positioning, excluding any blocks that are
+ * scheduled for deletion in the current batch.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @return {!Array<!Blockly.Block>}
+ * @private
+ */
+AI.YailToBlocks.getPositioningBlocks_ = function(workspace) {
+  var blocks = workspace.getTopBlocks(false);
+  var pending = AI.YailToBlocks.pendingDeletionIds_;
+  if (!pending) return blocks;
+  var filtered = [];
+  for (var i = 0; i < blocks.length; i++) {
+    if (!pending[blocks[i].id]) {
+      filtered.push(blocks[i]);
+    }
+  }
+  return filtered;
+};
+
+/**
  * Convert a YAIL string into Blockly blocks and add them to the workspace.
  *
  * @param {!Blockly.WorkspaceSvg} workspace The target workspace.
@@ -133,7 +202,9 @@ AI.YailToBlocks.convert = function(workspace, yailString) {
     var viewBottom = viewTop + metrics.viewHeight / workspace.scale;
 
     // Scan existing blocks for the lowest one visible in the viewport.
-    var existingBlocks = workspace.getTopBlocks(false);
+    // Exclude blocks scheduled for deletion later in this batch so new
+    // blocks don't leave gaps where removed blocks used to be.
+    var existingBlocks = AI.YailToBlocks.getPositioningBlocks_(workspace);
     var freeSpaceY = viewTop + 20;  // default if no visible blocks
     for (var e = 0; e < existingBlocks.length; e++) {
       var eb = existingBlocks[e];
@@ -3308,8 +3379,9 @@ AI.YailToBlocks.findGroupPosition_ = function(workspace, newBlock, spacing) {
   if (!instanceName) return null;
 
   // Query live workspace so blocks placed earlier in the same batch
-  // are visible (getTopBlocks reads the current workspace state).
-  var topBlocks = workspace.getTopBlocks(false);
+  // are visible.  Exclude pending deletions so new blocks group with
+  // blocks that will remain after the deletion phase.
+  var topBlocks = AI.YailToBlocks.getPositioningBlocks_(workspace);
   var maxBottom = -Infinity;
   var groupX = null;
 
@@ -3349,7 +3421,7 @@ AI.YailToBlocks.findGroupPosition_ = function(workspace, newBlock, spacing) {
  */
 AI.YailToBlocks.avoidOverlap_ = function(
     workspace, x, y, width, height, spacing, currentBlock) {
-  var topBlocks = workspace.getTopBlocks(false);
+  var topBlocks = AI.YailToBlocks.getPositioningBlocks_(workspace);
   // Iteratively shift right past overlapping blocks.  Bounded to avoid
   // infinite loops in degenerate layouts.
   for (var attempt = 0; attempt < 20; attempt++) {

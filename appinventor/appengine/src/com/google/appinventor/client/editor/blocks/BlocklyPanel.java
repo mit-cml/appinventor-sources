@@ -1279,6 +1279,17 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   /**
+   * Check whether a block with the given YAIL identifier exists.
+   *
+   * @param identifier YAIL identifier (e.g. "define-event Button1 Click")
+   * @return true if the block exists on the workspace
+   */
+  public native boolean doBlockExists(String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    return $wnd.AI.YailToBlocks.blockExists(workspace, identifier);
+  }-*/;
+
+  /**
    * Validate a YAIL string without creating any blocks (dry-run).
    * Parses the S-expression and checks structural validity.
    *

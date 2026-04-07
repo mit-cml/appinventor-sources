@@ -731,6 +731,16 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   /**
+   * Check whether a block with the given YAIL identifier exists.
+   *
+   * @param identifier YAIL identifier (e.g. "define-event Button1 Click")
+   * @return true if the block exists on the workspace
+   */
+  public boolean blockExists(String identifier) {
+    return blocksArea.doBlockExists(identifier);
+  }
+
+  /**
    * Validate a YAIL string without creating blocks (dry-run).
    *
    * @param yail the YAIL S-expression string to validate

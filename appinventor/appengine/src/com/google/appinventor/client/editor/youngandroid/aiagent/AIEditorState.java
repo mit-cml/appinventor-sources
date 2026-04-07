@@ -85,14 +85,14 @@ public final class AIEditorState {
 
   /**
    * Returns true if a block with the given YAIL identifier exists on the
-   * current screen.  There is no efficient lookup for blocks by YAIL id in
-   * the Blockly layer, so this always returns {@code false} — the executor
-   * will attempt the operation and let it fail gracefully if the block is
-   * not found.
+   * current screen.
    */
   public static boolean blockExists(String yailId) {
-    // No clean block-existence query is available; return false so the
-    // idempotency guard never skips a DELETE_BLOCK silently.
-    return false;
+    YaBlocksEditor blocksEditor = getCurrentBlocksEditor();
+    if (blocksEditor == null) {
+      // Can't check — assume the block exists so the delete is attempted.
+      return true;
+    }
+    return blocksEditor.blockExists(yailId);
   }
 }
