@@ -49,15 +49,13 @@
 
 	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
 	<property name="blockly.plugin.dir" location="${lib.dir}/blockly-plugins" />
-	<property name="blockly.src.dir.relative" value="lib/blockly" />
-	<property name="blockly.plugin.dir.relative" value="lib/blockly-plugins" />
-	<property name="closure.base.js.relative" value="lib/closure-compiler/base.js" />
-	<property name="blockly.output.js.relative" value="build/blocklyeditor/blockly-all.js" />
-	<property name="blockly.output.map.relative" value="build/blocklyeditor/blockly-all.js.map" />
 	<property name="i18n.src.dir" location="${src.dir}/msg" />
 	<property name="ai.i18n.src.dir" location="${i18n.src.dir}/ai_blockly" />
 	<property name="BlocklyTranslator-class.dir" location="${class.dir}/BlocklyTranslator-classes" />
 	<property name="BlocklyTranslations.dir" location="${public.build.dir}/msg" />
+	<property name="blockly.src.dir.relative" value="lib/blockly" />
+	<property name="blockly.plugin.dir.relative" value="lib/blockly-plugins" />
+	<property name="closure.base.js.relative" value="lib/closure-compiler/base.js" />
 
 	<property name="gwt.sdk" location="${lib.dir}/gwt/2.8.1-patched" />
 
@@ -129,11 +127,11 @@
 			<arg line="--language_in ECMASCRIPT_NEXT"/>
 			<arg line="--language_out ECMASCRIPT_NEXT"/>
 			<arg line="--js_output_file"/>
-			<arg value="${blockly.output.js.relative}"/>
+			<arg file="${public.build.dir}/blockly-all.js"/>
 			<arg line="--entry_point=goog:AI.Blockly.BlocklyEditor"/>
 			<arg line="--charset UTF-8"/>
 			<arg line="--create_source_map"/>
-			<arg value="${blockly.output.map.relative}"/>
+			<arg file="${public.build.dir}/blockly-all.js.map"/>
 			<arg line="--source_map_location_mapping src|/ode/static/js"/>
 			<arg line="--source_map_input"/>
 			<arg value="${blockly.src.dir.relative}/blockly_compressed.js|${blockly.src.dir.relative}/blockly_compressed.js.map"/>
