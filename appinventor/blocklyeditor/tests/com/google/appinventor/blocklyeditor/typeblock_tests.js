@@ -281,7 +281,7 @@ suite('TypeBlock', function() {
   test('undo create number block', async function() {
     await act(() => input('42'));
 
-    await act(() => ctrl('z'));
+    await act(() => cmdOrCtrl('z'));
     chai.assert.equal(workspace.getAllBlocks().length, 0);
   });
 
@@ -292,7 +292,7 @@ suite('TypeBlock', function() {
     await act(() => Blockly.common.setSelected(ifBlock));
     await act(() => input('true'));
 
-    await act(() => ctrl('z'));
+    await act(() => cmdOrCtrl('z'));
     chai.assert.isNull(ifBlock.getInput('IF0').connection.targetBlock());
   });
 
@@ -308,7 +308,7 @@ suite('TypeBlock', function() {
     await act(() => Blockly.common.setSelected(setBlock));
     await act(() => input('if'));
 
-    await act(() => ctrl('z'));
+    await act(() => cmdOrCtrl('z'));
     chai.assert.isNull(setBlock.nextConnection.targetBlock());
   });
 });
