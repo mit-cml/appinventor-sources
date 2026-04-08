@@ -12,7 +12,7 @@ to build MIT App Inventor applications.
 We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
-This code is tested and known to work with Java 11.
+This code is tested and known to work with Java 17.
 
 ## Contributors
 
@@ -30,11 +30,9 @@ This is a quick guide to get started with the sources. More detailed instruction
 
 ### Dependencies
 
-You will need a full Java JDK (version 11, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
+You will need a full Java JDK (version 17, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
 
 You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers. When setting up the gcloud cli you might be asked if you'd like to install Python 3.11, as the cli depends on it. In case of any issues with Python versions, check the value of the CLOUDSDK_PYTHON environment variable, which the cli can use to point to the right version.
-
-Note that the JDK used to build App Inventor with ant and the JDK used to run the local App Engine development server may not be the same. The ant build is tested with Java 11, while the App Engine runtime configured in `appinventor/appengine/war/WEB-INF/appengine-web.xml` is currently `java17`. Depending on your Google Cloud SDK installation, you may need to use Java 11 for ant commands and Java 17 for the main local server.
 
 If you want to make changes to the sources, you will have to run an automated test suite, and for that you will also need
 a recent version of NodeJS (node 20+ works) and the Firefox browser installed on your machine. Have a look at the testing section for more information.
@@ -107,7 +105,7 @@ You will see a lot of stuff in the terminal and after a few minutes (it can take
 
 If you are only trying to run the local web application, you usually do not need the full `ant` target. In that case, prefer:
 
-    $ ant -Dskip.ios=true webapp
+    $ ant webapp
 
 ### Notes on compiling for iOS
 
@@ -178,8 +176,6 @@ There are two servers in App Inventor, the main server that deals with project i
 
 ### Running the main server
 
-If your Google Cloud SDK installation requires a newer JDK than the ant build, set `JAVA_HOME` accordingly before starting the main server.
-
     $ your-google-cloud-SDK-folder/bin/java_dev_appserver.sh --port=8888 --address=0.0.0.0 appengine/build/war/
 
 Make sure you change *your-google-cloud-SDK-folder* to wherever in your hard drive you have placed the Google Cloud SDK.
@@ -188,8 +184,8 @@ Make sure you change *your-google-cloud-SDK-folder* to wherever in your hard dri
 
 The build server can be run from the terminal by typing:
 
-    $ cd appinventor
-    $ ant -Dskip.ios=true RunLocalBuildServer
+    $ cd appinventor/buildserver
+    $ ant RunLocalBuildServer
 
 Note that you will only need to run the build server if you are going to build an app as an apk. You can do all the layout and programming without having the build server running, but you will need it to download the apk.
 
