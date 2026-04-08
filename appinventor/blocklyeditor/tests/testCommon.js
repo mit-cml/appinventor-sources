@@ -302,10 +302,11 @@ function getPropertyBlockPresentedName(block) {
   }
 }
 
-function ctrl(key) {
+function cmdOrCtrl(key) {
   const workspace = Blockly.common.getMainWorkspace();
   const keyCode = key.toUpperCase().charCodeAt(0);
-  const options = { key: key, keyCode: keyCode, ctrlKey: true, bubbles: true };
+  const modKey = Blockly.utils.userAgent.MAC ? 'metaKey' : 'ctrlKey';
+  const options = { key: key, keyCode: keyCode, [modKey]: true, bubbles: true };
   workspace.getCanvas().dispatchEvent(new KeyboardEvent('keydown', options));
   workspace.getCanvas().dispatchEvent(new KeyboardEvent('keyup', options));
 }
