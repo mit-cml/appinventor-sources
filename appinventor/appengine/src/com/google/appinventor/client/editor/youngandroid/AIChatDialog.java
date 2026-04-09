@@ -659,6 +659,16 @@ public class AIChatDialog extends DialogBox
   public void showOperationPreview(AIAgentResponse response) {
     operationPreview.clear();
 
+    // Show the AI message as a sub-header if present (includes [ScreenName] for orchestration)
+    String aiMessage = response.getAiMessage();
+    if (aiMessage != null && !aiMessage.isEmpty()) {
+      Label aiLabel = new Label(aiMessage);
+      aiLabel.getElement().getStyle().setFontSize(12, Unit.PX);
+      aiLabel.getElement().getStyle().setColor("#555");
+      aiLabel.getElement().getStyle().setMarginBottom(4, Unit.PX);
+      operationPreview.add(aiLabel);
+    }
+
     Label header = new Label(MESSAGES.aiChatProposedChanges());
     header.getElement().getStyle().setProperty("fontWeight", "bold");
     header.getElement().getStyle().setMarginBottom(4, Unit.PX);
