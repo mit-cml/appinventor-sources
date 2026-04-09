@@ -722,6 +722,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public abstract boolean isVisibleComponent();
 
   /**
+   * Returns true if this component can contain child components. Overridden in MockContainer.
+   */
+  public boolean isContainer() {
+    return false;
+  }
+
+  /**
    * Selects this component in the visual editor.
    */
   public final void select(NativeEvent event) {
@@ -1391,7 +1398,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
     @Override
     public boolean isContainer() {
-      return MockComponent.this instanceof MockContainer;
+      return MockComponent.this.isContainer();
     }
 
     @Override

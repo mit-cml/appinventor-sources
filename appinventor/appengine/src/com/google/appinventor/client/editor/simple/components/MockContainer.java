@@ -56,6 +56,11 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
    *
    * @param editor  editor of source file the component belongs to
    */
+  @Override
+  public final boolean isContainer() {
+    return true;
+  }
+
   MockContainer(SimpleEditor editor, String type, ImageResource icon,
       MockLayout layout) {
     super(editor, type, icon);
