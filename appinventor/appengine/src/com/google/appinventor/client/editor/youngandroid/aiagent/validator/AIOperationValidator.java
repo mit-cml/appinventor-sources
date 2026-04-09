@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.editor.youngandroid.aiagent.validator;
 
+import com.google.appinventor.client.editor.youngandroid.aiagent.executor.ScreenExecutionContext;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -20,11 +21,21 @@ public final class AIOperationValidator {
   private AIOperationValidator() {}
 
   /**
-   * Validate a single operation.
+   * Validate a single operation using the current (visible) screen's editors.
    *
    * @return null if valid, or an error message string.
    */
   public static String validate(AIOperation op) {
+    return validate(op, null);
+  }
+
+  /**
+   * Validate a single operation. When {@code context} is non-null, designer
+   * validations use the context's editors instead of the visible screen.
+   *
+   * @return null if valid, or an error message string.
+   */
+  public static String validate(AIOperation op, ScreenExecutionContext context) {
     if (op.getType() == null) {
       return "Operation has null type";
     }
@@ -48,10 +59,10 @@ public final class AIOperationValidator {
       case DELETE_SCREEN:    return ProjectOperationValidator.validateDeleteScreen(json);
       case SET_PROJECT_PROP: return ProjectOperationValidator.validateSetProjectProp(json);
       case TOGGLE_EDITOR:    return ProjectOperationValidator.validateToggleEditor(json);
-      case ADD_COMPONENT:    return DesignerOperationValidator.validateAddComponent(json);
-      case DELETE_COMPONENT: return DesignerOperationValidator.validateDeleteComponent(json);
-      case SET_PROPERTY:     return DesignerOperationValidator.validateSetProperty(json);
-      case RENAME_COMPONENT: return DesignerOperationValidator.validateRenameComponent(json);
+      case ADD_COMPONENT:    return DesignerOperationValidator.validateAddComponent(json, context);
+      case DELETE_COMPONENT: return DesignerOperationValidator.validateDeleteComponent(json, context);
+      case SET_PROPERTY:     return DesignerOperationValidator.validateSetProperty(json, context);
+      case RENAME_COMPONENT: return DesignerOperationValidator.validateRenameComponent(json, context);
       case WRITE_BLOCK:      return BlockOperationValidator.validateWriteBlock(json);
       case DELETE_BLOCK:     return BlockOperationValidator.validateDeleteBlock(json);
       default:               return "Unknown operation type: " + op.getType();

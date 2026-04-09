@@ -227,7 +227,12 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       return;
     }
     if (queue.isEmpty()) {
-      uiCallback.setRequestInFlight(completedChildren < totalChildren);
+      boolean childrenStillRunning = completedChildren < totalChildren;
+      uiCallback.setRequestInFlight(childrenStillRunning);
+      if (childrenStillRunning) {
+        uiCallback.setStatusText(buildProgressStatus());
+        uiCallback.setStatusVisible(true);
+      }
       checkAllDone();
       return;
     }
@@ -239,6 +244,27 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       uiCallback.setStatusVisible(false);
       uiCallback.showOperationPreview(activeBatch.response);
     }
+  }
+
+  /**
+   * Builds a status string showing which children are still working.
+   */
+  private String buildProgressStatus() {
+    StringBuilder sb = new StringBuilder("Agents working: ");
+    boolean first = true;
+    for (Map.Entry<String, ChildConversation> entry : children.entrySet()) {
+      ChildConversation child = entry.getValue();
+      if (!child.isCancelled() && !child.isComplete()) {
+        if (!first) {
+          sb.append(", ");
+        }
+        sb.append(entry.getKey());
+        first = false;
+      }
+    }
+    sb.append(" (").append(completedChildren).append("/")
+        .append(totalChildren).append(" done)");
+    return sb.toString();
   }
 
   private void checkAllDone() {

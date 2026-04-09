@@ -83,6 +83,7 @@ public class ChildConversation {
   private boolean waitingForApproval;
   private boolean lastResponseHasMore;
   private boolean cancelled;
+  private boolean completed;
   private boolean streamingActive;
 
   /**
@@ -156,6 +157,7 @@ public class ChildConversation {
     if (lastResponseHasMore) {
       fetchContinuation();
     } else {
+      completed = true;
       callback.onComplete(this);
     }
   }
@@ -208,6 +210,13 @@ public class ChildConversation {
    */
   public boolean isCancelled() {
     return cancelled;
+  }
+
+  /**
+   * Returns whether this child has completed (reported onComplete to callback).
+   */
+  public boolean isComplete() {
+    return completed;
   }
 
   /**
@@ -270,7 +279,8 @@ public class ChildConversation {
       if (lastResponseHasMore) {
         fetchContinuation();
       } else {
-        callback.onComplete(this);
+        completed = true;
+      callback.onComplete(this);
       }
       return;
     }
@@ -284,6 +294,7 @@ public class ChildConversation {
       fetchContinuation();
     } else {
       // No operations and no more batches -- done
+      completed = true;
       callback.onComplete(this);
     }
   }

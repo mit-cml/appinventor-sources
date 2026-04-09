@@ -242,7 +242,7 @@ public class AIOperationExecutor {
       return;
     }
     try {
-      String error = AIOperationValidator.validate(op);
+      String error = AIOperationValidator.validate(op, context);
       if (error != null) {
         state.markFailed(op, error);
         state.skipRemaining(phase1, index + 1);
@@ -342,7 +342,7 @@ public class AIOperationExecutor {
         continue;
       }
       try {
-        String error = AIOperationValidator.validate(op);
+        String error = AIOperationValidator.validate(op, context);
         if (error != null) {
           state.markFailed(op, error);
           state.skipRemaining(current, i + 1);
