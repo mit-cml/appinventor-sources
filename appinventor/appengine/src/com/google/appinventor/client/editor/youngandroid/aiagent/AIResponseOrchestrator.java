@@ -256,8 +256,7 @@ public class AIResponseOrchestrator {
   public void rejectOperations() {
     if (orchestrationManager != null && orchestrationManager.isActive()) {
       orchestrationManager.rejectBatch("User rejected the operations.");
-      orchestrationManager = null;
-      callback.onPlanExecutionFinished();
+      // CompletionCallback.onOrchestrationRejected handles cleanup + parent feedback
       return;
     }
 
@@ -580,18 +579,39 @@ public class AIResponseOrchestrator {
     if (screenStepCount <= 1) {
       // Single screen — sequential execution via parent agent (Phase A path)
       callback.onPlanExecutionStarted();
-      String planMessage = "<system>\nThe user approved the following execution plan. "
+      String planMessage = "The user approved the following execution plan. "
           + "Execute it step by step, one screen at a time. "
           + "Use switch_screen to navigate between screens as needed. "
           + "Use toggle_editor to switch between Designer and Blocks views. "
           + "Work through each step in dependency order.\n\n"
-          + planJson + "\n</system>";
+          + planJson;
       sendPlatformMessage(planMessage);
     } else {
       // Multiple screens — parallel orchestration
       callback.onPlanExecutionStarted();
       orchestrationManager = new AIOrchestrationManager(contextCollector);
-      orchestrationManager.executePlan(planJson, callback);
+      orchestrationManager.executePlan(planJson, callback,
+          new AIOrchestrationManager.CompletionCallback() {
+            @Override
+            public void onOrchestrationComplete(String summary) {
+              orchestrationManager = null;
+              sendPlatformMessage(summary
+                  + "\nProvide a brief summary to the user of what was built.");
+            }
+
+            @Override
+            public void onOrchestrationRejected(String summary) {
+              orchestrationManager = null;
+              sendPlatformMessage(summary
+                  + "\nThe user stopped the plan execution. Ask what they'd like "
+                  + "changed, or propose a revised plan.");
+            }
+
+            @Override
+            public void onOrchestrationCancelled() {
+              orchestrationManager = null;
+            }
+          });
     }
   }
 

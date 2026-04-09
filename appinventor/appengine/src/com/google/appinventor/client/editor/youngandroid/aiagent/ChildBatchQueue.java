@@ -34,6 +34,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
   interface QueueCallback {
     void onAllChildrenDone();
     void onChildError(String screenName, String error);
+    void onRejected(String rejectionSummary);
   }
 
   /** A batch waiting for user approval. */
@@ -145,7 +146,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       summary.append("\nUser feedback: ").append(userFeedback);
     }
     uiCallback.addAiMessage(summary.toString());
-    queueCallback.onAllChildrenDone();
+    queueCallback.onRejected(summary.toString());
   }
 
   void setAutoAcceptAll() {

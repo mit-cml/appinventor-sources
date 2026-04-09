@@ -42,10 +42,21 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
   /** Maximum total RPCs allowed per plan execution. */
   private static final int MAX_RPCS_PER_PLAN = 20;
 
+  /** Callback for orchestration lifecycle events sent to the parent orchestrator. */
+  interface CompletionCallback {
+    /** Plan executed successfully — send summary to parent LLM. */
+    void onOrchestrationComplete(String summary);
+    /** Plan rejected mid-execution — send rejection context to parent LLM. */
+    void onOrchestrationRejected(String summary);
+    /** Plan cancelled — no parent feedback needed. */
+    void onOrchestrationCancelled();
+  }
+
   private final AIContextCollector contextCollector;
   private final AIAgentServiceAsync aiAgentService;
 
   private AIResponseOrchestrator.ChatCallback callback;
+  private CompletionCallback completionCallback;
   private PlanProjectStepExecutor projectStepExecutor;
   private ChildBatchQueue batchQueue;
 
@@ -66,8 +77,10 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
    * then spawns child conversations.
    */
   public void executePlan(String planJson,
-      AIResponseOrchestrator.ChatCallback callback) {
+      AIResponseOrchestrator.ChatCallback callback,
+      CompletionCallback completionCallback) {
     this.callback = callback;
+    this.completionCallback = completionCallback;
     this.cancelled = false;
     this.executing = true;
     this.totalRpcs = 0;
@@ -140,6 +153,9 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
     }
     callback.hideOperationPreview();
     finishExecution();
+    if (completionCallback != null) {
+      completionCallback.onOrchestrationCancelled();
+    }
   }
 
   /**
@@ -164,6 +180,14 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
   @Override
   public void onChildError(String screenName, String error) {
     // Logged by ChildBatchQueue, no extra action needed here
+  }
+
+  @Override
+  public void onRejected(String rejectionSummary) {
+    finishExecution();
+    if (completionCallback != null) {
+      completionCallback.onOrchestrationRejected(rejectionSummary);
+    }
   }
 
   // ---- Internal ----
@@ -204,21 +228,29 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
     callback.setAutoAcceptVisible(false);
     callback.onPlanExecutionFinished();
 
-    if (!cancelled && batchQueue != null) {
+    if (!cancelled && batchQueue != null && completionCallback != null) {
       java.util.List<String> applied = batchQueue.getAppliedScreens();
+      String summary = buildCompletionSummary(applied);
+      callback.addAiMessage(summary);
       if (!applied.isEmpty()) {
-        StringBuilder sb = new StringBuilder("Plan execution complete. Applied changes to: ");
-        for (int i = 0; i < applied.size(); i++) {
-          if (i > 0) {
-            sb.append(", ");
-          }
-          sb.append(applied.get(i));
-        }
-        sb.append(".");
-        callback.addAiMessage(sb.toString());
-      } else if (!children.isEmpty()) {
-        callback.addAiMessage("Plan execution complete. No changes were applied.");
+        completionCallback.onOrchestrationComplete(summary);
       }
     }
+  }
+
+  private String buildCompletionSummary(java.util.List<String> applied) {
+    if (!applied.isEmpty()) {
+      StringBuilder sb = new StringBuilder(
+          "Plan execution complete. Applied changes to: ");
+      for (int i = 0; i < applied.size(); i++) {
+        if (i > 0) {
+          sb.append(", ");
+        }
+        sb.append(applied.get(i));
+      }
+      sb.append(".");
+      return sb.toString();
+    }
+    return "Plan execution complete. No changes were applied.";
   }
 }
