@@ -590,8 +590,17 @@ public class AIChatDialog extends DialogBox
       return;
     }
 
+    // Show the user's original message in the chat
     renderer.addUserMessage(text);
     inputArea.setText("");
+
+    // If a plan proposal is pending, treat sending a message as rejection.
+    // Disable the plan card buttons, then wrap the user's text as rejection feedback.
+    if (orchestrator.hasPendingPlanProposal()) {
+      renderer.dismissActivePlanCard();
+      orchestrator.dismissPendingPlan();
+      text = "The user rejected the proposed plan. Their feedback: " + text;
+    }
     editModeWarning.setVisible(false);
     hideOperationPreview();
     hasConversationMessages = true;

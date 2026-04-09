@@ -41,6 +41,7 @@ public class AIChatRenderer {
   private HTML streamingThinkingHtml = null;
   private FlowPanel streamingThinkingPanel = null;
   private HTML typingIndicator = null;
+  private HorizontalPanel activePlanButtonBar = null;
 
   // Feedback link context (set via setFeedbackContext; links only shown in debug mode)
   private boolean debugEnabled;
@@ -219,7 +220,19 @@ public class AIChatRenderer {
     card.add(buttonBar);
     wrapper.add(card);
     chatHistory.add(wrapper);
+    activePlanButtonBar = buttonBar;
     scrollToBottom();
+  }
+
+  /**
+   * Disables the active plan card buttons (e.g., when the user sends a message
+   * instead of clicking approve/reject).
+   */
+  public void dismissActivePlanCard() {
+    if (activePlanButtonBar != null) {
+      disablePlanButtons(activePlanButtonBar);
+      activePlanButtonBar = null;
+    }
   }
 
   /**
@@ -286,7 +299,10 @@ public class AIChatRenderer {
   /**
    * Disables all buttons in the plan card button bar after a decision.
    */
-  private static void disablePlanButtons(HorizontalPanel buttonBar) {
+  private void disablePlanButtons(HorizontalPanel buttonBar) {
+    if (buttonBar == activePlanButtonBar) {
+      activePlanButtonBar = null;
+    }
     for (int i = 0; i < buttonBar.getWidgetCount(); i++) {
       if (buttonBar.getWidget(i) instanceof Button) {
         Button btn = (Button) buttonBar.getWidget(i);

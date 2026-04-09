@@ -109,6 +109,7 @@ public class AIResponseOrchestrator {
   private int validationRetryCount;
   private int executionRetryCount;
   private boolean autoAcceptAll;
+  private boolean pendingPlanProposal;
   private boolean debugBannerShown;
   private boolean orchestrationEnabled;
 
@@ -464,6 +465,21 @@ public class AIResponseOrchestrator {
   }
 
   /**
+   * Returns whether a plan proposal is awaiting user approval.
+   */
+  public boolean hasPendingPlanProposal() {
+    return pendingPlanProposal;
+  }
+
+  /**
+   * Dismisses a pending plan proposal as rejected. Called when the user
+   * sends a new message instead of clicking the plan card buttons.
+   */
+  public void dismissPendingPlan() {
+    pendingPlanProposal = false;
+  }
+
+  /**
    * Returns the pending AI response awaiting user approval, or null.
    */
   public AIAgentResponse getPendingResponse() {
@@ -494,14 +510,17 @@ public class AIResponseOrchestrator {
     }
 
     // Render the plan card with approve/reject
+    pendingPlanProposal = true;
     callback.renderPlanCard(planJson, new PlanApprovalCallback() {
       @Override
       public void onApprove(String approvedPlanJson) {
+        pendingPlanProposal = false;
         executePlanSequentially(approvedPlanJson);
       }
 
       @Override
       public void onReject() {
+        pendingPlanProposal = false;
         callback.addAiMessage(MESSAGES.aiChatPlanRejected());
         String feedback = "The user rejected the proposed plan. "
             + "Please suggest alternatives or ask what they'd like changed.";
