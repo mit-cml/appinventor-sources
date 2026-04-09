@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.aiagent.context;
 
+import com.google.appinventor.server.aiagent.EnforcementContext;
+
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR;
@@ -16,8 +18,26 @@ public class ModeModule extends ContextModule {
 
   @Override
   public String build(ContextParams params) {
+    if (params.getEnforcementContext() == EnforcementContext.PLANNING) {
+      return buildPlanningInstructions();
+    }
     return buildModeInstructions(params.getMode(), params.getCurrentView(),
         params.getLocale(), params.getLanguageDisplayName());
+  }
+
+  private String buildPlanningInstructions() {
+    return "You are in Plan & Execute mode. Your task is to research the project and "
+        + "propose a structured execution plan.\n\n"
+        + "Available tools: lookup_component (research component specs), "
+        + "lookup_screen (research screen state), propose_plan (submit your plan).\n\n"
+        + "DO NOT attempt to add components, write blocks, or make any changes. Instead:\n"
+        + "1. Use lookup_component and lookup_screen to understand the current project state.\n"
+        + "2. Break the user's request into steps, each targeting a specific screen.\n"
+        + "3. Use '__project__' as the screen for project-level operations "
+        + "(creating screens, setting project properties).\n"
+        + "4. Set depends_on when a step requires another to complete first "
+        + "(e.g., a screen must be created before components can be added to it).\n"
+        + "5. Call propose_plan with your complete plan.";
   }
 
   private String buildModeInstructions(String mode, String currentView,

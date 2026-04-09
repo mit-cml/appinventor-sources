@@ -78,6 +78,8 @@ public class AIAgentEngine {
       + "If you have fully completed the user's request, respond with text only "
       + "— do not call any tools.";
 
+  private static final Flag<Boolean> ORCHESTRATION_FLAG = Flag.createFlag("ai.agent.orchestration", false);
+
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
   private final ConversationManager conversationManager;
@@ -150,7 +152,8 @@ public class AIAgentEngine {
   public AIAgentResponse processRequest(String userId, long projectId, String screenName,
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
-      String locale, String languageDisplayName, boolean isPlatformMessage) {
+      String locale, String languageDisplayName, boolean isPlatformMessage,
+      boolean planExecuteMode) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -166,13 +169,18 @@ public class AIAgentEngine {
           + ", screen=" + screenName + ", mode=" + mode
           + ", msgLen=" + userMessage.length());
 
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+        enforcementContext = EnforcementContext.PLANNING;
+      }
+
       // Build system prompt, context messages, and tools
       String systemPrompt = contextBuilder.build();
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName);
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+          locale, languageDisplayName, enforcementContext);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
       // Build history for stateless providers
@@ -224,7 +232,8 @@ public class AIAgentEngine {
       }
 
       // Parse tool calls
-      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
+      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+          enforcementContext);
 
       // Debug: parse result
       if (AIDebug.enabled()) {
@@ -244,7 +253,7 @@ public class AIAgentEngine {
       // in an editing mode, retry once with a nudge.
       NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
       retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
-          contextMessages, tools, history, conv, resolver, streamBuffer);
+          contextMessages, tools, history, conv, resolver, streamBuffer, enforcementContext);
       llmResponse = nrs.llmResponse;
       parsed = nrs.parsed;
       assistantText = nrs.assistantText;
@@ -299,7 +308,7 @@ public class AIAgentEngine {
   public AIAgentResponse continueRequest(String userId, long projectId, String screenName,
       String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
-      String locale, String languageDisplayName) {
+      String locale, String languageDisplayName, boolean planExecuteMode) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -316,9 +325,14 @@ public class AIAgentEngine {
       AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
           + ", screen=" + screenName + ", mode=" + mode);
 
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+        enforcementContext = EnforcementContext.PLANNING;
+      }
+
       // Get provider and rebuild tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       // Patch the static system prompt into continuation state
@@ -329,7 +343,7 @@ public class AIAgentEngine {
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName);
+          locale, languageDisplayName, enforcementContext);
       // Append a scoping instruction so the model stays focused on the
       // user's request and does not refactor or undo prior changes.
       contextMessages = new ArrayList<String>(contextMessages);
@@ -362,7 +376,8 @@ public class AIAgentEngine {
       }
 
       // Parse, enforce, save, and build response
-      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
+      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+          enforcementContext);
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
 
       // Narration detection: catches LLMs that describe remaining work
@@ -376,7 +391,7 @@ public class AIAgentEngine {
       List<String> retryContext = provider.isStateless() ? contextMessages : null;
       NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
       retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
-          retryContext, tools, history, conv, resolver, streamBuffer);
+          retryContext, tools, history, conv, resolver, streamBuffer, enforcementContext);
       llmResponse = nrs.llmResponse;
       parsed = nrs.parsed;
       assistantText = nrs.assistantText;
@@ -431,7 +446,8 @@ public class AIAgentEngine {
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
       List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
-      String blockWarnings, String locale, String languageDisplayName) {
+      String blockWarnings, String locale, String languageDisplayName,
+      boolean planExecuteMode) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -491,11 +507,11 @@ public class AIAgentEngine {
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName);
+          locale, languageDisplayName, EnforcementContext.STANDARD);
 
       // Get provider, tools, and resolver
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, EnforcementContext.STANDARD);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       if (AIDebug.enabled()) {
@@ -511,7 +527,8 @@ public class AIAgentEngine {
           patchedRef, tools, contextMessages, resolver, streamBuffer);
 
       // Parse, enforce, save, and build response
-      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
+      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+          EnforcementContext.STANDARD);
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
 
       AIDebug.log(LOG, "Error retry response: operations=" + parsed.operations.size()
@@ -567,6 +584,7 @@ public class AIAgentEngine {
     // Piggyback config fields on every status poll so the client can
     // detect debug mode and build feedback links without a separate RPC.
     status.setDebugEnabled(AIDebug.enabled());
+    status.setOrchestrationEnabled(ORCHESTRATION_FLAG.get());
     AIConversationState conv = conversationManager.getConversation(projectId);
     if (conv != null) {
       status.setConversationId(conv.getConversationId());
@@ -637,7 +655,7 @@ public class AIAgentEngine {
   // ---------- Response pipeline ----------
 
   ParsedResult parseAndEnforce(LLMResponse llmResponse,
-      String mode, String currentView) {
+      String mode, String currentView, EnforcementContext context) {
     List<RawToolCall> rawToolCalls = llmResponse.getRawToolCalls();
     List<ToolCallStatus> statuses = new ArrayList<>();
     List<AIOperation> allParsedOps = new ArrayList<>();
@@ -672,7 +690,7 @@ public class AIAgentEngine {
     // Run mode enforcement on the parsed operations.
     List<String> enforceErrors = new ArrayList<>();
     List<AIOperation> accepted = ModeEnforcer.enforce(
-        allParsedOps, mode, currentView, enforceErrors);
+        allParsedOps, mode, currentView, context, enforceErrors);
     allErrors.addAll(enforceErrors);
 
     // Determine which parsed ops survived enforcement using identity.
@@ -720,7 +738,8 @@ public class AIAgentEngine {
   void retryIfNarration(NarrationRetryState state, String mode, String currentView,
       LLMProvider provider, String systemPrompt, List<String> contextMessages,
       List<LLMTool> tools, List<ChatMessage> history, AIConversationState conv,
-      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer)
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer,
+      EnforcementContext enforcementContext)
       throws LLMProviderException {
     if (!RETRY_NARRATION) {
       return;
@@ -768,7 +787,8 @@ public class AIAgentEngine {
               ? retryResponse.getText().length() : 0));
     }
 
-    ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView);
+    ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView,
+        enforcementContext);
     boolean retryActed = !retryParsed.operations.isEmpty()
         || !retryResponse.getRawToolCalls().isEmpty();
 
@@ -862,7 +882,11 @@ public class AIAgentEngine {
         entry.put("name", s.getToolName());
         switch (s.getOutcome()) {
           case ACCEPTED:
-            entry.put("result", "Done.");
+            if (AIToolNames.PROPOSE_PLAN.equals(s.getToolName())) {
+              entry.put("result", "Plan delivered to user for review.");
+            } else {
+              entry.put("result", "Done.");
+            }
             break;
           case PARSE_REJECTED:
           case MODE_REJECTED:

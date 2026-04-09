@@ -52,6 +52,7 @@ public class AIContextCollector {
     AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
         blocksYail, currentView, screenComponentsJson, projectSnapshot);
     request.setBlockWarnings(getCurrentBlocksWarningsAndErrors());
+    request.setPlanExecuteMode(AIEditorState.isPlanExecuteMode());
 
     // Set user's interface language for locale-aware AI responses
     String localeName = LocaleInfo.getCurrentLocale().getLocaleName();

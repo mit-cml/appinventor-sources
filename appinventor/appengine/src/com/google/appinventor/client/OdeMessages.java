@@ -6055,6 +6055,42 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("System message shown when the user cancels an in-flight AI request")
   String aiChatRequestCancelled();
 
+  @DefaultMessage("Plan & Execute")
+  @Description("Label for the Plan & Execute mode toggle in the AI chat dialog")
+  String aiChatPlanExecuteLabel();
+
+  @DefaultMessage("This project uses a tutorial. Plan & Execute may skip pedagogical steps. Continue?")
+  @Description("Confirmation shown when enabling Plan & Execute mode on a tutorial project")
+  String aiChatPlanExecuteTutorialConfirm();
+
+  @DefaultMessage("Execution Plan")
+  @Description("Header for the plan card shown in the AI chat when the agent proposes a plan")
+  String aiChatPlanCardHeader();
+
+  @DefaultMessage("Approve")
+  @Description("Label for the approve button on a plan card")
+  String aiChatPlanApproveButton();
+
+  @DefaultMessage("Edit & Approve")
+  @Description("Label for the edit-and-approve button on a plan card")
+  String aiChatPlanEditApproveButton();
+
+  @DefaultMessage("Reject")
+  @Description("Label for the reject button on a plan card")
+  String aiChatPlanRejectButton();
+
+  @DefaultMessage("Save")
+  @Description("Label for the save button when editing a plan before approval")
+  String aiChatPlanSaveButton();
+
+  @DefaultMessage("Cancel")
+  @Description("Label for the cancel button when editing a plan")
+  String aiChatPlanCancelButton();
+
+  @DefaultMessage("Plan rejected.")
+  @Description("Message shown after the user rejects an execution plan")
+  String aiChatPlanRejected();
+
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();

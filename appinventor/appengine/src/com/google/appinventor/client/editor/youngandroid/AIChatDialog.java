@@ -12,12 +12,15 @@ import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIChatRenderer;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIContextCollector;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIDialogResizeHandler;
+import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIModeSelectionDialog;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIOperationFormatter;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIResponseOrchestrator;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.gwt.dom.client.Element;
@@ -27,7 +30,11 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -66,6 +73,7 @@ public class AIChatDialog extends DialogBox
   private final Button applyAndAcceptAllButton;
   private final Button rejectButton;
   private final Button newConversationButton;
+  private final Button planExecuteButton;
   private final Label statusLabel;
   private final Label editModeWarning;
   private final FlowPanel autoAcceptPanel;
@@ -274,6 +282,28 @@ public class AIChatDialog extends DialogBox
 
     mainPanel.add(autoAcceptPanel);
 
+    // Plan & Execute toggle (only shown in ProjectEditor mode)
+    planExecuteCheckBox = new CheckBox(MESSAGES.aiChatPlanExecuteLabel());
+    planExecuteCheckBox.getElement().getStyle().setFontSize(12, Unit.PX);
+    planExecuteCheckBox.getElement().getStyle().setProperty("cursor", "pointer");
+    planExecuteCheckBox.setVisible(false);
+    planExecuteCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<Boolean> event) {
+        boolean checked = event.getValue();
+        if (checked && hasTutorialUrl()) {
+          boolean confirmed = Window.confirm(MESSAGES.aiChatPlanExecuteTutorialConfirm());
+          if (!confirmed) {
+            planExecuteCheckBox.setValue(false, false);
+            AIEditorState.setPlanExecuteMode(false);
+            return;
+          }
+        }
+        AIEditorState.setPlanExecuteMode(checked);
+      }
+    });
+    mainPanel.add(planExecuteCheckBox);
+
     // Bottom toolbar: new conversation + close
     HorizontalPanel bottomBar = new HorizontalPanel();
     bottomBar.setSpacing(4);
@@ -336,6 +366,7 @@ public class AIChatDialog extends DialogBox
     }
     currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     updateEditModeWarning();
+    updatePlanExecuteToggle();
     orchestrator.loadExistingConversation();
   }
 
@@ -365,13 +396,53 @@ public class AIChatDialog extends DialogBox
 
   /**
    * Hides the dialog and remembers its position.
+   * Resets the Plan & Execute toggle so it starts unchecked on next open.
    */
   public void hideDialog() {
     lastPopupLeft = getPopupLeft();
     lastPopupTop = getPopupTop();
     orchestrator.resetAutoAcceptAll();
     orchestrator.stopPollingStatus();
+    planExecuteCheckBox.setValue(false, false);
+    AIEditorState.setPlanExecuteMode(false);
     hide();
+  }
+
+  // ---- Plan & Execute toggle ----
+
+  /**
+   * Shows the Plan & Execute toggle when the current AI mode is ProjectEditor
+   * AND the {@code ai.agent.orchestration} server flag is enabled.
+   * Hides and resets the toggle otherwise.
+   */
+  private void updatePlanExecuteToggle() {
+    String mode = contextCollector.getCurrentAIAgentMode();
+    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode) && orchestrator.isOrchestrationEnabled()) {
+      planExecuteCheckBox.setVisible(true);
+    } else {
+      planExecuteCheckBox.setValue(false, false);
+      AIEditorState.setPlanExecuteMode(false);
+      planExecuteCheckBox.setVisible(false);
+    }
+  }
+
+  /**
+   * Returns true if the current project has a non-empty TutorialURL setting.
+   */
+  private boolean hasTutorialUrl() {
+    long projectId = contextCollector.getCurrentProjectId();
+    if (projectId == 0) {
+      return false;
+    }
+    ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (projectEditor == null) {
+      return false;
+    }
+    String tutorialUrl = projectEditor.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL);
+    return tutorialUrl != null && !tutorialUrl.isEmpty();
   }
 
   // ---- Edit-mode warning ----
@@ -538,6 +609,7 @@ public class AIChatDialog extends DialogBox
   public void clearChatHistory() {
     renderer.clear();
     updateEditModeWarning();
+    updatePlanExecuteToggle();
   }
 
   @Override
@@ -552,6 +624,17 @@ public class AIChatDialog extends DialogBox
   public void setFeedbackContext(boolean debugEnabled, String conversationId) {
     this.conversationId = conversationId;
     renderer.setFeedbackContext(debugEnabled, conversationId);
+  }
+
+  @Override
+  public void renderPlanCard(String planJson,
+      AIResponseOrchestrator.PlanApprovalCallback approvalCallback) {
+    renderer.renderPlanCard(planJson, approvalCallback);
+  }
+
+  @Override
+  public void onConfigLoaded() {
+    updatePlanExecuteToggle();
   }
 
 

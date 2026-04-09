@@ -23,6 +23,10 @@ public final class AIToolNames {
   public static final String LOOKUP_COMPONENT = "lookup_component";
   public static final String LOOKUP_SCREEN = "lookup_screen";
 
+  // ---------- Planning tools ----------
+
+  public static final String PROPOSE_PLAN = "propose_plan";
+
   // ---------- Designer-view tools ----------
 
   public static final String ADD_COMPONENT = "add_component";

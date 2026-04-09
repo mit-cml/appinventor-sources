@@ -43,7 +43,8 @@ public final class ModeEnforcer {
           AIOperation.Type.SWITCH_SCREEN,
           AIOperation.Type.CREATE_SCREEN,
           AIOperation.Type.DELETE_SCREEN,
-          AIOperation.Type.SET_PROJECT_PROP)));
+          AIOperation.Type.SET_PROJECT_PROP,
+          AIOperation.Type.PROPOSE_PLAN)));
 
   /** Project-level operations only allowed in ProjectEditor mode. */
   static final Set<AIOperation.Type> PROJECT_LEVEL_OPS =
@@ -79,9 +80,38 @@ public final class ModeEnforcer {
    * Returns the filtered list; rejected operations are reported in {@code errors}.
    */
   public static List<AIOperation> enforce(List<AIOperation> operations,
-      String mode, String currentView, List<String> errors) {
+      String mode, String currentView, EnforcementContext context,
+      List<String> errors) {
     if (operations.isEmpty()) {
       return operations;
+    }
+
+    if (context == EnforcementContext.PLANNING) {
+      List<AIOperation> planOnly = new ArrayList<>();
+      for (AIOperation op : operations) {
+        if (op.getType() == AIOperation.Type.PROPOSE_PLAN) {
+          planOnly.add(op);
+        } else if (WRITE_OPS.contains(op.getType())) {
+          errors.add("Operation " + op.getType() + " is not allowed during planning.");
+        } else {
+          planOnly.add(op);
+        }
+      }
+      return planOnly;
+    }
+
+    if (context == EnforcementContext.CHILD_EXECUTION) {
+      List<AIOperation> screenOnly = new ArrayList<>();
+      for (AIOperation op : operations) {
+        if (op.getType() == AIOperation.Type.PROPOSE_PLAN
+            || PROJECT_LEVEL_OPS.contains(op.getType())) {
+          errors.add("Operation " + op.getType() + " is not allowed for child agents.");
+        } else {
+          screenOnly.add(op);
+        }
+      }
+      operations = screenOnly;
+      // Fall through to existing mode/view enforcement below
     }
 
     // Solo-op detection: if any solo op is present alongside other ops,

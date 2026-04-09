@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.aiagent.context;
 
+import com.google.appinventor.server.aiagent.EnforcementContext;
+
 /**
  * Value class carrying per-request parameters shared across context modules.
  */
@@ -21,11 +23,13 @@ public class ContextParams {
   private final String blockWarnings;
   private final String locale;
   private final String languageDisplayName;
+  private final EnforcementContext enforcementContext;
 
   public ContextParams(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView,
       String screenComponentsJson, String projectSnapshot,
-      String blockWarnings, String locale, String languageDisplayName) {
+      String blockWarnings, String locale, String languageDisplayName,
+      EnforcementContext enforcementContext) {
     this.userId = userId;
     this.projectId = projectId;
     this.screenName = screenName;
@@ -37,6 +41,7 @@ public class ContextParams {
     this.blockWarnings = blockWarnings;
     this.locale = locale;
     this.languageDisplayName = languageDisplayName;
+    this.enforcementContext = enforcementContext;
   }
 
   public String getUserId() {
@@ -81,5 +86,9 @@ public class ContextParams {
 
   public String getLanguageDisplayName() {
     return languageDisplayName;
+  }
+
+  public EnforcementContext getEnforcementContext() {
+    return enforcementContext;
   }
 }

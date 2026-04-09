@@ -152,15 +152,18 @@ public class AIContextBuilder {
    *                             may be null
    * @param languageDisplayName  the native display name (e.g. "Español"),
    *                             may be null
+   * @param enforcementContext   controls which operations are allowed
+   *                             (e.g. PLANNING suppresses the normal mode instructions)
    * @return list of context message strings
    */
   public List<String> buildContextMessages(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView,
       String screenComponentsJson, String projectSnapshot,
-      String blockWarnings, String locale, String languageDisplayName) {
+      String blockWarnings, String locale, String languageDisplayName,
+      EnforcementContext enforcementContext) {
     ContextParams params = new ContextParams(userId, projectId, screenName, mode,
         blocksYail, currentView, screenComponentsJson, projectSnapshot, blockWarnings,
-        locale, languageDisplayName);
+        locale, languageDisplayName, enforcementContext);
     List<String> messages = new ArrayList<>();
 
     // Message 1: Mode and view
@@ -195,10 +198,30 @@ public class AIContextBuilder {
    *
    * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
    * @param currentView the active editor view ("Designer" or "Blocks")
-   * @return tools available in the given mode and view
+   * @param context     the enforcement context controlling which tools are exposed
+   * @return tools available in the given mode, view, and enforcement context
    */
-  public List<LLMTool> buildTools(String mode, String currentView) {
+  public List<LLMTool> buildTools(String mode, String currentView, EnforcementContext context) {
     List<LLMTool> tools = new ArrayList<>();
+
+    // Planning mode: only expose read-only tools and propose_plan
+    if (context == EnforcementContext.PLANNING) {
+      tools.add(new LLMTool(AIToolNames.LOOKUP_COMPONENT,
+          "Look up full metadata for a component type from the component database. "
+              + "Returns all properties, events, methods, and their types.",
+          "{\"type\":\"object\",\"properties\":{\"component_type\":{\"type\":\"string\","
+              + "\"description\":\"The component type name, e.g. Button, Label\"}},\"required\":[\"component_type\"]}"));
+      tools.add(new LLMTool(AIToolNames.LOOKUP_SCREEN,
+          "Look up the saved state of a screen including its component tree. "
+              + "Note: this reads from the server's last-saved data, which may not "
+              + "reflect unsaved changes. For the current screen, the component tree "
+              + "in the context messages above is the authoritative source. "
+              + "Use this tool only for non-current screens.",
+          "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
+              + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
+      tools.add(buildProposePlanTool());
+      return tools;
+    }
 
     // Read-only tools available in all modes
     tools.add(new LLMTool(AIToolNames.LOOKUP_COMPONENT,
@@ -327,6 +350,32 @@ public class AIContextBuilder {
     }
 
     return tools;
+  }
+
+  // ---------- Private helpers ----------
+
+  private LLMTool buildProposePlanTool() {
+    String parameters = "{\"type\":\"object\",\"properties\":{"
+        + "\"summary\":{\"type\":\"string\","
+        + "\"description\":\"Brief overall description of what the plan accomplishes\"},"
+        + "\"steps\":{\"type\":\"array\","
+        + "\"items\":{\"type\":\"object\","
+        + "\"properties\":{"
+        + "\"id\":{\"type\":\"string\",\"description\":\"Unique step identifier (e.g. s1, s2)\"},"
+        + "\"screen\":{\"type\":\"string\",\"description\":\"Target screen name. Use __project__ for project-level operations (create screen, project properties)\"},"
+        + "\"description\":{\"type\":\"string\",\"description\":\"What this step will do\"},"
+        + "\"depends_on\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},"
+        + "\"description\":\"Step IDs that must complete before this step starts\"}"
+        + "},\"required\":[\"id\",\"screen\",\"description\"]}"
+        + "}},\"required\":[\"summary\",\"steps\"]}";
+    return new LLMTool(
+        AIToolNames.PROPOSE_PLAN,
+        "Propose an execution plan for the user to review before making changes. "
+            + "Each step targets a specific screen and describes what will be done. "
+            + "Steps targeting different screens can execute in parallel. "
+            + "Use lookup_component and lookup_screen first to research the project, "
+            + "then propose a complete plan.",
+        parameters);
   }
 
   /**

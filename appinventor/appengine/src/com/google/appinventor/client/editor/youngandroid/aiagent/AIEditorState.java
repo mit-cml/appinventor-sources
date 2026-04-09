@@ -23,6 +23,16 @@ public final class AIEditorState {
 
   private AIEditorState() {}
 
+  private static boolean planExecuteMode = false;
+
+  public static boolean isPlanExecuteMode() {
+    return planExecuteMode;
+  }
+
+  public static void setPlanExecuteMode(boolean enabled) {
+    planExecuteMode = enabled;
+  }
+
   public static DesignProject getCurrentProject() {
     DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
     return toolbar.getCurrentProject();

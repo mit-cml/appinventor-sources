@@ -36,7 +36,10 @@ public class AIOperation implements IsSerializable, Serializable {
     SET_PROJECT_PROP,
 
     // Navigation operations (ScreenEditor + ProjectEditor modes)
-    TOGGLE_EDITOR
+    TOGGLE_EDITOR,
+
+    // Orchestration
+    PROPOSE_PLAN
   }
 
   private Type type;
