@@ -62,4 +62,12 @@ public interface SourceStructureExplorerItem {
    *                 be a container), 1 to insert after target
    */
   void moveTo(SourceStructureExplorerItem target, int position);
+
+  /**
+   * Returns false if this item should start collapsed the first time it appears in the tree.
+   * Defaults to true (expanded).
+   */
+  default boolean isInitiallyExpanded() {
+    return true;
+  }
 }

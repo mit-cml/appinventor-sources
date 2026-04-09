@@ -50,8 +50,10 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -80,6 +82,11 @@ public class SourceStructureExplorer extends Composite {
   private int hoverPosition = 0;
   /** Absolutely-positioned div injected into the scroll panel as the drop indicator. */
   private Element indicatorDiv;
+
+  /** Names of components that the user has explicitly collapsed in the tree. */
+  private final Set<String> collapsedNames = new HashSet<>();
+  /** Names of components whose initial expansion state has already been determined. */
+  private final Set<String> seenNames = new HashSet<>();
   /** True when the indicator is currently showing as a box (drop-into); false for a line. */
   private boolean indicatorIsBox = false;
 
@@ -119,10 +126,13 @@ public class SourceStructureExplorer extends Composite {
       public void onClose(CloseEvent<TreeItem> event) {
         TreeItem treeItem = event.getTarget();
         if (treeItem != null) {
+          String name = treeItem.getElement().getAttribute("data-name");
+          if (name != null && !name.isEmpty()) {
+            collapsedNames.add(name);
+          }
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
-            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            item.onStateChange(false);
+            ((SourceStructureExplorerItem) userObject).onStateChange(false);
           }
         }
       }
@@ -132,10 +142,13 @@ public class SourceStructureExplorer extends Composite {
       public void onOpen(OpenEvent<TreeItem> event) {
         TreeItem treeItem = event.getTarget();
         if (treeItem != null) {
+          String name = treeItem.getElement().getAttribute("data-name");
+          if (name != null && !name.isEmpty()) {
+            collapsedNames.remove(name);
+          }
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
-            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            item.onStateChange(true);
+            ((SourceStructureExplorerItem) userObject).onStateChange(true);
           }
         }
       }
@@ -457,6 +470,7 @@ public class SourceStructureExplorer extends Composite {
     tree.clear();
     nameToItem.clear();
     for (TreeItem root : roots) {
+      applyExpansionState(root);  // before addItem so setState doesn't trigger animation
       tree.addItem(root);
       collectNameToItem(root);
     }
@@ -531,6 +545,26 @@ public class SourceStructureExplorer extends Composite {
     }
     for (int i = 0; i < item.getChildCount(); i++) {
       collectNameToItem(item.getChild(i));
+    }
+  }
+
+  /**
+   * Recursively applies expansion state to freshly built tree items.
+   * Items whose data-name is in {@link #collapsedNames} are closed; all others are opened.
+   */
+  private void applyExpansionState(TreeItem item) {
+    String name = item.getElement().getAttribute("data-name");
+    if (name != null && !name.isEmpty() && !seenNames.contains(name)) {
+      seenNames.add(name);
+      Object userObj = item.getUserObject();
+      if (userObj instanceof SourceStructureExplorerItem
+          && !((SourceStructureExplorerItem) userObj).isInitiallyExpanded()) {
+        collapsedNames.add(name);
+      }
+    }
+    item.setState(name == null || name.isEmpty() || !collapsedNames.contains(name));
+    for (int i = 0; i < item.getChildCount(); i++) {
+      applyExpansionState(item.getChild(i));
     }
   }
 

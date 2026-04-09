@@ -113,8 +113,6 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       itemNode.addItem(childNode);
     }
 
-    itemNode.setState(expanded);
-
     return itemNode;
   }
 

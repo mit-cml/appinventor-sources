@@ -322,10 +322,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private Image iconImage;
 
   private final SourceStructureExplorerItem sourceStructureExplorerItem;
-  /**
-   * The state of the branch in the components tree corresponding to this component.
-   */
-  protected boolean expanded;
 
   // Properties of the component
   // Expose these to individual component subclasses, which might need to
@@ -358,7 +354,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     componentDefinition = COMPONENT_DATABASE.getComponentDefinition(type);
 
     sourceStructureExplorerItem = new ComponentExplorerItem();
-    expanded = true;
 
     // Create a default property set for the component
     properties = new EditableProperties(true);
@@ -837,6 +832,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
     }
   };
+
+  /**
+   * Returns false if this component's tree node should start collapsed on first display.
+   * Subclasses may override; defaults to true (expanded).
+   */
+  protected boolean isInitiallyExpanded() {
+    return true;
+  }
 
   /**
    * Constructs a tree item for the component which will be displayed in the
@@ -1349,7 +1352,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
     @Override
     public void onStateChange(boolean open) {
-      expanded = open;
+      // Expansion state is now tracked by SourceStructureExplorer.
+    }
+
+    @Override
+    public boolean isInitiallyExpanded() {
+      return MockComponent.this.isInitiallyExpanded();
     }
 
     @Override
