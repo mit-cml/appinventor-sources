@@ -375,8 +375,10 @@ public class AIContextCollector {
    *
    * @param screenName  the target screen to build context for
    * @param userMessage the user's message, or null for continuation requests
+   * @param currentView the child's current editor view ("Designer" or "Blocks")
    */
-  public AIAgentRequest buildRequestForScreen(String screenName, String userMessage) {
+  public AIAgentRequest buildRequestForScreen(String screenName, String userMessage,
+      String currentView) {
     long projectId = getCurrentProjectId();
 
     ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
@@ -415,7 +417,7 @@ public class AIContextCollector {
     String projectSnapshot = buildProjectSnapshot();
 
     AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
-        blocksYail, "Designer", screenComponentsJson, projectSnapshot);
+        blocksYail, currentView, screenComponentsJson, projectSnapshot);
 
     request.setOrchestrationMode(true);
     request.setTargetScreen(screenName);

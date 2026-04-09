@@ -106,6 +106,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
               if (!appliedScreens.contains(screenName)) {
                 appliedScreens.add(screenName);
               }
+              batch.child.updateViewFromOperations(operations);
             } else {
               uiCallback.addAiMessage("[" + screenName + "] Execution failed: "
                   + result.getErrorMessage());

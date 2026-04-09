@@ -10,6 +10,7 @@ import com.google.appinventor.client.editor.youngandroid.aiagent.executor.Screen
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
+import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 import com.google.gwt.user.client.Timer;
 
@@ -77,6 +78,7 @@ public class ChildConversation {
   private final BatchCallback callback;
   private final long projectId;
 
+  private String currentView = "Designer";
   private Timer pollingTimer;
   private boolean waitingForApproval;
   private boolean lastResponseHasMore;
@@ -117,7 +119,7 @@ public class ChildConversation {
     }
 
     AIAgentRequest request = contextCollector.buildRequestForScreen(
-        screenName, stepDescription);
+        screenName, stepDescription, currentView);
     startPollingStatus();
 
     aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>() {
@@ -208,6 +210,30 @@ public class ChildConversation {
     return cancelled;
   }
 
+  /**
+   * Returns the current editor view tracked by this child conversation.
+   */
+  public String getCurrentView() {
+    return currentView;
+  }
+
+  /**
+   * Scans the given operations for TOGGLE_EDITOR and updates this child's
+   * tracked view accordingly. Called after operations are applied.
+   */
+  public void updateViewFromOperations(List<AIOperation> operations) {
+    for (AIOperation op : operations) {
+      if (op.getType() == AIOperation.Type.TOGGLE_EDITOR) {
+        String payload = op.getPayload();
+        if (payload != null && payload.contains("Blocks")) {
+          currentView = "Blocks";
+        } else if (payload != null && payload.contains("Designer")) {
+          currentView = "Designer";
+        }
+      }
+    }
+  }
+
   // ---- Response handling ----
 
   /**
@@ -235,8 +261,19 @@ public class ChildConversation {
 
     lastResponseHasMore = response.hasMore();
 
-    List<?> operations = response.getOperations();
+    List<AIOperation> operations = response.getOperations();
     boolean hasOps = operations != null && !operations.isEmpty();
+
+    if (hasOps && isToggleOnly(operations)) {
+      // Auto-approve toggle operations -- no user approval needed
+      updateViewFromOperations(operations);
+      if (lastResponseHasMore) {
+        fetchContinuation();
+      } else {
+        callback.onComplete(this);
+      }
+      return;
+    }
 
     if (hasOps) {
       // Pause and report the batch to the orchestration manager
@@ -251,6 +288,18 @@ public class ChildConversation {
     }
   }
 
+  /**
+   * Returns true if every operation in the list is a TOGGLE_EDITOR operation.
+   */
+  private boolean isToggleOnly(List<AIOperation> operations) {
+    for (AIOperation op : operations) {
+      if (op.getType() != AIOperation.Type.TOGGLE_EDITOR) {
+        return false;
+      }
+    }
+    return !operations.isEmpty();
+  }
+
   // ---- Continuation ----
 
   /**
@@ -262,7 +311,7 @@ public class ChildConversation {
       return;
     }
 
-    AIAgentRequest request = contextCollector.buildRequestForScreen(screenName, null);
+    AIAgentRequest request = contextCollector.buildRequestForScreen(screenName, null, currentView);
     startPollingStatus();
 
     aiAgentService.continueRequest(request, new OdeAsyncCallback<AIAgentResponse>() {
