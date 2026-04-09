@@ -30,6 +30,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -93,6 +94,12 @@ public class AIChatDialog extends DialogBox
 
   /** True once the first real message (user or AI) has been added to the chat. */
   private boolean hasConversationMessages;
+
+  // Status label ellipsis animation
+  private static final String[] ELLIPSIS = {".", "..", "..."};
+  private String statusBaseText = "";
+  private int statusEllipsisCounter;
+  private Timer statusEllipsisTimer;
 
   /**
    * Constructs the AI chat dialog, building the full UI hierarchy
@@ -711,12 +718,40 @@ public class AIChatDialog extends DialogBox
 
   @Override
   public void setStatusText(String text) {
-    statusLabel.setText(text);
+    statusBaseText = text != null ? text : "";
+    statusEllipsisCounter = 0;
+    statusLabel.setText(statusBaseText);
   }
 
   @Override
   public void setStatusVisible(boolean visible) {
     statusLabel.setVisible(visible);
+    if (visible) {
+      startStatusAnimation();
+    } else {
+      stopStatusAnimation();
+    }
+  }
+
+  private void startStatusAnimation() {
+    stopStatusAnimation();
+    statusEllipsisCounter = 0;
+    statusEllipsisTimer = new Timer() {
+      @Override
+      public void run() {
+        statusEllipsisCounter++;
+        String dots = ELLIPSIS[statusEllipsisCounter % ELLIPSIS.length];
+        statusLabel.setText(statusBaseText + dots);
+      }
+    };
+    statusEllipsisTimer.scheduleRepeating(600);
+  }
+
+  private void stopStatusAnimation() {
+    if (statusEllipsisTimer != null) {
+      statusEllipsisTimer.cancel();
+      statusEllipsisTimer = null;
+    }
   }
 
   @Override

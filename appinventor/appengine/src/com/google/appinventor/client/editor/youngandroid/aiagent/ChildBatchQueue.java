@@ -9,7 +9,6 @@ import com.google.appinventor.client.editor.youngandroid.aiagent.executor.AIOper
 import com.google.appinventor.client.editor.youngandroid.aiagent.executor.ScreenExecutionContext;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
-import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,12 +72,6 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
 
   /** Last action description per screen, for live status display. */
   private final Map<String, String> lastAction = new HashMap<>();
-
-  /** Counter for cycling the ellipsis animation in the status line. */
-  private int ellipsisCounter;
-
-  /** Timer for animating the status ellipsis while waiting. */
-  private Timer ellipsisTimer;
 
   ChildBatchQueue(Map<String, ChildConversation> children,
       int totalChildren,
@@ -155,7 +148,6 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       return;
     }
     cancelled = true;
-    stopEllipsisAnimation();
     activeBatch = null;
     queue.clear();
     uiCallback.hideOperationPreview();
@@ -199,7 +191,6 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       return;
     }
     cancelled = true;
-    stopEllipsisAnimation();
     activeBatch = null;
     queue.clear();
     for (ChildConversation child : children.values()) {
@@ -275,14 +266,15 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       boolean childrenStillRunning = completedChildren < totalChildren;
       uiCallback.setRequestInFlight(childrenStillRunning);
       if (childrenStillRunning) {
-        startEllipsisAnimation();
+        uiCallback.setStatusText(buildProgressStatus());
+        uiCallback.setStatusVisible(true);
       } else {
-        stopEllipsisAnimation();
+        uiCallback.setStatusVisible(false);
       }
       checkAllDone();
       return;
     }
-    stopEllipsisAnimation();
+    uiCallback.setStatusVisible(false);
     activeBatch = queue.removeFirst();
     if (autoAcceptAll) {
       approveBatch();
@@ -293,41 +285,11 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
     }
   }
 
-  private static final String[] ELLIPSIS = {".", "..", "..."};
-
-  private void startEllipsisAnimation() {
-    stopEllipsisAnimation();
-    ellipsisCounter = 0;
-    uiCallback.setStatusText(buildProgressStatus());
-    uiCallback.setStatusVisible(true);
-    ellipsisTimer = new Timer() {
-      @Override
-      public void run() {
-        if (cancelled || completedChildren >= totalChildren) {
-          cancel();
-          return;
-        }
-        ellipsisCounter++;
-        uiCallback.setStatusText(buildProgressStatus());
-      }
-    };
-    ellipsisTimer.scheduleRepeating(600);
-  }
-
-  private void stopEllipsisAnimation() {
-    if (ellipsisTimer != null) {
-      ellipsisTimer.cancel();
-      ellipsisTimer = null;
-    }
-    uiCallback.setStatusVisible(false);
-  }
-
   /**
    * Builds a status string showing which children are still working
-   * and what each last did, with animated ellipsis.
+   * and what each last did. Ellipsis animation is handled by the dialog.
    */
   private String buildProgressStatus() {
-    String dots = ELLIPSIS[ellipsisCounter % ELLIPSIS.length];
     StringBuilder sb = new StringBuilder();
     boolean first = true;
     for (Map.Entry<String, ChildConversation> entry : children.entrySet()) {
@@ -339,9 +301,9 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
         sb.append(entry.getKey());
         String action = lastAction.get(entry.getKey());
         if (action != null) {
-          sb.append(": ").append(action).append(dots);
+          sb.append(": ").append(action);
         } else {
-          sb.append(": thinking").append(dots);
+          sb.append(": thinking");
         }
         first = false;
       }
