@@ -63,7 +63,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return AIAgentEngine.errorResponse("Message cannot be empty.");
     }
     userMessage = sanitize(userMessage);
-    if (userMessage.length() > MAX_MESSAGE_LENGTH) {
+    if (!request.isPlatformMessage() && userMessage.length() > MAX_MESSAGE_LENGTH) {
       return AIAgentEngine.errorResponse(
           "Message too long (max " + MAX_MESSAGE_LENGTH + " characters).");
     }
