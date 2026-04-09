@@ -173,6 +173,8 @@ public class AIAgentEngine {
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
       if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
       }
 
       // Build system prompt, context messages, and tools
@@ -335,6 +337,8 @@ public class AIAgentEngine {
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
       if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
       }
 
       // Get provider and rebuild tools

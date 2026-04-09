@@ -319,8 +319,9 @@ public class AIContextBuilder {
       AIDebug.log(LOG, toolList.toString());
     }
 
-    // Project-level tools only for ProjectEditor
-    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
+    // Project-level tools only for ProjectEditor (not for child agents)
+    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)
+        && context != EnforcementContext.CHILD_EXECUTION) {
       tools.add(new LLMTool(AIToolNames.SWITCH_SCREEN,
           "Switch the active screen context. "
               + "This tool MUST be called ALONE — do not combine it with any other tools "

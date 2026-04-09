@@ -21,8 +21,31 @@ public class ModeModule extends ContextModule {
     if (params.getEnforcementContext() == EnforcementContext.PLANNING) {
       return buildPlanningInstructions();
     }
+    if (params.getEnforcementContext() == EnforcementContext.CHILD_EXECUTION) {
+      return buildChildExecutionInstructions(params.getCurrentView());
+    }
     return buildModeInstructions(params.getMode(), params.getCurrentView(),
         params.getLocale(), params.getLanguageDisplayName());
+  }
+
+  private String buildChildExecutionInstructions(String currentView) {
+    return "You are a child agent executing one step of a multi-screen plan. "
+        + "Your task is to implement the requested changes on THIS screen only.\n\n"
+        + "IMPORTANT RULES:\n"
+        + "- Execute the task COMPLETELY. Do not ask questions or wait for user input.\n"
+        + "- Do not narrate or explain what you plan to do — just do it.\n"
+        + "- You can ONLY modify the current screen. You cannot create, delete, "
+        + "or switch to other screens.\n"
+        + "- Use toggle_editor to switch between Designer and Blocks views as needed.\n"
+        + "- The screen form component (the root) should be referenced by its screen name "
+        + "for property changes (e.g., set_property with the screen name as component_name).\n\n"
+        + "You are currently viewing the **" + currentView + "** editor.\n"
+        + "- Designer operations (add_component, delete_component, set_property, "
+        + "rename_component) require the Designer view.\n"
+        + "- Block operations (write_block, delete_block) require the Blocks view.\n"
+        + "- Use toggle_editor to switch when needed.\n\n"
+        + "Complete ALL work for this screen — both Designer components and Blocks logic "
+        + "— before finishing. Do not leave partial work.";
   }
 
   private String buildPlanningInstructions() {

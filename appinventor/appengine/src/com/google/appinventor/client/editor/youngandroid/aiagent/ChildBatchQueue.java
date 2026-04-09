@@ -234,6 +234,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
       approveBatch();
     } else {
       uiCallback.setRequestInFlight(false);
+      uiCallback.setStatusVisible(false);
       uiCallback.showOperationPreview(activeBatch.response);
     }
   }
