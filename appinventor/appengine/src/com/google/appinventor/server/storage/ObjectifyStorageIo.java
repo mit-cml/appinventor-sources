@@ -45,10 +45,13 @@ import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -2028,6 +2031,10 @@ public class ObjectifyStorageIo implements StorageIo {
         if (data == null) {     // This happens if file creation is interrupted
           data = new byte[0];
         }
+        // Strip AIAgentMode from .scm files so exported AIAs never carry it.
+        if (fileName.endsWith(".scm") && data.length > 0) {
+          data = stripAIAgentModeFromScm(data);
+        }
         out.putNextEntry(new ZipEntry(fileName));
         out.write(data, 0, data.length);
         out.closeEntry();
@@ -2100,6 +2107,28 @@ public class ObjectifyStorageIo implements StorageIo {
         new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);
     projectSourceZip.setMetadata(projectName.t);
     return projectSourceZip;
+  }
+
+  /**
+   * Removes the AIAgentMode property from an SCM file's Properties so that
+   * exported/imported projects never carry an active AI mode.
+   */
+  private byte[] stripAIAgentModeFromScm(byte[] scmBytes) {
+    try {
+      String scm = new String(scmBytes, StandardCharsets.UTF_8);
+      JSONObject root = YoungAndroidSourceAnalyzer.parseSourceFile(scm, new ServerJsonParser());
+      JSONValue propsValue = root.get("Properties");
+      if (propsValue != null) {
+        Map<String, JSONValue> props = propsValue.asObject().getProperties();
+        if (props.remove(SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE) != null) {
+          return YoungAndroidSourceAnalyzer.generateSourceFile(root)
+              .getBytes(StandardCharsets.UTF_8);
+        }
+      }
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "Failed to strip AIAgentMode from SCM", e);
+    }
+    return scmBytes;
   }
 
   // Find a user by email address. This version does *not* create a new user

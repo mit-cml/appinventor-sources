@@ -15,6 +15,8 @@ import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBu
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -23,6 +25,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -35,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -149,7 +153,13 @@ public final class FileImporterImpl implements FileImporter {
             ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
             ByteStreams.copy(zin, contentStream);
 
-            project.addRawFile(new RawFile(fileName, contentStream.toByteArray()));
+            byte[] fileBytes = contentStream.toByteArray();
+            // Strip AIAgentMode from imported .scm files so projects always
+            // start with AI mode Off regardless of what the exporter had set.
+            if (fileName.endsWith(".scm") && fileBytes.length > 0) {
+              fileBytes = stripAIAgentModeFromScm(fileBytes);
+            }
+            project.addRawFile(new RawFile(fileName, fileBytes));
           }
         }
       }
@@ -169,6 +179,27 @@ public final class FileImporterImpl implements FileImporter {
     }
     long projectId = storageIo.createProject(userId, project, projectSettings);
     return storageIo.getUserProject(userId, projectId);
+  }
+
+  /**
+   * Removes the AIAgentMode property from an SCM file's Properties so that
+   * imported projects always start with AI mode Off.
+   */
+  private static byte[] stripAIAgentModeFromScm(byte[] scmBytes) {
+    try {
+      String scm = new String(scmBytes, "UTF-8");
+      JSONObject root = YoungAndroidSourceAnalyzer.parseSourceFile(scm, new ServerJsonParser());
+      JSONValue propsValue = root.get("Properties");
+      if (propsValue != null) {
+        Map<String, JSONValue> props = propsValue.asObject().getProperties();
+        if (props.remove(SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE) != null) {
+          return YoungAndroidSourceAnalyzer.generateSourceFile(root).getBytes("UTF-8");
+        }
+      }
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "Failed to strip AIAgentMode from SCM during import", e);
+    }
+    return scmBytes;
   }
 
   @VisibleForTesting
