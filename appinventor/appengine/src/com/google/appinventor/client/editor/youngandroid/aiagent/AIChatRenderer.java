@@ -330,17 +330,24 @@ public class AIChatRenderer {
       String description = AIJsonUtils.extractField(stepJson, "description");
       String dependsOn = extractArrayField(stepJson, "depends_on");
 
-      html.append("<div style='padding:2px 0; padding-left:8px; "
-          + "font-family:\"SFMono-Regular\",Consolas,\"Liberation Mono\",Menlo,monospace;'>");
-      html.append("<b>").append(escapeHtml(stepId)).append("</b> ");
-      if (screen != null && !screen.isEmpty() && !"screen".equals(screen)) {
-        html.append(escapeHtml(screen)).append(" &mdash; ");
+      // Format the screen target as a badge; skip __project__ steps (no badge)
+      String screenLabel;
+      if ("__project__".equals(screen)) {
+        screenLabel = null;
+      } else if (screen != null && !screen.isEmpty() && !"screen".equals(screen)) {
+        screenLabel = screen;
+      } else {
+        screenLabel = null;
+      }
+
+      html.append("<div style='padding:3px 0; padding-left:4px;'>");
+      if (screenLabel != null) {
+        html.append("<span style='display:inline-block; background:#e0e0e0; "
+            + "border-radius:3px; padding:1px 6px; font-size:11px; "
+            + "color:#555; margin-right:6px;'>")
+            .append(escapeHtml(screenLabel)).append("</span>");
       }
       html.append(escapeHtml(description));
-      if (dependsOn != null && !dependsOn.isEmpty()) {
-        html.append(" <span style='color:#888; font-size:11px;'>(depends on: ")
-            .append(escapeHtml(dependsOn)).append(")</span>");
-      }
       html.append("</div>");
 
       pos = objEnd + 1;

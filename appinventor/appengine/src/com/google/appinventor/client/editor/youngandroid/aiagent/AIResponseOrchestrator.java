@@ -91,6 +91,10 @@ public class AIResponseOrchestrator {
     void renderPlanCard(String planJson, PlanApprovalCallback approvalCallback);
     /** Called when server config has been fetched (orchestration flag, etc.). */
     void onConfigLoaded();
+    /** Called when plan execution begins (plan approved, agent executing). */
+    void onPlanExecutionStarted();
+    /** Called when plan execution completes (all operations done). */
+    void onPlanExecutionFinished();
   }
 
   private final AIContextCollector contextCollector;
@@ -512,6 +516,7 @@ public class AIResponseOrchestrator {
    * tools and executes step by step.
    */
   private void executePlanSequentially(String planJson) {
+    callback.onPlanExecutionStarted();
     String planMessage = "<system>\nThe user approved the following execution plan. "
         + "Execute it step by step, one screen at a time. "
         + "Use switch_screen to navigate between screens as needed. "

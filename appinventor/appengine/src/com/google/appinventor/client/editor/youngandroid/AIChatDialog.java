@@ -30,11 +30,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -94,6 +91,9 @@ public class AIChatDialog extends DialogBox
   /** The project ID whose conversation is currently displayed. */
   private long currentProjectId;
 
+  /** True once the first real message (user or AI) has been added to the chat. */
+  private boolean hasConversationMessages;
+
   /**
    * Constructs the AI chat dialog, building the full UI hierarchy
    * and creating delegate instances.
@@ -103,6 +103,34 @@ public class AIChatDialog extends DialogBox
     setText(MESSAGES.aiChatDialogTitle());
     setAnimationEnabled(true);
     setGlassEnabled(false);
+
+    // Add close button (X) to the title bar
+    Element caption = getCaption().asWidget().getElement();
+    caption.getStyle().setProperty("position", "relative");
+    caption.getStyle().setProperty("paddingRight", "24px");
+    com.google.gwt.dom.client.Element closeX = com.google.gwt.dom.client.Document.get()
+        .createSpanElement();
+    closeX.setInnerHTML("&times;");
+    closeX.getStyle().setProperty("position", "absolute");
+    closeX.getStyle().setProperty("right", "6px");
+    closeX.getStyle().setProperty("top", "50%");
+    closeX.getStyle().setProperty("transform", "translateY(-50%)");
+    closeX.getStyle().setProperty("cursor", "pointer");
+    closeX.getStyle().setProperty("fontSize", "18px");
+    closeX.getStyle().setProperty("lineHeight", "1");
+    closeX.getStyle().setProperty("color", "#666");
+    caption.appendChild(closeX);
+    com.google.gwt.user.client.Event.sinkEvents(closeX,
+        com.google.gwt.user.client.Event.ONCLICK);
+    com.google.gwt.user.client.Event.setEventListener(closeX,
+        new com.google.gwt.user.client.EventListener() {
+          @Override
+          public void onBrowserEvent(com.google.gwt.user.client.Event event) {
+            if (com.google.gwt.user.client.Event.ONCLICK == event.getTypeInt()) {
+              hideDialog();
+            }
+          }
+        });
 
     // Create delegates
     contextCollector = new AIContextCollector();
@@ -282,52 +310,37 @@ public class AIChatDialog extends DialogBox
 
     mainPanel.add(autoAcceptPanel);
 
-    // Plan & Execute toggle (only shown in ProjectEditor mode)
-    planExecuteCheckBox = new CheckBox(MESSAGES.aiChatPlanExecuteLabel());
-    planExecuteCheckBox.getElement().getStyle().setFontSize(12, Unit.PX);
-    planExecuteCheckBox.getElement().getStyle().setProperty("cursor", "pointer");
-    planExecuteCheckBox.setVisible(false);
-    planExecuteCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-      @Override
-      public void onValueChange(ValueChangeEvent<Boolean> event) {
-        boolean checked = event.getValue();
-        if (checked && hasTutorialUrl()) {
-          boolean confirmed = Window.confirm(MESSAGES.aiChatPlanExecuteTutorialConfirm());
-          if (!confirmed) {
-            planExecuteCheckBox.setValue(false, false);
-            AIEditorState.setPlanExecuteMode(false);
-            return;
-          }
-        }
-        AIEditorState.setPlanExecuteMode(checked);
-      }
-    });
-    mainPanel.add(planExecuteCheckBox);
-
-    // Bottom toolbar: new conversation + close
+    // Bottom toolbar: Plan & Execute toggle (left) + New Conversation (right)
     HorizontalPanel bottomBar = new HorizontalPanel();
-    bottomBar.setSpacing(4);
+    bottomBar.setWidth("100%");
     bottomBar.getElement().getStyle().setMarginTop(6, Unit.PX);
 
+    // Plan & Execute toggle button (left side)
+    planExecuteButton = new Button(MESSAGES.aiChatPlanExecuteOff());
+    stylePlanExecuteButton("direct");
+    planExecuteButton.setVisible(false);
+    planExecuteButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        togglePlanExecuteMode();
+      }
+    });
+    bottomBar.add(planExecuteButton);
+    bottomBar.setCellHorizontalAlignment(planExecuteButton,
+        HorizontalPanel.ALIGN_LEFT);
+
+    // New Conversation button (right side)
     newConversationButton = new Button(MESSAGES.aiChatNewConversationButton());
     newConversationButton.getElement().getStyle().setProperty("cursor", "pointer");
     newConversationButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        orchestrator.clearConversation();
+        confirmAndClearConversation();
       }
     });
     bottomBar.add(newConversationButton);
-
-    Button closeButton = new Button(MESSAGES.aiChatCloseButton());
-    closeButton.getElement().getStyle().setProperty("cursor", "pointer");
-    closeButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        hideDialog();
-      }
-    });
-    bottomBar.add(closeButton);
+    bottomBar.setCellHorizontalAlignment(newConversationButton,
+        HorizontalPanel.ALIGN_RIGHT);
 
     mainPanel.add(bottomBar);
 
@@ -396,34 +409,123 @@ public class AIChatDialog extends DialogBox
 
   /**
    * Hides the dialog and remembers its position.
-   * Resets the Plan & Execute toggle so it starts unchecked on next open.
+   * Resets the Plan & Execute toggle so it starts off on next open.
    */
   public void hideDialog() {
     lastPopupLeft = getPopupLeft();
     lastPopupTop = getPopupTop();
     orchestrator.resetAutoAcceptAll();
     orchestrator.stopPollingStatus();
-    planExecuteCheckBox.setValue(false, false);
-    AIEditorState.setPlanExecuteMode(false);
+    setPlanExecuteActive(false);
     hide();
   }
 
   // ---- Plan & Execute toggle ----
 
   /**
-   * Shows the Plan & Execute toggle when the current AI mode is ProjectEditor
+   * Toggles Plan & Execute mode on/off. Shows tutorial confirmation if needed.
+   */
+  private void togglePlanExecuteMode() {
+    boolean newState = !AIEditorState.isPlanExecuteMode();
+    if (newState && hasTutorialUrl()) {
+      boolean confirmed = Window.confirm(MESSAGES.aiChatPlanExecuteTutorialConfirm());
+      if (!confirmed) {
+        return;
+      }
+    }
+    setPlanExecuteActive(newState);
+  }
+
+  /**
+   * Sets the mode button to Direct or Plan state and updates appearance.
+   */
+  private void setPlanExecuteActive(boolean active) {
+    AIEditorState.setPlanExecuteMode(active);
+    if (active) {
+      planExecuteButton.setText(MESSAGES.aiChatPlanExecuteOn());
+    } else {
+      planExecuteButton.setText(MESSAGES.aiChatPlanExecuteOff());
+    }
+    stylePlanExecuteButton(active ? "plan" : "direct");
+  }
+
+  /**
+   * Sets the button to "Execution Mode" state (blue, disabled).
+   */
+  private void setPlanExecuteExecuting() {
+    planExecuteButton.setText(MESSAGES.aiChatPlanExecuteExecuting());
+    stylePlanExecuteButton("executing");
+  }
+
+  /**
+   * Styles the mode button. States: "direct" (grey), "plan" (blue), "executing" (blue, disabled).
+   */
+  private void stylePlanExecuteButton(String state) {
+    planExecuteButton.getElement().getStyle().setProperty("borderRadius", "3px");
+    planExecuteButton.getElement().getStyle().setFontSize(12, Unit.PX);
+    if ("direct".equals(state)) {
+      planExecuteButton.getElement().getStyle().setProperty("background", "#f5f5f5");
+      planExecuteButton.getElement().getStyle().setColor("#333");
+      planExecuteButton.getElement().getStyle().setProperty("border", "1px solid #ccc");
+      planExecuteButton.getElement().getStyle().setProperty("cursor", "pointer");
+      planExecuteButton.getElement().getStyle().setProperty("opacity", "1");
+      planExecuteButton.setEnabled(true);
+    } else if ("plan".equals(state)) {
+      planExecuteButton.getElement().getStyle().setProperty("background", "#4a90d9");
+      planExecuteButton.getElement().getStyle().setColor("white");
+      planExecuteButton.getElement().getStyle().setProperty("border", "1px solid #3a7bc8");
+      planExecuteButton.getElement().getStyle().setProperty("cursor", "pointer");
+      planExecuteButton.getElement().getStyle().setProperty("opacity", "1");
+      planExecuteButton.setEnabled(true);
+    } else { // "executing" or "disabled"
+      planExecuteButton.getElement().getStyle().setProperty("background", "#4a90d9");
+      planExecuteButton.getElement().getStyle().setColor("white");
+      planExecuteButton.getElement().getStyle().setProperty("border", "1px solid #3a7bc8");
+      planExecuteButton.getElement().getStyle().setProperty("cursor", "default");
+      planExecuteButton.getElement().getStyle().setProperty("opacity", "0.7");
+      planExecuteButton.setEnabled(false);
+    }
+  }
+
+  /**
+   * Shows the mode button when the current AI mode is ProjectEditor
    * AND the {@code ai.agent.orchestration} server flag is enabled.
-   * Hides and resets the toggle otherwise.
+   * The button is disabled if there are already messages in the conversation
+   * (mode can only be toggled at the start of a conversation).
+   * Hides and resets the button otherwise.
    */
   private void updatePlanExecuteToggle() {
     String mode = contextCollector.getCurrentAIAgentMode();
     if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode) && orchestrator.isOrchestrationEnabled()) {
-      planExecuteCheckBox.setVisible(true);
+      planExecuteButton.setVisible(true);
+      boolean hasMessages = hasConversationMessages;
+      if (hasMessages) {
+        // Can't toggle mid-conversation — disable but keep showing current state
+        planExecuteButton.setEnabled(false);
+        planExecuteButton.getElement().getStyle().setProperty("cursor", "default");
+        planExecuteButton.getElement().getStyle().setProperty("opacity", "0.7");
+      } else {
+        planExecuteButton.setEnabled(true);
+        planExecuteButton.getElement().getStyle().setProperty("cursor", "pointer");
+        planExecuteButton.getElement().getStyle().setProperty("opacity", "1");
+      }
     } else {
-      planExecuteCheckBox.setValue(false, false);
-      AIEditorState.setPlanExecuteMode(false);
-      planExecuteCheckBox.setVisible(false);
+      setPlanExecuteActive(false);
+      planExecuteButton.setVisible(false);
     }
+  }
+
+  /**
+   * Confirms before clearing the conversation if there are messages in the chat.
+   */
+  private void confirmAndClearConversation() {
+    if (hasConversationMessages) {
+      boolean confirmed = Window.confirm(MESSAGES.aiChatClearConversationConfirm());
+      if (!confirmed) {
+        return;
+      }
+    }
+    orchestrator.clearConversation();
   }
 
   /**
@@ -492,6 +594,8 @@ public class AIChatDialog extends DialogBox
     inputArea.setText("");
     editModeWarning.setVisible(false);
     hideOperationPreview();
+    hasConversationMessages = true;
+    updatePlanExecuteToggle();
     orchestrator.sendMessage(text);
   }
 
@@ -502,11 +606,17 @@ public class AIChatDialog extends DialogBox
     renderer.addUserMessage(text);
     editModeWarning.setVisible(false);
     debugBanner.setVisible(false);
+    hasConversationMessages = true;
+    updatePlanExecuteToggle();
   }
 
   @Override
   public void addAiMessage(String text) {
     renderer.addAiMessage(text);
+    if (!hasConversationMessages) {
+      hasConversationMessages = true;
+      updatePlanExecuteToggle();
+    }
   }
 
   @Override
@@ -608,6 +718,7 @@ public class AIChatDialog extends DialogBox
   @Override
   public void clearChatHistory() {
     renderer.clear();
+    hasConversationMessages = false;
     updateEditModeWarning();
     updatePlanExecuteToggle();
   }
@@ -634,6 +745,18 @@ public class AIChatDialog extends DialogBox
 
   @Override
   public void onConfigLoaded() {
+    updatePlanExecuteToggle();
+  }
+
+  @Override
+  public void onPlanExecutionStarted() {
+    setPlanExecuteExecuting();
+  }
+
+  @Override
+  public void onPlanExecutionFinished() {
+    // After execution finishes, the button shows the current state (still plan mode)
+    // but is disabled since there are messages in the conversation
     updatePlanExecuteToggle();
   }
 

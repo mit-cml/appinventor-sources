@@ -6055,13 +6055,25 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("System message shown when the user cancels an in-flight AI request")
   String aiChatRequestCancelled();
 
-  @DefaultMessage("Plan & Execute")
-  @Description("Label for the Plan & Execute mode toggle in the AI chat dialog")
-  String aiChatPlanExecuteLabel();
+  @DefaultMessage("Direct Mode")
+  @Description("Label for the mode toggle button when in direct (non-planning) mode")
+  String aiChatPlanExecuteOff();
+
+  @DefaultMessage("Plan Mode")
+  @Description("Label for the mode toggle button when planning mode is active")
+  String aiChatPlanExecuteOn();
+
+  @DefaultMessage("Execution Mode")
+  @Description("Label for the mode toggle button when a plan is being executed")
+  String aiChatPlanExecuteExecuting();
 
   @DefaultMessage("This project uses a tutorial. Plan & Execute may skip pedagogical steps. Continue?")
   @Description("Confirmation shown when enabling Plan & Execute mode on a tutorial project")
   String aiChatPlanExecuteTutorialConfirm();
+
+  @DefaultMessage("Are you sure you want to clear the conversation?")
+  @Description("Confirmation shown when the user clicks New Conversation with existing messages")
+  String aiChatClearConversationConfirm();
 
   @DefaultMessage("Execution Plan")
   @Description("Header for the plan card shown in the AI chat when the agent proposes a plan")
