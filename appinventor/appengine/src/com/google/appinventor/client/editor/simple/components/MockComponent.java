@@ -1417,8 +1417,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         return;
       }
 
-      // Non-visible components must remain at Form (Screen) level
-      if (source instanceof MockNonVisibleComponent && !(targetContainer instanceof MockForm)) {
+      // Non-visible components must remain at the root (Screen) level
+      if (!source.isVisibleComponent() && !targetContainer.isRoot()) {
         return;
       }
 
