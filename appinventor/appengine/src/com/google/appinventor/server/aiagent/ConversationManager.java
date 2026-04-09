@@ -71,6 +71,23 @@ public class ConversationManager {
     }
   }
 
+  /** Gets conversation state for a specific screen (child agent). */
+  public AIConversationState getConversation(long projectId, String screenName) {
+    return storageIo.getAIConversationState(projectId, screenName);
+  }
+
+  /** Saves conversation state for a specific screen (child agent). */
+  public void saveConversation(long projectId, String screenName, AIConversationState state) {
+    storageIo.saveAIConversationState(projectId, screenName, state);
+  }
+
+  /** Clears conversation state for a specific screen (child agent). */
+  public void clearConversation(long projectId, String screenName) {
+    storageIo.clearAIConversationState(projectId, screenName);
+    storageIo.clearAIStreamBuffer(projectId, screenName);
+    // No message deletion — child conversations are ephemeral (no Datastore messages)
+  }
+
   // ---------- Message persistence ----------
 
   public void storeMessage(String conversationId, MessageRole role, String text,

@@ -43,9 +43,20 @@ public interface AIAgentServiceAsync {
   void getRequestStatus(long projectId, AsyncCallback<AIStreamStatus> callback);
 
   /**
+   * @see AIAgentService#getRequestStatus(long, String)
+   */
+  void getRequestStatus(long projectId, String targetScreen,
+      AsyncCallback<AIStreamStatus> callback);
+
+  /**
    * @see AIAgentService#cancelRequest(long)
    */
   void cancelRequest(long projectId, AsyncCallback<Void> callback);
+
+  /**
+   * @see AIAgentService#cancelRequest(long, String)
+   */
+  void cancelRequest(long projectId, String targetScreen, AsyncCallback<Void> callback);
 
   /**
    * @see AIAgentService#reportExecutionErrors(AIAgentRequest, List)

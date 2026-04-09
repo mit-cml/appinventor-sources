@@ -370,6 +370,69 @@ public class AIContextCollector {
   }
 
   /**
+   * Builds a request using a specific screen's background editors instead of
+   * the visible screen. Used by child conversations during orchestration.
+   *
+   * @param screenName  the target screen to build context for
+   * @param userMessage the user's message, or null for continuation requests
+   */
+  public AIAgentRequest buildRequestForScreen(String screenName, String userMessage) {
+    long projectId = getCurrentProjectId();
+
+    ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (!(projectEditor instanceof YaProjectEditor)) {
+      LOG.warning("buildRequestForScreen: no YaProjectEditor for projectId=" + projectId);
+      return new AIAgentRequest(userMessage, projectId, screenName);
+    }
+    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+
+    // Collect blocks YAIL from the background blocks editor
+    String blocksYail = "";
+    BlocksEditor<?, ?> blocksEditor = yaProjectEditor.getBlocksFileEditor(screenName);
+    if (blocksEditor != null) {
+      try {
+        blocksYail = blocksEditor.getBlocksYail();
+      } catch (Exception e) {
+        LOG.warning("buildRequestForScreen: failed to get blocks YAIL for " + screenName
+            + ": " + e.getMessage());
+      }
+    }
+
+    // Collect component tree JSON from the background form editor
+    String screenComponentsJson = null;
+    DesignerEditor<?, ?, ?, ?, ?> formEditor = yaProjectEditor.getFormFileEditor(screenName);
+    if (formEditor instanceof YaFormEditor) {
+      try {
+        screenComponentsJson = ((YaFormEditor) formEditor).getPropertiesJson();
+      } catch (Exception e) {
+        LOG.warning("buildRequestForScreen: failed to get components JSON for " + screenName
+            + ": " + e.getMessage());
+      }
+    }
+
+    // Project snapshot is project-wide and reusable
+    String projectSnapshot = buildProjectSnapshot();
+
+    AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
+        blocksYail, "Designer", screenComponentsJson, projectSnapshot);
+
+    request.setOrchestrationMode(true);
+    request.setTargetScreen(screenName);
+    request.setPlanExecuteMode(false);
+
+    // Set user's interface language for locale-aware AI responses
+    String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
+    request.setLocale("default".equals(localeName) ? "en" : localeName);
+    String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+    if (displayName != null && !displayName.isEmpty()) {
+      request.setLanguageDisplayName(displayName);
+    }
+
+    return request;
+  }
+
+  /**
    * Recursively counts the number of components in a MockComponent tree.
    */
   private int countComponentsRecursive(MockComponent component) {

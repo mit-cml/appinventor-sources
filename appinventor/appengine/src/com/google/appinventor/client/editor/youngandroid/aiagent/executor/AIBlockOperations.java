@@ -6,7 +6,6 @@
 package com.google.appinventor.client.editor.youngandroid.aiagent.executor;
 
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -19,10 +18,10 @@ final class AIBlockOperations {
 
   private AIBlockOperations() {}
 
-  static void executeWriteBlock(JSONObject json) {
+  static void executeWriteBlock(JSONObject json, ScreenExecutionContext context) {
     String yail = AIJsonUtils.getStringField(json, "yail");
 
-    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    YaBlocksEditor blocksEditor = context.getBlocksEditor();
     String resultJson = blocksEditor.writeBlock(yail);
 
     JSONObject result = JSONParser.parseStrict(resultJson).isObject();
@@ -36,10 +35,10 @@ final class AIBlockOperations {
     }
   }
 
-  static void executeDeleteBlock(JSONObject json) {
+  static void executeDeleteBlock(JSONObject json, ScreenExecutionContext context) {
     String block = AIJsonUtils.getStringField(json, "block");
 
-    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    YaBlocksEditor blocksEditor = context.getBlocksEditor();
     String resultJson = blocksEditor.deleteBlockByYailId(block);
 
     JSONObject result = JSONParser.parseStrict(resultJson).isObject();

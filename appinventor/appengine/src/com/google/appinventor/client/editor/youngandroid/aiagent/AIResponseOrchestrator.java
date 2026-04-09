@@ -20,6 +20,11 @@ import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 import com.google.appinventor.client.editor.youngandroid.aiagent.executor.AIOperationExecutor;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -113,6 +118,9 @@ public class AIResponseOrchestrator {
   private boolean debugBannerShown;
   private boolean orchestrationEnabled;
 
+  /** Manages parallel child conversations during multi-screen plan execution. */
+  private AIOrchestrationManager orchestrationManager;
+
   /** Original total number of tools in the batch, preserved across retries. */
   private int originalToolCount;
 
@@ -181,6 +189,10 @@ public class AIResponseOrchestrator {
    * batches without requiring user confirmation for each one.
    */
   public void applyAndAcceptAll() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.setAutoAcceptAll();
+      return;
+    }
     setAutoAcceptAll(true);
     applyOperations();
   }
@@ -192,6 +204,11 @@ public class AIResponseOrchestrator {
    * a continuation request is sent after successful application.
    */
   public void applyOperations() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.approveBatch();
+      return;
+    }
+
     if (pendingResponse == null) {
       return;
     }
@@ -237,6 +254,13 @@ public class AIResponseOrchestrator {
    * so the AI knows the operations were discarded.
    */
   public void rejectOperations() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.rejectBatch("User rejected the operations.");
+      orchestrationManager = null;
+      callback.onPlanExecutionFinished();
+      return;
+    }
+
     if (pendingResponse == null) {
       return;
     }
@@ -364,6 +388,11 @@ public class AIResponseOrchestrator {
    * Clears the current conversation on the server and in the UI.
    */
   public void clearConversation() {
+    if (orchestrationManager != null) {
+      orchestrationManager.cancelAll();
+      orchestrationManager = null;
+    }
+
     long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
       return;
@@ -403,6 +432,11 @@ public class AIResponseOrchestrator {
    * Cancels any in-flight request, stops polling, and resets state.
    */
   public void cancelInFlight() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.cancelAll();
+      orchestrationManager = null;
+      callback.onPlanExecutionFinished();
+    }
     setAutoAcceptAll(false);
     requestInFlight = false;
     pendingResponse = null;
@@ -530,19 +564,79 @@ public class AIResponseOrchestrator {
   }
 
   /**
-   * Sends the approved plan to the server as a platform message for
-   * sequential execution. The parent agent receives it with full write
-   * tools and executes step by step.
+   * Dispatches an approved plan for execution. Plans with two or more
+   * screen-level steps are executed via the parallel orchestration manager;
+   * single-screen plans fall back to the Phase A sequential path where
+   * the parent agent executes step by step.
    */
   private void executePlanSequentially(String planJson) {
-    callback.onPlanExecutionStarted();
-    String planMessage = "<system>\nThe user approved the following execution plan. "
-        + "Execute it step by step, one screen at a time. "
-        + "Use switch_screen to navigate between screens as needed. "
-        + "Use toggle_editor to switch between Designer and Blocks views. "
-        + "Work through each step in dependency order.\n\n"
-        + planJson + "\n</system>";
-    sendPlatformMessage(planMessage);
+    int screenStepCount = countScreenSteps(planJson);
+
+    if (screenStepCount <= 1) {
+      // Single screen — sequential execution via parent agent (Phase A path)
+      callback.onPlanExecutionStarted();
+      String planMessage = "<system>\nThe user approved the following execution plan. "
+          + "Execute it step by step, one screen at a time. "
+          + "Use switch_screen to navigate between screens as needed. "
+          + "Use toggle_editor to switch between Designer and Blocks views. "
+          + "Work through each step in dependency order.\n\n"
+          + planJson + "\n</system>";
+      sendPlatformMessage(planMessage);
+    } else {
+      // Multiple screens — parallel orchestration
+      callback.onPlanExecutionStarted();
+      orchestrationManager = new AIOrchestrationManager(contextCollector);
+      orchestrationManager.executePlan(planJson, callback);
+    }
+  }
+
+  /**
+   * Counts the number of screen-level steps in the plan JSON (steps where
+   * the screen is not {@code __project__}).
+   *
+   * @param planJson the plan JSON string
+   * @return number of distinct screen-level steps
+   */
+  private int countScreenSteps(String planJson) {
+    try {
+      JSONValue parsed = JSONParser.parseStrict(planJson);
+      JSONArray stepsArr = null;
+
+      JSONObject planObj = parsed.isObject();
+      if (planObj != null) {
+        JSONValue stepsVal = planObj.get("steps");
+        if (stepsVal != null) {
+          stepsArr = stepsVal.isArray();
+        }
+      }
+      if (stepsArr == null) {
+        stepsArr = parsed.isArray();
+      }
+      if (stepsArr == null) {
+        return 0;
+      }
+
+      int count = 0;
+      for (int i = 0; i < stepsArr.size(); i++) {
+        JSONValue stepVal = stepsArr.get(i);
+        JSONObject step = stepVal.isObject();
+        if (step == null) {
+          continue;
+        }
+        JSONValue screenVal = step.get("screen");
+        if (screenVal == null) {
+          continue;
+        }
+        JSONString screenStr = screenVal.isString();
+        if (screenStr != null && !"__project__".equals(screenStr.stringValue())) {
+          count++;
+        }
+      }
+      return count;
+    } catch (Exception e) {
+      LOG.warning("Failed to parse plan JSON for step count: " + e.getMessage());
+      return 0;
+    }
   }
 
   /**

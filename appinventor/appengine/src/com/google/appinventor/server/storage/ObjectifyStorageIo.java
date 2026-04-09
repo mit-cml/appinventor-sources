@@ -3040,6 +3040,14 @@ public class ObjectifyStorageIo implements StorageIo {
     return AI_STREAM_PREFIX + projectId + ":" + suffix;
   }
 
+  private String streamKey(long projectId, String screenName, String suffix) {
+    return AI_STREAM_PREFIX + projectId + ":" + screenName + ":" + suffix;
+  }
+
+  private String convKey(long projectId, String screenName) {
+    return AI_CONV_CACHE_KEY_PREFIX + projectId + ":" + screenName;
+  }
+
   @Override
   public void initAIStreamBuffer(long projectId) {
     Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
@@ -3137,6 +3145,123 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public void clearAIStreamCancelled(long projectId) {
     memcache.delete(streamKey(projectId, "cancelled"));
+  }
+
+  // ---- Screen-scoped AI methods (for multi-agent orchestration) ----
+
+  @Override
+  public void saveAIConversationState(long projectId, String screenName, AIConversationState state) {
+    memcache.put(convKey(projectId, screenName), state,
+        Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
+  }
+
+  @Override
+  public AIConversationState getAIConversationState(long projectId, String screenName) {
+    return (AIConversationState) memcache.get(convKey(projectId, screenName));
+  }
+
+  @Override
+  public void clearAIConversationState(long projectId, String screenName) {
+    memcache.delete(convKey(projectId, screenName));
+  }
+
+  @Override
+  public void initAIStreamBuffer(long projectId, String screenName) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Object oldWc = memcache.get(streamKey(projectId, screenName, "wc"));
+    if (oldWc != null) {
+      long oldCount = Long.parseLong(oldWc.toString());
+      List<String> keysToDelete = new ArrayList<>();
+      for (long i = 0; i <= oldCount; i++) {
+        keysToDelete.add(streamKey(projectId, screenName, "chunk:" + i));
+      }
+      keysToDelete.add(streamKey(projectId, screenName, "done"));
+      keysToDelete.add(streamKey(projectId, screenName, "cancelled"));
+      memcache.deleteAll(keysToDelete);
+    }
+    memcache.put(streamKey(projectId, screenName, "wc"), 0L, exp);
+    memcache.put(streamKey(projectId, screenName, "rc"), 0L, exp);
+    memcache.delete(streamKey(projectId, screenName, "cancelled"));
+  }
+
+  @Override
+  public void appendAIStreamChunk(long projectId, String screenName, String chunk) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Long index = memcache.increment(streamKey(projectId, screenName, "wc"), 1, 0L);
+    memcache.put(streamKey(projectId, screenName, "chunk:" + index), chunk, exp);
+  }
+
+  @Override
+  public List<String> consumeAIStreamChunks(long projectId, String screenName) {
+    Object wcObj = memcache.get(streamKey(projectId, screenName, "wc"));
+    Object rcObj = memcache.get(streamKey(projectId, screenName, "rc"));
+    if (wcObj == null || rcObj == null) {
+      return Collections.emptyList();
+    }
+    long wc = Long.parseLong(wcObj.toString());
+    long rc = Long.parseLong(rcObj.toString());
+    if (rc >= wc) {
+      return Collections.emptyList();
+    }
+    List<String> keys = new ArrayList<>();
+    for (long i = rc + 1; i <= wc; i++) {
+      keys.add(streamKey(projectId, screenName, "chunk:" + i));
+    }
+    Map<String, Object> results = memcache.getAll(keys);
+    List<String> chunks = new ArrayList<>();
+    for (String key : keys) {
+      Object val = results.get(key);
+      if (val != null) {
+        chunks.add(val.toString());
+      }
+    }
+    memcache.put(streamKey(projectId, screenName, "rc"), wc,
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+    return chunks;
+  }
+
+  @Override
+  public void markAIStreamDone(long projectId, String screenName) {
+    memcache.put(streamKey(projectId, screenName, "done"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamDone(long projectId, String screenName) {
+    return memcache.get(streamKey(projectId, screenName, "done")) != null;
+  }
+
+  @Override
+  public void clearAIStreamBuffer(long projectId, String screenName) {
+    Object wcObj = memcache.get(streamKey(projectId, screenName, "wc"));
+    long wc = 0;
+    if (wcObj != null) {
+      wc = Long.parseLong(wcObj.toString());
+    }
+    List<String> keys = new ArrayList<>();
+    keys.add(streamKey(projectId, screenName, "wc"));
+    keys.add(streamKey(projectId, screenName, "rc"));
+    keys.add(streamKey(projectId, screenName, "done"));
+    for (long i = 0; i <= wc; i++) {
+      keys.add(streamKey(projectId, screenName, "chunk:" + i));
+    }
+    memcache.deleteAll(keys);
+  }
+
+  @Override
+  public void setAIStreamCancelled(long projectId, String screenName) {
+    memcache.put(streamKey(projectId, screenName, "cancelled"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamCancelled(long projectId, String screenName) {
+    return memcache.get(streamKey(projectId, screenName, "cancelled")) != null;
+  }
+
+  @Override
+  public void clearAIStreamCancelled(long projectId, String screenName) {
+    memcache.delete(streamKey(projectId, screenName, "cancelled"));
   }
 
 }
