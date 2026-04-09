@@ -70,6 +70,9 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
   /** Accumulated errors per screen. */
   private final Map<String, List<String>> screenErrors = new HashMap<>();
 
+  /** Last action description per screen, for live status display. */
+  private final Map<String, String> lastAction = new HashMap<>();
+
   ChildBatchQueue(Map<String, ChildConversation> children,
       int totalChildren,
       AIResponseOrchestrator.ChatCallback uiCallback,
@@ -113,6 +116,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
               }
               screenOperations.get(screenName).addAll(operations);
               batch.child.updateViewFromOperations(operations);
+              lastAction.put(screenName, summarizeLastAction(operations));
 
               if (!autoAcceptAll) {
                 // Manual approval — show per-batch messages
@@ -279,23 +283,66 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
   }
 
   /**
-   * Builds a status string showing which children are still working.
+   * Builds a status string showing which children are still working
+   * and what each last did.
    */
   private String buildProgressStatus() {
-    StringBuilder sb = new StringBuilder("Agents working: ");
+    StringBuilder sb = new StringBuilder();
     boolean first = true;
     for (Map.Entry<String, ChildConversation> entry : children.entrySet()) {
       ChildConversation child = entry.getValue();
       if (!child.isCancelled() && !child.isComplete()) {
         if (!first) {
-          sb.append(", ");
+          sb.append(" | ");
         }
         sb.append(entry.getKey());
+        String action = lastAction.get(entry.getKey());
+        if (action != null) {
+          sb.append(": ").append(action);
+        } else {
+          sb.append(": thinking...");
+        }
         first = false;
       }
     }
-    sb.append(" (").append(completedChildren).append("/")
+    sb.append("  (").append(completedChildren).append("/")
         .append(totalChildren).append(" done)");
+    return sb.toString();
+  }
+
+  /**
+   * Returns a short description of the last batch of operations applied.
+   */
+  private static String summarizeLastAction(List<AIOperation> operations) {
+    if (operations.isEmpty()) {
+      return "waiting...";
+    }
+    // Count by type
+    int adds = 0, props = 0, blocks = 0, other = 0;
+    for (AIOperation op : operations) {
+      switch (op.getType()) {
+        case ADD_COMPONENT: adds++; break;
+        case SET_PROPERTY: props++; break;
+        case WRITE_BLOCK: blocks++; break;
+        case DELETE_BLOCK: blocks++; break;
+        default: other++; break;
+      }
+    }
+    StringBuilder sb = new StringBuilder();
+    if (adds > 0) {
+      sb.append("added ").append(adds).append(" component").append(adds > 1 ? "s" : "");
+    }
+    if (props > 0) {
+      if (sb.length() > 0) sb.append(", ");
+      sb.append("set ").append(props).append(" propert").append(props > 1 ? "ies" : "y");
+    }
+    if (blocks > 0) {
+      if (sb.length() > 0) sb.append(", ");
+      sb.append("wrote ").append(blocks).append(" block").append(blocks > 1 ? "s" : "");
+    }
+    if (other > 0 && sb.length() == 0) {
+      sb.append(operations.size()).append(" operation").append(operations.size() > 1 ? "s" : "");
+    }
     return sb.toString();
   }
 
