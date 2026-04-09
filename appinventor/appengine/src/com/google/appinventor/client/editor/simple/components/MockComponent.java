@@ -1417,11 +1417,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         return;
       }
 
-      // Non-visible components must remain at the root (Screen) level
-      if (!source.isVisibleComponent() && !targetContainer.isRoot()) {
-        return;
-      }
-
       // Determine target container and insertion index
       MockContainer targetContainer;
       int insertIndex;
@@ -1440,6 +1435,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         }
         int targetIdx = targetContainer.getChildren().indexOf(target);
         insertIndex = (position < 0) ? targetIdx : targetIdx + 1;
+      }
+
+      // Non-visible components must remain at the root (Screen) level
+      if (!source.isVisibleComponent() && !targetContainer.isRoot()) {
+        return;
       }
 
       // Handle coordinate properties when moving to/from AbsoluteArrangement
