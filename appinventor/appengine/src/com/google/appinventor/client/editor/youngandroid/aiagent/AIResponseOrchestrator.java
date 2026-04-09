@@ -570,6 +570,11 @@ public class AIResponseOrchestrator {
    * the parent agent executes step by step.
    */
   private void executePlanSequentially(String planJson) {
+    // Show loading state immediately so the user sees feedback after
+    // pressing Approve (Bug fix: gap between Approve and first batch).
+    requestInFlight = true;
+    callback.setRequestInFlight(true);
+
     int screenStepCount = countScreenSteps(planJson);
 
     if (screenStepCount <= 1) {
