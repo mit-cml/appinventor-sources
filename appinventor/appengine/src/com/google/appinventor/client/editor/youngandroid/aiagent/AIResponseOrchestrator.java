@@ -594,15 +594,21 @@ public class AIResponseOrchestrator {
           new AIOrchestrationManager.CompletionCallback() {
             @Override
             public void onOrchestrationComplete(String summary) {
+              List<String> screens = orchestrationManager.getAppliedScreens();
               orchestrationManager = null;
+              String screenStates = collectScreenStates(screens);
               sendPlatformMessage(summary
+                  + "\n\nCurrent state of modified screens:\n" + screenStates
                   + "\nProvide a brief summary to the user of what was built.");
             }
 
             @Override
             public void onOrchestrationRejected(String summary) {
+              List<String> screens = orchestrationManager.getAppliedScreens();
               orchestrationManager = null;
-              sendPlatformMessage(summary
+              String screenStates = screens.isEmpty() ? "" :
+                  "\n\nCurrent state of modified screens:\n" + collectScreenStates(screens);
+              sendPlatformMessage(summary + screenStates
                   + "\nThe user stopped the plan execution. Ask what they'd like "
                   + "changed, or propose a revised plan.");
             }
@@ -670,6 +676,36 @@ public class AIResponseOrchestrator {
    * a platform message and planExecuteMode is disabled (executing, not
    * planning).
    */
+  /**
+   * Collects the current component tree and blocks YAIL for each screen,
+   * so the parent LLM has accurate, up-to-date state after orchestration.
+   */
+  private String collectScreenStates(List<String> screenNames) {
+    StringBuilder sb = new StringBuilder();
+    for (String screenName : screenNames) {
+      sb.append("\n--- ").append(screenName).append(" ---\n");
+      try {
+        String components = contextCollector.getScreenComponentsJson(screenName);
+        if (components != null && !components.isEmpty()) {
+          sb.append("Components: ").append(components).append("\n");
+        }
+      } catch (Exception e) {
+        sb.append("Components: (unavailable)\n");
+      }
+      try {
+        String blocks = contextCollector.getScreenBlocksYail(screenName);
+        if (blocks != null && !blocks.isEmpty()) {
+          sb.append("Blocks:\n").append(blocks).append("\n");
+        } else {
+          sb.append("Blocks: (none)\n");
+        }
+      } catch (Exception e) {
+        sb.append("Blocks: (unavailable)\n");
+      }
+    }
+    return sb.toString();
+  }
+
   private void sendPlatformMessage(String message) {
     requestInFlight = true;
     callback.setRequestInFlight(true);

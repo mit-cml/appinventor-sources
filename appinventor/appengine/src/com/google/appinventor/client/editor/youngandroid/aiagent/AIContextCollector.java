@@ -435,6 +435,43 @@ public class AIContextCollector {
   }
 
   /**
+   * Returns the component tree JSON for a specific screen from its
+   * background editor.
+   */
+  public String getScreenComponentsJson(String screenName) {
+    long projectId = getCurrentProjectId();
+    ProjectEditor pe = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (!(pe instanceof YaProjectEditor)) {
+      return null;
+    }
+    DesignerEditor<?, ?, ?, ?, ?> formEditor =
+        ((YaProjectEditor) pe).getFormFileEditor(screenName);
+    if (formEditor instanceof YaFormEditor) {
+      return ((YaFormEditor) formEditor).getPropertiesJson();
+    }
+    return null;
+  }
+
+  /**
+   * Returns the blocks YAIL for a specific screen from its background editor.
+   */
+  public String getScreenBlocksYail(String screenName) {
+    long projectId = getCurrentProjectId();
+    ProjectEditor pe = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (!(pe instanceof YaProjectEditor)) {
+      return null;
+    }
+    BlocksEditor<?, ?> blocksEditor =
+        ((YaProjectEditor) pe).getBlocksFileEditor(screenName);
+    if (blocksEditor != null) {
+      return blocksEditor.getBlocksYail();
+    }
+    return null;
+  }
+
+  /**
    * Recursively counts the number of components in a MockComponent tree.
    */
   private int countComponentsRecursive(MockComponent component) {

@@ -15,7 +15,9 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
 import com.google.gwt.core.client.GWT;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -138,6 +140,11 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
 
   public boolean isActive() {
     return executing && !cancelled;
+  }
+
+  /** Returns the list of screen names that had operations successfully applied. */
+  public List<String> getAppliedScreens() {
+    return batchQueue != null ? batchQueue.getAppliedScreens() : new ArrayList<>();
   }
 
   public void cancelAll() {
