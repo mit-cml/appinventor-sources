@@ -11,6 +11,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,12 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
   /** Screens that had operations successfully applied. */
   private final List<String> appliedScreens = new ArrayList<>();
 
+  /** Accumulated operations per screen, for the grouped summary at the end. */
+  private final Map<String, List<AIOperation>> screenOperations = new HashMap<>();
+
+  /** Accumulated errors per screen. */
+  private final Map<String, List<String>> screenErrors = new HashMap<>();
+
   ChildBatchQueue(Map<String, ChildConversation> children,
       int totalChildren,
       AIResponseOrchestrator.ChatCallback uiCallback,
@@ -97,19 +104,34 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
               return;
             }
             if (result.isSuccess()) {
-              String aiMessage = batch.response.getAiMessage();
-              if (aiMessage != null && !aiMessage.isEmpty()) {
-                uiCallback.addAiMessage(aiMessage);
-              }
-              uiCallback.addAiMessage(
-                  AIOperationFormatter.buildAppliedSummary(operations));
               if (!appliedScreens.contains(screenName)) {
                 appliedScreens.add(screenName);
               }
+              // Accumulate operations for the grouped summary
+              if (!screenOperations.containsKey(screenName)) {
+                screenOperations.put(screenName, new ArrayList<AIOperation>());
+              }
+              screenOperations.get(screenName).addAll(operations);
               batch.child.updateViewFromOperations(operations);
+
+              if (!autoAcceptAll) {
+                // Manual approval — show per-batch messages
+                String aiMessage = batch.response.getAiMessage();
+                if (aiMessage != null && !aiMessage.isEmpty()) {
+                  uiCallback.addAiMessage(aiMessage);
+                }
+                uiCallback.addAiMessage(
+                    AIOperationFormatter.buildAppliedSummary(operations));
+              }
             } else {
-              uiCallback.addAiMessage("[" + screenName + "] Execution failed: "
-                  + result.getErrorMessage());
+              // Always show errors
+              String errorMsg = "[" + screenName + "] Execution failed: "
+                  + result.getErrorMessage();
+              if (!screenErrors.containsKey(screenName)) {
+                screenErrors.put(screenName, new ArrayList<String>());
+              }
+              screenErrors.get(screenName).add(result.getErrorMessage());
+              uiCallback.addAiMessage(errorMsg);
             }
             batch.child.resumeAfterApproval();
             presentNext();
@@ -179,6 +201,16 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
 
   List<String> getAppliedScreens() {
     return appliedScreens;
+  }
+
+  /** Returns a grouped summary of all operations applied per screen. */
+  Map<String, List<AIOperation>> getScreenOperations() {
+    return screenOperations;
+  }
+
+  /** Returns any errors that occurred per screen. */
+  Map<String, List<String>> getScreenErrors() {
+    return screenErrors;
   }
 
   // ---- BatchCallback implementation ----

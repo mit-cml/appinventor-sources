@@ -236,16 +236,22 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
     callback.onPlanExecutionFinished();
 
     if (!cancelled && batchQueue != null && completionCallback != null) {
-      java.util.List<String> applied = batchQueue.getAppliedScreens();
+      List<String> applied = batchQueue.getAppliedScreens();
       String summary = buildCompletionSummary(applied);
-      callback.addAiMessage(summary);
+      // Show grouped operations summary in chat
+      String groupedSummary = buildGroupedOperationsSummary();
+      if (!groupedSummary.isEmpty()) {
+        callback.addAiMessage(summary + "\n\n" + groupedSummary);
+      } else {
+        callback.addAiMessage(summary);
+      }
       if (!applied.isEmpty()) {
         completionCallback.onOrchestrationComplete(summary);
       }
     }
   }
 
-  private String buildCompletionSummary(java.util.List<String> applied) {
+  private String buildCompletionSummary(List<String> applied) {
     if (!applied.isEmpty()) {
       StringBuilder sb = new StringBuilder(
           "Plan execution complete. Applied changes to: ");
@@ -259,5 +265,33 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
       return sb.toString();
     }
     return "Plan execution complete. No changes were applied.";
+  }
+
+  private String buildGroupedOperationsSummary() {
+    if (batchQueue == null) {
+      return "";
+    }
+    Map<String, List<com.google.appinventor.shared.rpc.aiagent.AIOperation>> ops =
+        batchQueue.getScreenOperations();
+    if (ops.isEmpty()) {
+      return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, List<com.google.appinventor.shared.rpc.aiagent.AIOperation>> entry
+        : ops.entrySet()) {
+      sb.append("**").append(entry.getKey()).append(":**\n");
+      sb.append(AIOperationFormatter.buildAppliedSummary(entry.getValue()));
+      sb.append("\n");
+    }
+    Map<String, List<String>> errors = batchQueue.getScreenErrors();
+    if (!errors.isEmpty()) {
+      sb.append("\n**Errors:**\n");
+      for (Map.Entry<String, List<String>> entry : errors.entrySet()) {
+        for (String error : entry.getValue()) {
+          sb.append("- [").append(entry.getKey()).append("] ").append(error).append("\n");
+        }
+      }
+    }
+    return sb.toString();
   }
 }
