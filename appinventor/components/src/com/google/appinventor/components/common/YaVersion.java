@@ -610,7 +610,10 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 233:
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 233;
+  // For YOUNG_ANDROID_VERSION 234:
+  // - IMAGE_COMPONENT_VERSION was incremented to 7.
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 11.
+  public static final int YOUNG_ANDROID_VERSION = 234;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1118,7 +1121,9 @@ public class YaVersion {
   // - The AlternateText property was added.
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
-  public static final int IMAGE_COMPONENT_VERSION = 6;
+  // For IMAGE_COMPONENT_VERSION 7:
+  // - Added animated GIF support (Animated property and ResetAnimation method).
+  public static final int IMAGE_COMPONENT_VERSION = 7;
 
   // For IMAGEBOT_COMPONENT_VERSION 2:
   // - The ApiKey property was made available in the designer
@@ -1156,7 +1161,9 @@ public class YaVersion {
   // - The MarkOrigin, OriginX, and OriginY properties were added.
   // For IMAGESPRITE_COMPONENT_VERSION 10:
   // - A fix for MarkOrigin, OriginX, and OriginY properties was added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 10;
+  // For IMAGESPRITE_COMPONENT_VERSION 11:
+  // - Added animated GIF support (Animated property and ResetAnimation method).
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 11;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
