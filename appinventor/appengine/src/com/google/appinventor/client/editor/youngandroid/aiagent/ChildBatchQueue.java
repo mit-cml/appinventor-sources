@@ -119,13 +119,14 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
               lastAction.put(screenName, summarizeLastAction(operations));
 
               if (!autoAcceptAll) {
-                // Manual approval — show per-batch messages
+                // Manual approval — show combined message
+                StringBuilder msg = new StringBuilder();
                 String aiMessage = batch.response.getAiMessage();
                 if (aiMessage != null && !aiMessage.isEmpty()) {
-                  uiCallback.addAiMessage(aiMessage);
+                  msg.append(aiMessage).append("\n\n");
                 }
-                uiCallback.addAiMessage(
-                    AIOperationFormatter.buildAppliedSummary(operations));
+                msg.append(AIOperationFormatter.buildAppliedSummary(operations));
+                uiCallback.addAiMessage(msg.toString());
               }
             } else {
               // Always show errors
