@@ -41,7 +41,7 @@ import java.util.List;
  */
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that allows for image detection in an ARView3D.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/imageMarker.png")
 @SimpleObject
 public final class ImageMarker implements ARImageMarker {
 

@@ -22,7 +22,7 @@ import com.google.appinventor.components.common.YaVersion;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a tube in an ARView3D.  The tube " +
     "is positioned at a point and can be colored or textured as well as rotated.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/tubeNode.png")
 
   @SimpleObject
 

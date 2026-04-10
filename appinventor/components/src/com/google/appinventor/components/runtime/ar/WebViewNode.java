@@ -40,7 +40,7 @@ import com.google.ar.core.Trackable;
         "files or their sizes.  Most video editing software, such as Windows " +
         "Movie Maker and Apple iMovie, can help you decrease the size of videos " +
         "by shortening them or re-encoding the video into a more compact format.</p>",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/webViewNode.png")
 @SimpleObject
 public final class WebViewNode extends ARNodeBase implements ARWebView {
   private String objectModel = Form.ASSETS_PREFIX + "plane.obj";

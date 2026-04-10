@@ -52,7 +52,7 @@ import java.io.IOException;
         "files or their sizes.  Most video editing software, such as Windows " +
         "Movie Maker and Apple iMovie, can help you decrease the size of videos " +
         "by shortening them or re-encoding the video into a more compact format.</p>",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/videoNode.png")
 @SimpleObject
 public final class VideoNode extends ARNodeBase implements ARVideo {
 

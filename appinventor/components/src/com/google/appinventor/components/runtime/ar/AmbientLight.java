@@ -17,7 +17,7 @@ import com.google.appinventor.components.common.YaVersion;
 description = "A component that adds ambient light in an ARView3D.  Ambient light " +
 "defines the general brightness throughout the view.  It applies light from all directions " +
 "on all objects with the same intensity, regardless of distance.",
-category = ComponentCategory.AR)
+category = ComponentCategory.AR, iconName = "images/ambientLight.png")
 
 @SimpleObject
 public final class AmbientLight extends ARLightBase implements ARAmbientLight {

@@ -35,7 +35,7 @@ import android.util.Log;
       "External model files can be uploaded to the server for use, but the files " +
       "must be less than 5 MB.  An error will occur if the provided model file " +
       "cannot be loaded.", // TODO: include anything about converting models when uploaded to the server.
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/modelNode.png")
   @SimpleObject
   public final class ModelNode extends ARNodeBase implements ARModel {
 
@@ -140,7 +140,7 @@ import android.util.Log;
     float torqueArm = (myPos[1] + nodeHalfHeight) - contactY;
     torqueArm = Math.max(torqueArm, 0.05f); // minimum so glancing hits still topple
 
-    float toppleScale = 1.2f; // tune this
+    float toppleScale = 3.2f; // tune this
     angularVelocity[0] += normal[2] * (impulse * torqueArm / Mass()) * toppleScale;
     angularVelocity[2] -= normal[0] * (impulse * torqueArm / Mass()) * toppleScale;
 

@@ -26,7 +26,7 @@ description = "<p>A component that adds a directional light in an ARView3D.  A d
   "with the same intensity, regardless of how far away the lights are. A DirectionalLight lights " +
   "all objects with the same intensity and from the same direction.</p>" +
   "<p>By default, the light shines down the negative z-axis.</p>",
-category = ComponentCategory.AR)
+category = ComponentCategory.AR, iconName = "images/directionalLight.png")
 
 @SimpleObject
 public final class DirectionalLight extends ARLightBase implements ARDirectionalLight {

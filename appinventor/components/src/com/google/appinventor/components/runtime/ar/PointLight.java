@@ -23,7 +23,7 @@ import com.google.appinventor.components.common.YaVersion;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
 description = "A component that adds a point light in an ARView3D.  A point light is " +
 "a light that lights the scene in all directions with equal intensity from a specific point in space.",
-category = ComponentCategory.AR)
+category = ComponentCategory.AR, iconName = "images/pointLight.png")
 
 @SimpleObject
 public final class PointLight extends ARLightBase implements ARPointLight {

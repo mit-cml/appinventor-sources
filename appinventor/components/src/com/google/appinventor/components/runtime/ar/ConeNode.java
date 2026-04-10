@@ -20,7 +20,7 @@ import com.google.appinventor.components.common.YaVersion;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a cone in an ARView3D.  The cone " +
     "is positioned at a point and can be colored or textured as well as rotated.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/coneNode.png")
 
   @SimpleObject
 

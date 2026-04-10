@@ -24,7 +24,7 @@ import com.google.ar.core.Trackable;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a box in an ARView3D.  The box is positioned " +
         "at a point and can be colored or textured as well as rotated.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/boxNode.png")
 @SimpleObject public final class BoxNode extends ARNodeBase implements ARBox {
 
     private float width = 1.0f;

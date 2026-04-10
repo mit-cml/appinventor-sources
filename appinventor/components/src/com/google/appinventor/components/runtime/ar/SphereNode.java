@@ -30,7 +30,7 @@ import java.util.List;
     description = "A component that displays a 3D sphere with advanced physics behaviors in an ARView3D. " +
         "The sphere can roll, bounce, and respond to different surface types like wet, sticky, or slippery. " +
         "External model files can be uploaded but must be less than 5 MB.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/sphereNode.png")
 @SimpleObject
 public final class SphereNode extends ARNodeBase implements ARSphere {
 

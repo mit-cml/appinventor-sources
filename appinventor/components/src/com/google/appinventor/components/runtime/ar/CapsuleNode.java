@@ -35,7 +35,7 @@ import java.util.Locale;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a capsule in an ARView3D.  The capsule is positioned " +
       "at a point and can be colored or textured as well as rotated.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/capsuleNode.png")
 
   @SimpleObject
 

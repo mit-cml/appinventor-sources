@@ -27,7 +27,7 @@ import com.google.ar.core.Trackable;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
     description = "A component that displays a pyramid in an ARView3D.  The pyramid " +
     "is positioned at a point and can be colored or textured as well as rotated.",
-    category = ComponentCategory.AR)
+    category = ComponentCategory.AR, iconName = "images/pyramidNode.png")
 
   @SimpleObject
 

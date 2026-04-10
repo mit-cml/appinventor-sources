@@ -23,7 +23,7 @@ import com.google.appinventor.components.common.YaVersion;
 @DesignerComponent(version = YaVersion.CAMERA_COMPONENT_VERSION,
 description = "A component that adds spotlight in an ARView3D.  A spotlight lights " +
 "illuminates the space in a cone-shaped area from a specific position and in a specific direction.",
-category = ComponentCategory.AR)
+category = ComponentCategory.AR, iconName = "images/spotlight.png")
 
 @SimpleObject
 public final class Spotlight extends ARLightBase implements ARSpotlight {

@@ -69,7 +69,8 @@ import java.util.stream.Collectors;
                 "does not need to take the entire size of the view.  It can be resized to cover as much " +
                 "screenspace as desired.</p>",
         category = ComponentCategory.AR,
-        androidMinSdk = 14)
+        androidMinSdk = 14,
+        iconName = "images/arView3D.png")
 
 @SimpleObject
 @UsesLibraries({"ar-core.jar", "ar-core.aar", "obj-0.3.0.jar",
