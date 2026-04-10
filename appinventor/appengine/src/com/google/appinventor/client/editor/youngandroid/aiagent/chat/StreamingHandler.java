@@ -13,11 +13,11 @@ import com.google.gwt.user.client.ui.HTML;
  *
  * <p>Handles the lifecycle of a single streaming message: creation,
  * incremental text/thinking appends, and finalization. All rendering
- * callbacks go through the {@link ChatRendererHost} interface.</p>
+ * callbacks go through the {@link RendererHost} interface.</p>
  */
-public class ChatStreamingHandler {
+public class StreamingHandler {
 
-  private final ChatRendererHost host;
+  private final RendererHost host;
 
   private String streamingTextAccumulator = "";
   private String streamingThinkingAccumulator = "";
@@ -32,7 +32,7 @@ public class ChatStreamingHandler {
    *
    * @param host the renderer host for creating bubbles and converting Markdown
    */
-  public ChatStreamingHandler(ChatRendererHost host) {
+  public StreamingHandler(RendererHost host) {
     this.host = host;
   }
 

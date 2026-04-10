@@ -8,9 +8,9 @@ package com.google.appinventor.client.editor.youngandroid.aiagent;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.aiagent.chat.ChatPlanCardRenderer;
-import com.google.appinventor.client.editor.youngandroid.aiagent.chat.ChatRendererHost;
-import com.google.appinventor.client.editor.youngandroid.aiagent.chat.ChatStreamingHandler;
+import com.google.appinventor.client.editor.youngandroid.aiagent.chat.PlanCardRenderer;
+import com.google.appinventor.client.editor.youngandroid.aiagent.chat.RendererHost;
+import com.google.appinventor.client.editor.youngandroid.aiagent.chat.StreamingHandler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -23,17 +23,17 @@ import com.google.gwt.user.client.ui.Widget;
  * Facade for chat rendering in the AI agent dialog.
  *
  * <p>Manages message bubbles, feedback links, and Markdown conversion
- * directly. Delegates streaming to {@link ChatStreamingHandler} and
- * plan card rendering to {@link ChatPlanCardRenderer}.</p>
+ * directly. Delegates streaming to {@link StreamingHandler} and
+ * plan card rendering to {@link PlanCardRenderer}.</p>
  */
-public class AIChatRenderer implements ChatRendererHost {
+public class AIChatRenderer implements RendererHost {
 
   private static final String FEEDBACK_LINK_CLASS = "ai-feedback-link";
 
   private final FlowPanel chatHistory;
   private final ScrollPanel chatScrollPanel;
-  private final ChatStreamingHandler streamingHandler;
-  private final ChatPlanCardRenderer planCardRenderer;
+  private final StreamingHandler streamingHandler;
+  private final PlanCardRenderer planCardRenderer;
 
   // Feedback link context (set via setFeedbackContext; links only shown in debug mode)
   private boolean debugEnabled;
@@ -48,8 +48,8 @@ public class AIChatRenderer implements ChatRendererHost {
   public AIChatRenderer(FlowPanel chatHistory, ScrollPanel chatScrollPanel) {
     this.chatHistory = chatHistory;
     this.chatScrollPanel = chatScrollPanel;
-    this.streamingHandler = new ChatStreamingHandler(this);
-    this.planCardRenderer = new ChatPlanCardRenderer(chatHistory, new Runnable() {
+    this.streamingHandler = new StreamingHandler(this);
+    this.planCardRenderer = new PlanCardRenderer(chatHistory, new Runnable() {
       @Override
       public void run() {
         scrollToBottom();
@@ -226,7 +226,7 @@ public class AIChatRenderer implements ChatRendererHost {
         + "&projectId=" + projectId;
   }
 
-  // ---- ChatRendererHost implementation ----
+  // ---- RendererHost implementation ----
 
   @Override
   public FlowPanel createMessageBubble(String sender, String text, boolean isUser) {

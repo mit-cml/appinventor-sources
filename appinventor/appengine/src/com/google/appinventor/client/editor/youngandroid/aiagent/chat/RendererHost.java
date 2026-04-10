@@ -9,10 +9,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Contract for {@link ChatStreamingHandler} to call back into the
+ * Contract for {@link StreamingHandler} to call back into the
  * parent renderer without a circular package dependency.
  */
-public interface ChatRendererHost {
+public interface RendererHost {
 
   /**
    * Creates a styled message bubble.

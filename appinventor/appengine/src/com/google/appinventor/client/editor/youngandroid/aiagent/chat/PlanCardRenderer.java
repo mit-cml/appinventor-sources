@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.TextArea;
  * The edit flow replaces the button bar with a JSON textarea for manual
  * plan editing.</p>
  */
-public class ChatPlanCardRenderer {
+public class PlanCardRenderer {
 
   private final FlowPanel chatHistory;
   private final Runnable scrollCallback;
@@ -39,7 +39,7 @@ public class ChatPlanCardRenderer {
    * @param chatHistory    the panel that holds chat message widgets
    * @param scrollCallback called after adding/modifying cards to scroll to bottom
    */
-  public ChatPlanCardRenderer(FlowPanel chatHistory, Runnable scrollCallback) {
+  public PlanCardRenderer(FlowPanel chatHistory, Runnable scrollCallback) {
     this.chatHistory = chatHistory;
     this.scrollCallback = scrollCallback;
   }
