@@ -129,6 +129,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final DepthSettings depthSettings = new DepthSettings();
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
     private boolean enableOcclusion = false;
+    private boolean lastOcclusionSetting = false;
+
     private boolean enableBoundingBoxes = false;
     private boolean enableWireframes = false;
 
@@ -829,9 +831,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 if (!hasSetTextureNames) return;
             }
 
-            // Update ARCore frame (unchanged)
             try {
                 lastFrame  = session.update();
+                if (lastFrame.getTimestamp() == 0) return;
                 lastCamera = lastFrame.getCamera();
                 lastCamera.getViewMatrix(lastViewMatrix, 0);
                 lastCamera.getProjectionMatrix(lastProjMatrix, 0, Z_NEAR, Z_FAR);
@@ -839,18 +841,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Log.e(LOG_TAG, "Camera not available: " + e.getMessage());
                 return;
             } catch (com.google.ar.core.exceptions.SessionPausedException e) {
-                // Session not yet resumed — skip this frame
                 return;
-            } /*catch (com.google.ar.core.exceptions.FatalException e) {
-                Log.e(LOG_TAG, "ARCore FatalException — recreating session", e);
-                // Post session recreation to main thread
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    restartARSession();  // pause + resume session
-                });
-                return;  // skip this frame
-            } */catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(LOG_TAG, "onDrawFrame error: " + e.getMessage(), e);
+                return;  // ← MUST return here, lastCamera is null
             }
+
+            if (lastFrame == null || lastCamera == null) return;
 
             // OpenGL draws — camera feed, planes, sphere/box/capsule
             GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
@@ -864,14 +861,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             if (backgroundRenderer != null) {
                 backgroundRenderer.updateDisplayGeometry(lastFrame);
                 try {
-                    backgroundRenderer.setUseDepthVisualization(render, false);
-                    backgroundRenderer.setUseOcclusion(render,
-                        depthSettings.useDepthForOcclusion());
-                    Log.d("ARView3d", "bgRenderer useDepthForOcclusion: " + depthSettings.useDepthForOcclusion());
+                    boolean wantOcclusion = depthSettings.useDepthForOcclusion();
+                    if (wantOcclusion != lastOcclusionSetting) { //only if modified
+                        backgroundRenderer.setUseDepthVisualization(render, false);
+                        backgroundRenderer.setUseOcclusion(render,
+                            depthSettings.useDepthForOcclusion());
+                        lastOcclusionSetting = wantOcclusion;
+                        Log.d("ARView3d", "bgRenderer useDepthForOcclusion: " + depthSettings.useDepthForOcclusion());
+                    }
+
+
                 } catch (IOException e) {
                     Log.e(LOG_TAG, "BackgroundRenderer setup: " + e.getMessage());
                     return;
                 }
+
+                updateGroundLevelFromPlanes();
+
                 if (lastFrame.getCamera().getTrackingState() != TrackingState.TRACKING) {
                     // Don't update matrices — keep last known good pose
                     // Don't call updateFrame() — Filament holds its last position
@@ -928,13 +934,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             setDefaultPositions(arNodes);
             drawPlanesAndPoints(render, lastCamera, lastFrame,
                 viewMatrix, projectionMatrix);
-            // ✅ Update floor detection continuously (removed the groundDetected check)
-            updateGroundLevelFromPlanes();
+
 
             updatePhysics();
             updateCollisions();
 
-
+            if (arNodes.isEmpty()) return;
             // Let pending InitialPosition nodes and scaled acquire anchors
             for (ARNode node : arNodes) {
                 node.tryCreateAnchorIfNeeded(this::getNearestPlane);
@@ -967,7 +972,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         session.getAllTrackables(Plane.class));
                     arFilamentRenderer.renderSynchronous(modelNodes, viewMatrix, projectionMatrix, trackingPlanes);
                 }
-                for (ARNode n : modelNodes) {
+                /*for (ARNode n : modelNodes) {
                     float[] pos = n.Anchor() != null ?
                         n.Anchor().getPose().getTranslation() : null;
                     Log.d(LOG_TAG, "ModelNode: anchor=" + (n.Anchor() != null)
@@ -1437,7 +1442,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         //config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
         config.setLightEstimationMode(Config.LightEstimationMode.AMBIENT_INTENSITY);
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
-
+        Log.i(LOG_TAG, "PlaneDetectionType() = " + PlaneDetectionType());
         // This is the critical part for plane detection
         if (PlaneDetectionType() == 1) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
@@ -1446,7 +1451,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         } else if (PlaneDetectionType() == 3) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
         } else {
-            config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
+            //config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
+            config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
         }
 
         floorManager = new FloorPlaneManager();
