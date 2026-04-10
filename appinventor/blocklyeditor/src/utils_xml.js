@@ -227,7 +227,7 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
       }
       items.forEach((item, idx) => {
         xmlString += '<value name="ADD' + idx + '">' +
-          '<block type="' + blockType + '"><field name="' + fieldName + '">' + item + '</field></block></value>';
+          '<block type="' + blockType + '"><field name="' + fieldName + '">' + this.escapeXml(item) + '</field></block></value>';
       });
     }
     xmlString += '</block>';
@@ -241,14 +241,14 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
       items.forEach((item, idx) => {
         var [key, value] = item.split(':');
         xmlString += '<value name="ADD' + idx + '"><block type="pair">';
-        xmlString += '<value name="KEY"><block type="text"><field name="TEXT">' + key + '</field></block></value>';
-        xmlString += '<value name="VALUE"><block type="text"><field name="TEXT">' + value + '</field></block></value>';
+        xmlString += '<value name="KEY"><block type="text"><field name="TEXT">' + this.escapeXml(key) + '</field></block></value>';
+        xmlString += '<value name="VALUE"><block type="text"><field name="TEXT">' + this.escapeXml(value) + '</field></block></value>';
         xmlString += '</block></value>';
       });
     }
     xmlString += '</block>';
   } else if (typeStr === 'text' || typeStr === 'textArea' || typeStr === 'string') {
-    xmlString += '<block type="text"><field name="TEXT">' + valueStr + '</field></block>';
+    xmlString += '<block type="text"><field name="TEXT">' + this.escapeXml(valueStr) + '</field></block>';
   } else {
     // Return null is the type is unknown
     return null;
@@ -256,4 +256,17 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
 
   xmlString += '</value></xml>';
   return Blockly.utils.xml.textToDom(xmlString);
+};
+
+/**
+ * Escapes special characters for use in XML text nodes.
+ * @param {string} unsafe The string to escape.
+ * @return {string} The escaped string safe for XML.
+ */
+Blockly.Util.xml.escapeXml = function (unsafe) {
+  return unsafe.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 };
