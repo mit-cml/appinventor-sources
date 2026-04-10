@@ -64,19 +64,17 @@ public class AIAgentEngine {
    * Instruction appended to the context messages on every continuation call.
    * Steers the model away from refactoring or undoing prior user-requested
    * changes when it receives the fresh project state in a continuation.
+   * Loaded from {@code continuation_instructions.md}.
    */
-  private static final String CONTINUATION_SCOPE_INSTRUCTION =
-      "[Continuation scope — read before proceeding]\n\n"
-      + "You are continuing your response to the user's most recent request. "
-      + "Complete ONLY what is needed to fulfill that request. If your changes "
-      + "introduced a bug or inconsistency (e.g. blocks referencing a deleted or "
-      + "renamed component, a failed write_block, or missing blocks for a newly "
-      + "added component), fix that specific issue — but nothing else. Do not:\n"
-      + "- Refactor, reorganize, or \"clean up\" existing code beyond what was asked\n"
-      + "- Undo or reverse changes made in previous turns of this conversation\n"
-      + "- Add improvements, optimizations, or structural changes the user did not request\n\n"
-      + "If you have fully completed the user's request, respond with text only "
-      + "— do not call any tools.";
+  private static volatile String continuationScopeInstruction;
+
+  private static String getContinuationScopeInstruction() {
+    if (continuationScopeInstruction == null) {
+      continuationScopeInstruction =
+          ContextUtils.loadResource("continuation_instructions.md");
+    }
+    return continuationScopeInstruction;
+  }
 
   private static final Flag<Boolean> ORCHESTRATION_FLAG = Flag.createFlag("ai.agent.orchestration", false);
 
@@ -358,7 +356,7 @@ public class AIAgentEngine {
       // Append a scoping instruction so the model stays focused on the
       // user's request and does not refactor or undo prior changes.
       contextMessages = new ArrayList<String>(contextMessages);
-      contextMessages.add(AIAgentRequest.wrapPlatformMessage(CONTINUATION_SCOPE_INSTRUCTION));
+      contextMessages.add(AIAgentRequest.wrapPlatformMessage(getContinuationScopeInstruction()));
 
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());

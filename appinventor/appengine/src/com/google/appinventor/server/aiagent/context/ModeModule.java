@@ -13,8 +13,27 @@ import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_
 
 /**
  * Builds mode instructions and editor view rules for the current request.
+ *
+ * <p>Prompt text is loaded from resource files in {@code resources/}:
+ * <ul>
+ *   <li>{@code mode_planning.md} — planning mode instructions
+ *   <li>{@code mode_child_execution.md} — child agent execution instructions
+ *   <li>{@code mode_advisor.md} — advisor mode instructions
+ *   <li>{@code mode_screen_editor.md} — screen editor mode instructions
+ *   <li>{@code mode_project_editor.md} — project editor mode instructions
+ *   <li>{@code editor_view_rules.md} — editor view switching rules
+ * </ul>
+ *
+ * <p>Dynamic values are substituted via {@code {{placeholder}}} tokens.
  */
 public class ModeModule extends ContextModule {
+
+  private static volatile String cachedPlanning;
+  private static volatile String cachedChildExecution;
+  private static volatile String cachedAdvisor;
+  private static volatile String cachedScreenEditor;
+  private static volatile String cachedProjectEditor;
+  private static volatile String cachedViewRules;
 
   @Override
   public String build(ContextParams params) {
@@ -29,38 +48,17 @@ public class ModeModule extends ContextModule {
   }
 
   private String buildChildExecutionInstructions(String currentView) {
-    return "You are a child agent executing one step of a multi-screen plan. "
-        + "Your task is to implement the requested changes on THIS screen only.\n\n"
-        + "IMPORTANT RULES:\n"
-        + "- Execute the task COMPLETELY. Do not ask questions or wait for user input.\n"
-        + "- Do not narrate or explain what you plan to do — just do it.\n"
-        + "- You can ONLY modify the current screen. You cannot create, delete, "
-        + "or switch to other screens.\n"
-        + "- Use toggle_editor to switch between Designer and Blocks views as needed.\n"
-        + "- The screen form component (the root) should be referenced by its screen name "
-        + "for property changes (e.g., set_property with the screen name as component_name).\n\n"
-        + "You are currently viewing the **" + currentView + "** editor.\n"
-        + "- Designer operations (add_component, delete_component, set_property, "
-        + "rename_component) require the Designer view.\n"
-        + "- Block operations (write_block, delete_block) require the Blocks view.\n"
-        + "- Use toggle_editor to switch when needed.\n\n"
-        + "Complete ALL work for this screen — both Designer components and Blocks logic "
-        + "— before finishing. Do not leave partial work.";
+    if (cachedChildExecution == null) {
+      cachedChildExecution = ContextUtils.loadResource("mode_child_execution.md");
+    }
+    return cachedChildExecution.replace("{{view}}", currentView);
   }
 
   private String buildPlanningInstructions() {
-    return "You are in Plan & Execute mode. Your task is to research the project and "
-        + "propose a structured execution plan.\n\n"
-        + "Available tools: lookup_component (research component specs), "
-        + "lookup_screen (research screen state), propose_plan (submit your plan).\n\n"
-        + "DO NOT attempt to add components, write blocks, or make any changes. Instead:\n"
-        + "1. Use lookup_component and lookup_screen to understand the current project state.\n"
-        + "2. Break the user's request into steps, each targeting a specific screen.\n"
-        + "3. Use '__project__' as the screen for project-level operations "
-        + "(creating screens, setting project properties).\n"
-        + "4. Set depends_on when a step requires another to complete first "
-        + "(e.g., a screen must be created before components can be added to it).\n"
-        + "5. Call propose_plan with your complete plan.";
+    if (cachedPlanning == null) {
+      cachedPlanning = ContextUtils.loadResource("mode_planning.md");
+    }
+    return cachedPlanning;
   }
 
   private String buildModeInstructions(String mode, String currentView,
@@ -69,42 +67,27 @@ public class ModeModule extends ContextModule {
     sb.append("[Current mode and view — supersedes any previous mode instructions]\n\n");
     sb.append("## Mode: ").append(mode).append("\n\n");
     if (AI_AGENT_MODE_ADVISOR.equals(mode)) {
-      sb.append("You are in Advisor mode. You can ONLY provide advice and answer questions. ")
-          .append("You CANNOT modify the project — no write tools are available to you. ")
-          .append("Use the lookup_component and lookup_screen tools to examine the project ")
-          .append("when needed, then provide helpful guidance in your text response. ")
-          .append("Your text response is your only way to communicate with the user.\n");
+      if (cachedAdvisor == null) {
+        cachedAdvisor = ContextUtils.loadResource("mode_advisor.md");
+      }
+      sb.append(cachedAdvisor);
     } else if (AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)) {
-      sb.append("You are in ScreenEditor mode. You can modify the CURRENT screen only. ")
-          .append("You cannot create, delete, or switch screens. You can toggle editor views. ")
-          .append("To make changes, invoke the provided tools via function calling. ")
-          .append("Always include a text response explaining what you are doing or ")
-          .append("asking clarifying questions — do not return tool calls without ")
-          .append("an accompanying explanation.\n");
+      if (cachedScreenEditor == null) {
+        cachedScreenEditor = ContextUtils.loadResource("mode_screen_editor.md");
+      }
+      sb.append(cachedScreenEditor);
     } else if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
-      sb.append("You are in ProjectEditor mode. You have full access to modify the project ")
-          .append("including creating/deleting screens, modifying any screen, ")
-          .append("and setting project-level properties. ")
-          .append("To make changes, invoke the provided tools via function calling. ")
-          .append("Always include a text response explaining what you are doing or ")
-          .append("asking clarifying questions — do not return tool calls without ")
-          .append("an accompanying explanation.\n");
+      if (cachedProjectEditor == null) {
+        cachedProjectEditor = ContextUtils.loadResource("mode_project_editor.md");
+      }
+      sb.append(cachedProjectEditor);
     }
 
     if (!AI_AGENT_MODE_ADVISOR.equals(mode)) {
-      sb.append("\n### Editor View Rules\n");
-      sb.append("The user is currently viewing the **").append(currentView)
-          .append("** editor.\n");
-      sb.append("- **Designer operations** (`add_component`, `delete_component`, ")
-          .append("`set_property`, `rename_component`) can ONLY be executed when the ")
-          .append("user is viewing the **Designer** editor.\n");
-      sb.append("- **Block operations** (`write_block`, `delete_block`) can ONLY be ")
-          .append("executed when the user is viewing the **Blocks** editor.\n");
-      sb.append("- To switch views, use the `toggle_editor` tool.\n");
-      sb.append("- `toggle_editor` MUST be called **ALONE** — ")
-          .append("never combine it with other tool calls in the same response.\n");
-      sb.append("- After `toggle_editor` is confirmed, continue ")
-          .append("with the operations that require the new view.\n");
+      if (cachedViewRules == null) {
+        cachedViewRules = ContextUtils.loadResource("editor_view_rules.md");
+      }
+      sb.append("\n").append(cachedViewRules.replace("{{view}}", currentView));
       if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
         sb.append("- `switch_screen` MUST also be called **ALONE** — ")
             .append("never combine it with other tool calls in the same response.\n");
