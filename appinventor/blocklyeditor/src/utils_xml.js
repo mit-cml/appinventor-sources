@@ -211,8 +211,7 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
     xmlString += '<field name="BOOL">' + valueStr.toUpperCase() + '</field></block>';
   } else if (typeStr === 'list') {
     xmlString += '<block type="lists_create_with">';
-    var isEmpty = valueStr.trim() === '';
-    if (isEmpty) {
+    if (!valueStr.trim()) {
       xmlString += '<mutation items="0"></mutation>';
     } else {
       var items = valueStr.split(',').map(item => item.trim());
@@ -234,8 +233,7 @@ Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
     xmlString += '</block>';
   } else if (typeStr === 'dictionary') {
     xmlString += '<block type="dictionaries_create_with">';
-    var isEmpty = valueStr.trim() === '';
-    if (isEmpty) {
+    if (!valueStr.trim()) {
       xmlString += '<mutation items="0"></mutation>';
     } else {
       var items = valueStr.split(',').map(item => item.trim());
