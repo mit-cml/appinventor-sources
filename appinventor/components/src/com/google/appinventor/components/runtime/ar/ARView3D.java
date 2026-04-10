@@ -1,5 +1,7 @@
 package com.google.appinventor.components.runtime.ar;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.*;
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
@@ -180,6 +182,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     int maxPlanesToDispatch = 5; //throttle
     int count = 0;
+
 
     private long lastPhysicsUpdateTime = 0;
 
@@ -816,6 +819,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void onDrawFrame(ARViewRender render) {
         if (session == null) return;
 
+
         try {
             // Register camera texture (unchanged)
             if (!hasSetTextureNames) {
@@ -890,6 +894,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         currentViewportWidth, currentViewportHeight);
                 }
             }
+
 
             if (lastCamera.getTrackingState() == TrackingState.PAUSED) return;
 
@@ -981,7 +986,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         + " pos=" + (pos != null ?
                         pos[0]+","+pos[1]+","+pos[2] : "null")
                         + " inFilament " + arFilamentRenderer.getFilamentNodes());
-                }
+                }*/
             }
 
         } catch (Exception e) {
@@ -1624,8 +1629,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         @Override
                         public void HandlePermissionResponse(String permission, boolean granted) {
                             if (!granted) {
-                                // Handle permission denied
-                                onResume();
+                                Log.w(LOG_TAG, "Camera permission denied");
+                                return;
                             }
                         }
                     });
@@ -1690,7 +1695,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     public void onPause() {
-
+        Log.d(LOG_TAG, "onPause() ");
         if (session == null) {
             return;
         }
@@ -1699,56 +1704,44 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         session.pause();
     }
 
-
     @Override
     public void onClear() {
         Log.d(LOG_TAG, "onClear() - clear all models and trackables");
 
-        onPause();
+        arFilamentRenderer.setPaused(true);
 
-        try {
-            // Clear Filament scene (visual cleanup)
-            if (arFilamentRenderer != null) {
-                arFilamentRenderer.clearAllNodes();
-                Log.d(LOG_TAG, "Filament nodes cleared");
-            }
-
-            // Detach ARCore anchors (tracking cleanup)
-            if (session != null) {
-                int anchorCount = session.getAllAnchors().size();
-                for (Anchor anchor : session.getAllAnchors()) {
-                    anchor.detach();
+        if (session != null) {
+            int anchorCount = 0;
+            synchronized (arNodes) {
+                Log.d(LOG_TAG, "arNodes size at detach time: " + arNodes.size());
+                for (ARNode node : arNodes) {
+                    if (node instanceof ARNodeBase) {
+                        Anchor a = ((ARNodeBase) node).Anchor();
+                        Log.d(LOG_TAG, "Node " + node.getClass().getSimpleName()
+                            + " anchor=" + (a != null ? a.getTrackingState() : "NULL"));
+                        if (a != null) { a.detach(); anchorCount++; }
+                    }
                 }
-                Log.d(LOG_TAG, "Detached " + anchorCount + " anchors");
             }
+            Log.d(LOG_TAG, "Detached " + anchorCount + " anchors");
+        }
 
-            //  Clear app-level node tracking
-            int nodeCount = arNodes.size();
+        // 2. Now safe to clear
+        synchronized (arNodes) {
             arNodes.clear();
-            Log.d(LOG_TAG, "Cleared " + nodeCount + " nodes");
+        }
 
-            floorManager.reset();
-            groundDetected = false;
-            GROUND_LEVEL = -1f;
+        floorManager.reset();
+        groundDetected = false;
 
-            // Resume session with fresh state
-            if (session != null) {
-                session.resume();
-                Log.d(LOG_TAG, "Session resumed - tracking reset");
-            }
-
-            // Optional: notify listeners
-            if (container.$form() instanceof ReplForm) {
-                ((ReplForm) container.$form()).runOnUiThread(() -> {
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.clearAllNodes(() -> {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    arFilamentRenderer.setPaused(false);
+                    Log.d(LOG_TAG, "Renderer unpaused after clear");
                     EventDispatcher.dispatchEvent(this, "SceneCleared");
                 });
-            }
-
-        } catch (CameraNotAvailableException e) {
-            Log.e(LOG_TAG, "Camera unavailable during clear", e);
-           // handleCameraError();
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error during onClear", e);
+            });
         }
     }
 
@@ -1756,35 +1749,45 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public void onFullReset() {
         Log.d(LOG_TAG, "onFullReset() - complete teardown");
 
-        onPause();
+        // Must block render loop BEFORE any GPU teardown
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.setPaused(true);
+        }
+
+        onPause(); // session.pause() is appropriate here — this is a full reset
 
         try {
-            // Full reset - destroys GPU assets
             if (arFilamentRenderer != null) {
-                arFilamentRenderer.resetScene(true);  // true = clear GPU cache
+                arFilamentRenderer.resetScene(true);
             }
 
             if (session != null) {
-                for (Anchor anchor : session.getAllAnchors()) {
+                for (Anchor anchor : new ArrayList<>(session.getAllAnchors())) {
                     anchor.detach();
                 }
             }
 
-            arNodes.clear();
-
-            if (session != null) {
-                session.resume();
+            synchronized (arNodes) {
+                arNodes.clear();
             }
 
-            Log.d(LOG_TAG, "Full reset complete - GPU memory freed");
+            groundDetected = false;
+            GROUND_LEVEL = -1f;
+            floorManager.reset();
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error during full reset", e);
+        } finally {
+            // Always unpause, even on error — don't leave renderer frozen
+            if (arFilamentRenderer != null) {
+                arFilamentRenderer.setPaused(false);
+            }
         }
     }
 
     @Override
     public void onDestroy() {
+        Log.d(LOG_TAG, "onDestroy() - clear all models and trackables");
         if (session != null) {
             session.close();
             session = null;

@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.arview.renderer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.opengl.Matrix;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
 
@@ -185,6 +186,8 @@ public class ARFilamentRenderer {
      * Used in removeNode to check if the last reference is gone.
      */
     private final Map<ARNode, FilamentAsset>    nodeAssetMap    = new ConcurrentHashMap<>();
+    // Replace allInstancesMap with this — stored once at creation, never changes
+    private final Map<String, FilamentInstance[]> assetInstancesMap = new ConcurrentHashMap<>();
 
     private final Map<String, ArrayDeque<FilamentInstance>> instancePoolCache
         = new ConcurrentHashMap<>();
@@ -199,6 +202,11 @@ public class ARFilamentRenderer {
         filamentHandler.post(() -> particleEmitters.add(emitter));
     }
 
+    private volatile boolean paused = false;
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
 
     // How many instances to pre-allocate per unique model path.
 // Tune this to your max expected count per model.
@@ -318,6 +326,7 @@ public class ARFilamentRenderer {
                                   float[] viewMatrix,
                                   float[] projMatrix,
                                   List<Plane> planes) {
+        if (paused) return;
         if (!engineReady || !swapChainReady || destroyed) return;
         if (filamentHandler == null) return;
         if (renderInFlight) return;
@@ -825,6 +834,7 @@ public class ARFilamentRenderer {
     // -------------------------------------------------------------------------
 
     private void loadAndPositionNodes(Collection<ARNode> nodes) {
+        if (paused) return;
         for (ARNode node : nodes) {
             if (!shouldRender(node)) continue;
 
@@ -1024,6 +1034,12 @@ public class ARFilamentRenderer {
      */
     private void createNodeOnRenderThread(ARNode node, ByteBuffer buffer, String path) {
         try {
+
+            if (paused) {
+                Log.d(LOG_TAG, "Clear in progress — aborting load for " + path);
+                return;
+            }
+
             FilamentAsset primary = assetCache.get(path);
             int rootEntity;
 
@@ -1033,6 +1049,7 @@ public class ARFilamentRenderer {
 
                 buffer.rewind();
                 primary = assetLoader.createInstancedAsset(buffer, instances);
+                assetInstancesMap.put(path, instances);
                 if (primary == null) {
                     Log.e(LOG_TAG, "createInstancedAsset returned null: " + path);
                     return;
@@ -1340,53 +1357,47 @@ public class ARFilamentRenderer {
      * Removes all nodes from the scene but keeps assets/instances cached.
      * Perfect for ARCore session pause/resume - nodes can be instantly re-added.
      */
-    public void clearAllNodes() {
-        if (filamentHandler == null) return;
+    public void clearAllNodes(Runnable onComplete) {
+        if (filamentHandler == null) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
 
         filamentHandler.post(() -> {
             Log.d(LOG_TAG, "Clearing all nodes");
 
-            // Remove all instance nodes from scene, return to pools
-            for (Map.Entry<ARNode, FilamentInstance> entry : nodeInstanceMap.entrySet()) {
-                FilamentInstance inst = entry.getValue();
-                scene.remove(inst.getRoot());
-                for (int e : inst.getEntities()) {
-                    if (e != inst.getRoot()) scene.remove(e);
-                }
-
-                // Return to pool
-                String path = entry.getKey().Model();
+            int removed = 0;
+            for (Map.Entry<String, FilamentInstance[]> entry : assetInstancesMap.entrySet()) {
+                String path = entry.getKey();
                 ArrayDeque<FilamentInstance> pool = instancePoolCache.get(path);
-                if (pool != null) {
-                    pool.add(inst);
+                pool.clear();  // empty the pool first to avoid contains() checks
+
+                for (FilamentInstance inst : entry.getValue()) {
+                    if (inst == null) continue;
+                    scene.remove(inst.getRoot());
+                    for (int e : inst.getEntities()) {
+                        if (e != inst.getRoot()) scene.remove(e);
+                        removed++;
+                    }
+                    pool.add(inst);  // return everything unconditionally
                 }
+                Log.d(LOG_TAG, "Reclaimed all instances for " + path
+                    + " pool=" + pool.size());
             }
 
-            // Remove primary assets from scene (but keep them cached)
-            for (FilamentAsset asset : assetCache.values()) {
-                scene.remove(asset.getRoot());
-                for (int e : asset.getEntities()) {
-                    if (e != asset.getRoot()) scene.remove(e);
-                }
-            }
+            Log.d(LOG_TAG, "Removed " + removed + " entities from scene");
 
-            // Clear tracking
             nodeRootEntity.clear();
             nodeInstanceMap.clear();
             nodeAssetMap.clear();
             loadingNodes.clear();
-
-            // Free disk buffer cache
             modelBufferCache.clear();
 
-// Free depth buffer
             if (arDepthTexture != null) {
                 engine.destroyTexture(arDepthTexture);
                 arDepthTexture = null;
             }
-            depthBufferCache = null;  // let it get GC'd
-
-            // Reset state
+            depthBufferCache = null;
             depthDataReceived = false;
             occlusionAppliedToAllAssets = false;
             animationTime = 0f;
@@ -1398,6 +1409,11 @@ public class ARFilamentRenderer {
 
             Log.d(LOG_TAG, "Nodes cleared. Assets cached: " + assetCache.size()
                 + ", pool status: " + getPoolStatus());
+
+
+            if (onComplete != null) {
+                new Handler(Looper.getMainLooper()).post(onComplete);
+            }
         });
     }
 
