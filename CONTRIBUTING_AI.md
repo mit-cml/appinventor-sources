@@ -121,13 +121,21 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | File | Purpose |
 |------|---------|
 | `AIResponseOrchestrator.java` | RPC orchestration, polling, retry logic, auto-accept mode |
-| `AIChatRenderer.java` | Renders chat messages with Markdown and streaming support |
+| `AIChatRenderer.java` | Facade for chat rendering; delegates streaming to `ChatStreamingHandler` and plan cards to `ChatPlanCardRenderer` |
 | `AIContextCollector.java` | Gathers editor state (YAIL, components, warnings) for requests |
 | `AIModeSelectionDialog.java` | First-time mode selection UI |
 | `AIDialogResizeHandler.java` | Floating dialog resize/position management |
 | `AIEditorState.java` | Dialog visibility and mode state tracking |
 | `AIOperationFormatter.java` | Color-coded operation preview formatting |
 | `AIJsonUtils.java` | JSON utility functions |
+
+### Chat Rendering -- `client/.../aiagent/chat/`
+
+| File | Purpose |
+|------|---------|
+| `ChatRendererHost.java` | Interface for streaming handler to call back into the renderer |
+| `ChatStreamingHandler.java` | Streaming bubble state machine: start, append text/thinking, finalize |
+| `ChatPlanCardRenderer.java` | Plan card UI with approve/edit/reject flow |
 
 ### Operation Execution -- `client/.../aiagent/executor/`
 
