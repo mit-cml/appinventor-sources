@@ -121,7 +121,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | File | Purpose |
 |------|---------|
 | `AIResponseOrchestrator.java` | RPC orchestration, polling, retry logic, auto-accept mode |
-| `AIChatRenderer.java` | Facade for chat rendering; delegates streaming to `ChatStreamingHandler` and plan cards to `ChatPlanCardRenderer` |
+| `AIChatRenderer.java` | Facade for chat rendering; delegates streaming to `StreamingHandler` and plan cards to `PlanCardRenderer` |
 | `AIContextCollector.java` | Gathers editor state (YAIL, components, warnings) for requests |
 | `AIModeSelectionDialog.java` | First-time mode selection UI |
 | `AIDialogResizeHandler.java` | Floating dialog resize/position management |
@@ -133,9 +133,18 @@ GWT-RPC interfaces and DTOs shared between client and server.
 
 | File | Purpose |
 |------|---------|
-| `ChatRendererHost.java` | Interface for streaming handler to call back into the renderer |
-| `ChatStreamingHandler.java` | Streaming bubble state machine: start, append text/thinking, finalize |
-| `ChatPlanCardRenderer.java` | Plan card UI with approve/edit/reject flow |
+| `RendererHost.java` | Interface for streaming handler to call back into the renderer |
+| `StreamingHandler.java` | Streaming bubble state machine: start, append text/thinking, finalize |
+| `PlanCardRenderer.java` | Plan card UI with approve/edit/reject flow |
+
+### Dialog UI -- `client/.../aiagent/dialog/`
+
+| File | Purpose |
+|------|---------|
+| `StatusAnimator.java` | Status label ("Thinking...") with animated ellipsis timer |
+| `OperationPreviewPanel.java` | Operation preview area, apply/reject/accept-all buttons, auto-accept notice |
+| `PlanExecuteToggle.java` | Plan & Execute mode toggle button (direct/plan/executing states) |
+| `ChatInputHandler.java` | Input textarea, send/stop button, Enter-key submission, plan-rejection wrapping |
 
 ### Operation Execution -- `client/.../aiagent/executor/`
 
@@ -169,7 +178,15 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `appinventor_reference.md` | System prompt reference guide for the LLM |
 | `yail_grammar.md` | YAIL syntax documentation for block generation |
 | `few_shot_examples.json` | Few-shot examples for in-context learning |
+| `tool_definitions.json` | Tool schemas loaded by `AIContextBuilder.buildTools()` |
 | `tutorial_instructions.md` | Pedagogical instructions for tutorial-aware mode |
+| `continuation_instructions.md` | Instructions injected on continuation/retry requests |
+| `editor_view_rules.md` | View-specific rules (Designer vs Blocks) for mode instructions |
+| `mode_advisor.md` | Mode instructions for Advisor mode |
+| `mode_screen_editor.md` | Mode instructions for Screen Editor mode |
+| `mode_project_editor.md` | Mode instructions for Project Editor mode |
+| `mode_planning.md` | Mode instructions for Plan & Execute planning phase |
+| `mode_child_execution.md` | Mode instructions for Plan & Execute child execution phase |
 
 ### I18n -- `blocklyeditor/src/msg/ai_blockly/`
 
@@ -989,7 +1006,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 
 1. Add the enum value to `AIOperation.Type`.
 2. Add a tool constant in `AIToolNames`.
-3. Add the tool definition in `AIContextBuilder.buildTools()`.
+3. Add the tool definition in `server/aiagent/resources/tool_definitions.json`.
 4. Update `LLMResponseParser` to parse the new tool call into the operation.
 5. Update `ModeEnforcer` with mode/view permissions (add to the correct op set).
 6. Add a validation method in the appropriate `*OperationValidator`.
