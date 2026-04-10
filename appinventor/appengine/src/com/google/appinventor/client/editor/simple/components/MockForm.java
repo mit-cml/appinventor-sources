@@ -1137,6 +1137,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       // These are project-level properties, not per form.
       return false;
     }
+    if (PROPERTY_NAME_AI_AGENT_MODE.equals(propertyName)) {
+      // Editor-only setting, not a runtime property.
+      return false;
+    }
     return super.isPropertyforYail(propertyName);
   }
 

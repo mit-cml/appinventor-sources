@@ -3,6 +3,11 @@
   <runtime>java17</runtime>
   <app-engine-apis>true</app-engine-apis>
 
+  <instance-class>F2</instance-class>
+  <automatic-scaling>
+    <min-idle-instances>1</min-idle-instances>
+  </automatic-scaling>
+
   <!-- Configure serving/caching of GWT files -->
   <static-files>
     <include path="/companions/*" />
