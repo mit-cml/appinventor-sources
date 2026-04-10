@@ -887,6 +887,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     // Don't call updateFrame() — Filament holds its last position
                     backgroundRenderer.drawBackground(render, 0,
                         currentViewportWidth, currentViewportHeight);// still draw camera
+                    GLES30.glFinish();
+                    if (arFilamentRenderer != null) {
+                        List<Plane> trackingPlanes = new ArrayList<>(session.getAllTrackables(Plane.class));
+                        arFilamentRenderer.renderSynchronous(Collections.emptyList(), viewMatrix, projectionMatrix, trackingPlanes);
+                    }
                     return;
                 }
                 if (lastFrame.getTimestamp() != 0) {
@@ -944,50 +949,36 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             updatePhysics();
             updateCollisions();
 
-            if (arNodes.isEmpty()) return;
-            // Let pending InitialPosition nodes and scaled acquire anchors
-            for (ARNode node : arNodes) {
-                node.tryCreateAnchorIfNeeded(this::getNearestPlane);
-            }
-
-            // Sphere/box/capsule via ObjectRenderer (unchanged)
-            List<ARNode> objectNodes = sort(arNodes,
-                new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"});
-            if (objRenderer != null && !objectNodes.isEmpty()) {
-                drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
-            }
-
-            GLES30.glFinish();
-
-            // ---------------------------------------------------------------
-            // Hand off to Filament — NON-BLOCKING.
-            // updateFrame() does a lock+copy of matrices and node list.
-            // Returns immediately. FilamentRenderThread picks this up on its
-            // next vsync via Choreographer. The GL thread is never blocked
-            // by anything Filament does.
-            // ---------------------------------------------------------------
-            if (arFilamentRenderer != null) {
-                List<ARNode> modelNodes = sort(arNodes,
-                    new String[]{"ModelNode"});
-
-                // After session.update() gives you fresh viewMatrix:
-
-                if (!modelNodes.isEmpty()) {
-                    List<Plane> trackingPlanes = new ArrayList<>(
-                        session.getAllTrackables(Plane.class));
-                    arFilamentRenderer.renderSynchronous(modelNodes, viewMatrix, projectionMatrix, trackingPlanes);
+            // 1. All GL rendering first
+            if (arNodes.isEmpty()) {
+                // Still need to finish GL before Filament even with no nodes
+                GLES30.glFinish();
+            } else {
+                // Anchor creation
+                for (ARNode node : arNodes) {
+                    node.tryCreateAnchorIfNeeded(this::getNearestPlane);
                 }
-                /*for (ARNode n : modelNodes) {
-                    float[] pos = n.Anchor() != null ?
-                        n.Anchor().getPose().getTranslation() : null;
-                    Log.d(LOG_TAG, "ModelNode: anchor=" + (n.Anchor() != null)
-                        + " tracking=" + (n.Anchor() != null ?
-                        n.Anchor().getTrackingState() : "none")
-                        + " pos=" + (pos != null ?
-                        pos[0]+","+pos[1]+","+pos[2] : "null")
-                        + " inFilament " + arFilamentRenderer.getFilamentNodes());
-                }*/
+
+                // GL objects (spheres, boxes, capsules)
+                List<ARNode> objectNodes = sort(arNodes,
+                    new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"});
+                if (objRenderer != null && !objectNodes.isEmpty()) {
+                    drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
+                }
+
+                // 2. Flush all GL work before Filament touches the surface
+                GLES30.glFinish();
             }
+
+// 3. Filament always last — empty modelNodes flushes stale buffers
+            if (arFilamentRenderer != null) {
+                List<ARNode> modelNodes = sort(arNodes, new String[]{"ModelNode"});
+                List<Plane> trackingPlanes = new ArrayList<>(
+                    session.getAllTrackables(Plane.class));
+                arFilamentRenderer.renderSynchronous(modelNodes, viewMatrix, projectionMatrix, trackingPlanes);
+            }
+
+
 
         } catch (Exception e) {
             Log.e(LOG_TAG, "onDrawFrame error: " + e.getMessage(), e);
