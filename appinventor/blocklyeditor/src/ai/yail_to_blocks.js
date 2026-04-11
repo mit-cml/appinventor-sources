@@ -1589,7 +1589,11 @@ AI.YailToBlocks.convertSetProperty_ = function(workspace, node) {
   block.domToMutation(mutation);
   block.initSvg();
 
-  var valueBlock = AI.YailToBlocks.convertExpression_(workspace, value);
+  var valueBlock = AI.YailToBlocks.tryMakeAssetBlockForProperty_(
+      workspace, componentType, propertyName, value);
+  if (!valueBlock) {
+    valueBlock = AI.YailToBlocks.convertExpression_(workspace, value);
+  }
   if (valueBlock && block.getInput('VALUE')) {
     block.getInput('VALUE').connection.connect(valueBlock.outputConnection);
   }
@@ -1653,7 +1657,11 @@ AI.YailToBlocks.convertGenericSetProperty_ = function(workspace, node) {
     block.getInput('COMPONENT').connection.connect(compBlock.outputConnection);
   }
 
-  var valueBlock = AI.YailToBlocks.convertExpression_(workspace, value);
+  var valueBlock = AI.YailToBlocks.tryMakeAssetBlockForProperty_(
+      workspace, typeName, propertyName, value);
+  if (!valueBlock) {
+    valueBlock = AI.YailToBlocks.convertExpression_(workspace, value);
+  }
   if (valueBlock && block.getInput('VALUE')) {
     block.getInput('VALUE').connection.connect(valueBlock.outputConnection);
   }
@@ -1691,9 +1699,14 @@ AI.YailToBlocks.convertMethodCall_ = function(workspace, node, asExpression) {
   if (els.length > 3 && AI.SExprParser.isForm(els[3], '*list-for-runtime*')) {
     var argList = els[3].elements;
     for (var i = 1; i < argList.length; i++) {
-      var argBlock = AI.YailToBlocks.convertExpression_(workspace, argList[i]);
+      var paramIndex = i - 1;
+      var argBlock = AI.YailToBlocks.tryMakeAssetBlockForMethodArg_(
+          workspace, componentType, methodName, paramIndex, argList[i]);
+      if (!argBlock) {
+        argBlock = AI.YailToBlocks.convertExpression_(workspace, argList[i]);
+      }
       if (argBlock) {
-        var inputName = 'ARG' + (i - 1);
+        var inputName = 'ARG' + paramIndex;
         if (block.getInput(inputName)) {
           block.getInput(inputName).connection.connect(argBlock.outputConnection);
         }
@@ -2720,9 +2733,14 @@ AI.YailToBlocks.convertGenericMethodCall_ = function(workspace, node, asExpressi
   if (els.length > 4 && AI.SExprParser.isForm(els[4], '*list-for-runtime*')) {
     var argList = els[4].elements;
     for (var i = 1; i < argList.length; i++) {
-      var argBlock = AI.YailToBlocks.convertExpression_(workspace, argList[i]);
+      var paramIndex = i - 1;
+      var argBlock = AI.YailToBlocks.tryMakeAssetBlockForMethodArg_(
+          workspace, typeName, methodName, paramIndex, argList[i]);
+      if (!argBlock) {
+        argBlock = AI.YailToBlocks.convertExpression_(workspace, argList[i]);
+      }
       if (argBlock) {
-        var inputName = 'ARG' + (i - 1);
+        var inputName = 'ARG' + paramIndex;
         if (block.getInput(inputName)) {
           block.getInput(inputName).connection.connect(argBlock.outputConnection);
         }
@@ -3030,6 +3048,106 @@ AI.YailToBlocks.makeVarGetBlock_ = function(workspace, name) {
   block.setFieldValue(name, 'VAR');
   block.initSvg();
   return block;
+};
+
+/**
+ * Create a helpers_assets block for the given asset name.
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace.
+ * @param {string} assetName The asset filename.
+ * @return {!Blockly.Block} The new helpers_assets block.
+ * @private
+ */
+AI.YailToBlocks.makeAssetBlock_ = function(workspace, assetName) {
+  var block = workspace.newBlock('helpers_assets');
+  block.initSvg();
+  var mutation = document.createElement('mutation');
+  mutation.setAttribute('value', assetName);
+  block.domToMutation(mutation);
+  return block;
+};
+
+/**
+ * Try to create a helpers_assets block for a property value.  Returns the
+ * asset block when the property has an ASSET helper key and the value is a
+ * string that exists in the workspace's asset list.  Returns null otherwise,
+ * so the caller can fall back to the normal expression conversion.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace.
+ * @param {string} componentType Short component type name.
+ * @param {string} propertyName The property being set.
+ * @param {Object} valueNode The AST node for the value expression.
+ * @return {?Blockly.Block} An asset block, or null.
+ * @private
+ */
+AI.YailToBlocks.tryMakeAssetBlockForProperty_ = function(
+    workspace, componentType, propertyName, valueNode) {
+  if (!valueNode || valueNode.type !== 'string') {
+    return null;
+  }
+  var componentDb = workspace.getComponentDatabase();
+  if (!componentDb || !componentType) {
+    return null;
+  }
+
+  var propDescriptor = componentDb.getPropertyForType(
+      componentType, propertyName);
+  if (!propDescriptor || !propDescriptor.helperKey ||
+      propDescriptor.helperKey.type !== 'ASSET') {
+    return null;
+  }
+
+  // Only use the asset block if the asset actually exists in the project.
+  // Otherwise fall back to a plain text block (same pattern as
+  // convertStaticField_ falling back for unrecognized option lists).
+  var assets = workspace.getAssetList();
+  if (assets.indexOf(valueNode.value) === -1) {
+    return null;
+  }
+
+  return AI.YailToBlocks.makeAssetBlock_(workspace, valueNode.value);
+};
+
+/**
+ * Try to create a helpers_assets block for a method argument.  Returns the
+ * asset block when the parameter has an ASSET helper key and the value is a
+ * string that exists in the workspace's asset list.  Returns null otherwise.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace.
+ * @param {string} componentType Short component type name.
+ * @param {string} methodName The method being called.
+ * @param {number} paramIndex Zero-based parameter index.
+ * @param {Object} valueNode The AST node for the argument expression.
+ * @return {?Blockly.Block} An asset block, or null.
+ * @private
+ */
+AI.YailToBlocks.tryMakeAssetBlockForMethodArg_ = function(
+    workspace, componentType, methodName, paramIndex, valueNode) {
+  if (!valueNode || valueNode.type !== 'string') {
+    return null;
+  }
+  var componentDb = workspace.getComponentDatabase();
+  if (!componentDb || !componentType) {
+    return null;
+  }
+
+  var methodDescriptor = componentDb.getMethodForType(
+      componentType, methodName);
+  if (!methodDescriptor || !methodDescriptor.parameters ||
+      paramIndex >= methodDescriptor.parameters.length) {
+    return null;
+  }
+
+  var param = methodDescriptor.parameters[paramIndex];
+  if (!param.helperKey || param.helperKey.type !== 'ASSET') {
+    return null;
+  }
+
+  var assets = workspace.getAssetList();
+  if (assets.indexOf(valueNode.value) === -1) {
+    return null;
+  }
+
+  return AI.YailToBlocks.makeAssetBlock_(workspace, valueNode.value);
 };
 
 /** @private */
