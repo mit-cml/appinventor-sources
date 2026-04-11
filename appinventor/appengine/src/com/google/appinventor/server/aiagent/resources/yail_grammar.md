@@ -354,18 +354,6 @@ The type annotations describe the expected types of each argument. The descripti
 | `math-convert-dec-bin` | Decimal to binary | unary |
 | `math-convert-bin-dec` | Binary to decimal | unary |
 
-##### Math on List (statistics)
-These operate on a single list argument:
-| Primitive | Description |
-|-----------|-------------|
-| `avg` | Average |
-| `minl` | Minimum of list |
-| `maxl` | Maximum of list |
-| `gm` | Geometric mean |
-| `std-dev` | Standard deviation |
-| `std-err` | Standard error |
-| `mode` | Mode |
-
 #### Comparison Primitives
 | Primitive | Description |
 |-----------|-------------|
@@ -1043,6 +1031,20 @@ Recall the general form:
 | `math-convert-dec-bin` | `n` | `(text)` | decimal to binary |
 | `random-fraction` | *(none)* | `()` | random float 0–1 |
 | `random-set-seed` | `seed` | `(number)` | set random seed |
+
+### Math on List (Statistics) Primitives
+
+These operate on a single list argument. The type annotation is `(list-of-number)`, **not** `(list)`.
+
+| Primitive | Args in `*list-for-runtime*` | Types | Description |
+|---|---|---|---|
+| `avg` | `list` | `(list-of-number)` | average |
+| `minl` | `list` | `(list-of-number)` | minimum of list |
+| `maxl` | `list` | `(list-of-number)` | maximum of list |
+| `gm` | `list` | `(list-of-number)` | geometric mean |
+| `std-dev` | `list` | `(list-of-number)` | standard deviation |
+| `std-err` | `list` | `(list-of-number)` | standard error |
+| `mode` | `list` | `(list-of-number)` | mode |
 
 ### Comparison Primitives
 
