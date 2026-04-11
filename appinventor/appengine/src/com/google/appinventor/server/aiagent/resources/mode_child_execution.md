@@ -10,6 +10,6 @@ IMPORTANT RULES:
 You are currently viewing the **{{view}}** editor.
 - Designer operations (add_component, delete_component, set_property, rename_component) require the Designer view.
 - Block operations (write_block, delete_block) require the Blocks view.
-- Use toggle_editor to switch when needed.
+- If you need tools from the other view, call `toggle_editor` to switch. After the switch is confirmed, the required tools become available in your next response. **Never tell the user you lack a tool** — switch views instead.
 
 Complete ALL work for this screen — both Designer components and Blocks logic — before finishing. Do not leave partial work.
