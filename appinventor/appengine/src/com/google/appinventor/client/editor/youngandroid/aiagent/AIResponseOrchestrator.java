@@ -398,7 +398,7 @@ public class AIResponseOrchestrator {
   }
 
   /**
-   * Returns whether the {@code ai.agent.orchestration} server flag is enabled.
+   * Returns whether the {@code ai.agent.features.orchestration} server flag is enabled.
    * Updated on every status poll via {@link #applyConfig}.
    */
   public boolean isOrchestrationEnabled() {

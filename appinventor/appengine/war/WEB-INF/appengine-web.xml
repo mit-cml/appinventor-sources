@@ -213,7 +213,11 @@
     <property name="ai.agent.base.url" value="" />
     <property name="ai.agent.rate.limit" value="10" />
     <property name="ai.agent.debug" value="true" />
-    <property name="ai.agent.orchestration" value="true" />
+
+    <!-- AI Agent features -->
+    <property name="ai.agent.features.orchestration" value="true" />
+    <property name="ai.agent.features.tutorial-context" value="true" />
+    <property name="ai.agent.features.retry-narration" value="false" />
 
     <!-- Bedrock provider configuration (only needed when ai.agent.provider=bedrock) -->
     <property name="ai.agent.provider.bedrock.region" value="us-east-1" />

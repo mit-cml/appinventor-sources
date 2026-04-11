@@ -248,7 +248,7 @@ flowchart LR
 
 - The **system prompt** layers are cached after first build (they are static across requests).
 - The **context messages** are built fresh per-request and sent as separate user messages before the user's actual message. Crucially, `ProjectModule` and `ScreenModule` parse the **client-provided JSON** (projectSnapshot, screenComponentsJson, blocksYail) rather than reading from `StorageIo`. This means the LLM always sees exactly what the user sees -- including unsaved changes.
-- **Message 4 (TutorialModule)** is only included when `AIContextBuilder.INCLUDE_TUTORIAL_CONTEXT` is `true` and the project has a non-empty `TutorialURL`. The tutorial page content is fetched via HTTP by `TutorialContentCache` and cached in memory (8h TTL). When active, the LLM receives pedagogical instructions (from `tutorial_instructions.md`) alongside the full tutorial text, shifting its behavior to guide users step-by-step rather than doing everything at once.
+- **Message 4 (TutorialModule)** is only included when `ai.agent.features.tutorial-context` is `true` and the project has a non-empty `TutorialURL`. The tutorial page content is fetched via HTTP by `TutorialContentCache` and cached in memory (8h TTL). When active, the LLM receives pedagogical instructions (from `tutorial_instructions.md`) alongside the full tutorial text, shifting its behavior to guide users step-by-step rather than doing everything at once.
 
 ### Why a Client/Server Hybrid?
 
@@ -860,6 +860,11 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 <property name="ai.agent.rate.limit" value="10" />
 <property name="ai.agent.debug" value="false" />
 
+<!-- Feature flags (ai.agent.features.*) -->
+<property name="ai.agent.features.orchestration" value="false" />
+<property name="ai.agent.features.tutorial-context" value="true" />
+<property name="ai.agent.features.retry-narration" value="false" />
+
 <!-- Bedrock-specific (only when ai.agent.provider=bedrock) -->
 <property name="ai.agent.provider.bedrock.region" value="us-east-1" />
 <property name="ai.agent.provider.bedrock.access.key" value="" />
@@ -881,9 +886,19 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 | `ai.agent.api.key` | (empty) | API key for the selected provider |
 | `ai.agent.base.url` | (empty) | Base URL override (required for `ollama`, `openai-compatible`, `anthropic-compatible`; optional for `anthropic`, `minimax`) |
 | `ai.agent.rate.limit` | `10` | Max requests per user per minute |
-| `ai.agent.orchestration` | `false` | Enable Plan & Execute mode (multi-agent orchestration). When `true`, Project Editor mode shows a Direct/Plan & Execute toggle. When `false`, the entire orchestration system is hidden. |
 | `ai.agent.debug` | `false` | Enable debug logging. **Dev mode:** writes to `build/logs/aiagent/<conversationId>/<timestamp>.txt`. **Production:** routes to the `aiagent.debug` logger for external ingestion. Nothing goes to the console in either mode. |
 | `ai.agent.log.dir` | (auto-detected) | Override the base directory for dev-mode debug log files. When empty, derived automatically from the class location (typically `appengine/build/logs/aiagent/`). |
+
+**Feature flags (`ai.agent.features.*`):**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `ai.agent.features.orchestration` | `false` | Enable Plan & Execute mode (multi-agent orchestration). When `true`, Project Editor mode shows a Direct/Plan & Execute toggle. When `false`, the entire orchestration system is hidden. |
+| `ai.agent.features.tutorial-context` | `true` | Include tutorial content in LLM context when the project has a `TutorialURL`. When `false`, tutorial context is never sent regardless of project settings. |
+| `ai.agent.features.retry-narration` | `false` | Retry with a nudge when the LLM responds with text only (no tool calls) in editing modes. When `false`, narration-only responses are returned as-is. |
+
+| Property | Default | Description |
+|----------|---------|-------------|
 | `ai.agent.provider.bedrock.region` | `us-east-1` | AWS region for Bedrock |
 | `ai.agent.provider.bedrock.access.key` | (empty) | AWS access key ID |
 | `ai.agent.provider.bedrock.secret.key` | (empty) | AWS secret access key |
@@ -982,12 +997,12 @@ The AI Agent supports two execution modes in Project Editor:
 - **Direct** (default): the current single-agent flow. The LLM has full tool access and works through screens sequentially.
 - **Plan & Execute**: a two-phase workflow where the LLM first proposes a structured plan, then the client manages parallel child conversations -- one per screen -- to execute the plan concurrently.
 
-Plan & Execute is gated behind the `ai.agent.orchestration` server flag. When enabled, `PlanExecuteToggle` appears in the chat dialog toolbar (Project Editor mode only, hidden in Advisor and Screen Editor). When `TutorialURL` is set, a confirmation warning is shown before activating.
+Plan & Execute is gated behind the `ai.agent.features.orchestration` server flag. When enabled, `PlanExecuteToggle` appears in the chat dialog toolbar (Project Editor mode only, hidden in Advisor and Screen Editor). When `TutorialURL` is set, a confirmation warning is shown before activating.
 
 ```mermaid
 flowchart TB
     subgraph "Mode Selection"
-        Flag{"ai.agent.orchestration<br/>enabled?"}
+        Flag{"ai.agent.features.orchestration<br/>enabled?"}
         Mode{"AI Mode?"}
         Toggle["PlanExecuteToggle visible<br/>(Direct / Plan & Execute)"]
         Hidden["Toggle hidden<br/>(Direct mode only)"]
@@ -1270,7 +1285,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **`ScreenExecutionContext` replaces `AIEditorState` for all executor code.** `AIDesignerOperations`, `AIBlockOperations`, and `AIOperationExecutor` accept `ScreenExecutionContext` instead of calling `AIEditorState.getCurrentFormEditor()` / `getCurrentBlocksEditor()`. Use `ScreenExecutionContext.forCurrentScreen()` for the single-agent flow.
 - **`PROPOSE_PLAN` exclusivity is enforced in the parser, not `ModeEnforcer`.** If `propose_plan` appears alongside other tool calls, `LLMResponseParser` discards the others.
 - **`__project__` is a reserved sentinel value** for plan steps targeting project-level operations. `LLMResponseParser` rejects it as a screen name in non-plan tool calls.
-- **Tutorial context is gated by `AIContextBuilder.INCLUDE_TUTORIAL_CONTEXT`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Set to `false` to disable without other code changes.
+- **Tutorial context is gated by `ai.agent.features.tutorial-context`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Set to `false` to disable via `appengine-web.xml`.
 
 ---
 

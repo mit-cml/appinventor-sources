@@ -16,6 +16,7 @@ import com.google.appinventor.server.aiagent.context.ReferenceModule;
 import com.google.appinventor.server.aiagent.context.ScreenModule;
 import com.google.appinventor.server.aiagent.context.TutorialModule;
 import com.google.appinventor.server.aiagent.llm.LLMTool;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
@@ -64,7 +65,8 @@ public class AIContextBuilder {
    * When {@code true}, if the project has a TutorialURL set, the tutorial
    * page content is fetched and included as an additional context message.
    */
-  static final boolean INCLUDE_TUTORIAL_CONTEXT = true;
+  private static final Flag<Boolean> INCLUDE_TUTORIAL_CONTEXT =
+      Flag.createFlag("ai.agent.features.tutorial-context", true);
 
   /** Cached parsed tool definitions from {@code tool_definitions.json}. */
   private static volatile JSONObject cachedToolDefs;
@@ -187,7 +189,7 @@ public class AIContextBuilder {
     AIDebug.log(LOG, "Context message 3 (screen): " + screenCtx.length() + " chars");
 
     // Message 4: Tutorial context (if enabled and active)
-    if (INCLUDE_TUTORIAL_CONTEXT) {
+    if (INCLUDE_TUTORIAL_CONTEXT.get()) {
       String tutorialCtx = tutorialModule.build(params);
       if (tutorialCtx != null) {
         messages.add(tutorialCtx);
