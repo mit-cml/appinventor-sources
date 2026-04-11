@@ -475,99 +475,18 @@ AI.YailToBlocks.optimizeBlockWidths_ = function(workspace, blocks) {
 
 /**
  * Delete a block identified by its YAIL head tokens.
+ * When duplicates exist, prefers the enabled block (via
+ * {@link findBlockByIdentifier_}).
  *
  * @param {!Blockly.WorkspaceSvg} workspace The workspace.
  * @param {string} identifier Block identifier (e.g., "define-event Button1 Click").
  * @return {{success: boolean, error: ?string}}
  */
 AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
-  var tokens = identifier.trim().split(/\s+/);
-  if (tokens.length === 0) {
-    return {success: false, error: 'Empty block identifier'};
-  }
-
-  var formType = tokens[0];
-  var topBlocks = workspace.getTopBlocks(false);
-  var blockToDelete = null;
-
-  switch (formType) {
-    case 'define-event':
-      if (tokens.length < 3) {
-        return {success: false, error: 'define-event requires component and event name'};
-      }
-      var componentName = tokens[1];
-      var eventName = tokens[2];
-      for (var i = 0; i < topBlocks.length; i++) {
-        var block = topBlocks[i];
-        if (block.type === 'component_event' && block.instanceName === componentName
-            && block.eventName === eventName) {
-          blockToDelete = block;
-          break;
-        }
-      }
-      if (!blockToDelete) {
-        return {success: false, error: 'Event handler not found: ' + componentName + '.' + eventName};
-      }
-      break;
-
-    case 'def':
-    case 'def-return':
-      if (tokens.length < 2) {
-        return {success: false, error: 'def requires a name'};
-      }
-      var name = tokens[1].replace(/[()]/g, '');
-      if (name.startsWith('g$')) {
-        var varName = name.substring(2);
-        for (var i = 0; i < topBlocks.length; i++) {
-          var block = topBlocks[i];
-          if (block.type === 'global_declaration'
-              && block.getFieldValue('NAME') === varName) {
-            blockToDelete = block;
-            break;
-          }
-        }
-        if (!blockToDelete) {
-          return {success: false, error: 'Global variable not found: ' + varName};
-        }
-      } else if (name.startsWith('p$')) {
-        var procName = name.substring(2);
-        for (var i = 0; i < topBlocks.length; i++) {
-          var block = topBlocks[i];
-          if ((block.type === 'procedures_defnoreturn' || block.type === 'procedures_defreturn')
-              && block.getFieldValue('NAME') === procName) {
-            blockToDelete = block;
-            break;
-          }
-        }
-        if (!blockToDelete) {
-          return {success: false, error: 'Procedure not found: ' + procName};
-        }
-      } else {
-        return {success: false, error: 'Unknown def target: ' + name};
-      }
-      break;
-
-    case 'define-generic-event':
-      if (tokens.length < 3) {
-        return {success: false, error: 'define-generic-event requires type and event name'};
-      }
-      var typeName = tokens[1];
-      var eventName = tokens[2];
-      for (var i = 0; i < topBlocks.length; i++) {
-        var block = topBlocks[i];
-        if (block.type === 'component_event' && block.isGeneric
-            && block.typeName === typeName && block.eventName === eventName) {
-          blockToDelete = block;
-          break;
-        }
-      }
-      if (!blockToDelete) {
-        return {success: false, error: 'Generic event handler not found: ' + typeName + '.' + eventName};
-      }
-      break;
-
-    default:
-      return {success: false, error: 'Unknown block type: ' + formType};
+  var blockToDelete = AI.YailToBlocks.findBlockByIdentifier_(
+      workspace, identifier);
+  if (!blockToDelete) {
+    return {success: false, error: 'Block not found: ' + identifier};
   }
 
   // Save position so the replacement block can be placed here (upsert).
@@ -591,8 +510,9 @@ AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
 };
 
 /**
- * Find an existing top-level block by its YAIL identifier string,
- * without disposing it.  Returns the block or null if not found.
+ * Find an existing enabled top-level block by its YAIL identifier string,
+ * without disposing it.  Disabled blocks are skipped — the LLM can see
+ * them in the YAIL context but cannot interact with them.
  *
  * @param {!Blockly.WorkspaceSvg} workspace
  * @param {string} identifier e.g. "define-event Button1 Click"
@@ -613,7 +533,8 @@ AI.YailToBlocks.findBlockByIdentifier_ = function(workspace, identifier) {
       var eventName = tokens[2];
       for (var i = 0; i < topBlocks.length; i++) {
         var block = topBlocks[i];
-        if (block.type === 'component_event' && block.instanceName === componentName
+        if (!block.disabled && block.type === 'component_event'
+            && block.instanceName === componentName
             && block.eventName === eventName) {
           return block;
         }
@@ -626,7 +547,7 @@ AI.YailToBlocks.findBlockByIdentifier_ = function(workspace, identifier) {
       var eventName = tokens[2];
       for (var i = 0; i < topBlocks.length; i++) {
         var block = topBlocks[i];
-        if (block.type === 'component_event' && block.isGeneric
+        if (!block.disabled && block.type === 'component_event' && block.isGeneric
             && block.typeName === typeName && block.eventName === eventName) {
           return block;
         }
@@ -641,7 +562,7 @@ AI.YailToBlocks.findBlockByIdentifier_ = function(workspace, identifier) {
         var varName = name.substring(2);
         for (var i = 0; i < topBlocks.length; i++) {
           var block = topBlocks[i];
-          if (block.type === 'global_declaration'
+          if (!block.disabled && block.type === 'global_declaration'
               && block.getFieldValue('NAME') === varName) {
             return block;
           }
@@ -650,8 +571,9 @@ AI.YailToBlocks.findBlockByIdentifier_ = function(workspace, identifier) {
         var procName = name.substring(2);
         for (var i = 0; i < topBlocks.length; i++) {
           var block = topBlocks[i];
-          if ((block.type === 'procedures_defnoreturn'
-               || block.type === 'procedures_defreturn')
+          if (!block.disabled
+              && (block.type === 'procedures_defnoreturn'
+                  || block.type === 'procedures_defreturn')
               && block.getFieldValue('NAME') === procName) {
             return block;
           }
@@ -675,7 +597,8 @@ AI.YailToBlocks.findProcBlock_ = function(workspace, procName) {
   var topBlocks = workspace.getTopBlocks(false);
   for (var i = 0; i < topBlocks.length; i++) {
     var block = topBlocks[i];
-    if ((block.type === 'procedures_defnoreturn' || block.type === 'procedures_defreturn')
+    if (!block.disabled
+        && (block.type === 'procedures_defnoreturn' || block.type === 'procedures_defreturn')
         && block.getFieldValue('NAME') === procName) {
       return block;
     }

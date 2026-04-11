@@ -270,27 +270,10 @@ AI.Blockly.ContextMenuItems.buildExplainPrompt = function(block) {
   if (block.isBadBlock()) {
     parts.push('This block has errors and cannot generate valid YAIL.');
   } else {
-    // Temporarily enable disabled blocks so YAIL generators produce output
-    var wasDisabled = !block.isEnabled();
-    if (wasDisabled) {
-      block.setEnabled(true);
+    if (block.disabled) {
       parts.push('This block is disabled.');
     }
-    var yail = null;
-    try {
-      if (isTopLevel) {
-        yail = AI.Yail.blockToCode1(block);
-      } else {
-        yail = AI.Yail.blockToCode(block);
-      }
-      if (yail instanceof Array) yail = yail[0];
-    } catch (e) {
-      // YAIL generation failed
-    } finally {
-      if (wasDisabled) {
-        block.setEnabled(false);
-      }
-    }
+    var yail = AI.Yail.blockToYailIgnoringDisabled(block, isTopLevel);
     if (yail) {
       parts.push('YAIL of the selected block:\n' + yail);
     } else {

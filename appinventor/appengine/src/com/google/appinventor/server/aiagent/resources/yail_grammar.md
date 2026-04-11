@@ -4,6 +4,26 @@ YAIL (Young Android Intermediate Language) is an S-expression-based language der
 Use the `write_block` tool to create or replace blocks, providing complete YAIL S-expressions.
 Use the `delete_block` tool to remove blocks, providing the YAIL head tokens as identifier.
 
+## Disabled Blocks
+
+Blocks that the user has manually disabled in the workspace appear in the YAIL context with a `;;; DISABLED` comment prefix:
+```scheme
+;;; DISABLED
+(define-event Button1 Click ()
+  (set-this-form)
+  (call-component-method 'Notifier1 'ShowAlert
+    (*list-for-runtime* "Hello!") '(text)))
+```
+Disabled blocks exist on the workspace but are excluded from code generation and do not run at runtime. When you see a `;;; DISABLED` block:
+- **Disabled blocks are read-only.** `write_block` and `delete_block` cannot target them — they only operate on enabled blocks.
+- **Do not try to recreate a disabled block.** If you use `write_block` with the same identity as a disabled block, it creates a second (enabled) copy alongside it rather than replacing it.
+- **Reference them in your responses** when relevant (e.g. "I see you have a disabled Click handler for Button1").
+- You cannot enable or disable blocks — only the user can do that via the block's right-click menu.
+
+## Duplicate Blocks
+
+If you see two enabled blocks with the same identity (e.g. two `(define-event Button1 Click ...)` without `;;; DISABLED`), the workspace is in a corrupted state. Be aware that `write_block` and `delete_block` only target **one copy at a time** — you may need to call `delete_block` twice to remove both. Mention the duplication to the user so they can clean it up.
+
 ## Error Recovery
 
 When you receive error feedback about failed `write_block` operations, follow these rules:
