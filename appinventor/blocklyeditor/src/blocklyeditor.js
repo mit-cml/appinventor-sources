@@ -266,42 +266,53 @@ AI.Blockly.ContextMenuItems.buildExplainPrompt = function(block) {
   // -- Build context hint --
   var parts = [];
 
-  // YAIL
-  var yail = null;
-  try {
-    if (isTopLevel) {
-      yail = AI.Yail.blockToCode1(block);
-    } else {
-      yail = AI.Yail.blockToCode(block);
-    }
-    if (yail instanceof Array) yail = yail[0];
-  } catch (e) {
-    // YAIL generation failed
-  }
-
+  // Block state
   if (block.isBadBlock()) {
     parts.push('This block has errors and cannot generate valid YAIL.');
-  } else if (yail) {
-    parts.push('YAIL of the selected block:\n' + yail);
   } else {
-    parts.push('YAIL generation failed for this block.');
-  }
-
-  // Block state
-  if (!block.isEnabled()) {
-    parts.push('This block is disabled.');
-  }
-
-  // Warnings
-  var warningIcon = block.getIcon(Blockly.icons.WarningIcon.TYPE);
-  if (warningIcon) {
-    var warningText = warningIcon.getText();
-    if (warningText) {
-      parts.push('Block warnings: ' + warningText);
+    // Temporarily enable disabled blocks so YAIL generators produce output
+    var wasDisabled = !block.isEnabled();
+    if (wasDisabled) {
+      block.setEnabled(true);
+      parts.push('This block is disabled.');
+    }
+    var yail = null;
+    try {
+      if (isTopLevel) {
+        yail = AI.Yail.blockToCode1(block);
+      } else {
+        yail = AI.Yail.blockToCode(block);
+      }
+      if (yail instanceof Array) yail = yail[0];
+    } catch (e) {
+      // YAIL generation failed
+    } finally {
+      if (wasDisabled) {
+        block.setEnabled(false);
+      }
+    }
+    if (yail) {
+      parts.push('YAIL of the selected block:\n' + yail);
+    } else {
+      parts.push('YAIL generation failed for this block.');
     }
   }
-  if (block.replError) {
-    parts.push('Runtime error: ' + block.replError);
+
+  // Warnings/errors on this block and all descendants
+  var blocksToCheck = block.getDescendants(false);
+  for (var i = 0; i < blocksToCheck.length; i++) {
+    var b = blocksToCheck[i];
+    var label = (b === block) ? 'This block' : b.type;
+    var warningIcon = b.getIcon(Blockly.icons.WarningIcon.TYPE);
+    if (warningIcon) {
+      var warningText = warningIcon.getText();
+      if (warningText) {
+        parts.push(label + ' has warnings: ' + warningText);
+      }
+    }
+    if (b.replError) {
+      parts.push(label + ' has a runtime error: ' + b.replError);
+    }
   }
 
   return {
