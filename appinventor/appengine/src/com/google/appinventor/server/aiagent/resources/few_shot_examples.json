@@ -57,7 +57,7 @@
   {
     "description": "Login screen -- Designer ops only (current view: Designer), blocks follow after toggle",
     "user": "Make a login screen with username, password, and a submit button that checks if the username is 'admin' and password is '1234'",
-    "assistant_text": "I'll build the login screen UI first with a centered layout, input fields, a submit button, and a notifier. Then I'll switch to the Blocks editor to add the credential-checking logic.",
+    "assistant_text": "I'll build the login screen UI first with the input fields, a submit button, and a notifier. Then I'll switch to the Blocks editor to add the credential-checking logic.",
     "tool_calls": [
       {
         "tool": "set_property",
@@ -68,16 +68,19 @@
         }
       },
       {
-        "tool": "add_component",
+        "tool": "set_property",
         "arguments": {
-          "component_type": "VerticalArrangement",
-          "name": "LoginLayout",
-          "properties": {
-            "AlignHorizontal": "3",
-            "AlignVertical": "2",
-            "Width": "-2",
-            "Height": "-2"
-          }
+          "component_name": "Screen1",
+          "property_name": "AlignHorizontal",
+          "value": "3"
+        }
+      },
+      {
+        "tool": "set_property",
+        "arguments": {
+          "component_name": "Screen1",
+          "property_name": "AlignVertical",
+          "value": "2"
         }
       },
       {
@@ -85,7 +88,6 @@
         "arguments": {
           "component_type": "Label",
           "name": "TitleLabel",
-          "parent": "LoginLayout",
           "properties": {
             "Text": "Welcome",
             "FontSize": "28",
@@ -100,7 +102,6 @@
         "arguments": {
           "component_type": "TextBox",
           "name": "UsernameBox",
-          "parent": "LoginLayout",
           "properties": {
             "Hint": "Enter username",
             "Width": "-2"
@@ -112,7 +113,6 @@
         "arguments": {
           "component_type": "PasswordTextBox",
           "name": "PasswordBox",
-          "parent": "LoginLayout",
           "properties": {
             "Hint": "Enter password",
             "Width": "-2"
@@ -124,7 +124,6 @@
         "arguments": {
           "component_type": "Button",
           "name": "LoginButton",
-          "parent": "LoginLayout",
           "properties": {
             "Text": "Submit",
             "Width": "-2",

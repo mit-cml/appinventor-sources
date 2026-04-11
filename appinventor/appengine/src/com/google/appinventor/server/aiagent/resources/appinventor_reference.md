@@ -163,6 +163,15 @@ exists; you do not add it via `add_component`. Use `set_property` on the
 screen instance (e.g., `Screen1`) to change screen properties, or
 `set_project_property` for project-level settings.
 
+**The screen is already a vertical layout container.** It supports
+`AlignHorizontal`, `AlignVertical`, `Scrollable`, and other layout properties
+directly. **Do not** wrap components in a `VerticalArrangement` just to have
+a single root — place components directly on the screen and set layout
+properties on the screen itself. Only add a layout arrangement when you need
+a **nested** layout that differs from the screen (e.g., a horizontal row of
+buttons, a scrollable section inside a non-scrollable screen, or a group with
+its own alignment distinct from the rest of the screen).
+
 ### Screen Properties (set via `set_property`)
 These are block-accessible properties on the screen component:
 
