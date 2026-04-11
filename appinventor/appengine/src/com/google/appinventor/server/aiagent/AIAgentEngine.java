@@ -786,6 +786,11 @@ public class AIAgentEngine {
     if (!isEditingMode || !isNarrationOnly) {
       return;
     }
+    // In planning mode, text-only responses are expected — the LLM may
+    // ask clarifying questions before proposing a plan.  Don't nudge.
+    if (enforcementContext == EnforcementContext.PLANNING) {
+      return;
+    }
 
     AIDebug.log(LOG, "Narration detected in " + mode
         + " mode — retrying with tool-use nudge");
