@@ -2745,10 +2745,20 @@ AI.YailToBlocks.convertStaticField_ = function(workspace, node) {
   var className = els[1].name || String(els[1].value);
   var enumName = els[2].value || els[2].name || String(els[2].value);
 
-  // Try to find the OptionList key from the component database
+  // YAIL uses the full Java class name (e.g. "com.google.appinventor.components.common.ScreenOrientation")
+  // but option lists are keyed by their short name (e.g. "ScreenOrientation").
+  // Resolve the class name to the actual option list key.
+  var componentDb = workspace.getComponentDatabase();
+  var optionListKey = componentDb
+      ? componentDb.getOptionListKeyByClassName(className)
+      : null;
+  if (!optionListKey) {
+    return AI.YailToBlocks.makeTextBlock_(workspace, enumName);
+  }
+
   var block = workspace.newBlock('helpers_dropdown');
   var mutation = document.createElement('mutation');
-  mutation.setAttribute('key', className);
+  mutation.setAttribute('key', optionListKey);
   block.domToMutation(mutation);
   block.initSvg();
 

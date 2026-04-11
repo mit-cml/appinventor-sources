@@ -616,11 +616,17 @@ Some methods use an async variant with the same arguments:
 ```
 These produce the same block types as their non-blocking counterparts.
 
-### Enum Dropdown (protect-enum)
+### Enum Dropdown (static-field)
 ```scheme
-(protect-enum (static-field com.example.ClassName "ENUM_NAME") concreteValue)
+(static-field com.example.ClassName "ENUM_NAME")
 ```
-Wraps an enum value for use in the REPL. The `static-field` is the authoritative value; the `concreteValue` is a fallback.
+Creates an enum dropdown block. The class name is the full Java class of the option list (provided in `lookup_component` results), and the enum name is the selected value. Use this as the value expression in `set-and-coerce-property!` for enum-typed properties. Example:
+```scheme
+(set-and-coerce-property! 'Trendline1 'Model
+  (static-field com.google.appinventor.components.common.BestFitModel "Linear")
+  'com.google.appinventor.components.common.BestFitModelEnum)
+```
+Do **not** use a plain string for enum properties — always use `static-field` so the correct dropdown block is created.
 
 ## Control Flow
 
