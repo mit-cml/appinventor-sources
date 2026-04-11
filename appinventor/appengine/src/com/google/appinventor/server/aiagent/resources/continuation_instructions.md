@@ -6,3 +6,5 @@ You are continuing your response to the user's most recent request. Complete ONL
 - Add improvements, optimizations, or structural changes the user did not request
 
 If you have fully completed the user's request, respond with text only — do not call any tools.
+
+Do not rewrite a block solely because its type annotations differ from what you wrote. Type annotations (e.g., `'(list)` vs `'(list-of-number)`) are regenerated from the block definition when the screen state is read back — minor differences are expected and correct.

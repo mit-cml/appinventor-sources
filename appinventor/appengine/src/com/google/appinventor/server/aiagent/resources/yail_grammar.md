@@ -308,6 +308,8 @@ Most operations use this form:
 ```
 The type annotations describe the expected types of each argument. The description string is a human-readable label (e.g., `"select list item"`, `"+"`).
 
+> **Important — type annotations are canonical.** When blocks are read back from the workspace, type annotations are regenerated from the block definition, not preserved from your input. For example, writing `'(list)` for `maxl` will appear as `'(list-of-number)` in the screen state. This is correct — do **not** treat it as an error or attempt to "fix" it. Always use the type annotations specified in the tables below; they match what the workspace will produce.
+
 #### Math Primitives
 | Primitive | Description | Arity |
 |-----------|-------------|-------|
