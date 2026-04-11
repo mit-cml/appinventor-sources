@@ -24,6 +24,7 @@ public final class AIEditorState {
   private AIEditorState() {}
 
   private static boolean planExecuteMode = false;
+  private static boolean planApproved = false;
 
   public static boolean isPlanExecuteMode() {
     return planExecuteMode;
@@ -31,6 +32,19 @@ public final class AIEditorState {
 
   public static void setPlanExecuteMode(boolean enabled) {
     planExecuteMode = enabled;
+  }
+
+  /**
+   * Returns true if a plan has been approved in the current conversation.
+   * Used to determine the EXECUTION enforcement context for the plan
+   * execution itself and any follow-up messages.
+   */
+  public static boolean isPlanApproved() {
+    return planApproved;
+  }
+
+  public static void setPlanApproved(boolean approved) {
+    planApproved = approved;
   }
 
   public static DesignProject getCurrentProject() {

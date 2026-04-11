@@ -264,6 +264,12 @@ public class AIContextBuilder {
       tools.add(toolFromDefs(defs, AIToolNames.SET_PROJECT_PROPERTY));
     }
 
+    // In EXECUTION phase, also expose propose_plan so the parent agent can
+    // choose between direct edits and proposing a new plan for complex work.
+    if (context == EnforcementContext.EXECUTION) {
+      tools.add(toolFromDefs(defs, AIToolNames.PROPOSE_PLAN));
+    }
+
     return tools;
   }
 

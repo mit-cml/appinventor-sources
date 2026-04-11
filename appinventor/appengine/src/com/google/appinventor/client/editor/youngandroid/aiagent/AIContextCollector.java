@@ -53,6 +53,8 @@ public class AIContextCollector {
         blocksYail, currentView, screenComponentsJson, projectSnapshot);
     request.setBlockWarnings(getCurrentBlocksWarningsAndErrors());
     request.setPlanExecuteMode(AIEditorState.isPlanExecuteMode());
+    request.setExecutionPhase(AIEditorState.isPlanExecuteMode()
+        && AIEditorState.isPlanApproved());
 
     // Set user's interface language for locale-aware AI responses
     String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
@@ -422,6 +424,7 @@ public class AIContextCollector {
     request.setOrchestrationMode(true);
     request.setTargetScreen(screenName);
     request.setPlanExecuteMode(false);
+    request.setExecutionPhase(false);
 
     // Set user's interface language for locale-aware AI responses
     String localeName = LocaleInfo.getCurrentLocale().getLocaleName();

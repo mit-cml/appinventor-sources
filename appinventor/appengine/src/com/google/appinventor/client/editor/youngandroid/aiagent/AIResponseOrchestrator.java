@@ -397,6 +397,7 @@ public class AIResponseOrchestrator {
       return;
     }
 
+    AIEditorState.setPlanApproved(false);
     aiAgentService.clearConversation(projectId, new OdeAsyncCallback<Void>(
         MESSAGES.aiChatClearError()) {
       @Override
@@ -574,6 +575,7 @@ public class AIResponseOrchestrator {
     requestInFlight = true;
     callback.setRequestInFlight(true);
 
+    AIEditorState.setPlanApproved(true);
     int screenStepCount = countScreenSteps(planJson);
 
     if (screenStepCount <= 1) {

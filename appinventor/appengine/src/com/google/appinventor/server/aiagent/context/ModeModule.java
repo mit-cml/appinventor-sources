@@ -17,6 +17,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_
  * <p>Prompt text is loaded from resource files in {@code resources/}:
  * <ul>
  *   <li>{@code mode_planning.md} — planning mode instructions
+ *   <li>{@code mode_execution.md} — post-plan execution instructions (parent agent)
  *   <li>{@code mode_child_execution.md} — child agent execution instructions
  *   <li>{@code mode_advisor.md} — advisor mode instructions
  *   <li>{@code mode_screen_editor.md} — screen editor mode instructions
@@ -29,6 +30,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_
 public class ModeModule extends ContextModule {
 
   private static volatile String cachedPlanning;
+  private static volatile String cachedExecution;
   private static volatile String cachedChildExecution;
   private static volatile String cachedAdvisor;
   private static volatile String cachedScreenEditor;
@@ -40,11 +42,21 @@ public class ModeModule extends ContextModule {
     if (params.getEnforcementContext() == EnforcementContext.PLANNING) {
       return buildPlanningInstructions();
     }
+    if (params.getEnforcementContext() == EnforcementContext.EXECUTION) {
+      return buildExecutionInstructions(params.getCurrentView());
+    }
     if (params.getEnforcementContext() == EnforcementContext.CHILD_EXECUTION) {
       return buildChildExecutionInstructions(params.getCurrentView());
     }
     return buildModeInstructions(params.getMode(), params.getCurrentView(),
         params.getLocale(), params.getLanguageDisplayName());
+  }
+
+  private String buildExecutionInstructions(String currentView) {
+    if (cachedExecution == null) {
+      cachedExecution = ContextUtils.loadResource("mode_execution.md");
+    }
+    return cachedExecution.replace("{{view}}", currentView);
   }
 
   private String buildChildExecutionInstructions(String currentView) {

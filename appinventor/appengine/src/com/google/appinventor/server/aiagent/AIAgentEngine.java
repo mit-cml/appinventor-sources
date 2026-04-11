@@ -151,7 +151,8 @@ public class AIAgentEngine {
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName, boolean isPlatformMessage,
-      boolean planExecuteMode, boolean orchestrationMode, String targetScreen) {
+      boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
+      boolean executionPhase) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
@@ -169,7 +170,9 @@ public class AIAgentEngine {
           + ", msgLen=" + userMessage.length());
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
-      if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
       } else if (orchestrationMode) {
         enforcementContext = EnforcementContext.CHILD_EXECUTION;
@@ -312,7 +315,7 @@ public class AIAgentEngine {
       String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName, boolean planExecuteMode,
-      boolean orchestrationMode, String targetScreen) {
+      boolean orchestrationMode, String targetScreen, boolean executionPhase) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
@@ -333,7 +336,9 @@ public class AIAgentEngine {
           + ", screen=" + screenName + ", mode=" + mode);
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
-      if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
       } else if (orchestrationMode) {
         enforcementContext = EnforcementContext.CHILD_EXECUTION;
@@ -459,7 +464,8 @@ public class AIAgentEngine {
       List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
       String blockWarnings, String locale, String languageDisplayName,
-      boolean planExecuteMode, boolean orchestrationMode, String targetScreen) {
+      boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
+      boolean executionPhase) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
@@ -518,15 +524,22 @@ public class AIAgentEngine {
       String systemPrompt = contextBuilder.build();
       patchedRef = patchSystemPrompt(patchedRef, systemPrompt);
 
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
+      }
+
       // Build fresh context messages with current blocks state
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName, EnforcementContext.STANDARD);
+          locale, languageDisplayName, enforcementContext);
 
       // Get provider, tools, and resolver
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, EnforcementContext.STANDARD);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       if (AIDebug.enabled()) {
@@ -543,7 +556,7 @@ public class AIAgentEngine {
 
       // Parse, enforce, save, and build response
       ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
-          EnforcementContext.STANDARD);
+          enforcementContext);
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
 
       AIDebug.log(LOG, "Error retry response: operations=" + parsed.operations.size()

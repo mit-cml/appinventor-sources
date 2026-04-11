@@ -14,6 +14,12 @@ public enum EnforcementContext {
   STANDARD,
   /** Planning phase - only PROPOSE_PLAN and read-only tools allowed. */
   PLANNING,
+  /**
+   * Post-plan execution phase for the parent agent. Combines STANDARD
+   * write tools with PROPOSE_PLAN so the parent can handle small follow-up
+   * changes directly or propose a new plan for complex requests.
+   */
+  EXECUTION,
   /** Child agent execution - screen-level ops only, no project-level or PROPOSE_PLAN. */
   CHILD_EXECUTION
 }
