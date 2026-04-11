@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.editor.youngandroid.aiagent.executor;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
 import com.google.appinventor.client.editor.youngandroid.aiagent.validator.AIOperationValidator;
@@ -317,18 +318,27 @@ public class AIOperationExecutor {
       runSyncList(state, phase5, Collections.<List<AIOperation>>emptyList());
       state.finish();
     } finally {
-      // Force a Companion YAIL update after all sync phases complete (or halt).
-      // rename() and WRITE_BLOCK suppress normal update triggers, so an
-      // explicit sendComponentData ensures the Companion receives the latest
-      // component definitions and block code.
-      // Only send for the current screen — background screens have no live
-      // Companion connection.
+      // AI.YailToBlocks.convert() disables Blockly events during block
+      // creation (for performance and to avoid mid-mutation crashes), so
+      // workspace change listeners never fire and the editor is never
+      // marked dirty.  We must explicitly schedule a save for any editor
+      // that was modified.
+      //
+      // For the current screen we also force a Companion YAIL update via
+      // sendComponentData — rename() and WRITE_BLOCK suppress normal
+      // update triggers, so an explicit push ensures the Companion
+      // receives the latest component definitions and block code.
+      // Background screens have no live Companion connection.
       if (context.isCurrentScreen()) {
         YaBlocksEditor blocksEditor = context.getBlocksEditor();
         if (blocksEditor != null) {
           blocksEditor.sendComponentData(true);
         }
       }
+      // Mark both editors dirty so auto-save persists the changes —
+      // critical for background editors where no Blockly events fired.
+      Ode.getInstance().getEditorManager().scheduleAutoSave(context.getBlocksEditor());
+      Ode.getInstance().getEditorManager().scheduleAutoSave(context.getFormEditor());
     }
   }
 
