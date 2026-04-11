@@ -918,9 +918,14 @@ public class AIResponseOrchestrator {
         response.setAiMessage(null);
       }
       streamingActive = false;
-    } else if (aiMessage != null && !aiMessage.isEmpty() && !hasOps) {
-      // No streaming — show message only when there are no pending operations.
+    } else if (aiMessage != null && !aiMessage.isEmpty()) {
+      // No streaming — show the AI message as a chat bubble.
       callback.addAiMessage(aiMessage);
+      if (hasOps) {
+        // Clear so applyOperations() doesn't add it again as a deferred
+        // message and showPreview() doesn't render it in the preview panel.
+        response.setAiMessage(null);
+      }
     }
 
     // Display any errors

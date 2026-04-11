@@ -139,6 +139,9 @@ public class OperationPreviewPanel {
   public void showPreview(AIAgentResponse response) {
     previewPanel.clear();
 
+    // Show context label when set (e.g. "[ScreenName]" during orchestration).
+    // The orchestrator clears aiMessage for normal single-agent responses so
+    // this only renders for orchestration batches tagged by ChildBatchQueue.
     String aiMessage = response.getAiMessage();
     if (aiMessage != null && !aiMessage.isEmpty()) {
       Label aiLabel = new Label(aiMessage);
