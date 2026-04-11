@@ -14,7 +14,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Button",
-          "name": "Button1",
+          "name": "HelloButton",
           "properties": {
             "Text": "Hello",
             "BackgroundColor": "&HFFFF0000"

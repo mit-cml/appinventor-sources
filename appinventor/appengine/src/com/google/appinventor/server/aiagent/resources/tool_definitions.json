@@ -36,7 +36,7 @@
         },
         "name": {
           "type": "string",
-          "description": "Instance name, e.g. Button1"
+          "description": "Instance name — use a descriptive PascalCase name reflecting the component's purpose (e.g. SubmitButton, ScoreLabel, PlayerCanvas), not incremental names like Button1 or Label2"
         },
         "parent": {
           "type": "string",

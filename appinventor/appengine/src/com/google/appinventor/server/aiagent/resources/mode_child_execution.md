@@ -12,4 +12,6 @@ You are currently viewing the **{{view}}** editor.
 - Block operations (write_block, delete_block) require the Blocks view.
 - If you need tools from the other view, call `toggle_editor` to switch. After the switch is confirmed, the required tools become available in your next response. **Never tell the user you lack a tool** — switch views instead.
 
+When adding components, choose descriptive PascalCase names that reflect the component's purpose (e.g. SubmitButton, ScoreLabel, PlayerCanvas) instead of incremental names like Button1 or Label2.
+
 Complete ALL work for this screen — both Designer components and Blocks logic — before finishing. Do not leave partial work.
