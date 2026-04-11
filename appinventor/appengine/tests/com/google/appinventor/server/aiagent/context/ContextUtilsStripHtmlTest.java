@@ -84,4 +84,110 @@ public class ContextUtilsStripHtmlTest extends TestCase {
     assertEquals("", ContextUtils.stripHtmlForTutorial(null));
     assertEquals("", ContextUtils.stripHtmlForTutorial(""));
   }
+
+  public void testNumbersTutorialContentPages() {
+    String html = "<div class=\"tutorialContainer\">"
+        + "<div class=\"tutorialContentPage\"><h3>Intro</h3><p>First page</p></div>"
+        + "<div class=\"tutorialContentPage\"><h3>Setup</h3><p>Second page</p></div>"
+        + "</div>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("--- Step 1 ---"));
+    assertTrue(result.contains("--- Step 2 ---"));
+    assertTrue(result.indexOf("Step 1") < result.indexOf("Step 2"));
+  }
+
+  public void testMarksHintButtons() {
+    String html = "<div class=\"hintContainer\">"
+        + "<button>Give me a hint</button>"
+        + "<div class=\"hint hideHint\"><p>Try using a loop</p></div>"
+        + "</div>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("[Hint]"));
+    assertTrue(result.contains("Try using a loop"));
+  }
+
+  public void testMarksSolutionButtons() {
+    String html = "<div class=\"hintContainer\">"
+        + "<button>Check your solution</button>"
+        + "<div class=\"hint hideHint\"><p>answer here</p></div>"
+        + "</div>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("[Solution]"));
+    assertTrue(result.contains("answer here"));
+  }
+
+  public void testPreservesImageAltText() {
+    String html = "<p>See the diagram:</p>"
+        + "<img class=\"enlargeImage\" src=\"img/diagram.png\" alt=\"Markov matrix diagram\" />"
+        + "<p>Next step</p>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("[Image: Markov matrix diagram]"));
+    assertFalse(result.contains("src="));
+  }
+
+  public void testRemovesImagesWithoutAlt() {
+    String html = "<p>Before</p><img src=\"spacer.gif\" /><p>After</p>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("Before"));
+    assertTrue(result.contains("After"));
+    assertFalse(result.contains("[Image"));
+    assertFalse(result.contains("spacer"));
+  }
+
+  public void testConvertsHeadingsToMarkdownStyle() {
+    String html = "<h3>Machine Learning</h3><p>content</p>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("### Machine Learning"));
+  }
+
+  public void testConvertsListItemsToBulletPoints() {
+    String html = "<ul><li>First item</li><li>Second item</li></ul>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("- First item"));
+    assertTrue(result.contains("- Second item"));
+  }
+
+  public void testNestedHintContainers() {
+    String html = "<div class=\"hintContainer\">"
+        + "<button>Give me a hint</button>"
+        + "<div class=\"hint hideHint\">"
+        + "<p>Think about lists</p>"
+        + "<div class=\"hintContainer\">"
+        + "<button>Check your solution</button>"
+        + "<div class=\"hint hideHint\">"
+        + "<img alt=\"solution screenshot\" src=\"sol.png\" />"
+        + "</div></div></div></div>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("[Hint]"));
+    assertTrue(result.contains("Think about lists"));
+    assertTrue(result.contains("[Solution]"));
+    assertTrue(result.contains("[Image: solution screenshot]"));
+  }
+
+  public void testFullTutorialPageStructure() {
+    String html = "<html><head><title>Tutorial</title></head><body>"
+        + "<div id=\"youthRadioAccordion\">"
+        + "<h3>The Challenge</h3><div><p>Introduction text</p></div>"
+        + "<h3>Main Tutorial</h3><div>"
+        + "<div class=\"tutorialContainer\">"
+        + "<div class=\"tutorialContentPage\"><h3>Intro</h3>"
+        + "<p>Welcome to the tutorial</p></div>"
+        + "<div class=\"tutorialContentPage\"><h3>UI Setup</h3>"
+        + "<p>Add a button</p>"
+        + "<div class=\"hintContainer\"><button>Give me a hint</button>"
+        + "<div class=\"hint hideHint\"><p>Use the palette</p></div></div>"
+        + "</div></div></div></div>"
+        + "<script>$(document).ready()</script>"
+        + "</body></html>";
+    String result = ContextUtils.stripHtmlForTutorial(html);
+    assertTrue(result.contains("--- Step 1 ---"));
+    assertTrue(result.contains("--- Step 2 ---"));
+    assertTrue(result.contains("### Intro"));
+    assertTrue(result.contains("Welcome to the tutorial"));
+    assertTrue(result.contains("### UI Setup"));
+    assertTrue(result.contains("[Hint]"));
+    assertTrue(result.contains("Use the palette"));
+    assertFalse(result.contains("$(document)"));
+    assertFalse(result.contains("<title>"));
+  }
 }
