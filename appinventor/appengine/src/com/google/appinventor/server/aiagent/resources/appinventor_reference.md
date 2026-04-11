@@ -73,6 +73,13 @@ results indicate failure (starting with "FAILED:") or that were skipped
 - Before modifying a different screen, emit a `switch_screen` operation.
 - The default screen is `Screen1`. It always exists and cannot be deleted.
 
+### Naming Rules
+- All names (components, screens) must start with a letter and contain only
+  letters, digits, and underscores — no spaces, hyphens, or special characters.
+  Java and YAIL reserved words (`class`, `new`, `int`, `String`, `Float`,
+  `Double`, `Long`, `Short`, `Pattern`, `break`, `return`, `for`, `while`,
+  `def`, `begin`, etc.) are not allowed.
+
 ### Component Rules
 - Every component has a **unique name** within its screen. Names are
   PascalCase identifiers (e.g., `SubmitButton`, `ScoreLabel`).

@@ -36,7 +36,7 @@
         },
         "name": {
           "type": "string",
-          "description": "Instance name — use a descriptive PascalCase name reflecting the component's purpose (e.g. SubmitButton, ScoreLabel, PlayerCanvas), not incremental names like Button1 or Label2"
+          "description": "Instance name — must start with a letter and contain only letters, digits, and underscores (no spaces, hyphens, or special characters). Must not be a Java/YAIL reserved word. Use descriptive PascalCase (e.g. SubmitButton, ScoreLabel), not incremental names like Button1"
         },
         "parent": {
           "type": "string",
@@ -94,7 +94,7 @@
         },
         "new_name": {
           "type": "string",
-          "description": "New component name"
+          "description": "New component name — must start with a letter and contain only letters, digits, and underscores. Must not be a Java/YAIL reserved word"
         }
       },
       "required": ["old_name", "new_name"]
@@ -154,7 +154,7 @@
     }
   },
   "create_screen": {
-    "description": "Create a new screen in the project.",
+    "description": "Create a new screen in the project. The screen name must start with a letter and contain only letters, digits, and underscores (no spaces, hyphens, or special characters). Must not be a Java/YAIL reserved word. Use descriptive PascalCase (e.g. LoginScreen, Settings), not incremental names like Screen2.",
     "parameters": {
       "type": "object",
       "properties": {
