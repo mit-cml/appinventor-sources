@@ -105,34 +105,59 @@ public class TutorialContentCache {
     return false;
   }
 
+  static final int MAX_REDIRECTS = 5;
+
   /**
-   * Fetches the URL content as a string. Follows redirects. Returns
-   * {@code null} on any failure.
+   * Fetches the URL content as a string. Follows redirects manually to
+   * handle cross-protocol (HTTP &rarr; HTTPS) and cross-host redirects
+   * that {@link HttpURLConnection#setInstanceFollowRedirects} does not
+   * follow. Returns {@code null} on any failure.
    */
   String fetchUrl(String url) {
+    String currentUrl = url;
     try {
-      HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-      conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
-      conn.setReadTimeout(READ_TIMEOUT_MS);
-      conn.setInstanceFollowRedirects(true);
-      conn.setRequestProperty("User-Agent", "AppInventor-AIAgent/1.0");
+      for (int i = 0; i < MAX_REDIRECTS; i++) {
+        HttpURLConnection conn = (HttpURLConnection) new URL(currentUrl).openConnection();
+        conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        conn.setReadTimeout(READ_TIMEOUT_MS);
+        conn.setInstanceFollowRedirects(false);
+        conn.setRequestProperty("User-Agent", "AppInventor-AIAgent/1.0");
 
-      int status = conn.getResponseCode();
-      if (status != HttpURLConnection.HTTP_OK) {
-        LOG.warning("Tutorial fetch failed: HTTP " + status + " for " + url);
+        int status = conn.getResponseCode();
+        if (status == HttpURLConnection.HTTP_OK) {
+          try (BufferedReader reader = new BufferedReader(
+              new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            char[] buf = new char[4096];
+            int read;
+            while ((read = reader.read(buf)) != -1) {
+              sb.append(buf, 0, read);
+            }
+            return sb.toString();
+          }
+        }
+
+        if (status == HttpURLConnection.HTTP_MOVED_PERM
+            || status == HttpURLConnection.HTTP_MOVED_TEMP
+            || status == HttpURLConnection.HTTP_SEE_OTHER
+            || status == 307 || status == 308) {
+          String location = conn.getHeaderField("Location");
+          if (location == null || location.isEmpty()) {
+            LOG.warning("Tutorial redirect missing Location header: HTTP "
+                + status + " for " + currentUrl);
+            return null;
+          }
+          AIDebug.log(LOG, "Tutorial redirect: HTTP " + status + " from "
+              + currentUrl + " to " + location);
+          currentUrl = location;
+          continue;
+        }
+
+        LOG.warning("Tutorial fetch failed: HTTP " + status + " for " + currentUrl);
         return null;
       }
-
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-        StringBuilder sb = new StringBuilder();
-        char[] buf = new char[4096];
-        int read;
-        while ((read = reader.read(buf)) != -1) {
-          sb.append(buf, 0, read);
-        }
-        return sb.toString();
-      }
+      LOG.warning("Tutorial fetch failed: too many redirects for " + url);
+      return null;
     } catch (IOException e) {
       LOG.warning("Tutorial fetch error for " + url + ": " + e.getMessage());
       return null;
