@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Static utility methods shared across context modules.
@@ -140,36 +142,68 @@ public final class ContextUtils {
     return text;
   }
 
+  private static final Pattern TUTORIAL_PAGE_PATTERN = Pattern.compile(
+      "(?i)<div\\s[^>]*class=\"[^\"]*tutorialContentPage[^\"]*\"[^>]*>");
+
   /**
    * Strip HTML for tutorial content extraction. Unlike {@link #stripHtml},
-   * this method removes {@code <head>}, {@code <script>}, {@code <style>},
-   * {@code <nav>}, {@code <footer>}, and {@code <header>} elements with
-   * their contents, then strips remaining tags while preserving paragraph
-   * structure.
+   * this method:
+   * <ul>
+   *   <li>Removes site chrome ({@code <head>}, {@code <script>}, etc.)
+   *   <li>Numbers {@code <div class="tutorialContentPage">} sections as steps
+   *   <li>Marks hint/solution buttons with {@code [Hint]} and {@code [Solution]}
+   *   <li>Preserves image alt text as {@code [Image: alt]}
+   *   <li>Converts headings to markdown-style {@code ### heading}
+   *   <li>Converts list items to bullet points
+   * </ul>
    */
   public static String stripHtmlForTutorial(String html) {
     if (html == null || html.isEmpty()) {
       return "";
     }
     // 1. Remove elements that carry site chrome or non-content data.
-    //    Pattern.DOTALL so . matches newlines within elements.
     String text = html;
     for (String tag : new String[]{"head", "script", "style", "nav", "footer", "header"}) {
       text = text.replaceAll("(?is)<" + tag + "[^>]*>.*?</" + tag + ">", "\n");
     }
-    // 2. Replace block-level closing tags with newlines to preserve structure.
-    text = text.replaceAll("(?i)</(p|div|li|tr|h[1-6]|blockquote|section|article|main)>", "\n");
+    // 2. Number tutorial content pages as steps.
+    Matcher pageMatcher = TUTORIAL_PAGE_PATTERN.matcher(text);
+    StringBuilder sb = new StringBuilder();
+    int stepNum = 0;
+    int lastEnd = 0;
+    while (pageMatcher.find()) {
+      stepNum++;
+      sb.append(text, lastEnd, pageMatcher.start());
+      sb.append("\n--- Step ").append(stepNum).append(" ---\n");
+      lastEnd = pageMatcher.end();
+    }
+    sb.append(text, lastEnd, text.length());
+    text = sb.toString();
+    // 3. Mark hint/solution buttons.
+    text = text.replaceAll("(?is)<button[^>]*>\\s*Give me a hint\\s*</button>", "\n[Hint]\n");
+    text = text.replaceAll(
+        "(?is)<button[^>]*>\\s*Check your solution\\s*</button>", "\n[Solution]\n");
+    // 4. Preserve image alt text.
+    text = text.replaceAll("(?i)<img\\s[^>]*alt=\"([^\"]*)\"[^>]*/?>", " [Image: $1] ");
+    text = text.replaceAll("(?i)<img[^>]*/?>", "");
+    // 5. Convert headings to markdown-style markers.
+    text = text.replaceAll("(?i)<h([1-6])[^>]*>(.*?)</h\\1>", "\n### $2\n");
+    // 6. Convert list items to bullet points.
+    text = text.replaceAll("(?i)<li[^>]*>", "\n- ");
+    // 7. Replace block-level closing tags with newlines.
+    text = text.replaceAll(
+        "(?i)</(p|div|li|tr|blockquote|section|article|main)>", "\n");
     text = text.replaceAll("(?i)<br\\s*/?>", "\n");
-    // 3. Remove all remaining HTML tags.
+    // 8. Remove all remaining HTML tags.
     text = text.replaceAll("<[^>]+>", " ");
-    // 4. Decode common HTML entities.
+    // 9. Decode common HTML entities.
     text = text.replace("&amp;", "&")
                .replace("&lt;", "<")
                .replace("&gt;", ">")
                .replace("&quot;", "\"")
                .replace("&#39;", "'")
                .replace("&nbsp;", " ");
-    // 5. Collapse runs of whitespace within lines, then collapse 3+ newlines to 2.
+    // 10. Collapse whitespace.
     text = text.replaceAll("[ \\t]+", " ");
     text = text.replaceAll(" *\\n *", "\n");
     text = text.replaceAll("\\n{3,}", "\n\n");
