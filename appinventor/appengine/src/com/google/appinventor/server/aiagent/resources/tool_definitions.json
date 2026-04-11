@@ -26,7 +26,7 @@
     }
   },
   "add_component": {
-    "description": "Add a new component to the current screen.",
+    "description": "Add a new component to the current screen. Some components MUST be nested inside a specific parent: Ball/ImageSprite require a Canvas, ChartData2D/Trendline require a Chart, and Marker/LineString/Polygon/Rectangle/Circle/FeatureCollection require a Map. For these, you MUST set the parent parameter to the parent component's instance name.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -40,7 +40,7 @@
         },
         "parent": {
           "type": "string",
-          "description": "Parent container name (default: screen root)"
+          "description": "Parent container instance name. Required for components with mandatory nesting (e.g. ChartData2D must specify its Chart parent). Defaults to screen root if omitted."
         },
         "properties": {
           "type": "object",

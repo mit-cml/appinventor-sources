@@ -289,7 +289,22 @@ These components can contain child components:
 - `TableArrangement`
 - `HorizontalScrollArrangement`
 - `VerticalScrollArrangement`
-- `Canvas`
+
+### Specialized Containers (Mandatory Nesting)
+Some components MUST be placed inside a specific parent container — they
+**cannot** be added to the screen root or to general layout containers.
+Always set the `parent` parameter in `add_component` to the parent instance name.
+
+| Child Component | Required Parent |
+|---|---|
+| `Ball`, `ImageSprite` | `Canvas` |
+| `ChartData2D`, `Trendline` | `Chart` |
+| `Marker`, `LineString`, `Polygon`, `Rectangle`, `Circle`, `FeatureCollection` | `Map` |
+
+**You must add the parent container first**, then add the child with
+`"parent": "<ParentInstanceName>"`. For example, to add chart data:
+1. `add_component` with `component_type: "Chart"`, `name: "Chart1"`
+2. `add_component` with `component_type: "ChartData2D"`, `name: "ChartData2D1"`, `parent: "Chart1"`
 
 ### Asset References
 When a property references a media file (e.g., an image), use the filename

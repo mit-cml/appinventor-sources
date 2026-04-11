@@ -6,8 +6,12 @@
 package com.google.appinventor.client.editor.youngandroid.aiagent.validator;
 
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+import com.google.appinventor.client.editor.simple.components.MockCanvas;
+import com.google.appinventor.client.editor.simple.components.MockChart;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
+import com.google.appinventor.client.editor.simple.components.MockMap;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
@@ -63,6 +67,50 @@ final class DesignerOperationValidator {
     Map<String, MockComponent> components = formEditor.getComponents();
     if (components.containsKey(name)) {
       return "ADD_COMPONENT: component '" + name + "' already exists";
+    }
+
+    // Validate parent container accepts this component type.
+    String parent = AIJsonUtils.getStringField(json, "parent");
+    MockContainer container;
+    if (parent != null && !parent.isEmpty()) {
+      MockComponent parentComp = components.get(parent);
+      if (parentComp == null) {
+        return "ADD_COMPONENT: parent '" + parent + "' does not exist";
+      }
+      if (!(parentComp instanceof MockContainer)) {
+        return "ADD_COMPONENT: parent '" + parent + "' is not a container";
+      }
+      container = (MockContainer) parentComp;
+    } else {
+      container = formEditor.getForm();
+    }
+
+    if (!container.willAcceptComponentType(type)) {
+      String requiredParent = getRequiredParentType(type);
+      if (requiredParent != null) {
+        return "ADD_COMPONENT: '" + type + "' must be placed inside a "
+            + requiredParent + " — set the 'parent' parameter to the "
+            + requiredParent + " instance name";
+      }
+      return "ADD_COMPONENT: '" + type + "' cannot be placed inside '"
+          + (parent != null ? parent : "Screen") + "'";
+    }
+    return null;
+  }
+
+  /**
+   * Returns the required parent container type name for component types that
+   * have mandatory nesting, or {@code null} if the type has no restriction.
+   */
+  private static String getRequiredParentType(String type) {
+    if (MockCanvas.ACCEPTABLE_TYPES.contains(type)) {
+      return MockCanvas.TYPE;
+    }
+    if (MockChart.ACCEPTABLE_TYPES.contains(type)) {
+      return MockChart.TYPE;
+    }
+    if (MockMap.ACCEPTABLE_TYPES.contains(type)) {
+      return MockMap.TYPE;
     }
     return null;
   }
