@@ -109,7 +109,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | File | Purpose |
 |------|---------|
 | `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `clearConversation`, `getConversationHistory`, `getRequestStatus` |
-| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale |
+| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint |
 | `AIAgentResponse.java` | Response DTO: AI message text, operations list, errors, `hasMore` flag |
 | `AIOperation.java` | Single operation: type enum + JSON payload string |
 | `AIOperationResult.java` | Execution result: succeeded/failed/skipped with error details |
@@ -547,7 +547,7 @@ sequenceDiagram
 
 2. **Server validates.** `AIAgentServiceImpl` checks: non-empty message (max 2000 chars), user owns project, rate limit not exceeded, AI mode is not OFF.
 
-3. **Engine builds context and calls LLM.** `AIContextBuilder` assembles the system prompt (cached layers) and per-request context messages (fresh). Calls the LLM through `LLMProvider.chat()` with tools, history, and a `StreamBuffer`.
+3. **Engine builds context and calls LLM.** `AIContextBuilder` assembles the system prompt (cached layers) and per-request context messages (fresh). If the request carries a `contextHint` (e.g. block YAIL from the "Explain Block" context menu), it is appended to the LLM message but **not** stored in conversation history so it does not appear in the user's chat. Calls the LLM through `LLMProvider.chat()` with tools, history, and a `StreamBuffer`.
 
 4. **Tool-use loop (server-side).** If the LLM calls read-only tools, the provider resolves them via `ReadOnlyToolResolver` and re-calls the LLM, up to 5 iterations.
 
