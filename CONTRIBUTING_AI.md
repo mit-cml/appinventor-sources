@@ -1007,9 +1007,9 @@ When Plan & Execute is active, the enforcement context is set to `PLANNING`. The
 {
   "summary": "Build a login flow with a login form and dashboard",
   "steps": [
-    { "id": "s1", "screen": "__project__", "description": "Create Screen2" },
+    { "id": "s1", "screen": "__project__", "description": "Create DashboardScreen" },
     { "id": "s2", "screen": "Screen1", "description": "Add login form components and handler" },
-    { "id": "s3", "screen": "Screen2", "description": "Add dashboard layout", "depends_on": ["s1"] }
+    { "id": "s3", "screen": "DashboardScreen", "description": "Add dashboard layout", "depends_on": ["s1"] }
   ]
 }
 ```

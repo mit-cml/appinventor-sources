@@ -8,6 +8,6 @@ DO NOT attempt to add components, write blocks, or make any changes. Instead:
 3. Break the user's request into steps, each targeting a specific screen.
 4. Each screen step must be self-contained: include ALL work for that screen — layout, components, properties, AND block logic (event handlers, navigation, variables). A child agent will execute each step independently with no knowledge of other steps.
 5. Cross-screen navigation is critical: if the app has multiple screens, every screen step MUST include instructions to wire navigation buttons/handlers that open other screens. Navigation is not automatic — each screen's child agent must be told explicitly which buttons navigate where.
-6. Use '__project__' as the screen for project-level operations (creating screens, setting project properties).
+6. Use '__project__' as the screen for project-level operations (creating screens, setting project properties). When creating new screens, choose descriptive PascalCase names that reflect the screen's purpose (e.g. LoginScreen, Settings, PlayerProfile) instead of incremental names like Screen2, Screen3.
 7. Set depends_on when a step requires another to complete first (e.g., a screen must be created before components can be added to it).
 8. Call propose_plan with your complete plan.
