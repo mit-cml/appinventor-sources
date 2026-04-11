@@ -129,14 +129,12 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
                 uiCallback.addAiMessage(msg.toString());
               }
             } else {
-              // Always show errors
-              String errorMsg = "[" + screenName + "] Execution failed: "
-                  + result.getErrorMessage();
+              // Track error for the grouped summary — don't surface
+              // individual child errors in the chat.
               if (!screenErrors.containsKey(screenName)) {
                 screenErrors.put(screenName, new ArrayList<String>());
               }
               screenErrors.get(screenName).add(result.getErrorMessage());
-              uiCallback.addAiMessage(errorMsg);
             }
             batch.child.resumeAfterApproval();
             presentNext();
@@ -249,11 +247,13 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
   @Override
   public void onError(ChildConversation child, String error) {
     LOG.warning("Child error: " + child.getScreenName() + ": " + error);
-    if (!cancelled) {
-      uiCallback.addAiMessage("[" + child.getScreenName() + "] Error: " + error);
+    String screenName = child.getScreenName();
+    if (!screenErrors.containsKey(screenName)) {
+      screenErrors.put(screenName, new ArrayList<String>());
     }
+    screenErrors.get(screenName).add(error);
     completedChildren++;
-    queueCallback.onChildError(child.getScreenName(), error);
+    queueCallback.onChildError(screenName, error);
     checkAllDone();
   }
 
