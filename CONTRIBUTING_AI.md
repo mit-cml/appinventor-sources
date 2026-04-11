@@ -38,7 +38,7 @@ flowchart TB
 1. **Server handles LLM, client handles mutations.** The server never modifies the project directly. It returns structured `AIOperation` objects that the client validates and applies.
 2. **Preview before apply.** Every change is shown to the user for explicit approval.
 3. **Operation-based, not code-based.** All modifications are expressed as typed operations (ADD_COMPONENT, WRITE_BLOCK, etc.), not raw code patches.
-4. **Screen-scoped editing.** All editing operations target the currently-open screen and view. Cross-screen or cross-view work requires navigation operations issued in separate batches.
+4. **Screen-scoped editing.** In Direct mode (default), all editing operations target the currently-open screen and view. Cross-screen or cross-view work requires navigation operations issued in separate batches. In Plan & Execute mode (see [Plan & Execute](#plan--execute-multi-agent-orchestration)), operations can target background (non-visible) screens via `ScreenExecutionContext`, enabling parallel multi-screen work.
 5. **Streaming via Memcache polling.** LLM text tokens are buffered server-side in Memcache and consumed by the client through lightweight polls.
 
 ---
@@ -52,11 +52,12 @@ flowchart TB
 | `AIAgentEngine.java` | Core orchestration: context building, LLM calls, tool-use loop, response parsing, narration retry (`retryIfNarration`), finalization |
 | `AIAgentServiceImpl.java` | Servlet layer: authentication, rate limiting, input validation, delegates to engine |
 | `AIContextBuilder.java` | Assembles the full LLM context from modular context modules |
-| `ConversationManager.java` | Conversation lifecycle: Memcache state (24h TTL) + Datastore message persistence |
-| `StreamBuffer.java` | Writes LLM text/thinking tokens to Memcache for client polling |
+| `ConversationManager.java` | Conversation lifecycle: Memcache state (24h TTL) + Datastore message persistence; screen-scoped overloads for child conversations (ephemeral, Memcache only) |
+| `StreamBuffer.java` | Writes LLM text/thinking tokens to Memcache for client polling; screen-scoped keying for child conversations |
 | `LLMResponseParser.java` | Parses LLM tool calls into typed `AIOperation` objects |
 | `AIToolResolver.java` | Resolves read-only tool calls (component/screen lookups) |
-| `ModeEnforcer.java` | Validates operations against the active AI mode (Advisor/ScreenEditor/ProjectEditor) |
+| `ModeEnforcer.java` | Validates operations against the active AI mode and `EnforcementContext` |
+| `EnforcementContext.java` | Orchestration enforcement contexts: STANDARD, PLANNING, CHILD_EXECUTION |
 | `AIToolNames.java` | Constants for tool names sent to the LLM |
 | `AIDebug.java` | Debug logging: per-request file output (dev) or dedicated logger (prod) |
 | `TutorialContentCache.java` | Fetches tutorial HTML, strips to text, caches in memory (8h TTL, max 100 entries) |
@@ -108,35 +109,57 @@ GWT-RPC interfaces and DTOs shared between client and server.
 
 | File | Purpose |
 |------|---------|
-| `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `clearConversation`, `getConversationHistory`, `getRequestStatus` |
-| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint |
+| `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `clearConversation`, `getConversationHistory`, `getRequestStatus`; screen-scoped overloads for `getRequestStatus(projectId, targetScreen)` and `cancelRequest(projectId, targetScreen)` |
+| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode` |
 | `AIAgentResponse.java` | Response DTO: AI message text, operations list, errors, `hasMore` flag |
-| `AIOperation.java` | Single operation: type enum + JSON payload string |
+| `AIOperation.java` | Single operation: type enum (including `PROPOSE_PLAN`) + JSON payload string |
 | `AIOperationResult.java` | Execution result: succeeded/failed/skipped with error details |
 | `AIConversationMessage.java` | Message for chat history display |
-| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag, reset streaming flag |
+| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag, reset streaming flag, `orchestrationEnabled` config flag |
 
 ### Client -- `client/editor/youngandroid/aiagent/`
 
 | File | Purpose |
 |------|---------|
-| `AIResponseOrchestrator.java` | RPC orchestration, polling, retry logic, auto-accept mode |
-| `AIChatRenderer.java` | Renders chat messages with Markdown and streaming support |
-| `AIContextCollector.java` | Gathers editor state (YAIL, components, warnings) for requests |
+| `AIResponseOrchestrator.java` | RPC orchestration, polling, retry logic, auto-accept mode, plan execution lifecycle |
+| `AIChatRenderer.java` | Facade for chat rendering; delegates streaming to `StreamingHandler` and plan cards to `PlanCardRenderer` |
+| `AIContextCollector.java` | Gathers editor state (YAIL, components, warnings) for requests; `buildRequestForScreen()` for background editor context |
+| `AIOrchestrationManager.java` | Coordinates parallel child conversations during Plan & Execute; delegates to `PlanProjectStepExecutor` and `ChildBatchQueue` |
+| `ChildConversation.java` | Manages one child agent's RPC loop (processRequest/continueRequest) for a single screen |
+| `ChildBatchQueue.java` | FIFO queue of operation batches from children; per-batch approval, auto-accept, rejection handling |
+| `PlanProjectStepExecutor.java` | Plan parsing, `__project__` step execution (screen creation), editor readiness polling |
 | `AIModeSelectionDialog.java` | First-time mode selection UI |
 | `AIDialogResizeHandler.java` | Floating dialog resize/position management |
-| `AIEditorState.java` | Dialog visibility and mode state tracking |
+| `AIEditorState.java` | Dialog visibility, mode state, and `planExecuteMode` tracking |
 | `AIOperationFormatter.java` | Color-coded operation preview formatting |
 | `AIJsonUtils.java` | JSON utility functions |
+
+### Chat Rendering -- `client/.../aiagent/chat/`
+
+| File | Purpose |
+|------|---------|
+| `RendererHost.java` | Interface for streaming handler to call back into the renderer |
+| `StreamingHandler.java` | Streaming bubble state machine: start, append text/thinking, finalize |
+| `PlanCardRenderer.java` | Plan card UI with approve/edit/reject flow |
+
+### Dialog UI -- `client/.../aiagent/dialog/`
+
+| File | Purpose |
+|------|---------|
+| `StatusAnimator.java` | Status label ("Thinking...") with animated ellipsis timer |
+| `OperationPreviewPanel.java` | Operation preview area, apply/reject/accept-all buttons, auto-accept notice |
+| `PlanExecuteToggle.java` | Plan & Execute mode toggle button (direct/plan/executing states); tutorial project warning |
+| `ChatInputHandler.java` | Input textarea, send/stop button, Enter-key submission, plan-rejection wrapping |
 
 ### Operation Execution -- `client/.../aiagent/executor/`
 
 | File | Purpose |
 |------|---------|
-| `AIOperationExecutor.java` | Applies operations in phased order (project -> designer -> blocks) |
+| `AIOperationExecutor.java` | Applies operations in phased order; `executeForScreen()` entry point for background editors |
 | `AIProjectOperations.java` | CREATE_SCREEN, DELETE_SCREEN, SWITCH_SCREEN, SET_PROJECT_PROP |
-| `AIDesignerOperations.java` | ADD_COMPONENT, SET_PROPERTY, RENAME_COMPONENT, DELETE_COMPONENT |
-| `AIBlockOperations.java` | WRITE_BLOCK, DELETE_BLOCK |
+| `AIDesignerOperations.java` | ADD_COMPONENT, SET_PROPERTY, RENAME_COMPONENT, DELETE_COMPONENT — parameterized by `ScreenExecutionContext` |
+| `AIBlockOperations.java` | WRITE_BLOCK, DELETE_BLOCK — parameterized by `ScreenExecutionContext` |
+| `ScreenExecutionContext.java` | Carries target screen editors through the execution pipeline; replaces static `AIEditorState` lookups |
 
 ### Operation Validation -- `client/.../aiagent/validator/`
 
@@ -161,7 +184,15 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `appinventor_reference.md` | System prompt reference guide for the LLM |
 | `yail_grammar.md` | YAIL syntax documentation for block generation |
 | `few_shot_examples.json` | Few-shot examples for in-context learning |
+| `tool_definitions.json` | Tool schemas loaded by `AIContextBuilder.buildTools()` |
 | `tutorial_instructions.md` | Pedagogical instructions for tutorial-aware mode |
+| `continuation_instructions.md` | Instructions injected on continuation/retry requests |
+| `editor_view_rules.md` | View-specific rules (Designer vs Blocks) for mode instructions |
+| `mode_advisor.md` | Mode instructions for Advisor mode |
+| `mode_screen_editor.md` | Mode instructions for Screen Editor mode |
+| `mode_project_editor.md` | Mode instructions for Project Editor mode |
+| `mode_planning.md` | Mode instructions for Plan & Execute planning phase |
+| `mode_child_execution.md` | Mode instructions for Plan & Execute child execution phase |
 
 ### I18n -- `blocklyeditor/src/msg/ai_blockly/`
 
@@ -265,6 +296,10 @@ flowchart TB
         DS["delete_screen<br/><i>screen_name</i>"]
         SPP["set_project_property<br/><i>property, value</i>"]
     end
+
+    subgraph "Plan Tool (Plan & Execute mode only)"
+        PP["propose_plan<br/><i>summary, steps[]</i>"]
+    end
 ```
 
 ### Read-Only vs. Write Tools
@@ -290,15 +325,17 @@ Write tools (`add_component`, `write_block`, etc.) are **not executed server-sid
 
 ### Tool Filtering by Mode and View
 
-`AIContextBuilder.buildTools(mode, currentView)` controls which tools the LLM sees:
+`AIContextBuilder.buildTools(mode, currentView, enforcementContext)` controls which tools the LLM sees. The `EnforcementContext` (STANDARD, PLANNING, CHILD_EXECUTION) overrides mode-based filtering during orchestration:
 
-| Mode | View | Available Tools |
-|------|------|----------------|
-| Advisor | any | `lookup_component`, `lookup_screen` |
-| ScreenEditor | Designer | lookups + `add_component`, `delete_component`, `set_property`, `rename_component`, `toggle_editor` |
-| ScreenEditor | Blocks | lookups + `write_block`, `delete_block`, `toggle_editor` |
-| ProjectEditor | Designer | all ScreenEditor Designer tools + `switch_screen`, `create_screen`, `delete_screen`, `set_project_property` |
-| ProjectEditor | Blocks | all ScreenEditor Blocks tools + `switch_screen`, `create_screen`, `delete_screen`, `set_project_property` |
+| Mode | View | Enforcement Context | Available Tools |
+|------|------|---------------------|----------------|
+| Advisor | any | STANDARD | `lookup_component`, `lookup_screen` |
+| ScreenEditor | Designer | STANDARD | lookups + `add_component`, `delete_component`, `set_property`, `rename_component`, `toggle_editor` |
+| ScreenEditor | Blocks | STANDARD | lookups + `write_block`, `delete_block`, `toggle_editor` |
+| ProjectEditor | Designer | STANDARD | all ScreenEditor Designer tools + `switch_screen`, `create_screen`, `delete_screen`, `set_project_property` |
+| ProjectEditor | Blocks | STANDARD | all ScreenEditor Blocks tools + `switch_screen`, `create_screen`, `delete_screen`, `set_project_property` |
+| ProjectEditor | any | PLANNING | `lookup_component`, `lookup_screen`, `propose_plan` |
+| ProjectEditor | any | CHILD_EXECUTION | Same as ScreenEditor (screen-level tools only, no project-level tools, no `propose_plan`) |
 
 ---
 
@@ -323,7 +360,10 @@ public enum Type {
     DELETE_SCREEN,       // Remove a screen (ProjectEditor only)
     SET_PROJECT_PROP,    // Change project-level settings (ProjectEditor only)
 
-    TOGGLE_EDITOR        // Switch between Designer and Blocks views
+    TOGGLE_EDITOR,       // Switch between Designer and Blocks views
+
+    // Orchestration
+    PROPOSE_PLAN         // Structured execution plan for Plan & Execute mode
 }
 ```
 
@@ -370,7 +410,7 @@ Replaced blocks (upserts) always return to their original position regardless of
 
 ### Mode Enforcement
 
-`ModeEnforcer.enforce()` runs three checks on every operation batch:
+`ModeEnforcer.enforce()` runs checks on every operation batch. It accepts an `EnforcementContext` parameter that controls orchestration-phase restrictions independently of the user-facing AI mode:
 
 ```mermaid
 flowchart TD
@@ -395,6 +435,14 @@ flowchart TD
 | Advisor | None (read-only lookups only) |
 | Screen Editor | All except SWITCH_SCREEN, CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP |
 | Project Editor | All operations |
+
+In addition to mode checks, the `EnforcementContext` applies orchestration-phase restrictions:
+
+| Context | Effect |
+|---------|--------|
+| STANDARD | No additional restrictions (current behavior) |
+| PLANNING | Rejects all write operations except PROPOSE_PLAN |
+| CHILD_EXECUTION | Rejects project-level operations (SWITCH_SCREEN, CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP) and PROPOSE_PLAN |
 
 ---
 
@@ -833,6 +881,7 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 | `ai.agent.api.key` | (empty) | API key for the selected provider |
 | `ai.agent.base.url` | (empty) | Base URL override (required for `ollama`, `openai-compatible`, `anthropic-compatible`; optional for `anthropic`, `minimax`) |
 | `ai.agent.rate.limit` | `10` | Max requests per user per minute |
+| `ai.agent.orchestration` | `false` | Enable Plan & Execute mode (multi-agent orchestration). When `true`, Project Editor mode shows a Direct/Plan & Execute toggle. When `false`, the entire orchestration system is hidden. |
 | `ai.agent.debug` | `false` | Enable debug logging. **Dev mode:** writes to `build/logs/aiagent/<conversationId>/<timestamp>.txt`. **Production:** routes to the `aiagent.debug` logger for external ingestion. Nothing goes to the console in either mode. |
 | `ai.agent.log.dir` | (auto-detected) | Override the base directory for dev-mode debug log files. When empty, derived automatically from the class location (typically `appengine/build/logs/aiagent/`). |
 | `ai.agent.provider.bedrock.region` | `us-east-1` | AWS region for Bedrock |
@@ -926,6 +975,205 @@ When the server returns `hasMore = true`:
 
 ---
 
+## Plan & Execute (Multi-Agent Orchestration)
+
+The AI Agent supports two execution modes in Project Editor:
+
+- **Direct** (default): the current single-agent flow. The LLM has full tool access and works through screens sequentially.
+- **Plan & Execute**: a two-phase workflow where the LLM first proposes a structured plan, then the client manages parallel child conversations -- one per screen -- to execute the plan concurrently.
+
+Plan & Execute is gated behind the `ai.agent.orchestration` server flag. When enabled, `PlanExecuteToggle` appears in the chat dialog toolbar (Project Editor mode only, hidden in Advisor and Screen Editor). When `TutorialURL` is set, a confirmation warning is shown before activating.
+
+```mermaid
+flowchart TB
+    subgraph "Mode Selection"
+        Flag{"ai.agent.orchestration<br/>enabled?"}
+        Mode{"AI Mode?"}
+        Toggle["PlanExecuteToggle visible<br/>(Direct / Plan & Execute)"]
+        Hidden["Toggle hidden<br/>(Direct mode only)"]
+
+        Flag -->|yes| Mode
+        Flag -->|no| Hidden
+        Mode -->|ProjectEditor| Toggle
+        Mode -->|Advisor/ScreenEditor| Hidden
+    end
+```
+
+### Planning Phase
+
+When Plan & Execute is active, the enforcement context is set to `PLANNING`. The LLM receives only read-only tools (`lookup_component`, `lookup_screen`) and the `propose_plan` tool. No write tools are available. The LLM researches the project and then calls `propose_plan` with a structured plan:
+
+```json
+{
+  "summary": "Build a login flow with a login form and dashboard",
+  "steps": [
+    { "id": "s1", "screen": "__project__", "description": "Create Screen2" },
+    { "id": "s2", "screen": "Screen1", "description": "Add login form components and handler" },
+    { "id": "s3", "screen": "Screen2", "description": "Add dashboard layout", "depends_on": ["s1"] }
+  ]
+}
+```
+
+- **`__project__` steps** are project-level operations (screen creation) extracted and applied by the client before child conversations start.
+- **`depends_on`** declares step ordering. Steps targeting different screens with no dependencies run in parallel.
+
+`LLMResponseParser` handles `propose_plan` as a special case: if present alongside other tool calls, the others are discarded. The parser validates plan structure (required fields, unique step IDs, no circular dependencies via DFS cycle detection).
+
+### Plan Review UI
+
+`PlanCardRenderer` renders the plan in the chat as a structured card showing the summary, each step's screen target and description, and dependency relationships. Three buttons:
+
+- **Approve**: proceeds to execution
+- **Edit & Approve**: opens the plan as editable JSON, then proceeds
+- **Reject**: sends rejection feedback to the parent conversation
+
+### Execution Phase
+
+After approval, `AIResponseOrchestrator` checks the number of screen-level steps (non-`__project__` steps):
+
+- **Single screen step (or zero)**: no child conversations spawned. The parent agent continues directly with `planExecuteMode=false`, reverting to `EnforcementContext.STANDARD` with full write tools.
+- **Multiple screen steps**: the plan flows to `AIOrchestrationManager` for parallel execution.
+
+```mermaid
+flowchart TD
+    Approve["User approves plan"]
+    Count{"Screen steps<br/>count?"}
+    Single["Parent continues directly<br/>(STANDARD enforcement,<br/>full tool access)"]
+    Multi["AIOrchestrationManager<br/>.executePlan()"]
+
+    Approve --> Count
+    Count -->|"≤ 1"| Single
+    Count -->|"> 1"| Multi
+
+    subgraph "Project Setup"
+        Parse["PlanProjectStepExecutor<br/>parsePlanSteps()"]
+        Create["Create screens from<br/>__project__ steps"]
+        Wait["waitForEditorsReady()<br/><i>100ms poll, 10s timeout</i>"]
+    end
+
+    subgraph "Parallel Execution"
+        Spawn["spawnChildren()"]
+        C1["ChildConversation<br/>Screen1"]
+        C2["ChildConversation<br/>Screen2"]
+        CN["ChildConversation<br/>ScreenN"]
+        Queue["ChildBatchQueue<br/>(FIFO)"]
+    end
+
+    Multi --> Parse --> Create --> Wait --> Spawn
+    Spawn --> C1 & C2 & CN
+    C1 & C2 & CN -->|"onBatchReady()"| Queue
+```
+
+#### ScreenExecutionContext
+
+`ScreenExecutionContext` carries target screen editors through the entire execution pipeline, replacing static `AIEditorState` lookups. `AIDesignerOperations` and `AIBlockOperations` accept it as a parameter. `AIOperationExecutor.executeForScreen()` executes phases 2-5 against background editors.
+
+For the existing single-agent flow, `ScreenExecutionContext.forCurrentScreen()` creates a backward-compatible context from `AIEditorState`.
+
+#### ChildConversation
+
+Each child manages one screen's full RPC lifecycle:
+
+```mermaid
+sequenceDiagram
+    participant C as ChildConversation
+    participant CC as AIContextCollector
+    participant S as Server (AIAgentEngine)
+    participant Q as ChildBatchQueue
+    participant E as AIOperationExecutor
+
+    C->>CC: buildRequestForScreen(screenName)
+    Note over CC: Sets orchestrationMode=true,<br/>targetScreen=screenName
+    C->>S: processRequest(request)
+    C->>S: poll getRequestStatus(projectId, screenName)
+    S-->>C: AIAgentResponse (operations, hasMore)
+    C->>Q: onBatchReady(child, response)
+
+    Note over Q: Batch enters FIFO queue.<br/>User reviews one at a time.
+
+    Q->>E: executeForScreen(context, operations)
+    Note over E: Applies to background editor<br/>(phases 2-5 only)
+    Q->>C: resumeAfterApproval()
+
+    alt hasMore = true
+        C->>CC: buildRequestForScreen(screenName)
+        Note over CC: Fresh context from<br/>updated background editor
+        C->>S: continueRequest(request)
+        S-->>C: Next batch
+        C->>Q: onBatchReady(child, response)
+    end
+
+    alt hasMore = false
+        C->>Q: onComplete(child)
+    end
+```
+
+Key behaviors:
+- TOGGLE_EDITOR operations are auto-approved (no user interaction needed)
+- Each child polls its own screen-scoped StreamBuffer for streaming progress
+- Context is rebuilt from the updated background editor before each continuation
+
+#### ChildBatchQueue (FIFO Approval)
+
+As each child produces an operation batch, it is enqueued. The user reviews batches one at a time in the chat, same UX as single-agent. Batches are labeled with `[ScreenName]`. The user can:
+
+- **Apply**: operations applied to the target screen's background editor via `executeForScreen()`, then the child's continuation fires
+- **Apply & Accept All**: sets `autoAcceptAll` flag -- all current and future batches auto-approved for maximum speed
+- **Reject**: cancels all children, discards queue, sends rejection summary to the parent
+
+```mermaid
+flowchart LR
+    subgraph "FIFO Queue"
+        B1["[Screen1] Batch 1<br/><i>reviewing</i>"]
+        B2["[Screen2] Batch 1<br/><i>waiting</i>"]
+    end
+
+    Apply["Apply"]
+    AcceptAll["Apply &<br/>Accept All"]
+    Reject["Reject"]
+
+    B1 --> Apply --> B2
+    B1 --> AcceptAll -->|"auto-approve<br/>all remaining"| B2
+    B1 --> Reject -->|"cancel all<br/>children"| Stop["Hard stop"]
+```
+
+### Server-Side Changes
+
+The server supports concurrent child conversations via screen-scoped state:
+
+- **`StorageIo`**: 12 screen-scoped overloads for conversation state, stream buffer, and cancellation (keyed by `projectId + ":" + screenName`)
+- **`ConversationManager`**: screen-scoped `getConversation`, `saveConversation`, `clearConversation`. Child conversations are ephemeral (Memcache only, not persisted to Datastore)
+- **`StreamBuffer`**: constructor accepts optional `screenName`; when non-null, all Memcache operations use composite keys (`ai_stream:<projectId>:<screenName>:<suffix>`)
+- **`AIAgentEngine`**: `processRequest`, `continueRequest`, and `reportExecutionErrors` check `orchestrationMode` and route state by `targetScreen`
+- **`AIContextBuilder.buildTools()`**: when `enforcementContext=CHILD_EXECUTION`, excludes project-level tools and `propose_plan`
+- **`getRequestStatus` / `cancelRequest`**: dual overloads -- `(projectId)` for parent, `(projectId, targetScreen)` for children
+- **Rate limiting**: child requests (with `orchestrationMode=true`) are exempt from per-user rate limits. Budget enforcement is client-side: max 5 children (`MAX_CHILDREN`), max 20 RPCs per plan (`MAX_RPCS_PER_PLAN`) in `AIOrchestrationManager`
+
+### Post-Completion
+
+```mermaid
+flowchart TD
+    AllDone["All children complete<br/>(hasMore=false for all)"]
+    Summary["Grouped summary:<br/>per-screen operations + errors"]
+    Parent["Parent LLM receives summary<br/>via continueWithToolResults"]
+    Chat["Summary shown in chat"]
+
+    AllDone --> Summary --> Parent --> Chat
+
+    Rejected["User rejects a batch"]
+    Cancel["Cancel all children"]
+    Context["Parent receives:<br/>- applied screen summaries<br/>- rejection details<br/>- live screen states"]
+    Replan["Parent can re-plan<br/>(STANDARD enforcement,<br/>full tool access)"]
+
+    Rejected --> Cancel --> Context --> Replan
+```
+
+- **Success**: orchestration manager sends a grouped summary (per-screen operation lists and any errors) to the parent conversation. The parent LLM responds with a summary shown in the chat.
+- **Rejection**: the parent receives context about what was applied, what was rejected, and the live state of modified screens. The enforcement context reverts to STANDARD so the parent can re-plan or make targeted fixes with full tool access.
+- **Cancellation**: all children cancelled via screen-scoped `cancelRequest` RPCs. Approved batches remain applied (no rollback). The parent stores a cancellation summary.
+
+---
+
 ## Build System
 
 The AI agent code is compiled through existing Ant build targets in `appengine/build.xml`:
@@ -981,7 +1229,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 
 1. Add the enum value to `AIOperation.Type`.
 2. Add a tool constant in `AIToolNames`.
-3. Add the tool definition in `AIContextBuilder.buildTools()`.
+3. Add the tool definition in `server/aiagent/resources/tool_definitions.json`.
 4. Update `LLMResponseParser` to parse the new tool call into the operation.
 5. Update `ModeEnforcer` with mode/view permissions (add to the correct op set).
 6. Add a validation method in the appropriate `*OperationValidator`.
@@ -1017,7 +1265,11 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **Client-side operations have idempotency guards.** Operations that have already been applied (e.g. a component that was already added) are detected and skipped rather than failing. This prevents spurious errors when the LLM re-emits operations that succeeded in a previous attempt.
 - **Message length limit: 2000 characters.** Enforced server-side with control character stripping.
 - **Rate limit: configurable** (default 10 req/min per user). Enforced via in-memory timestamps in `AIAgentServiceImpl`.
-- **Context is never cached client-side.** Every request rebuilds the full editor state snapshot.
+- **Context is never cached client-side.** Every request rebuilds the full editor state snapshot. For child conversations, `buildRequestForScreen()` reads from background editors.
+- **Background editor operations are safe.** `BlocklyPanel.doWriteBlock()` uses `this.workspace` (the specific instance), not `Blockly.common.getMainWorkspace()`. `AI.YailToBlocks.convert()` accepts an explicit workspace parameter. No save/restore of the main workspace is needed.
+- **`ScreenExecutionContext` replaces `AIEditorState` for all executor code.** `AIDesignerOperations`, `AIBlockOperations`, and `AIOperationExecutor` accept `ScreenExecutionContext` instead of calling `AIEditorState.getCurrentFormEditor()` / `getCurrentBlocksEditor()`. Use `ScreenExecutionContext.forCurrentScreen()` for the single-agent flow.
+- **`PROPOSE_PLAN` exclusivity is enforced in the parser, not `ModeEnforcer`.** If `propose_plan` appears alongside other tool calls, `LLMResponseParser` discards the others.
+- **`__project__` is a reserved sentinel value** for plan steps targeting project-level operations. `LLMResponseParser` rejects it as a screen name in non-plan tool calls.
 - **Tutorial context is gated by `AIContextBuilder.INCLUDE_TUTORIAL_CONTEXT`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Set to `false` to disable without other code changes.
 
 ---

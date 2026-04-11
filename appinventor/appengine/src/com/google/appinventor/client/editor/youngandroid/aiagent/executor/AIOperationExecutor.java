@@ -5,8 +5,8 @@
 
 package com.google.appinventor.client.editor.youngandroid.aiagent.executor;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
 import com.google.appinventor.client.editor.youngandroid.aiagent.validator.AIOperationValidator;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
@@ -49,6 +49,8 @@ public class AIOperationExecutor {
 
   private static final Logger LOG = Logger.getLogger(AIOperationExecutor.class.getName());
 
+  private ScreenExecutionContext context;
+
   // ---- Public types ----
 
   /**
@@ -90,6 +92,8 @@ public class AIOperationExecutor {
    * Operations are grouped into phases and executed in order.
    */
   public void execute(List<AIOperation> operations, ExecutionCallback callback) {
+    this.context = ScreenExecutionContext.forCurrentScreen();
+
     List<AIOperation> phase1 = new ArrayList<>();
     List<AIOperation> phase2 = new ArrayList<>();
     List<AIOperation> phase3 = new ArrayList<>();
@@ -127,6 +131,48 @@ public class AIOperationExecutor {
 
     ExecutionState state = new ExecutionState(callback);
     runPhase1(state, phase1, 0, phase2, phase3, phase4, phase5);
+  }
+
+  /**
+   * Execute a list of AI operations against a specific screen (phases 2-5 only).
+   * Phase 1 (project-level) operations are not supported — they must be handled
+   * by the orchestration layer before dispatching to individual screens.
+   */
+  public static void executeForScreen(ScreenExecutionContext context,
+      List<AIOperation> operations, ExecutionCallback callback) {
+    AIOperationExecutor executor = new AIOperationExecutor();
+    executor.context = context;
+
+    List<AIOperation> phase2 = new ArrayList<>();
+    List<AIOperation> phase3 = new ArrayList<>();
+    List<AIOperation> phase4 = new ArrayList<>();
+    List<AIOperation> phase5 = new ArrayList<>();
+
+    for (AIOperation op : operations) {
+      switch (op.getType()) {
+        case ADD_COMPONENT:
+        case SET_PROPERTY:
+        case RENAME_COMPONENT:
+          phase2.add(op);
+          break;
+        case WRITE_BLOCK:
+          phase3.add(op);
+          break;
+        case DELETE_BLOCK:
+          phase4.add(op);
+          break;
+        case DELETE_COMPONENT:
+          phase5.add(op);
+          break;
+        default:
+          LOG.warning("Unsupported operation type for screen-targeted execution: "
+              + op.getType());
+          break;
+      }
+    }
+
+    ExecutionState state = new ExecutionState(callback);
+    executor.runSyncPhases(state, phase2, phase3, phase4, phase5);
   }
 
   // ---- Execution state ----
@@ -197,7 +243,7 @@ public class AIOperationExecutor {
       return;
     }
     try {
-      String error = AIOperationValidator.validate(op);
+      String error = AIOperationValidator.validate(op, context);
       if (error != null) {
         state.markFailed(op, error);
         state.skipRemaining(phase1, index + 1);
@@ -272,14 +318,27 @@ public class AIOperationExecutor {
       runSyncList(state, phase5, Collections.<List<AIOperation>>emptyList());
       state.finish();
     } finally {
-      // Force a Companion YAIL update after all sync phases complete (or halt).
-      // rename() and WRITE_BLOCK suppress normal update triggers, so an
-      // explicit sendComponentData ensures the Companion receives the latest
-      // component definitions and block code.
-      YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
-      if (blocksEditor != null) {
-        blocksEditor.sendComponentData(true);
+      // AI.YailToBlocks.convert() disables Blockly events during block
+      // creation (for performance and to avoid mid-mutation crashes), so
+      // workspace change listeners never fire and the editor is never
+      // marked dirty.  We must explicitly schedule a save for any editor
+      // that was modified.
+      //
+      // For the current screen we also force a Companion YAIL update via
+      // sendComponentData — rename() and WRITE_BLOCK suppress normal
+      // update triggers, so an explicit push ensures the Companion
+      // receives the latest component definitions and block code.
+      // Background screens have no live Companion connection.
+      if (context.isCurrentScreen()) {
+        YaBlocksEditor blocksEditor = context.getBlocksEditor();
+        if (blocksEditor != null) {
+          blocksEditor.sendComponentData(true);
+        }
       }
+      // Mark both editors dirty so auto-save persists the changes —
+      // critical for background editors where no Blockly events fired.
+      Ode.getInstance().getEditorManager().scheduleAutoSave(context.getBlocksEditor());
+      Ode.getInstance().getEditorManager().scheduleAutoSave(context.getFormEditor());
     }
   }
 
@@ -293,7 +352,7 @@ public class AIOperationExecutor {
         continue;
       }
       try {
-        String error = AIOperationValidator.validate(op);
+        String error = AIOperationValidator.validate(op, context);
         if (error != null) {
           state.markFailed(op, error);
           state.skipRemaining(current, i + 1);
@@ -332,30 +391,30 @@ public class AIOperationExecutor {
     switch (op.getType()) {
       case ADD_COMPONENT: {
         String name = json.get("name").isString().stringValue();
-        return AIEditorState.componentExists(name);
+        return context.componentExists(name);
       }
       case DELETE_COMPONENT: {
         String name = json.get("name").isString().stringValue();
-        return !AIEditorState.componentExists(name);
+        return !context.componentExists(name);
       }
       case RENAME_COMPONENT: {
         String oldName = json.get("old_name").isString().stringValue();
         String newName = json.get("new_name").isString().stringValue();
-        boolean oldExists = AIEditorState.componentExists(oldName);
-        boolean newExists = AIEditorState.componentExists(newName);
+        boolean oldExists = context.componentExists(oldName);
+        boolean newExists = context.componentExists(newName);
         return !oldExists && newExists;
       }
       case DELETE_BLOCK: {
         String block = json.get("block").isString().stringValue();
-        return !AIEditorState.blockExists(block);
+        return !context.blockExists(block);
       }
       case CREATE_SCREEN: {
         String screenName = json.get("screen_name").isString().stringValue();
-        return AIEditorState.screenExists(screenName);
+        return context.screenExists(screenName);
       }
       case DELETE_SCREEN: {
         String screenName = json.get("screen_name").isString().stringValue();
-        return !AIEditorState.screenExists(screenName);
+        return !context.screenExists(screenName);
       }
       default:
         return false;
@@ -367,22 +426,22 @@ public class AIOperationExecutor {
 
     switch (op.getType()) {
       case ADD_COMPONENT:
-        AIDesignerOperations.executeAddComponent(json);
+        AIDesignerOperations.executeAddComponent(json, context);
         break;
       case SET_PROPERTY:
-        AIDesignerOperations.executeSetProperty(json);
+        AIDesignerOperations.executeSetProperty(json, context);
         break;
       case RENAME_COMPONENT:
-        AIDesignerOperations.executeRenameComponent(json);
+        AIDesignerOperations.executeRenameComponent(json, context);
         break;
       case DELETE_COMPONENT:
-        AIDesignerOperations.executeDeleteComponent(json);
+        AIDesignerOperations.executeDeleteComponent(json, context);
         break;
       case WRITE_BLOCK:
-        AIBlockOperations.executeWriteBlock(json);
+        AIBlockOperations.executeWriteBlock(json, context);
         break;
       case DELETE_BLOCK:
-        AIBlockOperations.executeDeleteBlock(json);
+        AIBlockOperations.executeDeleteBlock(json, context);
         break;
       default:
         throw new IllegalStateException("Unexpected sync op type: " + op.getType());
@@ -397,7 +456,7 @@ public class AIOperationExecutor {
     if (deleteOps.isEmpty()) {
       return;
     }
-    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    YaBlocksEditor blocksEditor = context.getBlocksEditor();
     if (blocksEditor == null) {
       return;
     }
@@ -424,7 +483,7 @@ public class AIOperationExecutor {
     if (writeOps.isEmpty()) {
       return;
     }
-    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    YaBlocksEditor blocksEditor = context.getBlocksEditor();
     if (blocksEditor == null) {
       return;
     }
@@ -443,7 +502,7 @@ public class AIOperationExecutor {
   }
 
   private void clearPendingBlockDeletions() {
-    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    YaBlocksEditor blocksEditor = context.getBlocksEditor();
     if (blocksEditor != null) {
       blocksEditor.clearPendingDeletions();
     }

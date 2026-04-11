@@ -109,6 +109,8 @@ public class LLMResponseParser {
     // Read-only tools are handled separately by the provider; not parsed here
     KNOWN_TOOLS.add(AIToolNames.LOOKUP_COMPONENT);
     KNOWN_TOOLS.add(AIToolNames.LOOKUP_SCREEN);
+    // Orchestration tools
+    KNOWN_TOOLS.add(AIToolNames.PROPOSE_PLAN);
   }
 
   /**
@@ -120,6 +122,30 @@ public class LLMResponseParser {
   public ParseResult parseToolCalls(List<RawToolCall> rawToolCalls) {
     List<AIOperation> operations = new ArrayList<>();
     List<String> errors = new ArrayList<>();
+
+    // Special case: if propose_plan is present, it's the only operation returned.
+    boolean hasProposePlan = false;
+    for (RawToolCall call : rawToolCalls) {
+      if (AIToolNames.PROPOSE_PLAN.equals(call.getName())) {
+        hasProposePlan = true;
+        break;
+      }
+    }
+    if (hasProposePlan) {
+      for (RawToolCall call : rawToolCalls) {
+        if (AIToolNames.PROPOSE_PLAN.equals(call.getName())) {
+          String validationError = validatePlanStructure(call.getArgumentsJson());
+          if (validationError != null) {
+            errors.add("propose_plan: " + validationError);
+          } else {
+            operations.add(new AIOperation(AIOperation.Type.PROPOSE_PLAN,
+                call.getArgumentsJson()));
+          }
+          break;
+        }
+      }
+      return new ParseResult(operations, errors);
+    }
 
     for (RawToolCall call : rawToolCalls) {
       String toolName = call.getName();
@@ -164,6 +190,15 @@ public class LLMResponseParser {
         }
       }
 
+      // Per-tool semantic validation
+      if (AIToolNames.CREATE_SCREEN.equals(toolName)) {
+        String screenName = args.optString("screen_name");
+        if ("__project__".equals(screenName)) {
+          errors.add("Screen name '__project__' is reserved.");
+          continue;
+        }
+      }
+
       // Type coercion for known fields
       try {
         coerceTypes(toolName, args);
@@ -193,6 +228,82 @@ public class LLMResponseParser {
       }
     }
     // write_block and delete_block carry string payloads only — no coercion needed
+  }
+
+  /**
+   * Validates the structure of a propose_plan JSON payload.
+   *
+   * <p>Checks for required top-level fields, per-step required fields, duplicate
+   * step IDs, references to unknown steps in depends_on, and circular dependencies.
+   *
+   * @param json the raw JSON arguments string from the LLM tool call
+   * @return an error message if validation fails, or {@code null} if the plan is valid
+   */
+  private String validatePlanStructure(String json) {
+    try {
+      JSONObject plan = new JSONObject(json);
+      if (!plan.has("summary")) return "Missing 'summary' field.";
+      if (!plan.has("steps")) return "Missing 'steps' array.";
+      JSONArray steps = plan.getJSONArray("steps");
+      if (steps.length() == 0) return "Plan must have at least one step.";
+
+      Set<String> stepIds = new HashSet<>();
+      Map<String, List<String>> deps = new HashMap<>();
+      for (int i = 0; i < steps.length(); i++) {
+        JSONObject step = steps.getJSONObject(i);
+        if (!step.has("id") || !step.has("screen") || !step.has("description")) {
+          return "Step " + i + " missing required field (id, screen, description).";
+        }
+        String id = step.getString("id");
+        if (!stepIds.add(id)) return "Duplicate step ID: " + id;
+        deps.put(id, new ArrayList<String>());
+        if (step.has("depends_on")) {
+          JSONArray depArray = step.getJSONArray("depends_on");
+          for (int j = 0; j < depArray.length(); j++) {
+            deps.get(id).add(depArray.getString(j));
+          }
+        }
+      }
+      for (Map.Entry<String, List<String>> entry : deps.entrySet()) {
+        for (String dep : entry.getValue()) {
+          if (!stepIds.contains(dep)) {
+            return "Step " + entry.getKey() + " depends on unknown step: " + dep;
+          }
+        }
+      }
+      Set<String> visited = new HashSet<>();
+      Set<String> inStack = new HashSet<>();
+      for (String id : stepIds) {
+        if (hasCycle(id, deps, visited, inStack)) {
+          return "Circular dependency detected involving step: " + id;
+        }
+      }
+      return null;
+    } catch (Exception e) {
+      return "Invalid JSON: " + e.getMessage();
+    }
+  }
+
+  /**
+   * Depth-first cycle detection for the step dependency graph.
+   *
+   * @param id      the current step ID being visited
+   * @param deps    adjacency map from step ID to its dependency IDs
+   * @param visited steps that have been fully explored (no cycle through them)
+   * @param inStack steps on the current DFS recursion stack
+   * @return {@code true} if a cycle is detected, {@code false} otherwise
+   */
+  private boolean hasCycle(String id, Map<String, List<String>> deps,
+      Set<String> visited, Set<String> inStack) {
+    if (inStack.contains(id)) return true;
+    if (visited.contains(id)) return false;
+    visited.add(id);
+    inStack.add(id);
+    for (String dep : deps.getOrDefault(id, Collections.<String>emptyList())) {
+      if (hasCycle(dep, deps, visited, inStack)) return true;
+    }
+    inStack.remove(id);
+    return false;
   }
 
 }

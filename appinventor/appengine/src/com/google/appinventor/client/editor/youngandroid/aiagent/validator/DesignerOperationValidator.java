@@ -11,6 +11,7 @@ import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIJsonUtils;
+import com.google.appinventor.client.editor.youngandroid.aiagent.executor.ScreenExecutionContext;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.gwt.json.client.JSONObject;
 
@@ -24,7 +25,18 @@ final class DesignerOperationValidator {
 
   private DesignerOperationValidator() {}
 
-  static String validateAddComponent(JSONObject json) {
+  /**
+   * Returns the form editor to use for validation. Prefers the
+   * ScreenExecutionContext if provided; falls back to the visible screen.
+   */
+  private static YaFormEditor resolveFormEditor(ScreenExecutionContext context) {
+    if (context != null) {
+      return context.getFormEditor();
+    }
+    return AIEditorState.getCurrentFormEditor();
+  }
+
+  static String validateAddComponent(JSONObject json, ScreenExecutionContext context) {
     String type = AIJsonUtils.getStringField(json, "component_type");
     String name = AIJsonUtils.getStringField(json, "name");
     if (type == null || type.isEmpty()) {
@@ -37,7 +49,7 @@ final class DesignerOperationValidator {
       return "ADD_COMPONENT: '" + name + "' is not a valid identifier";
     }
 
-    YaFormEditor formEditor = AIEditorState.getCurrentFormEditor();
+    YaFormEditor formEditor = resolveFormEditor(context);
     if (formEditor == null) {
       return "ADD_COMPONENT: no form editor available for current screen";
     }
@@ -55,13 +67,13 @@ final class DesignerOperationValidator {
     return null;
   }
 
-  static String validateDeleteComponent(JSONObject json) {
+  static String validateDeleteComponent(JSONObject json, ScreenExecutionContext context) {
     String name = AIJsonUtils.getStringField(json, "name");
     if (name == null || name.isEmpty()) {
       return "DELETE_COMPONENT: missing 'name' field";
     }
 
-    YaFormEditor formEditor = AIEditorState.getCurrentFormEditor();
+    YaFormEditor formEditor = resolveFormEditor(context);
     if (formEditor == null) {
       return "DELETE_COMPONENT: no form editor available for current screen";
     }
@@ -76,7 +88,7 @@ final class DesignerOperationValidator {
     return null;
   }
 
-  static String validateSetProperty(JSONObject json) {
+  static String validateSetProperty(JSONObject json, ScreenExecutionContext context) {
     String component = AIJsonUtils.getStringField(json, "component_name");
     String property = AIJsonUtils.getStringField(json, "property_name");
     if (component == null || component.isEmpty()) {
@@ -89,7 +101,7 @@ final class DesignerOperationValidator {
       return "SET_PROPERTY: missing 'value' field";
     }
 
-    YaFormEditor formEditor = AIEditorState.getCurrentFormEditor();
+    YaFormEditor formEditor = resolveFormEditor(context);
     if (formEditor == null) {
       return "SET_PROPERTY: no form editor available for current screen";
     }
@@ -100,7 +112,7 @@ final class DesignerOperationValidator {
     return null;
   }
 
-  static String validateRenameComponent(JSONObject json) {
+  static String validateRenameComponent(JSONObject json, ScreenExecutionContext context) {
     String oldName = AIJsonUtils.getStringField(json, "old_name");
     String newName = AIJsonUtils.getStringField(json, "new_name");
     if (oldName == null || oldName.isEmpty()) {
@@ -113,7 +125,7 @@ final class DesignerOperationValidator {
       return "RENAME_COMPONENT: '" + newName + "' is not a valid identifier";
     }
 
-    YaFormEditor formEditor = AIEditorState.getCurrentFormEditor();
+    YaFormEditor formEditor = resolveFormEditor(context);
     if (formEditor == null) {
       return "RENAME_COMPONENT: no form editor available for current screen";
     }

@@ -20,6 +20,11 @@ import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 import com.google.appinventor.client.editor.youngandroid.aiagent.executor.AIOperationExecutor;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
@@ -59,6 +64,14 @@ public class AIResponseOrchestrator {
   private static final int MAX_EXECUTION_RETRIES = 3;
 
   /**
+   * Callback for plan approval decisions (approve or reject).
+   */
+  public interface PlanApprovalCallback {
+    void onApprove(String approvedPlanJson);
+    void onReject();
+  }
+
+  /**
    * Callback interface for UI updates from the orchestrator.
    */
   public interface ChatCallback {
@@ -79,6 +92,14 @@ public class AIResponseOrchestrator {
     void showDebugBanner();
     /** Sets the feedback context for AI messages (links only shown in debug mode). */
     void setFeedbackContext(boolean debugEnabled, String conversationId);
+    /** Renders a plan card with approve/reject buttons in the chat area. */
+    void renderPlanCard(String planJson, PlanApprovalCallback approvalCallback);
+    /** Called when server config has been fetched (orchestration flag, etc.). */
+    void onConfigLoaded();
+    /** Called when plan execution begins (plan approved, agent executing). */
+    void onPlanExecutionStarted();
+    /** Called when plan execution completes (all operations done). */
+    void onPlanExecutionFinished();
   }
 
   private final AIContextCollector contextCollector;
@@ -93,7 +114,12 @@ public class AIResponseOrchestrator {
   private int validationRetryCount;
   private int executionRetryCount;
   private boolean autoAcceptAll;
+  private boolean pendingPlanProposal;
   private boolean debugBannerShown;
+  private boolean orchestrationEnabled;
+
+  /** Manages parallel child conversations during multi-screen plan execution. */
+  private AIOrchestrationManager orchestrationManager;
 
   /** Original total number of tools in the batch, preserved across retries. */
   private int originalToolCount;
@@ -203,6 +229,10 @@ public class AIResponseOrchestrator {
    * batches without requiring user confirmation for each one.
    */
   public void applyAndAcceptAll() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.setAutoAcceptAll();
+      return;
+    }
     setAutoAcceptAll(true);
     applyOperations();
   }
@@ -214,6 +244,11 @@ public class AIResponseOrchestrator {
    * a continuation request is sent after successful application.
    */
   public void applyOperations() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.approveBatch();
+      return;
+    }
+
     if (pendingResponse == null) {
       return;
     }
@@ -259,6 +294,12 @@ public class AIResponseOrchestrator {
    * so the AI knows the operations were discarded.
    */
   public void rejectOperations() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.rejectBatch("User rejected the operations.");
+      // CompletionCallback.onOrchestrationRejected handles cleanup + parent feedback
+      return;
+    }
+
     if (pendingResponse == null) {
       return;
     }
@@ -352,6 +393,16 @@ public class AIResponseOrchestrator {
     if (status.getConversationId() != null) {
       callback.setFeedbackContext(status.isDebugEnabled(), status.getConversationId());
     }
+    orchestrationEnabled = status.isOrchestrationEnabled();
+    callback.onConfigLoaded();
+  }
+
+  /**
+   * Returns whether the {@code ai.agent.orchestration} server flag is enabled.
+   * Updated on every status poll via {@link #applyConfig}.
+   */
+  public boolean isOrchestrationEnabled() {
+    return orchestrationEnabled;
   }
 
   private void loadHistory(long projectId) {
@@ -376,11 +427,17 @@ public class AIResponseOrchestrator {
    * Clears the current conversation on the server and in the UI.
    */
   public void clearConversation() {
+    if (orchestrationManager != null) {
+      orchestrationManager.cancelAll();
+      orchestrationManager = null;
+    }
+
     long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
       return;
     }
 
+    AIEditorState.setPlanApproved(false);
     aiAgentService.clearConversation(projectId, new OdeAsyncCallback<Void>(
         MESSAGES.aiChatClearError()) {
       @Override
@@ -415,6 +472,11 @@ public class AIResponseOrchestrator {
    * Cancels any in-flight request, stops polling, and resets state.
    */
   public void cancelInFlight() {
+    if (orchestrationManager != null && orchestrationManager.isActive()) {
+      orchestrationManager.cancelAll();
+      orchestrationManager = null;
+      callback.onPlanExecutionFinished();
+    }
     setAutoAcceptAll(false);
     requestInFlight = false;
     pendingResponse = null;
@@ -477,10 +539,245 @@ public class AIResponseOrchestrator {
   }
 
   /**
+   * Returns whether a plan proposal is awaiting user approval.
+   */
+  public boolean hasPendingPlanProposal() {
+    return pendingPlanProposal;
+  }
+
+  /**
+   * Dismisses a pending plan proposal as rejected. Called when the user
+   * sends a new message instead of clicking the plan card buttons.
+   */
+  public void dismissPendingPlan() {
+    pendingPlanProposal = false;
+  }
+
+  /**
    * Returns the pending AI response awaiting user approval, or null.
    */
   public AIAgentResponse getPendingResponse() {
     return pendingResponse;
+  }
+
+  // ---- Plan proposal handling ----
+
+  /**
+   * Handles a PROPOSE_PLAN response by rendering a plan card in the chat
+   * with approve/reject buttons. The AI message (if any) is shown above
+   * the card.
+   */
+  private void handlePlanProposal(AIAgentResponse response) {
+    AIOperation planOp = response.getOperations().get(0);
+    String planJson = planOp.getPayload();
+
+    // Finalize any in-progress streaming bubble
+    if (streamingActive) {
+      callback.finalizeStreamingBubble(response.getAiMessage());
+      streamingActive = false;
+    } else {
+      // Show the AI message if present
+      String aiMessage = response.getAiMessage();
+      if (aiMessage != null && !aiMessage.isEmpty()) {
+        callback.addAiMessage(aiMessage);
+      }
+    }
+
+    // Render the plan card with approve/reject
+    pendingPlanProposal = true;
+    callback.renderPlanCard(planJson, new PlanApprovalCallback() {
+      @Override
+      public void onApprove(String approvedPlanJson) {
+        pendingPlanProposal = false;
+        executePlanSequentially(approvedPlanJson);
+      }
+
+      @Override
+      public void onReject() {
+        pendingPlanProposal = false;
+        callback.addAiMessage(MESSAGES.aiChatPlanRejected());
+        String feedback = "The user rejected the proposed plan. "
+            + "Please suggest alternatives or ask what they'd like changed.";
+        sendPlatformMessage(feedback);
+      }
+    });
+  }
+
+  /**
+   * Dispatches an approved plan for execution. Plans with two or more
+   * screen-level steps are executed via the parallel orchestration manager;
+   * single-screen plans fall back to the Phase A sequential path where
+   * the parent agent executes step by step.
+   */
+  private void executePlanSequentially(String planJson) {
+    // Show loading state immediately so the user sees feedback after
+    // pressing Approve (Bug fix: gap between Approve and first batch).
+    requestInFlight = true;
+    callback.setRequestInFlight(true);
+
+    AIEditorState.setPlanApproved(true);
+    int screenStepCount = countScreenSteps(planJson);
+
+    if (screenStepCount <= 1) {
+      // Single screen — sequential execution via parent agent (Phase A path)
+      callback.onPlanExecutionStarted();
+      String planMessage = "The user approved the following execution plan. "
+          + "Execute it step by step, one screen at a time. "
+          + "Use switch_screen to navigate between screens as needed. "
+          + "Use toggle_editor to switch between Designer and Blocks views. "
+          + "Work through each step in dependency order.\n\n"
+          + planJson;
+      sendPlatformMessage(planMessage);
+    } else {
+      // Multiple screens — parallel orchestration
+      callback.onPlanExecutionStarted();
+      orchestrationManager = new AIOrchestrationManager(contextCollector);
+      orchestrationManager.executePlan(planJson, callback,
+          new AIOrchestrationManager.CompletionCallback() {
+            @Override
+            public void onOrchestrationComplete(String summary) {
+              List<String> screens = orchestrationManager.getAppliedScreens();
+              orchestrationManager = null;
+              String screenStates = collectScreenStates(screens);
+              sendPlatformMessage(summary
+                  + "\n\nCurrent state of modified screens:\n" + screenStates
+                  + "\nProvide a brief summary to the user of what was built.");
+            }
+
+            @Override
+            public void onOrchestrationRejected(String summary) {
+              List<String> screens = orchestrationManager.getAppliedScreens();
+              orchestrationManager = null;
+              String screenStates = screens.isEmpty() ? "" :
+                  "\n\nCurrent state of modified screens:\n" + collectScreenStates(screens);
+              sendPlatformMessage(summary + screenStates
+                  + "\nThe user stopped the plan execution. Ask what they'd like "
+                  + "changed, or propose a revised plan.");
+            }
+
+            @Override
+            public void onOrchestrationCancelled() {
+              orchestrationManager = null;
+            }
+          });
+    }
+  }
+
+  /**
+   * Counts the number of screen-level steps in the plan JSON (steps where
+   * the screen is not {@code __project__}).
+   *
+   * @param planJson the plan JSON string
+   * @return number of distinct screen-level steps
+   */
+  private int countScreenSteps(String planJson) {
+    try {
+      JSONValue parsed = JSONParser.parseStrict(planJson);
+      JSONArray stepsArr = null;
+
+      JSONObject planObj = parsed.isObject();
+      if (planObj != null) {
+        JSONValue stepsVal = planObj.get("steps");
+        if (stepsVal != null) {
+          stepsArr = stepsVal.isArray();
+        }
+      }
+      if (stepsArr == null) {
+        stepsArr = parsed.isArray();
+      }
+      if (stepsArr == null) {
+        return 0;
+      }
+
+      int count = 0;
+      for (int i = 0; i < stepsArr.size(); i++) {
+        JSONValue stepVal = stepsArr.get(i);
+        JSONObject step = stepVal.isObject();
+        if (step == null) {
+          continue;
+        }
+        JSONValue screenVal = step.get("screen");
+        if (screenVal == null) {
+          continue;
+        }
+        JSONString screenStr = screenVal.isString();
+        if (screenStr != null && !"__project__".equals(screenStr.stringValue())) {
+          count++;
+        }
+      }
+      return count;
+    } catch (Exception e) {
+      LOG.warning("Failed to parse plan JSON for step count: " + e.getMessage());
+      return 0;
+    }
+  }
+
+  /**
+   * Sends a platform message (system-generated, non-user-visible) to the
+   * server via the normal processRequest RPC. The message is flagged as
+   * a platform message and planExecuteMode is disabled (executing, not
+   * planning).
+   */
+  /**
+   * Collects the current component tree and blocks YAIL for each screen,
+   * so the parent LLM has accurate, up-to-date state after orchestration.
+   */
+  private String collectScreenStates(List<String> screenNames) {
+    StringBuilder sb = new StringBuilder();
+    for (String screenName : screenNames) {
+      sb.append("\n--- ").append(screenName).append(" ---\n");
+      try {
+        String components = contextCollector.getScreenComponentsJson(screenName);
+        if (components != null && !components.isEmpty()) {
+          sb.append("Components: ").append(components).append("\n");
+        }
+      } catch (Exception e) {
+        sb.append("Components: (unavailable)\n");
+      }
+      try {
+        String blocks = contextCollector.getScreenBlocksYail(screenName);
+        if (blocks != null && !blocks.isEmpty()) {
+          sb.append("Blocks:\n").append(blocks).append("\n");
+        } else {
+          sb.append("Blocks: (none)\n");
+        }
+      } catch (Exception e) {
+        sb.append("Blocks: (unavailable)\n");
+      }
+    }
+    return sb.toString();
+  }
+
+  private void sendPlatformMessage(String message) {
+    requestInFlight = true;
+    callback.setRequestInFlight(true);
+    validationRetryCount = 0;
+    executionRetryCount = 0;
+    originalToolCount = 0;
+    preservedValidOps = null;
+    preservedAiMessage = null;
+
+    AIAgentRequest request = contextCollector.buildRequest(message);
+    request.setPlatformMessage(true);
+    request.setPlanExecuteMode(false);
+
+    startPollingStatus();
+    aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>(
+        MESSAGES.aiChatSendError()) {
+      @Override
+      public void onSuccess(AIAgentResponse response) {
+        handleResponseWithValidation(response);
+      }
+
+      @Override
+      public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        requestInFlight = false;
+        callback.setRequestInFlight(false);
+        stopPollingStatus();
+        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+      }
+    });
   }
 
   // ---- Validation ----
@@ -598,6 +895,14 @@ public class AIResponseOrchestrator {
   private void handleResponse(AIAgentResponse response) {
     List<AIOperation> operations = response.getOperations();
     boolean hasOps = operations != null && !operations.isEmpty();
+
+    // Intercept PROPOSE_PLAN responses — render a plan card instead of
+    // the normal operation preview.
+    if (hasOps && operations.size() == 1
+        && operations.get(0).getType() == AIOperation.Type.PROPOSE_PLAN) {
+      handlePlanProposal(response);
+      return;
+    }
 
     // Finalize streaming bubble or display the AI message.
     String aiMessage = response.getAiMessage();

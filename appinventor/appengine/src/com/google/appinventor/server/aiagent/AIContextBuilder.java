@@ -7,6 +7,7 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.server.aiagent.context.CatalogModule;
 import com.google.appinventor.server.aiagent.context.ContextParams;
+import com.google.appinventor.server.aiagent.context.ContextUtils;
 import com.google.appinventor.server.aiagent.context.ExamplesModule;
 import com.google.appinventor.server.aiagent.context.GrammarModule;
 import com.google.appinventor.server.aiagent.context.ModeModule;
@@ -20,6 +21,8 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +49,8 @@ import java.util.logging.Logger;
  *   <li>Current screen: component tree and blocks YAIL
  * </ol>
  *
- * <p>Tool definitions are built separately by {@link #buildTools} and passed
- * via each provider's native tool/function-calling API parameter, filtered
- * by mode and current editor view.
+ * <p>Tool definitions are loaded from {@code tool_definitions.json} and
+ * filtered by mode and current editor view via {@link #buildTools}.
  *
  * <p>All system prompt layers are cached on first use. Context messages
  * are built fresh per-request.
@@ -63,6 +65,9 @@ public class AIContextBuilder {
    * page content is fetched and included as an additional context message.
    */
   static final boolean INCLUDE_TUTORIAL_CONTEXT = true;
+
+  /** Cached parsed tool definitions from {@code tool_definitions.json}. */
+  private static volatile JSONObject cachedToolDefs;
 
   // Context modules
   private final ReferenceModule referenceModule = new ReferenceModule();
@@ -152,15 +157,18 @@ public class AIContextBuilder {
    *                             may be null
    * @param languageDisplayName  the native display name (e.g. "Español"),
    *                             may be null
+   * @param enforcementContext   controls which operations are allowed
+   *                             (e.g. PLANNING suppresses the normal mode instructions)
    * @return list of context message strings
    */
   public List<String> buildContextMessages(String userId, long projectId, String screenName,
       String mode, String blocksYail, String currentView,
       String screenComponentsJson, String projectSnapshot,
-      String blockWarnings, String locale, String languageDisplayName) {
+      String blockWarnings, String locale, String languageDisplayName,
+      EnforcementContext enforcementContext) {
     ContextParams params = new ContextParams(userId, projectId, screenName, mode,
         blocksYail, currentView, screenComponentsJson, projectSnapshot, blockWarnings,
-        locale, languageDisplayName);
+        locale, languageDisplayName, enforcementContext);
     List<String> messages = new ArrayList<>();
 
     // Message 1: Mode and view
@@ -193,27 +201,29 @@ public class AIContextBuilder {
   /**
    * Build the list of LLM tools filtered by mode and current editor view.
    *
+   * <p>Tool definitions are loaded from {@code tool_definitions.json} and
+   * cached on first use.
+   *
    * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
    * @param currentView the active editor view ("Designer" or "Blocks")
-   * @return tools available in the given mode and view
+   * @param context     the enforcement context controlling which tools are exposed
+   * @return tools available in the given mode, view, and enforcement context
    */
-  public List<LLMTool> buildTools(String mode, String currentView) {
+  public List<LLMTool> buildTools(String mode, String currentView, EnforcementContext context) {
+    JSONObject defs = getToolDefinitions();
     List<LLMTool> tools = new ArrayList<>();
 
+    // Planning mode: only expose read-only tools and propose_plan
+    if (context == EnforcementContext.PLANNING) {
+      tools.add(toolFromDefs(defs, AIToolNames.LOOKUP_COMPONENT));
+      tools.add(toolFromDefs(defs, AIToolNames.LOOKUP_SCREEN));
+      tools.add(toolFromDefs(defs, AIToolNames.PROPOSE_PLAN));
+      return tools;
+    }
+
     // Read-only tools available in all modes
-    tools.add(new LLMTool(AIToolNames.LOOKUP_COMPONENT,
-        "Look up full metadata for a component type from the component database. "
-            + "Returns all properties, events, methods, and their types.",
-        "{\"type\":\"object\",\"properties\":{\"component_type\":{\"type\":\"string\","
-            + "\"description\":\"The component type name, e.g. Button, Label\"}},\"required\":[\"component_type\"]}"));
-    tools.add(new LLMTool(AIToolNames.LOOKUP_SCREEN,
-        "Look up the saved state of a screen including its component tree. "
-            + "Note: this reads from the server's last-saved data, which may not "
-            + "reflect unsaved changes. For the current screen, the component tree "
-            + "in the context messages above is the authoritative source. "
-            + "Use this tool only for non-current screens.",
-        "{\"type\":\"object\",\"properties\":{\"screen_name\":{\"type\":\"string\","
-            + "\"description\":\"The screen name, e.g. Screen1\"}},\"required\":[\"screen_name\"]}"));
+    tools.add(toolFromDefs(defs, AIToolNames.LOOKUP_COMPONENT));
+    tools.add(toolFromDefs(defs, AIToolNames.LOOKUP_SCREEN));
 
     if (AI_AGENT_MODE_ADVISOR.equals(mode)) {
       return tools;
@@ -221,71 +231,20 @@ public class AIContextBuilder {
 
     // Designer tools: only available when viewing Designer
     if (!"Blocks".equals(currentView)) {
-      tools.add(new LLMTool(AIToolNames.ADD_COMPONENT,
-          "Add a new component to the current screen.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"component_type\":{\"type\":\"string\",\"description\":\"Component type, e.g. Button\"},"
-              + "\"name\":{\"type\":\"string\",\"description\":\"Instance name, e.g. Button1\"},"
-              + "\"parent\":{\"type\":\"string\",\"description\":\"Parent container name (default: screen root)\"},"
-              + "\"properties\":{\"type\":\"object\",\"description\":\"Initial property values\"}"
-              + "},\"required\":[\"component_type\",\"name\"]}"));
-
-      tools.add(new LLMTool(AIToolNames.DELETE_COMPONENT,
-          "Delete a component from the current screen.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"name\":{\"type\":\"string\",\"description\":\"Component instance name\"}"
-              + "},\"required\":[\"name\"]}"));
-
-      tools.add(new LLMTool(AIToolNames.SET_PROPERTY,
-          "Set a property value on a component.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"component_name\":{\"type\":\"string\",\"description\":\"Component instance name\"},"
-              + "\"property_name\":{\"type\":\"string\",\"description\":\"Property name\"},"
-              + "\"value\":{\"description\":\"Property value (type depends on property)\"}"
-              + "},\"required\":[\"component_name\",\"property_name\",\"value\"]}"));
-
-      tools.add(new LLMTool(AIToolNames.RENAME_COMPONENT,
-          "Rename a component instance.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"old_name\":{\"type\":\"string\",\"description\":\"Current component name\"},"
-              + "\"new_name\":{\"type\":\"string\",\"description\":\"New component name\"}"
-              + "},\"required\":[\"old_name\",\"new_name\"]}"));
+      tools.add(toolFromDefs(defs, AIToolNames.ADD_COMPONENT));
+      tools.add(toolFromDefs(defs, AIToolNames.DELETE_COMPONENT));
+      tools.add(toolFromDefs(defs, AIToolNames.SET_PROPERTY));
+      tools.add(toolFromDefs(defs, AIToolNames.RENAME_COMPONENT));
     }
 
     // Blocks tools: only available when viewing Blocks
     if (!"Designer".equals(currentView)) {
-      tools.add(new LLMTool(AIToolNames.WRITE_BLOCK,
-          "Create or replace a top-level block (event handler, global variable, or procedure) "
-              + "using YAIL code. The YAIL form head identifies the block type and target. "
-              + "If a block with the same identity already exists, it is replaced (upsert semantics).",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"yail\":{\"type\":\"string\",\"description\":\"Complete YAIL S-expression for the "
-              + "top-level block. Must be one of: (define-event ComponentName EventName ...), "
-              + "(define-generic-event ComponentType EventName ...), "
-              + "(def g$varName initialValue), (def (p$procName $param1 ...) body) for procedures "
-              + "without return, or (def-return (p$procName $param1 ...) body) for procedures with return\"}"
-              + "},\"required\":[\"yail\"]}"));
-
-      tools.add(new LLMTool(AIToolNames.DELETE_BLOCK,
-          "Delete a top-level block (event handler, global variable, or procedure). "
-              + "The identifier format matches the YAIL form head tokens.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"block\":{\"type\":\"string\",\"description\":\"Block identifier using YAIL head "
-              + "tokens, e.g. 'define-event Button1 Click', 'define-generic-event Button Click', "
-              + "'def g$score', 'def p$factorial', 'def-return p$myFunc'\"}"
-              + "},\"required\":[\"block\"]}"));
+      tools.add(toolFromDefs(defs, AIToolNames.WRITE_BLOCK));
+      tools.add(toolFromDefs(defs, AIToolNames.DELETE_BLOCK));
     }
 
     // Navigation tool: toggle editor view (ScreenEditor and ProjectEditor)
-    tools.add(new LLMTool(AIToolNames.TOGGLE_EDITOR,
-        "Switch the editor view between Designer and Blocks. "
-            + "This tool MUST be called ALONE — do not combine it with any other tools "
-            + "in the same response. After the toggle is confirmed, continue with "
-            + "the operations that require the new view.",
-        "{\"type\":\"object\",\"properties\":{"
-            + "\"view\":{\"type\":\"string\",\"enum\":[\"Designer\",\"Blocks\"],"
-            + "\"description\":\"The editor view to switch to\"}"
-            + "},\"required\":[\"view\"]}"));
+    tools.add(toolFromDefs(defs, AIToolNames.TOGGLE_EDITOR));
 
     // Log tool list built so far before project-level tools
     if (AIDebug.enabled()) {
@@ -296,37 +255,40 @@ public class AIContextBuilder {
       AIDebug.log(LOG, toolList.toString());
     }
 
-    // Project-level tools only for ProjectEditor
-    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)) {
-      tools.add(new LLMTool(AIToolNames.SWITCH_SCREEN,
-          "Switch the active screen context. "
-              + "This tool MUST be called ALONE — do not combine it with any other tools "
-              + "in the same response. After the switch is confirmed, continue with "
-              + "the operations that require the new screen.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to switch to\"}"
-              + "},\"required\":[\"screen_name\"]}"));
-      tools.add(new LLMTool(AIToolNames.CREATE_SCREEN,
-          "Create a new screen in the project.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"screen_name\":{\"type\":\"string\",\"description\":\"New screen name\"}"
-              + "},\"required\":[\"screen_name\"]}"));
+    // Project-level tools only for ProjectEditor (not for child agents)
+    if (AI_AGENT_MODE_PROJECT_EDITOR.equals(mode)
+        && context != EnforcementContext.CHILD_EXECUTION) {
+      tools.add(toolFromDefs(defs, AIToolNames.SWITCH_SCREEN));
+      tools.add(toolFromDefs(defs, AIToolNames.CREATE_SCREEN));
+      tools.add(toolFromDefs(defs, AIToolNames.DELETE_SCREEN));
+      tools.add(toolFromDefs(defs, AIToolNames.SET_PROJECT_PROPERTY));
+    }
 
-      tools.add(new LLMTool(AIToolNames.DELETE_SCREEN,
-          "Delete a screen from the project.",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"screen_name\":{\"type\":\"string\",\"description\":\"Screen name to delete\"}"
-              + "},\"required\":[\"screen_name\"]}"));
-
-      tools.add(new LLMTool(AIToolNames.SET_PROJECT_PROPERTY,
-          "Set a project-level property (theme, colors, sizing, etc.).",
-          "{\"type\":\"object\",\"properties\":{"
-              + "\"property\":{\"type\":\"string\",\"description\":\"Property name\"},"
-              + "\"value\":{\"type\":\"string\",\"description\":\"Property value\"}"
-              + "},\"required\":[\"property\",\"value\"]}"));
+    // In EXECUTION phase, also expose propose_plan so the parent agent can
+    // choose between direct edits and proposing a new plan for complex work.
+    if (context == EnforcementContext.EXECUTION) {
+      tools.add(toolFromDefs(defs, AIToolNames.PROPOSE_PLAN));
     }
 
     return tools;
+  }
+
+  // ---------- Private helpers ----------
+
+  private static JSONObject getToolDefinitions() {
+    if (cachedToolDefs == null) {
+      String json = ContextUtils.loadResource("tool_definitions.json");
+      cachedToolDefs = new JSONObject(json);
+    }
+    return cachedToolDefs;
+  }
+
+  private static LLMTool toolFromDefs(JSONObject defs, String toolName) {
+    JSONObject def = defs.getJSONObject(toolName);
+    return new LLMTool(
+        toolName,
+        def.getString("description"),
+        def.getJSONObject("parameters").toString());
   }
 
   /**

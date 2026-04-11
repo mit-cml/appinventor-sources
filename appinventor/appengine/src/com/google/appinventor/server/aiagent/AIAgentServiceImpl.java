@@ -63,7 +63,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
       return AIAgentEngine.errorResponse("Message cannot be empty.");
     }
     userMessage = sanitize(userMessage);
-    if (userMessage.length() > MAX_MESSAGE_LENGTH) {
+    if (!request.isPlatformMessage() && userMessage.length() > MAX_MESSAGE_LENGTH) {
       return AIAgentEngine.errorResponse(
           "Message too long (max " + MAX_MESSAGE_LENGTH + " characters).");
     }
@@ -71,8 +71,9 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     RequestContext ctx = validateRequest(projectId);
     if (ctx.error != null) return ctx.error;
 
-    // Rate limiting
-    if (!checkRateLimit(ctx.userId)) {
+    // Rate limiting (skip for orchestration sub-requests — already rate-limited
+    // by the parent request that spawned them)
+    if (!request.isOrchestrationMode() && !checkRateLimit(ctx.userId)) {
       return AIAgentEngine.errorResponse(
           "Rate limit exceeded. Please wait before sending another message.");
     }
@@ -81,7 +82,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         userMessage, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
-        request.isPlatformMessage(), request.getContextHint());
+        request.isPlatformMessage(), request.getContextHint(),
+        request.isPlanExecuteMode(),
+        request.isOrchestrationMode(), request.getTargetScreen(),
+        request.isExecutionPhase());
   }
 
   @Override
@@ -93,7 +97,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
     return engine.continueRequest(ctx.userId, projectId, request.getScreenName(),
         request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
-        request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName());
+        request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
+        request.isPlanExecuteMode(),
+        request.isOrchestrationMode(), request.getTargetScreen(),
+        request.isExecutionPhase());
   }
 
   @Override
@@ -111,7 +118,10 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         results, request.getRetryAttempt(), request.getTotalTools(),
         request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
-        request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName());
+        request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
+        request.isPlanExecuteMode(),
+        request.isOrchestrationMode(), request.getTargetScreen(),
+        request.isExecutionPhase());
   }
 
   @Override
@@ -138,24 +148,34 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
 
   @Override
   public AIStreamStatus getRequestStatus(long projectId) {
+    return getRequestStatus(projectId, null);
+  }
+
+  @Override
+  public AIStreamStatus getRequestStatus(long projectId, String targetScreen) {
     String userId = userInfoProvider.getUserId();
     try {
       storageIo.assertUserHasProject(userId, projectId);
     } catch (SecurityException e) {
       return new AIStreamStatus("error", null, null, true, false);
     }
-    return engine.getRequestStatus(projectId);
+    return engine.getRequestStatus(projectId, targetScreen);
   }
 
   @Override
   public void cancelRequest(long projectId) {
+    cancelRequest(projectId, null);
+  }
+
+  @Override
+  public void cancelRequest(long projectId, String targetScreen) {
     String userId = userInfoProvider.getUserId();
     try {
       storageIo.assertUserHasProject(userId, projectId);
     } catch (SecurityException e) {
       throw new SecurityException("You do not have access to this project.");
     }
-    engine.cancelRequest(projectId);
+    engine.cancelRequest(projectId, targetScreen);
   }
 
   // ---------- Request validation ----------

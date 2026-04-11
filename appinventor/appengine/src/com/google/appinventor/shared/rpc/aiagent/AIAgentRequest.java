@@ -29,6 +29,10 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private int totalTools;
   private boolean platformMessage;
   private String contextHint;
+  private boolean orchestrationMode;
+  private String targetScreen;
+  private boolean planExecuteMode;
+  private boolean executionPhase;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -249,6 +253,15 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   public void setPlatformMessage(boolean platformMessage) {
     this.platformMessage = platformMessage;
   }
+
+  public boolean isOrchestrationMode() { return orchestrationMode; }
+  public void setOrchestrationMode(boolean orchestrationMode) { this.orchestrationMode = orchestrationMode; }
+  public String getTargetScreen() { return targetScreen; }
+  public void setTargetScreen(String targetScreen) { this.targetScreen = targetScreen; }
+  public boolean isPlanExecuteMode() { return planExecuteMode; }
+  public void setPlanExecuteMode(boolean planExecuteMode) { this.planExecuteMode = planExecuteMode; }
+  public boolean isExecutionPhase() { return executionPhase; }
+  public void setExecutionPhase(boolean executionPhase) { this.executionPhase = executionPhase; }
 
   /**
    * Wraps a system-generated message in {@code <platform_message>} tags so

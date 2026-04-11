@@ -14,36 +14,62 @@ import java.util.List;
 public class StreamBuffer {
   private final StorageIo storageIo;
   private final long projectId;
+  private final String screenName; // null for parent, non-null for child
 
   public StreamBuffer(StorageIo storageIo, long projectId) {
+    this(storageIo, projectId, null);
+  }
+
+  public StreamBuffer(StorageIo storageIo, long projectId, String screenName) {
     this.storageIo = storageIo;
     this.projectId = projectId;
+    this.screenName = screenName;
   }
 
   /** Initialize or reset the buffer. Call once at the start of an LLM request. */
   public void init() {
-    storageIo.initAIStreamBuffer(projectId);
-    storageIo.clearAIStreamCancelled(projectId);
+    if (screenName != null) {
+      storageIo.initAIStreamBuffer(projectId, screenName);
+    } else {
+      storageIo.initAIStreamBuffer(projectId);
+    }
+    if (screenName != null) {
+      storageIo.clearAIStreamCancelled(projectId, screenName);
+    } else {
+      storageIo.clearAIStreamCancelled(projectId);
+    }
   }
 
   /** Append a text delta from the LLM. */
   public void appendText(String text) {
     if (text != null && !text.isEmpty()) {
-      storageIo.appendAIStreamChunk(projectId, "t:" + text);
+      if (screenName != null) {
+        storageIo.appendAIStreamChunk(projectId, screenName, "t:" + text);
+      } else {
+        storageIo.appendAIStreamChunk(projectId, "t:" + text);
+      }
     }
   }
 
   /** Append a thinking/reasoning delta from the LLM. */
   public void appendThinking(String text) {
     if (text != null && !text.isEmpty()) {
-      storageIo.appendAIStreamChunk(projectId, "k:" + text);
+      if (screenName != null) {
+        storageIo.appendAIStreamChunk(projectId, screenName, "k:" + text);
+      } else {
+        storageIo.appendAIStreamChunk(projectId, "k:" + text);
+      }
     }
   }
 
   /** Append a status update (e.g., "Building context..."). */
   public void appendStatus(String status) {
     if (status != null && !status.isEmpty()) {
-      storageIo.appendAIStreamChunk(projectId, "s:" + status);
+      if (screenName != null) {
+        storageIo.appendAIStreamChunk(projectId, screenName, "s:" + status);
+      } else {
+        storageIo.appendAIStreamChunk(projectId, "s:" + status);
+      }
     }
   }
 
@@ -51,12 +77,20 @@ public class StreamBuffer {
    * bubble (accumulated text, thinking, and typing indicator).
    * Used before a narration retry so the retry streams into a clean slate. */
   public void resetStreaming() {
-    storageIo.appendAIStreamChunk(projectId, "r:");
+    if (screenName != null) {
+      storageIo.appendAIStreamChunk(projectId, screenName, "r:");
+    } else {
+      storageIo.appendAIStreamChunk(projectId, "r:");
+    }
   }
 
   /** Mark the stream as done (LLM response fully received). */
   public void markDone() {
-    storageIo.markAIStreamDone(projectId);
+    if (screenName != null) {
+      storageIo.markAIStreamDone(projectId, screenName);
+    } else {
+      storageIo.markAIStreamDone(projectId);
+    }
   }
 
   /**
@@ -74,12 +108,20 @@ public class StreamBuffer {
 
   /** Marks this request as cancelled in Memcache. */
   public void setCancelled() {
-    storageIo.setAIStreamCancelled(projectId);
+    if (screenName != null) {
+      storageIo.setAIStreamCancelled(projectId, screenName);
+    } else {
+      storageIo.setAIStreamCancelled(projectId);
+    }
   }
 
   /** Returns true if this request has been cancelled. */
   public boolean isCancelled() {
-    return storageIo.isAIStreamCancelled(projectId);
+    if (screenName != null) {
+      return storageIo.isAIStreamCancelled(projectId, screenName);
+    } else {
+      return storageIo.isAIStreamCancelled(projectId);
+    }
   }
 
   /**
@@ -94,7 +136,11 @@ public class StreamBuffer {
 
   /** Clean up all buffer keys. Call after the RPC response is sent. */
   public void clear() {
-    storageIo.clearAIStreamBuffer(projectId);
+    if (screenName != null) {
+      storageIo.clearAIStreamBuffer(projectId, screenName);
+    } else {
+      storageIo.clearAIStreamBuffer(projectId);
+    }
   }
 
   /**
@@ -103,8 +149,12 @@ public class StreamBuffer {
    * update becomes {@code statusText}. Checks the done flag.
    */
   public AIStreamStatus consume() {
-    List<String> chunks = storageIo.consumeAIStreamChunks(projectId);
-    boolean done = storageIo.isAIStreamDone(projectId);
+    List<String> chunks = screenName != null
+        ? storageIo.consumeAIStreamChunks(projectId, screenName)
+        : storageIo.consumeAIStreamChunks(projectId);
+    boolean done = screenName != null
+        ? storageIo.isAIStreamDone(projectId, screenName)
+        : storageIo.isAIStreamDone(projectId);
 
     StringBuilder textBuilder = null;
     StringBuilder thinkingBuilder = null;

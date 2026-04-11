@@ -64,19 +64,19 @@ public class AIAgentEngine {
    * Instruction appended to the context messages on every continuation call.
    * Steers the model away from refactoring or undoing prior user-requested
    * changes when it receives the fresh project state in a continuation.
+   * Loaded from {@code continuation_instructions.md}.
    */
-  private static final String CONTINUATION_SCOPE_INSTRUCTION =
-      "[Continuation scope — read before proceeding]\n\n"
-      + "You are continuing your response to the user's most recent request. "
-      + "Complete ONLY what is needed to fulfill that request. If your changes "
-      + "introduced a bug or inconsistency (e.g. blocks referencing a deleted or "
-      + "renamed component, a failed write_block, or missing blocks for a newly "
-      + "added component), fix that specific issue — but nothing else. Do not:\n"
-      + "- Refactor, reorganize, or \"clean up\" existing code beyond what was asked\n"
-      + "- Undo or reverse changes made in previous turns of this conversation\n"
-      + "- Add improvements, optimizations, or structural changes the user did not request\n\n"
-      + "If you have fully completed the user's request, respond with text only "
-      + "— do not call any tools.";
+  private static volatile String continuationScopeInstruction;
+
+  private static String getContinuationScopeInstruction() {
+    if (continuationScopeInstruction == null) {
+      continuationScopeInstruction =
+          ContextUtils.loadResource("continuation_instructions.md");
+    }
+    return continuationScopeInstruction;
+  }
+
+  private static final Flag<Boolean> ORCHESTRATION_FLAG = Flag.createFlag("ai.agent.orchestration", false);
 
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
@@ -152,14 +152,17 @@ public class AIAgentEngine {
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName, boolean isPlatformMessage,
-      String contextHint) {
-    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
+      String contextHint,
+      boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
+      boolean executionPhase) {
+    String routingScreen = orchestrationMode ? targetScreen : null;
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
       streamBuffer.init();
       streamBuffer.appendStatus("Building context...");
 
       // Get or create conversation (resets on provider change)
-      ConversationInit init = initConversation(projectId);
+      ConversationInit init = initConversation(projectId, routingScreen);
       AIConversationState conv = init.conv;
       boolean isNew = init.isNew;
 
@@ -168,13 +171,22 @@ public class AIAgentEngine {
           + ", screen=" + screenName + ", mode=" + mode
           + ", msgLen=" + userMessage.length());
 
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+        enforcementContext = EnforcementContext.PLANNING;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
+      }
+
       // Build system prompt, context messages, and tools
       String systemPrompt = contextBuilder.build();
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName);
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+          locale, languageDisplayName, enforcementContext);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
       // Build history for stateless providers
@@ -233,7 +245,8 @@ public class AIAgentEngine {
       }
 
       // Parse tool calls
-      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
+      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+          enforcementContext);
 
       // Debug: parse result
       if (AIDebug.enabled()) {
@@ -253,7 +266,7 @@ public class AIAgentEngine {
       // in an editing mode, retry once with a nudge.
       NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
       retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
-          contextMessages, tools, history, conv, resolver, streamBuffer);
+          contextMessages, tools, history, conv, resolver, streamBuffer, enforcementContext);
       llmResponse = nrs.llmResponse;
       parsed = nrs.parsed;
       assistantText = nrs.assistantText;
@@ -264,18 +277,20 @@ public class AIAgentEngine {
           + ", textLen=" + assistantText.length());
 
       return finalizeResponse(llmResponse, assistantText, parsed,
-          conv, projectId, isNew);
+          conv, projectId, isNew, routingScreen);
 
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Request cancelled by user for project " + projectId);
       // Store synthetic assistant message to keep history role-alternating
       // (user message was already stored before the LLM call).
-      AIConversationState conv = conversationManager.getConversation(projectId);
+      AIConversationState conv = routingScreen != null
+          ? conversationManager.getConversation(projectId, routingScreen)
+          : conversationManager.getConversation(projectId);
       if (conv != null) {
         conversationManager.storeMessage(conv.getConversationId(),
             MessageRole.ASSISTANT, "[Request cancelled]", false);
       }
-      new StreamBuffer(storageIo, projectId).clear();
+      new StreamBuffer(storageIo, projectId, routingScreen).clear();
       return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
           Collections.<String>emptyList());
     } catch (LLMProviderException e) {
@@ -308,14 +323,18 @@ public class AIAgentEngine {
   public AIAgentResponse continueRequest(String userId, long projectId, String screenName,
       String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
-      String locale, String languageDisplayName) {
-    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
+      String locale, String languageDisplayName, boolean planExecuteMode,
+      boolean orchestrationMode, String targetScreen, boolean executionPhase) {
+    String routingScreen = orchestrationMode ? targetScreen : null;
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
       streamBuffer.init();
       streamBuffer.appendStatus("Continuing AI response...");
 
       // Load conversation state from memcache
-      AIConversationState conv = conversationManager.getConversation(projectId);
+      AIConversationState conv = routingScreen != null
+          ? conversationManager.getConversation(projectId, routingScreen)
+          : conversationManager.getConversation(projectId);
       if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
         streamBuffer.clear();
         return errorResponse("No continuation state available. Please start a new request.");
@@ -325,9 +344,18 @@ public class AIAgentEngine {
       AIDebug.log(LOG, "continueRequest: userId=" + userId + ", projectId=" + projectId
           + ", screen=" + screenName + ", mode=" + mode);
 
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+        enforcementContext = EnforcementContext.PLANNING;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
+      }
+
       // Get provider and rebuild tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       // Patch the static system prompt into continuation state
@@ -338,11 +366,11 @@ public class AIAgentEngine {
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName);
+          locale, languageDisplayName, enforcementContext);
       // Append a scoping instruction so the model stays focused on the
       // user's request and does not refactor or undo prior changes.
       contextMessages = new ArrayList<String>(contextMessages);
-      contextMessages.add(AIAgentRequest.wrapPlatformMessage(CONTINUATION_SCOPE_INSTRUCTION));
+      contextMessages.add(AIAgentRequest.wrapPlatformMessage(getContinuationScopeInstruction()));
 
       AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());
@@ -371,7 +399,8 @@ public class AIAgentEngine {
       }
 
       // Parse, enforce, save, and build response
-      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
+      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+          enforcementContext);
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
 
       // Narration detection: catches LLMs that describe remaining work
@@ -385,7 +414,7 @@ public class AIAgentEngine {
       List<String> retryContext = provider.isStateless() ? contextMessages : null;
       NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
       retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
-          retryContext, tools, history, conv, resolver, streamBuffer);
+          retryContext, tools, history, conv, resolver, streamBuffer, enforcementContext);
       llmResponse = nrs.llmResponse;
       parsed = nrs.parsed;
       assistantText = nrs.assistantText;
@@ -395,13 +424,16 @@ public class AIAgentEngine {
           + ", hasMore=" + (llmResponse.hasMore() && !parsed.operations.isEmpty())
           + ", textLen=" + assistantText.length());
 
-      return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false);
+      return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false,
+          routingScreen);
 
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Continuation cancelled by user for project " + projectId);
       // Store synthetic assistant message to keep history role-alternating.
       // Stateless providers (Anthropic) require strict role alternation.
-      AIConversationState cancelConv = conversationManager.getConversation(projectId);
+      AIConversationState cancelConv = routingScreen != null
+          ? conversationManager.getConversation(projectId, routingScreen)
+          : conversationManager.getConversation(projectId);
       if (cancelConv != null) {
         conversationManager.storeMessage(cancelConv.getConversationId(),
             MessageRole.ASSISTANT, "[Request cancelled]", false);
@@ -440,8 +472,11 @@ public class AIAgentEngine {
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
       List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
-      String blockWarnings, String locale, String languageDisplayName) {
-    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
+      String blockWarnings, String locale, String languageDisplayName,
+      boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
+      boolean executionPhase) {
+    String routingScreen = orchestrationMode ? targetScreen : null;
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
       streamBuffer.init();
 
@@ -461,7 +496,9 @@ public class AIAgentEngine {
       streamBuffer.appendStatus("Analyzing errors (" + retryInfo + ")...");
 
       // Load conversation state
-      AIConversationState conv = conversationManager.getConversation(projectId);
+      AIConversationState conv = routingScreen != null
+          ? conversationManager.getConversation(projectId, routingScreen)
+          : conversationManager.getConversation(projectId);
       if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
         streamBuffer.clear();
         return errorResponse("No conversation state available. Please start a new request.");
@@ -496,15 +533,22 @@ public class AIAgentEngine {
       String systemPrompt = contextBuilder.build();
       patchedRef = patchSystemPrompt(patchedRef, systemPrompt);
 
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
+      }
+
       // Build fresh context messages with current blocks state
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName);
+          locale, languageDisplayName, enforcementContext);
 
       // Get provider, tools, and resolver
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       if (AIDebug.enabled()) {
@@ -520,14 +564,16 @@ public class AIAgentEngine {
           patchedRef, tools, contextMessages, resolver, streamBuffer);
 
       // Parse, enforce, save, and build response
-      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView);
+      ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+          enforcementContext);
       String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
 
       AIDebug.log(LOG, "Error retry response: operations=" + parsed.operations.size()
           + ", errors=" + parsed.errors.size()
           + ", hasMore=" + (llmResponse.hasMore() && !parsed.operations.isEmpty()));
 
-      return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false);
+      return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false,
+          routingScreen);
 
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Error retry cancelled by user for project " + projectId);
@@ -571,12 +617,19 @@ public class AIAgentEngine {
   }
 
   public AIStreamStatus getRequestStatus(long projectId) {
-    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
+    return getRequestStatus(projectId, null);
+  }
+
+  public AIStreamStatus getRequestStatus(long projectId, String targetScreen) {
+    StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, targetScreen);
     AIStreamStatus status = streamBuffer.consume();
     // Piggyback config fields on every status poll so the client can
     // detect debug mode and build feedback links without a separate RPC.
     status.setDebugEnabled(AIDebug.enabled());
-    AIConversationState conv = conversationManager.getConversation(projectId);
+    status.setOrchestrationEnabled(ORCHESTRATION_FLAG.get());
+    AIConversationState conv = targetScreen != null
+        ? conversationManager.getConversation(projectId, targetScreen)
+        : conversationManager.getConversation(projectId);
     if (conv != null) {
       status.setConversationId(conv.getConversationId());
     }
@@ -588,7 +641,11 @@ public class AIAgentEngine {
    * in Memcache and checked by LLM providers during streaming.
    */
   public void cancelRequest(long projectId) {
-    new StreamBuffer(storageIo, projectId).setCancelled();
+    cancelRequest(projectId, null);
+  }
+
+  public void cancelRequest(long projectId, String targetScreen) {
+    new StreamBuffer(storageIo, projectId, targetScreen).setCancelled();
   }
 
   public String getProjectAIMode(String userId, long projectId) {
@@ -625,9 +682,14 @@ public class AIAgentEngine {
   /**
    * Get or create the conversation state for a project, resetting it if the
    * configured provider has changed since the last request.
+   *
+   * @param projectId  the project ID
+   * @param screenName screen name for routing (null for parent conversation)
    */
-  ConversationInit initConversation(long projectId) {
-    AIConversationState conv = conversationManager.getConversation(projectId);
+  ConversationInit initConversation(long projectId, String screenName) {
+    AIConversationState conv = screenName != null
+        ? conversationManager.getConversation(projectId, screenName)
+        : conversationManager.getConversation(projectId);
     boolean isNew = (conv == null);
     if (isNew) {
       conv = new AIConversationState(getConfiguredProvider(),
@@ -635,7 +697,11 @@ public class AIAgentEngine {
     }
     String currentProvider = getConfiguredProvider();
     if (!currentProvider.equals(conv.getProviderName())) {
-      conversationManager.clearConversation(projectId);
+      if (screenName != null) {
+        conversationManager.clearConversation(projectId, screenName);
+      } else {
+        conversationManager.clearConversation(projectId);
+      }
       conv = new AIConversationState(currentProvider,
           UUID.randomUUID().toString(), null);
       isNew = true;
@@ -646,7 +712,7 @@ public class AIAgentEngine {
   // ---------- Response pipeline ----------
 
   ParsedResult parseAndEnforce(LLMResponse llmResponse,
-      String mode, String currentView) {
+      String mode, String currentView, EnforcementContext context) {
     List<RawToolCall> rawToolCalls = llmResponse.getRawToolCalls();
     List<ToolCallStatus> statuses = new ArrayList<>();
     List<AIOperation> allParsedOps = new ArrayList<>();
@@ -681,7 +747,7 @@ public class AIAgentEngine {
     // Run mode enforcement on the parsed operations.
     List<String> enforceErrors = new ArrayList<>();
     List<AIOperation> accepted = ModeEnforcer.enforce(
-        allParsedOps, mode, currentView, enforceErrors);
+        allParsedOps, mode, currentView, context, enforceErrors);
     allErrors.addAll(enforceErrors);
 
     // Determine which parsed ops survived enforcement using identity.
@@ -729,7 +795,8 @@ public class AIAgentEngine {
   void retryIfNarration(NarrationRetryState state, String mode, String currentView,
       LLMProvider provider, String systemPrompt, List<String> contextMessages,
       List<LLMTool> tools, List<ChatMessage> history, AIConversationState conv,
-      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer)
+      ReadOnlyToolResolver resolver, StreamBuffer streamBuffer,
+      EnforcementContext enforcementContext)
       throws LLMProviderException {
     if (!RETRY_NARRATION) {
       return;
@@ -739,6 +806,11 @@ public class AIAgentEngine {
         && state.llmResponse.getRawToolCalls().isEmpty()
         && !state.assistantText.isEmpty();
     if (!isEditingMode || !isNarrationOnly) {
+      return;
+    }
+    // In planning mode, text-only responses are expected — the LLM may
+    // ask clarifying questions before proposing a plan.  Don't nudge.
+    if (enforcementContext == EnforcementContext.PLANNING) {
       return;
     }
 
@@ -777,7 +849,8 @@ public class AIAgentEngine {
               ? retryResponse.getText().length() : 0));
     }
 
-    ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView);
+    ParsedResult retryParsed = parseAndEnforce(retryResponse, mode, currentView,
+        enforcementContext);
     boolean retryActed = !retryParsed.operations.isEmpty()
         || !retryResponse.getRawToolCalls().isEmpty();
 
@@ -802,7 +875,8 @@ public class AIAgentEngine {
   }
 
   AIAgentResponse finalizeResponse(LLMResponse llmResponse, String assistantText,
-      ParsedResult parsed, AIConversationState conv, long projectId, boolean isNew) {
+      ParsedResult parsed, AIConversationState conv, long projectId, boolean isNew,
+      String screenName) {
     // Annotate the continuation state with per-tool-call results so that
     // continueWithToolResults() can send accurate feedback instead of blanket "Done.".
     String annotatedRef = annotateToolCallResults(
@@ -811,7 +885,11 @@ public class AIAgentEngine {
     // Save updated conversation state
     AIConversationState updated = new AIConversationState(conv.getProviderName(),
         conv.getConversationId(), annotatedRef);
-    conversationManager.saveConversation(projectId, updated);
+    if (screenName != null) {
+      conversationManager.saveConversation(projectId, screenName, updated);
+    } else {
+      conversationManager.saveConversation(projectId, updated);
+    }
 
     // Save assistant response to history (with structured content if tool calls present).
     // When the LLM returns no text but has operations, generate a summary for the
@@ -835,7 +913,7 @@ public class AIAgentEngine {
           MessageRole.ASSISTANT, historyText, true);
     }
 
-    new StreamBuffer(storageIo, projectId).clear();
+    new StreamBuffer(storageIo, projectId, screenName).clear();
 
     boolean hasMore = llmResponse.hasMore() && !parsed.operations.isEmpty();
     AIAgentResponse response = new AIAgentResponse(
@@ -871,7 +949,11 @@ public class AIAgentEngine {
         entry.put("name", s.getToolName());
         switch (s.getOutcome()) {
           case ACCEPTED:
-            entry.put("result", "Done.");
+            if (AIToolNames.PROPOSE_PLAN.equals(s.getToolName())) {
+              entry.put("result", "Plan delivered to user for review.");
+            } else {
+              entry.put("result", "Done.");
+            }
             break;
           case PARSE_REJECTED:
           case MODE_REJECTED:

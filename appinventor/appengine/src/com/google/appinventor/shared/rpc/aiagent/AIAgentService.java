@@ -68,6 +68,16 @@ public interface AIAgentService extends RemoteService {
   AIStreamStatus getRequestStatus(long projectId);
 
   /**
+   * Poll for progress of a running processRequest() for a specific screen
+   * (orchestration child agent).
+   *
+   * @param projectId    the project to check status for
+   * @param targetScreen the target screen name (null for parent conversation)
+   * @return current stream status with text deltas and done flag
+   */
+  AIStreamStatus getRequestStatus(long projectId, String targetScreen);
+
+  /**
    * Cancel an in-flight AI request for a project. Sets a cancellation flag
    * in Memcache that the LLM provider checks during streaming to abort early.
    * Best-effort: the request may complete before the flag is checked.
@@ -75,6 +85,15 @@ public interface AIAgentService extends RemoteService {
    * @param projectId the project whose request should be cancelled
    */
   void cancelRequest(long projectId);
+
+  /**
+   * Cancel an in-flight AI request for a specific screen (orchestration
+   * child agent).
+   *
+   * @param projectId    the project whose request should be cancelled
+   * @param targetScreen the target screen name (null for parent conversation)
+   */
+  void cancelRequest(long projectId, String targetScreen);
 
   /**
    * Report client-side execution or validation results to the server so

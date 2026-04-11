@@ -775,6 +775,23 @@ public interface StorageIo {
   boolean isAIStreamCancelled(long projectId);
   void clearAIStreamCancelled(long projectId);
 
+  // ---- Screen-scoped AI methods (for multi-agent orchestration) ----
+
+  void saveAIConversationState(long projectId, String screenName, AIConversationState state);
+  AIConversationState getAIConversationState(long projectId, String screenName);
+  void clearAIConversationState(long projectId, String screenName);
+
+  void initAIStreamBuffer(long projectId, String screenName);
+  void appendAIStreamChunk(long projectId, String screenName, String chunk);
+  List<String> consumeAIStreamChunks(long projectId, String screenName);
+  void markAIStreamDone(long projectId, String screenName);
+  boolean isAIStreamDone(long projectId, String screenName);
+  void clearAIStreamBuffer(long projectId, String screenName);
+
+  void setAIStreamCancelled(long projectId, String screenName);
+  boolean isAIStreamCancelled(long projectId, String screenName);
+  void clearAIStreamCancelled(long projectId, String screenName);
+
 }
 
 

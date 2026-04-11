@@ -52,6 +52,9 @@ public class AIContextCollector {
     AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
         blocksYail, currentView, screenComponentsJson, projectSnapshot);
     request.setBlockWarnings(getCurrentBlocksWarningsAndErrors());
+    request.setPlanExecuteMode(AIEditorState.isPlanExecuteMode());
+    request.setExecutionPhase(AIEditorState.isPlanExecuteMode()
+        && AIEditorState.isPlanApproved());
 
     // Set user's interface language for locale-aware AI responses
     String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
@@ -366,6 +369,109 @@ public class AIContextCollector {
       LOG.warning("Failed to build project snapshot: " + e.getMessage());
       return null;
     }
+  }
+
+  /**
+   * Builds a request using a specific screen's background editors instead of
+   * the visible screen. Used by child conversations during orchestration.
+   *
+   * @param screenName  the target screen to build context for
+   * @param userMessage the user's message, or null for continuation requests
+   * @param currentView the child's current editor view ("Designer" or "Blocks")
+   */
+  public AIAgentRequest buildRequestForScreen(String screenName, String userMessage,
+      String currentView) {
+    long projectId = getCurrentProjectId();
+
+    ProjectEditor projectEditor = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (!(projectEditor instanceof YaProjectEditor)) {
+      LOG.warning("buildRequestForScreen: no YaProjectEditor for projectId=" + projectId);
+      return new AIAgentRequest(userMessage, projectId, screenName);
+    }
+    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+
+    // Collect blocks YAIL from the background blocks editor
+    String blocksYail = "";
+    BlocksEditor<?, ?> blocksEditor = yaProjectEditor.getBlocksFileEditor(screenName);
+    if (blocksEditor != null) {
+      try {
+        blocksYail = blocksEditor.getBlocksYail();
+      } catch (Exception e) {
+        LOG.warning("buildRequestForScreen: failed to get blocks YAIL for " + screenName
+            + ": " + e.getMessage());
+      }
+    }
+
+    // Collect component tree JSON from the background form editor
+    String screenComponentsJson = null;
+    DesignerEditor<?, ?, ?, ?, ?> formEditor = yaProjectEditor.getFormFileEditor(screenName);
+    if (formEditor instanceof YaFormEditor) {
+      try {
+        screenComponentsJson = ((YaFormEditor) formEditor).getPropertiesJson();
+      } catch (Exception e) {
+        LOG.warning("buildRequestForScreen: failed to get components JSON for " + screenName
+            + ": " + e.getMessage());
+      }
+    }
+
+    // Project snapshot is project-wide and reusable
+    String projectSnapshot = buildProjectSnapshot();
+
+    AIAgentRequest request = new AIAgentRequest(userMessage, projectId, screenName,
+        blocksYail, currentView, screenComponentsJson, projectSnapshot);
+
+    request.setOrchestrationMode(true);
+    request.setTargetScreen(screenName);
+    request.setPlanExecuteMode(false);
+    request.setExecutionPhase(false);
+
+    // Set user's interface language for locale-aware AI responses
+    String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
+    request.setLocale("default".equals(localeName) ? "en" : localeName);
+    String displayName = LocaleInfo.getLocaleNativeDisplayName(localeName);
+    if (displayName != null && !displayName.isEmpty()) {
+      request.setLanguageDisplayName(displayName);
+    }
+
+    return request;
+  }
+
+  /**
+   * Returns the component tree JSON for a specific screen from its
+   * background editor.
+   */
+  public String getScreenComponentsJson(String screenName) {
+    long projectId = getCurrentProjectId();
+    ProjectEditor pe = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (!(pe instanceof YaProjectEditor)) {
+      return null;
+    }
+    DesignerEditor<?, ?, ?, ?, ?> formEditor =
+        ((YaProjectEditor) pe).getFormFileEditor(screenName);
+    if (formEditor instanceof YaFormEditor) {
+      return ((YaFormEditor) formEditor).getPropertiesJson();
+    }
+    return null;
+  }
+
+  /**
+   * Returns the blocks YAIL for a specific screen from its background editor.
+   */
+  public String getScreenBlocksYail(String screenName) {
+    long projectId = getCurrentProjectId();
+    ProjectEditor pe = Ode.getInstance().getEditorManager()
+        .getOpenProjectEditor(projectId);
+    if (!(pe instanceof YaProjectEditor)) {
+      return null;
+    }
+    BlocksEditor<?, ?> blocksEditor =
+        ((YaProjectEditor) pe).getBlocksFileEditor(screenName);
+    if (blocksEditor != null) {
+      return blocksEditor.getBlocksYail();
+    }
+    return null;
   }
 
   /**

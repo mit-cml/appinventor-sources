@@ -222,9 +222,13 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   protected void onStructureChange() {
     Ode.getInstance().getEditorManager().scheduleAutoSave(this);
 
-    // Update source structure panel
-    sourceStructureExplorer.updateTree(root.buildComponentsTree(),
-        root.getLastSelectedComponent().getSourceStructureExplorerItem());
+    // Only update the global source structure panel if this is the currently visible editor.
+    // Background editors (e.g., during Plan & Execute parallel execution) must not overwrite
+    // the component tree that the user is looking at.
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      sourceStructureExplorer.updateTree(root.buildComponentsTree(),
+          root.getLastSelectedComponent().getSourceStructureExplorerItem());
+    }
   }
 
   protected void loadDesigner() {
@@ -277,9 +281,10 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     for (ComponentDatabaseChangeListener listener : componentDatabaseChangeListeners) {
       listener.onComponentTypeAdded(componentTypes);
     }
-    //Update the Properties Panel
-    updatePropertiesPanel(root.getSelectedComponents(), true);
-    SourceStructureBox.getSourceStructureBox().show(root);
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      updatePropertiesPanel(root.getSelectedComponents(), true);
+      SourceStructureBox.getSourceStructureBox().show(root);
+    }
   }
 
   @Override
@@ -345,7 +350,9 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   public void onComponentRenamed(MockComponent component, String oldName) {
     if (loadComplete) {
       onStructureChange();
-      updatePropertiesPanel(root.getSelectedComponents(), true);
+      if (Ode.getInstance().getCurrentFileEditor() == this) {
+        updatePropertiesPanel(root.getSelectedComponents(), true);
+      }
     } else {
       LOG.severe("onComponentRenamed called when loadComplete is false");
     }
@@ -354,17 +361,17 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {
-      // TODO: SMRL Not sure this class should keep a pointer to source structure
-      // Select the item in the source structure explorer.
-      sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
-      SourceStructureBox.getSourceStructureBox().show(root);
+      if (Ode.getInstance().getCurrentFileEditor() == this) {
+        // Select the item in the source structure explorer.
+        sourceStructureExplorer.selectItem(component.getSourceStructureExplorerItem());
+        SourceStructureBox.getSourceStructureBox().show(root);
 
-      // Show the component properties in the properties panel.
-      updatePropertiesPanel(root.getSelectedComponents(), selected);
+        // Show the component properties in the properties panel.
+        updatePropertiesPanel(root.getSelectedComponents(), selected);
+      }
     } else {
       LOG.severe("onComponentSelectionChange called when loadComplete is false");
     }
-
   }
 
   // SimpleEditor implementation

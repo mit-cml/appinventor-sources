@@ -8,34 +8,32 @@ package com.google.appinventor.client.editor.youngandroid.aiagent;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.aiagent.chat.PlanCardRenderer;
+import com.google.appinventor.client.editor.youngandroid.aiagent.chat.RendererHost;
+import com.google.appinventor.client.editor.youngandroid.aiagent.chat.StreamingHandler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Renders chat message bubbles and converts Markdown to safe HTML.
+ * Facade for chat rendering in the AI agent dialog.
  *
- * <p>Manages the chat history panel and scroll behavior. User messages
- * are right-aligned with blue backgrounds; AI messages are left-aligned
- * with grey backgrounds and support Markdown rendering.</p>
+ * <p>Manages message bubbles, feedback links, and Markdown conversion
+ * directly. Delegates streaming to {@link StreamingHandler} and
+ * plan card rendering to {@link PlanCardRenderer}.</p>
  */
-public class AIChatRenderer {
+public class AIChatRenderer implements RendererHost {
 
   private static final String FEEDBACK_LINK_CLASS = "ai-feedback-link";
 
   private final FlowPanel chatHistory;
   private final ScrollPanel chatScrollPanel;
-
-  private String streamingTextAccumulator = "";
-  private String streamingThinkingAccumulator = "";
-  private FlowPanel streamingWrapper = null;
-  private HTML streamingMessageHtml = null;
-  private HTML streamingThinkingHtml = null;
-  private FlowPanel streamingThinkingPanel = null;
-  private HTML typingIndicator = null;
+  private final StreamingHandler streamingHandler;
+  private final PlanCardRenderer planCardRenderer;
 
   // Feedback link context (set via setFeedbackContext; links only shown in debug mode)
   private boolean debugEnabled;
@@ -50,6 +48,13 @@ public class AIChatRenderer {
   public AIChatRenderer(FlowPanel chatHistory, ScrollPanel chatScrollPanel) {
     this.chatHistory = chatHistory;
     this.chatScrollPanel = chatScrollPanel;
+    this.streamingHandler = new StreamingHandler(this);
+    this.planCardRenderer = new PlanCardRenderer(chatHistory, new Runnable() {
+      @Override
+      public void run() {
+        scrollToBottom();
+      }
+    });
   }
 
   /**
@@ -59,6 +64,8 @@ public class AIChatRenderer {
   public void initialize() {
     configureMarked();
   }
+
+  // ---- Message bubbles ----
 
   /**
    * Adds a right-aligned user message to the chat history.
@@ -73,8 +80,82 @@ public class AIChatRenderer {
   }
 
   /**
+   * Adds a left-aligned AI message to the chat history with a
+   * "Share Feedback" link (when feedback context is set).
+   *
+   * @param text the AI's message text
+   */
+  public void addAiMessage(String text) {
+    FlowPanel messageBubble = createMessageBubble(
+        MESSAGES.aiChatAiLabel(), text, false);
+    appendFeedbackLink(messageBubble);
+    chatHistory.add(messageBubble);
+    scrollToBottom();
+  }
+
+  // ---- Streaming (delegated) ----
+
+  /**
+   * Starts a new streaming AI message bubble.
+   */
+  public void startStreamingBubble() {
+    streamingHandler.startStreamingBubble();
+  }
+
+  /**
+   * Appends a text delta to the in-progress streaming bubble.
+   *
+   * @param delta the new text chunk to append
+   */
+  public void appendStreamingText(String delta) {
+    streamingHandler.appendStreamingText(delta);
+  }
+
+  /**
+   * Appends a thinking/reasoning delta to the in-progress streaming bubble.
+   *
+   * @param delta the new thinking text chunk to append
+   */
+  public void appendStreamingThinking(String delta) {
+    streamingHandler.appendStreamingThinking(delta);
+  }
+
+  /**
+   * Finalizes the streaming bubble with the complete AI response text.
+   *
+   * @param finalText the complete AI response text
+   */
+  public void finalizeStreamingBubble(String finalText) {
+    streamingHandler.finalizeStreamingBubble(finalText);
+  }
+
+  // ---- Plan cards (delegated) ----
+
+  /**
+   * Renders a plan card in the chat with summary, steps, and
+   * approve/edit/reject buttons.
+   *
+   * @param planJson         the raw plan JSON from the PROPOSE_PLAN operation
+   * @param approvalCallback receives the user's approve/reject decision
+   */
+  public void renderPlanCard(String planJson,
+      AIResponseOrchestrator.PlanApprovalCallback approvalCallback) {
+    planCardRenderer.renderPlanCard(planJson, approvalCallback);
+  }
+
+  /**
+   * Disables the active plan card buttons.
+   */
+  public void dismissActivePlanCard() {
+    planCardRenderer.dismissActivePlanCard();
+  }
+
+  // ---- Feedback links ----
+
+  /**
    * Sets the conversation ID used for "Share Feedback" links on AI messages.
    *
+   * @param debugEnabled   whether debug mode is enabled
    * @param conversationId the conversation UUID
    */
   public void setFeedbackContext(boolean debugEnabled, String conversationId) {
@@ -100,179 +181,10 @@ public class AIChatRenderer {
   }
 
   /**
-   * Adds a left-aligned AI message to the chat history with a
-   * "Share Feedback" link (when feedback context is set).
-   *
-   * @param text the AI's message text
-   */
-  public void addAiMessage(String text) {
-    FlowPanel messageBubble = createMessageBubble(
-        MESSAGES.aiChatAiLabel(), text, false);
-    appendFeedbackLink(messageBubble);
-    chatHistory.add(messageBubble);
-    scrollToBottom();
-  }
-
-  /**
-   * Scrolls the chat panel to the bottom.
-   */
-  public void scrollToBottom() {
-    chatScrollPanel.scrollToBottom();
-  }
-
-  /**
-   * Clears all messages from the chat history.
-   */
-  public void clear() {
-    chatHistory.clear();
-  }
-
-  /**
-   * Starts a new streaming AI message bubble. The bubble is added to
-   * the chat history immediately with empty content; subsequent calls
-   * to {@link #appendStreamingText} fill it incrementally.
-   */
-  public void startStreamingBubble() {
-    streamingTextAccumulator = "";
-    streamingThinkingAccumulator = "";
-    streamingWrapper = createMessageBubble(
-        MESSAGES.aiChatAiLabel(), "", false);
-    FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
-    streamingMessageHtml = (HTML) bubble.getWidget(1);
-    // Add typing indicator (three bouncing dots) below the message text
-    typingIndicator = new HTML(
-        "<div class='ai-typing-indicator'><span></span><span></span><span></span></div>");
-    bubble.add(typingIndicator);
-    chatHistory.add(streamingWrapper);
-    scrollToBottom();
-  }
-
-  /**
-   * Appends a text delta to the in-progress streaming bubble.
-   * Handles incomplete Markdown code fences by temporarily closing them
-   * so the rendered HTML stays valid.
-   *
-   * @param delta the new text chunk to append
-   */
-  public void appendStreamingText(String delta) {
-    if (streamingMessageHtml == null) return;
-    streamingTextAccumulator += delta;
-    String textToRender = streamingTextAccumulator;
-    int fenceCount = countOccurrences(textToRender, "```");
-    if (fenceCount % 2 != 0) {
-      textToRender += "\n```";
-    }
-    streamingMessageHtml.setHTML(markdownToSafeHtml(textToRender));
-    scrollToBottom();
-  }
-
-  /**
-   * Appends a thinking/reasoning delta to the in-progress streaming bubble.
-   * Thinking content is displayed in a collapsible details panel above the
-   * main response text, allowing users to inspect the model's reasoning.
-   *
-   * @param delta the new thinking text chunk to append
-   */
-  public void appendStreamingThinking(String delta) {
-    if (streamingWrapper == null) return;
-    FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
-
-    // Create the thinking panel on first thinking delta
-    if (streamingThinkingPanel == null) {
-      streamingThinkingPanel = new FlowPanel();
-      streamingThinkingPanel.addStyleName("ai-thinking-panel");
-      streamingThinkingHtml = new HTML();
-      streamingThinkingHtml.addStyleName("ai-thinking-content");
-      streamingThinkingPanel.add(streamingThinkingHtml);
-      // Insert before the message text (index 1 is the message HTML,
-      // index 0 is the role label)
-      bubble.insert(streamingThinkingPanel, 1);
-    }
-
-    streamingThinkingAccumulator += delta;
-    streamingThinkingHtml.setHTML(
-        "<details open class='ai-thinking-details'>"
-        + "<summary>Thinking\u2026</summary>"
-        + "<div class='ai-thinking-text'>"
-        + markdownToSafeHtml(streamingThinkingAccumulator)
-        + "</div></details>");
-    scrollToBottom();
-  }
-
-  /**
-   * Finalizes the streaming bubble with the complete AI response text.
-   * Resets all streaming state.
-   *
-   * @param finalText the complete AI response text
-   */
-  public void finalizeStreamingBubble(String finalText) {
-    if (streamingMessageHtml != null) {
-      // Remove typing indicator
-      if (typingIndicator != null) {
-        typingIndicator.removeFromParent();
-        typingIndicator = null;
-      }
-      if (finalText != null && !finalText.isEmpty()) {
-        // Canonical text from the server — use it as the final content
-        streamingMessageHtml.setHTML(markdownToSafeHtml(finalText));
-      } else if (streamingTextAccumulator.isEmpty()) {
-        // No text at all (streaming started but no deltas arrived) —
-        // remove the empty bubble rather than leaving a blank message
-        if (streamingWrapper != null) {
-          streamingWrapper.removeFromParent();
-        }
-      }
-      // When finalText is empty but streamingTextAccumulator has content,
-      // the text was already rendered by appendStreamingText(); just
-      // remove the typing indicator (done above) and keep it as-is.
-
-      // Add feedback link to the finalized streaming bubble
-      if (streamingWrapper != null) {
-        appendFeedbackLink(streamingWrapper);
-      }
-
-      // Collapse the thinking panel (switch from open to closed)
-      if (streamingThinkingHtml != null && !streamingThinkingAccumulator.isEmpty()) {
-        streamingThinkingHtml.setHTML(
-            "<details class='ai-thinking-details'>"
-            + "<summary>Thinking</summary>"
-            + "<div class='ai-thinking-text'>"
-            + markdownToSafeHtml(streamingThinkingAccumulator)
-            + "</div></details>");
-      } else if (streamingThinkingPanel != null
-          && streamingThinkingAccumulator.isEmpty()) {
-        streamingThinkingPanel.removeFromParent();
-      }
-      scrollToBottom();
-    }
-    streamingWrapper = null;
-    streamingMessageHtml = null;
-    streamingThinkingHtml = null;
-    streamingThinkingPanel = null;
-    streamingTextAccumulator = "";
-    streamingThinkingAccumulator = "";
-  }
-
-  /**
-   * Counts non-overlapping occurrences of a substring.
-   */
-  private static int countOccurrences(String text, String sub) {
-    int count = 0;
-    int idx = 0;
-    while ((idx = text.indexOf(sub, idx)) != -1) {
-      count++;
-      idx += sub.length();
-    }
-    return count;
-  }
-
-  /**
    * Appends a small "Share Feedback" link at the bottom of an AI message bubble.
-   * The link opens the built-in {@code /ode/feedback} form in a new tab,
-   * pre-populated with the conversation ID, message timestamp, and project ID
-   * so the feedback can be correlated with server-side debug logs.
    */
-  private void appendFeedbackLink(FlowPanel wrapper) {
+  @Override
+  public void appendFeedbackLink(FlowPanel wrapper) {
     if (!debugEnabled || conversationId == null || conversationId.isEmpty()) {
       return;
     }
@@ -294,8 +206,7 @@ public class AIChatRenderer {
   }
 
   /**
-   * Builds the feedback form URL for the given conversation, using the
-   * built-in {@code /ode/feedback} endpoint with pre-populated context.
+   * Builds the feedback form URL for the given conversation.
    *
    * @param conversationId the conversation UUID
    * @return the fully-encoded feedback URL
@@ -315,15 +226,10 @@ public class AIChatRenderer {
         + "&projectId=" + projectId;
   }
 
-  /**
-   * Creates a styled message bubble for the chat.
-   *
-   * @param sender the sender label (e.g. "You" or "AI")
-   * @param text   the message text
-   * @param isUser true for right-aligned user messages, false for left-aligned AI messages
-   * @return the styled FlowPanel
-   */
-  private FlowPanel createMessageBubble(String sender, String text, boolean isUser) {
+  // ---- RendererHost implementation ----
+
+  @Override
+  public FlowPanel createMessageBubble(String sender, String text, boolean isUser) {
     FlowPanel wrapper = new FlowPanel();
     wrapper.getElement().getStyle().setProperty("textAlign", isUser ? "right" : "left");
     wrapper.getElement().getStyle().setMarginBottom(6, Unit.PX);
@@ -366,6 +272,35 @@ public class AIChatRenderer {
     return wrapper;
   }
 
+  @Override
+  public void addToHistory(Widget widget) {
+    chatHistory.add(widget);
+  }
+
+  @Override
+  public String markdownToSafeHtml(String markdown) {
+    return markdownToSafeHtmlNative(markdown);
+  }
+
+  @Override
+  public void scrollToBottom() {
+    chatScrollPanel.scrollToBottom();
+  }
+
+  @Override
+  public String getAiLabel() {
+    return MESSAGES.aiChatAiLabel();
+  }
+
+  /**
+   * Clears all messages from the chat history.
+   */
+  public void clear() {
+    chatHistory.clear();
+  }
+
+  // ---- JSNI Markdown ----
+
   /**
    * Converts a Markdown string to sanitized HTML using marked.js and DOMPurify.
    * Falls back to plain-text escaping if the libraries are not loaded.
@@ -373,7 +308,7 @@ public class AIChatRenderer {
    * @param markdown the raw Markdown text
    * @return sanitized HTML string
    */
-  private static native String markdownToSafeHtml(String markdown) /*-{
+  private static native String markdownToSafeHtmlNative(String markdown) /*-{
     if (!$wnd.marked || !$wnd.DOMPurify) {
       // Fallback to plain-text escaping
       return markdown.replace(/&/g,'&amp;').replace(/</g,'&lt;')

@@ -6055,6 +6055,62 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("System message shown when the user cancels an in-flight AI request")
   String aiChatRequestCancelled();
 
+  @DefaultMessage("Direct Mode")
+  @Description("Label for the mode toggle button when in direct (non-planning) mode")
+  String aiChatPlanExecuteOff();
+
+  @DefaultMessage("Plan Mode")
+  @Description("Label for the mode toggle button when planning mode is active")
+  String aiChatPlanExecuteOn();
+
+  @DefaultMessage("Execution Mode")
+  @Description("Label for the mode toggle button when a plan is being executed")
+  String aiChatPlanExecuteExecuting();
+
+  @DefaultMessage("This project uses a tutorial. Plan & Execute may skip pedagogical steps. Continue?")
+  @Description("Confirmation shown when enabling Plan & Execute mode on a tutorial project")
+  String aiChatPlanExecuteTutorialConfirm();
+
+  @DefaultMessage("Are you sure you want to clear the conversation?")
+  @Description("Confirmation shown when the user clicks New Conversation with existing messages")
+  String aiChatClearConversationConfirm();
+
+  @DefaultMessage("Execution Plan")
+  @Description("Header for the plan card shown in the AI chat when the agent proposes a plan")
+  String aiChatPlanCardHeader();
+
+  @DefaultMessage("Approve")
+  @Description("Label for the approve button on a plan card")
+  String aiChatPlanApproveButton();
+
+  @DefaultMessage("Edit & Approve")
+  @Description("Label for the edit-and-approve button on a plan card")
+  String aiChatPlanEditApproveButton();
+
+  @DefaultMessage("Reject")
+  @Description("Label for the reject button on a plan card")
+  String aiChatPlanRejectButton();
+
+  @DefaultMessage("Save")
+  @Description("Label for the save button when editing a plan before approval")
+  String aiChatPlanSaveButton();
+
+  @DefaultMessage("Cancel")
+  @Description("Label for the cancel button when editing a plan")
+  String aiChatPlanCancelButton();
+
+  @DefaultMessage("Plan rejected.")
+  @Description("Status label shown on the plan card after the user rejects the plan")
+  String aiChatPlanRejected();
+
+  @DefaultMessage("Plan approved.")
+  @Description("Status label shown on the plan card after the user approves the plan")
+  String aiChatPlanApproved();
+
+  @DefaultMessage("Plan dismissed.")
+  @Description("Status label shown on the plan card when dismissed without explicit approval or rejection")
+  String aiChatPlanDismissed();
+
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();

@@ -60,6 +60,8 @@ public final class AIOperationFormatter {
         return "- Delete block: " + AIJsonUtils.extractField(payload, "block");
       case TOGGLE_EDITOR:
         return "~ Switch to " + AIJsonUtils.extractField(payload, "view") + " view";
+      case PROPOSE_PLAN:
+        return "Proposed execution plan";
       default:
         return type.name() + ": " + payload;
     }
