@@ -6100,8 +6100,16 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String aiChatPlanCancelButton();
 
   @DefaultMessage("Plan rejected.")
-  @Description("Message shown after the user rejects an execution plan")
+  @Description("Status label shown on the plan card after the user rejects the plan")
   String aiChatPlanRejected();
+
+  @DefaultMessage("Plan approved.")
+  @Description("Status label shown on the plan card after the user approves the plan")
+  String aiChatPlanApproved();
+
+  @DefaultMessage("Plan dismissed.")
+  @Description("Status label shown on the plan card when dismissed without explicit approval or rejection")
+  String aiChatPlanDismissed();
 
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")

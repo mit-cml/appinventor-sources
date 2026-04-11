@@ -28,10 +28,14 @@ import com.google.gwt.user.client.ui.TextArea;
  */
 public class PlanCardRenderer {
 
+  /** Set to true to show the "Edit & Approve" button on plan cards. */
+  private static final boolean SHOW_EDIT_BUTTON = false;
+
   private final FlowPanel chatHistory;
   private final Runnable scrollCallback;
 
   private HorizontalPanel activePlanButtonBar = null;
+  private FlowPanel activePlanCard = null;
 
   /**
    * Constructs a plan card renderer.
@@ -108,24 +112,27 @@ public class PlanCardRenderer {
     approveBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        disablePlanButtons(buttonBar);
+        replacePlanButtonsWithStatus(card, buttonBar, MESSAGES.aiChatPlanApproved(),
+            "#4CAF50");
         approvalCallback.onApprove(finalPlanJson);
       }
     });
     buttonBar.add(approveBtn);
 
-    Button editBtn = new Button(MESSAGES.aiChatPlanEditApproveButton());
-    editBtn.getElement().getStyle().setProperty("background", "#FF9800");
-    editBtn.getElement().getStyle().setColor("white");
-    editBtn.getElement().getStyle().setProperty("borderRadius", "3px");
-    editBtn.getElement().getStyle().setProperty("cursor", "pointer");
-    editBtn.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        showPlanEditor(card, buttonBar, finalPlanJson, approvalCallback);
-      }
-    });
-    buttonBar.add(editBtn);
+    if (SHOW_EDIT_BUTTON) {
+      Button editBtn = new Button(MESSAGES.aiChatPlanEditApproveButton());
+      editBtn.getElement().getStyle().setProperty("background", "#FF9800");
+      editBtn.getElement().getStyle().setColor("white");
+      editBtn.getElement().getStyle().setProperty("borderRadius", "3px");
+      editBtn.getElement().getStyle().setProperty("cursor", "pointer");
+      editBtn.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          showPlanEditor(card, buttonBar, finalPlanJson, approvalCallback);
+        }
+      });
+      buttonBar.add(editBtn);
+    }
 
     Button rejectBtn = new Button(MESSAGES.aiChatPlanRejectButton());
     rejectBtn.getElement().getStyle().setProperty("background", "#f44336");
@@ -135,7 +142,8 @@ public class PlanCardRenderer {
     rejectBtn.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        disablePlanButtons(buttonBar);
+        replacePlanButtonsWithStatus(card, buttonBar, MESSAGES.aiChatPlanRejected(),
+            "#f44336");
         approvalCallback.onReject();
       }
     });
@@ -145,18 +153,21 @@ public class PlanCardRenderer {
     wrapper.add(card);
     chatHistory.add(wrapper);
     activePlanButtonBar = buttonBar;
+    activePlanCard = card;
     scrollCallback.run();
   }
 
   /**
-   * Disables the active plan card buttons (e.g., when the user sends a message
+   * Dismisses the active plan card (e.g., when the user sends a message
    * instead of clicking approve/reject).
    */
   public void dismissActivePlanCard() {
-    if (activePlanButtonBar != null) {
-      disablePlanButtons(activePlanButtonBar);
-      activePlanButtonBar = null;
+    if (activePlanButtonBar != null && activePlanCard != null) {
+      replacePlanButtonsWithStatus(activePlanCard, activePlanButtonBar,
+          MESSAGES.aiChatPlanDismissed(), "#999");
     }
+    activePlanButtonBar = null;
+    activePlanCard = null;
   }
 
   /**
@@ -197,7 +208,8 @@ public class PlanCardRenderer {
       public void onClick(ClickEvent event) {
         String edited = editArea.getText().trim();
         editorPanel.removeFromParent();
-        disablePlanButtons(originalButtonBar);
+        replacePlanButtonsWithStatus(card, originalButtonBar,
+            MESSAGES.aiChatPlanApproved(), "#4CAF50");
         approvalCallback.onApprove(edited);
       }
     });
@@ -221,19 +233,21 @@ public class PlanCardRenderer {
   }
 
   /**
-   * Disables all buttons in the plan card button bar after a decision.
+   * Removes the button bar and replaces it with a static status label.
    */
-  private void disablePlanButtons(HorizontalPanel buttonBar) {
+  private void replacePlanButtonsWithStatus(FlowPanel card,
+      HorizontalPanel buttonBar, String statusText, String color) {
     if (buttonBar == activePlanButtonBar) {
       activePlanButtonBar = null;
+      activePlanCard = null;
     }
-    for (int i = 0; i < buttonBar.getWidgetCount(); i++) {
-      if (buttonBar.getWidget(i) instanceof Button) {
-        Button btn = (Button) buttonBar.getWidget(i);
-        btn.setEnabled(false);
-        btn.getElement().getStyle().setOpacity(0.5);
-      }
-    }
+    buttonBar.removeFromParent();
+    Label status = new Label(statusText);
+    status.getElement().getStyle().setColor(color);
+    status.getElement().getStyle().setProperty("fontWeight", "bold");
+    status.getElement().getStyle().setFontSize(12, Unit.PX);
+    status.getElement().getStyle().setMarginTop(4, Unit.PX);
+    card.add(status);
   }
 
   /**
