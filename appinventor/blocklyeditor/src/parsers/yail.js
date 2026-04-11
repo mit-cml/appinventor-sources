@@ -759,10 +759,33 @@ AI.YailToBlocks.convertGlobalVar_ = function(workspace, node) {
 
   var existingBlock = AI.YailToBlocks.findBlockByIdentifier_(
       workspace, 'def g$' + varName);
+
   if (existingBlock) {
-    AI.YailToBlocks.lastDeletedPosition_ = existingBlock.getRelativeToSurfaceXY();
+    // ===== UPDATE IN PLACE =====
+    var block = existingBlock;
+    AI.YailToBlocks.lastDeletedPosition_ = block.getRelativeToSurfaceXY();
+
+    var savedValue = AI.YailToBlocks.detachInputBlocks_(block, 'VALUE');
+    try {
+      var valueBlock = AI.YailToBlocks.convertExpression_(workspace, initValue);
+      if (valueBlock && block.getInput('VALUE')) {
+        block.getInput('VALUE').connection.connect(valueBlock.outputConnection);
+      }
+    } catch (e) {
+      if (savedValue) {
+        AI.YailToBlocks.reattachInputBlocks_(block, 'VALUE', savedValue);
+      }
+      throw e;
+    }
+    if (savedValue) {
+      AI.YailToBlocks.disposeDetachedBlocks_(savedValue);
+    }
+
+    block.render();
+    return block;
   }
 
+  // ===== CREATE FROM SCRATCH =====
   var block = workspace.newBlock('global_declaration');
   block.setFieldValue(varName, 'NAME');
   block.initSvg();
@@ -770,10 +793,6 @@ AI.YailToBlocks.convertGlobalVar_ = function(workspace, node) {
   var valueBlock = AI.YailToBlocks.convertExpression_(workspace, initValue);
   if (valueBlock && block.getInput('VALUE')) {
     block.getInput('VALUE').connection.connect(valueBlock.outputConnection);
-  }
-
-  if (existingBlock) {
-    existingBlock.dispose(true);
   }
 
   block.render();
