@@ -2569,6 +2569,20 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Opens the AI chat dialog and sends an explain-block message.
+   * If the dialog hasn't been created yet, it is lazy-initialized.
+   *
+   * @param displayText the text shown in the user's chat bubble
+   * @param contextHint hidden context (YAIL, warnings) sent to the LLM
+   */
+  public void sendExplainToAIChat(String displayText, String contextHint) {
+    if (aiChatDialog == null) {
+      aiChatDialog = new AIChatDialog();
+    }
+    aiChatDialog.sendExplainMessage(displayText, contextHint);
+  }
+
+  /**
    * Hides the AI chat dialog if it is currently showing.
    * Called when leaving the project design area (e.g. switching to the
    * projects list) because the chat is scoped to the active project.

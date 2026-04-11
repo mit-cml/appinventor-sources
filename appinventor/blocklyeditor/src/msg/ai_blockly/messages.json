@@ -980,6 +980,8 @@
 	"Blockly.Msg.DO_IT_RESULT": "Do It Result:",
 	"Blockly.Msg.DO_IT_DISCONNECTED": "Do It (Companion not connected)",
 	"Blockly.Msg.CLEAR_DO_IT_ERROR": "Clear Error",
+	"Blockly.Msg.AI_EXPLAIN_BLOCK": "Explain Block",
+	"Blockly.Msg.AI_EXPLAIN_BLOCK_DISABLED": "Explain Block (enable AI Assistant first)",
 	"Blockly.Msg.CAN_NOT_DO_IT": "Cannot Do it",
 	"Blockly.Msg.CONNECT_TO_DO_IT": "You must be connected to the companion or emulator to use 'Do It'",
 	"Blockly.Msg.TIME_YEARS": "Years",

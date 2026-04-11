@@ -245,6 +245,144 @@ AI.Blockly.ContextMenuItems.RegisterClearDoItOption = function() {
   Blockly.ContextMenuRegistry.registry.register(clearDoItItem);
 }
 
+/**
+ * Builds a display prompt and context hint for the "Explain Block" action.
+ * @param {Blockly.Block} block The block to explain.
+ * @return {{displayText: string, contextHint: string}}
+ */
+AI.Blockly.ContextMenuItems.buildExplainPrompt = function(block) {
+  var rootBlock = block.getRootBlock();
+  var isTopLevel = (block === rootBlock);
+
+  // -- Build display text --
+  var displayText;
+  if (isTopLevel) {
+    displayText = AI.Blockly.ContextMenuItems.describeBlockForExplain_(block, false);
+  } else {
+    var rootDesc = AI.Blockly.ContextMenuItems.describeBlockForExplain_(rootBlock, true);
+    displayText = rootDesc || 'Explain the selected block';
+  }
+
+  // -- Build context hint --
+  var parts = [];
+
+  // YAIL
+  var yail = null;
+  try {
+    if (isTopLevel) {
+      yail = AI.Yail.blockToCode1(block);
+    } else {
+      yail = AI.Yail.blockToCode(block);
+    }
+    if (yail instanceof Array) yail = yail[0];
+  } catch (e) {
+    // YAIL generation failed
+  }
+
+  if (block.isBadBlock()) {
+    parts.push('This block has errors and cannot generate valid YAIL.');
+  } else if (yail) {
+    parts.push('YAIL of the selected block:\n' + yail);
+  } else {
+    parts.push('YAIL generation failed for this block.');
+  }
+
+  // Block state
+  if (!block.isEnabled()) {
+    parts.push('This block is disabled.');
+  }
+
+  // Warnings
+  var warningIcon = block.getIcon(Blockly.icons.WarningIcon.TYPE);
+  if (warningIcon) {
+    var warningText = warningIcon.getText();
+    if (warningText) {
+      parts.push('Block warnings: ' + warningText);
+    }
+  }
+  if (block.replError) {
+    parts.push('Runtime error: ' + block.replError);
+  }
+
+  return {
+    displayText: displayText,
+    contextHint: parts.join('\n')
+  };
+};
+
+/**
+ * Returns a human-readable description of a block for explain prompts.
+ * @param {Blockly.Block} block The block to describe.
+ * @param {boolean} isPartOf True if this is for a "part of" prompt (non-root).
+ * @return {string} The display text.
+ * @private
+ */
+AI.Blockly.ContextMenuItems.describeBlockForExplain_ = function(block, isPartOf) {
+  var prefix = isPartOf ? 'Explain the selected part of the ' : 'Explain the selected ';
+
+  if (block.type === 'component_event') {
+    var instance = block.instanceName || block.typeName;
+    return prefix + instance + '.' + block.eventName + ' event handler';
+  } else if (block.type === 'procedures_defnoreturn' ||
+             block.type === 'procedures_defreturn') {
+    var procName = block.getFieldValue('NAME');
+    return prefix + '"' + procName + '" procedure';
+  } else if (block.type === 'global_declaration') {
+    var varName = block.getFieldValue('NAME');
+    return prefix + '"' + varName + '" global variable';
+  }
+
+  if (isPartOf) {
+    return null; // Caller falls back to generic text
+  }
+  return 'Explain the selected block';
+};
+
+AI.Blockly.ContextMenuItems.registerExplainBlockOption = function() {
+  var explainItem = {
+    displayText: function(scope) {
+      try {
+        var mode = window.parent.BlocklyPanel_getAIAgentMode();
+        if (mode === 'Off') {
+          return Blockly.Msg['AI_EXPLAIN_BLOCK_DISABLED'];
+        }
+      } catch (e) {
+        // Bridge not available
+      }
+      return Blockly.Msg['AI_EXPLAIN_BLOCK'];
+    },
+    callback: function(scope) {
+      var prompt = AI.Blockly.ContextMenuItems.buildExplainPrompt(scope.block);
+      try {
+        window.parent.BlocklyPanel_explainBlock(prompt.displayText, prompt.contextHint);
+      } catch (e) {
+        // Bridge not available
+      }
+    },
+    preconditionFn: function(scope) {
+      if (scope.block.workspace.isFlyout) {
+        return 'hidden';
+      }
+      try {
+        if (!window.parent.BlocklyPanel_isAIAgentAvailable()) {
+          return 'hidden';
+        }
+        var mode = window.parent.BlocklyPanel_getAIAgentMode();
+        if (mode === 'Off') {
+          return 'disabled';
+        }
+      } catch (e) {
+        return 'hidden';
+      }
+      return 'enabled';
+    },
+    weight: 99,
+    id: 'appinventor_explain_block',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(explainItem);
+};
+
 AI.Blockly.ContextMenuItems.registerGenerateYailOption = function() {
   // TODO: eventually create a separate kind of bubble for the generated yail,
   //  which can morph into the bubble for "do it" output once we hook
@@ -948,6 +1086,7 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerExportBlockOption();
   AI.Blockly.ContextMenuItems.registerDoItOption();
   AI.Blockly.ContextMenuItems.RegisterClearDoItOption();
+  AI.Blockly.ContextMenuItems.registerExplainBlockOption();
 
   Blockly.ContextMenuRegistry.registry.getItem('blockHelp').weight = 1000;
 }

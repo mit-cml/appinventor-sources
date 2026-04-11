@@ -86,6 +86,10 @@ public class AIChatDialog extends DialogBox
   /** The project ID whose conversation is currently displayed. */
   private long currentProjectId;
 
+  // Deferred explain message (queued when dialog needs mode selection first)
+  private String pendingExplainDisplay;
+  private String pendingExplainHint;
+
   /**
    * Constructs the AI chat dialog, building the full UI hierarchy
    * and creating delegate instances.
@@ -336,7 +340,19 @@ public class AIChatDialog extends DialogBox
     }
     currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     updateEditModeWarning();
-    orchestrator.loadExistingConversation();
+    // If an explain message is pending, send it directly without loading
+    // history first (avoids async race where history messages would appear
+    // after the explain message). The explain exchange will be stored in
+    // history and visible on next open.
+    if (pendingExplainDisplay != null) {
+      String display = pendingExplainDisplay;
+      String hint = pendingExplainHint;
+      pendingExplainDisplay = null;
+      pendingExplainHint = null;
+      sendExplainMessage(display, hint);
+    } else {
+      orchestrator.loadExistingConversation();
+    }
   }
 
   /**
@@ -372,6 +388,30 @@ public class AIChatDialog extends DialogBox
     orchestrator.resetAutoAcceptAll();
     orchestrator.stopPollingStatus();
     hide();
+  }
+
+  /**
+   * Sends an explain-block message to the AI. If the dialog is not yet
+   * showing (e.g., mode selection is pending), the message is queued and
+   * sent automatically once the dialog opens.
+   *
+   * @param displayText the text shown in the user's chat bubble
+   * @param contextHint hidden context (YAIL, warnings) sent to the LLM
+   */
+  public void sendExplainMessage(String displayText, String contextHint) {
+    if (!isShowing()) {
+      pendingExplainDisplay = displayText;
+      pendingExplainHint = contextHint;
+      show();
+      return;
+    }
+    if (orchestrator.isRequestInFlight()) {
+      return;
+    }
+    renderer.addUserMessage(displayText);
+    editModeWarning.setVisible(false);
+    hideOperationPreview();
+    orchestrator.sendMessageWithContext(displayText, contextHint);
   }
 
   // ---- Edit-mode warning ----

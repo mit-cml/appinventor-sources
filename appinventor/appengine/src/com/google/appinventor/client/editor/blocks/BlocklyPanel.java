@@ -313,6 +313,43 @@ public class BlocklyPanel extends HTMLPanel {
     return Ode.getInstance().getUser().getIsAdmin();
   }
 
+  /**
+   * Returns true if the AI agent feature is available on this server.
+   * Called from Blockly JS via the exported bridge function.
+   */
+  public static boolean isAIAgentAvailable() {
+    return Ode.getSystemConfig().getAiAgentAvailable();
+  }
+
+  /**
+   * Returns the current AI agent mode for the active project.
+   * Returns "Off" if no project is open or no mode is configured.
+   * Called from Blockly JS via the exported bridge function.
+   */
+  public static String getAIAgentMode() {
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId == 0) {
+      return SettingsConstants.AI_AGENT_MODE_OFF;
+    }
+    com.google.appinventor.client.editor.ProjectEditor projectEditor =
+        Ode.getInstance().getEditorManager().getOpenProjectEditor(projectId);
+    if (projectEditor == null) {
+      return SettingsConstants.AI_AGENT_MODE_OFF;
+    }
+    String mode = projectEditor.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE);
+    return (mode == null || mode.isEmpty()) ? SettingsConstants.AI_AGENT_MODE_OFF : mode;
+  }
+
+  /**
+   * Opens the AI chat and sends an explain-block message.
+   * Called from Blockly JS via the exported bridge function.
+   */
+  public static void explainBlock(String displayText, String contextHint) {
+    Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+  }
+
   // Set currentScreen
   // We use this to determine if we should send Yail to a
   // a connected device.
@@ -720,6 +757,12 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getDefaultCloudDBServer());
     $wnd.BlocklyPanel_getComponentContainerUuid =
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentContainerUuid(*));
+    $wnd.BlocklyPanel_isAIAgentAvailable =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::isAIAgentAvailable());
+    $wnd.BlocklyPanel_getAIAgentMode =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getAIAgentMode());
+    $wnd.BlocklyPanel_explainBlock =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::explainBlock(Ljava/lang/String;Ljava/lang/String;));
   }-*/;
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl, String targetLang)/*-{

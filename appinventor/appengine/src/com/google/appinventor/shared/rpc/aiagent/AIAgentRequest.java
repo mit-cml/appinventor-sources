@@ -28,6 +28,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private int retryAttempt;
   private int totalTools;
   private boolean platformMessage;
+  private String contextHint;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -255,5 +256,18 @@ public class AIAgentRequest implements IsSerializable, Serializable {
    */
   public static String wrapPlatformMessage(String content) {
     return "<system>\n" + content + "\n</system>";
+  }
+
+  /**
+   * Returns an optional context hint for the AI agent. Used to pass
+   * additional block-specific context (e.g., YAIL, warnings) that
+   * should be prepended to the user message before the LLM call.
+   */
+  public String getContextHint() {
+    return contextHint;
+  }
+
+  public void setContextHint(String contextHint) {
+    this.contextHint = contextHint;
   }
 }

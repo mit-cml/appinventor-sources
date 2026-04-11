@@ -81,7 +81,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         userMessage, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
-        request.isPlatformMessage());
+        request.isPlatformMessage(), request.getContextHint());
   }
 
   @Override

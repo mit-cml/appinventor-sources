@@ -145,12 +145,14 @@ public class AIAgentEngine {
    * @param screenComponentsJson live component tree JSON from the client
    * @param projectSnapshot      project metadata JSON from the client
    * @param blockWarnings        JSON with block warnings/errors from the client
+   * @param contextHint          optional context prepended to the LLM message only (not stored in history)
    * @return the AI agent response
    */
   public AIAgentResponse processRequest(String userId, long projectId, String screenName,
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
-      String locale, String languageDisplayName, boolean isPlatformMessage) {
+      String locale, String languageDisplayName, boolean isPlatformMessage,
+      String contextHint) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId);
     try {
       streamBuffer.init();
@@ -205,8 +207,15 @@ public class AIAgentEngine {
 
       // Call LLM (context messages are sent as separate turns by the provider).
       // Platform messages are wrapped so the LLM knows they are system-generated.
-      String llmMessage = isPlatformMessage
-          ? AIAgentRequest.wrapPlatformMessage(userMessage) : userMessage;
+      // Context hint (e.g., block YAIL for "Explain Block") is prepended to the
+      // LLM message but NOT stored in history, so it doesn't appear in the chat.
+      String llmMessage = userMessage;
+      if (contextHint != null && !contextHint.isEmpty()) {
+        llmMessage = llmMessage + "\n\n" + contextHint;
+      }
+      if (isPlatformMessage) {
+        llmMessage = AIAgentRequest.wrapPlatformMessage(llmMessage);
+      }
       LLMResponse llmResponse = provider.chat(
           systemPrompt, contextMessages, llmMessage, tools, conv.getProviderRef(),
           history, resolver, streamBuffer);

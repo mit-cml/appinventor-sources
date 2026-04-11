@@ -159,6 +159,46 @@ public class AIResponseOrchestrator {
   }
 
   /**
+   * Sends a message to the AI agent with an additional context hint.
+   * The context hint is attached to the request and prepended to the
+   * user message server-side before the LLM call.
+   *
+   * @param text the user's message text (shown in chat)
+   * @param contextHint additional context for the LLM (hidden from chat)
+   */
+  public void sendMessageWithContext(String text, String contextHint) {
+    AIAgentRequest request = contextCollector.buildRequest(text);
+    if (contextHint != null && !contextHint.isEmpty()) {
+      request.setContextHint(contextHint);
+    }
+    requestInFlight = true;
+    callback.setRequestInFlight(true);
+    validationRetryCount = 0;
+    executionRetryCount = 0;
+    originalToolCount = 0;
+    preservedValidOps = null;
+    preservedAiMessage = null;
+    startPollingStatus();
+
+    aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>(
+        MESSAGES.aiChatSendError()) {
+      @Override
+      public void onSuccess(AIAgentResponse response) {
+        handleResponseWithValidation(response);
+      }
+
+      @Override
+      public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        requestInFlight = false;
+        callback.setRequestInFlight(false);
+        stopPollingStatus();
+        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+      }
+    });
+  }
+
+  /**
    * Applies the current batch and automatically applies all subsequent
    * batches without requiring user confirmation for each one.
    */
