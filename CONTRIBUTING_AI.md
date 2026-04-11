@@ -170,12 +170,18 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `DesignerOperationValidator.java` | Validates component operations |
 | `BlockOperationValidator.java` | Validates block operations against Blockly engine |
 
-### Blockly AI -- `blocklyeditor/src/ai/`
+### YAIL-to-Blocks Parser -- `blocklyeditor/src/parsers/`
 
 | File | Purpose |
 |------|---------|
-| `yail_to_blocks.js` | Converts YAIL S-expressions into Blockly blocks with viewport-aware positioning and component grouping |
-| `sexpr_parser.js` | S-expression parser for YAIL |
+| `sexpr_parser.js` | S-expression tokenizer and parser for YAIL |
+| `yail.js` | Core YAIL-to-Blocks converter: `convert()`, `deleteBlock()`, top-level form dispatch, event/global/procedure converters, block finding and manipulation |
+| `yail/block_helpers.js` | Block factory helpers (`makeNumberBlock_`, etc.), color constant maps, asset block helpers, utility functions |
+| `yail/control_flow.js` | Control flow converters (if, while, foreach, forrange, let, begin, logic ops), higher-order list forms |
+| `yail/expressions.js` | Statement/expression dispatch, specific converters for variables, properties, methods, components, static fields |
+| `yail/positioning.js` | Block positioning, width optimization, overlap avoidance |
+| `yail/primitives.js` | `PRIMITIVE_MAP_` lookup table, `convertPrimitive_()`, `convertShortPrimitive_()` |
+| `yail/validation.js` | Dry-run YAIL validation without block creation |
 
 ### Resources -- `server/aiagent/resources/`
 
@@ -396,7 +402,7 @@ After all sync phases complete, `blocksEditor.sendComponentData(true)` forces a 
 
 ### Block Positioning
 
-When `WRITE_BLOCK` creates new blocks, `AI.YailToBlocks.convert()` in `blocklyeditor/src/ai/yail_to_blocks.js` handles positioning with three layered strategies:
+When `WRITE_BLOCK` creates new blocks, `AI.YailToBlocks.convert()` in `blocklyeditor/src/parsers/yail.js` handles positioning with three layered strategies:
 
 1. **Viewport-aware free-space placement (always active):** Scans existing top-level blocks visible in the viewport, places new blocks below the lowest one. If the user scrolled to empty space, blocks appear there instead.
 2. **Component grouping (gated by `AI.YailToBlocks.GROUP_BY_COMPONENT`):** Event handlers are placed near existing handlers for the same component, derived from the block's `instance_name` mutation attribute. Falls back to free-space when no group exists.
