@@ -1032,8 +1032,17 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public native void doCheckWarnings() /*-{
-    this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
-      .checkAllBlocksForWarningsAndErrors();
+    // checkAllBlocksForWarningsAndErrors lives on Blockly.WarningHandler,
+    // not on WorkspaceSvg. Route through getWarningHandler() (lazy-creates
+    // the handler if needed). The handler itself early-returns when the
+    // workspace is not rendered, so this is safe for background editors
+    // during Plan & Execute orchestration — they will re-check naturally
+    // when the user opens them and Blockly re-renders.
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var handler = workspace.getWarningHandler && workspace.getWarningHandler();
+    if (handler) {
+      handler.checkAllBlocksForWarningsAndErrors();
+    }
   }-*/;
 
   static native void setLanguageVersion(int yaVersion, int blocksVersion)/*-{
