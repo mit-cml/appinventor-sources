@@ -49,45 +49,54 @@ final class AIDesignerOperations {
 
     // Build a minimal JSON properties object in the format expected by
     // DesignerEditor.createMockComponent():
-    //   { "$Type": "Button", "$Version": "7", ... }
+    //   { "$Type": "Button", "$Version": "7" }
     // We intentionally omit $Name here. createMockComponent auto-generates a
     // name (e.g., "Button1") and fires fireComponentAdded, which registers
     // that auto-name in Blockly's componentDb_. We then call rename() below
     // to set the desired name, which fires fireComponentRenamed — the same
     // path as a manual user renaming via the properties panel.
+    //
+    // We deliberately do NOT include LLM-supplied properties in this initial
+    // JSON. The palette flow (SimpleComponentDescriptor.createMockComponentFromPalette)
+    // creates the bare component, then calls onCreateFromPalette() to seed
+    // defaults like "Text for Label1". We mirror that sequence below so the
+    // mock preview shows the same defaults a user would see, then apply
+    // LLM-supplied properties on top so they win over the palette defaults.
     SimpleComponentDatabase db = formEditor.getComponentDatabase();
-    StringBuilder sb = new StringBuilder();
-    sb.append("{\"$Type\":\"").append(type).append("\",");
-    sb.append("\"$Version\":\"").append(db.getComponentVersion(type)).append("\"");
+    String bareJson = "{\"$Type\":\"" + type + "\",\"$Version\":\""
+        + db.getComponentVersion(type) + "\"}";
 
-    // Append any initial property values from the payload.
-    if (json.containsKey("properties")) {
-      JSONValue propsVal = json.get("properties");
-      if (propsVal.isObject() != null) {
-        JSONObject props = propsVal.isObject();
-        for (String propName : props.keySet()) {
-          JSONValue propValue = props.get(propName);
-          String valueStr = (propValue.isString() != null)
-              ? propValue.isString().stringValue()
-              : propValue.toString();
-          valueStr = normalizePropertyValue(valueStr);
-          sb.append(",\"").append(propName).append("\":\"")
-              .append(AIJsonUtils.escapeJsonString(valueStr)).append("\"");
+    MockComponent created = formEditor.addMockComponent(
+        new ClientJsonParser().parse(bareJson).asObject(), container);
+
+    if (created != null) {
+      // Seed palette defaults (e.g. MockLabel sets Text to "Text for Label1")
+      // so the mock preview matches what a user sees when dragging from the
+      // palette.
+      created.onCreateFromPalette();
+
+      // Apply LLM-supplied properties on top of the palette defaults.
+      if (json.containsKey("properties")) {
+        JSONValue propsVal = json.get("properties");
+        if (propsVal.isObject() != null) {
+          JSONObject props = propsVal.isObject();
+          for (String propName : props.keySet()) {
+            JSONValue propValue = props.get(propName);
+            String valueStr = (propValue.isString() != null)
+                ? propValue.isString().stringValue()
+                : propValue.toString();
+            valueStr = normalizePropertyValue(valueStr);
+            created.changeProperty(propName, valueStr);
+          }
         }
       }
-    }
-    sb.append("}");
 
-    ClientJsonParser sharedParser = new ClientJsonParser();
-    com.google.appinventor.shared.properties.json.JSONObject propertiesObject =
-        sharedParser.parse(sb.toString()).asObject();
-    MockComponent created = formEditor.addMockComponent(propertiesObject, container);
-
-    // Rename to the AI-specified name. rename() fires fireComponentRenamed,
-    // which notifies BlocksEditor.onComponentRenamed() to update Blockly's
-    // componentDb_.
-    if (created != null && !name.equals(created.getName())) {
-      created.rename(name);
+      // Rename to the AI-specified name. rename() fires fireComponentRenamed,
+      // which notifies BlocksEditor.onComponentRenamed() to update Blockly's
+      // componentDb_.
+      if (!name.equals(created.getName())) {
+        created.rename(name);
+      }
     }
   }
 
