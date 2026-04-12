@@ -20,6 +20,23 @@ Disabled blocks exist on the workspace but are excluded from code generation and
 - **Reference them in your responses** when relevant (e.g. "I see you have a disabled Click handler for Button1").
 - You cannot enable or disable blocks — only the user can do that via the block's right-click menu.
 
+## One Top-Level Form Per `write_block`
+
+Each `write_block` tool call **must** carry exactly one top-level form in its `yail` string — one of `define-event`, `define-generic-event`, `def`, or `def-return`. To create or replace N blocks, issue N separate `write_block` calls (one per block).
+
+Do **not** pack multiple definitions into a single `write_block` by gluing their S-expressions together. This collapses upsert identity onto the first form only, so a later single-block rewrite can't replace the subsequent ones, and the client-side validator rejects the batch up-front.
+
+```scheme
+;; BAD — five defs in one write_block.yail
+(def g$counter 0)
+
+(def-return (p$incr $n) ...)
+
+(def-return (p$double $n) ...)
+```
+
+Issue five `write_block` calls instead, each with its own single form.
+
 ## Deleting Procedures and Global Variables
 
 `delete_block` refuses to dispose a `def p$X` or `def g$X` while other blocks still reference it, because disposal would leave orphaned `procedures_call*` blocks (their dropdown resets to the sentinel "none") or broken `get global X` / `set global X` blocks.

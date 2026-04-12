@@ -36,6 +36,18 @@ AI.YailToBlocks.validate = function(yailString) {
       return {valid: false, error: 'Empty YAIL input'};
     }
 
+    // A write_block tool call must carry exactly one top-level form.
+    // Packing multiple defs into a single yail string collapses upsert
+    // identity onto the first form only, so a later single-proc rewrite
+    // can't replace the others. Require one tool call per block.
+    if (ast.length > 1) {
+      return {valid: false,
+          error: 'write_block.yail must contain exactly one top-level form '
+              + '(define-event, define-generic-event, def, or def-return). '
+              + 'Got ' + ast.length + '. Split into '
+              + ast.length + ' separate write_block calls.'};
+    }
+
     for (var i = 0; i < ast.length; i++) {
       var node = ast[i];
       var result = AI.YailToBlocks.validateTopLevel_(node);

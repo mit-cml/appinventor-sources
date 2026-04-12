@@ -813,4 +813,32 @@ suite('YAIL to Blocks Converter', function() {
           'delete should succeed when no callers exist');
     });
   });
+
+  // ================================================================
+  // 10. validate() dry-run
+  // ================================================================
+  suite('validate()', function() {
+
+    test('Single top-level form is accepted', function() {
+      var r = AI.YailToBlocks.validate('(def g$a 1)');
+      chai.assert.isTrue(r.valid, r.error || '');
+    });
+
+    test('Multiple top-level forms are rejected', function() {
+      var r = AI.YailToBlocks.validate('(def g$a 1)\n(def g$b 2)');
+      chai.assert.isFalse(r.valid);
+      chai.assert.include(r.error, 'exactly one top-level form');
+      chai.assert.include(r.error, 'Got 2');
+    });
+
+    test('Empty YAIL is rejected', function() {
+      var r = AI.YailToBlocks.validate('');
+      chai.assert.isFalse(r.valid);
+    });
+
+    test('Unbalanced parens are reported with deficit count', function() {
+      var r = AI.YailToBlocks.validate('(def g$a 1');
+      chai.assert.isFalse(r.valid);
+    });
+  });
 });
