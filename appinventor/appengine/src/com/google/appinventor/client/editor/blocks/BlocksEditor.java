@@ -746,6 +746,18 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   /**
+   * Force the Blockly workspace to flush queued renders and recompute
+   * its layout.  The AI operation pipeline mutates the workspace with
+   * Blockly events disabled, so the viewport and scrollbars can lag
+   * behind the model after large batches (symptom: user has to refresh
+   * the page to see the applied changes).  Callers should invoke this
+   * explicitly after a batch completes.
+   */
+  public void refreshWorkspace() {
+    blocksArea.doRefreshWorkspace();
+  }
+
+  /**
    * Mark blocks for pending deletion so the placement algorithm ignores
    * them when positioning new blocks.
    *

@@ -1359,6 +1359,38 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   /**
+   * Force the workspace to flush any queued renders and recompute its
+   * layout metrics.  The AI operation pipeline calls
+   * {@code Blockly.Events.disable()} around write/delete mutations so
+   * normal change listeners never fire; after a batch of dozens of
+   * mutations the viewport, scrollbars, and block SVGs can lag behind
+   * the model until the user forces a refresh.  Invoking this once at
+   * the end of the batch forces the visual state to catch up.
+   *
+   * <p>Both {@code Blockly.renderManagement.triggerQueuedRenders} and
+   * {@code workspace.resizeContents} are guarded because background
+   * editors (Plan &amp; Execute child screens) are not rendered — the
+   * no-op is fine there, they refresh naturally when the user opens
+   * them.
+   */
+  public native void doRefreshWorkspace() /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    if (!workspace) {
+      return;
+    }
+    // Flush any renders queued during event-disabled mutations.
+    var renderMgr = $wnd.Blockly && $wnd.Blockly.renderManagement;
+    if (renderMgr && renderMgr.triggerQueuedRenders) {
+      renderMgr.triggerQueuedRenders();
+    }
+    // Recompute the workspace content bounding box, which also resizes
+    // scrollbars via workspace.scrollbar.resize() internally.
+    if (workspace.resizeContents) {
+      workspace.resizeContents();
+    }
+  }-*/;
+
+  /**
    * Mark existing blocks that will be replaced by WRITE_BLOCK upserts,
    * adding them to the pending deletion set for positioning.
    *

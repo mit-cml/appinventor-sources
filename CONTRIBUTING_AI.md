@@ -404,11 +404,12 @@ Phase 1 is **async** (screen switches involve RPC callbacks). Phases 2-5 are **s
 
 ### Post-Batch Cleanup Ordering
 
-After all sync phases complete, `runSyncPhases()` performs three cleanup steps **before** invoking the `ExecutionCallback.onComplete`:
+After all sync phases complete, `runSyncPhases()` performs four cleanup steps **before** invoking the `ExecutionCallback.onComplete`:
 
 1. `blocksEditor.sendComponentData(true)` -- forces a Companion YAIL update so the device reflects the changes immediately (current screen only; background screens have no live Companion).
 2. `blocksEditor.checkWarnings()` -- re-runs the Blockly warning/error pipeline on the target workspace. This is required because `AI.YailToBlocks.convert()` and `deleteBlock()` disable Blockly events during mutation, so the normal change listener in `BlocklyPanel.onLoad_` never fires and warnings tied to sibling blocks (e.g. duplicate event handlers) would otherwise stay stale.
-3. `EditorManager.scheduleAutoSave()` on both the blocks and form editors -- also needed because the event-disabled mutation path never marks the editor dirty.
+3. `blocksEditor.refreshWorkspace()` -- flushes `Blockly.renderManagement.triggerQueuedRenders()` and calls `workspace.resizeContents()` + `scrollbar.resize()`. Each `write_block` / `delete_block` runs under `Blockly.Events.disable()`, so queued SVG renders and viewport metric updates don't process automatically. Without this step, large batches (e.g. a 26-delete refactor) leave the visual workspace lagging behind the model until the user reloads the page.
+4. `EditorManager.scheduleAutoSave()` on both the blocks and form editors -- also needed because the event-disabled mutation path never marks the editor dirty.
 
 Only after these three steps does the executor call `state.finish()`. This ordering matters because `onComplete` synchronously drives `AIResponseOrchestrator.fetchContinuation()` -> `contextCollector.buildRequest()` -> `getBlocksWarningsAndErrors()`. If `checkWarnings()` ran after `state.finish()`, the continuation RPC's `blockWarnings` payload would reflect pre-mutation state, and the LLM would chase phantom errors (e.g. re-delete a handler it already cleaned up).
 

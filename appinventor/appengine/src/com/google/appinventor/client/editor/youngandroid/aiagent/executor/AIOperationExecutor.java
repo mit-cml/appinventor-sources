@@ -349,9 +349,16 @@ public class AIOperationExecutor {
       // their counterpart. Explicit re-check keeps the indicator in sync
       // AND ensures the next continueRequest's blockWarnings payload
       // reflects reality, preventing the LLM from chasing phantom errors.
+      //
+      // refreshWorkspace() flushes any Blockly renders queued during the
+      // event-disabled mutations and recomputes viewport / scrollbar
+      // metrics. Without this, large batches (e.g. a refactor that
+      // replaces dozens of blocks) leave the visual workspace lagging
+      // behind the model until the user reloads the page.
       YaBlocksEditor refreshEditor = context.getBlocksEditor();
       if (refreshEditor != null) {
         refreshEditor.checkWarnings();
+        refreshEditor.refreshWorkspace();
       }
       // Mark both editors dirty so auto-save persists the changes —
       // critical for background editors where no Blockly events fired.
