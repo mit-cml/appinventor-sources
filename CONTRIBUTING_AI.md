@@ -57,7 +57,7 @@ flowchart TB
 | `LLMResponseParser.java` | Parses LLM tool calls into typed `AIOperation` objects |
 | `AIToolResolver.java` | Resolves read-only tool calls (component/screen lookups) |
 | `ModeEnforcer.java` | Validates operations against the active AI mode and `EnforcementContext` |
-| `EnforcementContext.java` | Orchestration enforcement contexts: STANDARD, PLANNING, CHILD_EXECUTION |
+| `EnforcementContext.java` | Orchestration enforcement contexts: STANDARD, PLANNING, EXECUTION, CHILD_EXECUTION |
 | `AIToolNames.java` | Constants for tool names sent to the LLM |
 | `AIDebug.java` | Debug logging: per-request file output (dev) or dedicated logger (prod) |
 | `TutorialContentCache.java` | Fetches tutorial HTML, strips to text, caches in memory (8h TTL, max 100 entries) |
@@ -110,7 +110,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | File | Purpose |
 |------|---------|
 | `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `clearConversation`, `getConversationHistory`, `getRequestStatus`; screen-scoped overloads for `getRequestStatus(projectId, targetScreen)` and `cancelRequest(projectId, targetScreen)` |
-| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode` |
+| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode`, `executionPhase` |
 | `AIAgentResponse.java` | Response DTO: AI message text, operations list, errors, `hasMore` flag |
 | `AIOperation.java` | Single operation: type enum (including `PROPOSE_PLAN`) + JSON payload string |
 | `AIOperationResult.java` | Execution result: succeeded/failed/skipped with error details |
@@ -130,7 +130,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `PlanProjectStepExecutor.java` | Plan parsing, `__project__` step execution (screen creation), editor readiness polling |
 | `AIModeSelectionDialog.java` | First-time mode selection UI |
 | `AIDialogResizeHandler.java` | Floating dialog resize/position management |
-| `AIEditorState.java` | Dialog visibility, mode state, and `planExecuteMode` tracking |
+| `AIEditorState.java` | Dialog visibility, mode state, `planExecuteMode`, and `planApproved` tracking (the latter drives `EnforcementContext.EXECUTION` via the `executionPhase` request field) |
 | `AIOperationFormatter.java` | Color-coded operation preview formatting |
 | `AIJsonUtils.java` | JSON utility functions |
 
@@ -218,7 +218,7 @@ Context is assembled from two sources: the **client** collects live editor state
 |-------|--------|-------------|
 | `projectId` | `DesignToolbar.getCurrentProject()` | Active project ID |
 | `screenName` | `DesignToolbar.currentScreen` | Currently open screen name |
-| `blocksYail` | `BlocksEditor.getBlocksYail()` | YAIL for all blocks on the current screen (event handlers, globals, procedures) |
+| `blocksYail` | `BlocksEditor.getBlocksYail()` | YAIL for all blocks on the current screen (event handlers, globals, procedures). Top-level blocks that the user has manually disabled in the workspace are emitted with a `;;; DISABLED` comment on the line immediately preceding the form, so the LLM can read them without treating them as live code (see [Disabled Blocks](#disabled-blocks)). |
 | `currentView` | `DesignToolbar.getCurrentView()` | `"Designer"` or `"Blocks"` |
 | `screenComponentsJson` | `YaFormEditor.getPropertiesJson()` | Live component tree with property values |
 | `projectSnapshot` | Built inline | JSON with app name, version, theme, sizing, colors, tutorial URL, screen names, assets, extensions, and screen summaries (ProjectEditor mode only) |
@@ -331,7 +331,7 @@ Write tools (`add_component`, `write_block`, etc.) are **not executed server-sid
 
 ### Tool Filtering by Mode and View
 
-`AIContextBuilder.buildTools(mode, currentView, enforcementContext)` controls which tools the LLM sees. The `EnforcementContext` (STANDARD, PLANNING, CHILD_EXECUTION) overrides mode-based filtering during orchestration:
+`AIContextBuilder.buildTools(mode, currentView, enforcementContext)` controls which tools the LLM sees. The `EnforcementContext` (STANDARD, PLANNING, EXECUTION, CHILD_EXECUTION) overrides mode-based filtering during orchestration:
 
 | Mode | View | Enforcement Context | Available Tools |
 |------|------|---------------------|----------------|
@@ -341,6 +341,7 @@ Write tools (`add_component`, `write_block`, etc.) are **not executed server-sid
 | ProjectEditor | Designer | STANDARD | all ScreenEditor Designer tools + `switch_screen`, `create_screen`, `delete_screen`, `set_project_property` |
 | ProjectEditor | Blocks | STANDARD | all ScreenEditor Blocks tools + `switch_screen`, `create_screen`, `delete_screen`, `set_project_property` |
 | ProjectEditor | any | PLANNING | `lookup_component`, `lookup_screen`, `propose_plan` |
+| ProjectEditor | any | EXECUTION | Full STANDARD write tools + `propose_plan` (parent agent after plan approval — can apply follow-up edits directly or re-plan) |
 | ProjectEditor | any | CHILD_EXECUTION | Same as ScreenEditor (screen-level tools only, no project-level tools, no `propose_plan`) |
 
 ---
@@ -384,8 +385,11 @@ flowchart LR
     P3["Phase 3 (sync)<br/>WRITE_BLOCK"]
     P4["Phase 4 (sync)<br/>DELETE_BLOCK"]
     P5["Phase 5 (sync)<br/>DELETE_COMPONENT"]
+    Cleanup["Post-Batch Cleanup<br/><i>sendComponentData<br/>checkWarnings<br/>scheduleAutoSave</i>"]
+    Finish["state.finish()<br/><i>fires ExecutionCallback.onComplete<br/>which may drive fetchContinuation</i>"]
 
     P1 -->|"nav done"| P2 -->|"components exist"| P3 -->|"blocks written"| P4 -->|"blocks cleaned"| P5
+    P5 --> Cleanup --> Finish
 ```
 
 | Phase | Why it comes here |
@@ -398,7 +402,19 @@ flowchart LR
 
 Phase 1 is **async** (screen switches involve RPC callbacks). Phases 2-5 are **synchronous**. On any failure, the executor **halts** -- remaining operations are marked as skipped. There is no rollback.
 
-After all sync phases complete, `blocksEditor.sendComponentData(true)` forces a Companion YAIL update so the device reflects the changes immediately.
+### Post-Batch Cleanup Ordering
+
+After all sync phases complete, `runSyncPhases()` performs three cleanup steps **before** invoking the `ExecutionCallback.onComplete`:
+
+1. `blocksEditor.sendComponentData(true)` -- forces a Companion YAIL update so the device reflects the changes immediately (current screen only; background screens have no live Companion).
+2. `blocksEditor.checkWarnings()` -- re-runs the Blockly warning/error pipeline on the target workspace. This is required because `AI.YailToBlocks.convert()` and `deleteBlock()` disable Blockly events during mutation, so the normal change listener in `BlocklyPanel.onLoad_` never fires and warnings tied to sibling blocks (e.g. duplicate event handlers) would otherwise stay stale.
+3. `EditorManager.scheduleAutoSave()` on both the blocks and form editors -- also needed because the event-disabled mutation path never marks the editor dirty.
+
+Only after these three steps does the executor call `state.finish()`. This ordering matters because `onComplete` synchronously drives `AIResponseOrchestrator.fetchContinuation()` -> `contextCollector.buildRequest()` -> `getBlocksWarningsAndErrors()`. If `checkWarnings()` ran after `state.finish()`, the continuation RPC's `blockWarnings` payload would reflect pre-mutation state, and the LLM would chase phantom errors (e.g. re-delete a handler it already cleaned up).
+
+`BlocklyPanel.doCheckWarnings()` runs the two-phase refresh: `handler.determineDuplicateComponentEventHandlers()` first (to recompute each event handler's `IAmADuplicate` flag), then `handler.checkAllBlocksForWarningsAndErrors()` (to paint icons and update `errorIdHash`/`warningIdHash`). Running only the second phase would repaint stale flags.
+
+On failure paths, `runSyncList` calls `state.finish()` internally before returning, and `runSyncPhases` guards against double-finish with a `happyPath` flag. The cleanup still runs via the finally block so the workspace, Companion, and save queue reflect the partial result.
 
 ### Block Positioning
 
@@ -448,7 +464,31 @@ In addition to mode checks, the `EnforcementContext` applies orchestration-phase
 |---------|--------|
 | STANDARD | No additional restrictions (current behavior) |
 | PLANNING | Rejects all write operations except PROPOSE_PLAN |
+| EXECUTION | Parent agent after plan approval: STANDARD write tools **plus** PROPOSE_PLAN, so the parent can apply small follow-ups directly or re-plan for complex follow-up requests |
 | CHILD_EXECUTION | Rejects project-level operations (SWITCH_SCREEN, CREATE_SCREEN, DELETE_SCREEN, SET_PROJECT_PROP) and PROPOSE_PLAN |
+
+### Disabled Blocks
+
+Blockly lets the user manually disable any top-level block via the right-click menu. Disabled blocks stay on the workspace but are excluded from code generation and never run at runtime.
+
+The YAIL export in `blocklyeditor/src/generators/yail_blocks_export.js` emits every disabled top-level block with a `;;; DISABLED` comment on the preceding line:
+
+```scheme
+;;; DISABLED
+(define-event Button1 Click ()
+  (set-this-form)
+  (call-component-method 'Notifier1 'ShowAlert
+    (*list-for-runtime* "Hello!") '(text)))
+```
+
+The matching behaviour on the server/LLM side is documented in `server/aiagent/resources/yail_grammar.md`, which tells the model:
+
+- Disabled blocks are **read-only** — `write_block` and `delete_block` target the enabled workspace only, so they cannot modify or remove disabled blocks.
+- The LLM must **not** try to recreate a disabled block with `write_block`: using the same identity creates a second enabled copy next to the disabled one rather than replacing it.
+- Disabled blocks should still be acknowledged in explanations (e.g. "I see you have a disabled Click handler for Button1") because the user can see them.
+- Only the user can enable/disable blocks; there is no tool for the LLM to toggle that state.
+
+The grammar file also documents the sibling "duplicate blocks" convention: if two enabled blocks share the same identity (an inconsistent workspace), each `delete_block` call removes only one copy, so the LLM may need to call it twice and surface the duplication to the user.
 
 ---
 
@@ -500,7 +540,7 @@ Each operation is validated immediately before execution by `AIOperationValidato
 
 | Operation | Checks |
 |-----------|--------|
-| ADD_COMPONENT | `component_type` exists in SimpleComponentDatabase, `name` is a valid identifier, no duplicate name on current screen |
+| ADD_COMPONENT | `component_type` exists in SimpleComponentDatabase, `name` is a valid identifier, no duplicate name on current screen, and the target parent (or the form root when `parent` is omitted) accepts children of this type via `MockContainer.willAcceptComponentType()`. Types with mandatory nesting (`Ball`/`ImageSprite` inside `Canvas`, `ChartData2D`/`Trendline` inside `Chart`, `Marker`/`LineString`/`Polygon`/`Rectangle`/`Circle`/`FeatureCollection` inside `Map`) fail with a specific error naming the required parent. |
 | DELETE_COMPONENT | Component exists on screen, is not the Form root |
 | SET_PROPERTY | `component_name` exists, `property_name` and `value` are present |
 | RENAME_COMPONENT | `old_name` exists, `new_name` is a valid identifier, `new_name` doesn't already exist |
@@ -1054,14 +1094,14 @@ When Plan & Execute is active, the enforcement context is set to `PLANNING`. The
 
 After approval, `AIResponseOrchestrator` checks the number of screen-level steps (non-`__project__` steps):
 
-- **Single screen step (or zero)**: no child conversations spawned. The parent agent continues directly with `planExecuteMode=false`, reverting to `EnforcementContext.STANDARD` with full write tools.
+- **Single screen step (or zero)**: no child conversations spawned. The parent agent continues directly under `EnforcementContext.EXECUTION`, which grants full write tools plus `propose_plan` (so a follow-up request can either be applied inline or re-planned).
 - **Multiple screen steps**: the plan flows to `AIOrchestrationManager` for parallel execution.
 
 ```mermaid
 flowchart TD
     Approve["User approves plan"]
     Count{"Screen steps<br/>count?"}
-    Single["Parent continues directly<br/>(STANDARD enforcement,<br/>full tool access)"]
+    Single["Parent continues directly<br/>(EXECUTION enforcement,<br/>full write tools + propose_plan)"]
     Multi["AIOrchestrationManager<br/>.executePlan()"]
 
     Approve --> Count
@@ -1186,13 +1226,13 @@ flowchart TD
     Rejected["User rejects a batch"]
     Cancel["Cancel all children"]
     Context["Parent receives:<br/>- applied screen summaries<br/>- rejection details<br/>- live screen states"]
-    Replan["Parent can re-plan<br/>(STANDARD enforcement,<br/>full tool access)"]
+    Replan["Parent can re-plan or patch<br/>(EXECUTION enforcement,<br/>full write tools + propose_plan)"]
 
     Rejected --> Cancel --> Context --> Replan
 ```
 
 - **Success**: orchestration manager sends a grouped summary (per-screen operation lists and any errors) to the parent conversation. The parent LLM responds with a summary shown in the chat.
-- **Rejection**: the parent receives context about what was applied, what was rejected, and the live state of modified screens. The enforcement context reverts to STANDARD so the parent can re-plan or make targeted fixes with full tool access.
+- **Rejection**: the parent receives context about what was applied, what was rejected, and the live state of modified screens. The enforcement context stays on EXECUTION (via the sticky `AIEditorState.planApproved` flag) so the parent can either apply targeted fixes directly with full write tools or call `propose_plan` again for a more complex re-plan.
 - **Cancellation**: all children cancelled via screen-scoped `cancelRequest` RPCs. Approved batches remain applied (no rollback). The parent stores a cancellation summary.
 
 ---
@@ -1290,6 +1330,8 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **Rate limit: configurable** (default 10 req/min per user). Enforced via in-memory timestamps in `AIAgentServiceImpl`.
 - **Context is never cached client-side.** Every request rebuilds the full editor state snapshot. For child conversations, `buildRequestForScreen()` reads from background editors.
 - **Background editor operations are safe.** `BlocklyPanel.doWriteBlock()` uses `this.workspace` (the specific instance), not `Blockly.common.getMainWorkspace()`. `AI.YailToBlocks.convert()` accepts an explicit workspace parameter. No save/restore of the main workspace is needed.
+- **Blockly events are disabled during AI mutations.** `AI.YailToBlocks.convert()` and `deleteBlock()` wrap their workspace changes in `Blockly.Events.disable()/enable()`. This prevents mid-mutation crashes but also suppresses the change listener that normally runs `determineDuplicateComponentEventHandlers()` + `requestErrorChecking()` and the listener that marks the editor dirty. Any new executor code path that mutates the workspace outside normal Blockly events **must** explicitly call `BlocksEditor.checkWarnings()` and `EditorManager.scheduleAutoSave()` before yielding control back to async RPC pipelines.
+- **Post-batch cleanup must complete before `state.finish()`.** The orchestrator's `onComplete` handler synchronously drives `fetchContinuation()` -> `buildRequest()` -> `getBlocksWarningsAndErrors()`. If workspace cleanup (Companion update, warning refresh, auto-save) ran after `state.finish()`, the continuation RPC would carry stale `blockWarnings` and the LLM would chase phantom errors. `runSyncPhases` enforces this by running cleanup in a finally block and calling `state.finish()` only after the finally completes (gated by a `happyPath` flag to avoid double-finish on error paths, which already call `state.finish()` from inside `runSyncList`).
 - **`ScreenExecutionContext` replaces `AIEditorState` for all executor code.** `AIDesignerOperations`, `AIBlockOperations`, and `AIOperationExecutor` accept `ScreenExecutionContext` instead of calling `AIEditorState.getCurrentFormEditor()` / `getCurrentBlocksEditor()`. Use `ScreenExecutionContext.forCurrentScreen()` for the single-agent flow.
 - **`PROPOSE_PLAN` exclusivity is enforced in the parser, not `ModeEnforcer`.** If `propose_plan` appears alongside other tool calls, `LLMResponseParser` discards the others.
 - **`__project__` is a reserved sentinel value** for plan steps targeting project-level operations. `LLMResponseParser` rejects it as a screen name in non-plan tool calls.
