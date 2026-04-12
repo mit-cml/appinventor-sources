@@ -341,8 +341,11 @@ public final class MockComponentsUtil {
    */
   private static String getHexString(String color, int digits) {
     // When receiving the property values from the server hex numbers were converted to decimal
-    // numbers
-    color = color.startsWith("&H") ? color.substring(2) : Long.toHexString(Long.parseLong(color));
+    // numbers.  Mask to 32 bits so signed-decimal values (e.g. "-16776961" for blue) don't
+    // sign-extend into a 16-character string.
+    color = color.startsWith("&H")
+        ? color.substring(2)
+        : Long.toHexString(Long.parseLong(color) & 0xFFFFFFFFL);
     int len = color.length();
     if (len < digits) {
       do {
@@ -359,12 +362,18 @@ public final class MockComponentsUtil {
    * Converts the hex string representing the color &HAARRGGBB to a hex color in the format RRGGBBAA
    */
   static String getAlphaHexString(String color) {
-    color = color.startsWith("&H") ? color.substring(2) : Long.toHexString(Long.parseLong(color));
+    // Mask to 32 bits so signed-decimal values (e.g. "-16776961" for blue) don't sign-extend
+    // into a 16-character string.
+    color = color.startsWith("&H")
+        ? color.substring(2)
+        : Long.toHexString(Long.parseLong(color) & 0xFFFFFFFFL);
     int len = color.length();
     if (len < 8) {
       do {
         color = 'F' + color;
       } while (++len < 8);
+    } else if (len > 8) {
+      color = color.substring(len - 8);
     }
     return color.substring(2) + color.substring(0, 2);
   }
