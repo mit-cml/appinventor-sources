@@ -137,7 +137,9 @@ public class AIChatDialog extends DialogBox
     chatScrollPanel.getElement().getStyle().setProperty("background", "#fafafa");
     chatScrollPanel.getElement().getStyle().setMarginBottom(6, Unit.PX);
 
-    // Debug banner
+    // Debug banner: sits above the chat scroll panel so it is independent of
+    // the message stream. Visibility is driven solely by the server's debug
+    // flag; it is not cleared by "New Conversation" or individual messages.
     debugBanner = new FlowPanel();
     debugBanner.getElement().getStyle().setProperty("border", "1px solid #ff9800");
     debugBanner.getElement().getStyle().setProperty("borderRadius", "4px");
@@ -148,6 +150,8 @@ public class AIChatDialog extends DialogBox
     debugLabel.getElement().getStyle().setColor("#e65100");
     debugLabel.getElement().getStyle().setFontSize(11, Unit.PX);
     debugBanner.add(debugLabel);
+    debugBanner.setVisible(false);
+    mainPanel.add(debugBanner);
 
     mainPanel.add(chatScrollPanel);
 
@@ -353,7 +357,6 @@ public class AIChatDialog extends DialogBox
   public void addUserMessage(String text) {
     renderer.addUserMessage(text);
     editModeWarning.setVisible(false);
-    debugBanner.setVisible(false);
     hasConversationMessages = true;
     planToggle.update(hasConversationMessages);
   }
@@ -428,9 +431,6 @@ public class AIChatDialog extends DialogBox
   @Override
   public void showDebugBanner() {
     debugBanner.setVisible(true);
-    if (debugBanner.getParent() != chatHistory) {
-      chatHistory.insert(debugBanner, 0);
-    }
   }
 
   @Override

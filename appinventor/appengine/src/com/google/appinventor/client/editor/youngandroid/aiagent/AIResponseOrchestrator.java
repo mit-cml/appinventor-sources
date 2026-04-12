@@ -454,7 +454,6 @@ public class AIResponseOrchestrator {
       @Override
       public void onSuccess(Void result) {
         pendingResponse = null;
-        debugBannerShown = false;
         callback.clearChatHistory();
         callback.hideOperationPreview();
       }
