@@ -375,6 +375,10 @@ AI.YailToBlocks.convertSetProperty_ = function(workspace, node) {
   var valueBlock = AI.YailToBlocks.tryMakeAssetBlockForProperty_(
       workspace, componentType, propertyName, value);
   if (!valueBlock) {
+    valueBlock = AI.YailToBlocks.tryMakeColorBlockForProperty_(
+        workspace, componentType, propertyName, value);
+  }
+  if (!valueBlock) {
     valueBlock = AI.YailToBlocks.convertExpression_(workspace, value);
   }
   if (valueBlock && block.getInput('VALUE')) {
@@ -432,6 +436,10 @@ AI.YailToBlocks.convertGenericSetProperty_ = function(workspace, node) {
 
   var valueBlock = AI.YailToBlocks.tryMakeAssetBlockForProperty_(
       workspace, typeName, propertyName, value);
+  if (!valueBlock) {
+    valueBlock = AI.YailToBlocks.tryMakeColorBlockForProperty_(
+        workspace, typeName, propertyName, value);
+  }
   if (!valueBlock) {
     valueBlock = AI.YailToBlocks.convertExpression_(workspace, value);
   }

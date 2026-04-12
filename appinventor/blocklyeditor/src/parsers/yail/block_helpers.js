@@ -223,6 +223,34 @@ AI.YailToBlocks.tryMakeColorBlock_ = function(workspace, node) {
   return block;
 };
 
+/**
+ * Try to create a color block for a property value when the property is a
+ * color (designer editorType === 'color').  A bare integer in `set-property`
+ * for e.g. TextColor or BackgroundColor is almost certainly a color, so emit
+ * the semantic color_* block instead of a math_number.  Returns null when
+ * the property is not a color or the value doesn't match a known named color.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace The workspace.
+ * @param {string} componentType Short component type name.
+ * @param {string} propertyName The property being set.
+ * @param {Object} valueNode The AST node for the value expression.
+ * @return {?Blockly.Block} A color block, or null.
+ * @private
+ */
+AI.YailToBlocks.tryMakeColorBlockForProperty_ = function(
+    workspace, componentType, propertyName, valueNode) {
+  if (!valueNode || valueNode.type !== 'number') return null;
+  var componentDb = workspace.getComponentDatabase();
+  if (!componentDb || !componentType) return null;
+
+  var propDescriptor = componentDb.getPropertyForType(
+      componentType, propertyName);
+  if (!propDescriptor || propDescriptor.editorType !== 'color') return null;
+
+  return AI.YailToBlocks.tryMakeColorBlock_(workspace, valueNode);
+};
+
+
 // ---- Utility ----
 
 /**
