@@ -335,6 +335,15 @@ public class AIOperationExecutor {
           blocksEditor.sendComponentData(true);
         }
       }
+      // Re-run warning/error checks on the blocks workspace. Event-driven
+      // refresh is bypassed because WRITE_BLOCK/DELETE_BLOCK disable
+      // Blockly events during mutation, so warnings tied to sibling blocks
+      // (e.g. duplicate event handlers) don't clear when the AI removes
+      // their counterpart. Explicit re-check keeps the indicator in sync.
+      YaBlocksEditor refreshEditor = context.getBlocksEditor();
+      if (refreshEditor != null) {
+        refreshEditor.checkWarnings();
+      }
       // Mark both editors dirty so auto-save persists the changes —
       // critical for background editors where no Blockly events fired.
       Ode.getInstance().getEditorManager().scheduleAutoSave(context.getBlocksEditor());

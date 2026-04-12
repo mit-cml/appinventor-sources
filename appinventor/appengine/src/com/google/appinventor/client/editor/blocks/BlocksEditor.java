@@ -731,6 +731,21 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   }
 
   /**
+   * Re-run the Blockly warning/error check across all blocks in the
+   * workspace.
+   *
+   * <p>The AI write/delete paths disable Blockly events while mutating
+   * the workspace (to avoid mid-mutation crashes), so the warning handler
+   * never observes the changes and stale warnings linger on blocks whose
+   * duplicates or references the AI just removed. Callers that bypass the
+   * normal event pipeline must invoke this explicitly after their batch
+   * completes to force warnings to refresh.</p>
+   */
+  public void checkWarnings() {
+    blocksArea.doCheckWarnings();
+  }
+
+  /**
    * Mark blocks for pending deletion so the placement algorithm ignores
    * them when positioning new blocks.
    *
