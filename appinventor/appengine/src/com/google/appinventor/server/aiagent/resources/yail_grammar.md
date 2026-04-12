@@ -30,11 +30,11 @@ Practical implications:
 
 - **To fix a buggy event handler / procedure / global:** issue one `write_block` with the corrected YAIL. The upsert replaces the existing block — you do **not** need to delete it first.
 - **To remove a block entirely:** issue one `delete_block`.
-- **To resolve duplicate enabled blocks with the same identity:** this requires multiple turns. First call `delete_block` once (removes one copy) and explain to the user that applying the batch will leave one copy behind; in the next turn, `write_block` or `delete_block` can operate on the remaining copy. Do not try to remove both copies in a single batch.
+- **To resolve duplicate enabled blocks with the same identity:** issue one `delete_block`. Each `delete_block` removes one copy, so a single call turns `[A, A]` into `[A]`, which is already the desired de-duplicated state. Do not pair the delete with a `write_block` for the same identity in the same batch — that would erase the surviving copy via the upsert-then-delete interaction.
 
 ## Duplicate Blocks
 
-If you see two enabled blocks with the same identity (e.g. two `(define-event Button1 Click ...)` without `;;; DISABLED`), the workspace is in a corrupted state. `write_block` and `delete_block` target **one copy at a time**, and the "one mutation per identity per batch" rule above means you cannot address both copies in a single turn — handle the duplicate across two turns and surface the duplication to the user so they know why the fix needs multiple approvals.
+If you see two enabled blocks with the same identity (e.g. two `(define-event Button1 Click ...)` without `;;; DISABLED`), the workspace is in a corrupted state. `write_block` and `delete_block` target **one copy at a time**: a single `delete_block` removes one of the duplicates, leaving a single healthy copy. Mention the duplication to the user so they understand why the fix only emits one delete.
 
 ## Error Recovery
 
