@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_MEDIA_IMAGES;
 
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -150,7 +149,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  @UsesPermissions({READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES})
+  @UsesPermissions(READ_EXTERNAL_STORAGE)
   public void Picture(@Asset String path) {
     final String tempPath = path == null ? "" : path;
     if (TiramisuUtil.requestImagePermissions(container.$form(), path,
