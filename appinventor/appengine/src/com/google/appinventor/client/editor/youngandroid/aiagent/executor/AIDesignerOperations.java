@@ -70,6 +70,7 @@ final class AIDesignerOperations {
           String valueStr = (propValue.isString() != null)
               ? propValue.isString().stringValue()
               : propValue.toString();
+          valueStr = normalizePropertyValue(valueStr);
           sb.append(",\"").append(propName).append("\":\"")
               .append(AIJsonUtils.escapeJsonString(valueStr)).append("\"");
         }
@@ -97,11 +98,50 @@ final class AIDesignerOperations {
     String value = (valueJson.isString() != null)
         ? valueJson.isString().stringValue()
         : valueJson.toString();
+    value = normalizePropertyValue(value);
 
     YaFormEditor formEditor = context.getFormEditor();
     Map<String, MockComponent> components = formEditor.getComponents();
     MockComponent comp = components.get(component);
     comp.changeProperty(property, value);
+  }
+
+  /**
+   * Normalizes values coming from the LLM to shapes the designer expects.
+   *
+   * <p>Color literals must use {@code &HAARRGGBB}. The LLM occasionally emits
+   * {@code &AARRGGBB} (missing the {@code H}) or {@code #AARRGGBB}, both of
+   * which would crash {@code Long.parseLong}. Rewrite those to the canonical
+   * form so a single typo doesn't abort a whole operation batch.
+   */
+  static String normalizePropertyValue(String value) {
+    if (value == null || value.length() < 2) {
+      return value;
+    }
+    char first = value.charAt(0);
+    if (first == '&' && value.charAt(1) != 'H' && value.charAt(1) != 'h'
+        && isHex(value, 1)) {
+      return "&H" + value.substring(1);
+    }
+    if (first == '#' && isHex(value, 1)) {
+      return "&H" + value.substring(1);
+    }
+    return value;
+  }
+
+  private static boolean isHex(String s, int from) {
+    int len = s.length();
+    if (len - from != 6 && len - from != 8) {
+      return false;
+    }
+    for (int i = from; i < len; i++) {
+      char c = s.charAt(i);
+      if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')
+          || (c >= 'A' && c <= 'F'))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   static void executeRenameComponent(JSONObject json, ScreenExecutionContext context) {
