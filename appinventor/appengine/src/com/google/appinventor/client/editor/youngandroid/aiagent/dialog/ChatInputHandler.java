@@ -69,6 +69,8 @@ public class ChatInputHandler {
     inputArea.getElement().getStyle().setProperty("borderRadius", "3px");
     inputArea.getElement().getStyle().setProperty("border", "1px solid #ccc");
     inputArea.getElement().getStyle().setPadding(4, Unit.PX);
+    inputArea.getElement().getStyle().setProperty("fontSize", "13px");
+    inputArea.getElement().getStyle().setProperty("fontFamily", "inherit");
     inputArea.addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
