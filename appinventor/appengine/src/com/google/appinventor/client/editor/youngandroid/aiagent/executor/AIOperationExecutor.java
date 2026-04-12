@@ -294,6 +294,7 @@ public class AIOperationExecutor {
 
   private void runSyncPhases(ExecutionState state, List<AIOperation> phase2,
       List<AIOperation> phase3, List<AIOperation> phase4, List<AIOperation> phase5) {
+    boolean happyPath = false;
     try {
       if (!runSyncList(state, phase2, Arrays.asList(phase3, phase4, phase5))) {
         return;
@@ -316,8 +317,14 @@ public class AIOperationExecutor {
         clearPendingBlockDeletions();
       }
       runSyncList(state, phase5, Collections.<List<AIOperation>>emptyList());
-      state.finish();
+      happyPath = true;
     } finally {
+      // Post-batch cleanup MUST complete before state.finish() fires the
+      // execution callback, because the orchestrator's onComplete handler
+      // synchronously calls fetchContinuation() -> buildRequest() ->
+      // getBlocksWarningsAndErrors(), and the LLM would otherwise see stale
+      // warnings collected before checkWarnings() had a chance to run.
+      //
       // AI.YailToBlocks.convert() disables Blockly events during block
       // creation (for performance and to avoid mid-mutation crashes), so
       // workspace change listeners never fire and the editor is never
@@ -339,7 +346,9 @@ public class AIOperationExecutor {
       // refresh is bypassed because WRITE_BLOCK/DELETE_BLOCK disable
       // Blockly events during mutation, so warnings tied to sibling blocks
       // (e.g. duplicate event handlers) don't clear when the AI removes
-      // their counterpart. Explicit re-check keeps the indicator in sync.
+      // their counterpart. Explicit re-check keeps the indicator in sync
+      // AND ensures the next continueRequest's blockWarnings payload
+      // reflects reality, preventing the LLM from chasing phantom errors.
       YaBlocksEditor refreshEditor = context.getBlocksEditor();
       if (refreshEditor != null) {
         refreshEditor.checkWarnings();
@@ -348,6 +357,13 @@ public class AIOperationExecutor {
       // critical for background editors where no Blockly events fired.
       Ode.getInstance().getEditorManager().scheduleAutoSave(context.getBlocksEditor());
       Ode.getInstance().getEditorManager().scheduleAutoSave(context.getFormEditor());
+    }
+    // state.finish() must run AFTER the finally block so the refreshed
+    // warning/Companion state is visible to the ExecutionCallback. On error
+    // paths, runSyncList already called state.finish() before returning
+    // false, so we skip it here to avoid a double-finish.
+    if (happyPath) {
+      state.finish();
     }
   }
 

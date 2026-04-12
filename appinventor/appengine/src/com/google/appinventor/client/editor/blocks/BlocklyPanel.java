@@ -1032,15 +1032,23 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public native void doCheckWarnings() /*-{
-    // checkAllBlocksForWarningsAndErrors lives on Blockly.WarningHandler,
-    // not on WorkspaceSvg. Route through getWarningHandler() (lazy-creates
-    // the handler if needed). The handler itself early-returns when the
+    // Two-phase refresh (mirrors the workspace change listener in onLoad_
+    // and makeActive):
+    //   1) determineDuplicateComponentEventHandlers() — sweeps top blocks
+    //      and sets each component_event block's IAmADuplicate flag.
+    //   2) checkAllBlocksForWarningsAndErrors() — reads the flag via
+    //      checkIfIAmADuplicateEventHandler and paints warning icons.
+    // Running only step 2 would paint stale flags, leaving survivors
+    // marked as duplicates after the AI deletes their counterpart.
+    //
+    // checkAllBlocksForWarningsAndErrors itself early-returns when the
     // workspace is not rendered, so this is safe for background editors
-    // during Plan & Execute orchestration — they will re-check naturally
+    // during Plan & Execute orchestration — they will refresh naturally
     // when the user opens them and Blockly re-renders.
     var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
     var handler = workspace.getWarningHandler && workspace.getWarningHandler();
     if (handler) {
+      handler.determineDuplicateComponentEventHandlers();
       handler.checkAllBlocksForWarningsAndErrors();
     }
   }-*/;
