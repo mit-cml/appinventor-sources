@@ -745,4 +745,72 @@ suite('YAIL to Blocks Converter', function() {
       chai.assert.equal(innerCall.getFieldValue('PROCNAME'), 'inner');
     });
   });
+
+  // ================================================================
+  // 9. delete_block orphan-caller safety
+  // ================================================================
+  suite('deleteBlock orphan safety', function() {
+
+    test('Delete procedure with live caller is refused', function() {
+      AI.YailToBlocks.convert(this.workspace,
+          '(def-return (p$compute) 42)');
+      AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form)\n' +
+          '  (set-and-coerce-property! \'Label1 \'Text ' +
+          '((get-var p$compute)) \'text))');
+
+      var delResult = AI.YailToBlocks.deleteBlock(this.workspace,
+          'def p$compute');
+      chai.assert.isFalse(delResult.success,
+          'delete should be refused while caller is live');
+      chai.assert.include(delResult.error, 'compute',
+          'error should name the procedure');
+      chai.assert.include(delResult.error, 'Button1.Click',
+          'error should locate the caller for the LLM');
+
+      // Procedure is still on the workspace.
+      chai.assert.lengthOf(this.workspace.getTopBlocks(false), 2);
+    });
+
+    test('Delete procedure after caller rewritten succeeds', function() {
+      AI.YailToBlocks.convert(this.workspace,
+          '(def-return (p$compute) 42)');
+      AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form)\n' +
+          '  (set-and-coerce-property! \'Label1 \'Text ' +
+          '((get-var p$compute)) \'text))');
+
+      // First rewrite the caller to drop the reference, mimicking the
+      // two-step pattern the grammar doc prescribes.
+      AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form))');
+
+      var delResult = AI.YailToBlocks.deleteBlock(this.workspace,
+          'def p$compute');
+      chai.assert.isTrue(delResult.success,
+          'delete should succeed once callers are cleared');
+    });
+
+    test('Delete global with live reader is refused', function() {
+      AI.YailToBlocks.convert(this.workspace, '(def g$count 0)');
+      AI.YailToBlocks.convert(this.workspace,
+          '(define-event Button1 Click () (set-this-form)\n' +
+          '  (set-and-coerce-property! \'Label1 \'Text (get-var g$count) \'text))');
+
+      var delResult = AI.YailToBlocks.deleteBlock(this.workspace, 'def g$count');
+      chai.assert.isFalse(delResult.success,
+          'delete should be refused while a reader exists');
+      chai.assert.include(delResult.error, 'count');
+    });
+
+    test('Delete procedure with no callers still succeeds', function() {
+      AI.YailToBlocks.convert(this.workspace,
+          '(def-return (p$unused) 0)');
+
+      var delResult = AI.YailToBlocks.deleteBlock(this.workspace,
+          'def p$unused');
+      chai.assert.isTrue(delResult.success,
+          'delete should succeed when no callers exist');
+    });
+  });
 });

@@ -20,6 +20,16 @@ Disabled blocks exist on the workspace but are excluded from code generation and
 - **Reference them in your responses** when relevant (e.g. "I see you have a disabled Click handler for Button1").
 - You cannot enable or disable blocks — only the user can do that via the block's right-click menu.
 
+## Deleting Procedures and Global Variables
+
+`delete_block` refuses to dispose a `def p$X` or `def g$X` while other blocks still reference it, because disposal would leave orphaned `procedures_call*` blocks (their dropdown resets to the sentinel "none") or broken `get global X` / `set global X` blocks.
+
+To safely delete a procedure or global:
+1. In the **same batch**, issue `write_block` operations to rewrite every caller/reader so they no longer reference the procedure/global. (If a caller's only purpose was to invoke the removed procedure, `delete_block` the caller instead of rewriting it.)
+2. Then issue the `delete_block` for the `def`. Writes run before deletes within a batch, so by the time the delete executes, the workspace already reflects the rewrites.
+
+If you issue a `delete_block` for a referenced procedure/global without clearing the references first, the operation fails with a message listing the containers (events, procedures, globals) that still hold references — fix those in the next batch, then retry the delete.
+
 ## One Mutation Per Block Identity Per Batch
 
 A batch of tool calls may mutate any given block identity (e.g. `define-event Button1 Click`, `def g$score`, `def p$factorial`) **at most once**. The server rejects any extra `write_block` or `delete_block` whose identity was already targeted earlier in the same batch.

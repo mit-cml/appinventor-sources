@@ -307,6 +307,18 @@ AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
     return {success: false, error: 'Block not found: ' + identifier};
   }
 
+  // Safety check: refuse to orphan callers/readers. Procedure definitions
+  // and global variable declarations are referenced by other blocks on
+  // the workspace; disposing them would leave dangling
+  // procedures_call* blocks (whose dropdown resets to the sentinel
+  // "none") or broken lexical_variable_get/set blocks. The LLM must
+  // rewrite or delete the references in the same batch first.
+  var orphanError = AI.YailToBlocks.findOrphansForDelete_(
+      workspace, blockToDelete);
+  if (orphanError) {
+    return {success: false, error: orphanError};
+  }
+
   AI.YailToBlocks.lastDeletedPosition_ =
       blockToDelete.getRelativeToSurfaceXY();
 
@@ -322,6 +334,108 @@ AI.YailToBlocks.deleteBlock = function(workspace, identifier) {
     }
   }
   return {success: true, error: null};
+};
+
+/**
+ * Check whether deleting {@code blockToDelete} would leave orphaned
+ * references elsewhere on the workspace. Only procedure definitions and
+ * global variable declarations are guarded; event handlers and their
+ * bodies are stand-alone.
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {!Blockly.Block} blockToDelete The block that is about to be disposed.
+ * @return {?string} Human-readable error message when deletion would
+ *     orphan at least one reference, or null when the delete is safe.
+ * @private
+ */
+AI.YailToBlocks.findOrphansForDelete_ = function(workspace, blockToDelete) {
+  var type = blockToDelete.type;
+  var all = workspace.getAllBlocks(false);
+
+  if (type === 'procedures_defreturn' || type === 'procedures_defnoreturn') {
+    var procName = blockToDelete.getFieldValue('NAME');
+    var callers = [];
+    for (var i = 0; i < all.length; i++) {
+      var b = all[i];
+      if (b === blockToDelete) continue;
+      if ((b.type === 'procedures_callreturn'
+              || b.type === 'procedures_callnoreturn')
+          && b.getFieldValue('PROCNAME') === procName) {
+        callers.push(AI.YailToBlocks.describeEnclosingBlock_(b));
+      }
+    }
+    if (callers.length > 0) {
+      return 'Cannot delete procedure "' + procName + '": still called by '
+          + callers.length + ' block(s) in '
+          + AI.YailToBlocks.dedupeStrings_(callers).join(', ')
+          + '. Rewrite or delete the caller(s) first, then retry the delete.';
+    }
+  } else if (type === 'global_declaration') {
+    var varName = blockToDelete.getFieldValue('NAME');
+    var fieldValue = 'global ' + varName;
+    var readers = [];
+    for (var i = 0; i < all.length; i++) {
+      var b = all[i];
+      if (b === blockToDelete) continue;
+      if ((b.type === 'lexical_variable_get'
+              || b.type === 'lexical_variable_set')
+          && b.getFieldValue('VAR') === fieldValue) {
+        readers.push(AI.YailToBlocks.describeEnclosingBlock_(b));
+      }
+    }
+    if (readers.length > 0) {
+      return 'Cannot delete global variable "' + varName
+          + '": still referenced by ' + readers.length + ' block(s) in '
+          + AI.YailToBlocks.dedupeStrings_(readers).join(', ')
+          + '. Rewrite or delete the reference(s) first, then retry the delete.';
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Produce a short human-readable label for the top-level block enclosing
+ * {@code block}. Used in orphan-check error messages so the LLM knows
+ * where to find the stale reference.
+ *
+ * @param {!Blockly.Block} block
+ * @return {string}
+ * @private
+ */
+AI.YailToBlocks.describeEnclosingBlock_ = function(block) {
+  var root = block;
+  while (root.getParent && root.getParent()) {
+    root = root.getParent();
+  }
+  if (root.type === 'component_event') {
+    var who = root.instanceName || root.typeName || 'event';
+    return who + '.' + (root.eventName || '?');
+  }
+  if (root.type === 'procedures_defreturn'
+      || root.type === 'procedures_defnoreturn') {
+    return 'procedure ' + (root.getFieldValue('NAME') || '?');
+  }
+  if (root.type === 'global_declaration') {
+    return 'global ' + (root.getFieldValue('NAME') || '?');
+  }
+  return root.type;
+};
+
+/**
+ * De-duplicate an array of strings while preserving order.
+ * @private
+ */
+AI.YailToBlocks.dedupeStrings_ = function(arr) {
+  var seen = {};
+  var out = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (!seen[arr[i]]) {
+      seen[arr[i]] = true;
+      out.push(arr[i]);
+    }
+  }
+  return out;
 };
 
 /**
