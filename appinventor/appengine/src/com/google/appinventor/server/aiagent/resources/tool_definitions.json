@@ -64,7 +64,7 @@
     }
   },
   "set_property": {
-    "description": "Set a property value on a component.",
+    "description": "Set a property value on a component. Color values must be in &HAARRGGBB form (e.g. &HFF0000FF for blue) — never &AARRGGBB, #AARRGGBB, 0x..., or signed decimals.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -77,7 +77,7 @@
           "description": "Property name"
         },
         "value": {
-          "description": "Property value (type depends on property)"
+          "description": "Property value (type depends on property). Colors: &HAARRGGBB. Booleans: \"True\"/\"False\". Numbers: string-encoded."
         }
       },
       "required": ["component_name", "property_name", "value"]
@@ -180,7 +180,7 @@
     }
   },
   "set_project_property": {
-    "description": "Set a project-level property (theme, colors, sizing, etc.).",
+    "description": "Set a project-level property (theme, colors, sizing, etc.). Color values must be in &HAARRGGBB form (e.g. &HFF0000FF for blue) — never &AARRGGBB, #AARRGGBB, 0x..., or signed decimals.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -190,7 +190,7 @@
         },
         "value": {
           "type": "string",
-          "description": "Property value"
+          "description": "Property value. Colors: &HAARRGGBB."
         }
       },
       "required": ["property", "value"]

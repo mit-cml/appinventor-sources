@@ -264,6 +264,22 @@ Colors use the **&HAARRGGBB** format (alpha, red, green, blue) where each
 channel is a two-digit hex value. The alpha channel is `FF` for fully opaque
 and `00` for fully transparent.
 
+**Always include the `H` after `&` and always supply all 8 hex digits.**
+`"&FFE3F2FD"` (missing the `H`), `"#FFE3F2FD"`, `"0xFFE3F2FD"`, and signed
+decimal integers like `"-16776961"` are **not** valid color values for the
+designer and will fail or render as garbage. The only accepted form for
+`set_property` / `set_project_property` is `&HAARRGGBB`.
+
+**Designer vs. blocks — don't mix formats.** Block/YAIL code uses signed
+32-bit decimal integers for colors (e.g. blue = `-16776961`, red = `-65536`;
+see the Color Primitives section of the YAIL grammar). Designer `.scm`
+properties use `&HAARRGGBB`. The two are NOT interchangeable:
+
+| Context                                   | Format                      | Blue example    |
+|-------------------------------------------|-----------------------------|-----------------|
+| `set_property`, `set_project_property`    | `&HAARRGGBB` hex string     | `"&HFF0000FF"`  |
+| `write_block` / YAIL expressions          | signed 32-bit decimal int   | `-16776961`     |
+
 | Color   | Value        |
 |---------|--------------|
 | Black   | &HFF000000   |
