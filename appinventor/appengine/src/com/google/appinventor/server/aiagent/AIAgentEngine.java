@@ -78,6 +78,7 @@ public class AIAgentEngine {
   }
 
   private static final Flag<Boolean> ORCHESTRATION_FLAG = Flag.createFlag("ai.agent.features.orchestration", false);
+  private static final Flag<Boolean> PLAN_EDIT_FLAG = Flag.createFlag("ai.agent.features.plan-edit", false);
 
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
@@ -628,6 +629,7 @@ public class AIAgentEngine {
     // detect debug mode and build feedback links without a separate RPC.
     status.setDebugEnabled(AIDebug.enabled());
     status.setOrchestrationEnabled(ORCHESTRATION_FLAG.get());
+    status.setPlanEditEnabled(PLAN_EDIT_FLAG.get());
     AIConversationState conv = targetScreen != null
         ? conversationManager.getConversation(projectId, targetScreen)
         : conversationManager.getConversation(projectId);

@@ -20,6 +20,7 @@ public class AIStreamStatus implements IsSerializable, Serializable {
   private boolean debugEnabled;
   private String conversationId;
   private boolean orchestrationEnabled;
+  private boolean planEditEnabled;
 
   // Required no-arg constructor for GWT serialization
   public AIStreamStatus() {}
@@ -45,4 +46,6 @@ public class AIStreamStatus implements IsSerializable, Serializable {
   public void setConversationId(String conversationId) { this.conversationId = conversationId; }
   public boolean isOrchestrationEnabled() { return orchestrationEnabled; }
   public void setOrchestrationEnabled(boolean enabled) { this.orchestrationEnabled = enabled; }
+  public boolean isPlanEditEnabled() { return planEditEnabled; }
+  public void setPlanEditEnabled(boolean enabled) { this.planEditEnabled = enabled; }
 }

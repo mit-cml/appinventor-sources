@@ -449,6 +449,7 @@ public class AIChatDialog extends DialogBox
   public void onConfigLoaded() {
     planToggle.setOrchestrationEnabled(orchestrator.isOrchestrationEnabled());
     planToggle.update(hasConversationMessages);
+    renderer.setPlanEditEnabled(orchestrator.isPlanEditEnabled());
   }
 
   @Override

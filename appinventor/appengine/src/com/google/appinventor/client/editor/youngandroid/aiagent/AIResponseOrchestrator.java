@@ -117,6 +117,7 @@ public class AIResponseOrchestrator {
   private boolean pendingPlanProposal;
   private boolean debugBannerShown;
   private boolean orchestrationEnabled;
+  private boolean planEditEnabled;
 
   /** Manages parallel child conversations during multi-screen plan execution. */
   private AIOrchestrationManager orchestrationManager;
@@ -394,6 +395,7 @@ public class AIResponseOrchestrator {
       callback.setFeedbackContext(status.isDebugEnabled(), status.getConversationId());
     }
     orchestrationEnabled = status.isOrchestrationEnabled();
+    planEditEnabled = status.isPlanEditEnabled();
     callback.onConfigLoaded();
   }
 
@@ -403,6 +405,14 @@ public class AIResponseOrchestrator {
    */
   public boolean isOrchestrationEnabled() {
     return orchestrationEnabled;
+  }
+
+  /**
+   * Returns whether the {@code ai.agent.features.plan-edit} server flag is enabled.
+   * Updated on every status poll via {@link #applyConfig}.
+   */
+  public boolean isPlanEditEnabled() {
+    return planEditEnabled;
   }
 
   private void loadHistory(long projectId) {

@@ -28,8 +28,12 @@ import com.google.gwt.user.client.ui.TextArea;
  */
 public class PlanCardRenderer {
 
-  /** Set to true to show the "Edit & Approve" button on plan cards. */
-  private static final boolean SHOW_EDIT_BUTTON = false;
+  /**
+   * Whether the "Edit & Approve" button is shown on plan cards.
+   * Controlled by the {@code ai.agent.features.plan-edit} server flag,
+   * propagated to the client via {@link com.google.appinventor.shared.rpc.aiagent.AIStreamStatus}.
+   */
+  private boolean planEditEnabled;
 
   private final FlowPanel chatHistory;
   private final Runnable scrollCallback;
@@ -46,6 +50,15 @@ public class PlanCardRenderer {
   public PlanCardRenderer(FlowPanel chatHistory, Runnable scrollCallback) {
     this.chatHistory = chatHistory;
     this.scrollCallback = scrollCallback;
+  }
+
+  /**
+   * Sets whether the "Edit & Approve" button should be shown on future plan cards.
+   * Updated from the {@code ai.agent.features.plan-edit} server flag on every
+   * status poll.
+   */
+  public void setPlanEditEnabled(boolean enabled) {
+    this.planEditEnabled = enabled;
   }
 
   /**
@@ -119,7 +132,7 @@ public class PlanCardRenderer {
     });
     buttonBar.add(approveBtn);
 
-    if (SHOW_EDIT_BUTTON) {
+    if (planEditEnabled) {
       Button editBtn = new Button(MESSAGES.aiChatPlanEditApproveButton());
       editBtn.getElement().getStyle().setProperty("background", "#FF9800");
       editBtn.getElement().getStyle().setColor("white");

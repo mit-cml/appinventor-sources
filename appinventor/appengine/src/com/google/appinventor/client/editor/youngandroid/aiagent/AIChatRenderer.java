@@ -150,6 +150,14 @@ public class AIChatRenderer implements RendererHost {
     planCardRenderer.dismissActivePlanCard();
   }
 
+  /**
+   * Enables or disables the "Edit & Approve" button on plan cards,
+   * based on the {@code ai.agent.features.plan-edit} server flag.
+   */
+  public void setPlanEditEnabled(boolean enabled) {
+    planCardRenderer.setPlanEditEnabled(enabled);
+  }
+
   // ---- Feedback links ----
 
   /**

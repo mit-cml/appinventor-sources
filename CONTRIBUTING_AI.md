@@ -870,6 +870,7 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 <property name="ai.agent.features.orchestration" value="false" />
 <property name="ai.agent.features.tutorial-context" value="true" />
 <property name="ai.agent.features.retry-narration" value="false" />
+<property name="ai.agent.features.plan-edit" value="false" />
 
 <!-- Bedrock-specific (only when ai.agent.provider=bedrock) -->
 <property name="ai.agent.provider.bedrock.region" value="us-east-1" />
@@ -902,6 +903,7 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 | `ai.agent.features.orchestration` | `false` | Enable Plan & Execute mode (multi-agent orchestration). When `true`, Project Editor mode shows a Direct/Plan & Execute toggle. When `false`, the entire orchestration system is hidden. |
 | `ai.agent.features.tutorial-context` | `true` | Include tutorial content in LLM context when the project has a `TutorialURL`. When `false`, tutorial context is never sent regardless of project settings. |
 | `ai.agent.features.retry-narration` | `false` | Retry with a nudge when the LLM responds with text only (no tool calls) in editing modes. When `false`, narration-only responses are returned as-is. |
+| `ai.agent.features.plan-edit` | `false` | Show the "Edit & Approve" button on Plan & Execute plan cards, allowing the user to manually edit the plan JSON before approval. When `false`, only Approve and Reject are shown. |
 
 | Property | Default | Description |
 |----------|---------|-------------|
