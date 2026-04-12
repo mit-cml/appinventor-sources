@@ -13,10 +13,15 @@ import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Enforces AI agent mode, view, and solo-operation restrictions on operations.
@@ -126,6 +131,16 @@ public final class ModeEnforcer {
       }
     }
 
+    // Tracks the identity of the first accepted WRITE_BLOCK / DELETE_BLOCK
+    // per block identity, so we can reject any later op in the same batch
+    // that targets the same identity.  Preventing a mixed write+delete on
+    // one identity avoids a destructive interaction with the WRITE_BLOCK
+    // upsert path (the write replaces one duplicate, then the delete
+    // consumes the newly-written block).  We apply the same rule to
+    // write+write and delete+delete for consistency: one mutation per
+    // identity per batch.
+    Map<String, AIOperation.Type> seenBlockIdentities = new HashMap<>();
+
     List<AIOperation> accepted = new ArrayList<>();
     for (AIOperation op : operations) {
       boolean rejected = false;
@@ -163,6 +178,23 @@ public final class ModeEnforcer {
         rejected = true;
       }
 
+      // Block-identity conflict enforcement
+      if (!rejected && BLOCKS_OPS.contains(op.getType())) {
+        String identity = extractBlockIdentity(op);
+        if (identity != null) {
+          AIOperation.Type prior = seenBlockIdentities.get(identity);
+          if (prior != null) {
+            errors.add("Block identity '" + identity + "' is already targeted by "
+                + "a prior " + prior + " in this batch. Each block may be "
+                + "mutated at most once per batch — issue additional changes "
+                + "in a follow-up turn. Rejected: " + op.getType());
+            rejected = true;
+          } else {
+            seenBlockIdentities.put(identity, op.getType());
+          }
+        }
+      }
+
       if (!rejected) {
         accepted.add(op);
       }
@@ -171,5 +203,26 @@ public final class ModeEnforcer {
     AIDebug.log(LOG, "Mode enforcement (" + mode + ", view=" + currentView + "): accepted="
         + accepted.size() + ", rejected=" + (operations.size() - accepted.size()));
     return accepted;
+  }
+
+  /**
+   * Extract the canonical block identity from a {@link AIOperation.Type#WRITE_BLOCK}
+   * or {@link AIOperation.Type#DELETE_BLOCK} payload.  Returns {@code null}
+   * for unrecognized payloads — callers should then skip the conflict
+   * check (parse errors are surfaced separately in {@link LLMResponseParser}).
+   */
+  private static String extractBlockIdentity(AIOperation op) {
+    try {
+      JSONObject payload = new JSONObject(op.getPayload());
+      if (op.getType() == AIOperation.Type.WRITE_BLOCK) {
+        return BlockIdentity.fromWriteYail(payload.optString("yail", null));
+      }
+      if (op.getType() == AIOperation.Type.DELETE_BLOCK) {
+        return BlockIdentity.fromDeleteIdentifier(payload.optString("block", null));
+      }
+    } catch (JSONException e) {
+      // Malformed payloads are caught by the parser stage — fall through.
+    }
+    return null;
   }
 }

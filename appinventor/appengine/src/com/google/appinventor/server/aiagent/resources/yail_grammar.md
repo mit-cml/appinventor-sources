@@ -20,9 +20,21 @@ Disabled blocks exist on the workspace but are excluded from code generation and
 - **Reference them in your responses** when relevant (e.g. "I see you have a disabled Click handler for Button1").
 - You cannot enable or disable blocks — only the user can do that via the block's right-click menu.
 
+## One Mutation Per Block Identity Per Batch
+
+A batch of tool calls may mutate any given block identity (e.g. `define-event Button1 Click`, `def g$score`, `def p$factorial`) **at most once**. The server rejects any extra `write_block` or `delete_block` whose identity was already targeted earlier in the same batch.
+
+Rationale: `write_block` has **upsert** semantics — when it matches an existing block with the same identity, it disposes that block and creates a replacement in the same position. Combining a `write_block` with a `delete_block` for the same identity (or two writes / two deletes for the same identity) produces ambiguous semantics and, in the write+delete case, would silently erase the newly-written block. The single-mutation rule makes the net effect of a batch deterministic.
+
+Practical implications:
+
+- **To fix a buggy event handler / procedure / global:** issue one `write_block` with the corrected YAIL. The upsert replaces the existing block — you do **not** need to delete it first.
+- **To remove a block entirely:** issue one `delete_block`.
+- **To resolve duplicate enabled blocks with the same identity:** this requires multiple turns. First call `delete_block` once (removes one copy) and explain to the user that applying the batch will leave one copy behind; in the next turn, `write_block` or `delete_block` can operate on the remaining copy. Do not try to remove both copies in a single batch.
+
 ## Duplicate Blocks
 
-If you see two enabled blocks with the same identity (e.g. two `(define-event Button1 Click ...)` without `;;; DISABLED`), the workspace is in a corrupted state. Be aware that `write_block` and `delete_block` only target **one copy at a time** — you may need to call `delete_block` twice to remove both. Mention the duplication to the user so they can clean it up.
+If you see two enabled blocks with the same identity (e.g. two `(define-event Button1 Click ...)` without `;;; DISABLED`), the workspace is in a corrupted state. `write_block` and `delete_block` target **one copy at a time**, and the "one mutation per identity per batch" rule above means you cannot address both copies in a single turn — handle the duplicate across two turns and surface the duplication to the user so they know why the fix needs multiple approvals.
 
 ## Error Recovery
 

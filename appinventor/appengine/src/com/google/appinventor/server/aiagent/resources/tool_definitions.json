@@ -101,7 +101,7 @@
     }
   },
   "write_block": {
-    "description": "Create or replace a top-level block (event handler, global variable, or procedure) using YAIL code. The YAIL form head identifies the block type and target. If a block with the same identity already exists, it is replaced (upsert semantics).",
+    "description": "Create or replace a top-level block (event handler, global variable, or procedure) using YAIL code. The YAIL form head identifies the block type and target. If a block with the same identity already exists, it is replaced (upsert semantics) — do NOT pair this with a delete_block for the same identity. Each block identity may be mutated at most once per batch; the server rejects conflicting write_block/delete_block calls that target the same identity.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -114,7 +114,7 @@
     }
   },
   "delete_block": {
-    "description": "Delete a top-level block (event handler, global variable, or procedure). The identifier format matches the YAIL form head tokens.",
+    "description": "Delete a top-level block (event handler, global variable, or procedure). The identifier format matches the YAIL form head tokens. Each block identity may be mutated at most once per batch; the server rejects a delete_block whose identity is already targeted by another delete_block or a write_block in the same response.",
     "parameters": {
       "type": "object",
       "properties": {
