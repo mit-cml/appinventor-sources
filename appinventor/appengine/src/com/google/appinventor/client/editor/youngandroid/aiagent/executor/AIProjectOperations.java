@@ -207,7 +207,18 @@ final class AIProjectOperations {
         if (formEditor != null) {
           MockForm form = formEditor.getForm();
           if (form != null) {
+            // Apply via Screen1's form so all property plumbing fires:
+            // per-screen .scm properties land on Screen1; project-level
+            // properties (PrimaryColor, Theme, AppName, ...) flow through
+            // MockForm.onPropertyChange into ProjectSettings.
             form.changeProperty(property, value);
+            // Screen1's form updates its own cached state and visuals, but
+            // other open forms still hold stale copies of the project-level
+            // value, and the currently-visible form's Properties panel does
+            // not rebind on its own. Refresh every other open form so their
+            // MockForm.getProperties() re-reads from ProjectSettings and the
+            // visible Properties panel re-renders.
+            refreshOtherFormEditors(yaProjectEditor, "Screen1");
             callback.onSuccess();
             return;
           }
@@ -216,6 +227,23 @@ final class AIProjectOperations {
       callback.onFailure("SET_PROJECT_PROP: Screen1 form editor not available");
     } catch (Exception e) {
       callback.onFailure("SET_PROJECT_PROP: " + e.getMessage());
+    }
+  }
+
+  private static void refreshOtherFormEditors(YaProjectEditor yaProjectEditor,
+      String skipFormName) {
+    for (String formName : yaProjectEditor.getOpenFormNames()) {
+      if (formName.equals(skipFormName)) {
+        continue;
+      }
+      YaFormEditor other = (YaFormEditor) yaProjectEditor.getFormFileEditor(formName);
+      if (other == null) {
+        continue;
+      }
+      MockForm otherForm = other.getForm();
+      if (otherForm != null) {
+        otherForm.projectPropertyChanged();
+      }
     }
   }
 
