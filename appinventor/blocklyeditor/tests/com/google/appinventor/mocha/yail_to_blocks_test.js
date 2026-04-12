@@ -660,4 +660,89 @@ suite('YAIL to Blocks Converter', function() {
         'LongClick should not overlap with Label1 block');
   });
   });
+
+  // ================================================================
+  // 8. Procedure calls in expression position (regression: conv 0513883e)
+  // ================================================================
+  suite('Procedure calls', function() {
+
+    test('Call defreturn in value socket resolves to procedures_callreturn',
+        function() {
+      // Define the procedure first so the workspace can resolve it.
+      AI.YailToBlocks.convert(this.workspace,
+          '(def-return (p$getMsg) "hi")');
+
+      var yail = '(define-event Button1 Click () (set-this-form)\n' +
+          '  (set-and-coerce-property! \'Label1 \'Text ' +
+          '((get-var p$getMsg)) \'text))';
+      var result = AI.YailToBlocks.convert(this.workspace, yail);
+      chai.assert.isTrue(result.success, 'convert should succeed');
+
+      var event = findTopBlock(this.workspace, 'component_event');
+      var setProp = getEventBody(event);
+      var valueBlock = setProp.getInput('VALUE').connection.targetBlock();
+      chai.assert.isNotNull(valueBlock,
+          'Text socket must hold the procedure call block');
+      chai.assert.equal(valueBlock.type, 'procedures_callreturn');
+      chai.assert.equal(valueBlock.getFieldValue('PROCNAME'), 'getMsg');
+    });
+
+    test('Call unresolved proc in value socket still builds callreturn',
+        function() {
+      // The def for p$getMsg will arrive in a LATER write_block within
+      // the same batch. At conversion time it does not yet exist on the
+      // workspace, but we must still produce a block with an output
+      // connection so the value socket stays connected.
+      var yail = '(define-event Button1 Click () (set-this-form)\n' +
+          '  (set-and-coerce-property! \'Label1 \'Text ' +
+          '((get-var p$getMsg)) \'text))';
+      var result = AI.YailToBlocks.convert(this.workspace, yail);
+      chai.assert.isTrue(result.success, 'convert should succeed');
+
+      var event = findTopBlock(this.workspace, 'component_event');
+      var setProp = getEventBody(event);
+      var valueBlock = setProp.getInput('VALUE').connection.targetBlock();
+      chai.assert.isNotNull(valueBlock,
+          'Text socket must hold the procedure call even when proc is undefined');
+      chai.assert.equal(valueBlock.type, 'procedures_callreturn');
+      chai.assert.equal(valueBlock.getFieldValue('PROCNAME'), 'getMsg');
+    });
+
+    test('Call unresolved proc as statement builds callnoreturn',
+        function() {
+      // Statement position needs a block with previousConnection.
+      var yail = '(define-event Button1 Click () (set-this-form)\n' +
+          '  ((get-var p$doSomething) 1 2))';
+      var result = AI.YailToBlocks.convert(this.workspace, yail);
+      chai.assert.isTrue(result.success, 'convert should succeed');
+
+      var event = findTopBlock(this.workspace, 'component_event');
+      var body = getEventBody(event);
+      chai.assert.isNotNull(body, 'event should have body statement');
+      chai.assert.equal(body.type, 'procedures_callnoreturn');
+      chai.assert.equal(body.getFieldValue('PROCNAME'), 'doSomething');
+    });
+
+    test('Call with argument subtree preserves nested expression', function() {
+      // Nested call inside an arg — the inner call occupies a value
+      // socket of the outer call. Both must end up as callreturn blocks.
+      var yail = '(define-event Button1 Click () (set-this-form)\n' +
+          '  (set-and-coerce-property! \'Label1 \'Text ' +
+          '((get-var p$outer) ((get-var p$inner))) \'text))';
+      var result = AI.YailToBlocks.convert(this.workspace, yail);
+      chai.assert.isTrue(result.success, 'convert should succeed');
+
+      var event = findTopBlock(this.workspace, 'component_event');
+      var setProp = getEventBody(event);
+      var outerCall = setProp.getInput('VALUE').connection.targetBlock();
+      chai.assert.equal(outerCall.type, 'procedures_callreturn');
+      chai.assert.equal(outerCall.getFieldValue('PROCNAME'), 'outer');
+
+      var innerCall = outerCall.getInput('ARG0').connection.targetBlock();
+      chai.assert.isNotNull(innerCall,
+          'nested procedure call must occupy the outer ARG0 socket');
+      chai.assert.equal(innerCall.type, 'procedures_callreturn');
+      chai.assert.equal(innerCall.getFieldValue('PROCNAME'), 'inner');
+    });
+  });
 });

@@ -32,7 +32,17 @@ AI.YailToBlocks.convertStatement_ = function(workspace, node) {
   var block;
 
   if (!head) {
-    block = AI.YailToBlocks.convertExpression_(workspace, node);
+    // Headless list at statement position — may be a procedure call of the
+    // form ((get-var p$name) args...). Route through convertProcedureCall_
+    // with asExpression=false so we build a callnoreturn block when no
+    // matching definition exists yet. Everything else falls back to the
+    // expression path (where the line 94 statement-check will reject it).
+    if (node.type === 'list' && node.elements.length > 0
+        && AI.SExprParser.isForm(node.elements[0], 'get-var')) {
+      block = AI.YailToBlocks.convertProcedureCall_(workspace, node, false);
+    } else {
+      block = AI.YailToBlocks.convertExpression_(workspace, node);
+    }
   } else {
     switch (head) {
       case 'set-var!':
@@ -193,7 +203,7 @@ AI.YailToBlocks.convertListExpr_ = function(workspace, node) {
   var head = AI.SExprParser.formHead(node);
   if (!head) {
     if (node.elements.length > 0 && node.elements[0].type === 'list') {
-      return AI.YailToBlocks.convertProcedureCall_(workspace, node);
+      return AI.YailToBlocks.convertProcedureCall_(workspace, node, true);
     }
     return null;
   }
@@ -537,8 +547,32 @@ AI.YailToBlocks.convertGenericMethodCall_ = function(workspace, node, asExpressi
   return block;
 };
 
-/** @private */
-AI.YailToBlocks.convertProcedureCall_ = function(workspace, node) {
+/**
+ * Convert a YAIL procedure-call form ((get-var p$name) args...) to a
+ * procedures_call{return,noreturn} block.
+ *
+ * <p>Block-type selection:
+ * <ol>
+ *   <li>If a matching procedures_def{return,noreturn} exists in the
+ *       workspace, use the corresponding call variant so the call's
+ *       output/previous connection matches the definition.</li>
+ *   <li>Otherwise fall back to {@code asExpression}. This is needed when
+ *       the LLM references a procedure that has not been written yet
+ *       (different write_block tool call, same batch). The call-site
+ *       position determines which connection is required:
+ *       procedures_callreturn has an output connection (expression
+ *       position) and procedures_callnoreturn has a previous connection
+ *       (statement position).</li>
+ * </ol>
+ *
+ * @param {!Blockly.WorkspaceSvg} workspace
+ * @param {Object} node AST list of the form ((get-var p$name) args...)
+ * @param {boolean} asExpression True iff the call appears in a value
+ *     socket (needs outputConnection); false for statement position.
+ * @return {?Blockly.Block}
+ * @private
+ */
+AI.YailToBlocks.convertProcedureCall_ = function(workspace, node, asExpression) {
   var els = node.elements;
   var getVarForm = els[0];
   if (!AI.SExprParser.isForm(getVarForm, 'get-var')) return null;
@@ -546,14 +580,27 @@ AI.YailToBlocks.convertProcedureCall_ = function(workspace, node) {
   if (!procRef.startsWith('p$')) return null;
   var procName = procRef.substring(2);
 
-  var blockType = 'procedures_callnoreturn';
   var topBlocks = workspace.getTopBlocks(false);
+  var matchedDef = null;
   for (var i = 0; i < topBlocks.length; i++) {
-    if (topBlocks[i].type === 'procedures_defreturn'
-        && topBlocks[i].getFieldValue('NAME') === procName) {
-      blockType = 'procedures_callreturn';
+    var tb = topBlocks[i];
+    if ((tb.type === 'procedures_defreturn'
+         || tb.type === 'procedures_defnoreturn')
+        && tb.getFieldValue('NAME') === procName) {
+      matchedDef = tb;
       break;
     }
+  }
+
+  var blockType;
+  if (matchedDef) {
+    blockType = matchedDef.type === 'procedures_defreturn'
+        ? 'procedures_callreturn'
+        : 'procedures_callnoreturn';
+  } else {
+    blockType = asExpression
+        ? 'procedures_callreturn'
+        : 'procedures_callnoreturn';
   }
 
   var block = workspace.newBlock(blockType);
@@ -561,16 +608,9 @@ AI.YailToBlocks.convertProcedureCall_ = function(workspace, node) {
   var argCount = els.length - 1;
   var mutation = document.createElement('mutation');
   mutation.setAttribute('name', procName);
-  var paramNames = [];
-  for (var i = 0; i < topBlocks.length; i++) {
-    if ((topBlocks[i].type === 'procedures_defreturn' ||
-         topBlocks[i].type === 'procedures_defnoreturn') &&
-        topBlocks[i].getFieldValue('NAME') === procName &&
-        topBlocks[i].arguments_) {
-      paramNames = topBlocks[i].arguments_;
-      break;
-    }
-  }
+  var paramNames = matchedDef && matchedDef.arguments_
+      ? matchedDef.arguments_
+      : [];
   for (var i = 0; i < argCount; i++) {
     var arg = document.createElement('arg');
     arg.setAttribute('name', paramNames[i] || ('x' + i));
