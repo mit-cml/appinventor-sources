@@ -589,12 +589,31 @@ Returns a list of all components of the given type in the current screen.
 
 ### Generic Event Handler
 ```scheme
-(define-generic-event ComponentType EventName ($component $param1 $param2 ...)
+(define-generic-event ComponentType EventName ($component $notAlreadyHandled $param1 $param2 ...)
   (set-this-form)
   <body statements>)
 ```
 Handles events for any component of the given type, rather than a specific instance.
-The first parameter (`$component`) is always the component instance that fired the event.
+
+The block always exposes these implicit local variables, in this exact order,
+regardless of what the source param list declares:
+
+1. `component` -- the component instance that fired the event (type `component`).
+2. `notAlreadyHandled` -- `#t` when no specific `(define-event ComponentName EventName ...)`
+   already ran for this instance; `#f` otherwise (type `boolean`). Use it to guard
+   generic fallback logic so it does not double-run with a specific handler.
+3. Any event-specific parameters (e.g. `x`, `y` for `Canvas.Touched`).
+
+In the body, reference them with `(lexical-value $component)`, `(lexical-value $notAlreadyHandled)`,
+etc. The parser strips the `$` (and any `$param_`/`$local_` prefix) when resolving
+variable names, so `$component` and `component` refer to the same slot.
+
+**Always declare the canonical list `($component $notAlreadyHandled ...event params)`**
+in the source you emit, so the YAIL round-trips to the same form App Inventor
+would export from the Blockly workspace. (The parser tolerates shorter lists on
+upsert because the block's actual params come from the component/event schema,
+but writing the canonical list keeps `write_block` outputs diffable against the
+live workspace.)
 
 ### Blocking Continuation Methods
 Some methods use an async variant with the same arguments:
@@ -987,10 +1006,54 @@ Gets a reference to a named procedure. Note: this uses the same `create-yail-pro
 
 ### Generic event handler (any Button)
 ```scheme
-(define-generic-event Button Click ($component)
+(define-generic-event Button Click ($component $notAlreadyHandled)
   (set-this-form)
   (set-and-coerce-property! 'Label1 'Text "A button was clicked" 'text))
 ```
+The two implicit parameters `$component $notAlreadyHandled` are always exposed
+by the block even though `Button.Click` itself takes no event parameters. Declare
+them in the source param list so the YAIL matches the canonical export; the body
+reaches them with `(lexical-value $component)` and `(lexical-value $notAlreadyHandled)`.
+
+### Generic event handler with deep nesting (any Button, cascading dispatch)
+When a generic handler dispatches to different branches based on which instance
+fired the event, the structure is typically an outer guard around a cascade of
+`if`/`begin` forms. **Indent every level and close each form on its own line at
+the matching indent** -- shortcuts like `))))))` at the tail are the single
+biggest source of malformed generic handlers. If you lose track of depth, split
+the body across multiple `write_block` calls for procedures and invoke them from
+the handler instead of writing one monolithic nested expression.
+
+```scheme
+(define-generic-event Button Click ($component $notAlreadyHandled)
+  (set-this-form)
+  (if (call-yail-primitive yail-not
+        (*list-for-runtime*
+          (call-yail-primitive yail-equal?
+            (*list-for-runtime* (lexical-value $component) (get-component ResetButton))
+            '(any any) "="))
+        '(boolean) "not")
+    (begin
+      (if (call-yail-primitive yail-equal?
+            (*list-for-runtime* (lexical-value $component) (get-component RockButton))
+            '(any any) "=")
+        (begin
+          (set-var! g$currentUserChoice (get-var g$ROCK)))
+        (begin
+          (if (call-yail-primitive yail-equal?
+                (*list-for-runtime* (lexical-value $component) (get-component PaperButton))
+                '(any any) "=")
+            (begin
+              (set-var! g$currentUserChoice (get-var g$PAPER)))
+            (begin
+              (set-var! g$currentUserChoice (get-var g$SCISSORS))))))
+      ((get-var p$updateWinnerScore)))))
+```
+Paren count check: this example opens **37** parentheses and closes **37**. If
+your handler is reported as "Unterminated list ... missing closing parenthesis",
+do **not** just append `)` at the very end -- that usually closes the outer form
+too early and truncates the body. Re-indent the whole form and close each `(if`
+and `(begin` on its own line at the correct depth instead.
 
 ---
 

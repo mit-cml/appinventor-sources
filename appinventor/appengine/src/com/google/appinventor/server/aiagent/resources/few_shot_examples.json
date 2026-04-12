@@ -224,5 +224,18 @@
         }
       }
     ]
+  },
+  {
+    "description": "Generic (any-Button) event handler with cascading if/begin dispatch -- uses canonical $component $notAlreadyHandled params and deep nesting",
+    "user": "When any of the three buttons is clicked, set global choice based on which one, then update ChoiceLabel",
+    "assistant_text": "I'll add a single any-Button.Click handler that checks which button fired via $component, sets the global choice accordingly, then updates ChoiceLabel. This replaces three per-button handlers with one.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-generic-event Button Click ($component $notAlreadyHandled)\n  (set-this-form)\n  (if (call-yail-primitive yail-equal?\n        (*list-for-runtime* (lexical-value $component) (get-component RockButton))\n        '(any any) \"=\")\n    (begin\n      (set-var! g$choice (get-var g$ROCK)))\n    (begin\n      (if (call-yail-primitive yail-equal?\n            (*list-for-runtime* (lexical-value $component) (get-component PaperButton))\n            '(any any) \"=\")\n        (begin\n          (set-var! g$choice (get-var g$PAPER)))\n        (begin\n          (if (call-yail-primitive yail-equal?\n                (*list-for-runtime* (lexical-value $component) (get-component ScissorsButton))\n                '(any any) \"=\")\n            (begin\n              (set-var! g$choice (get-var g$SCISSORS)))\n            (begin\n              (set-var! g$choice 0)))))))\n  (set-and-coerce-property! 'ChoiceLabel 'Text\n    (call-yail-primitive yail-list-get-item\n      (*list-for-runtime* (get-var g$choiceNames) (get-var g$choice))\n      '(list number) \"select list item\")\n    'text))"
+        }
+      }
+    ]
   }
 ]
