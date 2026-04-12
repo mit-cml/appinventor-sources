@@ -448,6 +448,7 @@ public class AIResponseOrchestrator {
     }
 
     AIEditorState.setPlanApproved(false);
+    setAutoAcceptAll(false);
     aiAgentService.clearConversation(projectId, new OdeAsyncCallback<Void>(
         MESSAGES.aiChatClearError()) {
       @Override
