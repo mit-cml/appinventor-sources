@@ -68,6 +68,7 @@ public interface StorageIo {
    * address currently associated with this user.
    *
    * @param user email address
+   * @param create create user if true
    * @return user data
    */
   User getUserFromEmail(String email, boolean create);
