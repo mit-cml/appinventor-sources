@@ -1735,63 +1735,75 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             });
         }
     }
-
-    /* clear memory */
     public void onFullReset() {
-        Log.d(LOG_TAG, "onFullReset() - complete teardown");
+        // Same as onClear but also wipes session state and GPU cache
+        onClear();  // handles everything
 
-        // Must block render loop BEFORE any GPU teardown
+        onPause();  // wipe ARCore tracking
         if (arFilamentRenderer != null) {
-            arFilamentRenderer.setPaused(true);
+            arFilamentRenderer.resetScene(true);  // free GPU memory
         }
-
-        onPause(); // session.pause() is appropriate here — this is a full reset
-
-        try {
-            if (arFilamentRenderer != null) {
-                arFilamentRenderer.resetScene(true);
-            }
-
-            if (session != null) {
-                for (Anchor anchor : new ArrayList<>(session.getAllAnchors())) {
-                    anchor.detach();
-                }
-            }
-
-            synchronized (arNodes) {
-                arNodes.clear();
-            }
-
-            groundDetected = false;
-            GROUND_LEVEL = -1f;
-            floorManager.reset();
-
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error during full reset", e);
-        } finally {
-            // Always unpause, even on error — don't leave renderer frozen
-            if (arFilamentRenderer != null) {
-                arFilamentRenderer.setPaused(false);
-            }
-        }
+        System.gc();
     }
 
     @Override
     public void onDestroy() {
-        Log.d(LOG_TAG, "onDestroy() - clear all models and trackables");
-        if (session != null) {
-            session.close();
-            session = null;
+        Log.d(LOG_TAG, "onDestroy()");
+
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.setPaused(true);
         }
+
+        if (session != null) {
+            for (Anchor anchor : new ArrayList<>(session.getAllAnchors())) {
+                anchor.detach();
+            }
+        }
+
+        synchronized (arNodes) {
+            arNodes.clear();
+        }
+
+        // Full GPU teardown — no unpause, no resume
         if (arFilamentRenderer != null) {
             arFilamentRenderer.destroy();
             arFilamentRenderer = null;
         }
+
+        // Pause and null session
+        if (session != null) {
+            session.pause();
+            session = null;
+        }
+
+        if (floorManager != null) {
+            floorManager.reset();
+            floorManager = null;
+        }
+
+        backgroundRenderer = null;
+        planeRenderer = null;
+        pointCloudRenderer = null;
+        objRenderer = null;
+
+        System.gc();
+        Log.d(LOG_TAG, "onDestroy complete");
     }
 
-    @SimpleFunction(description = "Delete")
+    @SimpleFunction(description = "Remove a single node from the scene.")
     public void onDelete(ARNode node) {
-        arNodes.remove(node);
+        if (node instanceof ARNodeBase) {
+            Anchor a = ((ARNodeBase) node).Anchor();
+            if (a != null) a.detach();
+        }
+
+        if (arFilamentRenderer != null) {
+            arFilamentRenderer.removeNode(node);
+        }
+
+        synchronized (arNodes) {
+            arNodes.remove(node);
+        }
     }
 
     @SimpleFunction(description = "Load scene from storage")
