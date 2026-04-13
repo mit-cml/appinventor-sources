@@ -42,12 +42,12 @@ final class DesignerOperationValidator {
 
   static String validateAddComponent(JSONObject json, ScreenExecutionContext context) {
     String type = AIJsonUtils.getStringField(json, "component_type");
-    String name = AIJsonUtils.getStringField(json, "name");
+    String name = AIJsonUtils.getStringField(json, "component_name");
     if (type == null || type.isEmpty()) {
       return "ADD_COMPONENT: missing 'component_type' field";
     }
     if (name == null || name.isEmpty()) {
-      return "ADD_COMPONENT: missing 'name' field";
+      return "ADD_COMPONENT: missing 'component_name' field";
     }
     if (!TextValidators.isValidIdentifier(name)) {
       return "ADD_COMPONENT: '" + name + "' is not a valid identifier";
@@ -70,15 +70,15 @@ final class DesignerOperationValidator {
     }
 
     // Validate parent container accepts this component type.
-    String parent = AIJsonUtils.getStringField(json, "parent");
+    String parent = AIJsonUtils.getStringField(json, "parent_name");
     MockContainer container;
     if (parent != null && !parent.isEmpty()) {
       MockComponent parentComp = components.get(parent);
       if (parentComp == null) {
-        return "ADD_COMPONENT: parent '" + parent + "' does not exist";
+        return "ADD_COMPONENT: parent_name '" + parent + "' does not exist";
       }
       if (!(parentComp instanceof MockContainer)) {
-        return "ADD_COMPONENT: parent '" + parent + "' is not a container";
+        return "ADD_COMPONENT: parent_name '" + parent + "' is not a container";
       }
       container = (MockContainer) parentComp;
     } else {
@@ -89,7 +89,7 @@ final class DesignerOperationValidator {
       String requiredParent = getRequiredParentType(type);
       if (requiredParent != null) {
         return "ADD_COMPONENT: '" + type + "' must be placed inside a "
-            + requiredParent + " — set the 'parent' parameter to the "
+            + requiredParent + " — set the 'parent_name' parameter to the "
             + requiredParent + " instance name";
       }
       return "ADD_COMPONENT: '" + type + "' cannot be placed inside '"
@@ -116,9 +116,9 @@ final class DesignerOperationValidator {
   }
 
   static String validateDeleteComponent(JSONObject json, ScreenExecutionContext context) {
-    String name = AIJsonUtils.getStringField(json, "name");
+    String name = AIJsonUtils.getStringField(json, "component_name");
     if (name == null || name.isEmpty()) {
-      return "DELETE_COMPONENT: missing 'name' field";
+      return "DELETE_COMPONENT: missing 'component_name' field";
     }
 
     YaFormEditor formEditor = resolveFormEditor(context);

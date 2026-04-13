@@ -26,7 +26,7 @@
     }
   },
   "add_component": {
-    "description": "Add a new component to the current screen. Some components MUST be nested inside a specific parent: Ball/ImageSprite require a Canvas, ChartData2D/Trendline require a Chart, and Marker/LineString/Polygon/Rectangle/Circle/FeatureCollection require a Map. For these, you MUST set the parent parameter to the parent component's instance name.",
+    "description": "Add a new component to the current screen. Some components MUST be nested inside a specific parent: Ball/ImageSprite require a Canvas, ChartData2D/Trendline require a Chart, and Marker/LineString/Polygon/Rectangle/Circle/FeatureCollection require a Map. For these, you MUST set the parent_name parameter to the parent component's instance name.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -34,11 +34,11 @@
           "type": "string",
           "description": "Component type, e.g. Button"
         },
-        "name": {
+        "component_name": {
           "type": "string",
           "description": "Instance name — must start with a letter and contain only letters, digits, and underscores (no spaces, hyphens, or special characters). Must not be a Java/YAIL reserved word. Use descriptive PascalCase (e.g. SubmitButton, ScoreLabel), not incremental names like Button1"
         },
-        "parent": {
+        "parent_name": {
           "type": "string",
           "description": "Parent container instance name. Required for components with mandatory nesting (e.g. ChartData2D must specify its Chart parent). Defaults to screen root if omitted."
         },
@@ -47,7 +47,7 @@
           "description": "Initial property values"
         }
       },
-      "required": ["component_type", "name"]
+      "required": ["component_type", "component_name"]
     }
   },
   "delete_component": {
@@ -55,12 +55,12 @@
     "parameters": {
       "type": "object",
       "properties": {
-        "name": {
+        "component_name": {
           "type": "string",
           "description": "Component instance name"
         }
       },
-      "required": ["name"]
+      "required": ["component_name"]
     }
   },
   "set_property": {

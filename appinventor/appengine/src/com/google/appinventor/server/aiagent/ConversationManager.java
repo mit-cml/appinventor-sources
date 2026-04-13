@@ -122,10 +122,11 @@ public class ConversationManager {
         switch (op.getType()) {
           case ADD_COMPONENT:
             sb.append("Added ").append(payload.optString("component_type"))
-                .append(" '").append(payload.optString("name")).append("'\n");
+                .append(" '").append(payload.optString("component_name")).append("'\n");
             break;
           case DELETE_COMPONENT:
-            sb.append("Deleted component '").append(payload.optString("name")).append("'\n");
+            sb.append("Deleted component '").append(payload.optString("component_name"))
+                .append("'\n");
             break;
           case SET_PROPERTY:
             sb.append("Set ").append(payload.optString("component_name"))

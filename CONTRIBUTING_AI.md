@@ -281,8 +281,8 @@ flowchart TB
     end
 
     subgraph "Designer Tools (Designer view only)"
-        AC["add_component<br/><i>component_type, name, parent, properties</i>"]
-        DC["delete_component<br/><i>name</i>"]
+        AC["add_component<br/><i>component_type, component_name, parent_name, properties</i>"]
+        DC["delete_component<br/><i>component_name</i>"]
         SP["set_property<br/><i>component_name, property_name, value</i>"]
         RC["rename_component<br/><i>old_name, new_name</i>"]
     end
@@ -870,7 +870,7 @@ Before mode enforcement, `LLMResponseParser.parseToolCalls()` validates each raw
 |-------|------------------------|
 | Unknown tool name | Error added: `"Unknown tool: <name>"`. The tool call is dropped. |
 | Malformed JSON arguments | Error added: `"Malformed JSON arguments for <name>"`. Dropped. |
-| Missing required field | Error added: `"Missing required field '<field>' for <name>"`. Dropped. |
+| Missing required field | Error added: `"Missing required field '<field>' for <tool>. Required: '<req1>', '<req2>'. Provided: '<k1>', '<k2>'."`. Dropped. The provided-keys hint lets the model self-correct when it hallucinates similar-but-wrong parameter names. |
 | Type coercion failure | Error added: `"Type coercion failed for <name>"`. Dropped. |
 | Read-only tool (lookup_*) | Silently skipped (already resolved server-side by the provider). |
 

@@ -422,11 +422,11 @@ public class AIOperationExecutor {
 
     switch (op.getType()) {
       case ADD_COMPONENT: {
-        String name = json.get("name").isString().stringValue();
+        String name = json.get("component_name").isString().stringValue();
         return context.componentExists(name);
       }
       case DELETE_COMPONENT: {
-        String name = json.get("name").isString().stringValue();
+        String name = json.get("component_name").isString().stringValue();
         return !context.componentExists(name);
       }
       case RENAME_COMPONENT: {

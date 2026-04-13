@@ -14,7 +14,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Button",
-          "name": "HelloButton",
+          "component_name": "HelloButton",
           "properties": {
             "Text": "Hello",
             "BackgroundColor": "&HFFFF0000"
@@ -32,7 +32,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Label",
-          "name": "CounterLabel",
+          "component_name": "CounterLabel",
           "properties": {
             "Text": "0",
             "FontSize": "24",
@@ -45,7 +45,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Button",
-          "name": "IncrementButton",
+          "component_name": "IncrementButton",
           "properties": {
             "Text": "Add 1",
             "Width": "-2"
@@ -87,7 +87,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Label",
-          "name": "TitleLabel",
+          "component_name": "TitleLabel",
           "properties": {
             "Text": "Welcome",
             "FontSize": "28",
@@ -101,7 +101,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "TextBox",
-          "name": "UsernameBox",
+          "component_name": "UsernameBox",
           "properties": {
             "Hint": "Enter username",
             "Width": "-2"
@@ -112,7 +112,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "PasswordTextBox",
-          "name": "PasswordBox",
+          "component_name": "PasswordBox",
           "properties": {
             "Hint": "Enter password",
             "Width": "-2"
@@ -123,7 +123,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Button",
-          "name": "LoginButton",
+          "component_name": "LoginButton",
           "properties": {
             "Text": "Submit",
             "Width": "-2",
@@ -136,7 +136,7 @@
         "tool": "add_component",
         "arguments": {
           "component_type": "Notifier",
-          "name": "LoginNotifier"
+          "component_name": "LoginNotifier"
         }
       }
     ]

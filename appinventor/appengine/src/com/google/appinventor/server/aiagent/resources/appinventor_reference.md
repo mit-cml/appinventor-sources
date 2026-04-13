@@ -348,7 +348,7 @@ These components can contain child components:
 ### Specialized Containers (Mandatory Nesting)
 Some components MUST be placed inside a specific parent container — they
 **cannot** be added to the screen root or to general layout containers.
-Always set the `parent` parameter in `add_component` to the parent instance name.
+Always set the `parent_name` parameter in `add_component` to the parent instance name.
 
 | Child Component | Required Parent |
 |---|---|
@@ -357,9 +357,9 @@ Always set the `parent` parameter in `add_component` to the parent instance name
 | `Marker`, `LineString`, `Polygon`, `Rectangle`, `Circle`, `FeatureCollection` | `Map` |
 
 **You must add the parent container first**, then add the child with
-`"parent": "<ParentInstanceName>"`. For example, to add chart data:
-1. `add_component` with `component_type: "Chart"`, `name: "Chart1"`
-2. `add_component` with `component_type: "ChartData2D"`, `name: "ChartData2D1"`, `parent: "Chart1"`
+`"parent_name": "<ParentInstanceName>"`. For example, to add chart data:
+1. `add_component` with `component_type: "Chart"`, `component_name: "Chart1"`
+2. `add_component` with `component_type: "ChartData2D"`, `component_name: "ChartData2D1"`, `parent_name: "Chart1"`
 
 ### Asset References
 When a property references a media file (e.g., an image), use the filename

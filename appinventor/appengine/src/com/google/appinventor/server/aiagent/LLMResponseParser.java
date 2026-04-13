@@ -93,8 +93,8 @@ public class LLMResponseParser {
     TOOL_NAME_TO_TYPE.put(AIToolNames.SET_PROJECT_PROPERTY, AIOperation.Type.SET_PROJECT_PROP);
     TOOL_NAME_TO_TYPE.put(AIToolNames.TOGGLE_EDITOR, AIOperation.Type.TOGGLE_EDITOR);
 
-    REQUIRED_FIELDS.put(AIToolNames.ADD_COMPONENT, Arrays.asList("component_type", "name"));
-    REQUIRED_FIELDS.put(AIToolNames.DELETE_COMPONENT, Collections.singletonList("name"));
+    REQUIRED_FIELDS.put(AIToolNames.ADD_COMPONENT, Arrays.asList("component_type", "component_name"));
+    REQUIRED_FIELDS.put(AIToolNames.DELETE_COMPONENT, Collections.singletonList("component_name"));
     REQUIRED_FIELDS.put(AIToolNames.SET_PROPERTY, Arrays.asList("component_name", "property_name", "value"));
     REQUIRED_FIELDS.put(AIToolNames.RENAME_COMPONENT, Arrays.asList("old_name", "new_name"));
     REQUIRED_FIELDS.put(AIToolNames.WRITE_BLOCK, Collections.singletonList("yail"));
@@ -178,14 +178,24 @@ public class LLMResponseParser {
       // Check required fields
       List<String> requiredFields = REQUIRED_FIELDS.get(toolName);
       if (requiredFields != null) {
-        boolean missingField = false;
+        List<String> missing = new ArrayList<>();
         for (String field : requiredFields) {
           if (!args.has(field) || args.isNull(field)) {
-            errors.add("Missing required field '" + field + "' for " + toolName);
-            missingField = true;
+            missing.add(field);
           }
         }
-        if (missingField) {
+        if (!missing.isEmpty()) {
+          // Include the keys the LLM actually provided so a retry can self-correct
+          // when the model hallucinates similar-but-wrong names (e.g. "name" vs
+          // "component_name", "parent" vs "parent_name").
+          List<String> provided = new ArrayList<>(args.keySet());
+          Collections.sort(provided);
+          errors.add("Missing required field"
+              + (missing.size() == 1 ? " " : "s ")
+              + quoteJoin(missing) + " for " + toolName
+              + ". Required: " + quoteJoin(requiredFields)
+              + ". Provided: " + (provided.isEmpty() ? "(none)" : quoteJoin(provided))
+              + ".");
           continue;
         }
       }
@@ -213,6 +223,19 @@ public class LLMResponseParser {
     }
 
     return new ParseResult(operations, errors);
+  }
+
+  /**
+   * Joins keys with single quotes and comma separators, e.g.
+   * {@code 'component_type', 'component_name'}.
+   */
+  private static String quoteJoin(List<String> keys) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < keys.size(); i++) {
+      if (i > 0) sb.append(", ");
+      sb.append('\'').append(keys.get(i)).append('\'');
+    }
+    return sb.toString();
   }
 
   /**

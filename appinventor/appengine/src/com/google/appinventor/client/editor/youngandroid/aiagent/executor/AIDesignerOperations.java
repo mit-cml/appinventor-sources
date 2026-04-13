@@ -27,8 +27,8 @@ final class AIDesignerOperations {
 
   static void executeAddComponent(JSONObject json, ScreenExecutionContext context) {
     String type = AIJsonUtils.getStringField(json, "component_type");
-    String name = AIJsonUtils.getStringField(json, "name");
-    String parent = AIJsonUtils.getStringField(json, "parent");
+    String name = AIJsonUtils.getStringField(json, "component_name");
+    String parent = AIJsonUtils.getStringField(json, "parent_name");
 
     YaFormEditor formEditor = context.getFormEditor();
     MockForm form = formEditor.getForm();
@@ -164,7 +164,7 @@ final class AIDesignerOperations {
   }
 
   static void executeDeleteComponent(JSONObject json, ScreenExecutionContext context) {
-    String name = AIJsonUtils.getStringField(json, "name");
+    String name = AIJsonUtils.getStringField(json, "component_name");
 
     YaFormEditor formEditor = context.getFormEditor();
     Map<String, MockComponent> components = formEditor.getComponents();

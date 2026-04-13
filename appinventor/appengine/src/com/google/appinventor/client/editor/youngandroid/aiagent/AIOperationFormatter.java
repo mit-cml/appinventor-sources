@@ -35,9 +35,9 @@ public final class AIOperationFormatter {
     switch (type) {
       case ADD_COMPONENT:
         return "+ Add component: " + AIJsonUtils.extractField(payload, "component_type")
-            + " (" + AIJsonUtils.extractField(payload, "name") + ")";
+            + " (" + AIJsonUtils.extractField(payload, "component_name") + ")";
       case DELETE_COMPONENT:
-        return "- Delete component: " + AIJsonUtils.extractField(payload, "name");
+        return "- Delete component: " + AIJsonUtils.extractField(payload, "component_name");
       case SET_PROPERTY:
         return "~ Set " + AIJsonUtils.extractField(payload, "component_name")
             + "." + AIJsonUtils.extractField(payload, "property_name")
