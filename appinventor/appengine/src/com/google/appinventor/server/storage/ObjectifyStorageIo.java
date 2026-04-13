@@ -370,15 +370,15 @@ public class ObjectifyStorageIo implements StorageIo {
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
-    UserData user = datastore.query(UserData.class).filter("email", realOrDummyEmail).get();
+    UserData user = datastore.query(UserData.class).filter("email", email).get();
     if (email == null ) {
-      user = createUser(datastore, newId, realOrDummyEmail);
+      user = createUser(datastore, newId, email);
       User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
       retUser.setPassword(user.password);
       return retUser;
     }
     if (user == null) {
-      LOG.info("getUserFromEmail: first attempt failed using " + realOrDummyEmail);
+      LOG.info("getUserFromEmail: first attempt failed using " + email);
       // Now try lower case version
       user = datastore.query(UserData.class).filter("emaillower", emaillower).get();
       if (user == null && create) {       // Finally, create it (in lower case)
@@ -413,29 +413,6 @@ public class ObjectifyStorageIo implements StorageIo {
     datastore.put(userData);
     return userData;
   }
-
-  @Override
-  public User createAnonymousAccount() {
-    boolean ok = false;
-      try {
-
-
-        String strUserId = UUID.randomUUID().toString();
-        String strAnonId = UUID.randomUUID().toString();
-
-          return new User(
-              strUserId,
-              strAnonId,
-              false,
-              false,
-              null);
-
-
-    } catch (Exception e) {
-      throw CrashReport.createAndLogError(LOG, null, "Unable to open database", e);
-    }
-  }
-
 
   @Override
   public void setTosAccepted(final String userId) {
