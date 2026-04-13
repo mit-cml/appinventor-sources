@@ -8,6 +8,7 @@ package com.google.appinventor.server.storage;
 
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -61,8 +62,8 @@ public interface StorageIo {
   User getUser(String userId, String email);
 
   /**
-   * Returns user data given user email address. If the user data for the given email
-   * doesn't already exist in the storage, it should
+   * Returns user data given user email address. If the user data for
+   * the given email doesn't already exist in the storage, it should
    * be created if the created flag is true. Email is the email
    * address currently associated with this user.
    *
@@ -117,7 +118,6 @@ public interface StorageIo {
    * @param settings user's settings
    */
   void storeSettings(String userId, String settings);
-
 
   // Project management
 
@@ -207,7 +207,7 @@ public interface StorageIo {
    * @return userId
    */
 
-  String getProjectUserId(long projectId) throws StoredData.ProjectNotFoundException;
+  String getProjectUserId(long projectId);
   /**
    * Bulk version of getUserProject.
    * @param userId a userId
@@ -216,6 +216,15 @@ public interface StorageIo {
    */
 
   List<UserProject> getUserProjects(String userId, List<Long> projectIds);
+
+  /**
+   * Sets a project name.
+   *
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId project id
+   * @param name new name
+   * */
+  void setProjectName(String userId, long projectId, String name);
 
   /**
    * Returns a project name.
@@ -262,23 +271,6 @@ public interface StorageIo {
    * @return String specially formatted history
    */
   String getProjectHistory(String userId, long projectId);
-
-  // JIS XXX
-  /**
-   * Returns the date the project was created.
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project id
-   *
-   * @return long milliseconds
-   */
-  long getProjectDateCreated(String userId, long projectId);
- /**
-   * Returns the gallery id or -1 if not published.
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project id
-   *
-   * @return long milliseconds
-   */
 
   // Non-project-specific file management
 
@@ -609,11 +601,11 @@ public interface StorageIo {
   List<AdminUser> searchUsers(String partialEmail);
   void storeUser(AdminUser user) throws AdminInterfaceException;
 
-
   // Generate an anonymous account
   // Anonymous accounts have an account id of the form
   // anon-<long>
   User createAnonymousAccount();
+
   /**
    * There are two kinds of backpacks. User backpacks, which are
    * stored with the user's personal files (which today is just the
@@ -694,6 +686,20 @@ public interface StorageIo {
   boolean deleteAccount(String userId);
 
   String getIosExtensionsConfig();
+
+  /**
+   * Create a new User.
+   *
+   * This method is for use of external portals to create account via a call
+   * to the RestServlet.
+   *
+   * @param userId the userId for the new user. Must be a UUID
+   * @param email The name or email address for the new user. Must be unique.
+   *
+   * @return true on success. Throws UserAlreadyExists exception on duplicates
+   */
+
+  void createUser(String userId, String email) throws UserAlreadyExistsException;
 
 }
 
