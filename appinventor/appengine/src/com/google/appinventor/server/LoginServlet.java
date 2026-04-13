@@ -247,7 +247,7 @@ public class LoginServlet extends HttpServlet {
       if (DEBUG) {
         LOG.info("setpw email = " + data.email);
       }
-      User user = storageIo.getUserFromEmail(data.email);
+      User user = storageIo.getUserFromEmail(data.email, false);
       userInfo = new OdeAuthFilter.UserInfo(); // Create new userInfo object
       userInfo.setUserId(user.getUserId()); // This effectively logs us in!
       out = setCookieOutput(userInfo, resp);
@@ -325,7 +325,7 @@ public class LoginServlet extends HttpServlet {
           fail(req, resp, "Failed to provide an Email Address for login.", locale);
           return;
         }
-        User user = storageIo.getUserFromEmail(email);
+        User user = storageIo.getUserFromEmail(email, false);
         userInfo.setUserId(user.getUserId());
       } else {                  // SSOLOGIN3
         String uuid = token.getUuid();
@@ -532,7 +532,7 @@ public class LoginServlet extends HttpServlet {
 
     String email = params.get("email");
     String password = params.get("password"); // We don't check it now
-    User user = storageIo.getUserFromEmail(email);
+    User user = storageIo.getUserFromEmail(email, false);
     boolean validLogin = false;
 
     String hash = user.getPassword();

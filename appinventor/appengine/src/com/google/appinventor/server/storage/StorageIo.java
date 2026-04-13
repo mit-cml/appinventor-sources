@@ -70,7 +70,7 @@ public interface StorageIo {
    * @param user email address
    * @return user data
    */
-  User getUserFromEmail(String email);
+  User getUserFromEmail(String email, boolean create);
 
   /**
    * Sets the stored email address for user with id userId
