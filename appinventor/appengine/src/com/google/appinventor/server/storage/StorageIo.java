@@ -62,13 +62,15 @@ public interface StorageIo {
 
   /**
    * Returns user data given user email address. If the user data for the given email
-   * doesn't already exist in the storage, it should be created. email
-   * is the email address currently associated with this user.
+   * doesn't already exist in the storage, it should
+   * be created if the created flag is true. Email is the email
+   * address currently associated with this user.
    *
    * @param user email address
+   * @param create create user if true
    * @return user data
    */
-  User getUserFromEmail(String email);
+  User getUserFromEmail(String email, boolean create);
 
   /**
    * Sets the stored email address for user with id userId
@@ -607,6 +609,11 @@ public interface StorageIo {
   List<AdminUser> searchUsers(String partialEmail);
   void storeUser(AdminUser user) throws AdminInterfaceException;
 
+
+  // Generate an anonymous account
+  // Anonymous accounts have an account id of the form
+  // anon-<long>
+  User createAnonymousAccount();
   /**
    * There are two kinds of backpacks. User backpacks, which are
    * stored with the user's personal files (which today is just the

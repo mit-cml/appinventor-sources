@@ -346,20 +346,34 @@ public class ObjectifyStorageIo implements StorageIo {
   // Get User from email address alone. This version will create the user
   // if they don't exist
   @Override
-  public User getUserFromEmail(String email) {
-    String emaillower = email.toLowerCase();
+  public User getUserFromEmail(String email, boolean create) {
+    String realOrDummyEmail = "";
+    String emaillower = "";
+    if (email == null) {
+      realOrDummyEmail = "";
+    } else{
+      realOrDummyEmail = email;
+    }
+    emaillower = realOrDummyEmail.toLowerCase();
+
     LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
-    UserData user = datastore.query(UserData.class).filter("email", email).get();
+    UserData user = datastore.query(UserData.class).filter("email", realOrDummyEmail).get();
+    if (email == null ) {
+      user = createUser(datastore, newId, realOrDummyEmail);
+      User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
+      retUser.setPassword(user.password);
+      return retUser;
+    }
     if (user == null) {
-      LOG.info("getUserFromEmail: first attempt failed using " + email);
+      LOG.info("getUserFromEmail: first attempt failed using " + realOrDummyEmail);
       // Now try lower case version
       user = datastore.query(UserData.class).filter("emaillower", emaillower).get();
-      if (user == null) {       // Finally, create it (in lower case)
+      if (user == null && create) {
         LOG.info("getUserFromEmail: second attempt failed using " + emaillower);
-        user = createUser(datastore, newId, email);
+        user = createUser(datastore, newId, realOrDummyEmail);
       }
     }
     User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
@@ -381,6 +395,29 @@ public class ObjectifyStorageIo implements StorageIo {
     datastore.put(userData);
     return userData;
   }
+
+  @Override
+  public User createAnonymousAccount() {
+    boolean ok = false;
+      try {
+
+
+        String strUserId = UUID.randomUUID().toString();
+        String strAnonId = UUID.randomUUID().toString();
+
+          return new User(
+              strUserId,
+              strAnonId,
+              false,
+              false,
+              null);
+
+
+    } catch (Exception e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unable to open database", e);
+    }
+  }
+
 
   @Override
   public void setTosAccepted(final String userId) {

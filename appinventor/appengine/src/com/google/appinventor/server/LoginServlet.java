@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appinventor.shared.util.AccountUtil;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 
@@ -80,8 +81,9 @@ public class LoginServlet extends HttpServlet {
   private static final Flag<String> password = Flag.createFlag("localauth.mailserver.password", "");
   private static final Flag<Boolean> useGoogle = Flag.createFlag("auth.usegoogle", true);
   private static final Flag<Boolean> useLocal = Flag.createFlag("auth.uselocal", false);
+  private static final Flag<Boolean> anonOK = Flag.createFlag("auth.useanon", true);
   private static final String loginUrl = Flag.createFlag("login.url", "").get();
-
+  private static final Flag<String> publicPort = Flag.createFlag("port.public", "8888");
   private static final UserService userService = UserServiceFactory.getUserService();
   private final PolicyFactory sanitizer = new HtmlPolicyBuilder().allowElements("p").toFactory();
   private static final boolean DEBUG = Flag.createFlag("appinventor.debugging", false).get();
@@ -136,6 +138,94 @@ public class LoginServlet extends HttpServlet {
       bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale("en"));
     } else {
       bundle = ResourceBundle.getBundle("com/google/appinventor/server/loginmessages", new Locale(locale));
+    }
+
+    if (true){
+      String noAccount = params.get("noaccount");
+      String reVisit = params.get("revisit");
+      if (noAccount != null) {  // Anonymous Login
+        LOG.info("noAccount = " + noAccount);
+        User user = storageIo.createAnonymousAccount();
+        userInfo = new OdeAuthFilter.UserInfo();
+        userInfo.setUserId(user.getUserId());
+        String newCookie = userInfo.buildCookie(false);
+        if (newCookie != null) {
+          Cookie cook = new Cookie("AppInventor", newCookie);
+          cook.setPath("/");
+          resp.addCookie(cook);
+        }
+        String uri = "http://" + req.getServerName();
+        String pPort = publicPort.get();
+        if (pPort.equals("443")) {
+          uri = "https://" + req.getServerName();
+        }
+        else if (!pPort.equals("80")) {
+          uri += ":" + pPort;
+        }
+        uri += "/";
+        if (redirect != null && !redirect.equals("")) {
+          uri = redirect;
+        }
+        uri = new UriBuilder(uri)
+            .add("locale", locale)
+            .add("repo", repo)
+            .add("galleryId", galleryId).build();
+        resp.sendRedirect(uri);
+        return;
+      } else if (reVisit != null) {
+        LOG.info("revisit = " + reVisit);
+        String A = params.get("A");
+        String B = params.get("B");
+        String C = params.get("C");
+        String D = params.get("D");
+        if (A == null || B == null || C == null || D == null ||
+            A.isEmpty() || B.isEmpty() || C.isEmpty() || D.isEmpty()) {
+          fail(req, resp, "Invalid Code", locale);
+          return;
+        }
+        String code = A.toUpperCase() + "-" + B.toUpperCase() + "-" +
+            C.toUpperCase() + "-" + D.toUpperCase();
+        String accountId;
+        try {
+
+          accountId = AccountUtil.codeToAccount(code);
+        } catch (IllegalArgumentException e) {
+          fail(req, resp, "Invalid Code", locale);
+          return;
+        }
+        User user = storageIo.getUserFromEmail(accountId, false);
+        if (user == null) {
+          fail(req, resp, "Invalid Code", locale);
+          return;
+        }
+        // At this point we are logged in!
+        userInfo = new OdeAuthFilter.UserInfo();
+        userInfo.setUserId(user.getUserId());
+        String newCookie = userInfo.buildCookie(false);
+        if (newCookie != null) {
+          Cookie cook = new Cookie("AppInventor", newCookie);
+          cook.setPath("/");
+          resp.addCookie(cook);
+        }
+        String uri = "http://" + req.getServerName();
+        String pPort = publicPort.get();
+        if (pPort.equals("443")) {
+          uri = "https://" + req.getServerName();
+        }
+        else if (!pPort.equals("80")) {
+          uri += ":" + pPort;
+        }
+        uri += "/";
+        if (redirect != null && !redirect.equals("")) {
+          uri = redirect;
+        }
+        uri = new UriBuilder(uri)
+            .add("locale", locale)
+            .add("repo", repo)
+            .add("galleryId", galleryId).build();
+        resp.sendRedirect(uri);
+        return;
+      }
     }
 
     if (page.equals("google")) {
@@ -237,10 +327,11 @@ public class LoginServlet extends HttpServlet {
         fail(req, resp, "Invalid Set Password Link", locale);
         return;
       }
+      LOG.info("setpw email = " + data.email);
       if (DEBUG) {
         LOG.info("setpw email = " + data.email);
       }
-      User user = storageIo.getUserFromEmail(data.email);
+      User user = storageIo.getUserFromEmail(data.email, true);
       userInfo = new OdeAuthFilter.UserInfo(); // Create new userInfo object
       userInfo.setUserId(user.getUserId()); // This effectively logs us in!
       out = setCookieOutput(userInfo, resp);
@@ -318,7 +409,7 @@ public class LoginServlet extends HttpServlet {
           fail(req, resp, "Failed to provide an Email Address for login.", locale);
           return;
         }
-        User user = storageIo.getUserFromEmail(email);
+        User user = storageIo.getUserFromEmail(email, true);
         userInfo.setUserId(user.getUserId());
       } else {                  // SSOLOGIN3
         String uuid = token.getUuid();
@@ -494,7 +585,7 @@ public class LoginServlet extends HttpServlet {
 
     String email = params.get("email");
     String password = params.get("password"); // We don't check it now
-    User user = storageIo.getUserFromEmail(email);
+    User user = storageIo.getUserFromEmail(email, true);
     boolean validLogin = false;
 
     String hash = user.getPassword();
