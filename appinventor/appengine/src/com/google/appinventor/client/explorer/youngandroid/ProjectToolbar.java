@@ -104,6 +104,10 @@ public class ProjectToolbar extends Toolbar {
     int numAllItems = projectList.getMyProjectsCount();  // Get number of valid projects not in trash
     int numSelectedProjects = projectList.getSelectedProjectsCount();
     LOG.info("Set Project List variables");
+    String exportProjectLabel = numSelectedProjects > 1
+        ? Ode.MESSAGES.exportSelectedProjectsMenuItem(numSelectedProjects)
+        : Ode.MESSAGES.exportProjectMenuItem();
+    setDropDownItemHtml("Export", "ExportProject", exportProjectLabel);
     if (isReadOnly) {           // If we are read-only, we disable all buttons
       setButtonEnabled(WIDGET_NAME_NEW, false);
       setButtonEnabled(WIDGET_NAME_DELETE, false);
