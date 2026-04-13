@@ -119,6 +119,36 @@ class YoungAndroidComponentFactory extends BaseComponentFactory {
     bundledImages.put("images/filepicker.png", images.file());
     bundledImages.put("images/trendline.png", images.trendline());
     bundledImages.put("images/absoluteArrangement.png", images.table());
+    bundledImages.put("images/capsuleNode.png", images.capsuleNode());
+    bundledImages.put("images/coneNode.png", images.coneNode());
+    bundledImages.put("images/boxNode.png", images.boxNode());
+    bundledImages.put("images/cylinderNode.png", images.cylinderNode());
+    bundledImages.put("images/planeNode.png", images.planeNode());
+    bundledImages.put("images/pyramidNode.png", images.pyramidNode());
+    bundledImages.put("images/sphereNode.png", images.sphereNode());
+    bundledImages.put("images/textNode.png", images.textNode());
+    bundledImages.put("images/torusNode.png", images.torusNode());
+    bundledImages.put("images/tubeNode.png", images.tubeNode());
+    bundledImages.put("images/videoNode.png", images.videoNode());
+    bundledImages.put("images/videoNodeBig.png", images.videoNodeBig());
+    bundledImages.put("images/webViewNode.png", images.webViewNode());
+    bundledImages.put("images/webViewNodeBig.png", images.webViewNodeBig());
+    bundledImages.put("images/ambientLight.png", images.ambientLight());
+    bundledImages.put("images/ambientLightBig.png", images.ambientLightBig());
+    bundledImages.put("images/arView3D.png", images.arView3D());
+    bundledImages.put("images/arView3DBig.png", images.arView3DBig());
+    bundledImages.put("images/detectedPlane.png", images.detectedPlane());
+    bundledImages.put("images/directionalLight.png", images.directionalLight());
+    bundledImages.put("images/directionalLightBig.png", images.directionalLightBig());
+    bundledImages.put("images/imageMarker.png", images.imageMarker());
+    bundledImages.put("images/imageMarkerBig.png", images.imageMarkerBig());
+    bundledImages.put("images/modelNode.png", images.modelNode());
+    bundledImages.put("images/modelNodeBig.png", images.modelNodeBig());
+    bundledImages.put("images/pointLight.png", images.pointLight());
+    bundledImages.put("images/pointLightBig.png", images.pointLightBig());
+    bundledImages.put("images/spotlight.png", images.spotlight());
+    bundledImages.put("images/spotlightBig.png", images.spotlightBig());
+
   }
 
   YoungAndroidComponentFactory(DesignerEditor<?, ?, ?, ?, ?> editor) {
