@@ -155,16 +155,6 @@ Blockly.BlockSvg.prototype.dispose = (function(func) {
 })(Blockly.BlockSvg.prototype.dispose);
 
 /**
- * Get the top-most workspace. Typically this is the current workspace except for flyout/flydowns.
- * @returns {!Blockly.WorkspaceSvg}
- */
-Blockly.BlockSvg.prototype.getTopWorkspace = function() {
-  var workspace = this.workspace;
-  while (workspace.targetWorkspace) workspace = workspace.targetWorkspace;
-  return workspace;
-};
-
-/**
  * Load the block's help page in a new window. This version overrides the implementation in Blockly
  * in order to include the locale query parameter that the documentation page will use to redirect
  * the user if a translation exists for their language.

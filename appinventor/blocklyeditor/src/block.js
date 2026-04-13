@@ -179,3 +179,12 @@ Blockly.Block.prototype.domToMutation = null;
  */
 Blockly.Block.prototype.mutationToDom = null;
 
+/**
+ * Get the top-most workspace. Typically this is the current workspace except for flyout/flydowns.
+ * @returns {!Blockly.Workspace}
+ */
+Blockly.Block.prototype.getTopWorkspace = function() {
+  var workspace = this.workspace;
+  while (workspace.targetWorkspace) workspace = workspace.targetWorkspace;
+  return workspace;
+};
