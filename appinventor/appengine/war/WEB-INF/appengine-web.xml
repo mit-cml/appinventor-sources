@@ -81,6 +81,7 @@
 
     <property name="auth.usegoogle" value="true" />
     <property name="auth.uselocal" value="true" />
+    <property name="auth.useanon" value="true" />
 
     <!-- Flags associated with localauth code -->
     <property name="localauth.mailserver" value="https://osiris.mit.edu/passmail/" />

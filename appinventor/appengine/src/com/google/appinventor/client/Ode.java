@@ -79,6 +79,7 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.shared.util.AccountUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
@@ -120,12 +121,15 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.Date;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -285,7 +289,6 @@ public class Ode implements EntryPoint {
   private boolean screensLocked;
 
   // Licensing related variables
-  private String licenseCode;
   private String systemId;
   private static UiStyleFactory uiFactory = null;
 
@@ -785,6 +788,10 @@ public class Ode implements EntryPoint {
             isAnon = true;
           }
           registerIosExtensions(config.getIosExtensions());
+          if (user.getUserEmail().startsWith("anon-")) { // We are anonymous user
+             isAnon = true;
+          }
+          systemId = result.getSysUID();
           return resolve(null);
         })
         .then0(this::handleGalleryId)
@@ -796,6 +803,14 @@ public class Ode implements EntryPoint {
         ))
         .then0(this::handleUiPreference)
         .then(this::initializeUi)
+        .then0(() -> {
+            if (isAnon) {
+              topPanel.showUserEmail("Anonymous");
+            } else {
+              topPanel.showUserEmail(user.getUserEmail());
+            }
+            return null;
+        })
         .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
         .then(projects -> {
           folderManager.loadFolders();
@@ -1342,6 +1357,15 @@ public class Ode implements EntryPoint {
     return user;
   }
 
+  /** Returns whether or not this is an anonymous user
+   *
+   *  @return true if this is an anonymous user
+   */
+
+  public boolean isAnonUser() {
+    return isAnon;
+  }
+
   /**
    * Checks whether autoloading of the user's previous project should be
    * performed.
@@ -1689,6 +1713,15 @@ public class Ode implements EntryPoint {
    * @param force Bypass the check to see if they have dimissed this version
    */
   private void createWelcomeDialog(final boolean force) {
+    if (isAnon && !displayedCodes) { // First display the revisit codes if we
+      displayRevisitCodes(false, new Runnable() {
+          @Override public void run() {
+            displayedCodes = true;
+            createWelcomeDialog(force);
+          }
+        });         // if we are an anonymous account
+      return;
+    }
     if (!shouldShowWelcomeDialog() && !force) {
       maybeShowNoProjectsDialog();
       return;
@@ -1737,6 +1770,50 @@ public class Ode implements EntryPoint {
         }
       }
     });
+  }
+
+  public void displayRevisitCodes(boolean leaving, final Runnable next) {
+    if (!isAnon) {                                          // We are not anonymous so don't
+      next.run();                                           // show the dialog
+      return;
+    }
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.createWelcomeDialogText());
+    dialogBox.setHeight("200px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    String code = AccountUtil.accountToCode(getUser().getUserEmail());
+    String message;
+    if (leaving) {
+      message = "You are leaving MIT App Inventor. If you wish to " +
+        " access any projects you created here in the future, be sure " +
+        " to write down the code below and use it to re-enter MIT App " +
+        "Inventor.<br/><br/>Your Code: " + code;
+    } else {
+      message = "You are logged in without an account.<br/>\n" +
+        "You can use the code below to re-enter MIT App Inventor and work " +
+        "on your projects again.<br/><br/>\n" +
+        "Your Code is: " + code + "<br/>\n";
+    }
+    HTML htmlmessage = new HTML(message);
+    htmlmessage.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button ok = new Button(MESSAGES.createWelcomeDialogButton());
+    ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          next.run();
+        }
+      });
+    holder.add(ok);
+    DialogBoxContents.add(htmlmessage);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
   }
 
   /**
@@ -1792,7 +1869,7 @@ public class Ode implements EntryPoint {
     } else {
       uversion = Integer.parseInt(value);
     }
-    if (uversion >= splashConfig.version) {
+    if ((uversion >= splashConfig.version) && splashConfig.version != -2) { // -2 means always show the splash screen!
       return false;
     } else {
       return true;
@@ -1898,6 +1975,7 @@ public class Ode implements EntryPoint {
   // (if enabled). This function is called out of SplashSettings.java
   // after the userSettings object is loaded (above) and parsed.
   private void showSplashScreens() {
+
     boolean showSplash = false;
     if (AppInventorFeatures.showSurveySplashScreen()) {
       int nvalue = 0;
@@ -2280,6 +2358,52 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Dialog box to display expiration warning.
+   * If it is less then 10 days to expiration, this dialog box is displayed with
+   * a Continue button. If this copy of App Inventor has expired, then there
+   * is no Continue button and the application is now hung.
+   */
+  private void expireDialog() {
+    Date now = new Date();
+    Date expiration = new Date(1441080000000L);
+    Date warning = new Date(expiration.getTime() - 3600*1000*10*24); // Ten days before expiration
+    if (now.compareTo(warning) < 0) {
+      return;                                    // Don't display if expiration in far future
+    }
+    HTML message;
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    FlowPanel holder = new FlowPanel();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    if (now.compareTo(expiration) < 0) {         // Give warning
+      message = new HTML("This version of MIT App Inventor will expire: " + expiration.toString());
+      Button okButton = new Button("Continue");
+      okButton.addClickListener(new ClickListener() {
+          public void onClick(Widget sender) {
+            dialogBox.hide();
+          }
+        });
+      holder.add(okButton);
+      message.setStyleName("DialogBox-message");
+      DialogBoxContents.add(message);
+      DialogBoxContents.add(holder);
+      dialogBox.setWidget(DialogBoxContents);
+      dialogBox.show();
+    } else {
+      message = new HTML("This copy of MIT App Inventor has expired");
+      message.setStyleName("DialogBox-message");
+      DialogBoxContents.add(message);
+      dialogBox.setWidget(DialogBoxContents);
+      dialogBox.show();
+    }
+  }
+
+  /**
    * This dialog is showned if an account is disabled. It is
    * completely modal with no escape. The provided URL is displayed in
    * an iframe, so it can be tailored to each person whose account is
@@ -2408,6 +2532,15 @@ public class Ode implements EntryPoint {
       LOG.info("Unlocking Screens");
     }
     screensLocked = value;
+  }
+
+  public static boolean exitToParent() {
+    String userId = getInstance().getUser().getUserId();
+    // For code.appinventor.org our parent won't close us, so we always
+    // return false
+    // return finish(userId);
+    finish(userId);
+    return false;
   }
 
   /**
@@ -2613,7 +2746,12 @@ public class Ode implements EntryPoint {
   }
 
   public boolean getGalleryReadOnly() {
-    return config.getGalleryReadOnly();
+    // If we have an anonymous user we are always in Gallery readonly
+    if (isAnon) {
+      return true;
+    } else {
+      return config.getGalleryReadOnly();
+    }
   }
 
   public boolean getDeleteAccountAllowed() {
