@@ -371,6 +371,12 @@ public class ObjectifyStorageIo implements StorageIo {
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
     UserData user = datastore.query(UserData.class).filter("email", email).get();
+    if (email == null ) {
+      user = createUser(datastore, newId, email);
+      User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
+      retUser.setPassword(user.password);
+      return retUser;
+    }
     if (user == null) {
       LOG.info("getUserFromEmail: first attempt failed using " + email);
       // Now try lower case version
