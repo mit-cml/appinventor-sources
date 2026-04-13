@@ -107,7 +107,7 @@ Blockly.BlockSvg.prototype.isBadBlock = function() {
  * Mark this block as Bad.  Highlight it visually in Red.
  */
 Blockly.BlockSvg.prototype.badBlock = function() {
-  this.isBad = true;
+  Object.getPrototypeOf(Blockly.BlockSvg.prototype).badBlock.call(this);
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
     if (!((typeof this.getSvgRoot()) == 'object' && this.getSvgRoot() != null)) {
@@ -121,7 +121,7 @@ Blockly.BlockSvg.prototype.badBlock = function() {
  * Unmark this block as Bad.
  */
 Blockly.BlockSvg.prototype.notBadBlock = function() {
-  this.isBad = false;
+  Object.getPrototypeOf(Blockly.BlockSvg.prototype).notBadBlock.call(this);
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
     if (!((typeof this.getSvgRoot()) == 'object' && this.getSvgRoot() != null)) {

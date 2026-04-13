@@ -180,6 +180,20 @@ Blockly.Block.prototype.domToMutation = null;
 Blockly.Block.prototype.mutationToDom = null;
 
 /**
+ * Mark this block as bad.
+ */
+Blockly.Block.prototype.badBlock = function() {
+  this.isBad = true;
+};
+
+/**
+ * Unmark this block as bad.
+ */
+Blockly.Block.prototype.notBadBlock = function() {
+  this.isBad = false;
+};
+
+/**
  * Get the top-most workspace. Typically this is the current workspace except for flyout/flydowns.
  * @returns {!Blockly.Workspace}
  */
