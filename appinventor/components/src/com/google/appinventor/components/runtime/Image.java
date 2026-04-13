@@ -6,7 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import android.Manifest;
 
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -51,7 +51,6 @@ import java.io.IOException;
     "Designer or in the Blocks Editor.",
     iconName = "images/image.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class Image extends AndroidViewComponent {
 
   private final ImageView view;
@@ -149,7 +148,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  @UsesPermissions(READ_EXTERNAL_STORAGE)
+  @UsesPermissions({Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE})
   public void Picture(@Asset String path) {
     final String tempPath = path == null ? "" : path;
     if (TiramisuUtil.requestImagePermissions(container.$form(), path,
