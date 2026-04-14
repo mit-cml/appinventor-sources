@@ -25,8 +25,8 @@ import UIKit
   var PinchToScale: Bool { get set }
   var PanToMove: Bool { get set }
   var RotateWithGesture: Bool { get set }
-  var PoseFromPropertyPosition: String { get set }
-  var FromPropertyRotation: String { get set }
+  var InitialPosition: String { get set }
+  var InitialRotation: String { get set }
 
   var XPosition: Float { get set }
   var YPosition: Float { get set }

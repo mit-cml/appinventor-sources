@@ -28,7 +28,6 @@ enum CollisionType {
 
 @available(iOS 14.0, *)
 open class ARNodeBase: NSObject, ARNode {
-
   weak var _container: ARNodeContainer?
   public var _modelEntity: ModelEntity
   
@@ -343,12 +342,12 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
-  @objc open var PoseFromPropertyPosition: String {
+  @objc open var InitialPosition: String {
     get { return _fromPropertyPosition }
     set(pose) { _fromPropertyPosition = pose }
   }
   
-  @objc open var FromPropertyRotation: String {
+  @objc open var InitialRotation: String {
     get { return _fromPropertyRotation }
     set(rotation) { _fromPropertyRotation = rotation }
   }
