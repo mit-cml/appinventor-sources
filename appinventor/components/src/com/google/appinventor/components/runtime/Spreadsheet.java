@@ -157,7 +157,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   // Designer Properties
   private String apiKey;
-  private String credentialsPath;
+  private String credentialsPath = "";
   private String spreadsheetID = "";
   // This gets changed to the name of the project by MockSpreadsheet by default
   private String applicationName = "App Inventor";
@@ -228,14 +228,14 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public String CredentialsJson() {
-    return credentialsPath;
-  }
+    return credentialsPath == null ? "" : credentialsPath;
+ }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(description = "The JSON File with credentials for the Service Account")
   public void CredentialsJson(String credentialsPath) {
-    this.credentialsPath = credentialsPath;
+    this.credentialsPath = credentialsPath == null ? "" : credentialsPath;
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
