@@ -383,6 +383,105 @@ AI.Blockly.ContextMenuItems.registerExplainBlockOption = function() {
   Blockly.ContextMenuRegistry.registry.register(explainItem);
 };
 
+/**
+ * Compact, user-facing description of the block whose replError this menu
+ * entry targets. Used to generate context-specific menu labels like
+ * "Ask AI about Button1.Click error" instead of the generic
+ * "Ask AI about this error". Returns null for unrecognized shapes so the
+ * caller can fall back to the generic string.
+ *
+ * @param {Blockly.Block} block
+ * @return {?string}
+ */
+AI.Blockly.ContextMenuItems.describeBlockForError_ = function(block) {
+  if (!block) return null;
+  if (block.type === 'component_event') {
+    var instance = block.instanceName || block.typeName;
+    return instance + '.' + block.eventName + ' error';
+  }
+  if (block.type === 'procedures_defnoreturn' ||
+      block.type === 'procedures_defreturn') {
+    return '"' + block.getFieldValue('NAME') + '" procedure error';
+  }
+  if (block.type === 'global_declaration') {
+    return '"' + block.getFieldValue('NAME') + '" global error';
+  }
+  return null;
+};
+
+AI.Blockly.ContextMenuItems.registerAskAIAboutErrorOption = function() {
+  var item = {
+    displayText: function(scope) {
+      var specific = AI.Blockly.ContextMenuItems.describeBlockForError_(scope.block);
+      if (!specific) {
+        return Blockly.Msg['AI_ASK_ABOUT_ERROR'];
+      }
+      var fmt = Blockly.Msg['AI_ASK_ABOUT_ERROR_FMT'];
+      return fmt ? fmt.replace('{0}', specific) : Blockly.Msg['AI_ASK_ABOUT_ERROR'];
+    },
+    callback: function(scope) {
+      var block = scope.block;
+      if (!block || !block.replError) {
+        return;
+      }
+      try {
+        // Build displayText + contextHint. Runtime snapshot enrichment is
+        // applied by BlocklyPanel.askAIAboutRuntimeError when share is on.
+        // Note: the chat bubble uses the first-person *_CHAT keys (the user
+        // is asking for help), distinct from the imperative menu labels.
+        var specific = AI.Blockly.ContextMenuItems.describeBlockForError_(block);
+        var chatFmt = Blockly.Msg['AI_ASK_ABOUT_ERROR_CHAT_FMT'];
+        var chatGeneric = Blockly.Msg['AI_ASK_ABOUT_ERROR_CHAT']
+            || Blockly.Msg['AI_ASK_ABOUT_ERROR'];
+        var displayText = specific && chatFmt
+            ? chatFmt.replace('{0}', specific)
+            : chatGeneric;
+        // Raw error payload only — response style is governed by
+        // companion_instructions.md in the system prompt (rendered by
+        // CompanionModule when share is on).
+        var contextParts = [];
+        contextParts.push('Runtime error: ' + block.replError);
+        contextParts.push('Block ID: ' + block.id);
+        contextParts.push('Block type: ' + block.type);
+        var descriptor = AI.Blockly.ContextMenuItems.describeBlockForExplain_
+            ? AI.Blockly.ContextMenuItems.describeBlockForExplain_(block, false)
+            : null;
+        if (descriptor) {
+          contextParts.push(descriptor);
+        }
+        var contextHint = contextParts.join('\n');
+        window.parent.BlocklyPanel_askAIAboutRuntimeError(displayText, contextHint);
+      } catch (e) {
+        // Bridge not available
+      }
+    },
+    preconditionFn: function(scope) {
+      if (!scope.block || scope.block.workspace.isFlyout) {
+        return 'hidden';
+      }
+      if (!scope.block.replError) {
+        return 'hidden';
+      }
+      try {
+        if (!window.parent.BlocklyPanel_isAIAgentAvailable()) {
+          return 'hidden';
+        }
+        var mode = window.parent.BlocklyPanel_getAIAgentMode();
+        if (mode === 'Off') {
+          return 'hidden';
+        }
+      } catch (e) {
+        return 'hidden';
+      }
+      return 'enabled';
+    },
+    weight: 100,  // slightly below explain-block (99)
+    id: 'appinventor_ask_ai_about_error',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(item);
+};
+
 AI.Blockly.ContextMenuItems.registerGenerateYailOption = function() {
   // TODO: eventually create a separate kind of bubble for the generated yail,
   //  which can morph into the bubble for "do it" output once we hook
@@ -1087,6 +1186,7 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerDoItOption();
   AI.Blockly.ContextMenuItems.RegisterClearDoItOption();
   AI.Blockly.ContextMenuItems.registerExplainBlockOption();
+  AI.Blockly.ContextMenuItems.registerAskAIAboutErrorOption();
 
   Blockly.ContextMenuRegistry.registry.getItem('blockHelp').weight = 1000;
 }

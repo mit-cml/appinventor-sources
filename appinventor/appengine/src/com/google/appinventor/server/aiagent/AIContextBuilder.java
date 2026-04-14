@@ -6,6 +6,7 @@
 package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.server.aiagent.context.CatalogModule;
+import com.google.appinventor.server.aiagent.context.CompanionModule;
 import com.google.appinventor.server.aiagent.context.ContextParams;
 import com.google.appinventor.server.aiagent.context.ContextUtils;
 import com.google.appinventor.server.aiagent.context.ExamplesModule;
@@ -68,6 +69,15 @@ public class AIContextBuilder {
   private static final Flag<Boolean> INCLUDE_TUTORIAL_CONTEXT =
       Flag.createFlag("ai.agent.features.tutorial-context", true);
 
+  /**
+   * Controls whether Companion runtime state is included in LLM requests.
+   * When {@code true}, if the client attaches a non-null companionSnapshot
+   * to the request, that state is rendered into a context message and the
+   * companion read tools are exposed to the LLM.
+   */
+  private static final Flag<Boolean> INCLUDE_COMPANION_CONTEXT =
+      Flag.createFlag("ai.agent.features.companion-context", true);
+
   /** Cached parsed tool definitions from {@code tool_definitions.json}. */
   private static volatile JSONObject cachedToolDefs;
 
@@ -79,6 +89,7 @@ public class AIContextBuilder {
   private final ModeModule modeModule = new ModeModule();
   private final ProjectModule projectModule = new ProjectModule();
   private final ScreenModule screenModule = new ScreenModule();
+  private final CompanionModule companionModule = new CompanionModule();
   private final TutorialContentCache tutorialContentCache;
   private final TutorialModule tutorialModule;
 
@@ -136,12 +147,15 @@ public class AIContextBuilder {
    * Build the per-request context messages sent as separate user messages
    * before the user's actual message.
    *
-   * <p>Returns three context messages:
+   * <p>Returns up to five context messages (mode, project, screen, companion,
+   * tutorial — the last two only when enabled and applicable).
    * <ol>
    *   <li>Mode and view: current mode instructions and editor view rules
    *   <li>Project overview: project metadata, screen list, assets,
    *       extensions, and other screen summaries
    *   <li>Current screen: component tree and blocks YAIL
+   *   <li>Companion runtime state (if enabled and snapshot present)
+   *   <li>Tutorial content (if enabled and project has a TutorialURL)
    * </ol>
    *
    * @param userId               the authenticated user
@@ -159,6 +173,8 @@ public class AIContextBuilder {
    *                             may be null
    * @param languageDisplayName  the native display name (e.g. "Español"),
    *                             may be null
+   * @param companionSnapshot    JSON snapshot of live Companion state from the client
+   *                             (may be null when not sharing)
    * @param enforcementContext   controls which operations are allowed
    *                             (e.g. PLANNING suppresses the normal mode instructions)
    * @return list of context message strings
@@ -167,10 +183,10 @@ public class AIContextBuilder {
       String mode, String blocksYail, String currentView,
       String screenComponentsJson, String projectSnapshot,
       String blockWarnings, String locale, String languageDisplayName,
-      EnforcementContext enforcementContext) {
+      String companionSnapshot, EnforcementContext enforcementContext) {
     ContextParams params = new ContextParams(userId, projectId, screenName, mode,
         blocksYail, currentView, screenComponentsJson, projectSnapshot, blockWarnings,
-        locale, languageDisplayName, enforcementContext);
+        locale, languageDisplayName, companionSnapshot, enforcementContext);
     List<String> messages = new ArrayList<>();
 
     // Message 1: Mode and view
@@ -188,12 +204,21 @@ public class AIContextBuilder {
     messages.add(screenCtx);
     AIDebug.log(LOG, "Context message 3 (screen): " + screenCtx.length() + " chars");
 
-    // Message 4: Tutorial context (if enabled and active)
+    // Message 4: Companion runtime state (if enabled and snapshot present)
+    if (INCLUDE_COMPANION_CONTEXT.get()) {
+      String companionCtx = companionModule.build(params);
+      if (companionCtx != null) {
+        messages.add(companionCtx);
+        AIDebug.log(LOG, "Context message 4 (companion): " + companionCtx.length() + " chars");
+      }
+    }
+
+    // Message 5: Tutorial context (if enabled and active)
     if (INCLUDE_TUTORIAL_CONTEXT.get()) {
       String tutorialCtx = tutorialModule.build(params);
       if (tutorialCtx != null) {
         messages.add(tutorialCtx);
-        AIDebug.log(LOG, "Context message 4 (tutorial): " + tutorialCtx.length() + " chars");
+        AIDebug.log(LOG, "Context message 5 (tutorial): " + tutorialCtx.length() + " chars");
       }
     }
 
@@ -206,12 +231,15 @@ public class AIContextBuilder {
    * <p>Tool definitions are loaded from {@code tool_definitions.json} and
    * cached on first use.
    *
-   * @param mode        "Advisor", "ScreenEditor", or "ProjectEditor"
-   * @param currentView the active editor view ("Designer" or "Blocks")
-   * @param context     the enforcement context controlling which tools are exposed
+   * @param mode              "Advisor", "ScreenEditor", or "ProjectEditor"
+   * @param currentView       the active editor view ("Designer" or "Blocks")
+   * @param context           the enforcement context controlling which tools are exposed
+   * @param companionSharing  {@code true} when the client has attached a non-null
+   *                          companionSnapshot to the request; exposes companion read tools
    * @return tools available in the given mode, view, and enforcement context
    */
-  public List<LLMTool> buildTools(String mode, String currentView, EnforcementContext context) {
+  public List<LLMTool> buildTools(String mode, String currentView, EnforcementContext context,
+      boolean companionSharing) {
     JSONObject defs = getToolDefinitions();
     List<LLMTool> tools = new ArrayList<>();
 
@@ -226,6 +254,15 @@ public class AIContextBuilder {
     // Read-only tools available in all modes
     tools.add(toolFromDefs(defs, AIToolNames.LOOKUP_COMPONENT));
     tools.add(toolFromDefs(defs, AIToolNames.LOOKUP_SCREEN));
+
+    // Companion runtime reads: available in all non-PLANNING modes when the
+    // client has attached a companion snapshot and the feature flag is on.
+    // Advisor + ScreenEditor + ProjectEditor all get them.
+    if (INCLUDE_COMPANION_CONTEXT.get() && companionSharing) {
+      tools.add(toolFromDefs(defs, AIToolNames.READ_COMPONENT_PROPERTY));
+      tools.add(toolFromDefs(defs, AIToolNames.READ_VARIABLE));
+      tools.add(toolFromDefs(defs, AIToolNames.READ_RECENT_LOGS));
+    }
 
     if (AI_AGENT_MODE_ADVISOR.equals(mode)) {
       return tools;

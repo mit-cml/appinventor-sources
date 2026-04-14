@@ -50,4 +50,10 @@ public final class AIToolNames {
   public static final String CREATE_SCREEN = "create_screen";
   public static final String DELETE_SCREEN = "delete_screen";
   public static final String SET_PROJECT_PROPERTY = "set_project_property";
+
+  // ---------- Companion runtime reads (client-resolved) ----------
+
+  public static final String READ_COMPONENT_PROPERTY = "read_component_property";
+  public static final String READ_VARIABLE = "read_variable";
+  public static final String READ_RECENT_LOGS = "read_recent_logs";
 }

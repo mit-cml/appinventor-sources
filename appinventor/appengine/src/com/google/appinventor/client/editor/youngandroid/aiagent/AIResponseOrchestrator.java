@@ -18,7 +18,9 @@ import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
+import com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge;
 import com.google.appinventor.client.editor.youngandroid.aiagent.executor.AIOperationExecutor;
+import com.google.appinventor.client.editor.youngandroid.aiagent.validator.CompanionReadValidator;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -30,6 +32,7 @@ import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +168,7 @@ public class AIResponseOrchestrator {
     originalToolCount = 0;
     preservedValidOps = null;
     preservedAiMessage = null;
+    CompanionBridge.getInstance().resetTurnBudget();
     startPollingStatus();
 
     aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>(
@@ -205,6 +209,7 @@ public class AIResponseOrchestrator {
     originalToolCount = 0;
     preservedValidOps = null;
     preservedAiMessage = null;
+    CompanionBridge.getInstance().resetTurnBudget();
     startPollingStatus();
 
     aiAgentService.processRequest(request, new OdeAsyncCallback<AIAgentResponse>(
@@ -326,6 +331,7 @@ public class AIResponseOrchestrator {
     originalToolCount = 0;
     preservedValidOps = null;
     preservedAiMessage = null;
+    CompanionBridge.getInstance().resetTurnBudget();
     startPollingStatus();
 
     aiAgentService.processRequest(feedback, new OdeAsyncCallback<AIAgentResponse>(
@@ -431,6 +437,34 @@ public class AIResponseOrchestrator {
             }
           }
         });
+  }
+
+  /**
+   * Resets per-conversation client-side state without touching the server.
+   * Called by {@link AIChatDialog#onProjectChanged} so that stale retry
+   * counters, preserved ops, auto-accept, pending preview, etc. from the
+   * previous project never leak into the next one.
+   *
+   * <p>Does NOT clear the renderer — {@link #loadExistingConversation()}
+   * (or the dialog's clear path on pending-explain) will do that when
+   * appropriate.</p>
+   */
+  public void resetConversationState() {
+    if (orchestrationManager != null) {
+      orchestrationManager.cancelAll();
+      orchestrationManager = null;
+    }
+    if (requestInFlight) {
+      cancelInFlight();
+    }
+    AIEditorState.setPlanApproved(false);
+    setAutoAcceptAll(false);
+    validationRetryCount = 0;
+    executionRetryCount = 0;
+    originalToolCount = 0;
+    preservedValidOps = null;
+    preservedAiMessage = null;
+    pendingResponse = null;
   }
 
   /**
@@ -810,6 +844,25 @@ public class AIResponseOrchestrator {
 
     List<AIOperation> operations = response.getOperations();
 
+    // Intercept runtime-read operations: resolve client-side and feed results
+    // back to the LLM via reportExecutionErrors. Never shown in the preview.
+    if (operations != null && !operations.isEmpty()) {
+      List<AIOperation> readOps = new ArrayList<>();
+      List<AIOperation> nonReadOps = new ArrayList<>();
+      for (AIOperation op : operations) {
+        if (op.getType() == AIOperation.Type.READ_RUNTIME) {
+          readOps.add(op);
+        } else {
+          nonReadOps.add(op);
+        }
+      }
+      if (!readOps.isEmpty()) {
+        // Any non-read ops in this response are dropped; the LLM will re-emit on next turn.
+        resolveRuntimeReads(readOps);
+        return;
+      }
+    }
+
     // Pre-validate WRITE_BLOCK and DELETE_BLOCK operations client-side
     if (operations != null && !operations.isEmpty()) {
       Map<Integer, String> validationErrors = validateBlockOperations(operations);
@@ -1054,6 +1107,200 @@ public class AIResponseOrchestrator {
 
     // Keep polling — "Calling AI" stays visible
     sendRetryRequest(results, validationRetryCount, originalToolCount);
+  }
+
+  // ---- Runtime reads ----
+
+  /**
+   * Callback interface for async runtime-read resolution.
+   */
+  private interface RuntimeReadCallback {
+    void onResult(AIOperationResult result);
+  }
+
+  /**
+   * Resolves a batch of READ_RUNTIME operations by dispatching each through
+   * the appropriate path (CompanionBridge for property/variable reads, the
+   * client-side log buffer for read_recent_logs) and feeding all results
+   * back to the LLM via reportExecutionErrors.
+   */
+  private void resolveRuntimeReads(final List<AIOperation> readOps) {
+    startPollingStatus();
+    validationRetryCount = 0;
+    if (executionRetryCount == 0) {
+      originalToolCount = readOps.size();
+    }
+    executionRetryCount++;
+
+    final List<AIOperationResult> results = new ArrayList<>(
+        Collections.nCopies(readOps.size(), (AIOperationResult) null));
+    final int[] remaining = new int[] { readOps.size() };
+    final int retryAttempt = executionRetryCount;
+    final int totalTools = originalToolCount;
+
+    for (int i = 0; i < readOps.size(); i++) {
+      final int index = i;
+      AIOperation op = readOps.get(i);
+      resolveOneRead(op, new RuntimeReadCallback() {
+        @Override
+        public void onResult(AIOperationResult result) {
+          results.set(index, result);
+          remaining[0]--;
+          if (remaining[0] == 0) {
+            sendRetryRequest(results, retryAttempt, totalTools);
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Resolves a single READ_RUNTIME operation, invoking the callback with
+   * the result. Dispatches to CompanionBridge for property/variable reads,
+   * or reads the client-side log buffer for read_recent_logs.
+   */
+  private void resolveOneRead(AIOperation op, final RuntimeReadCallback cb) {
+    JSONObject payload = parseRuntimePayload(op.getPayload());
+    String tool = payload != null ? AIJsonUtils.getStringField(payload, "tool") : null;
+    JSONObject args = null;
+    if (payload != null && payload.containsKey("args")) {
+      JSONValue argsVal = payload.get("args");
+      if (argsVal != null) {
+        args = argsVal.isObject();
+      }
+    }
+
+    if (tool == null || args == null) {
+      cb.onResult(AIOperationResult.failed("read_runtime(malformed)",
+          "Payload missing 'tool' or 'args'"));
+      return;
+    }
+
+    if ("read_component_property".equals(tool)) {
+      String err = CompanionReadValidator.validateReadComponentProperty(args);
+      if (err != null) {
+        cb.onResult(AIOperationResult.failed(formatReadSummary(tool, args), err));
+        return;
+      }
+      final String component = AIJsonUtils.getStringField(args, "component_name");
+      final String property = AIJsonUtils.getStringField(args, "property_name");
+      CompanionBridge.getInstance().readComponentProperty(
+          component, property, new CompanionBridge.Callback() {
+            @Override
+            public void onSuccess(String value) {
+              // value already carries the Scheme display representation
+              // (e.g. "fgg" with quotes for strings) — don't re-wrap.
+              cb.onResult(AIOperationResult.runtimeRead(
+                  "read_component_property(" + component + "." + property + ") = " + value));
+            }
+
+            @Override
+            public void onFailure(String error) {
+              cb.onResult(AIOperationResult.failed(
+                  "read_component_property(" + component + "." + property + ")", error));
+            }
+          });
+
+    } else if ("read_variable".equals(tool)) {
+      String blocksYail = contextCollector.getScreenBlocksYail(
+          contextCollector.getCurrentScreenName());
+      String err = CompanionReadValidator.validateReadVariable(args, blocksYail);
+      if (err != null) {
+        cb.onResult(AIOperationResult.failed(formatReadSummary(tool, args), err));
+        return;
+      }
+      final String variable = AIJsonUtils.getStringField(args, "variable_name");
+      CompanionBridge.getInstance().readVariable(variable, new CompanionBridge.Callback() {
+        @Override
+        public void onSuccess(String value) {
+          cb.onResult(AIOperationResult.runtimeRead(
+              "read_variable(" + variable + ") = " + value));
+        }
+
+        @Override
+        public void onFailure(String error) {
+          cb.onResult(AIOperationResult.failed("read_variable(" + variable + ")", error));
+        }
+      });
+
+    } else if ("read_recent_logs".equals(tool)) {
+      String err = CompanionReadValidator.validateReadRecentLogs(args);
+      if (err != null) {
+        cb.onResult(AIOperationResult.failed("read_recent_logs", err));
+        return;
+      }
+      int n = 20;
+      if (args.containsKey("n")) {
+        JSONValue nVal = args.get("n");
+        if (nVal != null && nVal.isNumber() != null) {
+          n = (int) nVal.isNumber().doubleValue();
+        }
+      }
+      if (n < 1) n = 1;
+      if (n > 50) n = 50;
+      String rendered = renderRecentLogs(n);
+      cb.onResult(AIOperationResult.runtimeRead("read_recent_logs(" + n + ") = " + rendered));
+
+    } else {
+      cb.onResult(AIOperationResult.failed("read_runtime", "Unknown tool: " + tool));
+    }
+  }
+
+  /**
+   * Reads up to n recent log entries from the client-side ring buffer
+   * populated by replmgr.js processRetvals.
+   */
+  private native String renderRecentLogs(int n) /*-{
+    var buf = ($wnd.top.Blockly && $wnd.top.Blockly.ReplMgr
+        && $wnd.top.Blockly.ReplMgr.aiLogBuffer)
+        ? $wnd.top.Blockly.ReplMgr.aiLogBuffer : [];
+    var start = Math.max(0, buf.length - n);
+    var out = [];
+    for (var i = start; i < buf.length; i++) {
+      var e = buf[i];
+      out.push('[' + (e.level || 'info') + '] ' + (e.text || ''));
+    }
+    return out.length === 0 ? '(no recent logs)' : out.join('\n');
+  }-*/;
+
+  /**
+   * Parses the JSON payload of a READ_RUNTIME operation.
+   * Returns null if the payload is absent or unparseable.
+   */
+  private JSONObject parseRuntimePayload(String payloadJson) {
+    if (payloadJson == null || payloadJson.isEmpty()) {
+      return null;
+    }
+    try {
+      JSONValue v = JSONParser.parseStrict(payloadJson);
+      return v.isObject();
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * Returns a JSON-quoted representation of a runtime read value.
+   */
+  private String quoteValue(String v) {
+    return v == null ? "\"\"" : "\"" + v.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+  }
+
+  /**
+   * Formats a compact summary of a read tool call for use in operation results.
+   * Example: read_component_property(component_name=Button1, property_name=Text)
+   */
+  private String formatReadSummary(String tool, JSONObject args) {
+    StringBuilder sb = new StringBuilder(tool).append("(");
+    boolean first = true;
+    for (String k : args.keySet()) {
+      if (!first) {
+        sb.append(", ");
+      }
+      sb.append(k).append('=').append(args.get(k).toString());
+      first = false;
+    }
+    return sb.append(')').toString();
   }
 
   // ---- Continuation ----

@@ -39,7 +39,10 @@ public class AIOperation implements IsSerializable, Serializable {
     TOGGLE_EDITOR,
 
     // Orchestration
-    PROPOSE_PLAN
+    PROPOSE_PLAN,
+
+    // Runtime reads (client-resolved, never reach server executor)
+    READ_RUNTIME
   }
 
   private Type type;

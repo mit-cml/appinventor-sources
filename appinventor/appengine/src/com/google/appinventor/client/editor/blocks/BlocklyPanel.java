@@ -13,6 +13,10 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
+import com.google.appinventor.client.editor.youngandroid.aiagent.companion.BlockYailSymbolScanner;
+import com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
@@ -33,6 +37,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -42,6 +47,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -349,6 +355,120 @@ public class BlocklyPanel extends HTMLPanel {
   public static void explainBlock(String displayText, String contextHint) {
     Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
   }
+
+  /**
+   * Opens the AI chat and sends a runtime-error explanation request.
+   * Called from Blockly JS via the exported bridge function.
+   *
+   * <p>If the share toggle is on and the Companion is connected, the method
+   * asynchronously enriches {@code contextHint} with a runtime snapshot:
+   * it scans the current-screen YAIL for referenced component properties and
+   * global variables, dispatches bounded reads via {@link CompanionBridge},
+   * waits up to 2 seconds for replies, then sends the enriched hint. If
+   * all reads resolve early the message is sent immediately without waiting
+   * for the full 2 s.</p>
+   *
+   * <p>A {@code fired[0]} flag ensures the message is never sent twice even
+   * if all reads settle exactly when the timer fires.</p>
+   */
+  public static void askAIAboutRuntimeError(final String displayText, final String contextHint) {
+    // If share is off OR companion is not connected, fire immediately with the basic hint.
+    if (!AIEditorState.isCompanionShareEnabled() || !isCompanionConnected()) {
+      Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+      return;
+    }
+
+    // Scan the current-screen YAIL for referenced symbols.
+    String yail = null;
+    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    if (blocksEditor != null) {
+      yail = blocksEditor.getBlocksYail();
+    }
+    if (yail == null || yail.isEmpty()) {
+      Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+      return;
+    }
+
+    final List<BlockYailSymbolScanner.Symbol> symbols = BlockYailSymbolScanner.scan(yail, 10);
+    if (symbols.isEmpty()) {
+      Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+      return;
+    }
+
+    // Async enrichment: dispatch bounded reads, wait up to 2s, then send.
+    final Map<BlockYailSymbolScanner.Symbol, String> resolved =
+        new LinkedHashMap<BlockYailSymbolScanner.Symbol, String>();
+    final Map<BlockYailSymbolScanner.Symbol, String> errors =
+        new LinkedHashMap<BlockYailSymbolScanner.Symbol, String>();
+    final boolean[] fired = new boolean[]{false};
+
+    final Runnable sendWithEnrichment = new Runnable() {
+      @Override public void run() {
+        if (fired[0]) return;
+        fired[0] = true;
+        String enrichedHint = contextHint;
+        if (!resolved.isEmpty() || !errors.isEmpty()) {
+          StringBuilder sb = new StringBuilder(contextHint);
+          sb.append("\n\nRuntime snapshot at error time:\n");
+          for (Map.Entry<BlockYailSymbolScanner.Symbol, String> e : resolved.entrySet()) {
+            sb.append("- ").append(formatSymbol(e.getKey())).append(" = ").append(e.getValue()).append('\n');
+          }
+          for (Map.Entry<BlockYailSymbolScanner.Symbol, String> e : errors.entrySet()) {
+            sb.append("- ").append(formatSymbol(e.getKey())).append(" [read failed: ").append(e.getValue()).append("]\n");
+          }
+          enrichedHint = sb.toString();
+        }
+        Ode.getInstance().sendExplainToAIChat(displayText, enrichedHint);
+      }
+    };
+
+    // 2-second wall-clock fan-out gate. When it fires, send whatever resolved.
+    Timer gate = new Timer() {
+      @Override public void run() {
+        sendWithEnrichment.run();
+      }
+    };
+    gate.schedule(2000);
+
+    // Counter tracks remaining in-flight reads; if all resolve before gate, send early.
+    final int[] remaining = new int[]{symbols.size()};
+
+    CompanionBridge bridge = CompanionBridge.getInstance();
+    for (final BlockYailSymbolScanner.Symbol sym : symbols) {
+      CompanionBridge.Callback cb = new CompanionBridge.Callback() {
+        @Override public void onSuccess(String value) {
+          resolved.put(sym, value);
+          remaining[0]--;
+          if (remaining[0] == 0) {
+            sendWithEnrichment.run();
+          }
+        }
+        @Override public void onFailure(String error) {
+          errors.put(sym, error);
+          remaining[0]--;
+          if (remaining[0] == 0) {
+            sendWithEnrichment.run();
+          }
+        }
+      };
+      if (sym.kind == BlockYailSymbolScanner.Kind.PROPERTY) {
+        bridge.readComponentProperty(sym.componentOrVar, sym.propertyName, cb);
+      } else {
+        bridge.readVariable(sym.componentOrVar, cb);
+      }
+    }
+  }
+
+  private static String formatSymbol(BlockYailSymbolScanner.Symbol sym) {
+    return sym.kind == BlockYailSymbolScanner.Kind.PROPERTY
+        ? sym.componentOrVar + "." + sym.propertyName
+        : "global " + sym.componentOrVar;
+  }
+
+  private static native boolean isCompanionConnected() /*-{
+    var ReplMgr = $wnd.top.Blockly && $wnd.top.Blockly.ReplMgr;
+    return !!(ReplMgr && typeof ReplMgr.isConnected === 'function' && ReplMgr.isConnected());
+  }-*/;
 
   // Set currentScreen
   // We use this to determine if we should send Yail to a
@@ -763,7 +883,29 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getAIAgentMode());
     $wnd.BlocklyPanel_explainBlock =
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::explainBlock(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_askAIAboutRuntimeError =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::askAIAboutRuntimeError(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_isCompanionShareEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState::isCompanionShareEnabled());
+    $wnd.BlocklyPanel_setCompanionShareEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState::setCompanionShareEnabled(Z));
+    $wnd.BlocklyPanel_resolveCompanionRead =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::resolveCompanionRead(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
   }-*/;
+
+  /**
+   * Static entry point called from the {@code top.BlocklyPanel_resolveCompanionRead} JSNI export.
+   * Routes the Companion return-value reply to {@link
+   * com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge}.
+   *
+   * @param blockId the {@code ai-read-<hex>} synthetic blockid
+   * @param status  {@code "OK"} on success, otherwise an error key
+   * @param value   the return-value string or error message from the Companion
+   */
+  public static void resolveCompanionRead(String blockId, String status, String value) {
+    com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge
+        .resolvePendingGlobal(blockId, status, value);
+  }
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl, String targetLang)/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();

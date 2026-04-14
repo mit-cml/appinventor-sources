@@ -93,6 +93,12 @@ public class LLMResponseParser {
     TOOL_NAME_TO_TYPE.put(AIToolNames.SET_PROJECT_PROPERTY, AIOperation.Type.SET_PROJECT_PROP);
     TOOL_NAME_TO_TYPE.put(AIToolNames.TOGGLE_EDITOR, AIOperation.Type.TOGGLE_EDITOR);
 
+    // Companion read tools map to a shared READ_RUNTIME type; the tool name is
+    // embedded in the payload so the client-side resolver knows which to run.
+    TOOL_NAME_TO_TYPE.put(AIToolNames.READ_COMPONENT_PROPERTY, AIOperation.Type.READ_RUNTIME);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.READ_VARIABLE, AIOperation.Type.READ_RUNTIME);
+    TOOL_NAME_TO_TYPE.put(AIToolNames.READ_RECENT_LOGS, AIOperation.Type.READ_RUNTIME);
+
     REQUIRED_FIELDS.put(AIToolNames.ADD_COMPONENT, Arrays.asList("component_type", "component_name"));
     REQUIRED_FIELDS.put(AIToolNames.DELETE_COMPONENT, Collections.singletonList("component_name"));
     REQUIRED_FIELDS.put(AIToolNames.SET_PROPERTY, Arrays.asList("component_name", "property_name", "value"));
@@ -104,6 +110,11 @@ public class LLMResponseParser {
     REQUIRED_FIELDS.put(AIToolNames.DELETE_SCREEN, Collections.singletonList("screen_name"));
     REQUIRED_FIELDS.put(AIToolNames.SET_PROJECT_PROPERTY, Arrays.asList("property", "value"));
     REQUIRED_FIELDS.put(AIToolNames.TOGGLE_EDITOR, Collections.singletonList("view"));
+    REQUIRED_FIELDS.put(AIToolNames.READ_COMPONENT_PROPERTY,
+        Arrays.asList("component_name", "property_name"));
+    REQUIRED_FIELDS.put(AIToolNames.READ_VARIABLE,
+        Collections.singletonList("variable_name"));
+    // read_recent_logs has no required fields; n is optional with default 20.
 
     KNOWN_TOOLS.addAll(TOOL_NAME_TO_TYPE.keySet());
     // Read-only tools are handled separately by the provider; not parsed here
@@ -219,7 +230,14 @@ public class LLMResponseParser {
       }
 
       AIDebug.log(LOG, "Parsed operation: " + type + " payload=" + args.toString());
-      operations.add(new AIOperation(type, args.toString()));
+      if (type == AIOperation.Type.READ_RUNTIME) {
+        JSONObject payload = new JSONObject();
+        payload.put("tool", toolName);
+        payload.put("args", args);
+        operations.add(new AIOperation(type, payload.toString()));
+      } else {
+        operations.add(new AIOperation(type, args.toString()));
+      }
     }
 
     return new ParseResult(operations, errors);

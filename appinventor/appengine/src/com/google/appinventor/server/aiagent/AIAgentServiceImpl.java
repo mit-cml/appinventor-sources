@@ -82,7 +82,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         userMessage, request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
-        request.isPlatformMessage(), request.getContextHint(),
+        request.isPlatformMessage(), request.getContextHint(), request.getCompanionSnapshot(),
         request.isPlanExecuteMode(),
         request.isOrchestrationMode(), request.getTargetScreen(),
         request.isExecutionPhase());
@@ -98,7 +98,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
-        request.isPlanExecuteMode(),
+        request.getCompanionSnapshot(), request.isPlanExecuteMode(),
         request.isOrchestrationMode(), request.getTargetScreen(),
         request.isExecutionPhase());
   }
@@ -119,7 +119,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         request.getBlocksYail(), request.getCurrentView(), ctx.mode,
         request.getScreenComponentsJson(), request.getProjectSnapshot(),
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
-        request.isPlanExecuteMode(),
+        request.getCompanionSnapshot(), request.isPlanExecuteMode(),
         request.isOrchestrationMode(), request.getTargetScreen(),
         request.isExecutionPhase());
   }

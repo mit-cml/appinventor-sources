@@ -267,13 +267,27 @@ public class AIChatDialog extends DialogBox
       }
       return;
     }
-    if (isShowing() && newProjectId != currentProjectId) {
-      currentProjectId = newProjectId;
-      orchestrator.resetAutoAcceptAll();
-      if (orchestrator.isRequestInFlight()) {
-        orchestrator.cancelInFlight();
-      }
+    if (newProjectId == currentProjectId) {
+      return;
+    }
+    currentProjectId = newProjectId;
+    // Reset per-conversation state regardless of visibility so an Ask AI /
+    // Explain Block handoff fired later against the new project doesn't
+    // replay stale auto-accept, retry counters, preserved ops, etc. from
+    // the previous project.
+    orchestrator.resetConversationState();
+    // A pending explain may have been queued from the old project while
+    // the dialog was closed — discard it so we don't open the chat on
+    // the new project with a message that was meant for the old one.
+    pendingExplainDisplay = null;
+    pendingExplainHint = null;
+    if (isShowing()) {
+      // Refresh history immediately if the user can see the dialog.
       orchestrator.loadExistingConversation();
+    } else {
+      // Wipe the renderer so the next show() doesn't briefly flash
+      // the previous project's chat before history loads.
+      renderer.clear();
     }
   }
 

@@ -76,6 +76,7 @@ Each module extends `ContextModule` and contributes one section of the LLM syste
 | `ReferenceModule` | App Inventor reference guide |
 | `ModeModule` | Mode-specific instructions and constraints |
 | `TutorialModule` | Tutorial content and pedagogical instructions (when TutorialURL is set) |
+| `CompanionModule` | Runtime snapshot (connection kind, active screen, last 10 logs, last 3 errors) prefixed with pedagogical instructions from `companion_instructions.md`; injected as message 4 when `companionSnapshot` is present and `ai.agent.features.companion-context` is `true` |
 
 To add a new context section, create a class extending `ContextModule`, implement `build(ContextParams)`, and register it in `AIContextBuilder`.
 
@@ -110,10 +111,10 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | File | Purpose |
 |------|---------|
 | `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `clearConversation`, `getConversationHistory`, `getRequestStatus`; screen-scoped overloads for `getRequestStatus(projectId, targetScreen)` and `cancelRequest(projectId, targetScreen)` |
-| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode`, `executionPhase` |
+| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode`, `executionPhase`, `companionSnapshot` (JSON string with connection kind, active screen, last logs/errors) |
 | `AIAgentResponse.java` | Response DTO: AI message text, operations list, errors, `hasMore` flag |
-| `AIOperation.java` | Single operation: type enum (including `PROPOSE_PLAN`) + JSON payload string |
-| `AIOperationResult.java` | Execution result: succeeded/failed/skipped with error details |
+| `AIOperation.java` | Single operation: type enum (including `PROPOSE_PLAN` and `READ_RUNTIME`) + JSON payload string |
+| `AIOperationResult.java` | Execution result: `SUCCEEDED` / `FAILED` / `SKIPPED` for mutations (mapped to canned outcome strings server-side) or `RUNTIME_READ` for `READ_RUNTIME` results (summary passed through verbatim as the LLM tool result) |
 | `AIConversationMessage.java` | Message for chat history display |
 | `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag, reset streaming flag, `orchestrationEnabled` config flag |
 
@@ -133,6 +134,21 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `AIEditorState.java` | Dialog visibility, mode state, `planExecuteMode`, and `planApproved` tracking (the latter drives `EnforcementContext.EXECUTION` via the `executionPhase` request field) |
 | `AIOperationFormatter.java` | Color-coded operation preview formatting |
 | `AIJsonUtils.java` | JSON utility functions |
+
+### Companion Read -- `client/.../aiagent/companion/`
+
+| File | Purpose |
+|------|---------|
+| `BlockYailSymbolScanner.java` | Statically scans a screen's YAIL S-expressions for referenced component properties and global variables; used by the "Ask AI about this error" handoff to determine which reads to dispatch |
+| `CompanionBridge.java` | Owns runtime-read dispatch: hard-coded Scheme templates per tool, identifier-regex validation, synthetic `ai-read-<uuid>` blockids, 5s per-read timeout, budgets (10/turn, 30/min), result correlation via pending-read map |
+| `PutYailTransport.java` | Production `ReplTransport` implementation: delegates to `Blockly.ReplMgr.putYail` |
+| `ReplTransport.java` | Seam interface for injecting Scheme into the Companion; production and test implementations swap behind this |
+
+### Companion Read Validation -- `client/.../aiagent/validator/`
+
+| File | Purpose |
+|------|---------|
+| `CompanionReadValidator.java` | Validates `READ_RUNTIME` operations before dispatch: checks share toggle is on, Companion is connected, tool name is one of the three allowed reads, and argument identifiers pass regex |
 
 ### Chat Rendering -- `client/.../aiagent/chat/`
 
@@ -190,7 +206,8 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `appinventor_reference.md` | System prompt reference guide for the LLM |
 | `yail_grammar.md` | YAIL syntax documentation for block generation |
 | `few_shot_examples.json` | Few-shot examples for in-context learning |
-| `tool_definitions.json` | Tool schemas loaded by `AIContextBuilder.buildTools()` |
+| `tool_definitions.json` | Tool schemas loaded by `AIContextBuilder.buildTools()`; includes the three Companion read tools: `read_component_property`, `read_variable`, `read_recent_logs` (emitted only when `ai.agent.features.companion-context` is `true`) |
+| `companion_instructions.md` | Debugging/pedagogical instructions loaded by `CompanionModule` and prepended to its context section. Tells the LLM how to trace runtime errors back to specific blocks, when to use each read tool, and presentation rules (never expose YAIL/Scheme/blockids to the user) |
 | `tutorial_instructions.md` | Pedagogical instructions for tutorial-aware mode |
 | `continuation_instructions.md` | Instructions injected on continuation/retry requests |
 | `editor_view_rules.md` | View-specific rules (Designer vs Blocks) for mode instructions |
@@ -855,6 +872,7 @@ When the client calls `reportExecutionErrors()`, here is what happens on the ser
    - `"FAILED: <error message>"` -- the operation failed during execution, with the specific error.
    - `"SKIPPED: execution halted after a prior failure."` -- the operation was never attempted because a preceding operation failed.
    - `"Validated successfully. Pending application."` -- used during validation retries to indicate the operation passed dry-run validation but has not been applied yet.
+   - For `AIOperationResult.Status.RUNTIME_READ` entries (produced by the Companion read tools), the `summary` field is passed through **verbatim** as the tool result — e.g. `read_component_property(TextBox1.Text) = "4"` — so the LLM sees the actual value rather than a canned outcome. The per-mutation cases above never apply to runtime reads.
 
 2. **Continue via tool results.** The patched continuation state is sent to the LLM via `provider.continueWithToolResults()` with fresh context messages built from the client's updated editor state. The LLM sees its original tool calls paired with native tool results describing exactly what succeeded, failed, or was skipped -- there is no separate feedback "user message" and no `<system>` tag wrapping.
 
@@ -945,6 +963,7 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 | `ai.agent.features.tutorial-context` | `true` | Include tutorial content in LLM context when the project has a `TutorialURL`. When `false`, tutorial context is never sent regardless of project settings. |
 | `ai.agent.features.retry-narration` | `false` | Retry with a nudge when the LLM responds with text only (no tool calls) in editing modes. When `false`, narration-only responses are returned as-is. |
 | `ai.agent.features.plan-edit` | `false` | Show the "Edit & Approve" button on Plan & Execute plan cards, allowing the user to manually edit the plan JSON before approval. When `false`, only Approve and Reject are shown. |
+| `ai.agent.features.companion-context` | `true` | Emit `CompanionModule` context and the three Companion read tool definitions (`read_component_property`, `read_variable`, `read_recent_logs`) when the Companion share toggle is on. When `false`, the snapshot field in `AIAgentRequest` is ignored and the tools are never sent to the LLM. |
 
 | Property | Default | Description |
 |----------|---------|-------------|
@@ -1238,6 +1257,50 @@ flowchart TD
 
 ---
 
+## Companion Integration
+
+(spec: [docs/superpowers/specs/2026-04-14-ai-companion-read-integration-design.md](docs/superpowers/specs/2026-04-14-ai-companion-read-integration-design.md))
+
+The Companion Integration gives the AI Agent read-only visibility into runtime state when the user has a Companion connected. No mutation surface is added; all edits still flow through the existing `AIOperation` pipeline.
+
+### Purpose
+
+When the share toggle is on, the agent can read live component property values, global variable values, and recent logs/errors from the running app. This lets it diagnose runtime-specific bugs grounded in live state rather than static YAIL alone.
+
+### User Control (Per-Session Toggle)
+
+A "Share runtime data with AI Assistant" checkbox appears inline in the Companion connect flow — in the QR dialog for wireless connections and in a one-time post-connect dialog for Emulator/USB/Chromebook. The toggle is visible only when AI mode is not OFF, defaults to false, and is reset to false on Companion disconnect via the `AI.Events.CompanionDisconnect` event. That event class existed previously but was never fired; it is now emitted alongside `resetAIBuffers()` and the toggle reset at each of the five `resetYail(false)` call sites in `replmgr.js` (wireless disconnect, general reset, emulator failure, disconnect handler, legacy-mode failure). `resetYail(true)` — used only for partial chunking-error recovery — deliberately does not fire the event.
+
+### Passive Context (`CompanionModule`)
+
+When the toggle is on and the Companion is connected, `AIContextCollector.buildRequest()` attaches a `companionSnapshot` JSON field (connection kind, active screen, last 10 logs, last 3 errors). Server-side `CompanionModule` loads `companion_instructions.md` once (cached in a `static volatile` field, same pattern as `TutorialModule`), prepends those pedagogical instructions, then appends the rendered runtime state. The combined section is inserted as a Markdown context message between `ScreenModule` (message 3) and `TutorialModule` (now message 5).
+
+### Active Read Tools
+
+Three structured read tools are available to the LLM: `read_component_property`, `read_variable`, and `read_recent_logs`. The server parses them into `AIOperation.Type.READ_RUNTIME` with payload `{"tool": "...", "args": {...}}`. Resolution is **client-side** via `AIResponseOrchestrator` — it intercepts `READ_RUNTIME` ops before preview and either dispatches through `CompanionBridge` (properties/variables) or reads the ring buffer directly (logs). Results feed back via `reportExecutionErrors` → `continueWithToolResults` in a fresh turn. Non-read ops in a mixed batch are dropped and the LLM re-emits them on the next turn informed by the retrieved values.
+
+### `CompanionBridge`
+
+`CompanionBridge` owns Scheme templating, synthetic `ai-read-<uuid>` blockids, a 5-second per-read timeout, and budgets of 10 reads/turn and 30 reads/minute. Transport is `Blockly.ReplMgr.putYail` via a `ReplTransport` seam that tests inject around. The `ai-read-*` blockid namespace is an invariant: `processRetvals` in `replmgr.js` routes replies matching this prefix to `BlocklyPanel_resolveCompanionRead` → `CompanionBridge.resolvePendingGlobal`, never to a Blockly block bubble.
+
+**Scheme templates are bare** — e.g. `(get-property 'Button1 'Text)`, **not** `(get-display-representation (get-property ...))`. The device's `process-repl-input` macro (`runtime.scm:3741-3745`) already wraps the result in `get-display-representation` before returning. Wrapping a second time would double-quote strings (e.g. `trrg` → `""trrg""`). Identifier regex `^[A-Za-z_][A-Za-z0-9_]*$` is applied to component/property/variable names before substitution so the templates can't be broken out of.
+
+**Reads are serialized FIFO** — at most one `ai-read-*` in `phoneState.phoneQueue` at any time. The HTTP/ADB transport's `pollphone` loop concatenates every queued item into a single Scheme `(begin ...)` block tagged with blockid `"-2"`, returning only the last expression's value; parallelizing reads there would silently discard 9 of 10 replies. The bridge enforces this with a `waiting` `LinkedList<WaitingRead>`: `dispatch()` sends immediately when `pending.isEmpty()`, otherwise enqueues; `resolvePending()` and `timeoutRead()` both call `pumpNext()` after finishing the current read. The WebRTC path preserves per-item blockids and wouldn't need this, but the bridge serializes unconditionally so behavior is identical across transports.
+
+**Budget refunds on failure** — `refundBudget()` decrements `turnCount` and pops the last `windowTimestamps` entry when (a) a read times out (no response = no device load = shouldn't count) or (b) the Companion returns a NOK status (device-side rejection). Successful reads consume budget normally. This keeps the per-turn cap about successful load rather than attempts, so the LLM can retry after a hiccup without running out of quota.
+
+### "Ask AI about this error" Handoff
+
+A secondary button on the runtime-error dialog and a context-menu entry on any block with a non-null `replError` both call `BlocklyPanel.askAIAboutRuntimeError`. The block-menu label is context-aware — `describeBlockForError_` in `blocklyeditor.js` produces specific strings like *"Ask AI about Button1.Click error"*, *"Ask AI about "factorial" procedure error"*, or *"Ask AI about "score" global error"*, falling back to the generic *"Ask AI about this error"* for unrecognized block shapes. The same specific label is used both as the menu entry and as the user-visible chat bubble that appears after the click.
+
+`BlocklyPanel.askAIAboutRuntimeError` builds a `contextHint` from the error and block info and — when the share toggle is on — calls `BlockYailSymbolScanner.scan(yail, 10)` to extract referenced `(get-property 'X 'Y)` and `(get-var g$Z)` symbols from the current-screen YAIL (regex-based, deduped via `LinkedHashSet`, capped at 10). It dispatches those reads via `CompanionBridge` and waits up to a 2-second fan-out gate; any reads that resolve in that window are appended to the hint under a "Runtime snapshot at error time" section, the rest are silently omitted (best-effort). It then calls `Ode.sendExplainToAIChat(displayText, contextHint)` — the same entry point used by Explain Block. `contextHint` never appears in persistent chat history.
+
+### Feature Flag
+
+`ai.agent.features.companion-context` (default `true`) gates server-side emission of `CompanionModule` and the three runtime-read tool definitions. When off, tools are never shipped to the LLM and any `companionSnapshot` in the request is ignored.
+
+---
+
 ## Build System
 
 The AI agent code is compiled through existing Ant build targets in `appengine/build.xml`:
@@ -1325,7 +1388,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **Max 5 tool-use iterations** per LLM call to prevent infinite loops.
 - **Max 5 validation retries** for block YAIL errors before stripping invalid operations.
 - **Max 3 execution error retries** before giving up and showing the error to the user.
-- **Execution and validation errors are communicated via native tool results, not user messages.** The `patchToolCallResults()` helper writes per-tool-call outcome strings (`"Applied successfully."`, `"FAILED: ..."`, `"SKIPPED: ..."`, `"Validated successfully. Pending application."`) into the continuation state, and the retry goes through `continueWithToolResults()`. This keeps error feedback in the tool result channel where the LLM naturally expects it.
+- **Execution and validation errors are communicated via native tool results, not user messages.** The `patchToolCallResults()` helper writes per-tool-call outcome strings (`"Applied successfully."`, `"FAILED: ..."`, `"SKIPPED: ..."`, `"Validated successfully. Pending application."`) into the continuation state, and the retry goes through `continueWithToolResults()`. This keeps error feedback in the tool result channel where the LLM naturally expects it. Results with status `RUNTIME_READ` are an exception: their `summary` is used as the tool result verbatim so the LLM sees the actual read value instead of a canned outcome.
 - **Client-side operations have idempotency guards.** Operations that have already been applied (e.g. a component that was already added) are detected and skipped rather than failing. This prevents spurious errors when the LLM re-emits operations that succeeded in a previous attempt.
 - **Message length limit: 2000 characters.** Enforced server-side with control character stripping.
 - **Rate limit: configurable** (default 10 req/min per user). Enforced via in-memory timestamps in `AIAgentServiceImpl`.
@@ -1338,6 +1401,9 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **`PROPOSE_PLAN` exclusivity is enforced in the parser, not `ModeEnforcer`.** If `propose_plan` appears alongside other tool calls, `LLMResponseParser` discards the others.
 - **`__project__` is a reserved sentinel value** for plan steps targeting project-level operations. `LLMResponseParser` rejects it as a screen name in non-plan tool calls.
 - **Tutorial context is gated by `ai.agent.features.tutorial-context`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Set to `false` to disable via `appengine-web.xml`.
+- **Runtime reads never mutate.** The three Companion read tools (`read_component_property`, `read_variable`, `read_recent_logs`) resolve client-side through `CompanionBridge` with identifier-regex validation and hard-coded Scheme templates. No arbitrary-Scheme tool exists; no method-call or setter tool exists. The LLM's only path to runtime state is through these three structured reads, gated by the per-session share toggle.
+- **Companion read Scheme templates are bare.** Do not wrap `(get-property ...)` / `(get-var ...)` in `get-display-representation` inside `CompanionBridge` — `runtime.scm`'s `process-repl-input` macro already does that on the device. Wrapping twice double-quotes strings (`trrg` → `""trrg""`). Identifier regex (`^[A-Za-z_][A-Za-z0-9_]*$`) is the only parameterization allowed in those templates.
+- **Companion reads are serialized, not parallel.** At most one `ai-read-*` blockid in `phoneState.phoneQueue` at a time. The HTTP/ADB `pollphone` chunker concatenates queued items into a single `(begin ...)` block tagged with blockid `"-2"`, returning only the last expression's value; parallel reads there would silently lose intermediate results. `CompanionBridge` enforces this with a `waiting` FIFO queue behind the single-slot `pending` map. Budget (`turnCount`, `windowTimestamps`) is refunded on timeout and on Companion NOK so failed reads don't count against the LLM's per-turn quota.
 
 ---
 

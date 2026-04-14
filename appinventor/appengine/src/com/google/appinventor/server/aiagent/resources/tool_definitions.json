@@ -196,6 +196,50 @@
       "required": ["property", "value"]
     }
   },
+  "read_component_property": {
+    "description": "Read the current runtime value of a component property from the connected Companion. Use this when you need to confirm what the live app actually has (e.g. what the user typed in a TextBox). Only available when a Companion is paired and the user has enabled runtime sharing.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "component_name": {
+          "type": "string",
+          "description": "The component's identifier in the current screen, e.g. Button1."
+        },
+        "property_name": {
+          "type": "string",
+          "description": "The property name, e.g. Text."
+        }
+      },
+      "required": ["component_name", "property_name"]
+    }
+  },
+  "read_variable": {
+    "description": "Read the current runtime value of a global variable from the connected Companion. Only available when a Companion is paired and the user has enabled runtime sharing.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "variable_name": {
+          "type": "string",
+          "description": "The global variable name without the 'global' prefix."
+        }
+      },
+      "required": ["variable_name"]
+    }
+  },
+  "read_recent_logs": {
+    "description": "Read the last N log entries from the connected Companion. Useful for diagnosing behavior over time. Only available when a Companion is paired and the user has enabled runtime sharing.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      }
+    }
+  },
   "propose_plan": {
     "description": "Propose an execution plan for the user to review before making changes. Each step targets a specific screen and describes what will be done. Steps targeting different screens can execute in parallel. Use lookup_component and lookup_screen first to research the project, then propose a complete plan.",
     "parameters": {

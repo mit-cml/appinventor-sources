@@ -47,6 +47,18 @@ public final class AIEditorState {
     planApproved = approved;
   }
 
+  // Per-Companion-session flag controlling runtime visibility to the AI agent.
+  // Set true via the connect-dialog toggle; reset to false on CompanionDisconnect.
+  private static boolean companionShareEnabled = false;
+
+  public static boolean isCompanionShareEnabled() {
+    return companionShareEnabled;
+  }
+
+  public static void setCompanionShareEnabled(boolean enabled) {
+    companionShareEnabled = enabled;
+  }
+
   public static DesignProject getCurrentProject() {
     DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
     return toolbar.getCurrentProject();

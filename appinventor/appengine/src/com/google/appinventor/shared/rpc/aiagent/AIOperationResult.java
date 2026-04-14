@@ -25,7 +25,15 @@ public class AIOperationResult implements IsSerializable, Serializable {
     /** Operation failed during validation or execution (fix and retry). */
     FAILED,
     /** Operation was skipped because an earlier operation failed. */
-    SKIPPED
+    SKIPPED,
+    /**
+     * Operation was a runtime read (READ_RUNTIME): {@code summary} carries
+     * the full tool-result text verbatim (e.g. {@code
+     * read_component_property(TextBox1.Text) = "fgg"}) and must be passed
+     * through to the LLM without the canned "Applied successfully" /
+     * "Validated successfully" substitution used for mutations.
+     */
+    RUNTIME_READ
   }
 
   private Status status;
@@ -52,6 +60,14 @@ public class AIOperationResult implements IsSerializable, Serializable {
 
   public static AIOperationResult skipped(String summary) {
     return new AIOperationResult(Status.SKIPPED, summary, null);
+  }
+
+  /**
+   * Factory for READ_RUNTIME results. {@code toolResultText} is passed
+   * through verbatim as the tool-call result surfaced to the LLM.
+   */
+  public static AIOperationResult runtimeRead(String toolResultText) {
+    return new AIOperationResult(Status.RUNTIME_READ, toolResultText, null);
   }
 
   public Status getStatus() {

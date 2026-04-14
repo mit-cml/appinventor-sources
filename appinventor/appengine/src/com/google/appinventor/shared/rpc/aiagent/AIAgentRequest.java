@@ -33,6 +33,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private String targetScreen;
   private boolean planExecuteMode;
   private boolean executionPhase;
+  private String companionSnapshot;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -282,5 +283,13 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setContextHint(String contextHint) {
     this.contextHint = contextHint;
+  }
+
+  public String getCompanionSnapshot() {
+    return companionSnapshot;
+  }
+
+  public void setCompanionSnapshot(String companionSnapshot) {
+    this.companionSnapshot = companionSnapshot;
   }
 }

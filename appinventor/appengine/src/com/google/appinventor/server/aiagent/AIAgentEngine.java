@@ -154,7 +154,7 @@ public class AIAgentEngine {
       String userMessage, String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName, boolean isPlatformMessage,
-      String contextHint,
+      String contextHint, String companionSnapshot,
       boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
       boolean executionPhase) {
     String routingScreen = orchestrationMode ? targetScreen : null;
@@ -187,8 +187,9 @@ public class AIAgentEngine {
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName, enforcementContext);
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
+          locale, languageDisplayName, companionSnapshot, enforcementContext);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
+          companionSnapshot != null);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
       // Build history for stateless providers
@@ -325,8 +326,9 @@ public class AIAgentEngine {
   public AIAgentResponse continueRequest(String userId, long projectId, String screenName,
       String blocksYail, String currentView, String mode,
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
-      String locale, String languageDisplayName, boolean planExecuteMode,
-      boolean orchestrationMode, String targetScreen, boolean executionPhase) {
+      String locale, String languageDisplayName, String companionSnapshot,
+      boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
+      boolean executionPhase) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
     try {
@@ -357,7 +359,8 @@ public class AIAgentEngine {
 
       // Get provider and rebuild tools
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
+          companionSnapshot != null);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       // Patch the static system prompt into continuation state
@@ -368,7 +371,7 @@ public class AIAgentEngine {
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName, enforcementContext);
+          locale, languageDisplayName, companionSnapshot, enforcementContext);
       // Append a scoping instruction so the model stays focused on the
       // user's request and does not refactor or undo prior changes.
       contextMessages = new ArrayList<String>(contextMessages);
@@ -474,7 +477,7 @@ public class AIAgentEngine {
   public AIAgentResponse reportExecutionErrors(String userId, long projectId, String screenName,
       List<AIOperationResult> results, int retryAttempt, int totalTools, String blocksYail,
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
-      String blockWarnings, String locale, String languageDisplayName,
+      String blockWarnings, String locale, String languageDisplayName, String companionSnapshot,
       boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
       boolean executionPhase) {
     String routingScreen = orchestrationMode ? targetScreen : null;
@@ -486,16 +489,33 @@ public class AIAgentEngine {
       // Use totalTools from the client when available — on subsequent retries
       // the results list shrinks (only failed/skipped ops are re-emitted).
       int failedCount = 0;
+      int runtimeReadCount = 0;
       for (AIOperationResult r : results) {
         if (r.getStatus() == AIOperationResult.Status.FAILED) {
           failedCount++;
+        } else if (r.getStatus() == AIOperationResult.Status.RUNTIME_READ) {
+          runtimeReadCount++;
         }
       }
       int totalCount = totalTools > 0 ? totalTools : results.size();
 
-      String retryInfo = failedCount + " out of " + totalCount + " tools failed"
-          + (retryAttempt > 0 ? ", retry attempt " + retryAttempt : "");
-      streamBuffer.appendStatus("Analyzing errors (" + retryInfo + ")...");
+      // Three flavors of "continuation" share this method:
+      //  1. Runtime reads (RUNTIME_READ): tool-result feedback for Companion
+      //     reads — not a retry, not an error. Status reflects that.
+      //  2. Validation retry (all SUCCEEDED, no SKIPPED): the LLM sees which
+      //     block operations passed dry-run so it can fix the failures.
+      //  3. Execution retry (mixed or explicit failures): the normal retry
+      //     flow — "N out of M tools failed, retry attempt K".
+      boolean allRuntimeReads = runtimeReadCount > 0 && runtimeReadCount == results.size();
+      String statusTag;
+      if (allRuntimeReads) {
+        statusTag = runtimeReadCount + (runtimeReadCount == 1 ? " read" : " reads");
+        streamBuffer.appendStatus("Analyzing runtime data (" + statusTag + ")...");
+      } else {
+        statusTag = failedCount + " out of " + totalCount + " tools failed"
+            + (retryAttempt > 0 ? ", retry attempt " + retryAttempt : "");
+        streamBuffer.appendStatus("Analyzing errors (" + statusTag + ")...");
+      }
 
       // Load conversation state
       AIConversationState conv = routingScreen != null
@@ -546,11 +566,12 @@ public class AIAgentEngine {
       List<String> contextMessages = contextBuilder.buildContextMessages(
           userId, projectId, screenName, mode, blocksYail, currentView,
           screenComponentsJson, projectSnapshot, blockWarnings,
-          locale, languageDisplayName, enforcementContext);
+          locale, languageDisplayName, companionSnapshot, enforcementContext);
 
       // Get provider, tools, and resolver
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
+          companionSnapshot != null);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       if (AIDebug.enabled()) {
@@ -559,7 +580,7 @@ public class AIAgentEngine {
             + patchedRef.substring(0, Math.min(patchedRef.length(), 500)));
       }
 
-      streamBuffer.appendStatus("Calling AI (" + retryInfo + ")...");
+      streamBuffer.appendStatus("Calling AI (" + statusTag + ")...");
 
       // Continue with patched tool results instead of starting a new chat
       LLMResponse llmResponse = provider.continueWithToolResults(
@@ -1014,6 +1035,13 @@ public class AIAgentEngine {
             case SKIPPED:
               entry.put("result",
                   "SKIPPED: execution halted after a prior failure.");
+              break;
+            case RUNTIME_READ:
+              // Runtime reads carry the full tool-result text in summary —
+              // use it verbatim instead of a canned outcome so the LLM sees
+              // the actual value (e.g. read_component_property(Foo.Bar) = "x").
+              String readText = cr.getSummary();
+              entry.put("result", readText != null ? readText : "");
               break;
           }
           clientIdx++;

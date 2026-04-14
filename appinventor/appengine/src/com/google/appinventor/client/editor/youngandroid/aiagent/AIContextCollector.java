@@ -56,6 +56,13 @@ public class AIContextCollector {
     request.setExecutionPhase(AIEditorState.isPlanExecuteMode()
         && AIEditorState.isPlanApproved());
 
+    if (AIEditorState.isCompanionShareEnabled()) {
+      String snapshot = buildCompanionSnapshot();
+      if (snapshot != null) {
+        request.setCompanionSnapshot(snapshot);
+      }
+    }
+
     // Set user's interface language for locale-aware AI responses
     String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
     request.setLocale("default".equals(localeName) ? "en" : localeName);
@@ -426,6 +433,13 @@ public class AIContextCollector {
     request.setPlanExecuteMode(false);
     request.setExecutionPhase(false);
 
+    if (AIEditorState.isCompanionShareEnabled()) {
+      String snapshot = buildCompanionSnapshot();
+      if (snapshot != null) {
+        request.setCompanionSnapshot(snapshot);
+      }
+    }
+
     // Set user's interface language for locale-aware AI responses
     String localeName = LocaleInfo.getCurrentLocale().getLocaleName();
     request.setLocale("default".equals(localeName) ? "en" : localeName);
@@ -473,6 +487,35 @@ public class AIContextCollector {
     }
     return null;
   }
+
+  /**
+   * Builds a JSON snapshot of the live Companion state from the client-side
+   * ring buffers in Blockly.ReplMgr. Returns null when the Companion is not
+   * connected.
+   *
+   * Read by CompanionModule on the server to render runtime context for the LLM.
+   */
+  private native String buildCompanionSnapshot() /*-{
+    var ReplMgr = $wnd.top.Blockly && $wnd.top.Blockly.ReplMgr;
+    if (!ReplMgr || typeof ReplMgr.isConnected !== 'function' || !ReplMgr.isConnected()) {
+      return null;
+    }
+    // top.usewebrtc is set to true when the WebRTC data channel is negotiated
+    // (replmgr.js line ~1686) and reset to false on disconnect (line ~845).
+    // rs.proxy is an unrelated browser proxy window used for the iOS/web companion,
+    // not an indicator of WebRTC. top.usewebrtc is the authoritative signal.
+    var connectionKind = $wnd.top.usewebrtc ? 'webrtc' : 'http';
+    var activeScreen = ReplMgr.aiActiveScreen || null;
+    var logs = (ReplMgr.aiLogBuffer || []).slice();
+    var errors = (ReplMgr.aiErrorBuffer || []).slice();
+    var snapshot = {
+      connectionKind: connectionKind,
+      activeScreen: activeScreen,
+      logs: logs,
+      errors: errors
+    };
+    return JSON.stringify(snapshot);
+  }-*/;
 
   /**
    * Recursively counts the number of components in a MockComponent tree.
