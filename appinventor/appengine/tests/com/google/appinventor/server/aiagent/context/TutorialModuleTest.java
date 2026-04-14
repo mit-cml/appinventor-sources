@@ -33,7 +33,7 @@ public class TutorialModuleTest extends TestCase {
     ContextParams params = new ContextParams(
         "user1", 1L, "Screen1", "ScreenEditor", "", "Designer",
         "", "{\"tutorialURL\":\"https://appinventor.mit.edu/test\"}",
-        "", null, null);
+        "", null, null, null);
     String result = module.build(params);
     assertNotNull(result);
     assertTrue(result.contains("[Active Tutorial Context]"));
@@ -47,7 +47,7 @@ public class TutorialModuleTest extends TestCase {
     ContextParams params = new ContextParams(
         "user1", 1L, "Screen1", "ScreenEditor", "", "Designer",
         "", "{\"projectName\":\"Test\"}",
-        "", null, null);
+        "", null, null, null);
     assertNull(module.build(params));
   }
 
@@ -57,7 +57,7 @@ public class TutorialModuleTest extends TestCase {
     ContextParams params = new ContextParams(
         "user1", 1L, "Screen1", "ScreenEditor", "", "Designer",
         "", "{\"tutorialURL\":\"\"}",
-        "", null, null);
+        "", null, null, null);
     assertNull(module.build(params));
   }
 
@@ -66,7 +66,7 @@ public class TutorialModuleTest extends TestCase {
         new FakeTutorialContentCache("content"));
     ContextParams params = new ContextParams(
         "user1", 1L, "Screen1", "ScreenEditor", "", "Designer",
-        "", null, "", null, null);
+        "", null, "", null, null, null);
     assertNull(module.build(params));
   }
 
@@ -76,7 +76,7 @@ public class TutorialModuleTest extends TestCase {
     ContextParams params = new ContextParams(
         "user1", 1L, "Screen1", "ScreenEditor", "", "Designer",
         "", "{\"tutorialURL\":\"https://appinventor.mit.edu/test\"}",
-        "", null, null);
+        "", null, null, null);
     assertNull(module.build(params));
   }
 }
