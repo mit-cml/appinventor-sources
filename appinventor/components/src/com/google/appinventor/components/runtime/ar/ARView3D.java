@@ -151,6 +151,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final FrameLayout   frameLayout;         // returned by getView()
     private ARViewRender arViewRender;
 
+    private static Session activeSession = null;
     // Matrices and math components
     private final float[] viewMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
@@ -273,6 +274,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     public void Initialize() {
+        // Close any orphaned session from a previous instance
+        if (activeSession != null) {
+            Log.d(LOG_TAG, "Initialize: closing orphaned session");
+            try {
+                activeSession.pause();
+                activeSession.close();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error closing orphaned session", e);
+            }
+            activeSession = null;
+        }
         onResume();
     }
 
@@ -1603,7 +1615,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @Override
     public void onResume() {
         if (session == null) {
-
+            Log.d(LOG_TAG, "onResume() ");
             try {
                 // Request ARCore installation if needed
                 switch (ArCoreApk.getInstance().requestInstall($form(), !installRequested)) {
@@ -1630,6 +1642,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                 // Create and configure ARCore session
                 session = new Session($context());
+                activeSession = session;
                 configureSession();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Failed to create AR session", e);
@@ -1690,7 +1703,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         if (session == null) {
             return;
         }
-
         displayRotationHelper.onPause();
         session.pause();
     }
@@ -1736,19 +1748,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
     public void onFullReset() {
+        Log.d(LOG_TAG, "onFullReset()");
         // Same as onClear but also wipes session state and GPU cache
-        onClear();  // handles everything
+        onClear();
 
-        onPause();  // wipe ARCore tracking
-        if (arFilamentRenderer != null) {
-            arFilamentRenderer.resetScene(true);  // free GPU memory
-        }
         System.gc();
     }
 
     @Override
     public void onDestroy() {
-        Log.d(LOG_TAG, "onDestroy()");
+        Log.d(LOG_TAG, "inside onDestroy()");
 
         if (arFilamentRenderer != null) {
             arFilamentRenderer.setPaused(true);
@@ -1774,6 +1783,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         if (session != null) {
             session.pause();
             session = null;
+            activeSession = null;
         }
 
         if (floorManager != null) {
