@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="migration-tools" default="help" basedir=".">
+
+  <property name="lib.dir" location="../../lib"/>
+  <property name="src.dir" location="src"/>
+  <property name="build.dir" location="build"/>
+
+  <property name="project" value=""/>
+  <property name="extra.args" value=""/>
+
+  <path id="classpath">
+    <pathelement location="${lib.dir}/json/json.jar"/>
+  </path>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}" source="11" target="11"
+           includeantruntime="false" classpathref="classpath"/>
+  </target>
+
+  <macrodef name="run-tool">
+    <attribute name="classname"/>
+    <sequential>
+      <fail message="Usage: ant &lt;tool&gt; -Dproject=your-gcp-project [-Dextra.args='...']">
+        <condition><equals arg1="${project}" arg2=""/></condition>
+      </fail>
+      <java classname="@{classname}" fork="true" failonerror="true">
+        <classpath>
+          <pathelement location="${build.dir}"/>
+          <path refid="classpath"/>
+        </classpath>
+        <arg value="${project}"/>
+        <arg line="${extra.args}"/>
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="scan-ai-conversations" depends="compile"
+          description="Read-only scan of AI agent conversations in Datastore">
+    <run-tool classname="ScanAIConversations"/>
+  </target>
+
+  <target name="backfill-ai-conversations" depends="compile"
+          description="Create ConversationData rows using a logs-derived mapping CSV">
+    <run-tool classname="BackfillAIConversations"/>
+  </target>
+
+  <target name="help">
+    <echo>
+AI Agent Migration Tools
+========================
+Usage: ant &lt;tool&gt; -Dproject=gcp-project [-Dextra.args='...']
+
+Tools:
+  scan-ai-conversations   Read-only scan: groups ConversationMessageData by
+                          conversationId, cross-references with ConversationData,
+                          reports per-conversation stats and bucketises.
+                          args: [--csv=out.csv] [--limit=N]
+
+  backfill-ai-conversations
+                          Backfill ConversationData rows using a CSV exported
+                          from Cloud Logging. CSV must have columns
+                          conversation_id,message where message contains
+                          'userId=N, projectId=N'. Dry-run by default.
+                          args: --mapping=path.csv [--commit]
+
+Examples:
+  ant scan-ai-conversations -Dproject=my-gcp-project
+  ant scan-ai-conversations -Dproject=my-gcp-project -Dextra.args="--csv=scan.csv"
+  ant backfill-ai-conversations -Dproject=my-gcp-project \
+      -Dextra.args="--mapping=logs.csv"           # dry-run
+  ant backfill-ai-conversations -Dproject=my-gcp-project \
+      -Dextra.args="--mapping=logs.csv --commit"  # write
+    </echo>
+  </target>
+</project>
