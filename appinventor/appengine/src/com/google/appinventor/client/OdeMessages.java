@@ -5939,10 +5939,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label for the reject operations button in AI chat dialog")
   String aiChatRejectButton();
 
-  @DefaultMessage("New Conversation")
-  @Description("Label for the new conversation button in AI chat dialog")
-  String aiChatNewConversationButton();
-
   @DefaultMessage("Type your message...")
   @Description("Placeholder text for the AI chat input area")
   String aiChatInputPlaceholder();
@@ -5970,10 +5966,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Failed to load conversation history.")
   @Description("Error message when loading conversation history fails")
   String aiChatLoadHistoryError();
-
-  @DefaultMessage("Failed to clear conversation.")
-  @Description("Error message when clearing conversation fails")
-  String aiChatClearError();
 
   @DefaultMessage("No project is currently open.")
   @Description("Error message when AI chat is opened without an active project")
@@ -6071,10 +6063,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Confirmation shown when enabling Plan & Execute mode on a tutorial project")
   String aiChatPlanExecuteTutorialConfirm();
 
-  @DefaultMessage("Are you sure you want to clear the conversation?")
-  @Description("Confirmation shown when the user clicks New Conversation with existing messages")
-  String aiChatClearConversationConfirm();
-
   @DefaultMessage("Execution Plan")
   @Description("Header for the plan card shown in the AI chat when the agent proposes a plan")
   String aiChatPlanCardHeader();
@@ -6114,4 +6102,92 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Select & Open")
   @Description("Button to confirm AI mode selection and open the chat dialog")
   String aiModeSelectAndOpen();
+
+  @DefaultMessage("Conversations")
+  @Description("Header title for the AI chat conversation list view.")
+  String aiChatConversationsTitle();
+
+  @DefaultMessage("New conversation")
+  @Description("Button label to start a new AI chat conversation.")
+  String aiChatNewConversation();
+
+  @DefaultMessage("Rename conversation")
+  @Description("Placeholder text for the inline rename input.")
+  String aiChatRenameConversationPlaceholder();
+
+  @DefaultMessage("Delete conversation?")
+  @Description("Confirmation prompt shown when the user deletes a conversation.")
+  String aiChatDeleteConversationConfirm();
+
+  @DefaultMessage("Could not load conversations.")
+  @Description("Error message shown when the conversation list fails to load.")
+  String aiChatLoadConversationsError();
+
+  @DefaultMessage("Could not rename conversation.")
+  @Description("Error message shown when renaming a conversation fails.")
+  String aiChatRenameConversationError();
+
+  @DefaultMessage("Could not delete conversation.")
+  @Description("Error message shown when deleting a conversation fails.")
+  String aiChatDeleteConversationError();
+
+  @DefaultMessage("Today")
+  @Description("Date separator label for messages sent on the current local day.")
+  String aiChatDateSeparatorToday();
+
+  @DefaultMessage("Yesterday")
+  @Description("Date separator label for messages sent on the previous local day.")
+  String aiChatDateSeparatorYesterday();
+
+  @DefaultMessage("Back to conversations")
+  @Description("Tooltip for the button that returns from chat view to the conversation list.")
+  String aiChatBackToConversations();
+
+  @DefaultMessage("Today at {0}")
+  @Description("Fallback label for untitled conversations updated today; {0} is HH:mm.")
+  String aiChatConversationDateToday(String time);
+
+  @DefaultMessage("Yesterday at {0}")
+  @Description("Fallback label for untitled conversations updated yesterday; {0} is HH:mm.")
+  String aiChatConversationDateYesterday(String time);
+
+  @DefaultMessage("Unnamed Conversation")
+  @Description("Placeholder title shown for AI chat conversations that have no user-set title.")
+  String aiChatUnnamedConversation();
+
+  @DefaultMessage("Created {0}")
+  @Description("Subtitle line showing when a conversation was created; {0} is a formatted date.")
+  String aiChatConversationCreatedAt(String dateStr);
+
+  @DefaultMessage("Last message {0}")
+  @Description("Subtitle line showing when the most recent message was sent; {0} is a formatted date.")
+  String aiChatConversationLastMessageAt(String dateStr);
+
+  @DefaultMessage("Are you sure you want to delete this conversation? This cannot be undone.")
+  @Description("Body text for the delete conversation confirmation dialog.")
+  String aiChatDeleteConversationConfirmBody();
+
+  @DefaultMessage("Delete")
+  @Description("Label for the delete button in the delete conversation confirmation dialog.")
+  String aiChatDeleteButton();
+
+  @DefaultMessage("Cancel")
+  @Description("Label for the cancel button in the delete conversation confirmation dialog.")
+  String aiChatCancelButton();
+
+  @DefaultMessage("View Conversations")
+  @Description("Bottom-bar button that switches the AI chat dialog from the chat view to the conversation list view.")
+  String aiChatViewConversationsButton();
+
+  @DefaultMessage("Rename")
+  @Description("Top-bar button label that starts inline rename of the current conversation's title.")
+  String aiChatRenameConversationButton();
+
+  @DefaultMessage("Save")
+  @Description("Top-bar button label while an inline conversation rename is active; clicking it commits the new title.")
+  String aiChatSaveConversationButton();
+
+  @DefaultMessage("Conversation Name")
+  @Description("Placeholder shown in the inline rename text field before the user types a title.")
+  String aiChatConversationNamePlaceholder();
 }

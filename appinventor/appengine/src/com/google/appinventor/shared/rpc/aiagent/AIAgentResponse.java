@@ -22,6 +22,7 @@ public class AIAgentResponse implements IsSerializable, Serializable {
   private boolean isNewConversation;
   private boolean hasMore;
   private List<String> errors;
+  private String conversationId;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -85,5 +86,17 @@ public class AIAgentResponse implements IsSerializable, Serializable {
 
   public void setErrors(List<String> errors) {
     this.errors = errors;
+  }
+
+  /**
+   * Returns the conversation UUID this response belongs to. Set by the server
+   * on every path so the client can adopt the id for subsequent turns.
+   */
+  public String getConversationId() {
+    return conversationId;
+  }
+
+  public void setConversationId(String conversationId) {
+    this.conversationId = conversationId;
   }
 }

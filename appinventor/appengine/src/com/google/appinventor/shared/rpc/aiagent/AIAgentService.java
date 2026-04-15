@@ -13,8 +13,12 @@ import java.util.List;
 /**
  * GWT-RPC service interface for the AI agent.
  *
- * <p>Conversation state is managed server-side (one conversation per project,
- * lazy-created on first message, 24h TTL). No conversationId from client.</p>
+ * <p>Conversations are addressed by {@code conversationId} (UUID). A
+ * conversation is minted server-side on the first {@code processRequest}
+ * call when the client passes a blank id, and the server echoes the new
+ * id back on the response so the client can track it. Conversations are
+ * retained until explicitly deleted or until the owning project is
+ * deleted.</p>
  */
 @RemoteServiceRelativePath(ServerLayout.AI_AGENT_SERVICE)
 public interface AIAgentService extends RemoteService {
@@ -40,23 +44,40 @@ public interface AIAgentService extends RemoteService {
   AIAgentResponse continueRequest(AIAgentRequest request);
 
   /**
-   * Clear the current conversation for a project.
-   * Deletes the Memcache entry and all Datastore ConversationMessageData
-   * entities. The next processRequest() will start fresh.
+   * List conversations owned by the current user on the given project,
+   * most recently updated first.
    *
-   * @param projectId the project whose conversation should be cleared
+   * @param projectId the project whose conversations to list
+   * @return list of conversation summaries
    */
-  void clearConversation(long projectId);
+  List<AIConversationSummary> listConversations(long projectId);
 
   /**
-   * Load the conversation history for a project. Returns text-only messages
-   * (no operations) for display in the chat dialog. Used after page reload
-   * to restore the chat UI.
+   * Rename a conversation. Trims whitespace; empty/null clears the title
+   * (the client will fall back to a date-based label).
    *
-   * @param projectId the project whose history to load
-   * @return list of conversation messages, empty if no conversation exists
+   * @param conversationId the conversation to rename
+   * @param newTitle       the new title, or null/empty to clear
+   * @return the updated summary
    */
-  List<AIConversationMessage> getConversationHistory(long projectId);
+  AIConversationSummary renameConversation(String conversationId, String newTitle);
+
+  /**
+   * Delete a conversation: metadata row, all messages, and the Memcache
+   * state entry.
+   *
+   * @param conversationId the conversation to delete
+   */
+  void deleteConversation(String conversationId);
+
+  /**
+   * Load the display-only message history for a specific conversation.
+   *
+   * @param conversationId the conversation whose history to load
+   * @return list of conversation messages; empty if the conversation does
+   *         not exist or the user does not own it
+   */
+  List<AIConversationMessage> getConversationHistory(String conversationId);
 
   /**
    * Poll for progress of a running processRequest() call.

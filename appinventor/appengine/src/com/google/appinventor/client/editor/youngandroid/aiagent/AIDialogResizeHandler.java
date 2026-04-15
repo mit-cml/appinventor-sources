@@ -9,8 +9,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Handles resize interactions for the AI chat dialog.
@@ -26,13 +26,57 @@ public class AIDialogResizeHandler {
    */
   public interface ResizeTarget {
     Element getDialogElement();
-    VerticalPanel getMainPanel();
+
+    /**
+     * Returns the outer container whose size defines the dialog's content
+     * area. The resize handler sizes this panel directly.
+     */
+    Panel getResizableContainer();
+
+    /**
+     * Returns the chat scroll panel. The resize handler also sizes this
+     * imperatively alongside the outer container so the chat area grows
+     * immediately when the user drags — belt-and-suspenders to any
+     * flex-layout subtleties inside the dialog body.
+     */
     ScrollPanel getChatScrollPanel();
+
+    /**
+     * Returns the pixel overhead (all fixed rows + padding) subtracted from
+     * the outer container's height to compute the chat scroll panel's
+     * height during a drag. Implementations measure this once; the
+     * handler re-reads it on every resize in case visibility toggles
+     * (debug banner, edit-mode warning, operation preview) changed it.
+     */
+    int getChatOverheadHeight();
   }
 
   private static final int RESIZE_HANDLE_SIZE = 12;
   private static final int MIN_DIALOG_WIDTH = 300;
-  private static final int MIN_SCROLL_HEIGHT = 100;
+
+  /**
+   * Minimum pixel height for the outer container, sized so the always-visible
+   * fixed rows (top bar + chat-scroll border/margin + input + bottom bar +
+   * mainPanel padding) plus {@code AIChatDialog.CHAT_MIN_HEIGHT} all fit.
+   * Calculation (rough, in px):
+   *   topBar        ~34   (title + Rename button with padding)
+   *   topBar margin   4
+   *   chat border     2   (top+bottom 1px each)
+   *   chat margin     6
+   *   chat min      120   (CHAT_MIN_HEIGHT)
+   *   input handler  80   (3-row textarea + border + padding)
+   *   bottom margin   6
+   *   bottom bar     32   (buttons row)
+   *   main padding   16   (8 top + 8 bottom)
+   *   safety         ~20
+   *   -----------------
+   *   total         ~320
+   * Bumped to 400 so the dialog is usable even with the debug banner
+   * visible (whose long wrapped warning contributes ~80px) and with a
+   * transient row or two on top (edit-mode warning, auto-accept) without
+   * clipping the bottom toolbar.
+   */
+  private static final int MIN_DIALOG_HEIGHT = 400;
 
   private static final int EDGE_RIGHT = 2;
   private static final int EDGE_BOTTOM = 4;
@@ -42,8 +86,8 @@ public class AIDialogResizeHandler {
   // Resize state
   private int resizeStartX;
   private int resizeStartY;
-  private int resizeStartPanelWidth;
-  private int resizeStartScrollHeight;
+  private int resizeStartContainerWidth;
+  private int resizeStartContainerHeight;
   private int resizeEdge;
   private HandlerRegistration resizePreviewHandler;
 
@@ -121,8 +165,9 @@ public class AIDialogResizeHandler {
   private void startResize(int clientX, int clientY, int edge) {
     resizeStartX = clientX;
     resizeStartY = clientY;
-    resizeStartPanelWidth = target.getMainPanel().getOffsetWidth();
-    resizeStartScrollHeight = target.getChatScrollPanel().getOffsetHeight();
+    Panel container = target.getResizableContainer();
+    resizeStartContainerWidth = container.getOffsetWidth();
+    resizeStartContainerHeight = container.getOffsetHeight();
     resizeEdge = edge;
 
     if (resizePreviewHandler != null) {
@@ -146,26 +191,36 @@ public class AIDialogResizeHandler {
   }
 
   /**
-   * Processes a mouse-move during an active resize, updating panel dimensions.
-   * Only right and bottom edges are supported, so the dialog's top-left
-   * position never changes.
+   * Processes a mouse-move during an active resize, updating the outer
+   * container dimensions. Inner panels (mainPanel via position:absolute
+   * inset:0, chatScrollPanel via flex:1, conversationListPanel via
+   * position:absolute inset:0) follow automatically. Only right and bottom
+   * edges are supported, so the dialog's top-left position never changes.
    */
   private void doResize(int clientX, int clientY) {
     int dx = clientX - resizeStartX;
     int dy = clientY - resizeStartY;
 
-    int newPanelWidth = resizeStartPanelWidth;
-    int newScrollHeight = resizeStartScrollHeight;
+    int newWidth = resizeStartContainerWidth;
+    int newHeight = resizeStartContainerHeight;
 
     if ((resizeEdge & EDGE_RIGHT) != 0) {
-      newPanelWidth = Math.max(resizeStartPanelWidth + dx, MIN_DIALOG_WIDTH);
+      newWidth = Math.max(resizeStartContainerWidth + dx, MIN_DIALOG_WIDTH);
     }
     if ((resizeEdge & EDGE_BOTTOM) != 0) {
-      newScrollHeight = Math.max(resizeStartScrollHeight + dy, MIN_SCROLL_HEIGHT);
+      newHeight = Math.max(resizeStartContainerHeight + dy, MIN_DIALOG_HEIGHT);
     }
 
-    target.getMainPanel().setWidth(newPanelWidth + "px");
-    target.getChatScrollPanel().setSize(newPanelWidth + "px", newScrollHeight + "px");
+    target.getResizableContainer().setSize(newWidth + "px", newHeight + "px");
+    // Also imperatively size the chat scroll panel so it grows with the
+    // drag. The flex layout should theoretically cascade this from the
+    // outer container, but in practice GWT's ScrollPanel + nested flex
+    // doesn't always reflow on parent resize; sizing it directly is the
+    // behaviour that reliably worked pre-refactor.
+    int chatHeight = Math.max(newHeight - target.getChatOverheadHeight(),
+        /* matches AIChatDialog.CHAT_MIN_HEIGHT */ 120);
+    target.getChatScrollPanel().setSize(
+        (newWidth - 16) + "px", chatHeight + "px");
   }
 
   /**

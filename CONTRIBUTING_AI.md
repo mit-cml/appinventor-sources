@@ -52,7 +52,7 @@ flowchart TB
 | `AIAgentEngine.java` | Core orchestration: context building, LLM calls, tool-use loop, response parsing, narration retry (`retryIfNarration`), finalization |
 | `AIAgentServiceImpl.java` | Servlet layer: authentication, rate limiting, input validation, delegates to engine |
 | `AIContextBuilder.java` | Assembles the full LLM context from modular context modules |
-| `ConversationManager.java` | Conversation lifecycle: Memcache state (24h TTL) + Datastore message persistence; screen-scoped overloads for child conversations (ephemeral, Memcache only) |
+| `ConversationManager.java` | Conversation lifecycle: minting (`createConversation`), metadata CRUD (`ConversationData`: title, createdAt, updatedAt), Memcache state (24h TTL, keyed by `conversationId`) and Datastore message persistence (retained until the conversation or project is deleted); screen-scoped overloads for child conversations (ephemeral, Memcache only) |
 | `StreamBuffer.java` | Writes LLM text/thinking tokens to Memcache for client polling; screen-scoped keying for child conversations |
 | `LLMResponseParser.java` | Parses LLM tool calls into typed `AIOperation` objects |
 | `AIToolResolver.java` | Resolves read-only tool calls (component/screen lookups) |
@@ -110,9 +110,9 @@ GWT-RPC interfaces and DTOs shared between client and server.
 
 | File | Purpose |
 |------|---------|
-| `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `clearConversation`, `getConversationHistory`, `getRequestStatus`; screen-scoped overloads for `getRequestStatus(projectId, targetScreen)` and `cancelRequest(projectId, targetScreen)` |
-| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode`, `executionPhase`, `companionSnapshot` (JSON string with connection kind, active screen, last logs/errors) |
-| `AIAgentResponse.java` | Response DTO: AI message text, operations list, errors, `hasMore` flag |
+| `AIAgentService.java` | Service interface: `processRequest`, `continueRequest`, `reportExecutionErrors`, `getRequestStatus`, `cancelRequest`; conversation management (`listConversations`, `renameConversation`, `deleteConversation`, `getConversationHistory(String conversationId)`); screen-scoped overloads for `getRequestStatus(projectId, targetScreen)` and `cancelRequest(projectId, targetScreen)`. The legacy project-keyed `clearConversation(long)` and `getConversationHistory(long)` methods were removed in Phase 5 of the multi-conversation migration. |
+| `AIAgentRequest.java` | Request DTO: user message, project ID, screen name, YAIL, view, components JSON, locale, contextHint, `orchestrationMode`, `targetScreen`, `planExecuteMode`, `executionPhase`, `companionSnapshot` (JSON string with connection kind, active screen, last logs/errors), `conversationId` (blank on first send; server echoes the minted id back on the response) |
+| `AIAgentResponse.java` | Response DTO: AI message text, operations list, errors, `hasMore` flag, `conversationId` (mirrors the client field; populated server-side when a conversation is minted on first send) |
 | `AIOperation.java` | Single operation: type enum (including `PROPOSE_PLAN` and `READ_RUNTIME`) + JSON payload string |
 | `AIOperationResult.java` | Execution result: `SUCCEEDED` / `FAILED` / `SKIPPED` for mutations (mapped to canned outcome strings server-side) or `RUNTIME_READ` for `READ_RUNTIME` results (summary passed through verbatim as the LLM tool result) |
 | `AIConversationMessage.java` | Message for chat history display |
@@ -681,59 +681,81 @@ sequenceDiagram
 
 ## Conversation Management
 
+App Inventor AI supports **many conversations per project**. Each conversation has a stable UUID (`conversationId`), persistent metadata (title, timestamps), and a retained message history. The client presents a list view so users can switch between, rename, and delete conversations; the LLM state behind each conversation is rehydrated on demand, including the full message history for stateful providers when their `providerRef` has expired.
+
 ```mermaid
 flowchart TD
-    subgraph "First Message"
-        FM1["processRequest() called"]
-        FM2["ConversationManager.getConversation(projectId)"]
-        FM3{"Exists in<br/>Memcache?"}
-        FM4["Create new state<br/>UUID + provider name"]
-        FM5["Save to Memcache<br/>(24h TTL)"]
-        FM6["Use existing state"]
+    subgraph "First Send (blank convId)"
+        FM1["processRequest(conversationId='')"]
+        FM2["ConversationManager.createConversation(userId, projectId)"]
+        FM3["Mint UUID + write<br/>ConversationData row<br/>(title=null, createdAt=now)"]
+        FM4["Echo conversationId<br/>on AIAgentResponse"]
 
-        FM1 --> FM2 --> FM3
-        FM3 -->|no| FM4 --> FM5
-        FM3 -->|yes| FM6
+        FM1 --> FM2 --> FM3 --> FM4
+    end
+
+    subgraph "Subsequent Send"
+        SS1["processRequest(conversationId=UUID)"]
+        SS2["loadConversation(convId) -> history"]
+        SS3{"Memcache<br/>state hit?"}
+        SS4["Use existing<br/>AIConversationState"]
+        SS5["Cold: provider.chat(history,...)<br/>replays history inside the call"]
+
+        SS1 --> SS2 --> SS3
+        SS3 -->|yes| SS4
+        SS3 -->|no| SS5
     end
 
     subgraph "Message Storage"
         MS1["storeMessage(conversationId, role, text)"]
-        MS2["Datastore: ConversationMessageData<br/><i>timestamp + sequence counter</i>"]
-        MS3["cleanupConversationMessages()<br/><i>evict expired entries</i>"]
+        MS2["Datastore: ConversationMessageData<br/><i>timestamp + sequence counter,<br/>expiresAt=0</i>"]
+        MS3["touchConversation(convId)<br/><i>bump updatedAt</i>"]
 
         MS1 --> MS2 --> MS3
     end
 
-    subgraph "Page Reload"
-        PR1["getConversationHistory(projectId)"]
-        PR2["Load state from Memcache"]
-        PR3["loadAIConversationMessages(conversationId)"]
-        PR4["Return text-only messages<br/>(no operations)"]
+    subgraph "List / Rename / Delete"
+        LR1["listConversations(projectId)"]
+        LR2["ConversationData rows<br/>sorted by updatedAt desc"]
+        RN1["renameConversation(convId, title)"]
+        RN2["update title; null/empty clears"]
+        DL1["deleteConversation(convId)"]
+        DL2["Delete messages +<br/>ConversationData + Memcache"]
 
-        PR1 --> PR2 --> PR3 --> PR4
-    end
-
-    subgraph "Clear Conversation"
-        CC1["clearConversation(projectId)"]
-        CC2["Delete Memcache entry"]
-        CC3["Clear stream buffer"]
-        CC4["Delete Datastore messages"]
-
-        CC1 --> CC2 --> CC3 --> CC4
+        LR1 --> LR2
+        RN1 --> RN2
+        DL1 --> DL2
     end
 ```
 
-### Persistence Model
+### Data Model
 
-| Store | What | TTL | Purpose |
-|-------|------|-----|---------|
-| **Memcache** | `AIConversationState` (provider name, conversation ID, provider ref) | 24 hours | Fast access for active conversations |
+| Store | Entity / Key | TTL | Purpose |
+|-------|--------------|-----|---------|
+| **Datastore** | `ConversationData` (`conversationId`, `projectId`, `userId`, `title?`, `createdAt`, `updatedAt`) | Until deleted | Per-conversation metadata shown in the list view |
+| **Datastore** | `ConversationMessageData` (`conversationId`, `timestamp`, `sequence`, `role`, `text`, `structuredContent?`, `display`, `expiresAt=0`) | Until deleted | Persisted message history |
+| **Memcache** | `AIConversationState` keyed by `conversationId` | 24 hours | Provider name + `providerRef` for the main flow |
+| **Memcache** | `AIConversationState` keyed by `(projectId, screenName)` | Ephemeral | Orchestration child agents (unchanged) |
 | **Memcache** | Stream buffer chunks (per-request) | Request lifetime | Text streaming from server to client |
-| **Datastore** | `ConversationMessageData` entities | Until cleared | Message history persistence across server restarts |
+
+`ConversationMessageData.expiresAt` is always `0` on new rows — retention is explicit, not time-based. Messages go away only when the conversation is deleted (explicitly by the user) or when the owning project is deleted (cascade in `ObjectifyStorageIo.deleteProject`, which piggybacks on the existing `FileData` cleanup job).
+
+### Lifecycle
+
+- **Creation** is implicit. The client sends `conversationId=""` on the first message of a new conversation. `AIAgentEngine.processRequest` detects the blank id, calls `ConversationManager.createConversation(userId, projectId)` to mint a UUID and write the `ConversationData` row, and echoes the id back on `AIAgentResponse.conversationId`. The client stores this id on its orchestrator and sends it on every subsequent call in the same conversation.
+- **Activity bump.** Every call to `storeMessage` invokes `storageIo.touchConversation(conversationId)` after the Datastore write, keeping `updatedAt` current so the list view stays correctly sorted.
+- **Title.** Null by default. `renameConversation` trims whitespace; null or empty clears the title. The client falls back to an italic last-message-date label (Today / Yesterday / weekday / short date) when the title is null.
+- **Deletion** is the only way to remove conversations from the list. `deleteConversation` deletes the `ConversationData` row, every `ConversationMessageData` for that id, and the Memcache state entry. Project-level deletion cascades all owned conversations.
+
+### Rehydration on Cold Memcache
+
+The main flow always calls `ConversationManager.loadConversation(conversationId)` to build the `history` list before handing off to the provider — this is no longer gated on `provider.isStateless()`. Stateless providers already relied on this. Stateful providers (`OpenAIProvider`, `GeminiProvider`, `VertexProvider`) accept the `history` argument on `chat()` and use it when `providerRef` is null or empty (Memcache cold, or a brand-new conversation with prior messages after a server restart). They replay history inside the call, mint a fresh `providerRef` from the first response, and continue statefully from there.
+
+`AIAgentEngine.continueRequest` and `reportExecutionErrors` take the same fallback: when `providerRef` is null, instead of failing with "No continuation state available", they call `provider.chat(history, ...)` with a synthetic user message summarizing the tool outcomes ("Please continue from the previous tool results.", or a tool-result outcome summary). This restores the previous multi-turn state implicitly and keeps the retry pipelines working across cold restarts.
 
 ### Message Ordering
 
-Messages are stored with a composite key of `(timestamp, sequence)`. The `ThreadLocal<Integer>` sequence counter ensures unique ordering when multiple messages are stored within the same millisecond (e.g. user message + AI response in one request).
+Messages are stored with a composite key of `(timestamp, sequence)`. The `ThreadLocal<Integer>` sequence counter ensures unique ordering when multiple messages land in the same millisecond (e.g. user message + AI response in one request).
 
 ### Structured Content
 
@@ -741,7 +763,13 @@ When the LLM returns tool calls, `ConversationManager.buildStructuredContentPair
 - **Assistant content**: text blocks + tool_use blocks (what the LLM said and called)
 - **Tool result content**: matching tool_result blocks (accepted operations get `"Pending client execution."`, rejected ones get the error message)
 
-This structured format is stored in Datastore and replayed to stateless providers (Anthropic) on subsequent calls so the LLM sees the full tool-call history.
+This structured format is stored in Datastore and replayed to both stateless providers (Anthropic) and cold-start stateful providers on subsequent calls, so the LLM sees the full tool-call history either way.
+
+### Client UX
+
+- **Two-view layout.** `AIChatDialog` wraps a `DeckPanel` with a chat view and a list view. The chat header has a leading `☰` button that swaps to the list.
+- **List view.** Scrollable rows sorted by `updatedAt` desc. Each row shows the title or an italic date-fallback label. Hover reveals a pencil icon (inline rename via a `TextBox`) and a trash icon (confirm-then-delete). The active conversation is visually highlighted. A `+ New conversation` control clears local state only — the new conversation materializes server-side on the first message send, when the server mints the id.
+- **Chat view.** Per-message timestamps render as `HH:mm` in the browser's local timezone. Date separators (Today / Yesterday / weekday / short date) are inserted whenever the calendar date changes between consecutive messages.
 
 ---
 
@@ -1382,6 +1410,8 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 ## Conventions
 
 - **All LLM communication is server-side only.** API keys and prompts never reach the client.
+- **Conversations are retained until explicitly deleted** or until the owning project is deleted. The cascade lives in `ObjectifyStorageIo.deleteProject()` alongside the existing `FileData` cleanup job; there is no TTL sweep or cron. `ConversationMessageData.expiresAt` is always `0` on new rows.
+- **Stateful providers transparently replay full history when `providerRef` is null.** The engine always passes `history` to `chat()`; OpenAI Responses, Gemini, and Vertex each decide how to use it (OpenAI rebuilds the `input` list, Gemini/Vertex prepend history `contents`). This keeps cold-Memcache restarts and brand-new-conversation-with-prior-messages paths working without the client having to know anything.
 - **Operations are the only mutation mechanism.** Never bypass the operation/executor pipeline to modify project state directly from AI responses.
 - **Navigation operations must be issued alone** -- SWITCH_SCREEN, CREATE_SCREEN, and TOGGLE_EDITOR cannot be combined with other operations in the same batch.
 - **Read-only tools are resolved server-side** within the provider's internal loop. Only non-read-only tool calls become `AIOperation` objects returned to the client.
@@ -1414,10 +1444,11 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **Authorization**: every RPC verifies the user owns the target project via `StorageIo.assertUserHasProject()`.
 - **Property whitelist**: `SET_PROJECT_PROP` only accepts properties from a hardcoded whitelist in `ProjectOperationValidator`.
 - **No runtime access**: the AI operates on source files only -- it cannot run apps, access devices, or make network requests.
-- **Conversation data** has a 24-hour TTL in Memcache and can be cleared by the user at any time.
+- **Conversation messages are retained until explicitly deleted** by the user (`deleteConversation`) or until the owning project is deleted (cascade in `ObjectifyStorageIo.deleteProject`). The Memcache `AIConversationState` record still has a 24-hour TTL — when it expires, the next call rehydrates from the Datastore message history.
 
 ---
 
 ## Further Reading
 
 - [`appinventor/misc/ai-agent/educator-guide.md`](appinventor/misc/ai-agent/educator-guide.md) -- Comprehensive guide for educators using the AI Agent, with teaching scenarios and a glossary.
+- [`docs/superpowers/specs/2026-04-15-ai-agent-multi-conversation-design.md`](docs/superpowers/specs/2026-04-15-ai-agent-multi-conversation-design.md) -- Multi-conversation design: data model, rehydration, client UX, migration plan.

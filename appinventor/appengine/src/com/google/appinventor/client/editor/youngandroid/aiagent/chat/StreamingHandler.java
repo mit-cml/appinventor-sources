@@ -44,8 +44,10 @@ public class StreamingHandler {
   public void startStreamingBubble() {
     streamingTextAccumulator = "";
     streamingThinkingAccumulator = "";
+    long now = System.currentTimeMillis();
+    host.maybeAppendDateSeparator(now);
     streamingWrapper = host.createMessageBubble(
-        host.getAiLabel(), "", false);
+        host.getAiLabel(), "", false, now);
     FlowPanel bubble = (FlowPanel) streamingWrapper.getWidget(0);
     streamingMessageHtml = (HTML) bubble.getWidget(1);
     // Add typing indicator (three bouncing dots) below the message text

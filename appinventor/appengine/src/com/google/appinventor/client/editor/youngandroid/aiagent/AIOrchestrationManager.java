@@ -105,7 +105,7 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
             if (screenSteps.size() > MAX_CHILDREN) {
               callback.addAiMessage("Plan targets too many screens ("
                   + screenSteps.size() + ", max " + MAX_CHILDREN
-                  + "). Please simplify the plan.");
+                  + "). Please simplify the plan.", System.currentTimeMillis());
               finishExecution();
               return;
             }
@@ -114,7 +114,7 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
 
           @Override
           public void onError(String message) {
-            callback.addAiMessage(message);
+            callback.addAiMessage(message, System.currentTimeMillis());
             finishExecution();
           }
         });
@@ -241,9 +241,9 @@ public class AIOrchestrationManager implements ChildBatchQueue.QueueCallback {
       // Show grouped operations summary in chat
       String groupedSummary = buildGroupedOperationsSummary();
       if (!groupedSummary.isEmpty()) {
-        callback.addAiMessage(summary + "\n\n" + groupedSummary);
+        callback.addAiMessage(summary + "\n\n" + groupedSummary, System.currentTimeMillis());
       } else {
-        callback.addAiMessage(summary);
+        callback.addAiMessage(summary, System.currentTimeMillis());
       }
       if (!applied.isEmpty()) {
         completionCallback.onOrchestrationComplete(summary);

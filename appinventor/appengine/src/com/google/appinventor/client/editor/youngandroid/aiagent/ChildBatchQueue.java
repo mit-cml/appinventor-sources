@@ -126,7 +126,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
                   msg.append(aiMessage).append("\n\n");
                 }
                 msg.append(AIOperationFormatter.buildAppliedSummary(operations));
-                uiCallback.addAiMessage(msg.toString());
+                uiCallback.addAiMessage(msg.toString(), System.currentTimeMillis());
               }
             } else {
               // Track error for the grouped summary — don't surface
@@ -171,7 +171,7 @@ final class ChildBatchQueue implements ChildConversation.BatchCallback {
     if (userFeedback != null && !userFeedback.isEmpty()) {
       summary.append("\nUser feedback: ").append(userFeedback);
     }
-    uiCallback.addAiMessage(summary.toString());
+    uiCallback.addAiMessage(summary.toString(), System.currentTimeMillis());
     queueCallback.onRejected(summary.toString());
   }
 

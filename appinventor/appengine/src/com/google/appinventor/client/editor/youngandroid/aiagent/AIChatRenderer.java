@@ -13,11 +13,14 @@ import com.google.appinventor.client.editor.youngandroid.aiagent.chat.RendererHo
 import com.google.appinventor.client.editor.youngandroid.aiagent.chat.StreamingHandler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.Date;
 
 /**
  * Facade for chat rendering in the AI agent dialog.
@@ -38,6 +41,10 @@ public class AIChatRenderer implements RendererHost {
   // Feedback link context (set via setFeedbackContext; links only shown in debug mode)
   private boolean debugEnabled;
   private String conversationId;
+
+  /** Tracks the calendar date of the most recently appended message so
+   *  we only insert a date separator when the calendar date changes. */
+  private String lastMessageDateKey;
 
   /**
    * Constructs a renderer for the given chat history and scroll panels.
@@ -70,11 +77,13 @@ public class AIChatRenderer implements RendererHost {
   /**
    * Adds a right-aligned user message to the chat history.
    *
-   * @param text the user's message text
+   * @param text      the user's message text
+   * @param timestamp epoch-millis timestamp for the per-bubble time label
    */
-  public void addUserMessage(String text) {
+  public void addUserMessage(String text, long timestamp) {
+    maybeAppendDateSeparator(timestamp);
     FlowPanel messageBubble = createMessageBubble(
-        MESSAGES.aiChatUserLabel(), text, true);
+        MESSAGES.aiChatUserLabel(), text, true, timestamp);
     chatHistory.add(messageBubble);
     scrollToBottom();
   }
@@ -83,11 +92,13 @@ public class AIChatRenderer implements RendererHost {
    * Adds a left-aligned AI message to the chat history with a
    * "Share Feedback" link (when feedback context is set).
    *
-   * @param text the AI's message text
+   * @param text      the AI's message text
+   * @param timestamp epoch-millis timestamp for the per-bubble time label
    */
-  public void addAiMessage(String text) {
+  public void addAiMessage(String text, long timestamp) {
+    maybeAppendDateSeparator(timestamp);
     FlowPanel messageBubble = createMessageBubble(
-        MESSAGES.aiChatAiLabel(), text, false);
+        MESSAGES.aiChatAiLabel(), text, false, timestamp);
     appendFeedbackLink(messageBubble);
     chatHistory.add(messageBubble);
     scrollToBottom();
@@ -237,7 +248,8 @@ public class AIChatRenderer implements RendererHost {
   // ---- RendererHost implementation ----
 
   @Override
-  public FlowPanel createMessageBubble(String sender, String text, boolean isUser) {
+  public FlowPanel createMessageBubble(String sender, String text, boolean isUser,
+      long timestamp) {
     FlowPanel wrapper = new FlowPanel();
     wrapper.getElement().getStyle().setProperty("textAlign", isUser ? "right" : "left");
     wrapper.getElement().getStyle().setMarginBottom(6, Unit.PX);
@@ -246,6 +258,7 @@ public class AIChatRenderer implements RendererHost {
     FlowPanel bubble = new FlowPanel();
     bubble.getElement().getStyle().setProperty("display", "inline-block");
     bubble.getElement().getStyle().setProperty("maxWidth", "85%");
+    bubble.getElement().getStyle().setProperty("minWidth", "80px");
     bubble.getElement().getStyle().setProperty("textAlign", "left");
     bubble.getElement().getStyle().setPadding(8, Unit.PX);
     bubble.getElement().getStyle().setProperty("borderRadius", "8px");
@@ -276,8 +289,77 @@ public class AIChatRenderer implements RendererHost {
     messageHtml.getElement().getStyle().setProperty("wordWrap", "break-word");
     bubble.add(messageHtml);
 
+    // Per-bubble local-time label. Timestamps of 0 (legacy messages from
+    // before we tracked per-message timestamps) are rendered without a
+    // time label to avoid showing "00:00".
+    if (timestamp > 0) {
+      Label timeLabel = new Label(DateTimeFormat.getFormat("HH:mm")
+          .format(new Date(timestamp)));
+      timeLabel.addStyleName("ai-chat-bubble-time");
+      timeLabel.getElement().getStyle().setProperty("display", "block");
+      timeLabel.getElement().getStyle().setFontSize(10, Unit.PX);
+      timeLabel.getElement().getStyle().setColor("#888");
+      timeLabel.getElement().getStyle().setMarginTop(2, Unit.PX);
+      timeLabel.getElement().getStyle().setProperty("textAlign",
+          isUser ? "right" : "left");
+      bubble.add(timeLabel);
+    }
+
     wrapper.add(bubble);
     return wrapper;
+  }
+
+  @Override
+  public void maybeAppendDateSeparator(long timestamp) {
+    if (timestamp <= 0) {
+      // Legacy or unknown timestamp — don't emit a separator so the chat
+      // doesn't get a "Jan 1, 1970" header.
+      return;
+    }
+    String key = calendarDateKey(timestamp);
+    if (!key.equals(lastMessageDateKey)) {
+      appendDateSeparator(timestamp);
+      lastMessageDateKey = key;
+    }
+  }
+
+  private void appendDateSeparator(long ts) {
+    Label sep = new Label(formatDateSeparatorLabel(ts));
+    sep.addStyleName("ai-chat-date-separator");
+    sep.getElement().getStyle().setProperty("textAlign", "center");
+    sep.getElement().getStyle().setColor("#888");
+    sep.getElement().getStyle().setFontSize(11, Unit.PX);
+    sep.getElement().getStyle().setProperty("textTransform", "uppercase");
+    sep.getElement().getStyle().setProperty("letterSpacing", "0.5px");
+    sep.getElement().getStyle().setMarginTop(12, Unit.PX);
+    sep.getElement().getStyle().setMarginBottom(4, Unit.PX);
+    chatHistory.add(sep);
+  }
+
+  private static String calendarDateKey(long ts) {
+    return DateTimeFormat.getFormat("yyyy-MM-dd").format(new Date(ts));
+  }
+
+  private String formatDateSeparatorLabel(long ts) {
+    Date d = new Date(ts);
+    long now = System.currentTimeMillis();
+    String dKey = calendarDateKey(ts);
+    String nowKey = calendarDateKey(now);
+    if (dKey.equals(nowKey)) {
+      return MESSAGES.aiChatDateSeparatorToday();
+    }
+    long oneDayMs = 24L * 60L * 60L * 1000L;
+    if (calendarDateKey(now - oneDayMs).equals(dKey)) {
+      return MESSAGES.aiChatDateSeparatorYesterday();
+    }
+    long delta = now - ts;
+    if (delta >= 0 && delta < 7 * oneDayMs) {
+      return DateTimeFormat.getFormat("EEEE").format(d);
+    }
+    String thisYear = DateTimeFormat.getFormat("yyyy").format(new Date(now));
+    String thatYear = DateTimeFormat.getFormat("yyyy").format(d);
+    String pattern = thisYear.equals(thatYear) ? "MMM d" : "MMM d, yyyy";
+    return DateTimeFormat.getFormat(pattern).format(d);
   }
 
   @Override
@@ -305,6 +387,7 @@ public class AIChatRenderer implements RendererHost {
    */
   public void clear() {
     chatHistory.clear();
+    lastMessageDateKey = null;
   }
 
   // ---- JSNI Markdown ----

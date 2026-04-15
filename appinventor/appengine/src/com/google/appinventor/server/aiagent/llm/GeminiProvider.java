@@ -75,8 +75,28 @@ public class GeminiProvider implements LLMProvider {
       List<ChatMessage> history, ReadOnlyToolResolver resolver,
       StreamBuffer streamBuffer) throws LLMProviderException {
 
-    // Build the contents array from history + current user message
-    JSONArray contents = buildContents(history, contextMessages, userMessage);
+    // Build the contents array.
+    // - If we have a live providerRef, we'll merge it with a fresh
+    //   (history-less) contents below.
+    // - If we have NO providerRef but have history, replay history with
+    //   full structured-content fidelity (function calls + results).
+    // - Otherwise, fall back to the plain-text history serialization for
+    //   compatibility with existing call sites.
+    boolean replayHistory = (providerRef == null || providerRef.isEmpty())
+        && history != null && !history.isEmpty();
+    JSONArray contents;
+    if (replayHistory) {
+      contents = new JSONArray();
+      for (ChatMessage m : history) {
+        appendHistoryTurnToContents(contents, m);
+      }
+      JSONArray currentOnly = buildContents(null, contextMessages, userMessage);
+      for (int i = 0; i < currentOnly.length(); i++) {
+        contents.put(currentOnly.get(i));
+      }
+    } else {
+      contents = buildContents(history, contextMessages, userMessage);
+    }
     JSONArray toolDeclarations = buildToolDeclarations(tools);
 
     // Internal tool-use loop
@@ -470,6 +490,90 @@ public class GeminiProvider implements LLMProvider {
     throw new LLMProviderException(
         "Gemini continuation tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
         "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Appends a single history turn to a Gemini {@code contents} array,
+   * preserving structured content (function calls and results) when the
+   * message carries {@code structuredContent} from
+   * {@code ConversationManager.buildStructuredContentPair}.
+   *
+   * <p>Mapping:
+   * <ul>
+   *   <li>user plain → {@code {"role":"user","parts":[{"text":...}]}}</li>
+   *   <li>assistant plain → {@code {"role":"model","parts":[{"text":...}]}}</li>
+   *   <li>assistant tool_use → {@code {"role":"model","parts":[{"functionCall":{"name":..,"args":..}}]}}</li>
+   *   <li>tool_result → {@code {"role":"function","parts":[{"functionResponse":{"name":..,"response":{"content":..}}}]}}</li>
+   * </ul>
+   *
+   * <p>Package-visible for test access.
+   */
+  static void appendHistoryTurnToContents(JSONArray contents, ChatMessage m) {
+    String role = m.getRole() != null ? m.getRole() : "user";
+    String structured = m.getStructuredContent();
+    if (structured != null && !structured.isEmpty()) {
+      try {
+        JSONArray parts = new JSONArray(structured);
+        JSONArray modelParts = new JSONArray();
+        JSONArray functionParts = new JSONArray();
+        for (int i = 0; i < parts.length(); i++) {
+          JSONObject part = parts.getJSONObject(i);
+          String type = part.optString("type", "");
+          if ("text".equals(type)) {
+            modelParts.put(new JSONObject().put("text", part.optString("text", "")));
+          } else if ("tool_use".equals(type)) {
+            String name = part.optString("name", "");
+            JSONObject fc = new JSONObject().put("name", name);
+            Object input = part.opt("input");
+            if (input instanceof JSONObject) {
+              fc.put("args", input);
+            } else if (input != null) {
+              try {
+                fc.put("args", new JSONObject(input.toString()));
+              } catch (JSONException e) {
+                fc.put("args", new JSONObject());
+              }
+            } else {
+              fc.put("args", new JSONObject());
+            }
+            modelParts.put(new JSONObject().put("functionCall", fc));
+          } else if ("tool_result".equals(type)) {
+            String toolName = part.optString("tool_name", "tool");
+            String content = part.optString("content", "");
+            JSONObject fr = new JSONObject()
+                .put("name", toolName)
+                .put("response", new JSONObject().put("content", content));
+            functionParts.put(new JSONObject().put("functionResponse", fr));
+          }
+        }
+        if (modelParts.length() > 0) {
+          String geminiRole = "assistant".equals(role) || "model".equals(role)
+              ? "model" : "user";
+          contents.put(new JSONObject()
+              .put("role", geminiRole)
+              .put("parts", modelParts));
+        }
+        if (functionParts.length() > 0) {
+          contents.put(new JSONObject()
+              .put("role", "function")
+              .put("parts", functionParts));
+        }
+        return;
+      } catch (JSONException e) {
+        LOG.warning("Failed to parse structuredContent during history replay: "
+            + e.getMessage());
+        // Fall through to plain text.
+      }
+    }
+    // Plain text fallback.
+    if ("system".equals(role)) {
+      return;
+    }
+    String text = m.getText() != null ? m.getText() : "";
+    String geminiRole = "assistant".equals(role) ? "model" : "user";
+    contents.put(new JSONObject()
+        .put("role", geminiRole)
+        .put("parts", new JSONArray().put(new JSONObject().put("text", text))));
   }
 
   /**

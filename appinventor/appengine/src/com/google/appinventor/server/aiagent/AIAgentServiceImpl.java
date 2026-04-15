@@ -9,10 +9,12 @@ import com.google.appinventor.server.OdeRemoteServiceServlet;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
+import com.google.appinventor.shared.rpc.aiagent.AIConversationSummary;
 import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
 
@@ -85,7 +87,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         request.isPlatformMessage(), request.getContextHint(), request.getCompanionSnapshot(),
         request.isPlanExecuteMode(),
         request.isOrchestrationMode(), request.getTargetScreen(),
-        request.isExecutionPhase());
+        request.isExecutionPhase(), request.getConversationId());
   }
 
   @Override
@@ -100,7 +102,7 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
         request.getCompanionSnapshot(), request.isPlanExecuteMode(),
         request.isOrchestrationMode(), request.getTargetScreen(),
-        request.isExecutionPhase());
+        request.isExecutionPhase(), request.getConversationId());
   }
 
   @Override
@@ -121,29 +123,68 @@ public class AIAgentServiceImpl extends OdeRemoteServiceServlet
         request.getBlockWarnings(), request.getLocale(), request.getLanguageDisplayName(),
         request.getCompanionSnapshot(), request.isPlanExecuteMode(),
         request.isOrchestrationMode(), request.getTargetScreen(),
-        request.isExecutionPhase());
+        request.isExecutionPhase(), request.getConversationId());
   }
 
   @Override
-  public void clearConversation(long projectId) {
+  public List<AIConversationSummary> listConversations(long projectId) {
     String userId = userInfoProvider.getUserId();
     try {
       storageIo.assertUserHasProject(userId, projectId);
     } catch (SecurityException e) {
       throw new SecurityException("You do not have access to this project.");
     }
-    engine.clearConversation(projectId);
+    List<StoredData.ConversationData> rows = engine.listConversations(userId, projectId);
+    List<AIConversationSummary> out = new ArrayList<>(rows.size());
+    for (StoredData.ConversationData cd : rows) {
+      out.add(new AIConversationSummary(cd.conversationId, cd.title,
+          cd.createdAt, cd.updatedAt));
+    }
+    return out;
   }
 
   @Override
-  public List<AIConversationMessage> getConversationHistory(long projectId) {
+  public AIConversationSummary renameConversation(String conversationId, String newTitle) {
     String userId = userInfoProvider.getUserId();
-    try {
-      storageIo.assertUserHasProject(userId, projectId);
-    } catch (SecurityException e) {
-      return Collections.emptyList();
+    assertOwnsConversation(userId, conversationId);
+    engine.renameConversation(conversationId, newTitle);
+    StoredData.ConversationData cd = engine.getConversationMetadata(conversationId);
+    if (cd == null) {
+      // Race: someone deleted the conversation between the ownership check
+      // and the rename. Return a minimal summary using the id we were given.
+      return new AIConversationSummary(conversationId, null, 0L, 0L);
     }
-    return engine.getConversationHistory(projectId);
+    return new AIConversationSummary(cd.conversationId, cd.title, cd.createdAt, cd.updatedAt);
+  }
+
+  @Override
+  public void deleteConversation(String conversationId) {
+    String userId = userInfoProvider.getUserId();
+    assertOwnsConversation(userId, conversationId);
+    engine.deleteConversation(conversationId);
+  }
+
+  @Override
+  public List<AIConversationMessage> getConversationHistory(String conversationId) {
+    String userId = userInfoProvider.getUserId();
+    assertOwnsConversation(userId, conversationId);
+    return engine.getConversationHistoryByConvId(conversationId);
+  }
+
+  /**
+   * Throws {@link SecurityException} if the given user does not own the
+   * conversation or the project that owns it.
+   */
+  private void assertOwnsConversation(String userId, String conversationId) {
+    StoredData.ConversationData cd = engine.getConversationMetadata(conversationId);
+    if (cd == null || !userId.equals(cd.userId)) {
+      throw new SecurityException("Conversation access denied.");
+    }
+    try {
+      storageIo.assertUserHasProject(userId, cd.projectId);
+    } catch (SecurityException e) {
+      throw new SecurityException("Conversation access denied.");
+    }
   }
 
   @Override

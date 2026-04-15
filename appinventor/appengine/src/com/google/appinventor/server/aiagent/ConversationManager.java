@@ -9,6 +9,7 @@ import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.aiagent.llm.RawToolCall;
 import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.storage.StoredData.MessageRole;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 
@@ -50,26 +51,49 @@ public class ConversationManager {
     messageSequence.set(0);
   }
 
-  // ---------- Conversation state ----------
+  // ---------- Conversation state (convId-keyed) ----------
 
-  public AIConversationState getConversation(long projectId) {
-    return storageIo.getAIConversationState(projectId);
+  /** Gets the AIConversationState keyed by conversationId (memcache-backed). */
+  public AIConversationState getConversation(String conversationId) {
+    return storageIo.getAIConversationStateByConvId(conversationId);
   }
 
-  public void saveConversation(long projectId, AIConversationState state) {
-    storageIo.saveAIConversationState(projectId, state);
+  /** Saves the AIConversationState keyed by conversationId (memcache-backed). */
+  public void saveConversation(String conversationId, AIConversationState state) {
+    storageIo.saveAIConversationStateByConvId(conversationId, state);
   }
 
-  public void clearConversation(long projectId) {
-    AIConversationState conv = getConversation(projectId);
-    storageIo.clearAIConversationState(projectId);
-    storageIo.clearAIStreamBuffer(projectId);
-
-    // Delete stored messages from Datastore
-    if (conv != null) {
-      storageIo.deleteAIConversationMessages(conv.getConversationId());
-    }
+  /**
+   * Clears only the memcache-backed conversation state for a conversation.
+   * Does NOT delete metadata or messages; use {@link #deleteConversation} for that.
+   */
+  public void clearConversationState(String conversationId) {
+    storageIo.clearAIConversationStateByConvId(conversationId);
   }
+
+  // ---------- Conversation metadata CRUD ----------
+
+  public String createConversation(String userId, long projectId) {
+    return storageIo.createConversation(userId, projectId);
+  }
+
+  public StoredData.ConversationData getConversationMetadata(String conversationId) {
+    return storageIo.getConversationMetadata(conversationId);
+  }
+
+  public List<StoredData.ConversationData> listConversations(String userId, long projectId) {
+    return storageIo.listConversations(userId, projectId);
+  }
+
+  public void renameConversation(String conversationId, String title) {
+    storageIo.renameConversation(conversationId, title);
+  }
+
+  public void deleteConversation(String conversationId) {
+    storageIo.deleteConversation(conversationId);
+  }
+
+  // ---------- Screen-scoped conversation state (child agents) ----------
 
   /** Gets conversation state for a specific screen (child agent). */
   public AIConversationState getConversation(long projectId, String screenName) {
@@ -102,7 +126,7 @@ public class ConversationManager {
     messageSequence.set(seq + 1);
     storageIo.storeAIConversationMessage(conversationId, now, seq, role, text,
         structuredContent, display);
-    storageIo.cleanupConversationMessages();
+    storageIo.touchConversation(conversationId, now);
   }
 
   public List<ChatMessage> loadConversation(String conversationId) {

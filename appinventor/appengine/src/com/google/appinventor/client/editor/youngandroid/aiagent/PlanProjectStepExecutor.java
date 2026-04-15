@@ -249,7 +249,7 @@ final class PlanProjectStepExecutor {
             LOG.warning("Failed to create screen " + screenName
                 + ": " + caught.getMessage());
             uiCallback.addAiMessage("Failed to create screen " + screenName
-                + ": " + caught.getMessage());
+                + ": " + caught.getMessage(), System.currentTimeMillis());
             createScreensThenWait(screensToCreate, index + 1,
                 yaProjectEditor, screenSteps, uiCallback, readyCallback);
           }

@@ -32,6 +32,7 @@ public class ChatMessage {
   private final String text;
   private final String structuredContent;
   private final boolean display;
+  private final long timestamp;
 
   /**
    * Creates a new chat message with text only (no structured content).
@@ -66,10 +67,26 @@ public class ChatMessage {
    * @param display           true if this message should appear in the client chat UI
    */
   public ChatMessage(String role, String text, String structuredContent, boolean display) {
+    this(role, text, structuredContent, display, 0L);
+  }
+
+  /**
+   * Creates a new chat message with a server-side timestamp.
+   *
+   * @param role              the role of the message sender
+   * @param text              the text content (human-readable summary)
+   * @param structuredContent provider-agnostic JSON array of content parts,
+   *                          or null for plain-text-only messages
+   * @param display           true if this message should appear in the client chat UI
+   * @param timestamp         server-side timestamp in millis (0 if unknown)
+   */
+  public ChatMessage(String role, String text, String structuredContent, boolean display,
+      long timestamp) {
     this.role = role;
     this.text = text;
     this.structuredContent = structuredContent;
     this.display = display;
+    this.timestamp = timestamp;
   }
 
   /**
@@ -117,6 +134,17 @@ public class ChatMessage {
    */
   public boolean isDisplay() {
     return display;
+  }
+
+  /**
+   * Returns the server-side timestamp (millis) when the message was stored,
+   * or 0 if unknown (e.g. messages built from live LLM responses before
+   * persistence, or older stored rows).
+   *
+   * @return the timestamp in millis, or 0 if unknown
+   */
+  public long getTimestamp() {
+    return timestamp;
   }
 
   @Override

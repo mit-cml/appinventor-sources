@@ -34,6 +34,7 @@ public class AIAgentRequest implements IsSerializable, Serializable {
   private boolean planExecuteMode;
   private boolean executionPhase;
   private String companionSnapshot;
+  private String conversationId;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -291,5 +292,17 @@ public class AIAgentRequest implements IsSerializable, Serializable {
 
   public void setCompanionSnapshot(String companionSnapshot) {
     this.companionSnapshot = companionSnapshot;
+  }
+
+  /**
+   * Returns the conversation UUID this request belongs to, or null when the
+   * client is starting a new conversation.
+   */
+  public String getConversationId() {
+    return conversationId;
+  }
+
+  public void setConversationId(String conversationId) {
+    this.conversationId = conversationId;
   }
 }

@@ -29,6 +29,7 @@ import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBu
 import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
+import com.google.appinventor.server.storage.StoredData.ConversationData;
 import com.google.appinventor.server.storage.StoredData.ConversationMessageData;
 import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
@@ -218,6 +219,7 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(AllowedTutorialUrls.class);
     ObjectifyService.register(AllowedIosExtensions.class);
     ObjectifyService.register(ConversationMessageData.class);
+    ObjectifyService.register(ConversationData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     // gcsBucket is where project storage goes
@@ -668,6 +670,23 @@ public class ObjectifyStorageIo implements StorageIo {
           datastore.delete(projectKey);
         }
       }, true);
+      // third job cascades AI agent conversations: metadata rows and their
+      // messages. Runs before blob/GCS cleanup because it's a pure-datastore
+      // operation and keeps the delete order readable. Uses no transaction
+      // because queries span entity groups (ConversationData and
+      // ConversationMessageData have no common ancestor).
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          List<ConversationData> convs = datastore.query(ConversationData.class)
+              .filter("projectId", projectId).list();
+          for (ConversationData cd : convs) {
+            datastore.delete(datastore.query(ConversationMessageData.class)
+                .filter("conversationId", cd.conversationId).fetchKeys());
+          }
+          datastore.delete(convs);
+        }
+      }, false);
       // have to delete the blobs outside of the user and project jobs
       for (String blobKeyString: blobKeys) {
         deleteBlobstoreFile(blobKeyString);
@@ -2928,19 +2947,19 @@ public class ObjectifyStorageIo implements StorageIo {
   private static final int CONVERSATION_TTL_SECONDS = 24 * 60 * 60; // 24 hours
 
   @Override
-  public void saveAIConversationState(long projectId, AIConversationState state) {
-    memcache.put(AI_CONV_CACHE_KEY_PREFIX + projectId, state,
+  public void saveAIConversationStateByConvId(String conversationId, AIConversationState state) {
+    memcache.put(AI_CONV_CACHE_KEY_PREFIX + conversationId, state,
         Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
   }
 
   @Override
-  public AIConversationState getAIConversationState(long projectId) {
-    return (AIConversationState) memcache.get(AI_CONV_CACHE_KEY_PREFIX + projectId);
+  public AIConversationState getAIConversationStateByConvId(String conversationId) {
+    return (AIConversationState) memcache.get(AI_CONV_CACHE_KEY_PREFIX + conversationId);
   }
 
   @Override
-  public void clearAIConversationState(long projectId) {
-    memcache.delete(AI_CONV_CACHE_KEY_PREFIX + projectId);
+  public void clearAIConversationStateByConvId(String conversationId) {
+    memcache.delete(AI_CONV_CACHE_KEY_PREFIX + conversationId);
   }
 
   @Override
@@ -2962,7 +2981,8 @@ public class ObjectifyStorageIo implements StorageIo {
     msg.role = role.name().toLowerCase();
     msg.text = text;
     msg.display = display;
-    msg.expiresAt = timestamp + CONVERSATION_TTL_SECONDS * 1000L;
+    // No TTL under multi-conversation model; retained until user deletes.
+    msg.expiresAt = 0;
 
     // Safety: if the structured content would push the entity past ~900KB,
     // drop it and fall back to text-only (Datastore limit is 1MB per entity).
@@ -2978,7 +2998,6 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public List<ChatMessage> loadAIConversationMessages(String conversationId) {
-    long now = System.currentTimeMillis();
     Objectify ofy = ObjectifyService.begin();
     // Note: timestamp and sequence are @Unindexed (class-level annotation),
     // so we cannot use .order() on them — Datastore silently drops entities
@@ -3000,11 +3019,9 @@ public class ObjectifyStorageIo implements StorageIo {
 
     List<ChatMessage> result = new ArrayList<>();
     for (ConversationMessageData m : messages) {
-      if (m.expiresAt > now) {
-        result.add(new ChatMessage(
-            m.role != null ? m.role : "user",
-            m.text, m.structuredContent, m.display));
-      }
+      result.add(new ChatMessage(
+          m.role != null ? m.role : "user",
+          m.text, m.structuredContent, m.display, m.timestamp));
     }
     return result;
   }
@@ -3017,19 +3034,80 @@ public class ObjectifyStorageIo implements StorageIo {
         .fetchKeys());
   }
 
-  // Cleanup expired conversation messages. Called opportunistically when
-  // storing new messages. Removes up to 10 at a time to limit processing,
-  // similar to cleanupNonces().
   @Override
-  public void cleanupConversationMessages() {
-    Objectify datastore = ObjectifyService.begin();
-    try {
-      datastore.delete(datastore.query(ConversationMessageData.class)
-          .filter("expiresAt <", System.currentTimeMillis())
-          .limit(10).fetchKeys());
-    } catch (Exception ex) {
-      LOG.log(Level.WARNING, "Exception during cleanupConversationMessages", ex);
+  public String createConversation(String userId, long projectId) {
+    String convId = UUID.randomUUID().toString();
+    long now = System.currentTimeMillis();
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = new ConversationData();
+    cd.conversationId = convId;
+    cd.projectId = projectId;
+    cd.userId = userId;
+    cd.title = null;
+    cd.createdAt = now;
+    cd.updatedAt = now;
+    ofy.put(cd);
+    return convId;
+  }
+
+  @Override
+  public ConversationData getConversationMetadata(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    return ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+  }
+
+  @Override
+  public List<ConversationData> listConversations(String userId, long projectId) {
+    Objectify ofy = ObjectifyService.begin();
+    List<ConversationData> results = ofy.query(ConversationData.class)
+        .filter("projectId", projectId).list();
+    List<ConversationData> filtered = new ArrayList<>(results.size());
+    for (ConversationData cd : results) {
+      if (userId.equals(cd.userId)) filtered.add(cd);
     }
+    Collections.sort(filtered, new Comparator<ConversationData>() {
+      @Override public int compare(ConversationData a, ConversationData b) {
+        return Long.compare(b.updatedAt, a.updatedAt);
+      }
+    });
+    return filtered;
+  }
+
+  @Override
+  public void renameConversation(String conversationId, String title) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+    if (cd == null) return;
+    if (title != null) {
+      title = title.trim();
+      if (title.isEmpty()) title = null;
+      else if (title.length() > 120) title = title.substring(0, 120);
+    }
+    cd.title = title;
+    ofy.put(cd);
+  }
+
+  @Override
+  public void touchConversation(String conversationId, long updatedAt) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+    if (cd == null) return;
+    cd.updatedAt = updatedAt;
+    ofy.put(cd);
+  }
+
+  @Override
+  public void deleteConversation(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+    if (cd != null) ofy.delete(cd);
+    ofy.delete(ofy.query(ConversationMessageData.class)
+        .filter("conversationId", conversationId).fetchKeys());
+    memcache.delete(AI_CONV_CACHE_KEY_PREFIX + conversationId);
   }
 
   // --- AI Stream Buffer ---

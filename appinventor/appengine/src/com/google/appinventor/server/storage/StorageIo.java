@@ -596,9 +596,6 @@ public interface StorageIo {
   // Cleanup expired nonces
   void cleanupNonces();
 
-  // Cleanup expired AI conversation messages
-  void cleanupConversationMessages();
-
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
 
@@ -695,30 +692,6 @@ public interface StorageIo {
   // ---------- AI Agent conversation storage ----------
 
   /**
-   * Saves an AI conversation state to memcache, keyed by projectId.
-   *
-   * @param projectId   the project this conversation belongs to
-   * @param state       the conversation state
-   * @param ttlSeconds  time-to-live in seconds
-   */
-  void saveAIConversationState(long projectId, AIConversationState state);
-
-  /**
-   * Loads the AI conversation state from memcache.
-   *
-   * @param projectId the project whose conversation state to load
-   * @return the conversation state, or null if not found
-   */
-  AIConversationState getAIConversationState(long projectId);
-
-  /**
-   * Clears the AI conversation state from memcache.
-   *
-   * @param projectId the project whose conversation state to clear
-   */
-  void clearAIConversationState(long projectId);
-
-  /**
    * Stores an AI conversation message to the Datastore.
    *
    * @param conversationId  the conversation UUID
@@ -762,6 +735,77 @@ public interface StorageIo {
    * @param conversationId the conversation UUID
    */
   void deleteAIConversationMessages(String conversationId);
+
+  // ---------- Multi-conversation support ----------
+
+  /**
+   * Creates a new conversation for the given user and project.
+   *
+   * @param userId    the owning user
+   * @param projectId the project this conversation belongs to
+   * @return the newly generated conversation UUID
+   */
+  String createConversation(String userId, long projectId);
+
+  /**
+   * Loads the metadata entity for a conversation.
+   *
+   * @param conversationId the conversation UUID
+   * @return the metadata entity, or null if no such conversation exists
+   */
+  StoredData.ConversationData getConversationMetadata(String conversationId);
+
+  /**
+   * Lists conversations for a user within a project, sorted most-recent first.
+   *
+   * @param userId    the owning user
+   * @param projectId the project to list conversations for
+   * @return list of conversation metadata entities
+   */
+  List<StoredData.ConversationData> listConversations(String userId, long projectId);
+
+  /**
+   * Renames a conversation. Titles are trimmed; empty titles are stored as
+   * null and titles longer than 120 chars are truncated.
+   *
+   * @param conversationId the conversation UUID
+   * @param title          the new title (may be null/empty)
+   */
+  void renameConversation(String conversationId, String title);
+
+  /**
+   * Updates the updatedAt timestamp for a conversation.
+   *
+   * @param conversationId the conversation UUID
+   * @param updatedAt      the new updatedAt timestamp
+   */
+  void touchConversation(String conversationId, long updatedAt);
+
+  /**
+   * Deletes a conversation along with all of its messages and cached state.
+   *
+   * @param conversationId the conversation UUID
+   */
+  void deleteConversation(String conversationId);
+
+  // ---------- ConversationId-keyed AI conversation state ----------
+
+  /**
+   * Saves an AI conversation state to memcache, keyed by conversationId.
+   */
+  void saveAIConversationStateByConvId(String conversationId, AIConversationState state);
+
+  /**
+   * Loads an AI conversation state from memcache by conversationId.
+   *
+   * @return the conversation state, or null if not found
+   */
+  AIConversationState getAIConversationStateByConvId(String conversationId);
+
+  /**
+   * Clears an AI conversation state from memcache by conversationId.
+   */
+  void clearAIConversationStateByConvId(String conversationId);
 
   // --- AI Stream Buffer ---
   void initAIStreamBuffer(long projectId);

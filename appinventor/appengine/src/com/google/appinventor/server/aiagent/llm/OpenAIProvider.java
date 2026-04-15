@@ -87,6 +87,12 @@ public class OpenAIProvider implements LLMProvider {
     Object currentInput;
     JSONArray pendingCalls = extractPendingToolCalls(providerRef);
     boolean hasContext = contextMessages != null && !contextMessages.isEmpty();
+    // History replay fallback: when we don't have a live responseId AND the
+    // caller supplied a non-empty history, replay the history as Responses API
+    // input items so the model sees prior turns. Required for cold-memcache
+    // resume paths where providerRef is null/expired.
+    boolean replayHistory =
+        responseId == null && history != null && !history.isEmpty();
     if (pendingCalls != null && pendingCalls.length() > 0) {
       JSONArray inputArray = new JSONArray();
       // chat() is called for follow-up messages (new question, user rejection,
@@ -133,13 +139,20 @@ public class OpenAIProvider implements LLMProvider {
           .put("role", "user")
           .put("content", userMessage));
       currentInput = inputArray;
-    } else if (hasContext) {
+    } else if (replayHistory || hasContext) {
       JSONArray inputArray = new JSONArray();
-      for (String ctx : contextMessages) {
-        if (ctx != null && !ctx.isEmpty()) {
-          inputArray.put(new JSONObject()
-              .put("role", "user")
-              .put("content", ctx));
+      if (replayHistory) {
+        for (ChatMessage m : history) {
+          appendHistoryTurnToInput(inputArray, m);
+        }
+      }
+      if (hasContext) {
+        for (String ctx : contextMessages) {
+          if (ctx != null && !ctx.isEmpty()) {
+            inputArray.put(new JSONObject()
+                .put("role", "user")
+                .put("content", ctx));
+          }
         }
       }
       inputArray.put(new JSONObject()
@@ -437,6 +450,93 @@ public class OpenAIProvider implements LLMProvider {
     throw new LLMProviderException(
         "OpenAI continuation tool-use loop exceeded " + MAX_TOOL_ITERATIONS + " iterations",
         "The AI took too many steps to process your request. Please try again.");
+  }
+
+  /**
+   * Appends a single history turn to the Responses API {@code input} array,
+   * using the provider-agnostic structured content JSON produced by
+   * {@code ConversationManager.buildStructuredContentPair} when present.
+   *
+   * <p>Mapping:
+   * <ul>
+   *   <li>user plain text → {@code {"role":"user","content":[{"type":"input_text","text":...}]}}</li>
+   *   <li>assistant plain text → {@code {"role":"assistant","content":[{"type":"output_text","text":...}]}}</li>
+   *   <li>assistant tool_use part → {@code {"type":"function_call","call_id":id,"name":name,"arguments":args}}</li>
+   *   <li>tool_result part → {@code {"type":"function_call_output","call_id":id,"output":content}}</li>
+   * </ul>
+   *
+   * <p>Package-visible for test access.
+   */
+  static void appendHistoryTurnToInput(JSONArray inputArray, ChatMessage m) {
+    String role = m.getRole() != null ? m.getRole() : "user";
+    String structured = m.getStructuredContent();
+    if (structured != null && !structured.isEmpty()) {
+      try {
+        JSONArray parts = new JSONArray(structured);
+        // Assistant messages may contain an interleaved text+tool_use mix.
+        // Emit a leading "message" entry that accumulates any text parts,
+        // followed by function_call entries; tool_result parts become
+        // function_call_output entries.
+        StringBuilder textBuf = new StringBuilder();
+        JSONArray functionCalls = new JSONArray();
+        JSONArray functionOutputs = new JSONArray();
+        for (int i = 0; i < parts.length(); i++) {
+          JSONObject part = parts.getJSONObject(i);
+          String type = part.optString("type", "");
+          if ("text".equals(type)) {
+            textBuf.append(part.optString("text", ""));
+          } else if ("tool_use".equals(type)) {
+            String toolUseId = part.optString("id", "");
+            String name = part.optString("name", "");
+            Object input = part.opt("input");
+            String argsJson = input == null ? "{}" : input.toString();
+            functionCalls.put(new JSONObject()
+                .put("type", "function_call")
+                .put("call_id", toolUseId)
+                .put("name", name)
+                .put("arguments", argsJson));
+          } else if ("tool_result".equals(type)) {
+            String toolUseId = part.optString("tool_use_id", "");
+            String output = part.optString("content", "");
+            functionOutputs.put(new JSONObject()
+                .put("type", "function_call_output")
+                .put("call_id", toolUseId)
+                .put("output", output));
+          }
+        }
+        if (textBuf.length() > 0) {
+          String contentType = "assistant".equals(role) ? "output_text" : "input_text";
+          inputArray.put(new JSONObject()
+              .put("role", role)
+              .put("content", new JSONArray()
+                  .put(new JSONObject().put("type", contentType).put("text", textBuf.toString()))));
+        }
+        for (int i = 0; i < functionCalls.length(); i++) {
+          inputArray.put(functionCalls.get(i));
+        }
+        for (int i = 0; i < functionOutputs.length(); i++) {
+          inputArray.put(functionOutputs.get(i));
+        }
+        return;
+      } catch (JSONException e) {
+        LOG.warning("Failed to parse structuredContent during history replay: "
+            + e.getMessage());
+        // Fall through to plain-text handling.
+      }
+    }
+    // Plain text fallback.
+    String text = m.getText() != null ? m.getText() : "";
+    if ("tool_result".equals(role)) {
+      // No structured content means no call_id to attach; skip — the LLM will
+      // infer context from surrounding messages.
+      return;
+    }
+    String contentType = "assistant".equals(role) ? "output_text" : "input_text";
+    String outRole = "assistant".equals(role) ? "assistant" : "user";
+    inputArray.put(new JSONObject()
+        .put("role", outRole)
+        .put("content", new JSONArray()
+            .put(new JSONObject().put("type", contentType).put("text", text))));
   }
 
   /**

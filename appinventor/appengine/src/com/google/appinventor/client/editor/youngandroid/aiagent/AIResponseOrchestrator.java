@@ -15,6 +15,7 @@ import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentService;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentServiceAsync;
 import com.google.appinventor.shared.rpc.aiagent.AIConversationMessage;
+import com.google.appinventor.shared.rpc.aiagent.AIConversationSummary;
 import com.google.appinventor.shared.rpc.aiagent.AIOperation;
 import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
 import com.google.appinventor.shared.rpc.aiagent.AIStreamStatus;
@@ -78,8 +79,8 @@ public class AIResponseOrchestrator {
    * Callback interface for UI updates from the orchestrator.
    */
   public interface ChatCallback {
-    void addUserMessage(String text);
-    void addAiMessage(String text);
+    void addUserMessage(String text, long timestamp);
+    void addAiMessage(String text, long timestamp);
     void startStreamingBubble();
     void appendStreamingText(String delta);
     void appendStreamingThinking(String delta);
@@ -119,11 +120,19 @@ public class AIResponseOrchestrator {
   private boolean autoAcceptAll;
   private boolean pendingPlanProposal;
   private boolean debugBannerShown;
+  private boolean debugEnabled;
   private boolean orchestrationEnabled;
   private boolean planEditEnabled;
 
   /** Manages parallel child conversations during multi-screen plan execution. */
   private AIOrchestrationManager orchestrationManager;
+
+  /**
+   * The active conversation UUID. Null when a new conversation is pending —
+   * the server mints one on the first {@link #sendMessage} and echoes it
+   * back on the response, at which point this field is populated.
+   */
+  private String currentConversationId;
 
   /** Original total number of tools in the batch, preserved across retries. */
   private int originalToolCount;
@@ -161,6 +170,7 @@ public class AIResponseOrchestrator {
    */
   public void sendMessage(String text) {
     AIAgentRequest request = contextCollector.buildRequest(text);
+    request.setConversationId(currentConversationId);
     requestInFlight = true;
     callback.setRequestInFlight(true);
     validationRetryCount = 0;
@@ -184,7 +194,7 @@ public class AIResponseOrchestrator {
         requestInFlight = false;
         callback.setRequestInFlight(false);
         stopPollingStatus();
-        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage(), System.currentTimeMillis());
       }
     });
   }
@@ -199,6 +209,7 @@ public class AIResponseOrchestrator {
    */
   public void sendMessageWithContext(String text, String contextHint) {
     AIAgentRequest request = contextCollector.buildRequest(text);
+    request.setConversationId(currentConversationId);
     if (contextHint != null && !contextHint.isEmpty()) {
       request.setContextHint(contextHint);
     }
@@ -225,7 +236,7 @@ public class AIResponseOrchestrator {
         requestInFlight = false;
         callback.setRequestInFlight(false);
         stopPollingStatus();
-        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage(), System.currentTimeMillis());
       }
     });
   }
@@ -275,9 +286,10 @@ public class AIResponseOrchestrator {
             if (result.isSuccess()) {
               // Show the deferred AI message (LLM explanatory text), if any
               if (deferredMessage != null && !deferredMessage.isEmpty()) {
-                callback.addAiMessage(deferredMessage);
+                callback.addAiMessage(deferredMessage, System.currentTimeMillis());
               }
-              callback.addAiMessage(AIOperationFormatter.buildAppliedSummary(operations));
+              callback.addAiMessage(AIOperationFormatter.buildAppliedSummary(operations),
+                  System.currentTimeMillis());
               if (hasMore) {
                 // More batches expected — request the next one
                 startPollingStatus();
@@ -312,7 +324,7 @@ public class AIResponseOrchestrator {
 
     setAutoAcceptAll(false);
     pendingResponse = null;
-    callback.addAiMessage(MESSAGES.aiChatOperationsRejected());
+    callback.addAiMessage(MESSAGES.aiChatOperationsRejected(), System.currentTimeMillis());
     callback.hideOperationPreview();
 
     // Inform the server about the rejection by sending a feedback message
@@ -322,6 +334,7 @@ public class AIResponseOrchestrator {
     }
     AIAgentRequest feedback = contextCollector.buildRequest(
         "The user rejected the proposed operations. Please suggest alternatives.");
+    feedback.setConversationId(currentConversationId);
     feedback.setPlatformMessage(true);
 
     requestInFlight = true;
@@ -352,40 +365,6 @@ public class AIResponseOrchestrator {
   }
 
   /**
-   * Loads existing conversation history from the server.
-   * Called when the dialog is opened to restore previous messages.
-   * Fetches config (debug flag, conversation ID) first so that feedback
-   * links are available when history messages are rendered.
-   */
-  public void loadExistingConversation() {
-    final long projectId = contextCollector.getCurrentProjectId();
-    if (projectId == 0) {
-      return;
-    }
-
-    pendingResponse = null;
-    callback.clearChatHistory();
-    callback.hideOperationPreview();
-
-    // Fetch config first, then load history so feedback context is set
-    // before messages are rendered.
-    aiAgentService.getRequestStatus(projectId,
-        new OdeAsyncCallback<AIStreamStatus>() {
-          @Override
-          public void onSuccess(AIStreamStatus status) {
-            applyConfig(status);
-            loadHistory(projectId);
-          }
-
-          @Override
-          public void onFailure(Throwable caught) {
-            // Config fetch failed — still load history without feedback links.
-            loadHistory(projectId);
-          }
-        });
-  }
-
-  /**
    * Applies configuration from an {@link AIStreamStatus} poll result.
    * Shows the debug banner (once) and updates the feedback context.
    */
@@ -393,6 +372,7 @@ public class AIResponseOrchestrator {
     if (status == null) {
       return;
     }
+    this.debugEnabled = status.isDebugEnabled();
     if (status.isDebugEnabled() && !debugBannerShown) {
       debugBannerShown = true;
       callback.showDebugBanner();
@@ -421,32 +401,14 @@ public class AIResponseOrchestrator {
     return planEditEnabled;
   }
 
-  private void loadHistory(long projectId) {
-    aiAgentService.getConversationHistory(projectId,
-        new OdeAsyncCallback<List<AIConversationMessage>>(MESSAGES.aiChatLoadHistoryError()) {
-          @Override
-          public void onSuccess(List<AIConversationMessage> messages) {
-            if (messages != null) {
-              for (AIConversationMessage msg : messages) {
-                if ("user".equals(msg.getRole())) {
-                  callback.addUserMessage(msg.getText());
-                } else {
-                  callback.addAiMessage(msg.getText());
-                }
-              }
-            }
-          }
-        });
-  }
-
   /**
    * Resets per-conversation client-side state without touching the server.
    * Called by {@link AIChatDialog#onProjectChanged} so that stale retry
    * counters, preserved ops, auto-accept, pending preview, etc. from the
    * previous project never leak into the next one.
    *
-   * <p>Does NOT clear the renderer — {@link #loadExistingConversation()}
-   * (or the dialog's clear path on pending-explain) will do that when
+   * <p>Does NOT clear the renderer — {@link #loadConversation} (or the
+   * dialog's clear path on pending-explain) will do that when
    * appropriate.</p>
    */
   public void resetConversationState() {
@@ -468,30 +430,105 @@ public class AIResponseOrchestrator {
   }
 
   /**
-   * Clears the current conversation on the server and in the UI.
+   * Returns the currently active conversation UUID, or null if a new
+   * conversation has not been started yet.
    */
-  public void clearConversation() {
-    if (orchestrationManager != null) {
-      orchestrationManager.cancelAll();
-      orchestrationManager = null;
-    }
+  public String getCurrentConversationId() {
+    return currentConversationId;
+  }
 
+  /**
+   * Manually sets the current conversation ID. Callers should normally
+   * rely on {@link #loadConversation} or response echoes; use this only
+   * when hydrating state from an external source.
+   */
+  public void setCurrentConversationId(String id) {
+    updateCurrentConversationId(id);
+  }
+
+  /**
+   * Centralized setter for {@link #currentConversationId}. Also notifies
+   * the callback with the feedback context so that AI chat bubbles can
+   * render "Share Feedback" links once the server assigns a convId.
+   */
+  private void updateCurrentConversationId(String convId) {
+    this.currentConversationId = convId;
+    if (convId != null && !convId.isEmpty()) {
+      callback.setFeedbackContext(debugEnabled, convId);
+    }
+  }
+
+  /**
+   * Fetches all conversations for the current project.
+   */
+  public void listConversations(OdeAsyncCallback<List<AIConversationSummary>> cb) {
     long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
       return;
     }
+    aiAgentService.listConversations(projectId, cb);
+  }
 
+  /**
+   * Loads an existing conversation: cancels any in-flight request, clears
+   * the chat, switches the active conversation id, and replays the stored
+   * history into the chat UI.
+   *
+   * @param convId the conversation UUID to load
+   * @param onDone optional callback invoked after history has rendered
+   */
+  public void loadConversation(String convId, final Runnable onDone) {
+    cancelInFlight();
+    callback.clearChatHistory();
+    updateCurrentConversationId(convId);
+    aiAgentService.getConversationHistory(convId,
+        new OdeAsyncCallback<List<AIConversationMessage>>(MESSAGES.aiChatLoadHistoryError()) {
+          @Override
+          public void onSuccess(List<AIConversationMessage> messages) {
+            if (messages != null) {
+              for (AIConversationMessage m : messages) {
+                if ("user".equals(m.getRole())) {
+                  callback.addUserMessage(m.getText(), m.getTimestamp());
+                } else {
+                  callback.addAiMessage(m.getText(), m.getTimestamp());
+                }
+              }
+            }
+            if (onDone != null) {
+              onDone.run();
+            }
+          }
+        });
+  }
+
+  /**
+   * Starts a new (empty) conversation. No server call — the server mints
+   * the conversation on the first message, and its id is echoed back on
+   * the response.
+   */
+  public void newConversation() {
+    cancelInFlight();
+    callback.clearChatHistory();
+    currentConversationId = null;
     AIEditorState.setPlanApproved(false);
     setAutoAcceptAll(false);
-    aiAgentService.clearConversation(projectId, new OdeAsyncCallback<Void>(
-        MESSAGES.aiChatClearError()) {
-      @Override
-      public void onSuccess(Void result) {
-        pendingResponse = null;
-        callback.clearChatHistory();
-        callback.hideOperationPreview();
-      }
-    });
+  }
+
+  /**
+   * Renames a conversation via RPC.
+   */
+  public void renameConversation(String convId, String newTitle,
+      OdeAsyncCallback<AIConversationSummary> cb) {
+    aiAgentService.renameConversation(convId, newTitle, cb);
+  }
+
+  /**
+   * Deletes a conversation via RPC. Does not touch the active conversation
+   * pointer — callers should follow up with {@link #newConversation} if the
+   * active conversation was the one deleted.
+   */
+  public void deleteConversation(String convId, OdeAsyncCallback<Void> cb) {
+    aiAgentService.deleteConversation(convId, cb);
   }
 
   /**
@@ -510,6 +547,15 @@ public class AIResponseOrchestrator {
             applyConfig(status);
           }
         });
+  }
+
+  /**
+   * Fetches server config flags (orchestration enabled, debug enabled, plan
+   * edit enabled) eagerly. Called when the dialog opens so feature gates
+   * like the Plan &amp; Execute toggle can render before any message is sent.
+   */
+  public void loadConfig() {
+    ensureFeedbackContext();
   }
 
   /**
@@ -564,7 +610,7 @@ public class AIResponseOrchestrator {
     }
 
     // Show cancellation message.
-    callback.addAiMessage(MESSAGES.aiChatRequestCancelled());
+    callback.addAiMessage(MESSAGES.aiChatRequestCancelled(), System.currentTimeMillis());
   }
 
   /**
@@ -623,7 +669,7 @@ public class AIResponseOrchestrator {
       // Show the AI message if present
       String aiMessage = response.getAiMessage();
       if (aiMessage != null && !aiMessage.isEmpty()) {
-        callback.addAiMessage(aiMessage);
+        callback.addAiMessage(aiMessage, System.currentTimeMillis());
       }
     }
 
@@ -639,7 +685,7 @@ public class AIResponseOrchestrator {
       @Override
       public void onReject() {
         pendingPlanProposal = false;
-        callback.addAiMessage(MESSAGES.aiChatPlanRejected());
+        callback.addAiMessage(MESSAGES.aiChatPlanRejected(), System.currentTimeMillis());
         String feedback = "The user rejected the proposed plan. "
             + "Please suggest alternatives or ask what they'd like changed.";
         sendPlatformMessage(feedback);
@@ -802,6 +848,7 @@ public class AIResponseOrchestrator {
     preservedAiMessage = null;
 
     AIAgentRequest request = contextCollector.buildRequest(message);
+    request.setConversationId(currentConversationId);
     request.setPlatformMessage(true);
     request.setPlanExecuteMode(false);
 
@@ -819,7 +866,7 @@ public class AIResponseOrchestrator {
         requestInFlight = false;
         callback.setRequestInFlight(false);
         stopPollingStatus();
-        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+        callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage(), System.currentTimeMillis());
       }
     });
   }
@@ -840,6 +887,13 @@ public class AIResponseOrchestrator {
     // Discard stale RPC responses that arrive after the user cancelled.
     if (!requestInFlight) {
       return;
+    }
+
+    // Track the conversation ID the server assigned / resumed. This is set
+    // on every response from processRequest / continueRequest /
+    // reportExecutionErrors.
+    if (response != null && response.getConversationId() != null) {
+      updateCurrentConversationId(response.getConversationId());
     }
 
     List<AIOperation> operations = response.getOperations();
@@ -983,7 +1037,7 @@ public class AIResponseOrchestrator {
       streamingActive = false;
     } else if (aiMessage != null && !aiMessage.isEmpty()) {
       // No streaming — show the AI message as a chat bubble.
-      callback.addAiMessage(aiMessage);
+      callback.addAiMessage(aiMessage, System.currentTimeMillis());
       if (hasOps) {
         // Clear so applyOperations() doesn't add it again as a deferred
         // message and showPreview() doesn't render it in the preview panel.
@@ -995,7 +1049,7 @@ public class AIResponseOrchestrator {
     List<String> errors = response.getErrors();
     if (errors != null && !errors.isEmpty()) {
       for (String error : errors) {
-        callback.addAiMessage("Error: " + error);
+        callback.addAiMessage("Error: " + error, System.currentTimeMillis());
       }
     }
 
@@ -1324,7 +1378,9 @@ public class AIResponseOrchestrator {
     preservedValidOps = null;
     preservedAiMessage = null;
 
-    aiAgentService.continueRequest(contextCollector.buildRequest(null),
+    AIAgentRequest continueReq = contextCollector.buildRequest(null);
+    continueReq.setConversationId(currentConversationId);
+    aiAgentService.continueRequest(continueReq,
         new OdeAsyncCallback<AIAgentResponse>(MESSAGES.aiChatSendError()) {
           @Override
           public void onSuccess(AIAgentResponse response) {
@@ -1337,7 +1393,7 @@ public class AIResponseOrchestrator {
             requestInFlight = false;
             callback.setRequestInFlight(false);
             stopPollingStatus();
-            callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+            callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage(), System.currentTimeMillis());
           }
         });
   }
@@ -1361,7 +1417,8 @@ public class AIResponseOrchestrator {
       requestInFlight = false;
       callback.setRequestInFlight(false);
       callback.addAiMessage(MESSAGES.aiChatSendError()
-          + ": execution failed after " + MAX_EXECUTION_RETRIES + " retries.");
+          + ": execution failed after " + MAX_EXECUTION_RETRIES + " retries.",
+          System.currentTimeMillis());
       return;
     }
 
@@ -1398,6 +1455,7 @@ public class AIResponseOrchestrator {
   private void sendRetryRequest(List<AIOperationResult> results, int retryAttempt,
       int totalTools) {
     AIAgentRequest retryRequest = contextCollector.buildRequest(null);
+    retryRequest.setConversationId(currentConversationId);
     retryRequest.setRetryAttempt(retryAttempt);
     retryRequest.setTotalTools(totalTools);
     aiAgentService.reportExecutionErrors(retryRequest, results,
@@ -1413,7 +1471,7 @@ public class AIResponseOrchestrator {
             requestInFlight = false;
             callback.setRequestInFlight(false);
             stopPollingStatus();
-            callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage());
+            callback.addAiMessage(MESSAGES.aiChatSendError() + ": " + caught.getMessage(), System.currentTimeMillis());
           }
         });
   }

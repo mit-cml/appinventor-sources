@@ -17,6 +17,7 @@ public class AIConversationMessage implements IsSerializable, Serializable {
 
   private String role;
   private String text;
+  private long timestamp;
 
   /**
    * No-arg constructor required for GWT serialization.
@@ -25,14 +26,26 @@ public class AIConversationMessage implements IsSerializable, Serializable {
   }
 
   /**
-   * Creates a new conversation message.
+   * Creates a new conversation message with no known timestamp (defaults to 0).
    *
    * @param role "user" or "assistant"
    * @param text the message text
    */
   public AIConversationMessage(String role, String text) {
+    this(role, text, 0L);
+  }
+
+  /**
+   * Creates a new conversation message with a server timestamp.
+   *
+   * @param role      "user" or "assistant"
+   * @param text      the message text
+   * @param timestamp server-side timestamp in millis
+   */
+  public AIConversationMessage(String role, String text, long timestamp) {
     this.role = role;
     this.text = text;
+    this.timestamp = timestamp;
   }
 
   public String getRole() {
@@ -49,5 +62,13 @@ public class AIConversationMessage implements IsSerializable, Serializable {
 
   public void setText(String text) {
     this.text = text;
+  }
+
+  public long getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
   }
 }

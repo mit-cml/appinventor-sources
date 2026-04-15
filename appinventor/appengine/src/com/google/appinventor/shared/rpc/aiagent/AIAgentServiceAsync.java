@@ -27,14 +27,26 @@ public interface AIAgentServiceAsync {
   void continueRequest(AIAgentRequest request, AsyncCallback<AIAgentResponse> callback);
 
   /**
-   * @see AIAgentService#clearConversation(long)
+   * @see AIAgentService#listConversations(long)
    */
-  void clearConversation(long projectId, AsyncCallback<Void> callback);
+  void listConversations(long projectId,
+      AsyncCallback<List<AIConversationSummary>> callback);
 
   /**
-   * @see AIAgentService#getConversationHistory(long)
+   * @see AIAgentService#renameConversation(String, String)
    */
-  void getConversationHistory(long projectId,
+  void renameConversation(String conversationId, String newTitle,
+      AsyncCallback<AIConversationSummary> callback);
+
+  /**
+   * @see AIAgentService#deleteConversation(String)
+   */
+  void deleteConversation(String conversationId, AsyncCallback<Void> callback);
+
+  /**
+   * @see AIAgentService#getConversationHistory(String)
+   */
+  void getConversationHistory(String conversationId,
       AsyncCallback<List<AIConversationMessage>> callback);
 
   /**

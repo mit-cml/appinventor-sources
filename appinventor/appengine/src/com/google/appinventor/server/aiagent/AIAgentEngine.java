@@ -17,6 +17,7 @@ import com.google.appinventor.server.aiagent.llm.ReadOnlyToolResolver;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.storage.StoredData.MessageRole;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
@@ -156,17 +157,30 @@ public class AIAgentEngine {
       String locale, String languageDisplayName, boolean isPlatformMessage,
       String contextHint, String companionSnapshot,
       boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
-      boolean executionPhase) {
+      boolean executionPhase, String requestedConversationId) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
+    String convId = null;
     try {
       streamBuffer.init();
       streamBuffer.appendStatus("Building context...");
 
-      // Get or create conversation (resets on provider change)
-      ConversationInit init = initConversation(projectId, routingScreen);
-      AIConversationState conv = init.conv;
-      boolean isNew = init.isNew;
+      // Get or create conversation (resets on provider change).
+      // For orchestration child paths, keep the screen-scoped memcache flow.
+      // For the main path, resolve/create a convId-keyed conversation.
+      AIConversationState conv;
+      boolean isNew;
+      if (routingScreen != null) {
+        ConversationInit init = initConversation(projectId, routingScreen);
+        conv = init.conv;
+        isNew = init.isNew;
+        convId = conv.getConversationId();
+      } else {
+        convId = resolveOrCreateConversationId(userId, projectId, requestedConversationId);
+        ConversationInit init = initMainConversation(convId);
+        conv = init.conv;
+        isNew = init.isNew;
+      }
 
       AIDebug.beginRequest(conv.getConversationId());
       AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
@@ -192,12 +206,11 @@ public class AIAgentEngine {
           companionSnapshot != null);
       AIDebug.log(LOG, "System prompt built: length=" + systemPrompt.length() + " chars");
 
-      // Build history for stateless providers
+      // Build history. Multi-conversation model always replays persisted
+      // history (both stateless and stateful providers); stateful providers
+      // may choose to ignore when a providerRef is still live.
       LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
-      List<ChatMessage> history = Collections.emptyList();
-      if (provider.isStateless()) {
-        history = conversationManager.loadConversation(conv.getConversationId());
-      }
+      List<ChatMessage> history = conversationManager.loadConversation(conv.getConversationId());
       if (AIDebug.enabled()) {
         StringBuilder histInfo = new StringBuilder("History loaded: " + history.size() + " messages");
         for (ChatMessage msg : history) {
@@ -286,24 +299,26 @@ public class AIAgentEngine {
       LOG.info("Request cancelled by user for project " + projectId);
       // Store synthetic assistant message to keep history role-alternating
       // (user message was already stored before the LLM call).
-      AIConversationState conv = routingScreen != null
-          ? conversationManager.getConversation(projectId, routingScreen)
-          : conversationManager.getConversation(projectId);
-      if (conv != null) {
-        conversationManager.storeMessage(conv.getConversationId(),
+      String cancelConvId = convId;
+      if (cancelConvId == null && routingScreen != null) {
+        AIConversationState conv = conversationManager.getConversation(projectId, routingScreen);
+        if (conv != null) cancelConvId = conv.getConversationId();
+      }
+      if (cancelConvId != null) {
+        conversationManager.storeMessage(cancelConvId,
             MessageRole.ASSISTANT, "[Request cancelled]", false);
       }
       new StreamBuffer(storageIo, projectId, routingScreen).clear();
-      return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
-          Collections.<String>emptyList());
+      return withConvId(new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+          Collections.<String>emptyList()), convId);
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error", e);
       streamBuffer.clear();
-      return errorResponse(e.getUserFacingMessage());
+      return withConvId(errorResponse(e.getUserFacingMessage()), convId);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent", e);
       streamBuffer.clear();
-      return errorResponse("An unexpected error occurred. Please try again.");
+      return withConvId(errorResponse("An unexpected error occurred. Please try again."), convId);
     } finally {
       AIDebug.endRequest();
     }
@@ -328,20 +343,58 @@ public class AIAgentEngine {
       String screenComponentsJson, String projectSnapshot, String blockWarnings,
       String locale, String languageDisplayName, String companionSnapshot,
       boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
-      boolean executionPhase) {
+      boolean executionPhase, String requestedConversationId) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
+    String convId = null;
     try {
       streamBuffer.init();
       streamBuffer.appendStatus("Continuing AI response...");
 
-      // Load conversation state from memcache
-      AIConversationState conv = routingScreen != null
-          ? conversationManager.getConversation(projectId, routingScreen)
-          : conversationManager.getConversation(projectId);
-      if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
+      // Load conversation state.
+      // - Screen-scoped (orchestration child): memcache by project+screen, as before.
+      // - Main path: resolve convId first, then load state by convId and
+      //   rehydrate a minimal state if memcache is cold.
+      AIConversationState conv;
+      if (routingScreen != null) {
+        conv = conversationManager.getConversation(projectId, routingScreen);
+      } else {
+        convId = resolveOrCreateConversationId(userId, projectId, requestedConversationId);
+        conv = conversationManager.getConversation(convId);
+        if (conv == null) {
+          // Rehydrate a minimal state so a cold memcache doesn't prevent
+          // continuation bookkeeping. providerRef remains null below, which
+          // is still handled by the guard.
+          conv = new AIConversationState(getConfiguredProvider(), convId, null);
+          conversationManager.saveConversation(convId, conv);
+        }
+      }
+      if (conv == null) {
         streamBuffer.clear();
-        return errorResponse("No continuation state available. Please start a new request.");
+        return withConvId(errorResponse(
+            "No continuation state available. Please start a new request."), convId);
+      }
+      if (convId == null) {
+        convId = conv.getConversationId();
+      }
+      // Fallback path: providerRef is null/empty (cold memcache or fresh
+      // rehydrate). Delegate to a chat() call with full persisted history so
+      // providers can replay their way back into context. This also handles
+      // stateless providers uniformly.
+      boolean providerRefMissing = conv.getProviderRef() == null
+          || conv.getProviderRef().isEmpty();
+      if (providerRefMissing && routingScreen == null) {
+        return chatFallbackForContinuation(conv, convId, userId, projectId, screenName,
+            blocksYail, currentView, mode, screenComponentsJson, projectSnapshot,
+            blockWarnings, locale, languageDisplayName, companionSnapshot,
+            planExecuteMode, orchestrationMode, targetScreen, executionPhase,
+            "Please continue from the previous tool results.",
+            streamBuffer);
+      }
+      if (providerRefMissing) {
+        streamBuffer.clear();
+        return withConvId(errorResponse(
+            "No continuation state available. Please start a new request."), convId);
       }
 
       AIDebug.beginRequest(conv.getConversationId());
@@ -412,9 +465,10 @@ public class AIAgentEngine {
       // instead of calling tools after continuation (e.g. after
       // toggle_editor switches to Blocks, the LLM narrates instead of
       // emitting write_block).
-      List<ChatMessage> history = provider.isStateless()
-          ? conversationManager.loadConversation(conv.getConversationId())
-          : Collections.<ChatMessage>emptyList();
+      // Multi-conversation model: always load history; provider decides how
+      // to use it relative to any live providerRef.
+      List<ChatMessage> history =
+          conversationManager.loadConversation(conv.getConversationId());
       // Stateful providers already have context; re-sending would duplicate.
       List<String> retryContext = provider.isStateless() ? contextMessages : null;
       NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
@@ -436,24 +490,27 @@ public class AIAgentEngine {
       LOG.info("Continuation cancelled by user for project " + projectId);
       // Store synthetic assistant message to keep history role-alternating.
       // Stateless providers (Anthropic) require strict role alternation.
-      AIConversationState cancelConv = routingScreen != null
-          ? conversationManager.getConversation(projectId, routingScreen)
-          : conversationManager.getConversation(projectId);
-      if (cancelConv != null) {
-        conversationManager.storeMessage(cancelConv.getConversationId(),
+      String cancelConvId = convId;
+      if (cancelConvId == null && routingScreen != null) {
+        AIConversationState cancelConv =
+            conversationManager.getConversation(projectId, routingScreen);
+        if (cancelConv != null) cancelConvId = cancelConv.getConversationId();
+      }
+      if (cancelConvId != null) {
+        conversationManager.storeMessage(cancelConvId,
             MessageRole.ASSISTANT, "[Request cancelled]", false);
       }
       streamBuffer.clear();
-      return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
-          Collections.<String>emptyList());
+      return withConvId(new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+          Collections.<String>emptyList()), convId);
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error in continuation", e);
       streamBuffer.clear();
-      return errorResponse(e.getUserFacingMessage());
+      return withConvId(errorResponse(e.getUserFacingMessage()), convId);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in AI agent continuation", e);
       streamBuffer.clear();
-      return errorResponse("An unexpected error occurred. Please try again.");
+      return withConvId(errorResponse("An unexpected error occurred. Please try again."), convId);
     } finally {
       AIDebug.endRequest();
     }
@@ -479,9 +536,10 @@ public class AIAgentEngine {
       String currentView, String mode, String screenComponentsJson, String projectSnapshot,
       String blockWarnings, String locale, String languageDisplayName, String companionSnapshot,
       boolean planExecuteMode, boolean orchestrationMode, String targetScreen,
-      boolean executionPhase) {
+      boolean executionPhase, String requestedConversationId) {
     String routingScreen = orchestrationMode ? targetScreen : null;
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, routingScreen);
+    String convId = null;
     try {
       streamBuffer.init();
 
@@ -517,13 +575,59 @@ public class AIAgentEngine {
         streamBuffer.appendStatus("Analyzing errors (" + statusTag + ")...");
       }
 
-      // Load conversation state
-      AIConversationState conv = routingScreen != null
-          ? conversationManager.getConversation(projectId, routingScreen)
-          : conversationManager.getConversation(projectId);
-      if (conv == null || conv.getProviderRef() == null || conv.getProviderRef().isEmpty()) {
+      // Load conversation state.
+      AIConversationState conv;
+      if (routingScreen != null) {
+        conv = conversationManager.getConversation(projectId, routingScreen);
+      } else {
+        convId = resolveOrCreateConversationId(userId, projectId, requestedConversationId);
+        conv = conversationManager.getConversation(convId);
+        if (conv == null) {
+          // Cold memcache — rehydrate minimal state so continuation bookkeeping
+          // works. The providerRef==null guard below still fires because a
+          // rehydrated state has no providerRef.
+          conv = new AIConversationState(getConfiguredProvider(), convId, null);
+          conversationManager.saveConversation(convId, conv);
+        }
+      }
+      if (conv == null) {
         streamBuffer.clear();
-        return errorResponse("No conversation state available. Please start a new request.");
+        return withConvId(errorResponse(
+            "No conversation state available. Please start a new request."), convId);
+      }
+      if (convId == null) {
+        convId = conv.getConversationId();
+      }
+      // Fallback path: providerRef missing (cold memcache). Synthesize a
+      // chat() call describing the outcomes so the LLM can react, using full
+      // persisted history via the provider's history-replay branch.
+      boolean providerRefMissing = conv.getProviderRef() == null
+          || conv.getProviderRef().isEmpty();
+      if (providerRefMissing && routingScreen == null) {
+        StringBuilder summary = new StringBuilder(
+            "The previous tool calls had these outcomes:");
+        for (AIOperationResult r : results) {
+          summary.append("\n- ").append(r.getStatus());
+          String detail = r.getErrorDetail();
+          if (detail != null && !detail.isEmpty()) {
+            summary.append(": ").append(detail);
+          }
+          String summ = r.getSummary();
+          if (summ != null && !summ.isEmpty()) {
+            summary.append(" (" ).append(summ).append(")");
+          }
+        }
+        summary.append("\nPlease continue.");
+        return chatFallbackForContinuation(conv, convId, userId, projectId, screenName,
+            blocksYail, currentView, mode, screenComponentsJson, projectSnapshot,
+            blockWarnings, locale, languageDisplayName, companionSnapshot,
+            planExecuteMode, orchestrationMode, targetScreen, executionPhase,
+            summary.toString(), streamBuffer);
+      }
+      if (providerRefMissing) {
+        streamBuffer.clear();
+        return withConvId(errorResponse(
+            "No conversation state available. Please start a new request."), convId);
       }
 
       AIDebug.beginRequest(conv.getConversationId());
@@ -547,8 +651,9 @@ public class AIAgentEngine {
           conv.getProviderRef(), results, isValidationRetry);
       if (patchedRef == null) {
         streamBuffer.clear();
-        return errorResponse(
-            "Missing tool call results in continuation state. Please start a new request.");
+        return withConvId(errorResponse(
+            "Missing tool call results in continuation state. Please start a new request."),
+            convId);
       }
 
       // Patch the system prompt into the continuation state
@@ -601,40 +706,152 @@ public class AIAgentEngine {
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Error retry cancelled by user for project " + projectId);
       streamBuffer.clear();
-      return new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
-          Collections.<String>emptyList());
+      return withConvId(new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+          Collections.<String>emptyList()), convId);
     } catch (LLMProviderException e) {
       LOG.log(Level.WARNING, "LLM provider error in error retry", e);
       streamBuffer.clear();
-      return errorResponse(e.getUserFacingMessage());
+      return withConvId(errorResponse(e.getUserFacingMessage()), convId);
     } catch (Exception e) {
       LOG.log(Level.SEVERE, "Unexpected error in error retry", e);
       streamBuffer.clear();
-      return errorResponse("An unexpected error occurred during retry. Please try again.");
+      return withConvId(errorResponse(
+          "An unexpected error occurred during retry. Please try again."), convId);
     } finally {
       AIDebug.endRequest();
     }
   }
 
-  // ---------- Public API: simple delegations ----------
+  /**
+   * Runs a plain {@code chat()} call from a continuation entry point when the
+   * cached {@code providerRef} is null or empty (cold memcache / fresh
+   * rehydrate). Relies on the providers' history-replay fallback branch to
+   * reconstruct context from the persisted message log.
+   *
+   * <p>Stateless providers also flow through here when called from the
+   * continuation entry points; they already use {@code history} as their
+   * primary context source.
+   */
+  private AIAgentResponse chatFallbackForContinuation(AIConversationState conv, String convId,
+      String userId, long projectId, String screenName, String blocksYail,
+      String currentView, String mode, String screenComponentsJson, String projectSnapshot,
+      String blockWarnings, String locale, String languageDisplayName,
+      String companionSnapshot, boolean planExecuteMode, boolean orchestrationMode,
+      String targetScreen, boolean executionPhase, String syntheticUserMessage,
+      StreamBuffer streamBuffer) {
+    AIDebug.beginRequest(conv.getConversationId());
+    try {
+      AIDebug.log(LOG, "chatFallbackForContinuation: userId=" + userId
+          + ", projectId=" + projectId + ", convId=" + convId);
 
-  public void clearConversation(long projectId) {
-    conversationManager.clearConversation(projectId);
+      EnforcementContext enforcementContext = EnforcementContext.STANDARD;
+      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+        enforcementContext = EnforcementContext.EXECUTION;
+      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+        enforcementContext = EnforcementContext.PLANNING;
+      } else if (orchestrationMode) {
+        enforcementContext = EnforcementContext.CHILD_EXECUTION;
+      }
+
+      String systemPrompt = contextBuilder.build();
+      List<String> contextMessages = contextBuilder.buildContextMessages(
+          userId, projectId, screenName, mode, blocksYail, currentView,
+          screenComponentsJson, projectSnapshot, blockWarnings,
+          locale, languageDisplayName, companionSnapshot, enforcementContext);
+      List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
+          companionSnapshot != null);
+      LLMProvider provider;
+      try {
+        provider = LLMProviderRegistry.get(conv.getProviderName());
+      } catch (LLMProviderException e) {
+        LOG.log(Level.WARNING, "LLM provider unavailable in continuation fallback", e);
+        streamBuffer.clear();
+        return withConvId(errorResponse(e.getUserFacingMessage()), convId);
+      }
+      List<ChatMessage> history = conversationManager.loadConversation(convId);
+      ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
+
+      // Store the synthetic continuation marker so history remains consistent.
+      conversationManager.storeMessage(convId, MessageRole.USER,
+          "[Continuation requested]", false);
+
+      streamBuffer.appendStatus("Calling AI...");
+      String llmMessage = AIAgentRequest.wrapPlatformMessage(syntheticUserMessage);
+
+      try {
+        LLMResponse llmResponse = provider.chat(systemPrompt, contextMessages, llmMessage,
+            tools, null, history, resolver, streamBuffer);
+
+        ParsedResult parsed = parseAndEnforce(llmResponse, mode, currentView,
+            enforcementContext);
+        String assistantText = llmResponse.getText() != null ? llmResponse.getText() : "";
+
+        NarrationRetryState nrs = new NarrationRetryState(llmResponse, parsed, assistantText);
+        retryIfNarration(nrs, mode, currentView, provider, systemPrompt,
+            contextMessages, tools, history, conv, resolver, streamBuffer,
+            enforcementContext);
+        llmResponse = nrs.llmResponse;
+        parsed = nrs.parsed;
+        assistantText = nrs.assistantText;
+
+        return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId,
+            false, null);
+      } catch (StreamBuffer.CancelledException e) {
+        LOG.info("Continuation-fallback cancelled for project " + projectId);
+        conversationManager.storeMessage(convId, MessageRole.ASSISTANT,
+            "[Request cancelled]", false);
+        streamBuffer.clear();
+        return withConvId(new AIAgentResponse("", Collections.<AIOperation>emptyList(), false,
+            Collections.<String>emptyList()), convId);
+      } catch (LLMProviderException e) {
+        LOG.log(Level.WARNING, "LLM provider error in continuation fallback", e);
+        streamBuffer.clear();
+        return withConvId(errorResponse(e.getUserFacingMessage()), convId);
+      } catch (Exception e) {
+        LOG.log(Level.SEVERE, "Unexpected error in continuation fallback", e);
+        streamBuffer.clear();
+        return withConvId(errorResponse(
+            "An unexpected error occurred. Please try again."), convId);
+      }
+    } finally {
+      AIDebug.endRequest();
+    }
   }
 
-  public List<AIConversationMessage> getConversationHistory(long projectId) {
-    AIConversationState conv = conversationManager.getConversation(projectId);
-    if (conv == null) {
-      return Collections.emptyList();
-    }
+  // ---------- Conversation metadata delegates ----------
 
-    List<ChatMessage> history = conversationManager.loadConversation(conv.getConversationId());
+  /** Lists conversations for a given user+project, most recent first. */
+  public List<StoredData.ConversationData> listConversations(String userId, long projectId) {
+    return conversationManager.listConversations(userId, projectId);
+  }
+
+  /** Returns the ConversationData metadata for a conversation id, or null. */
+  public StoredData.ConversationData getConversationMetadata(String conversationId) {
+    return conversationManager.getConversationMetadata(conversationId);
+  }
+
+  /** Renames a conversation (title trimmed; null/empty clears the title). */
+  public void renameConversation(String conversationId, String newTitle) {
+    conversationManager.renameConversation(conversationId, newTitle);
+  }
+
+  /** Deletes a conversation (metadata row, all messages, and memcache state). */
+  public void deleteConversation(String conversationId) {
+    conversationManager.deleteConversation(conversationId);
+  }
+
+  /**
+   * Loads the display-only message history for a specific conversation id.
+   * Returns an empty list if the conversation does not exist.
+   */
+  public List<AIConversationMessage> getConversationHistoryByConvId(String conversationId) {
+    List<ChatMessage> history = conversationManager.loadConversation(conversationId);
     List<AIConversationMessage> result = new ArrayList<>();
     for (ChatMessage msg : history) {
       if (!msg.isDisplay()) {
         continue;
       }
-      result.add(new AIConversationMessage(msg.getRole(), msg.getText()));
+      result.add(new AIConversationMessage(msg.getRole(), msg.getText(), msg.getTimestamp()));
     }
     return result;
   }
@@ -651,11 +868,15 @@ public class AIAgentEngine {
     status.setDebugEnabled(AIDebug.enabled());
     status.setOrchestrationEnabled(ORCHESTRATION_FLAG.get());
     status.setPlanEditEnabled(PLAN_EDIT_FLAG.get());
-    AIConversationState conv = targetScreen != null
-        ? conversationManager.getConversation(projectId, targetScreen)
-        : conversationManager.getConversation(projectId);
-    if (conv != null) {
-      status.setConversationId(conv.getConversationId());
+    // Screen-scoped requests still piggyback the conversationId so the
+    // client can correlate child-agent status with the parent orchestrator.
+    // Main-path requests get the conversationId back on the RPC response
+    // directly; the stream-status channel no longer needs to surface it.
+    if (targetScreen != null) {
+      AIConversationState conv = conversationManager.getConversation(projectId, targetScreen);
+      if (conv != null) {
+        status.setConversationId(conv.getConversationId());
+      }
     }
     return status;
   }
@@ -704,16 +925,11 @@ public class AIAgentEngine {
   // ---------- Conversation init ----------
 
   /**
-   * Get or create the conversation state for a project, resetting it if the
-   * configured provider has changed since the last request.
-   *
-   * @param projectId  the project ID
-   * @param screenName screen name for routing (null for parent conversation)
+   * Get or create the screen-scoped conversation state (orchestration child
+   * agents). Resets when the configured provider changes.
    */
   ConversationInit initConversation(long projectId, String screenName) {
-    AIConversationState conv = screenName != null
-        ? conversationManager.getConversation(projectId, screenName)
-        : conversationManager.getConversation(projectId);
+    AIConversationState conv = conversationManager.getConversation(projectId, screenName);
     boolean isNew = (conv == null);
     if (isNew) {
       conv = new AIConversationState(getConfiguredProvider(),
@@ -721,16 +937,61 @@ public class AIAgentEngine {
     }
     String currentProvider = getConfiguredProvider();
     if (!currentProvider.equals(conv.getProviderName())) {
-      if (screenName != null) {
-        conversationManager.clearConversation(projectId, screenName);
-      } else {
-        conversationManager.clearConversation(projectId);
-      }
+      conversationManager.clearConversation(projectId, screenName);
       conv = new AIConversationState(currentProvider,
           UUID.randomUUID().toString(), null);
       isNew = true;
     }
     return new ConversationInit(conv, isNew);
+  }
+
+  /**
+   * Resolves the conversation id for a main-path request. If the client
+   * supplied a convId and it belongs to this user+project, reuse it.
+   * Otherwise mint a fresh conversation.
+   */
+  String resolveOrCreateConversationId(String userId, long projectId,
+      String requestedConversationId) {
+    if (requestedConversationId == null || requestedConversationId.isEmpty()) {
+      return conversationManager.createConversation(userId, projectId);
+    }
+    StoredData.ConversationData meta =
+        conversationManager.getConversationMetadata(requestedConversationId);
+    if (meta == null
+        || !userId.equals(meta.userId)
+        || meta.projectId != projectId) {
+      // Mint a fresh conversation; don't leak info via different error shapes.
+      return conversationManager.createConversation(userId, projectId);
+    }
+    return requestedConversationId;
+  }
+
+  /**
+   * Loads the AIConversationState for a main-path conversation, creating a
+   * fresh state if none exists in memcache. Resets state when the configured
+   * provider changes.
+   */
+  ConversationInit initMainConversation(String conversationId) {
+    AIConversationState conv = conversationManager.getConversation(conversationId);
+    boolean isNew = (conv == null);
+    if (isNew) {
+      conv = new AIConversationState(getConfiguredProvider(), conversationId, null);
+    }
+    String currentProvider = getConfiguredProvider();
+    if (!currentProvider.equals(conv.getProviderName())) {
+      conversationManager.clearConversationState(conversationId);
+      conv = new AIConversationState(currentProvider, conversationId, null);
+      isNew = true;
+    }
+    return new ConversationInit(conv, isNew);
+  }
+
+  /** Stamps the conversation id on a response (null-safe). */
+  static AIAgentResponse withConvId(AIAgentResponse response, String conversationId) {
+    if (response != null && conversationId != null) {
+      response.setConversationId(conversationId);
+    }
+    return response;
   }
 
   // ---------- Response pipeline ----------
@@ -912,7 +1173,7 @@ public class AIAgentEngine {
     if (screenName != null) {
       conversationManager.saveConversation(projectId, screenName, updated);
     } else {
-      conversationManager.saveConversation(projectId, updated);
+      conversationManager.saveConversation(conv.getConversationId(), updated);
     }
 
     // Save assistant response to history (with structured content if tool calls present).
@@ -943,6 +1204,7 @@ public class AIAgentEngine {
     AIAgentResponse response = new AIAgentResponse(
         assistantText, parsed.operations, isNew, parsed.errors);
     response.setHasMore(hasMore);
+    response.setConversationId(conv.getConversationId());
     return response;
   }
 

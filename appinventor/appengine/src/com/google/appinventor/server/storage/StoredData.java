@@ -365,7 +365,37 @@ public class StoredData {
     // Whether this message should be shown in the client chat UI.
     public boolean display;
 
-    @Indexed public long expiresAt;   // timestamp + 24h, for cleanup
+    // Legacy: originally timestamp + 24h for TTL-based cleanup. No longer used
+    // as a cleanup key under the multi-conversation model — new rows are
+    // retained until the user deletes the conversation. Kept on the entity
+    // for backward compatibility with existing rows.
+    @Indexed public long expiresAt;
+  }
+
+  // AI Agent conversation metadata, keyed by conversationId (UUID).
+  // One row per conversation; the messages themselves live in ConversationMessageData.
+  @Unindexed
+  public static final class ConversationData {
+    @Id Long id;
+
+    // The conversation UUID (stable identifier used everywhere else).
+    @Indexed public String conversationId;
+
+    // The project this conversation belongs to.
+    @Indexed public long projectId;
+
+    // The user who owns this conversation.
+    @Indexed public String userId;
+
+    // Optional user-supplied title. null/empty means the client renders
+    // a date-based fallback label.
+    public String title;
+
+    // Creation timestamp (System.currentTimeMillis()).
+    public long createdAt;
+
+    // Last-activity timestamp; sort key for conversation lists.
+    public long updatedAt;
   }
 
   public static final class ProjectNotFoundException extends IOException {

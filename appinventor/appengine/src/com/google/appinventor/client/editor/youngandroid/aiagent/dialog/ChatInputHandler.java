@@ -135,7 +135,7 @@ public class ChatInputHandler {
       return;
     }
 
-    renderer.addUserMessage(text);
+    renderer.addUserMessage(text, System.currentTimeMillis());
     inputArea.setText("");
 
     if (orchestrator.hasPendingPlanProposal()) {
