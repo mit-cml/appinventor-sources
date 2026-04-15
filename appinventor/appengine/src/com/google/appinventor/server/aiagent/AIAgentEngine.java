@@ -185,7 +185,8 @@ public class AIAgentEngine {
       AIDebug.beginRequest(conv.getConversationId());
       AIDebug.log(LOG, "processRequest: userId=" + userId + ", projectId=" + projectId
           + ", screen=" + screenName + ", mode=" + mode
-          + ", msgLen=" + userMessage.length());
+          + ", msgLen=" + userMessage.length()
+          + ", msg=" + userMessage);
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
       if (ORCHESTRATION_FLAG.get() && executionPhase) {
@@ -742,7 +743,8 @@ public class AIAgentEngine {
     AIDebug.beginRequest(conv.getConversationId());
     try {
       AIDebug.log(LOG, "chatFallbackForContinuation: userId=" + userId
-          + ", projectId=" + projectId + ", convId=" + convId);
+          + ", projectId=" + projectId + ", convId=" + convId
+          + ", msg=" + (syntheticUserMessage == null ? "(null)" : syntheticUserMessage));
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
       if (ORCHESTRATION_FLAG.get() && executionPhase) {
