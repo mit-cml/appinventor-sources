@@ -17,4 +17,10 @@ public interface CloudDBDataServiceAsync {
 
   void getEntries(String projectId, String token, String redisServer, int redisPort, boolean useSSL,
       AsyncCallback<List<DataEntry>> callback);
+
+  void setEntry(String projectId, String token, String redisServer, int redisPort, boolean useSSL,
+      String tag, String value, AsyncCallback<Void> callback);
+
+  void deleteEntry(String projectId, String token, String redisServer, int redisPort, boolean useSSL,
+      String tag, AsyncCallback<Void> callback);
 }

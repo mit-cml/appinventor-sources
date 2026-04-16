@@ -22,9 +22,10 @@ import java.util.logging.Logger;
  * Server-side implementation of {@link CloudDBDataService}.
  *
  * <p>Uses the token passed from the client (the component's Token property, which was
- * issued by {@code TokenAuthServiceImpl}) to authenticate with Redis, then fetches all
- * keys under the given projectId prefix and returns them as {@link DataEntry} objects.
- * The Jedis connection is always closed in a finally block.
+ * issued by {@code TokenAuthServiceImpl}) to authenticate with Redis, then reads or
+ * writes keys under the given projectId prefix. All Jedis connections are closed in
+ * finally blocks. Jedis exception types are wrapped as plain {@link Exception} because
+ * Jedis types are not in GWT's RPC serialization whitelist.
  */
 public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
     implements CloudDBDataService {
@@ -47,24 +48,10 @@ public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
           + "Ensure the component's Token property has been populated.");
     }
 
-    String host = "DEFAULT".equals(redisServer) ? defaultServer : redisServer;
-    if (host == null || host.isEmpty()) {
-      throw new Exception("No CloudDB server configured (clouddb.server flag is empty).");
-    }
-
+    String host = resolveHost(redisServer);
     Jedis jedis = null;
     try {
-      JedisShardInfo shardInfo;
-      if (useSSL) {
-        // Pass null for sslSocketFactory / sslParameters / hostnameVerifier to use the
-        // JVM's default SSL context, which trusts standard CA roots on the server.
-        shardInfo = new JedisShardInfo(host, redisPort, CONNECTION_TIMEOUT_MS,
-            true /* ssl */, null, null, null);
-      } else {
-        shardInfo = new JedisShardInfo(host, redisPort, CONNECTION_TIMEOUT_MS);
-      }
-      shardInfo.setPassword(token);
-      jedis = new Jedis(shardInfo);
+      jedis = buildJedis(host, redisPort, useSSL, token);
 
       String prefix = projectId + ":";
       Set<String> keys = jedis.keys(prefix + "*");
@@ -78,21 +65,88 @@ public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
       return entries;
 
     } catch (Exception e) {
-      // Jedis exception types (JedisConnectionException, JedisDataException, etc.) are
-      // not in GWT's RPC serialization whitelist. Wrap them in a plain Exception so the
-      // message reaches the client without a secondary SerializationException.
       LOG.warning("CloudDB read failed for projectId=" + projectId
           + " host=" + host + ": " + e.getMessage());
       throw new Exception("Could not connect to CloudDB: " + e.getMessage());
     } finally {
-      if (jedis != null) {
-        try {
-          jedis.close();
-        } catch (Exception e) {
-          LOG.warning("Error closing Jedis connection: " + e.getMessage());
-        }
-      }
+      closeQuietly(jedis);
     }
   }
 
+  @Override
+  public void setEntry(String projectId, String token, String redisServer,
+      int redisPort, boolean useSSL, String tag, String value) throws Exception {
+
+    if (token == null || token.isEmpty()) {
+      throw new Exception("No CloudDB token available.");
+    }
+    if (tag == null || tag.trim().isEmpty()) {
+      throw new Exception("Tag must not be empty.");
+    }
+
+    String host = resolveHost(redisServer);
+    Jedis jedis = null;
+    try {
+      jedis = buildJedis(host, redisPort, useSSL, token);
+      jedis.set(projectId + ":" + tag, value != null ? value : "");
+    } catch (Exception e) {
+      LOG.warning("CloudDB setEntry failed for projectId=" + projectId
+          + " tag=" + tag + ": " + e.getMessage());
+      throw new Exception("Could not write to CloudDB: " + e.getMessage());
+    } finally {
+      closeQuietly(jedis);
+    }
+  }
+
+  @Override
+  public void deleteEntry(String projectId, String token, String redisServer,
+      int redisPort, boolean useSSL, String tag) throws Exception {
+
+    if (token == null || token.isEmpty()) {
+      throw new Exception("No CloudDB token available.");
+    }
+
+    String host = resolveHost(redisServer);
+    Jedis jedis = null;
+    try {
+      jedis = buildJedis(host, redisPort, useSSL, token);
+      jedis.del(projectId + ":" + tag);
+    } catch (Exception e) {
+      LOG.warning("CloudDB deleteEntry failed for projectId=" + projectId
+          + " tag=" + tag + ": " + e.getMessage());
+      throw new Exception("Could not delete from CloudDB: " + e.getMessage());
+    } finally {
+      closeQuietly(jedis);
+    }
+  }
+
+  private String resolveHost(String redisServer) throws Exception {
+    String host = "DEFAULT".equals(redisServer) ? defaultServer : redisServer;
+    if (host == null || host.isEmpty()) {
+      throw new Exception("No CloudDB server configured (clouddb.server flag is empty).");
+    }
+    return host;
+  }
+
+  private Jedis buildJedis(String host, int port, boolean useSSL, String token) {
+    JedisShardInfo shardInfo;
+    if (useSSL) {
+      shardInfo = new JedisShardInfo(host, port, CONNECTION_TIMEOUT_MS,
+          true /* ssl */, null, null, null);
+    } else {
+      shardInfo = new JedisShardInfo(host, port, CONNECTION_TIMEOUT_MS);
+    }
+    shardInfo.setPassword(token);
+    return new Jedis(shardInfo);
+  }
+
+  private void closeQuietly(Jedis jedis) {
+    if (jedis != null) {
+      try {
+        jedis.close();
+      } catch (Exception e) {
+        LOG.warning("Error closing Jedis connection: " + e.getMessage());
+      }
+    }
+  }
 }

@@ -5,7 +5,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.editor.simple.DataStoreProvider;
+import com.google.appinventor.client.editor.simple.MutableDataStoreProvider;
 import com.google.appinventor.client.editor.simple.dialogs.DataVisualizerPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.Ode;
@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author natalie@csail.mit.edu (Natalie Lao)
  */
-public class MockCloudDB extends MockNonVisibleComponent implements DataStoreProvider {
+public class MockCloudDB extends MockNonVisibleComponent implements MutableDataStoreProvider {
 
   public static final String TYPE = "CloudDB";
   private static final String PROPERTY_NAME_PROJECT_ID = "ProjectID";
@@ -210,13 +210,35 @@ public class MockCloudDB extends MockNonVisibleComponent implements DataStorePro
 
   @Override
   public void fetchEntries(AsyncCallback<List<DataEntry>> callback) {
+    String[] p = getConnectionParams();
+    Ode.getInstance().getCloudDBDataService()
+        .getEntries(p[0], p[1], p[2], Integer.parseInt(p[3]), Boolean.parseBoolean(p[4]), callback);
+  }
+
+  @Override
+  public void setEntry(String tag, String value, AsyncCallback<Void> callback) {
+    String[] p = getConnectionParams();
+    Ode.getInstance().getCloudDBDataService()
+        .setEntry(p[0], p[1], p[2], Integer.parseInt(p[3]), Boolean.parseBoolean(p[4]),
+            tag, value, callback);
+  }
+
+  @Override
+  public void deleteEntry(String tag, AsyncCallback<Void> callback) {
+    String[] p = getConnectionParams();
+    Ode.getInstance().getCloudDBDataService()
+        .deleteEntry(p[0], p[1], p[2], Integer.parseInt(p[3]), Boolean.parseBoolean(p[4]),
+            tag, callback);
+  }
+
+  // Returns [projectId, token, redisServer, redisPort, useSSL] as strings.
+  private String[] getConnectionParams() {
     String projectId = getPropertyValue(PROPERTY_NAME_PROJECT_ID);
     String token = getPropertyValue(PROPERTY_NAME_TOKEN);
     String redisServer = getPropertyValue(PROPERTY_NAME_REDIS_SERVER);
     if (redisServer == null || redisServer.isEmpty()) {
       redisServer = "DEFAULT";
     }
-
     int redisPort = DEFAULT_REDIS_PORT;
     String portStr = getPropertyValue(PROPERTY_NAME_REDIS_PORT);
     if (portStr != null && !portStr.isEmpty()) {
@@ -226,15 +248,13 @@ public class MockCloudDB extends MockNonVisibleComponent implements DataStorePro
         redisPort = DEFAULT_REDIS_PORT;
       }
     }
-
     boolean useSSL = true;
     String sslStr = getPropertyValue(PROPERTY_NAME_USE_SSL);
-    if ("False".equalsIgnoreCase(sslStr) || "false".equals(sslStr)) {
+    if ("False".equalsIgnoreCase(sslStr)) {
       useSSL = false;
     }
-
-    Ode.getInstance().getCloudDBDataService()
-        .getEntries(projectId, token, redisServer, redisPort, useSSL, callback);
+    return new String[]{projectId, token, redisServer,
+        String.valueOf(redisPort), String.valueOf(useSSL)};
   }
 
   @Override

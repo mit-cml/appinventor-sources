@@ -6,6 +6,8 @@
 package com.google.appinventor.client.editor.simple.dialogs;
 
 import com.google.appinventor.client.editor.simple.DataStoreProvider;
+import com.google.appinventor.client.editor.simple.MutableDataStoreProvider;
+import com.google.appinventor.client.utils.MessageDialog;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.appinventor.shared.rpc.clouddb.DataEntry;
 
@@ -17,12 +19,17 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
 
 /**
  * Floating, non-modal panel that displays the tag/value contents of a data-store
- * component (e.g. CloudDB) at design time.
+ * component (e.g. CloudDB) at design time. When the provider implements
+ * {@link MutableDataStoreProvider}, the panel also allows creating, editing, and
+ * deleting entries directly from the designer.
  *
  * <h3>WCAG 2.1 compliance</h3>
  * <ul>
@@ -47,16 +54,18 @@ public final class DataVisualizerPanel extends Dialog {
   private static DataVisualizerPanel instance;
 
   private final Label statusLabel;   // loading / error / empty messages
-  private final FlexTable dataTable; // tag | value | type rows
+  private final FlexTable dataTable; // tag | value | type | actions rows
   private final Label countLabel;    // "N entries"
+  private Button headerAddButton;    // "Add" button in the actions column header
 
   private DataStoreProvider currentProvider;
 
   // ---- Table column indices ----
-  private static final int COL_TAG   = 0;
-  private static final int COL_VALUE = 1;
-  private static final int COL_TYPE  = 2;
-  private static final int HEADER_ROW = 0;
+  private static final int COL_TAG     = 0;
+  private static final int COL_VALUE   = 1;
+  private static final int COL_TYPE    = 2;
+  private static final int COL_ACTIONS = 3;
+  private static final int HEADER_ROW  = 0;
 
   /**
    * Shows (or updates) the visualizer panel for the given provider.
@@ -92,7 +101,7 @@ public final class DataVisualizerPanel extends Dialog {
     countLabel = new Label();
     countLabel.addStyleName("ode-ProjectFieldLabel");
 
-    Button refreshButton = new Button("↻ Refresh");
+    Button refreshButton = new Button("\u21BB Refresh");
     refreshButton.addStyleName("gwt-Button");
     refreshButton.getElement().setAttribute("aria-label", "Refresh data from store");
     refreshButton.addClickHandler(event -> refresh());
@@ -153,6 +162,10 @@ public final class DataVisualizerPanel extends Dialog {
         + " (" + provider.getDataStoreType() + ")");
     // Re-wire aria-labelledby after caption text changes (caption element ID is stable).
     configureAria(null);
+    // Show the Add button only for mutable providers.
+    if (headerAddButton != null) {
+      headerAddButton.setVisible(provider instanceof MutableDataStoreProvider);
+    }
   }
 
   /**
@@ -163,7 +176,7 @@ public final class DataVisualizerPanel extends Dialog {
     if (currentProvider == null) {
       return;
     }
-    setStatus("Loading…");
+    setStatus("Loading\u2026");
     clearDataRows();
 
     currentProvider.fetchEntries(new AsyncCallback<List<DataEntry>>() {
@@ -197,7 +210,7 @@ public final class DataVisualizerPanel extends Dialog {
     dataTable.setText(HEADER_ROW, COL_VALUE, "Value");
     dataTable.setText(HEADER_ROW, COL_TYPE,  "Type");
 
-    for (int col = 0; col < 3; col++) {
+    for (int col = 0; col < COL_ACTIONS; col++) {
       com.google.gwt.dom.client.Element th = dataTable.getCellFormatter()
           .getElement(HEADER_ROW, col);
       th.setAttribute("role", "columnheader");
@@ -205,11 +218,24 @@ public final class DataVisualizerPanel extends Dialog {
       th.addClassName("ode-ComponentHeaderLabel");
     }
 
+    // Actions column header: Add button (hidden until a mutable provider is set).
+    headerAddButton = new Button("+ Add");
+    headerAddButton.addStyleName("gwt-Button");
+    headerAddButton.getElement().setAttribute("aria-label", "Add new entry");
+    headerAddButton.addClickHandler(event -> onAddClicked());
+    headerAddButton.setVisible(false);
+    dataTable.setWidget(HEADER_ROW, COL_ACTIONS, headerAddButton);
+    com.google.gwt.dom.client.Element actTh = dataTable.getCellFormatter()
+        .getElement(HEADER_ROW, COL_ACTIONS);
+    actTh.setAttribute("role", "columnheader");
+    actTh.setAttribute("scope", "col");
+
     dataTable.getRowFormatter().addStyleName(HEADER_ROW, "ode-ComponentHeaderRow");
 
-    fmt.setWidth(HEADER_ROW, COL_TAG,   "30%");
-    fmt.setWidth(HEADER_ROW, COL_VALUE, "55%");
-    fmt.setWidth(HEADER_ROW, COL_TYPE,  "15%");
+    fmt.setWidth(HEADER_ROW, COL_TAG,     "30%");
+    fmt.setWidth(HEADER_ROW, COL_VALUE,   "47%");
+    fmt.setWidth(HEADER_ROW, COL_TYPE,    "15%");
+    fmt.setWidth(HEADER_ROW, COL_ACTIONS, "8%");
   }
 
   private void clearDataRows() {
@@ -227,14 +253,75 @@ public final class DataVisualizerPanel extends Dialog {
     dataTable.setText(row, COL_TYPE,  detectType(value));
 
     dataTable.getRowFormatter().addStyleName(row, styleClass);
-
     dataTable.getRowFormatter().getElement(row).setAttribute("role", "row");
-    for (int col = 0; col < 3; col++) {
+
+    for (int col = 0; col < COL_ACTIONS; col++) {
       dataTable.getCellFormatter().getElement(row, col).setAttribute("role", "cell");
     }
     dataTable.getCellFormatter().addStyleName(row, COL_VALUE, "ode-ComponentNameLabel");
     dataTable.getCellFormatter().getElement(row, COL_VALUE)
         .getStyle().setProperty("wordBreak", "break-word");
+
+    // Actions column: Edit + Delete buttons for mutable providers only.
+    // The cell must be created (via setWidget) before its ARIA role can be set.
+    if (currentProvider instanceof MutableDataStoreProvider) {
+      final MutableDataStoreProvider mutableProvider = (MutableDataStoreProvider) currentProvider;
+      final String rawValue = value;
+
+      Button editBtn = new Button("\u270F");
+      editBtn.addStyleName("gwt-Button");
+      editBtn.getElement().setAttribute("aria-label", "Edit entry: " + tag);
+      editBtn.addClickHandler(event ->
+          new EntryEditDialog(tag, rawValue, mutableProvider, DataVisualizerPanel.this).show());
+
+      Button deleteBtn = new Button("\u2715");
+      deleteBtn.addStyleName("gwt-Button");
+      deleteBtn.getElement().setAttribute("aria-label", "Delete entry: " + tag);
+      deleteBtn.addClickHandler(event -> onDeleteClicked(tag, mutableProvider));
+
+      FlowPanel actionsPanel = new FlowPanel();
+      actionsPanel.getElement().getStyle().setProperty("display", "flex");
+      actionsPanel.getElement().getStyle().setProperty("gap", "2px");
+      actionsPanel.add(editBtn);
+      actionsPanel.add(deleteBtn);
+      dataTable.setWidget(row, COL_ACTIONS, actionsPanel);
+      dataTable.getCellFormatter().getElement(row, COL_ACTIONS).setAttribute("role", "cell");
+    }
+  }
+
+  private void onAddClicked() {
+    if (!(currentProvider instanceof MutableDataStoreProvider)) {
+      return;
+    }
+    new EntryEditDialog(null, null,
+        (MutableDataStoreProvider) currentProvider, this).show();
+  }
+
+  private void onDeleteClicked(final String tag, final MutableDataStoreProvider provider) {
+    MessageDialog.messageDialog(
+        "Delete Entry",
+        "Delete entry \u201C" + tag + "\u201D? This cannot be undone.",
+        "Delete", "Cancel",
+        new MessageDialog.Actions() {
+          @Override
+          public void onOK() {
+            setStatus("Deleting\u2026");
+            provider.deleteEntry(tag, new AsyncCallback<Void>() {
+              @Override
+              public void onSuccess(Void result) {
+                refresh();
+              }
+              @Override
+              public void onFailure(Throwable caught) {
+                setStatus("Delete failed: " + caught.getMessage());
+              }
+            });
+          }
+          @Override
+          public void onCancel() {
+            // nothing
+          }
+        });
   }
 
   /**
@@ -243,7 +330,7 @@ public final class DataVisualizerPanel extends Dialog {
   private static String formatValue(String raw) {
     if (raw == null || raw.isEmpty()) return "(empty)";
     if (raw.length() > 120) {
-      return raw.substring(0, 117) + "…";
+      return raw.substring(0, 117) + "\u2026";
     }
     return raw;
   }
@@ -281,5 +368,130 @@ public final class DataVisualizerPanel extends Dialog {
       statusLabel.getElement().setId(id);
     }
     return id;
+  }
+
+  /**
+   * Modal dialog for creating a new entry (add mode) or updating the value of
+   * an existing entry (edit mode). Tags are not editable in edit mode because
+   * renaming a Redis key requires a separate delete + add flow.
+   */
+  static final class EntryEditDialog extends Dialog {
+
+    private final boolean isAddMode;
+    private final MutableDataStoreProvider provider;
+    private final DataVisualizerPanel panel;
+    private final TextBox tagBox;
+    private final Label tagDisplayLabel;
+    private final TextArea valueArea;
+    private final Label errorLabel;
+
+    /**
+     * @param existingTag   the tag to edit; {@code null} to create a new entry
+     * @param existingValue the current JSON value; {@code null} for a new entry
+     * @param provider      the mutable data store to write/delete on
+     * @param panel         the parent panel to refresh after a successful save
+     */
+    EntryEditDialog(String existingTag, String existingValue,
+        MutableDataStoreProvider provider, DataVisualizerPanel panel) {
+      // Dialog base class sets glass=true — override it here. The glass element
+      // ends up at the same z-index as the popup in this GWT version, covering the
+      // dialog and absorbing all mouse events (keyboard still works via focus).
+      setGlassEnabled(false);
+      this.isAddMode = (existingTag == null);
+      this.provider = provider;
+      this.panel = panel;
+
+      tagBox = new TextBox();
+      tagBox.setVisibleLength(40);
+
+      tagDisplayLabel = new Label(existingTag != null ? existingTag : "");
+
+      valueArea = new TextArea();
+      valueArea.setVisibleLines(6);
+      valueArea.setCharacterWidth(50);
+      if (existingValue != null) {
+        valueArea.setValue(existingValue);
+      }
+
+      Label jsonHint = new Label(
+          "Values are JSON \u2014 e.g. \"hello\", 42, true, [1,2], {\"k\":\"v\"}");
+      jsonHint.addStyleName("ode-ProjectFieldLabel");
+
+      errorLabel = new Label();
+      errorLabel.addStyleName("ode-ErrorMessage");
+      errorLabel.getElement().setAttribute("role", "alert");
+      errorLabel.setVisible(false);
+
+      Button saveButton = new Button(isAddMode ? "Add" : "Save");
+      saveButton.addStyleName("gwt-Button");
+      saveButton.getElement().setAttribute("aria-label",
+          isAddMode ? "Save new entry" : "Save changes to " + existingTag);
+      saveButton.addClickHandler(event -> onSave());
+
+      Button cancelButton = new Button("Cancel");
+      cancelButton.addStyleName("gwt-Button");
+      cancelButton.getElement().setAttribute("aria-label", "Cancel and close dialog");
+      cancelButton.addClickHandler(event -> hide());
+
+      FlowPanel buttonRow = new FlowPanel();
+      buttonRow.getElement().getStyle().setProperty("marginTop", "8px");
+      buttonRow.getElement().getStyle().setProperty("display", "flex");
+      buttonRow.getElement().getStyle().setProperty("gap", "4px");
+      buttonRow.add(saveButton);
+      buttonRow.add(cancelButton);
+
+      VerticalPanel layout = new VerticalPanel();
+      layout.setSpacing(4);
+      layout.add(new Label("Tag:"));
+      layout.add(isAddMode ? tagBox : tagDisplayLabel);
+      layout.add(new Label("Value (JSON):"));
+      layout.add(valueArea);
+      layout.add(jsonHint);
+      layout.add(errorLabel);
+      layout.add(buttonRow);
+
+      setWidget(layout);
+      configureAria(isAddMode ? "Add CloudDB Entry" : "Edit CloudDB Entry");
+      setCaption(isAddMode ? "Add Entry" : "Edit: " + existingTag);
+    }
+
+    private void onSave() {
+      String tag = isAddMode ? tagBox.getValue().trim() : tagDisplayLabel.getText().trim();
+      String value = valueArea.getValue().trim();
+
+      if (tag.isEmpty()) {
+        showError("Tag must not be empty.");
+        return;
+      }
+      if (value.isEmpty()) {
+        showError("Value must not be empty.");
+        return;
+      }
+      try {
+        com.google.gwt.json.client.JSONParser.parseStrict(value);
+      } catch (com.google.gwt.json.client.JSONException e) {
+        showError("Invalid JSON: " + e.getMessage()
+            + " \u2014 Use double quotes, e.g. {\"k\":\"v\"} not {'k':'v'}");
+        return;
+      }
+      showError("");
+
+      provider.setEntry(tag, value, new AsyncCallback<Void>() {
+        @Override
+        public void onSuccess(Void result) {
+          hide();
+          panel.refresh();
+        }
+        @Override
+        public void onFailure(Throwable caught) {
+          showError("Save failed: " + caught.getMessage());
+        }
+      });
+    }
+
+    private void showError(String message) {
+      errorLabel.setText(message);
+      errorLabel.setVisible(message != null && !message.isEmpty());
+    }
   }
 }

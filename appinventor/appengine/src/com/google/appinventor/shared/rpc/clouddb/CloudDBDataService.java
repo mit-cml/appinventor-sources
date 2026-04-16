@@ -12,7 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.util.List;
 
 /**
- * GWT RPC service interface for reading CloudDB data from the designer.
+ * GWT RPC service interface for reading and writing CloudDB data from the designer.
  */
 @RemoteServiceRelativePath(ServerLayout.CLOUDDB_DATA_SERVICE)
 public interface CloudDBDataService extends RemoteService {
@@ -30,4 +30,33 @@ public interface CloudDBDataService extends RemoteService {
    */
   List<DataEntry> getEntries(String projectId, String token, String redisServer,
       int redisPort, boolean useSSL) throws Exception;
+
+  /**
+   * Creates or overwrites a single tag/value entry (Redis SET).
+   *
+   * @param projectId   the CloudDB ProjectID (Redis key prefix)
+   * @param token       the CloudDB auth token
+   * @param redisServer hostname, or {@code "DEFAULT"}
+   * @param redisPort   TCP port
+   * @param useSSL      whether to use TLS
+   * @param tag         the key name (must not be blank)
+   * @param value       the JSON-encoded value string
+   * @throws Exception if the Redis connection or auth fails, or tag is blank
+   */
+  void setEntry(String projectId, String token, String redisServer,
+      int redisPort, boolean useSSL, String tag, String value) throws Exception;
+
+  /**
+   * Deletes the entry with the given tag (Redis DEL).
+   *
+   * @param projectId   the CloudDB ProjectID (Redis key prefix)
+   * @param token       the CloudDB auth token
+   * @param redisServer hostname, or {@code "DEFAULT"}
+   * @param redisPort   TCP port
+   * @param useSSL      whether to use TLS
+   * @param tag         the key name to delete
+   * @throws Exception if the Redis connection or auth fails
+   */
+  void deleteEntry(String projectId, String token, String redisServer,
+      int redisPort, boolean useSSL, String tag) throws Exception;
 }
