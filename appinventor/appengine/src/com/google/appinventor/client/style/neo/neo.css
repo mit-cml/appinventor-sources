@@ -1076,6 +1076,10 @@ select.ode-PropertyEditor[disabled] {
     color: selected-color;
 }
 
+.ode-DialogBox .download-button span {
+  color: gray-800;
+}
+
 .ode-SimpleMockContainer {
     border: 2px solid tab-bar-color;
   }
