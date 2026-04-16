@@ -5,14 +5,21 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import com.google.appinventor.client.editor.simple.DataStoreProvider;
+import com.google.appinventor.client.editor.simple.dialogs.DataVisualizerPanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.shared.rpc.clouddb.DataEntry;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.List;
 
 /**
  * Mock for the non-visible CloudDB component. This needs a separate mock
@@ -21,13 +28,17 @@ import com.google.gwt.user.client.ui.Widget;
  *
  * @author natalie@csail.mit.edu (Natalie Lao)
  */
-public class MockCloudDB extends MockNonVisibleComponent {
+public class MockCloudDB extends MockNonVisibleComponent implements DataStoreProvider {
 
   public static final String TYPE = "CloudDB";
   private static final String PROPERTY_NAME_PROJECT_ID = "ProjectID";
   private static final String PROPERTY_NAME_TOKEN = "Token";
   private static final String PROPERTY_NAME_REDIS_SERVER = "RedisServer";
   private static final String PROPERTY_NAME_DEFAULT_REDISSERVER = "DefaultRedisServer";
+  private static final String PROPERTY_NAME_REDIS_PORT = "RedisPort";
+  private static final String PROPERTY_NAME_USE_SSL = "UseSSL";
+
+  private static final int DEFAULT_REDIS_PORT = 6381;
 
   private boolean persistToken = false;
 
@@ -185,6 +196,56 @@ public class MockCloudDB extends MockNonVisibleComponent {
         super.onFailure(t);
       }
     });
+  }
+
+  @Override
+  public String getDataStoreName() {
+    return getName();
+  }
+
+  @Override
+  public String getDataStoreType() {
+    return TYPE;
+  }
+
+  @Override
+  public void fetchEntries(AsyncCallback<List<DataEntry>> callback) {
+    String projectId = getPropertyValue(PROPERTY_NAME_PROJECT_ID);
+    String token = getPropertyValue(PROPERTY_NAME_TOKEN);
+    String redisServer = getPropertyValue(PROPERTY_NAME_REDIS_SERVER);
+    if (redisServer == null || redisServer.isEmpty()) {
+      redisServer = "DEFAULT";
+    }
+
+    int redisPort = DEFAULT_REDIS_PORT;
+    String portStr = getPropertyValue(PROPERTY_NAME_REDIS_PORT);
+    if (portStr != null && !portStr.isEmpty()) {
+      try {
+        redisPort = Integer.parseInt(portStr);
+      } catch (NumberFormatException e) {
+        redisPort = DEFAULT_REDIS_PORT;
+      }
+    }
+
+    boolean useSSL = true;
+    String sslStr = getPropertyValue(PROPERTY_NAME_USE_SSL);
+    if ("False".equalsIgnoreCase(sslStr) || "false".equals(sslStr)) {
+      useSSL = false;
+    }
+
+    Ode.getInstance().getCloudDBDataService()
+        .getEntries(projectId, token, redisServer, redisPort, useSSL, callback);
+  }
+
+  @Override
+  public Widget getPropertiesPanelExtension() {
+    Button viewDataButton = new Button("View Data \u2197");
+    viewDataButton.addStyleName("gwt-Button");
+    viewDataButton.getElement().setAttribute("aria-label",
+        "View data stored by " + getName() + " in CloudDB");
+    viewDataButton.getElement().getStyle().setProperty("margin", "6px 4px 4px 4px");
+    viewDataButton.addClickHandler(event -> DataVisualizerPanel.show(MockCloudDB.this));
+    return viewDataButton;
   }
 
 }

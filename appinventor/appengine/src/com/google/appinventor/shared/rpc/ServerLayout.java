@@ -205,6 +205,12 @@ public class ServerLayout {
    */
   public static final String TOKEN_AUTH_SERVICE = "tokenauth";
 
+  /**
+   * Relative path of the {@link com.google.appinventor.shared.rpc.clouddb.CloudDBDataService}
+   * within the ODE GWT module.
+   */
+  public static final String CLOUDDB_DATA_SERVICE = "clouddbdata";
+
   public static String genRelativeDownloadPath(long projectId, String target) {
     return DOWNLOAD_SERVLET_BASE + DOWNLOAD_PROJECT_OUTPUT + "/" + projectId + "/" + target;
   }

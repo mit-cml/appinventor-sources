@@ -166,6 +166,20 @@
     <servlet-name>tokenAuthService</servlet-name>
   </filter-mapping>
 
+  <!-- CloudDB Data Visualizer -->
+  <servlet>
+    <servlet-name>cloudDBDataService</servlet-name>
+    <servlet-class>com.google.appinventor.server.clouddb.CloudDBDataServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cloudDBDataService</servlet-name>
+    <url-pattern>/ode/clouddbdata</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>cloudDBDataService</servlet-name>
+  </filter-mapping>
+
   <!-- accept tos -->
   <servlet>
     <servlet-name>tosServlet</servlet-name>
