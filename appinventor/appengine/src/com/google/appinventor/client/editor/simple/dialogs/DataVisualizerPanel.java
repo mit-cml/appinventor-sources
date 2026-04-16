@@ -16,7 +16,17 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONException;
+import com.google.gwt.json.client.JSONNull;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -24,9 +34,12 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -549,28 +562,30 @@ public final class DataVisualizerPanel extends Dialog {
    * Modal dialog for creating a new entry (add mode) or updating the value of
    * an existing entry (edit mode). Tags are not editable in edit mode because
    * renaming a Redis key requires a separate delete + add flow.
+   *
+   * <p>The value editor has two tabs: a type-aware Structured editor that hides
+   * JSON syntax from beginners, and a Raw JSON tab for power users.
    */
   static final class EntryEditDialog extends Dialog {
+
+    private static final int TAB_STRUCTURED = 0;
+    private static final int TAB_RAW        = 1;
 
     private final boolean isAddMode;
     private final MutableDataStoreProvider provider;
     private final DataVisualizerPanel panel;
     private final TextBox tagBox;
     private final Label tagDisplayLabel;
-    private final TextArea valueArea;
+    private final JsonNodeEditor rootEditor;
+    private final TextArea rawTextArea;
     private final Label errorLabel;
+    private final Button structuredTabBtn;
+    private final Button rawTabBtn;
+    private final SimplePanel tabContentPanel;
+    private int currentTab = TAB_STRUCTURED;
 
-    /**
-     * @param existingTag   the tag to edit; {@code null} to create a new entry
-     * @param existingValue the current JSON value; {@code null} for a new entry
-     * @param provider      the mutable data store to write/delete on
-     * @param panel         the parent panel to refresh after a successful save
-     */
     EntryEditDialog(String existingTag, String existingValue,
         MutableDataStoreProvider provider, DataVisualizerPanel panel) {
-      // Dialog base class sets glass=true — override it here. The glass element
-      // ends up at the same z-index as the popup in this GWT version, covering the
-      // dialog and absorbing all mouse events (keyboard still works via focus).
       setGlassEnabled(false);
       this.isAddMode = (existingTag == null);
       this.provider = provider;
@@ -581,21 +596,55 @@ public final class DataVisualizerPanel extends Dialog {
 
       tagDisplayLabel = new Label(existingTag != null ? existingTag : "");
 
-      valueArea = new TextArea();
-      valueArea.setVisibleLines(6);
-      valueArea.setCharacterWidth(50);
+      rawTextArea = new TextArea();
+      rawTextArea.setVisibleLines(8);
+      rawTextArea.setCharacterWidth(50);
       if (existingValue != null) {
-        valueArea.setValue(existingValue);
+        rawTextArea.setValue(existingValue);
       }
 
-      Label jsonHint = new Label(
-          "Values are JSON \u2014 e.g. \"hello\", 42, true, [1,2], {\"k\":\"v\"}");
-      jsonHint.addStyleName("ode-ProjectFieldLabel");
+      // Parse existing value for the structured editor.
+      JSONValue parsed = null;
+      if (existingValue != null && !existingValue.trim().isEmpty()) {
+        try {
+          parsed = JSONParser.parseStrict(existingValue);
+        } catch (JSONException e) {
+          // Unparseable — structured editor starts blank, raw tab has the text.
+        }
+      }
+      rootEditor = new JsonNodeEditor(parsed);
 
       errorLabel = new Label();
       errorLabel.addStyleName("ode-ErrorMessage");
       errorLabel.getElement().setAttribute("role", "alert");
       errorLabel.setVisible(false);
+
+      // Tab bar — two buttons styled as tabs.
+      structuredTabBtn = new Button("Structured");
+      rawTabBtn = new Button("Raw JSON");
+      structuredTabBtn.addStyleName("gwt-Button");
+      rawTabBtn.addStyleName("gwt-Button");
+      markTabActive(structuredTabBtn);
+      markTabInactive(rawTabBtn);
+      structuredTabBtn.addClickHandler(e -> switchToTab(TAB_STRUCTURED));
+      rawTabBtn.addClickHandler(e -> switchToTab(TAB_RAW));
+
+      FlowPanel tabBar = new FlowPanel();
+      tabBar.getElement().getStyle().setProperty("display", "flex");
+      tabBar.getElement().getStyle().setProperty("gap", "2px");
+      tabBar.getElement().getStyle().setProperty("marginBottom", "6px");
+      tabBar.add(structuredTabBtn);
+      tabBar.add(rawTabBtn);
+
+      tabContentPanel = new SimplePanel();
+      tabContentPanel.setWidget(rootEditor);
+      tabContentPanel.setWidth("500px");
+      tabContentPanel.getElement().getStyle().setProperty("maxHeight", "400px");
+      tabContentPanel.getElement().getStyle().setProperty("overflowY", "auto");
+      tabContentPanel.getElement().getStyle().setProperty("overflowX", "auto");
+      tabContentPanel.getElement().getStyle().setProperty("border", "1px solid #ddd");
+      tabContentPanel.getElement().getStyle().setProperty("padding", "4px");
+      tabContentPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
 
       Button saveButton = new Button(isAddMode ? "Add" : "Save");
       saveButton.addStyleName("gwt-Button");
@@ -619,9 +668,8 @@ public final class DataVisualizerPanel extends Dialog {
       layout.setSpacing(4);
       layout.add(new Label("Tag:"));
       layout.add(isAddMode ? tagBox : tagDisplayLabel);
-      layout.add(new Label("Value (JSON):"));
-      layout.add(valueArea);
-      layout.add(jsonHint);
+      layout.add(tabBar);
+      layout.add(tabContentPanel);
       layout.add(errorLabel);
       layout.add(buttonRow);
 
@@ -630,24 +678,66 @@ public final class DataVisualizerPanel extends Dialog {
       setCaption(isAddMode ? "Add Entry" : "Edit: " + existingTag);
     }
 
+    private void switchToTab(int tab) {
+      if (tab == currentTab) return;
+      showError("");
+      if (tab == TAB_RAW) {
+        // Sync structured → raw before switching.
+        rawTextArea.setValue(rootEditor.getValue());
+        tabContentPanel.setWidget(rawTextArea);
+        markTabActive(rawTabBtn);
+        markTabInactive(structuredTabBtn);
+      } else {
+        // Sync raw → structured; abort switch on invalid JSON.
+        String raw = rawTextArea.getValue().trim();
+        if (!raw.isEmpty()) {
+          try {
+            rootEditor.setValue(JSONParser.parseStrict(raw));
+          } catch (JSONException e) {
+            showError("Fix the JSON in the Raw tab before switching: " + e.getMessage());
+            return;
+          }
+        }
+        tabContentPanel.setWidget(rootEditor);
+        markTabActive(structuredTabBtn);
+        markTabInactive(rawTabBtn);
+      }
+      currentTab = tab;
+    }
+
+    private static void markTabActive(Button btn) {
+      btn.getElement().getStyle().setProperty("fontWeight", "bold");
+      btn.getElement().getStyle().setProperty("textDecoration", "underline");
+    }
+
+    private static void markTabInactive(Button btn) {
+      btn.getElement().getStyle().clearProperty("fontWeight");
+      btn.getElement().getStyle().clearProperty("textDecoration");
+    }
+
     private void onSave() {
       String tag = isAddMode ? tagBox.getValue().trim() : tagDisplayLabel.getText().trim();
-      String value = valueArea.getValue().trim();
-
       if (tag.isEmpty()) {
         showError("Tag must not be empty.");
         return;
       }
-      if (value.isEmpty()) {
-        showError("Value must not be empty.");
-        return;
-      }
-      try {
-        com.google.gwt.json.client.JSONParser.parseStrict(value);
-      } catch (com.google.gwt.json.client.JSONException e) {
-        showError("Invalid JSON: " + e.getMessage()
-            + " \u2014 Use double quotes, e.g. {\"k\":\"v\"} not {'k':'v'}");
-        return;
+
+      String value;
+      if (currentTab == TAB_RAW) {
+        value = rawTextArea.getValue().trim();
+        if (value.isEmpty()) {
+          showError("Value must not be empty.");
+          return;
+        }
+        try {
+          JSONParser.parseStrict(value);
+        } catch (JSONException e) {
+          showError("Invalid JSON: " + e.getMessage()
+              + " \u2014 Use double quotes, e.g. {\"k\":\"v\"} not {'k':'v'}");
+          return;
+        }
+      } else {
+        value = rootEditor.getValue();
       }
       showError("");
 
@@ -667,6 +757,330 @@ public final class DataVisualizerPanel extends Dialog {
     private void showError(String message) {
       errorLabel.setText(message);
       errorLabel.setVisible(message != null && !message.isEmpty());
+    }
+  }
+
+  /**
+   * A recursive GWT widget that edits a single JSON value.
+   *
+   * <p>A type-selector {@link ListBox} lets the user switch between text, number,
+   * boolean, list, and dictionary modes. For list and dict types the body renders
+   * child {@code JsonNodeEditor} instances, enabling arbitrary nesting depth.
+   */
+  static final class JsonNodeEditor extends Composite {
+
+    private static int instanceCounter = 0;
+
+    private static final String TYPE_TEXT    = "text";
+    private static final String TYPE_NUMBER  = "number";
+    private static final String TYPE_BOOLEAN = "boolean";
+    private static final String TYPE_LIST    = "list";
+    private static final String TYPE_DICT    = "dict";
+
+    private final String uid = "jne" + (++instanceCounter);
+    private final ListBox typeSelector;
+    private final SimplePanel bodyPanel;
+
+    // Lazily-created per-type controls.
+    private TextBox textBox;
+    private TextBox numberBox;
+    private FlowPanel boolPanel;
+    private RadioButton trueButton;
+    private RadioButton falseButton;
+
+    // List state.
+    private final List<JsonNodeEditor> listItems = new ArrayList<>();
+
+    // Dict state: parallel lists of keys and value editors.
+    private final List<TextBox>       dictKeyBoxes     = new ArrayList<>();
+    private final List<JsonNodeEditor> dictValueEditors = new ArrayList<>();
+
+    private String currentType = TYPE_TEXT;
+
+    JsonNodeEditor() {
+      this(null);
+    }
+
+    JsonNodeEditor(JSONValue initialValue) {
+      typeSelector = new ListBox();
+      typeSelector.addItem("Text (string)",   TYPE_TEXT);
+      typeSelector.addItem("Number",          TYPE_NUMBER);
+      typeSelector.addItem("True / False",    TYPE_BOOLEAN);
+      typeSelector.addItem("List  [ ]",       TYPE_LIST);
+      typeSelector.addItem("Dictionary { }",  TYPE_DICT);
+      typeSelector.getElement().setAttribute("aria-label", "Value type");
+
+      bodyPanel = new SimplePanel();
+      bodyPanel.getElement().getStyle().setProperty("marginTop", "4px");
+      bodyPanel.getElement().getStyle().setProperty("overflowX", "auto");
+
+      typeSelector.addChangeHandler(e -> {
+        currentType = typeSelector.getValue(typeSelector.getSelectedIndex());
+        renderBody();
+      });
+
+      VerticalPanel root = new VerticalPanel();
+      root.add(typeSelector);
+      root.add(bodyPanel);
+      initWidget(root);
+
+      if (initialValue != null) {
+        setValue(initialValue);
+      } else {
+        renderBody();
+      }
+    }
+
+    /** Populate the editor from a parsed {@link JSONValue}. */
+    void setValue(JSONValue v) {
+      if (v == null || v instanceof JSONNull) {
+        selectType(TYPE_TEXT);
+        ensureTextBox();
+        textBox.setValue("");
+      } else if (v instanceof JSONString) {
+        selectType(TYPE_TEXT);
+        ensureTextBox();
+        textBox.setValue(((JSONString) v).stringValue());
+      } else if (v instanceof JSONNumber) {
+        selectType(TYPE_NUMBER);
+        ensureNumberBox();
+        double d = ((JSONNumber) v).doubleValue();
+        numberBox.setValue(isWholeNumber(d) ? String.valueOf((long) d) : String.valueOf(d));
+      } else if (v instanceof JSONBoolean) {
+        selectType(TYPE_BOOLEAN);
+        ensureBoolPanel();
+        boolean b = ((JSONBoolean) v).booleanValue();
+        trueButton.setValue(b);
+        falseButton.setValue(!b);
+      } else if (v instanceof JSONArray) {
+        selectType(TYPE_LIST);
+        listItems.clear();
+        JSONArray arr = (JSONArray) v;
+        for (int i = 0; i < arr.size(); i++) {
+          listItems.add(new JsonNodeEditor(arr.get(i)));
+        }
+      } else if (v instanceof JSONObject) {
+        selectType(TYPE_DICT);
+        dictKeyBoxes.clear();
+        dictValueEditors.clear();
+        JSONObject obj = (JSONObject) v;
+        for (String key : obj.keySet()) {
+          dictKeyBoxes.add(newKeyBox(key));
+          dictValueEditors.add(new JsonNodeEditor(obj.get(key)));
+        }
+      }
+      renderBody();
+    }
+
+    /** Serialize the current editor state to a JSON string. */
+    String getValue() {
+      switch (currentType) {
+        case TYPE_TEXT:
+          return new JSONString(textBox != null ? textBox.getValue() : "").toString();
+        case TYPE_NUMBER: {
+          String s = numberBox != null ? numberBox.getValue().trim() : "0";
+          try {
+            return new JSONNumber(Double.parseDouble(s)).toString();
+          } catch (NumberFormatException e) {
+            return "0";
+          }
+        }
+        case TYPE_BOOLEAN:
+          return (trueButton != null && trueButton.getValue()) ? "true" : "false";
+        case TYPE_LIST: {
+          StringBuilder sb = new StringBuilder("[");
+          for (int i = 0; i < listItems.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(listItems.get(i).getValue());
+          }
+          return sb.append("]").toString();
+        }
+        case TYPE_DICT: {
+          StringBuilder sb = new StringBuilder("{");
+          for (int i = 0; i < dictKeyBoxes.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(new JSONString(dictKeyBoxes.get(i).getValue()).toString());
+            sb.append(":");
+            sb.append(dictValueEditors.get(i).getValue());
+          }
+          return sb.append("}").toString();
+        }
+        default:
+          return "null";
+      }
+    }
+
+    private void selectType(String type) {
+      currentType = type;
+      for (int i = 0; i < typeSelector.getItemCount(); i++) {
+        if (type.equals(typeSelector.getValue(i))) {
+          typeSelector.setSelectedIndex(i);
+          return;
+        }
+      }
+    }
+
+    private void renderBody() {
+      switch (currentType) {
+        case TYPE_TEXT:
+          ensureTextBox();
+          bodyPanel.setWidget(textBox);
+          break;
+        case TYPE_NUMBER:
+          ensureNumberBox();
+          bodyPanel.setWidget(numberBox);
+          break;
+        case TYPE_BOOLEAN:
+          ensureBoolPanel();
+          bodyPanel.setWidget(boolPanel);
+          break;
+        case TYPE_LIST:
+          bodyPanel.setWidget(buildListWidget());
+          break;
+        case TYPE_DICT:
+          bodyPanel.setWidget(buildDictWidget());
+          break;
+        default:
+          break;
+      }
+    }
+
+    private void ensureTextBox() {
+      if (textBox == null) {
+        textBox = new TextBox();
+        textBox.setWidth("200px");
+        textBox.getElement().setAttribute("aria-label", "Text value");
+      }
+    }
+
+    private void ensureNumberBox() {
+      if (numberBox == null) {
+        numberBox = new TextBox();
+        numberBox.setWidth("120px");
+        numberBox.getElement().setAttribute("aria-label", "Number value");
+      }
+    }
+
+    private void ensureBoolPanel() {
+      if (boolPanel == null) {
+        trueButton  = new RadioButton(uid + "-bool", "true");
+        falseButton = new RadioButton(uid + "-bool", "false");
+        trueButton.setValue(true);
+        boolPanel = new FlowPanel();
+        boolPanel.getElement().getStyle().setProperty("display", "flex");
+        boolPanel.getElement().getStyle().setProperty("gap", "16px");
+        boolPanel.getElement().getStyle().setProperty("padding", "4px 0");
+        boolPanel.add(trueButton);
+        boolPanel.add(falseButton);
+      }
+    }
+
+    private Widget buildListWidget() {
+      VerticalPanel vp = new VerticalPanel();
+      vp.setSpacing(2);
+      for (int i = 0; i < listItems.size(); i++) {
+        final int idx = i;
+        FlowPanel row = new FlowPanel();
+        row.getElement().getStyle().setProperty("display", "flex");
+        row.getElement().getStyle().setProperty("alignItems", "flex-start");
+        row.getElement().getStyle().setProperty("gap", "4px");
+        row.getElement().getStyle().setProperty("marginBottom", "2px");
+
+        Label num = new Label((i + 1) + ".");
+        num.getElement().getStyle().setProperty("minWidth", "20px");
+        num.getElement().getStyle().setProperty("paddingTop", "4px");
+
+        Button del = new Button("\u00D7");
+        del.addStyleName("gwt-Button");
+        del.getElement().setAttribute("aria-label", "Remove item " + (i + 1));
+        del.getElement().getStyle().setProperty("padding", "0 6px");
+        del.addClickHandler(e -> { listItems.remove(idx); renderBody(); });
+
+        row.add(num);
+        row.add(listItems.get(i));
+        row.add(del);
+        vp.add(row);
+      }
+
+      Button addBtn = new Button("\uFF0B Add item");
+      addBtn.addStyleName("gwt-Button");
+      addBtn.addClickHandler(e -> { listItems.add(new JsonNodeEditor()); renderBody(); });
+      vp.add(addBtn);
+      return vp;
+    }
+
+    private Widget buildDictWidget() {
+      VerticalPanel vp = new VerticalPanel();
+      vp.setSpacing(2);
+      for (int i = 0; i < dictKeyBoxes.size(); i++) {
+        final int idx = i;
+
+        // Header row: key label + key TextBox + delete button.
+        FlowPanel headerRow = new FlowPanel();
+        headerRow.getElement().getStyle().setProperty("display", "flex");
+        headerRow.getElement().getStyle().setProperty("alignItems", "center");
+        headerRow.getElement().getStyle().setProperty("gap", "4px");
+        headerRow.getElement().getStyle().setProperty("marginBottom", "2px");
+
+        Label keyLbl = new Label("key:");
+        keyLbl.getElement().getStyle().setProperty("flexShrink", "0");
+
+        Button del = new Button("\u00D7");
+        del.addStyleName("gwt-Button");
+        del.getElement().setAttribute("aria-label",
+            "Remove key " + dictKeyBoxes.get(i).getValue());
+        del.getElement().getStyle().setProperty("padding", "0 6px");
+        del.addClickHandler(e -> {
+          dictKeyBoxes.remove(idx);
+          dictValueEditors.remove(idx);
+          renderBody();
+        });
+
+        headerRow.add(keyLbl);
+        headerRow.add(dictKeyBoxes.get(i));
+        headerRow.add(del);
+
+        // Value row: indented below the key.
+        FlowPanel valueRow = new FlowPanel();
+        valueRow.getElement().getStyle().setProperty("display", "flex");
+        valueRow.getElement().getStyle().setProperty("alignItems", "flex-start");
+        valueRow.getElement().getStyle().setProperty("gap", "4px");
+        valueRow.getElement().getStyle().setProperty("paddingLeft", "24px");
+        valueRow.getElement().getStyle().setProperty("marginBottom", "6px");
+
+        Label valLbl = new Label("value:");
+        valLbl.getElement().getStyle().setProperty("paddingTop", "4px");
+        valLbl.getElement().getStyle().setProperty("flexShrink", "0");
+
+        valueRow.add(valLbl);
+        valueRow.add(dictValueEditors.get(i));
+
+        vp.add(headerRow);
+        vp.add(valueRow);
+      }
+
+      Button addBtn = new Button("\uFF0B Add key");
+      addBtn.addStyleName("gwt-Button");
+      addBtn.addClickHandler(e -> {
+        dictKeyBoxes.add(newKeyBox(""));
+        dictValueEditors.add(new JsonNodeEditor());
+        renderBody();
+      });
+      vp.add(addBtn);
+      return vp;
+    }
+
+    private static TextBox newKeyBox(String value) {
+      TextBox kb = new TextBox();
+      kb.setValue(value);
+      kb.setWidth("110px");
+      kb.getElement().setAttribute("aria-label", "Key name");
+      return kb;
+    }
+
+    private static boolean isWholeNumber(double d) {
+      return !Double.isInfinite(d) && !Double.isNaN(d)
+          && d == Math.floor(d) && Math.abs(d) < 1e15;
     }
   }
 }
