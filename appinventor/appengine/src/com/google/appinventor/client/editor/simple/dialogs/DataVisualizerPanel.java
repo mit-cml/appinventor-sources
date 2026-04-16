@@ -12,17 +12,23 @@ import com.google.appinventor.client.wizards.Dialog;
 import com.google.appinventor.shared.rpc.clouddb.DataEntry;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -55,7 +61,7 @@ public final class DataVisualizerPanel extends Dialog {
 
   private final Label statusLabel;   // loading / error / empty messages
   private final FlexTable dataTable; // tag | value | type | actions rows
-  private final Label countLabel;    // "N entries"
+  private final Label countLabel;    // "N entries" / "N of M entries"
   private Button headerAddButton;    // "Add" button in the actions column header
 
   private DataStoreProvider currentProvider;
@@ -66,6 +72,19 @@ public final class DataVisualizerPanel extends Dialog {
   private static final int COL_TYPE    = 2;
   private static final int COL_ACTIONS = 3;
   private static final int HEADER_ROW  = 0;
+
+  // ---- Filter + sort state ----
+  private enum SortField { TAG, TYPE }
+  private enum SortOrder { ASCENDING, DESCENDING }
+
+  private List<DataEntry> allEntries = new ArrayList<>();
+  private String filterText = "";
+  private SortField sortField = null;
+  private SortOrder sortOrder = SortOrder.ASCENDING;
+
+  private TextBox filterBox;
+  private InlineLabel tagSortAsc, tagSortDec;
+  private InlineLabel typeSortAsc, typeSortDec;
 
   /**
    * Shows (or updates) the visualizer panel for the given provider.
@@ -125,10 +144,28 @@ public final class DataVisualizerPanel extends Dialog {
     footer.add(refreshButton);
     footer.add(closeButton);
 
+    filterBox = new TextBox();
+    filterBox.getElement().setAttribute("type", "search");
+    filterBox.getElement().setAttribute("placeholder", "Search tags, values, types\u2026");
+    filterBox.getElement().setAttribute("aria-label", "Filter entries");
+    filterBox.getElement().getStyle().setProperty("width", "100%");
+    filterBox.getElement().getStyle().setProperty("boxSizing", "border-box");
+    filterBox.getElement().getStyle().setProperty("marginBottom", "4px");
+    filterBox.addKeyDownHandler(event -> event.stopPropagation());
+    filterBox.addKeyUpHandler(event -> {
+      filterText = filterBox.getValue();
+      applyFilterAndSort();
+    });
+
+    FlowPanel searchBar = new FlowPanel();
+    searchBar.getElement().getStyle().setProperty("padding", "4px 8px 0 8px");
+    searchBar.add(filterBox);
+
     FlowPanel tableArea = new FlowPanel();
     tableArea.getElement().getStyle().setProperty("overflowY", "auto");
     tableArea.getElement().getStyle().setProperty("flex", "1");
     tableArea.getElement().getStyle().setProperty("minHeight", "0");
+    tableArea.add(searchBar);
     tableArea.add(dataTable);
     tableArea.add(statusLabel);
 
@@ -182,17 +219,8 @@ public final class DataVisualizerPanel extends Dialog {
     currentProvider.fetchEntries(new AsyncCallback<List<DataEntry>>() {
       @Override
       public void onSuccess(List<DataEntry> entries) {
-        clearDataRows();
-        if (entries.isEmpty()) {
-          setStatus("No data found for this project ID.");
-          countLabel.setText("0 entries");
-        } else {
-          setStatus("");
-          for (DataEntry entry : entries) {
-            addDataRow(entry.getTag(), entry.getValue());
-          }
-          countLabel.setText(entries.size() + " entr" + (entries.size() == 1 ? "y" : "ies"));
-        }
+        allEntries = new ArrayList<>(entries);
+        applyFilterAndSort();
       }
 
       @Override
@@ -203,12 +231,116 @@ public final class DataVisualizerPanel extends Dialog {
     });
   }
 
+  private void applyFilterAndSort() {
+    clearDataRows();
+    String query = filterText == null ? "" : filterText.trim().toLowerCase();
+
+    List<DataEntry> filtered = new ArrayList<>();
+    for (DataEntry entry : allEntries) {
+      if (query.isEmpty()) {
+        filtered.add(entry);
+      } else {
+        String tag = entry.getTag() != null ? entry.getTag().toLowerCase() : "";
+        String val = formatValue(entry.getValue()).toLowerCase();
+        String type = detectType(entry.getValue()).toLowerCase();
+        if (tag.contains(query) || val.contains(query) || type.contains(query)) {
+          filtered.add(entry);
+        }
+      }
+    }
+
+    if (sortField != null) {
+      Collections.sort(filtered, buildComparator());
+    }
+
+    if (filtered.isEmpty()) {
+      setStatus(query.isEmpty()
+          ? "No data found for this project ID."
+          : "No entries match \u201C" + filterText.trim() + "\u201D.");
+    } else {
+      setStatus("");
+      for (DataEntry entry : filtered) {
+        addDataRow(entry.getTag(), entry.getValue());
+      }
+    }
+
+    int total = allEntries.size();
+    int shown = filtered.size();
+    if (!query.isEmpty() && shown != total) {
+      countLabel.setText(shown + " of " + total + " entr" + (total == 1 ? "y" : "ies"));
+    } else {
+      countLabel.setText(total + " entr" + (total == 1 ? "y" : "ies"));
+    }
+  }
+
+  private Comparator<DataEntry> buildComparator() {
+    return (a, b) -> {
+      String aVal = sortField == SortField.TAG
+          ? (a.getTag() != null ? a.getTag() : "")
+          : detectType(a.getValue());
+      String bVal = sortField == SortField.TAG
+          ? (b.getTag() != null ? b.getTag() : "")
+          : detectType(b.getValue());
+      int cmp = aVal.compareToIgnoreCase(bVal);
+      return sortOrder == SortOrder.ASCENDING ? cmp : -cmp;
+    };
+  }
+
+  private void onSortClicked(SortField field) {
+    if (sortField == field) {
+      sortOrder = (sortOrder == SortOrder.ASCENDING) ? SortOrder.DESCENDING : SortOrder.ASCENDING;
+    } else {
+      sortField = field;
+      sortOrder = SortOrder.ASCENDING;
+    }
+    refreshSortIndicators();
+    applyFilterAndSort();
+  }
+
+  private void refreshSortIndicators() {
+    tagSortAsc.setVisible(sortField == SortField.TAG && sortOrder == SortOrder.ASCENDING);
+    tagSortDec.setVisible(sortField == SortField.TAG && sortOrder == SortOrder.DESCENDING);
+    typeSortAsc.setVisible(sortField == SortField.TYPE && sortOrder == SortOrder.ASCENDING);
+    typeSortDec.setVisible(sortField == SortField.TYPE && sortOrder == SortOrder.DESCENDING);
+
+    String tagAriaSort = sortField == SortField.TAG
+        ? (sortOrder == SortOrder.ASCENDING ? "ascending" : "descending") : "none";
+    String typeAriaSort = sortField == SortField.TYPE
+        ? (sortOrder == SortOrder.ASCENDING ? "ascending" : "descending") : "none";
+    dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TAG).setAttribute("aria-sort", tagAriaSort);
+    dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TYPE).setAttribute("aria-sort", typeAriaSort);
+  }
+
   private void buildTableHeader() {
     FlexCellFormatter fmt = dataTable.getFlexCellFormatter();
 
-    dataTable.setText(HEADER_ROW, COL_TAG,   "Tag");
+    // Tag header — sortable
+    tagSortAsc = new InlineLabel(" \u25b2");
+    tagSortDec = new InlineLabel(" \u25bc");
+    tagSortAsc.setVisible(false);
+    tagSortDec.setVisible(false);
+    FlowPanel tagHeader = new FlowPanel();
+    tagHeader.getElement().getStyle().setProperty("cursor", "pointer");
+    tagHeader.add(new InlineLabel("Tag"));
+    tagHeader.add(tagSortAsc);
+    tagHeader.add(tagSortDec);
+    tagHeader.addDomHandler(event -> onSortClicked(SortField.TAG), ClickEvent.getType());
+    dataTable.setWidget(HEADER_ROW, COL_TAG, tagHeader);
+
     dataTable.setText(HEADER_ROW, COL_VALUE, "Value");
-    dataTable.setText(HEADER_ROW, COL_TYPE,  "Type");
+
+    // Type header — sortable
+    typeSortAsc = new InlineLabel(" \u25b2");
+    typeSortDec = new InlineLabel(" \u25bc");
+    typeSortAsc.setVisible(false);
+    typeSortDec.setVisible(false);
+    FlowPanel typeHeader = new FlowPanel();
+    typeHeader.getElement().getStyle().setProperty("cursor", "pointer");
+    typeHeader.add(new InlineLabel("Type"));
+    typeHeader.add(typeSortAsc);
+    typeHeader.add(typeSortDec);
+    typeHeader.addDomHandler(event -> onSortClicked(SortField.TYPE), ClickEvent.getType());
+    dataTable.setWidget(HEADER_ROW, COL_TYPE, typeHeader);
 
     for (int col = 0; col < COL_ACTIONS; col++) {
       com.google.gwt.dom.client.Element th = dataTable.getCellFormatter()
@@ -217,6 +349,8 @@ public final class DataVisualizerPanel extends Dialog {
       th.setAttribute("scope", "col");
       th.addClassName("ode-ComponentHeaderLabel");
     }
+    dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TAG).setAttribute("aria-sort", "none");
+    dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TYPE).setAttribute("aria-sort", "none");
 
     // Actions column header: Add button (hidden until a mutable provider is set).
     headerAddButton = new Button("+ Add");
