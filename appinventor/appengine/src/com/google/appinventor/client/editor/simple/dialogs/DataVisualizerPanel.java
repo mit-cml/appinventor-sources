@@ -233,8 +233,9 @@ public final class DataVisualizerPanel extends Dialog {
     if (currentProvider == null) {
       return;
     }
-    setStatus("Loading\u2026");
-    clearDataRows();
+    if (allEntries.isEmpty()) {
+      setStatus("Loading\u2026");
+    }
 
     currentProvider.fetchEntries(new AsyncCallback<List<DataEntry>>() {
       @Override
