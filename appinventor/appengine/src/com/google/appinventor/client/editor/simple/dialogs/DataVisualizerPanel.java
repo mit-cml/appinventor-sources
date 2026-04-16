@@ -14,6 +14,7 @@ import com.google.appinventor.shared.rpc.clouddb.DataEntry;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -22,6 +23,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -66,14 +68,12 @@ public final class DataVisualizerPanel extends Dialog {
 
   private DataStoreProvider currentProvider;
 
-  // ---- Table column indices ----
   private static final int COL_TAG     = 0;
   private static final int COL_VALUE   = 1;
   private static final int COL_TYPE    = 2;
   private static final int COL_ACTIONS = 3;
   private static final int HEADER_ROW  = 0;
 
-  // ---- Filter + sort state ----
   private enum SortField { TAG, TYPE }
   private enum SortOrder { ASCENDING, DESCENDING }
 
@@ -85,6 +85,9 @@ public final class DataVisualizerPanel extends Dialog {
   private TextBox filterBox;
   private InlineLabel tagSortAsc, tagSortDec;
   private InlineLabel typeSortAsc, typeSortDec;
+
+  private Timer autoRefreshTimer;
+  private int autoRefreshIntervalMs = 0; // 0 = Off
 
   /**
    * Shows (or updates) the visualizer panel for the given provider.
@@ -99,6 +102,7 @@ public final class DataVisualizerPanel extends Dialog {
     instance.setProvider(provider);
     instance.show();
     instance.refresh();
+    instance.restartTimer();
   }
 
   private DataVisualizerPanel() {
@@ -130,6 +134,19 @@ public final class DataVisualizerPanel extends Dialog {
     closeButton.getElement().setAttribute("aria-label", "Close visualizer panel");
     closeButton.addClickHandler(event -> hide());
 
+    ListBox intervalBox = new ListBox();
+    intervalBox.addItem("Auto: Off", "0");
+    intervalBox.addItem("5s",  "5000");
+    intervalBox.addItem("10s", "10000");
+    intervalBox.addItem("30s", "30000");
+    intervalBox.addItem("60s", "60000");
+    intervalBox.getElement().setAttribute("aria-label", "Auto-refresh interval");
+    intervalBox.addChangeHandler(event -> {
+      autoRefreshIntervalMs =
+          Integer.parseInt(intervalBox.getValue(intervalBox.getSelectedIndex()));
+      restartTimer();
+    });
+
     FlowPanel footer = new FlowPanel();
     footer.addStyleName("ode-Android-footer");
     footer.getElement().getStyle().setProperty("padding", "4px 8px");
@@ -137,12 +154,15 @@ public final class DataVisualizerPanel extends Dialog {
     footer.getElement().getStyle().setProperty("alignItems", "center");
     footer.getElement().getStyle().setProperty("gap", "8px");
     footer.add(countLabel);
-    // Push buttons to right
+    // Push controls to right
     HTML spacer = new HTML("&nbsp;");
     spacer.getElement().getStyle().setProperty("flex", "1");
     footer.add(spacer);
+    footer.add(intervalBox);
     footer.add(refreshButton);
     footer.add(closeButton);
+
+    addCloseHandler(event -> stopTimer());
 
     filterBox = new TextBox();
     filterBox.getElement().setAttribute("type", "search");
@@ -309,6 +329,26 @@ public final class DataVisualizerPanel extends Dialog {
         ? (sortOrder == SortOrder.ASCENDING ? "ascending" : "descending") : "none";
     dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TAG).setAttribute("aria-sort", tagAriaSort);
     dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TYPE).setAttribute("aria-sort", typeAriaSort);
+  }
+
+  private void restartTimer() {
+    stopTimer();
+    if (autoRefreshIntervalMs > 0) {
+      autoRefreshTimer = new Timer() {
+        @Override
+        public void run() {
+          refresh();
+        }
+      };
+      autoRefreshTimer.scheduleRepeating(autoRefreshIntervalMs);
+    }
+  }
+
+  private void stopTimer() {
+    if (autoRefreshTimer != null) {
+      autoRefreshTimer.cancel();
+      autoRefreshTimer = null;
+    }
   }
 
   private void buildTableHeader() {
