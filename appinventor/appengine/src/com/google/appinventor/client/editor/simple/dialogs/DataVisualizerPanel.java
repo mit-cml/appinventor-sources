@@ -120,8 +120,8 @@ public final class DataVisualizerPanel extends Dialog {
     tableArea.getElement().getStyle().setProperty("overflowY", "auto");
     tableArea.getElement().getStyle().setProperty("flex", "1");
     tableArea.getElement().getStyle().setProperty("minHeight", "0");
-    tableArea.add(statusLabel);
     tableArea.add(dataTable);
+    tableArea.add(statusLabel);
 
     // resize:both requires overflow != visible and explicit dimensions.
     // No extra CSS class here — the Dialog already provides its own chrome.
