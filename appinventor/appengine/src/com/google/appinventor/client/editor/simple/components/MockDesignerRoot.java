@@ -189,6 +189,16 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
     }
   }
 
+  /**
+   * Triggers a source structure item selection event to be sent to the listener
+   * on the listener list.
+   */
+  public void fireSourceStructureItemSelected(MockComponent component, NativeEvent source) {
+    for (DesignerChangeListener listener : changeListeners) {
+      listener.onSourceStructureItemSelected(component, source);
+    }
+  }
+
   private boolean shouldSelectMultipleComponents(NativeEvent e) {
     if (e == null) {
       return false;
