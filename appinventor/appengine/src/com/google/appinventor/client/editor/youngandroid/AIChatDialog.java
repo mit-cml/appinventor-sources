@@ -977,8 +977,19 @@ public class AIChatDialog extends DialogBox
     if (w <= 0 || h <= 0) {
       return;
     }
+    // Shrinking the scroll panel (e.g. "Calling AI…" appearing, op preview
+    // revealing) leaves scrollTop in place while clientHeight drops, so a
+    // user who was pinned to the bottom suddenly sees older messages and
+    // the just-sent bubble falls off-screen. Resnap to the bottom after the
+    // resize whenever we were already there; preserve position otherwise
+    // so mid-history reading isn't yanked.
+    boolean wasAtBottom = chatScrollPanel.getVerticalScrollPosition()
+        >= chatScrollPanel.getMaximumVerticalScrollPosition() - 4;
     int chatHeight = Math.max(h - getChatOverheadHeight(), CHAT_MIN_HEIGHT);
     chatScrollPanel.setSize((w - 16) + "px", chatHeight + "px");
+    if (wasAtBottom) {
+      chatScrollPanel.scrollToBottom();
+    }
   }
 
   @Override
