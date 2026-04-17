@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for Chart Views (Chart UI) for Charts types that
@@ -100,13 +101,13 @@ public abstract class AxisChartView<
           } else if (valueType == CHART_VALUE_DATE) {
             //display x-axis labels as Date
             Date mDate = new Date((long) value);
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             chart.getXAxis().setLabelRotationAngle(-90);
             return dateFormat.format(mDate);
           } else if (valueType == CHART_VALUE_TIME) {
             //display x-axis labels as Time
             Date mDate = new Date((long) value);
-            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
             chart.getXAxis().setLabelRotationAngle(-90);
             return dateFormat.format(mDate);
           } else {

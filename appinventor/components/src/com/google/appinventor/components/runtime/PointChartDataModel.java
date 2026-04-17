@@ -20,6 +20,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -67,12 +68,12 @@ public abstract class PointChartDataModel<
         float x;
         // Attempt to parse the x and y value String representations
         if(Pattern.compile(DATE_PATTERN).matcher(xValue).matches()){
-          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+          SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
           Date date = sdf.parse(xValue);
           x = date.getTime();
         }
         else if(Pattern.compile(TIME_PATTERN).matcher(xValue).matches()){
-          SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+          SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
           Date date = sdf.parse(xValue);
           x = date.getTime();
         }
