@@ -704,11 +704,20 @@ public class AIChatDialog extends DialogBox
   @Override
   public void setStatusVisible(boolean visible) {
     statusAnimator.setVisible(visible);
+    // Overhead row toggling visibility — re-run the chat sizer so the scroll
+    // panel shrinks/grows to match the new overhead. Without this, the old
+    // explicit height set by sizeChatToContainer() stays put and the bottom
+    // toolbar spills past outerContainer's overflow:hidden clip.
+    deferredResizeChat();
   }
 
   @Override
   public void setAutoAcceptVisible(boolean visible) {
     operationPreview.setAutoAcceptVisible(visible);
+    // Same overhead-toggle reasoning as setStatusVisible: the auto-accept
+    // notice adds a row above the bottom toolbar, so the chat must resize
+    // or the toolbar gets clipped.
+    deferredResizeChat();
   }
 
   @Override
