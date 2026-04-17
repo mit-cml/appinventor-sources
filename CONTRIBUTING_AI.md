@@ -68,7 +68,7 @@ Each module extends `ContextModule` and contributes one section of the LLM syste
 
 | Module | What it provides |
 |--------|-----------------|
-| `ProjectModule` | App name, screens list, assets |
+| `ProjectModule` | App name, screens list, assets, extensions (with component types) |
 | `ScreenModule` | Current screen's component tree and block YAIL |
 | `CatalogModule` | Brief component catalog (types, categories, descriptions) |
 | `GrammarModule` | YAIL syntax documentation |
@@ -270,7 +270,8 @@ flowchart LR
 ```
 
 - The **system prompt** layers are cached after first build (they are static across requests).
-- The **context messages** are built fresh per-request and sent as separate user messages before the user's actual message. Crucially, `ProjectModule` and `ScreenModule` parse the **client-provided JSON** (projectSnapshot, screenComponentsJson, blocksYail) rather than reading from `StorageIo`. This means the LLM always sees exactly what the user sees -- including unsaved changes.
+- **Never inject user-controlled or project-specific strings into the system prompt.** The system prompt is cached process-wide and shared across all requests -- any per-user or per-project data placed there would (a) leak across tenants and (b) widen the prompt-injection surface. Project metadata, extension names, component trees, YAIL, asset names, tutorial text, and anything else derived from user input MUST live in per-request context messages (`ProjectModule`, `ScreenModule`, `TutorialModule`, etc.). The only things that belong in the cached system prompt are static reference material shipped in the repo (`simple_components.json`, `yail_grammar.md`, `appinventor_reference.md`, `few_shot_examples.json`). When adding a new context module, if its output depends on the request, register it in `buildContextMessages`, not `build`.
+- The **context messages** are built fresh per-request and sent as separate user messages before the user's actual message. Crucially, `ProjectModule` and `ScreenModule` parse the **client-provided JSON** (projectSnapshot, screenComponentsJson, blocksYail) rather than reading from `StorageIo`. This means the LLM always sees exactly what the user sees -- including unsaved changes. The one exception is extension component type names: the snapshot carries package names only, so `ProjectModule` reads `assets/external_comps/<pkg>/components.json` via `StorageIo` to expand each package into its component types.
 - **Message 4 (TutorialModule)** is only included when `ai.agent.features.tutorial-context` is `true` and the project has a non-empty `TutorialURL`. The tutorial page content is fetched via HTTP by `TutorialContentCache` and cached in memory (8h TTL). When active, the LLM receives pedagogical instructions (from `tutorial_instructions.md`) alongside the full tutorial text, shifting its behavior to guide users step-by-step rather than doing everything at once.
 
 ### Why a Client/Server Hybrid?
@@ -1398,7 +1399,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 
 1. Create a class extending `ContextModule` in `server/aiagent/context/`.
 2. Implement `build(ContextParams)` returning the context section text.
-3. Register it in `AIContextBuilder` -- either as a new system prompt layer (cached) or as a per-request context message.
+3. Register it in `AIContextBuilder`. If the output depends on the user, project, or request in any way, register it as a per-request context message in `buildContextMessages`. Only register as a cached system prompt layer when the output is derived purely from static, repo-shipped resources -- never from user input, `StorageIo`, or anything a specific project supplies. See the "user-controlled strings" rule in the Context Architecture section.
 
 ### Adding i18n strings
 

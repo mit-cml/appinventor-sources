@@ -7,6 +7,8 @@ package com.google.appinventor.server.aiagent.context;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
 
+import com.google.appinventor.server.storage.StorageIo;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,11 +22,19 @@ import java.util.logging.Logger;
  * extensions, and other-screen summaries (in ProjectEditor mode).
  *
  * <p>Reads from the client-provided {@code projectSnapshot} JSON rather
- * than StorageIo, so unsaved changes are reflected.
+ * than StorageIo, so unsaved changes are reflected. One exception:
+ * extension component type names are fetched from StorageIo because the
+ * snapshot carries only package names.
  */
 public class ProjectModule extends ContextModule {
 
   private static final Logger LOG = Logger.getLogger(ProjectModule.class.getName());
+
+  private final StorageIo storageIo;
+
+  public ProjectModule(StorageIo storageIo) {
+    this.storageIo = storageIo;
+  }
 
   @Override
   public String build(ContextParams params) {
@@ -38,14 +48,16 @@ public class ProjectModule extends ContextModule {
 
     try {
       JSONObject snapshot = new JSONObject(snapshotJson);
-      return buildFromSnapshot(snapshot, screenName, mode);
+      return buildFromSnapshot(snapshot, screenName, mode,
+          params.getUserId(), params.getProjectId());
     } catch (Exception e) {
       LOG.warning("Failed to parse projectSnapshot: " + e.getMessage());
       return buildFallback();
     }
   }
 
-  private String buildFromSnapshot(JSONObject snapshot, String screenName, String mode) {
+  private String buildFromSnapshot(JSONObject snapshot, String screenName, String mode,
+      String userId, long projectId) {
     StringBuilder project = new StringBuilder();
     project.append("[Current project state — supersedes any previous project state]\n\n");
     project.append("## Project State\n\n");
@@ -71,14 +83,25 @@ public class ProjectModule extends ContextModule {
       project.append("### Assets: ").append(String.join(", ", assets)).append("\n\n");
     }
 
-    // Extensions
+    // Extensions: show each package with the component types it provides,
+    // so the LLM knows what it can add via add_component or look up via
+    // lookup_component without having to guess type names.
     JSONArray extensionsArr = snapshot.optJSONArray("extensions");
     if (extensionsArr != null && extensionsArr.length() > 0) {
-      List<String> extensions = new ArrayList<>();
+      project.append("### Extensions\n");
       for (int i = 0; i < extensionsArr.length(); i++) {
-        extensions.add(extensionsArr.getString(i));
+        String pkg = extensionsArr.getString(i);
+        List<String> types = ProjectFiles.listExtensionComponentTypes(
+            userId, projectId, pkg, storageIo);
+        project.append("- ").append(pkg);
+        if (!types.isEmpty()) {
+          project.append(" (component types: ")
+              .append(String.join(", ", types))
+              .append(")");
+        }
+        project.append("\n");
       }
-      project.append("### Extensions: ").append(String.join(", ", extensions)).append("\n\n");
+      project.append("\n");
     }
 
     // Screen summaries (ProjectEditor mode only)

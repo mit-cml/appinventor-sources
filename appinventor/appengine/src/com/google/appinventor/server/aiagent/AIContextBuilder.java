@@ -87,7 +87,7 @@ public class AIContextBuilder {
   private final GrammarModule grammarModule = new GrammarModule();
   private final ExamplesModule examplesModule = new ExamplesModule();
   private final ModeModule modeModule = new ModeModule();
-  private final ProjectModule projectModule = new ProjectModule();
+  private final ProjectModule projectModule;
   private final ScreenModule screenModule = new ScreenModule();
   private final CompanionModule companionModule = new CompanionModule();
   private final TutorialContentCache tutorialContentCache;
@@ -97,6 +97,7 @@ public class AIContextBuilder {
 
   public AIContextBuilder(StorageIo storageIo) {
     this.storageIo = storageIo;
+    this.projectModule = new ProjectModule(storageIo);
     this.tutorialContentCache = new TutorialContentCache(storageIo);
     this.tutorialModule = new TutorialModule(tutorialContentCache);
   }

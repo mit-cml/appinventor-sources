@@ -11,6 +11,9 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 
 import com.google.appinventor.server.storage.StorageIo;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -101,6 +104,31 @@ public final class ProjectFiles {
       LOG.warning("Failed to list assets: " + e.getMessage());
     }
     return assets;
+  }
+
+  /**
+   * List the component type names declared by an extension package.
+   * Returns an empty list if the package's {@code components.json} is
+   * missing or malformed.
+   */
+  public static List<String> listExtensionComponentTypes(String userId, long projectId,
+      String pkg, StorageIo storageIo) {
+    List<String> types = new ArrayList<>();
+    try {
+      String filePath = EXTERNAL_COMPS_FOLDER + "/" + pkg + "/components.json";
+      String content = storageIo.downloadFile(userId, projectId, filePath, "UTF-8");
+      JSONArray arr = new JSONArray(content);
+      for (int i = 0; i < arr.length(); i++) {
+        JSONObject comp = arr.getJSONObject(i);
+        String name = comp.optString("name", "");
+        if (!name.isEmpty()) {
+          types.add(name);
+        }
+      }
+    } catch (Exception e) {
+      LOG.warning("Failed to read extension components for " + pkg + ": " + e.getMessage());
+    }
+    return types;
   }
 
   /**
