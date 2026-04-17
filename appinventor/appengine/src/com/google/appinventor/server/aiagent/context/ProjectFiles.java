@@ -107,9 +107,12 @@ public final class ProjectFiles {
   }
 
   /**
-   * List the component type names declared by an extension package.
-   * Returns an empty list if the package's {@code components.json} is
-   * missing or malformed.
+   * List the palette-visible component type names declared by an extension
+   * package. Components with {@code showOnPalette=false} or
+   * {@code categoryString="INTERNAL"} are omitted so the LLM sees the same
+   * inventory the user sees in the designer. Matches the filter in
+   * {@link CatalogModule} for built-ins. Returns an empty list if the
+   * package's {@code components.json} is missing or malformed.
    */
   public static List<String> listExtensionComponentTypes(String userId, long projectId,
       String pkg, StorageIo storageIo) {
@@ -121,7 +124,9 @@ public final class ProjectFiles {
       for (int i = 0; i < arr.length(); i++) {
         JSONObject comp = arr.getJSONObject(i);
         String name = comp.optString("name", "");
-        if (!name.isEmpty()) {
+        boolean showOnPalette = "true".equals(comp.optString("showOnPalette", "false"));
+        String categoryString = comp.optString("categoryString", "");
+        if (!name.isEmpty() && showOnPalette && !"INTERNAL".equals(categoryString)) {
           types.add(name);
         }
       }
