@@ -12,7 +12,20 @@ to build MIT App Inventor applications.
 We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
-This code is tested and known to work with Java 11.
+This code is tested and known to work with Java 11 for building the project.
+
+### Java Version Requirements
+
+Note: Different parts of the App Inventor setup require different Java versions:
+
+- **Build (Ant / webapp):** Requires Java 11
+- **Local App Engine Development Server:** Requires Java 17 (as specified in appengine-web.xml)
+
+If you have multiple JDKs installed, ensure:
+- Java 11 is used when running Ant builds
+- Java 17 is used when running the local development server
+
+This distinction is important to avoid setup issues.
 
 ## Contributors
 
