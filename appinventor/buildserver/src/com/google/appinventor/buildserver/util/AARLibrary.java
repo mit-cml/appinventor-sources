@@ -16,12 +16,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.io.IOUtils;
-
-import com.android.io.StreamException;
-import com.android.xml.AndroidManifest;
 
 /**
  * AARLibrary encapsulates important information about Android Archive (AAR) files so that they
@@ -100,22 +95,6 @@ public class AARLibrary {
   private Set<File> jni = new HashSet<>();
 
   /**
-   * File wrapper around a zip stream to allow extracting the package name from the AndroidManifest.
-   */
-  private static class ZipEntryWrapper extends BaseFileWrapper {
-    private final InputStream stream;
-
-    ZipEntryWrapper(InputStream stream) {
-      this.stream = stream;
-    }
-
-    @Override
-    public InputStream getContents() throws StreamException {
-      return this.stream;
-    }
-  }
-
-  /**
    * Constructs a new AARLibrary.
    *
    * @param aar the file representation of the archive (a .aar file).
@@ -175,28 +154,6 @@ public class AARLibrary {
   }
 
   /**
-   * Extracts the package name from the Android Archive without needing to unzip it to a location
-   * in the file system
-   *
-   * @param zip the input stream reading from the Android Archive.
-   * @return the package name declared in the archive's AndroidManifest.xml.
-   * @throws IOException if reading the input stream fails.
-   */
-  private String extractPackageName(ZipFile zip) throws IOException {
-    ZipEntry entry = zip.getEntry("AndroidManifest.xml");
-    if (entry == null) {
-      throw new IllegalArgumentException(zip.getName() + " does not contain AndroidManifest.xml");
-    }
-    try {
-      ZipEntryWrapper wrapper = new ZipEntryWrapper(zip.getInputStream(entry));
-      // the following call will automatically close the input stream opened above
-      return AndroidManifest.getPackage(wrapper);
-    } catch(StreamException|XPathExpressionException e) {
-      throw new IOException("Exception processing AndroidManifest.xml", e);
-    }
-  }
-
-  /**
    * Catalogs the file extracted from the Android Archive based on its file name.
    *
    * @param file the file name of an extracted file.
@@ -227,11 +184,11 @@ public class AARLibrary {
    * @throws IOException if any error occurs attempting to read the archive or write new files to
    *                     the file system.
    */
-  public void unpackToDirectory(final File path) throws IOException {
+  public void unpackToDirectory(final File path, String packageName) throws IOException {
     ZipFile zip = null;
     try {
       zip = new ZipFile(aarPath);
-      packageName = extractPackageName(zip);
+      this.packageName = packageName;
       basedir = new File(path, packageName);
       if (!basedir.exists() && !basedir.mkdirs()) {
         throw new IOException("Unable to create directory for AAR package: " + basedir);
