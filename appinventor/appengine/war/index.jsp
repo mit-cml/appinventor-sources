@@ -89,6 +89,7 @@
 
   <!-- ODE scripts -->
   <body class="gwt-bodyRob">
+    <div id="shortcuts"></div>
     <div class="floatingBox" style="display:none" id="unsupported">
       <h2> Your browser might not be compatible. </h2>
       To use App Inventor, you must use a compatible browser.<br>
@@ -125,7 +126,7 @@
     <script type="text/javascript" src="static/js/block-dynamic-connection-0.8.8.min.js"></script>
     <script type="text/javascript" src="static/js/pickr.min.js"></script>
     <script type="text/javascript" src="static/js/workspace-multiselect-pr126-e813d3a.min.js"></script>
-    <script type="text/javascript" src="static/js/keyboard-navigation-0.7.0.min.js"></script>
+    <script type="text/javascript" src="static/js/keyboard-navigation-3.0.5.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
