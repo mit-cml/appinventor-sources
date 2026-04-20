@@ -1,0 +1,283 @@
+Buildfile: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build.xml
+
+init:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/buildserver
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/reports
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/reports/raw
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/reports/html
+
+common_CommonUtils:
+
+init:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/common
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/reports
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/reports/raw
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/reports/html
+
+CommonUtils:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes/CommonUtils
+    [javac] Compiling 4 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes/CommonUtils
+    [javac] Note: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/src/com/google/appinventor/common/utils/StringUtils.java uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes/CommonUtils/com/google/appinventor/common/utils/package-info.class
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/common/CommonUtils.jar
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/common/CommonUtils-gwt.jar
+
+common_CommonVersion:
+
+init:
+
+CommonVersion:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes/CommonVersion
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/src/com/google/appinventor/common/version
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/src/com/google/appinventor/common/version
+    [javac] Compiling 3 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes/CommonVersion
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/common/build/classes/CommonVersion/com/google/appinventor/common/version/package-info.class
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/common/CommonVersion.jar
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/common/CommonVersion-gwt.jar
+
+components_CommonConstants:
+
+init:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/reports
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/reports/raw
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/reports/html
+
+CommonConstants:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/CommonConstants
+    [javac] Compiling 47 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/CommonConstants
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/CommonConstants/com/google/appinventor/components/common/package-info.class
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/CommonConstants.jar
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/CommonConstants-gwt.jar
+
+CopyToRunLibDir:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/run/lib
+     [copy] Copying 40 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/run/lib
+
+components_AndroidRuntime:
+
+common_CommonVersion:
+
+init:
+
+CommonVersion:
+
+init:
+
+HtmlEntities:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/HtmlEntities
+    [javac] Compiling 1 source file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/HtmlEntities
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/HtmlEntities.jar
+
+Barcode:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/Barcode
+    [javac] Compiling 40 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/Barcode
+    [javac] Note: Some input files use or override a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps/Barcode.jar
+
+CopyComponentLibraries:
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps/armeabi-v7a
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps/arm64-v8a
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps/x86_64
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 66 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 2 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/deps
+
+common_CommonUtils:
+
+init:
+
+CommonUtils:
+
+CommonConstants:
+
+AnnotationProcessors:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AnnotationProcessors
+    [javac] Compiling 49 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AnnotationProcessors
+    [javac] Note: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/src/com/google/appinventor/components/scripts/ComponentProcessor.java uses or overrides a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AnnotationProcessors/com/google/appinventor/components/annotations/androidmanifest/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AnnotationProcessors/com/google/appinventor/components/annotations/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AnnotationProcessors/com/google/appinventor/components/scripts/package-info.class
+     [copy] Copying 22 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AnnotationProcessors
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/AnnotationProcessors.jar
+
+AndroidRuntime.uptodate:
+
+AndroidRuntime:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime
+    [javac] Compiling 390 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant AnnotationRetention.BINARY
+    [javac]   reason: class file for kotlin.annotation.AnnotationRetention not found
+    [javac] warning: unknown enum constant AnnotationTarget.CLASS
+    [javac]   reason: class file for kotlin.annotation.AnnotationTarget not found
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY
+    [javac] warning: unknown enum constant AnnotationTarget.LOCAL_VARIABLE
+    [javac] warning: unknown enum constant AnnotationTarget.VALUE_PARAMETER
+    [javac] warning: unknown enum constant AnnotationTarget.CONSTRUCTOR
+    [javac] warning: unknown enum constant AnnotationTarget.FUNCTION
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY_GETTER
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY_SETTER
+    [javac] warning: unknown enum constant AnnotationTarget.FILE
+    [javac] warning: unknown enum constant AnnotationTarget.TYPEALIAS
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/simple_components.json
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/simple_components.txt
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/simple_components_build_info.json
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/ComponentInfoTranslations.java
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/ComponentPropertyTranslations.java
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/ComponentMethodTranslations.java
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/ComponentEventTranslations.java
+    [javac] Note: Wrote file file:/home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/ComponentTranslationTable.java
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant AnnotationRetention.BINARY
+    [javac]   reason: class file for kotlin.annotation.AnnotationRetention not found
+    [javac] warning: unknown enum constant AnnotationTarget.CLASS
+    [javac]   reason: class file for kotlin.annotation.AnnotationTarget not found
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY
+    [javac] warning: unknown enum constant AnnotationTarget.LOCAL_VARIABLE
+    [javac] warning: unknown enum constant AnnotationTarget.VALUE_PARAMETER
+    [javac] warning: unknown enum constant AnnotationTarget.CONSTRUCTOR
+    [javac] warning: unknown enum constant AnnotationTarget.FUNCTION
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY_GETTER
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY_SETTER
+    [javac] warning: unknown enum constant AnnotationTarget.FILE
+    [javac] warning: unknown enum constant AnnotationTarget.TYPEALIAS
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant AnnotationRetention.BINARY
+    [javac]   reason: class file for kotlin.annotation.AnnotationRetention not found
+    [javac] warning: unknown enum constant AnnotationTarget.CLASS
+    [javac]   reason: class file for kotlin.annotation.AnnotationTarget not found
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY
+    [javac] warning: unknown enum constant AnnotationTarget.LOCAL_VARIABLE
+    [javac] warning: unknown enum constant AnnotationTarget.VALUE_PARAMETER
+    [javac] warning: unknown enum constant AnnotationTarget.CONSTRUCTOR
+    [javac] warning: unknown enum constant AnnotationTarget.FUNCTION
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY_GETTER
+    [javac] warning: unknown enum constant AnnotationTarget.PROPERTY_SETTER
+    [javac] warning: unknown enum constant AnnotationTarget.FILE
+    [javac] warning: unknown enum constant AnnotationTarget.TYPEALIAS
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] warning: unknown enum constant Scope.LIBRARY_GROUP_PREFIX
+    [javac] Note: Some input files use or override a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] 60 warnings
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/com/google/appinventor/components/runtime/util/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/com/google/appinventor/components/annotations/androidmanifest/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/com/google/appinventor/components/runtime/collect/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/com/google/appinventor/components/annotations/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/com/google/appinventor/components/runtime/package-info.class
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/components/build/classes/AndroidRuntime/com/google/appinventor/components/runtime/errors/package-info.class
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/AndroidRuntime.jar
+     [copy] Copying 3 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/ComponentTranslation/src/com/google/appinventor/client/editor/simple/components/i18n
+     [copy] Copying 5 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/build/components/ComponentTranslation/src/com/google/appinventor/client/editor/simple/components/i18n
+     [copy] Copying 13 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/docs/markdown/reference/components
+
+ios_PlayerApp:
+
+init:
+
+CheckPlayerApp:
+
+PlayerApp:
+
+BuildServer:
+    [mkdir] Created dir: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer
+    [javac] Compiling 86 source files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+    [javac] Creating empty /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/com/google/appinventor/buildserver/package-info.class
+     [copy] Copying 12 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/files
+     [copy] Copied 1 empty directory to 1 empty directory under /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/files
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/files
+     [copy] Copying 114 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/files
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/tools
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/tools
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/tools
+     [copy] Copying 1 file to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/tools
+     [copy] Copying 8 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/tools
+     [copy] Copying 3 files to /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/classes/BuildServer/tools
+      [jar] Building jar: /home/muskan/appinventor-sources-old/appinventor-sources/appinventor/buildserver/build/run/lib/BuildServer.jar
+
+all:
+
+BUILD SUCCESSFUL
+Total time: 14 seconds
