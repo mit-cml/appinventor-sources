@@ -335,6 +335,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty
   public void Elements(List<Object> itemsList) {
     items = new ArrayList<>(itemsList);
+    ensureValidSelection();
     updateAdapterData();
     listAdapterWithRecyclerView.notifyDataSetChanged();
   }
@@ -366,6 +367,7 @@ public final class ListView extends AndroidViewComponent {
       category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
     items = new ArrayList<Object>(ElementsUtil.elementsListFromString(itemstring));
+    ensureValidSelection();
     updateAdapterData();
     listAdapterWithRecyclerView.notifyDataSetChanged();
   }
@@ -1159,6 +1161,7 @@ public final class ListView extends AndroidViewComponent {
       return;
     }
     items.remove(index - 1);
+    ensureValidSelection();
     updateAdapterData();
     listAdapterWithRecyclerView.notifyItemRemoved(index - 1);
   }
@@ -1186,6 +1189,7 @@ public final class ListView extends AndroidViewComponent {
         items.add(CreateElement(mainText, detailText, imageName));
       }
     }
+    ensureValidSelection();
     updateAdapterData();
     listAdapterWithRecyclerView.notifyItemChanged(listAdapterWithRecyclerView.getItemCount() - 1);
   }
@@ -1199,6 +1203,7 @@ public final class ListView extends AndroidViewComponent {
       int positionStart = items.size();
       int itemCount = itemsList.size();
       items.addAll(itemsList);
+      ensureValidSelection();
       updateAdapterData();
       listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
     }
@@ -1232,6 +1237,7 @@ public final class ListView extends AndroidViewComponent {
         items.add(index - 1, CreateElement(mainText, detailText, imageName));
       }
     }
+    ensureValidSelection();
     updateAdapterData();
     listAdapterWithRecyclerView.notifyItemInserted(index - 1);
   }
@@ -1250,6 +1256,7 @@ public final class ListView extends AndroidViewComponent {
       int positionStart = index - 1;
       int itemCount = itemsList.size();
       items.addAll(positionStart, itemsList);
+      ensureValidSelection();
       updateAdapterData();
       listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
     }
@@ -1299,6 +1306,35 @@ public final class ListView extends AndroidViewComponent {
   public void updateAdapterData() {
     SelectionIndex(0);
     listAdapterWithRecyclerView.updateData(items);
+  }
+
+  /**
+   * Ensures that selectionIndex, selection, and selectionDetailText
+   * remain consistent with the current items list.
+   *
+   * Must be called after any mutation (insert/remove/replace).
+   */
+  private void ensureValidSelection() {
+    if (selectionIndex <= 0 || selectionIndex > items.size()) {
+      selectionIndex = 0;
+      selection = "";
+      selectionDetailText = "";
+      return;
+    }
+
+    Object item = items.get(selectionIndex - 1);
+
+    if (item instanceof YailDictionary) {
+      selection = ElementsUtil.toStringEmptyIfNull(
+          ((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT));
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(
+          ((YailDictionary) item).get(Component.LISTVIEW_KEY_DESCRIPTION));
+    } else {
+      // Item is a plain string, not a YailDictionary,
+      // so no detail text is available for this layout type
+      selection = item.toString();
+      selectionDetailText = "";
+    }
   }
 
   /**
