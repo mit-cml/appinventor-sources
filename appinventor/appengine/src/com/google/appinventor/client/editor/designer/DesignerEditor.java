@@ -32,6 +32,7 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
+import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -698,69 +699,34 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       return;  // Not the active editor
     }
     if (event.isAltKeyDown()) {
-      List<MockComponent> allComponents = new ArrayList<>(getComponents().values());
       MockComponent selectedComponent = root.getLastSelectedComponent();
-      int index = root.getChildren().indexOf(selectedComponent);
-
-      if (selectedComponent.isVisibleComponent()) {
-        switch (event.getNativeKeyCode()) {
-          case KeyCodes.KEY_DOWN:
-            if (index < 0) {
-              MockContainer container = selectedComponent.getContainer();
-              List<MockComponent> containerComponents = container.getChildren();
-              int indexC = containerComponents.indexOf(selectedComponent);
-              int indexOfContainer = allComponents.indexOf(container);
-              selectedComponent.getContainer().removeComponent(selectedComponent, false);
-
-              if (indexC == containerComponents.size() && container.getContainer().willAcceptComponentType(selectedComponent.getType())) {
-                container.getContainer().addVisibleComponent(selectedComponent, indexOfContainer);
-              } else {
-                container.addVisibleComponent(selectedComponent, indexC + 1);
+      if (selectedComponent != null && selectedComponent.isVisibleComponent()) {
+        MockContainer parent = selectedComponent.getContainer();
+        if (parent != null) {
+          // Snapshot sibling list before any mutation so indices are stable.
+          List<MockComponent> siblings = new ArrayList<>(parent.getChildren());
+          int posInParent = siblings.indexOf(selectedComponent);
+          SourceStructureExplorerItem source = selectedComponent.getSourceStructureExplorerItem();
+          switch (event.getNativeKeyCode()) {
+            case KeyCodes.KEY_DOWN:
+              if (posInParent < siblings.size() - 1) {
+                MockComponent next = siblings.get(posInParent + 1);
+                source.moveTo(next.getSourceStructureExplorerItem(), 1);
+              } else if (!parent.isRoot()) {
+                source.moveTo(parent.getSourceStructureExplorerItem(), 1);
               }
-            } else {
-              index++;
-              root.removeComponent(selectedComponent, false);
-              MockComponent nextComponent = allComponents.get(index + 1);
-              int nextComponentindex = root.getChildren().indexOf(nextComponent);
-              if(nextComponent instanceof MockContainer && ((MockContainer) nextComponent).willAcceptComponentType(selectedComponent.getType())) {
-                ((MockContainer)nextComponent).addVisibleComponent(selectedComponent, 0);
-              } else if (nextComponentindex < 0 && ((MockContainer) nextComponent.getContainer()).willAcceptComponentType(selectedComponent.getType())) {
-                nextComponent.getContainer().addVisibleComponent(selectedComponent, 0);
-              } else {
-                root.addVisibleComponent(selectedComponent, index);
+              break;
+            case KeyCodes.KEY_UP:
+              if (posInParent > 0) {
+                MockComponent prev = siblings.get(posInParent - 1);
+                source.moveTo(prev.getSourceStructureExplorerItem(), -1);
+              } else if (!parent.isRoot()) {
+                source.moveTo(parent.getSourceStructureExplorerItem(), -1);
               }
-            }
-            break;
-
-          case KeyCodes.KEY_UP:
-            if (index < 0) {
-              MockContainer container = selectedComponent.getContainer();
-              List<MockComponent> containerComponents = container.getChildren();
-              int indexC = containerComponents.indexOf(selectedComponent);
-              int indexOfContainer = allComponents.indexOf(container);
-              selectedComponent.getContainer().removeComponent(selectedComponent, false);
-              if (indexC == 0 && container.getContainer().willAcceptComponentType(selectedComponent.getType())) {
-                container.getContainer().addVisibleComponent(selectedComponent, indexOfContainer - 1);
-              } else {
-                container.addVisibleComponent(selectedComponent, indexC - 1);
-              }
-            } else {
-              index++;
-              root.removeComponent(selectedComponent, false);
-              MockComponent prevComponent = allComponents.get(index - 1);
-              int prevComponentIndex = root.getChildren().indexOf(prevComponent);
-              if(prevComponent instanceof MockContainer && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
-                ((MockContainer)prevComponent).addVisibleComponent(selectedComponent, -1);
-              } else if (prevComponentIndex < 0 && ((MockContainer) prevComponent).willAcceptComponentType(selectedComponent.getType())) {
-                prevComponent.getContainer().addVisibleComponent(selectedComponent, -1);
-              } else {
-                root.addVisibleComponent(selectedComponent, index - 2);
-              }
-            }
-            break;
-
-          default:
-            break;
+              break;
+            default:
+              break;
+          }
         }
       }
     } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
