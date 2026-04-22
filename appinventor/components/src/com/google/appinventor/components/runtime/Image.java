@@ -50,8 +50,6 @@ import java.io.IOException;
     "Designer or in the Blocks Editor.",
     iconName = "images/image.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-    "android.permission.READ_EXTERNAL_STORAGE")
 public final class Image extends AndroidViewComponent {
 
   private final ImageView view;
@@ -149,6 +147,7 @@ public final class Image extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
+  @UsesPermissions({Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE})
   public void Picture(@Asset String path) {
     final String tempPath = path == null ? "" : path;
     if (TiramisuUtil.requestImagePermissions(container.$form(), path,
