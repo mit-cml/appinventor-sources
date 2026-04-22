@@ -143,7 +143,17 @@ public class CreateManifest implements AndroidTask {
         out.write("  </queries>\n");
       }
 
-      int minSdk = AndroidBuildUtils.computeMinSdk(context);
+      int computedMinSdk = AndroidBuildUtils.computeMinSdk(context);
+      // Get user-selected min SDK from project
+      String userMinSdkStr = context.getProject().getMinSdk();
+      int userMinSdk;
+      try {
+        userMinSdk = Integer.parseInt(userMinSdkStr);
+      } catch (NumberFormatException e) {
+        userMinSdk = computedMinSdk;
+      }
+      // Final minSdk should never be lower than required by components
+      int minSdk = Math.max(userMinSdk, computedMinSdk);
       context.getReporter().log("Min SDK " + minSdk);
 
       // make permissions unique by putting them in one set
