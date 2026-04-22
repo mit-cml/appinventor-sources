@@ -368,7 +368,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
   }
 
 
-  public int getMyProjectsCount() {
+/*  public int getMyProjectsCount() {
     int count = 0;
     if (folder == null) {
       return 0;
@@ -377,6 +377,39 @@ public class ProjectList extends Composite implements FolderManagerEventListener
       if (!project.isInTrash()) {
         ++ count;
       };
+    }
+    return count;
+  } */
+
+    // line 386-413 update
+
+ /**
+   * Returns the number of projects.
+   *
+   * @return the number of projects
+   */
+  public int getMyProjectsCount() {
+    return getMyProjectsCount(true);
+  }
+
+  /**
+   * Returns the number of projects, optionally including those in the trash.
+   *
+   * @param includeTrash whether to include projects in the trash
+   * @return the number of projects
+   */
+  public int getMyProjectsCount(boolean includeTrash) {
+    int count = 0;
+    if (folder == null) {
+      return 0;
+    }
+    if (includeTrash) {
+      return folder.getVisibleProjects().size();
+    }
+    for (Project project : folder.getVisibleProjects()) {
+      if (!project.isInTrash()) {
+        ++count;
+      }
     }
     return count;
   }

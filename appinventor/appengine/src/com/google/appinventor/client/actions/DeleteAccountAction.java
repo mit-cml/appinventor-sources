@@ -17,7 +17,7 @@ public class DeleteAccountAction implements Command {
   private static final String SIGNOUT_URL = "/ode/_logout";
   @Override
   public void execute() {
-    if(ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0) {
+    if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount(false) > 0) {
       Ode.getInstance().genericWarning(MESSAGES.warnHasProjects());
     } else {
       Ode.getInstance().getUserInfoService().deleteAccount(
