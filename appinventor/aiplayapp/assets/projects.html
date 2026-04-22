@@ -1,4 +1,4 @@
-<!-- Copyright © 2025 Massachusetts Institute of Technology
+<!-- Copyright © 2025-2026 Massachusetts Institute of Technology
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,46 +15,143 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Project Selector</title>
+        <title>Saved Apps</title>
+        <style>
+         body { font-family: sans-serif; margin: 12px; }
+         h1 { font-size: 20px; }
+         #controls { margin-bottom: 10px; }
+         #search { padding: 6px; width: 60%; }
+         #sortmode { padding: 6px; }
+         .project { padding: 10px 0; border-bottom: 1px solid #ddd; }
+         .pname { font-weight: bold; font-size: 15px; }
+         .pdate { color: #888; font-size: 12px; margin-top: 2px; }
+         .project button { margin-top: 6px; padding: 5px 14px; border: none;
+             color: white; border-radius: 3px; margin-right: 8px; }
+         .btn-run { background: #555; }
+         .btn-del { background: #c33; }
+         .empty { text-align: center; padding: 40px 0; color: #888; }
+         .empty p { margin-top: 6px; font-size: 14px; }
+        </style>
         <script type="text/javascript">
-         function done() {
-             Android.finished();
-         };
-          function showprojects() {
-            let projects = Android.listProjects();
-            projects = JSON.parse(projects);
-            let html = "";
-            if (projects.length == 0) {
-              html += '<p>You do not have any projects saved.</p>'
-            } else {
-              html += "<table border=1>\n";
-              for (let i=0; i < projects.length; i++) {
-                html += "<tr><td>" + projects[i] + "</td><td><button onClick=\"loadproject('" + projects[i] + "');\">Run</button></td><td>&nbsp;-&nbsp;</td><td><button onClick=\"deleteproject('" + projects[i] + "');\">Delete</button></td></tr>\n"
-              }
-              html += "</table>\n";
-            }
-            let l = document.getElementById("projects");
-            l.innerHTML = html;
-          }
-          function loadproject(project) {
-            Android.loadProject(project);
-          }
-          function deleteproject(project) {
-            Android.deleteProject(project);
-            showprojects();
-          }
-          document.addEventListener("DOMContentLoaded", function() {
-            showprojects();
-          });
+         let allProjects = [];
+
+         function formatdate(ts) {
+             if (!ts || ts <= 0) return "";
+             let diff = Date.now() - ts;
+             if (diff < 0) return "";
+             let days = Math.floor(diff / 86400000);
+             let hours = Math.floor(diff / 3600000);
+             let mins = Math.floor(diff / 60000);
+             if (days > 0) return days + " day" + (days == 1 ? "" : "s") + " ago";
+             if (hours > 0) return hours + " hour" + (hours == 1 ? "" : "s") + " ago";
+             if (mins > 0) return mins + " minute" + (mins == 1 ? "" : "s") + " ago";
+             return "just now";
+         }
+
+         function showprojects() {
+             let query = document.getElementById("search").value.toLowerCase();
+             let mode = document.getElementById("sortmode").value;
+             let list = allProjects.slice();
+
+             if (query) {
+                 list = list.filter(function(p) {
+                     return p.name.toLowerCase().indexOf(query) >= 0;
+                 });
+             }
+
+             if (mode == "az") {
+                 list.sort(function(a, b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+             } else if (mode == "za") {
+                 list.sort(function(a, b) { return b.name.toLowerCase().localeCompare(a.name.toLowerCase()); });
+             } else {
+                 list.sort(function(a, b) { return (b.lastModified || 0) - (a.lastModified || 0); });
+             }
+
+             let el = document.getElementById("projects");
+             el.innerHTML = "";
+
+             if (allProjects.length == 0) {
+                 el.innerHTML = '<div class="empty"><strong>No Apps Downloaded</strong>' +
+                     '<p>Connect to your project first to download it to your library!</p></div>';
+                 return;
+             }
+             if (list.length == 0) {
+                 el.innerHTML = '<div class="empty">No matching apps.</div>';
+                 return;
+             }
+
+             for (let i = 0; i < list.length; i++) {
+                 let p = list[i];
+                 let div = document.createElement("div");
+                 div.className = "project";
+
+                 let nm = document.createElement("div");
+                 nm.className = "pname";
+                 nm.textContent = p.name;
+                 div.appendChild(nm);
+
+                 let rel = formatdate(p.lastModified);
+                 if (rel) {
+                     let dt = document.createElement("div");
+                     dt.className = "pdate";
+                     dt.textContent = "Last modified: " + rel;
+                     div.appendChild(dt);
+                 }
+
+                 let run = document.createElement("button");
+                 run.className = "btn-run";
+                 run.textContent = "Run";
+                 run.onclick = (function(name) {
+                     return function() { Android.loadProject(name); };
+                 })(p.name);
+
+                 let del = document.createElement("button");
+                 del.className = "btn-del";
+                 del.textContent = "Delete";
+                 del.onclick = (function(name) {
+                     return function() { deleteproject(name); };
+                 })(p.name);
+
+                 div.appendChild(run);
+                 div.appendChild(del);
+                 el.appendChild(div);
+             }
+         }
+
+         function deleteproject(name) {
+             if (!confirm('Delete "' + name + '"?')) return;
+             Android.deleteProject(name);
+             allProjects = allProjects.filter(function(p) { return p.name != name; });
+             showprojects();
+         }
+
+         document.addEventListener("DOMContentLoaded", function() {
+             let raw = Android.listProjects();
+             try { allProjects = JSON.parse(raw); } catch (e) { allProjects = []; }
+             let saved = localStorage.getItem("projects_sortMode");
+             if (saved) document.getElementById("sortmode").value = saved;
+             document.getElementById("search").addEventListener("input", showprojects);
+             document.getElementById("sortmode").addEventListener("change", function() {
+                 localStorage.setItem("projects_sortMode", this.value);
+                 showprojects();
+             });
+             showprojects();
+         });
         </script>
     </head>
     <body>
       <center>
-        <h1>Select Project to load</h1>
+        <h1>Saved Apps</h1>
       </center>
-      <p>
-        <div id="projects">
-        </div>
-      </p>
+      <div id="controls">
+        <input type="text" id="search" placeholder="Search...">
+        <select id="sortmode">
+          <option value="recent">Recently Modified</option>
+          <option value="az">App Name: A-Z</option>
+          <option value="za">App Name: Z-A</option>
+        </select>
+      </div>
+      <div id="projects">
+      </div>
     </body>
 </html>
