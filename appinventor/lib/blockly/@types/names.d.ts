@@ -3,7 +3,13 @@
  * Copyright 2012 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { VariableMap } from './variable_map.js';
+/**
+ * Utility functions for handling variable and procedure names.
+ *
+ * @class
+ */
+import type { IVariableMap } from './interfaces/i_variable_map.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for a database of entity names (variables, procedures, etc).
@@ -40,7 +46,7 @@ export declare class Names {
      *
      * @param map The map to track.
      */
-    setVariableMap(map: VariableMap): void;
+    setVariableMap(map: IVariableMap<IVariableModel<IVariableState>>): void;
     /**
      * Get the name for a user-defined variable, based on its ID.
      * This should only be used for variables of NameType VARIABLE.

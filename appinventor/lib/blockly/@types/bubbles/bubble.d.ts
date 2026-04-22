@@ -3,8 +3,11 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { ISelectable } from '../blockly.js';
 import { IBubble } from '../interfaces/i_bubble.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
+import type { IHasBubble } from '../interfaces/i_has_bubble.js';
+import { ISelectable } from '../interfaces/i_selectable.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Rect } from '../utils/rect.js';
 import { Size } from '../utils/size.js';
@@ -14,10 +17,11 @@ import { WorkspaceSvg } from '../workspace_svg.js';
  * bubble, where it has a "tail" that points to the block, and a "head" that
  * displays arbitrary svg elements.
  */
-export declare abstract class Bubble implements IBubble, ISelectable {
+export declare abstract class Bubble implements IBubble, ISelectable, IFocusableNode {
     readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
+    protected owner?: (IHasBubble & IFocusableNode) | undefined;
     /** The width of the border around the bubble. */
     static readonly BORDER_WIDTH = 6;
     /** Double the width of the border around the bubble. */
@@ -60,14 +64,20 @@ export declare abstract class Bubble implements IBubble, ISelectable {
     /** The position of the left of the bubble realtive to its anchor. */
     private relativeLeft;
     private dragStrategy;
+    private focusableElement;
     /**
      * @param workspace The workspace this bubble belongs to.
      * @param anchor The anchor location of the thing this bubble is attached to.
      *     The tail of the bubble will point to this location.
      * @param ownerRect An optional rect we don't want the bubble to overlap with
      *     when automatically positioning.
+     * @param overriddenFocusableElement An optional replacement to the focusable
+     *     element that's represented by this bubble (as a focusable node). This
+     *     element will have its ID overwritten. If not provided, the focusable
+     *     element of this node will default to the bubble's SVG root.
+     * @param owner The object responsible for hosting/spawning this bubble.
      */
-    constructor(workspace: WorkspaceSvg, anchor: Coordinate, ownerRect?: Rect | undefined);
+    constructor(workspace: WorkspaceSvg, anchor: Coordinate, ownerRect?: Rect | undefined, overriddenFocusableElement?: SVGElement | HTMLElement, owner?: (IHasBubble & IFocusableNode) | undefined);
     /** Dispose of this bubble. */
     dispose(): void;
     /**
@@ -96,8 +106,18 @@ export declare abstract class Bubble implements IBubble, ISelectable {
     protected getColour(): string;
     /** Sets the colour of the background and tail of this bubble. */
     setColour(colour: string): void;
-    /** Brings the bubble to the front and passes the pointer event off to the gesture system. */
+    /**
+     * Passes the pointer event off to the gesture system and ensures the bubble
+     * is focused.
+     */
     private onMouseDown;
+    /**
+     * Handles key events when this bubble is focused. By default, closes the
+     * bubble on Escape.
+     *
+     * @param e The keyboard event to handle.
+     */
+    protected onKeyDown(e: KeyboardEvent): void;
     /** Positions the bubble relative to its anchor. Does not render its tail. */
     protected positionRelativeToAnchor(): void;
     /**
@@ -190,5 +210,19 @@ export declare abstract class Bubble implements IBubble, ISelectable {
     revertDrag(): void;
     select(): void;
     unselect(): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    /**
+     * Returns the object that owns/hosts this bubble, if any.
+     */
+    getOwner(): (IHasBubble & IFocusableNode) | undefined;
 }
 //# sourceMappingURL=bubble.d.ts.map
