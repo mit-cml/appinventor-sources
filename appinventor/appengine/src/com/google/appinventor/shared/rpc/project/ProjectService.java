@@ -374,4 +374,11 @@ public interface ProjectService extends RemoteService {
    */
   void log(String message);
 
+  /**
+   * Returns permission metadata for the project.
+   * @param projectId  project ID
+   * @return permission metadata
+   */
+  PermissionMetadata getProjectPermissionMetadata(long projectId);
+
 }

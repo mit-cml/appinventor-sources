@@ -1,0 +1,22 @@
+<!-- Copyright 2026 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.wizards">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+
+  <ai:Dialog ui:field="permissionsDialog" styleName="ode-DialogBox">
+    <g:FlowPanel styleName="ode-PermissionsPanel">
+      <g:Label text="The following permissions are required by components in this project:" styleName="ode-PermissionsHeader" />
+      
+      <g:ScrollPanel ui:field="scrollPanel" styleName="ode-PermissionsScrollPanel">
+        <g:FlexTable ui:field="permissionsTable" styleName="ode-PermissionsTable" />
+      </g:ScrollPanel>
+
+      <g:FlowPanel styleName="ode-DialogButtons">
+        <g:Button ui:field="closeButton" text="{messages.closeButton}" />
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </ai:Dialog>
+</ui:UiBinder>

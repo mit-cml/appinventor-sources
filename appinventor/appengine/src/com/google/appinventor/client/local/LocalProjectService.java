@@ -39,6 +39,7 @@ import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
+import com.google.appinventor.shared.rpc.project.PermissionMetadata;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
@@ -504,6 +505,11 @@ public class LocalProjectService implements ProjectServiceAsync {
   @Override
   public void log(String message, AsyncCallback<Void> callback) {
 
+  }
+
+  @Override
+  public void getProjectPermissionMetadata(long projectId, AsyncCallback<PermissionMetadata> callback) {
+    callback.onSuccess(new PermissionMetadata(projectId, new ArrayList<>()));
   }
 
   public Promise<String> exportProject(long projectId) {

@@ -600,6 +600,18 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text On Project Properties Button")
   String projectPropertiesText();
 
+  @DefaultMessage("Project Permissions...")
+  @Description("Text On Project Permissions Dialog Menuitem")
+  String projectPermissionsMenuItem();
+
+  @DefaultMessage("Project Permissions")
+  @Description("Text On Project Permissions Button")
+  String projectPermissionsText();
+
+  @DefaultMessage("Close")
+  @Description("Text On Close Button")
+  String closeButton();
+
   @DefaultMessage("Import Extension Failed!")
   @Description("Error message reported when the component import failed")
   String componentImportError();
