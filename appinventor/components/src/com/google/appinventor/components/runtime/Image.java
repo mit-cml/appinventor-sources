@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime;
 
 import android.Manifest;
-
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
