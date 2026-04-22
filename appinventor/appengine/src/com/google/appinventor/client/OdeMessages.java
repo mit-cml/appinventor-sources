@@ -736,6 +736,32 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Information about the Companion")
   String companionInformation();
 
+  //Adding pop-up feature to choose andriod or ios
+  @DefaultMessage("Choose your platform:")
+  @Description("Asking user to choose between Android and iOS companion")
+  String companionChoosePlatform();
+
+  @DefaultMessage("Android")
+  @Description("Button label for Android companion")
+  String companionAndroidButton();
+  
+  @DefaultMessage("iOS")
+  @Description("Button label for iOS companion")
+  String companionIosButton();
+
+  @DefaultMessage("Android Companion")
+  @Description("Title of Android companion dialog")
+  String companionAndroidTitle();
+
+  @DefaultMessage("iOS Companion")
+  @Description("Title of iOS companion dialog")
+  String companionIosTitle();
+
+  @DefaultMessage("Download the MIT App Inventor Companion from the App Store:")
+  @Description("Message shown in iOS companion dialog")
+  String companionIosMessage();
+  //feature added
+
   @DefaultMessage("Update the Companion")
   @Description("Menu item to update the Companion to the latest version")
   String companionUpdate();
