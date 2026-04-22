@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.Asset;
@@ -22,6 +23,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
+import com.google.appinventor.components.runtime.util.GifMovieDrawable;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.Vector2D;
 
@@ -70,7 +72,7 @@ import java.util.ArrayList;
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public class ImageSprite extends Sprite {
   private final Form form;
-  private BitmapDrawable drawable;
+  private Drawable drawable;
   private int widthHint = LENGTH_PREFERRED;
   private int heightHint = LENGTH_PREFERRED;
   private String picturePath = "";  // Picture property
@@ -241,14 +243,85 @@ public class ImageSprite extends Sprite {
   @SimpleProperty
   public void Picture(@Asset String path) {
     picturePath = (path == null) ? "" : path;
+    stopAnimation();
     try {
-      drawable = MediaUtil.getBitmapDrawable(form, picturePath);
-    } catch (IOException ioe) {
+      drawable = MediaUtil.getDrawable(form, picturePath);
+    } catch (Exception e) {
       Log.e("ImageSprite", "Unable to load " + picturePath);
       drawable = null;
     }
+    if (drawable instanceof GifMovieDrawable) {
+      setupAnimationCallback();
+    }
     // note: drawable can be null!
     registerChange();
+  }
+
+  private void setupAnimationCallback() {
+    drawable.setCallback(new Drawable.Callback() {
+      @Override
+      public void invalidateDrawable(Drawable who) {
+        canvas.getView().invalidate();
+      }
+
+      @Override
+      public void scheduleDrawable(Drawable who, Runnable what, long when) {
+        long delay = when - android.os.SystemClock.uptimeMillis();
+        canvas.getView().postDelayed(what, Math.max(0, delay));
+      }
+
+      @Override
+      public void unscheduleDrawable(Drawable who, Runnable what) {
+        canvas.getView().removeCallbacks(what);
+      }
+    });
+  }
+
+  private void stopAnimation() {
+    if (drawable instanceof GifMovieDrawable) {
+      ((GifMovieDrawable) drawable).stop();
+      drawable.setCallback(null);
+    }
+  }
+
+  @Override
+  public void onDelete() {
+    stopAnimation();
+    super.onDelete();
+  }
+
+  @Override
+  public void onDestroy() {
+    stopAnimation();
+    super.onDestroy();
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(description = "Controls whether an animated GIF image is playing. " +
+      "Setting to true resumes animation; setting to false pauses at the current frame. " +
+      "Has no effect on non-animated images.")
+  public void Animated(boolean animated) {
+    if (drawable instanceof GifMovieDrawable) {
+      if (animated) {
+        ((GifMovieDrawable) drawable).start();
+      } else {
+        ((GifMovieDrawable) drawable).stop();
+      }
+    }
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean Animated() {
+    return drawable instanceof GifMovieDrawable && ((GifMovieDrawable) drawable).isRunning();
+  }
+
+  @SimpleFunction(description = "Resets the animation of an animated GIF image to the first frame. " +
+      "If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.")
+  public void ResetAnimation() {
+    if (drawable instanceof GifMovieDrawable) {
+      ((GifMovieDrawable) drawable).reset();
+    }
   }
 
   // The actual width/height of an ImageSprite whose Width/Height property is set to Automatic or
@@ -258,8 +331,11 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(description = "The height of the ImageSprite in pixels.")
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
-      // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / form.deviceDensity());
+      if (drawable == null) return 0;
+      if (drawable instanceof BitmapDrawable) {
+        return (int)(((BitmapDrawable) drawable).getBitmap().getHeight() / form.deviceDensity());
+      }
+      return (int)(drawable.getIntrinsicHeight() / form.deviceDensity());
     }
     return heightHint;
   }
@@ -285,8 +361,11 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(description = "The width of the ImageSprite in pixels.")
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
-      // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / form.deviceDensity());
+      if (drawable == null) return 0;
+      if (drawable instanceof BitmapDrawable) {
+        return (int)(((BitmapDrawable) drawable).getBitmap().getWidth() / form.deviceDensity());
+      }
+      return (int)(drawable.getIntrinsicWidth() / form.deviceDensity());
     }
     return widthHint;
   }
