@@ -199,6 +199,8 @@ Blockly.Block.prototype.notBadBlock = function() {
  */
 Blockly.Block.prototype.getTopWorkspace = function() {
   var workspace = this.workspace;
-  while (workspace.targetWorkspace) workspace = workspace.targetWorkspace;
+  while (workspace.targetWorkspace) {
+    workspace = workspace.targetWorkspace;
+  }
   return workspace;
 };
