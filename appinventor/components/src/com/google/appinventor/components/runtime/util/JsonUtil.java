@@ -45,6 +45,7 @@ public class JsonUtil {
 
   private static final String BINFILE_DIR = "/AppInventorBinaries";
   private static final String LOG_TAG = "JsonUtil";
+  private static final String TYPE_FIELD = "\u0002$type$\u0003";
 
   /**
    * Prevent instantiation.
@@ -252,6 +253,10 @@ public class JsonUtil {
     if (value instanceof FString) {
       return JSONObject.quote(value.toString());
     }
+    if (value instanceof YailMatrix) {
+      return "{\"" + TYPE_FIELD.replace("\\", "\\\\") + "\":\"YailMatrix\",\"data\":"
+          + ((YailMatrix) value).toJSONString() + "}";
+    }
     if (value instanceof YailList) {
       return ((YailList) value).toJSONString();
     }
@@ -348,8 +353,25 @@ public class JsonUtil {
           (value instanceof Boolean)) {
         return value;
       } else if (value instanceof JSONArray) {
-        return getListFromJsonArray((JSONArray)value, useDicts);
+        return getListFromJsonArray((JSONArray) value, useDicts);
       } else if (value instanceof JSONObject) {
+        Log.d(LOG_TAG, "Got JSONObject");
+        for (Iterator<String> it = ((JSONObject) value).keys(); it.hasNext(); ) {
+          String key = it.next();
+          Log.d(LOG_TAG, "Key: " + key);
+        }
+        if (((JSONObject) value).has(TYPE_FIELD)) {
+          Log.d(LOG_TAG, "Got possible matrix");
+          String type = ((JSONObject) value).getString(TYPE_FIELD);
+          Log.d(LOG_TAG, "Got type: " + type);
+          if ("YailMatrix".equals(type)) {
+            JSONArray data = ((JSONObject) value).optJSONArray("data");
+            if (data != null) {
+              return YailMatrix.fromJsonArray(data);
+            }
+            Log.d(LOG_TAG, "YailMatrix missing data field");
+          }
+        }
         if (useDicts) {
           return getDictionaryFromJsonObject((JSONObject) value);
         } else {

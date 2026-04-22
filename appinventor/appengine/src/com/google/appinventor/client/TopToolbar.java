@@ -58,7 +58,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = "RefreshCompanion";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_SETTINGS = "Settings";
-  private static final String WIDGET_NAME_AUTOLOAD = "Autoload Last Project";
+  private static final String WIDGET_NAME_AUTOLOAD = "AutoloadLastProject";
   private static final String WIDGET_NAME_DYSLEXIC_FONT = "DyslexicFont";
   private static final String WIDGET_NAME_APP_STORE_SETTINGS = "AppStoreSettings";
   private static final String WIDGET_NAME_NEW_LAYOUT = "NewLayout";
@@ -88,6 +88,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton settingsDropDown;
   @UiField protected DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
+  @UiField (provided = true) protected Boolean isAvailable;
 
   protected boolean readOnly;
 
@@ -114,6 +115,10 @@ public class TopToolbar extends Composite {
     // UIBinder can't negate the boolean itself.
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
+
+    boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
+
+    isAvailable = !oneProjectMode && hasWriteAccess;
 
     bindUI();
     if (iamChromebook) {
@@ -158,13 +163,14 @@ public class TopToolbar extends Composite {
     buildDropDown.removeUnneededSeparators();
 
     if (!Ode.getUserAutoloadProject()) {
-      settingsDropDown.setItemHtmlById("AutoloadLastProject", MESSAGES.enableAutoload());
-      settingsDropDown.setCommandById("AutoloadLastProject", new EnableAutoloadAction());
+      settingsDropDown.setItemHtmlById(WIDGET_NAME_AUTOLOAD, MESSAGES.enableAutoload());
+      settingsDropDown.setCommandById(WIDGET_NAME_AUTOLOAD, new EnableAutoloadAction());
     }
     if (!Ode.getUserDyslexicFont()) {
-      settingsDropDown.setItemHtmlById("DyslexicFont", MESSAGES.enableOpenDyslexic());
-      settingsDropDown.setCommandById("DyslexicFont", new SetFontDyslexicAction());
+      settingsDropDown.setItemHtmlById(WIDGET_NAME_DYSLEXIC_FONT, MESSAGES.enableOpenDyslexic());
+      settingsDropDown.setCommandById(WIDGET_NAME_DYSLEXIC_FONT, new SetFontDyslexicAction());
     }
+
     if (!Ode.getInstance().getUser().getIsAdmin()) {
       adminDropDown.removeFromParent();
     }
@@ -182,11 +188,11 @@ public class TopToolbar extends Composite {
 
   public void updateMoveToTrash(boolean moveToTrash) {
     if (moveToTrash) {
-      // Move projects from trash.
+      // Move projects to trash.
       fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), true);
       fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), false);
     } else {
-      // Projects are alreayd in trash. Completely delete them.
+      // Projects are already in trash. Completely delete them.
       fileDropDown.setItemVisible(MESSAGES.trashProjectMenuItem(), false);
       fileDropDown.setItemVisible(MESSAGES.deleteFromTrashButton(), true);
     }
@@ -227,13 +233,18 @@ public class TopToolbar extends Composite {
         connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, true);
         connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, true);
       }
-      connectDropDown.setItemEnabledById(WIDGET_NAME_REFRESHCOMPANION_BUTTON, false);
+      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), false);
     } else {
-      connectDropDown.setItemEnabledById(WIDGET_NAME_WIRELESS_BUTTON, false);
-      connectDropDown.setItemEnabledById(WIDGET_NAME_CHROMEBOOK, false);
-      connectDropDown.setItemEnabledById(WIDGET_NAME_EMULATOR_BUTTON, false);
-      connectDropDown.setItemEnabledById(WIDGET_NAME_USB_BUTTON, false);
-      connectDropDown.setItemEnabledById(WIDGET_NAME_REFRESHCOMPANION_BUTTON, true);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
+      if (iamChromebook) {
+        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
+      } else {
+        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+      }
+      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), true);
     }
   }
 
@@ -271,7 +282,7 @@ public class TopToolbar extends Composite {
         updateConnectToDropDownButton(true, false, false);
       } else if (forUsb) {      // We are starting the usb connection
         updateConnectToDropDownButton(false, false, true);
-      } else {                  // We are connecting via wifi to a Companion
+      } else {                  // We are connecting via Wi-Fi to a Companion
         updateConnectToDropDownButton(false, true, false);
       }
     } else {

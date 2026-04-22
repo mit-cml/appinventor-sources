@@ -30,6 +30,14 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
   }
   @objc open var Model: String = ""
   @objc open var Provider: String = "chatgpt"
+  @objc open var ServiceURL: String = ChatBot.SERVICE_URL.absoluteString {
+    didSet {
+      guard let url = URL(string: ServiceURL) else {
+        return
+      }
+      super.url = url
+    }
+  }
   @objc open var System: String = ""
 
   // MARK: Methods

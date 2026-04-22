@@ -12,6 +12,6 @@ public class ToggleTutorialAction implements Command {
   @Override
   public void execute() {
     Ode ode = Ode.getInstance();
-    ode.setTutorialVisible(!ode.isTutorialVisible());
+    ode.setTutorialVisible(!ode.isTutorialVisible(), false);
   }
 }

@@ -49,4 +49,10 @@ message token {
   optional bool anon = 28;                    // Alexa Account is anonymous
 }
 
+message envelope {
+  optional uint64 version = 1 [default = 1];
+  optional uint64 keyid = 2 [default = 1];
+  optional bytes unsigned = 3;  // The serialized token from above
+  optional bytes signature = 4; // HMAC-SHA256 of unsigned
+}
 

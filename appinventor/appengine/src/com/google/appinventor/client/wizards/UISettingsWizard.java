@@ -9,7 +9,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -81,14 +80,8 @@ public class UISettingsWizard {
   }
 
   public void show() {
-    // We add a delay here in case the DeckPanel that makes up the main App Inventor display
-    // is in the middle of animating. Unfortunately, there seems to be no way to acquire its
-    // animation state from GWT.
-    Scheduler.get().scheduleFixedDelay(() -> {
-      uiDialog.center();
-      classicRadioButton.focus();
-      return false;
-    }, 350);
+    uiDialog.center();
+    classicRadioButton.focus();
   }
 
   public void hide() {

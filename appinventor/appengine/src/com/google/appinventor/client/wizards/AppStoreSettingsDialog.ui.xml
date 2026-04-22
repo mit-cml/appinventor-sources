@@ -9,8 +9,8 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="settingsDialog" caption="{messages.settingsTabName}"
-              styleName="ode-DialogBox" width="400px">
+  <wiz:Dialog ui:field="settingsDialog" role="dialog" ariaModal="true" ariaLabel="App Store Settings"
+              caption="{messages.settingsTabName}" styleName="ode-DialogBox" width="400px">
     <g:FlowPanel>
       <g:HTML>
         Please provide your Apple ID and App Specific Password for MIT App Inventor below. These

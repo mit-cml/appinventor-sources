@@ -27,6 +27,7 @@ import com.google.appinventor.client.editor.youngandroid.events.EventHelper;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -385,7 +386,15 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   // Note: our companion designer adds us as a listener on the form
   @Override
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
-    // nothing to do here
+    if (!SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET.equals(propertyName) || !loadComplete) {
+      return;
+    }
+
+    BlockSelectorBox.getBlockSelectorBox().clearBuiltInBlocksCache();
+    blocksArea.resetDrawerLanguageTreeCache();
+    updateSourceStructureExplorer();
+    // Close any open drawer because its contents may no longer match the toolkit.
+    hideBlocksDrawer();
   }
 
   @Override
@@ -557,7 +566,7 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
                 var neighbour = connection.closest($wnd.Blockly.config.snapRadius,
-                  new $wnd.goog.math.Coordinate(blockX, blockY));
+                  new $wnd.Blockly.utils.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
                   break;

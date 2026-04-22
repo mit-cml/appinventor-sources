@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupListener;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -52,7 +52,7 @@ public final class PropertyHelpWidget extends Image {
 
       // Create panel to hold the above three widgets and act as the
       // popup's widget.
-      final VerticalPanel inner = new VerticalPanel();
+      final FlowPanel inner = new FlowPanel();
       inner.setStyleName("ode-ComponentHelpPopup-Body");
       inner.add(helpText);
       add(inner);
@@ -77,6 +77,11 @@ public final class PropertyHelpWidget extends Image {
       imageResource = images.help();
     }
     AbstractImagePrototype.create(imageResource).applyTo(this);
+
+    // Add alt text for accessibility - helps screen readers describe the help button
+    String altText = ComponentTranslationTable.getPropertyName(prop.getName()) + " help";
+    getElement().setAttribute("alt", altText);
+
     addClickListener(new ClickListener() {
         @Override
         public void onClick(Widget sender) {

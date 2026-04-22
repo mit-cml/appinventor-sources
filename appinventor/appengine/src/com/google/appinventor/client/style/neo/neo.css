@@ -929,7 +929,7 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 15px 56px 12px 64px;;
+  padding: 15px 56px 12px 64px;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
   background: phonePortraitTablet;
@@ -1074,6 +1074,10 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-DialogBox .dialogContent td a {
     color: selected-color;
+}
+
+.ode-DialogBox .download-button span {
+  color: gray-800;
 }
 
 .ode-SimpleMockContainer {
@@ -1870,23 +1874,6 @@ input[type="checkbox"]:focus {
 
 /* Blocks editor */
 
-.ac-renderer {
-    font: normal 13px Arial, sans-serif;
-    background: v-white;
-    border: 1px solid gray-700;
-    color: v-black;
-}
-
-.ac-row {
-    cursor: pointer;
-    padding: .4em;
-    background: v-white;
-}
-
-.ac-active {
-    background-color: gray-200;
-}
-
 .blocklySvg text {
   fill: blockly-indicator;
 }
@@ -2026,7 +2013,8 @@ display: contents;
   border-bottom: 1px solid gray-400;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+.ode-CollapsablePanel .gwt-DisclosurePanel .header,
+.ode-PaletteCategoryHeader {
   border-bottom: 1px solid gray-400;
   border-top: 0px;
   cursor: pointer;
@@ -2036,7 +2024,8 @@ display: contents;
   height: unset;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .content {
+.ode-CollapsablePanel .gwt-DisclosurePanel .content,
+.ode-PaletteCategoryContentInner {
   padding: 0px;
   border: 0px;
   margin-left: 0px;

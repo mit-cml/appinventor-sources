@@ -37,7 +37,7 @@ open class ProxiedComponent<
     Response: HasResponse & Message
 >: NonvisibleComponent, URLSessionDelegate, LifecycleDelegate where Request.T == T {
 
-  private let url: URL
+  var url: URL
   private var _urlSession: URLSession! = nil
 
   public init(_ parent: ComponentContainer, _ url: URL) {

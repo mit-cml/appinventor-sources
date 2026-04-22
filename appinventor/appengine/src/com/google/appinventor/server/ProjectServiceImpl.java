@@ -192,7 +192,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public UserProject copyProject(long oldProjectId, String newName){
     final String userId = userInfoProvider.getUserId();
     long projectId = getProjectRpcImpl(userId, oldProjectId).
-        copyProject(userId, oldProjectId, newName);
+      copyProject(userId, oldProjectId, newName, null);
     return makeUserProject(userId, projectId);
   }
 
@@ -692,7 +692,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     if (sessionId.equals("force")) { // If we are forcing our way -- no check
       return;
     }
-    if (!storedSessionId.equals(sessionId))
+    if (storedSessionId == null || !storedSessionId.equals(sessionId))
       if (AppInventorFeatures.requireOneLogin()) {
         throw new InvalidSessionException("A more recent login has occurred since we started. No further changes will be saved.");
       }

@@ -73,6 +73,8 @@ public final class BlocksCategory {
       name = MESSAGES.builtinLogicLabel();
     } else if (drawerName.equals("Math")) {
       name = MESSAGES.builtinMathLabel();
+    } else if (drawerName.equals("Matrices")) {
+      name = MESSAGES.builtinMatricesLabel();
     } else if (drawerName.equals("Text")) {
       name = MESSAGES.builtinTextLabel();
     } else if (drawerName.equals("Lists")) {

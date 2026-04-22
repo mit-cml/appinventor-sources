@@ -43,7 +43,7 @@ Blockly.WorkspaceSvg.prototype.componentDb_ = null;
 
 /**
  * The workspace's typeblock instance.
- * @type {AI.Blockly.TypeBlock}
+ * @type {TypeBlocking}
  * @private
  */
 Blockly.WorkspaceSvg.prototype.typeBlock_ = null;
@@ -62,37 +62,10 @@ Blockly.WorkspaceSvg.prototype.flydown_ = null;
 Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
 
 /**
- * latest clicked position is used to open the type blocking suggestions window
- * Initial position is 0,0
- * @type {{x: number, y: number}}
- */
-Blockly.WorkspaceSvg.prototype.latestClick = { x: 0, y: 0 };
-
-/**
  * Whether the workspace elements are hidden
  * @type {boolean}
  */
 Blockly.WorkspaceSvg.prototype.chromeHidden = false;
-
-/**
- * Wrap the onMouseClick_ event to handle additional behaviors.
- */
-Blockly.WorkspaceSvg.prototype.onMouseDown_ = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var f = function(e) {
-      var metrics = Blockly.common.getMainWorkspace().getMetrics();
-      var point = Blockly.utils.browserEvents.mouseToSvg(e, this.getParentSvg(), this.getInverseScreenCTM());
-      point.x = (point.x + metrics.viewLeft) / this.scale;
-      point.y = (point.y + metrics.viewTop) / this.scale;
-      this.latestClick = point;
-      return func.call(this, e);
-    };
-    f.isWrapper = true;
-    return f;
-  }
-})(Blockly.WorkspaceSvg.prototype.onMouseDown_);
 
 Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
   if (func.isWrapped) {
@@ -198,7 +171,7 @@ Blockly.WorkspaceSvg.prototype.addWarningIndicator = function() {
     }
     this.warningIndicator_ = new Blockly.WarningIndicator(this);
     var svgWarningIndicator = this.warningIndicator_.createDom();
-    this.svgGroup_.appendChild(svgWarningIndicator);
+    this.getSvgGroup().appendChild(svgWarningIndicator);
     this.warningIndicator_.init();
   }
 };
@@ -284,57 +257,6 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
     return false;
   }
 };
-
-/**
- * Render the workspace.
- * @param {Array.<Blockly.BlockSvg>=} blocks
- */
-// Override Blockly's render with optimized version from lyn
-/*
-Blockly.WorkspaceSvg.prototype.render = function(blocks) {
-  this.rendered = true;
-  this.bulkRendering = true;
-  Blockly.utils.dom.startTextWidthCache();
-  try {
-    if (Blockly.Instrument.isOn) {
-      var start = new Date().getTime();
-    }
-    // [lyn, 04/08/14] Get both top and all blocks for stats
-    var topBlocks = blocks || this.getTopBlocks(/* ordered * / false);
-    var allBlocks = this.getAllBlocks();
-    if (Blockly.Instrument.useRenderDown) {
-      for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
-        Blockly.Instrument.timer(
-          function () {
-            topBlock.render(false);
-          },
-          function (result, timeDiffInner) {
-            Blockly.Instrument.stats.renderDownTime += timeDiffInner;
-          }
-        );
-      }
-    } else {
-      for (var x = 0, block; block = allBlocks[x]; x++) {
-        if (!block.getChildren().length) {
-          block.render();
-        }
-      }
-    }
-    if (Blockly.Instrument.isOn) {
-      var stop = new Date().getTime();
-      var timeDiffOuter = stop - start;
-      Blockly.Instrument.stats.blockCount = allBlocks.length;
-      Blockly.Instrument.stats.topBlockCount = topBlocks.length;
-      Blockly.Instrument.stats.workspaceRenderCalls++;
-      Blockly.Instrument.stats.workspaceRenderTime += timeDiffOuter;
-    }
-  } finally {
-    this.bulkRendering = false;
-    this.requestConnectionDBUpdate();
-    Blockly.utils.dom.stopTextWidthCache();
-  }
-};
-*/
 
 /**
  * Obtain the {@link Blockly.ComponentDatabase} associated with the workspace.
@@ -588,7 +510,7 @@ Blockly.WorkspaceSvg.prototype.loadBlocksFile = function(formJson, blocksContent
             // Potentially apply any new translations for event parameter names
             var untranslatedEventName = block.eventparam;
             block.fieldVar_.setValue(untranslatedEventName);
-            // block.fieldVar_.setText(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
+            // block.fieldVar_.setValue(block.workspace.getTopWorkspace().getComponentDatabase().getInternationalizedParameterName(untranslatedEventName));
             block.eventparam = untranslatedEventName;
             block.workspace.requestErrorChecking(block);
           }
@@ -678,7 +600,6 @@ Blockly.WorkspaceSvg.prototype.getFlydown = function() {
 Blockly.WorkspaceSvg.prototype.hideChaff = (function(func) {
   return function(opt_allowToolbox) {
     this.flydown_ && this.flydown_.hide();
-    this.typeBlock_ && this.typeBlock_.hide();
     if (!opt_allowToolbox) {  // Fixes #1269
       this.backpack_ && this.backpack_.hide();
     }
@@ -702,28 +623,11 @@ Blockly.WorkspaceSvg.prototype.markFocused = function() {
     this.targetWorkspace.markFocused();
   } else {
     Blockly.common.setMainWorkspace(this);
+    // We call e.preventDefault in many event handlers which means we
+    // need to explicitly grab focus (e.g from a textarea) because
+    // the browser will not do it for us.
+    this.getParentSvg().focus({preventScroll: true});
   }
-};
-
-Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, forRepl, compileUnattachedBlocks) {
-  var map = {components: {}, globals: []};
-  var blocks = this.getTopBlocks(/* ordered */ true);
-  for (var i = 0, block; block = blocks[i]; ++i) {
-    if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn' || block.type == 'global_declaration') {
-      map.globals.push(block);
-    } else if (block.category == 'Component' && block.type == 'event') {
-      if (block.isGeneric) {
-        map.globals.push(block);
-        continue;
-      }
-      var instanceName = block.instanceName;
-      if (!map.components[instanceName]) {
-        map.components[instanceName] = [];
-      }
-      map.components[instanceName].push(block);
-    }
-  }
-  return map;
 };
 
 Blockly.WorkspaceSvg.prototype.resize = (function(resize) {
@@ -743,10 +647,10 @@ Blockly.WorkspaceSvg.prototype.recordDeleteAreas = function() {
     this.deleteAreaTrash_ = null;
   }
   if (this.isMutator) {
-    if (this.flyout_) {
-      this.deleteAreaToolbox_ = this.flyout_.getClientRect();
-    } else if (this.toolbox_) {
-      this.deleteAreaToolbox_ = this.toolbox_.getClientRect();
+    if (this.getFlyout(true)) {
+      this.deleteAreaToolbox_ = this.getFlyout(true).getClientRect();
+    } else if (this.getToolbox()) {
+      this.deleteAreaToolbox_ = this.getToolbox().getClientRect();
     } else {
       this.deleteAreaToolbox_ = null;
     }
@@ -763,7 +667,7 @@ Blockly.WorkspaceSvg.prototype.hasBackpack = function() {
   return this.backpack_ != null;
 };
 
-Blockly.WorkspaceSvg.prototype.onMouseWheel_ = function(e) {
+Blockly.WorkspaceSvg.prototype.onMouseWheel = function(e) {
   this.cancelCurrentGesture();
   if (e.eventPhase == 3) {
     if (e.ctrlKey == true) {
@@ -862,6 +766,19 @@ Blockly.WorkspaceSvg.prototype.buildComponentMap = function(warnings, errors, fo
       map.components[instanceName].push(block);
     }
   }
+
+  /*
+    Sorts out the globals so that procedures proceed global variables.
+    This is necessary so that procedures can be defined as a variable
+  */
+  map.globals.sort(function(a, b) {
+    var isProcA = (a.type == 'procedures_defnoreturn' || a.type == 'procedures_defreturn');
+    var isProcB = (b.type == 'procedures_defnoreturn' || b.type == 'procedures_defreturn');
+
+    if (isProcA && !isProcB) return -1;
+    if (!isProcA && isProcB) return 1;
+    return 0;
+  });
   return map;
 };
 
@@ -911,7 +828,7 @@ Blockly.WorkspaceSvg.prototype.requestRender = function(block) {
         this.pendingRender = null;
       }
     }.bind(this);
-    if (this.svgGroup_.parentElement.parentElement.parentElement.style.display === 'none') {
+    if (this.getSvgGroup().parentElement.parentElement.parentElement.style.display === 'none') {
       this.pendingRender = true;
     } else {
       this.pendingRender = setTimeout(this.pendingRenderFunc, 0);
@@ -949,10 +866,9 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
       try {
         var handler = this.getWarningHandler();
         if (handler) {  // not true for flyouts and before the main workspace is rendered.
-          goog.array.forEach(this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck,
-            function(block) {
-              handler.checkErrors(block);
-            });
+          for (const block of this.checkAllBlocks ? this.getAllBlocks() : this.needsErrorCheck) {
+            handler.checkErrors(block);
+          }
         }
       } finally {
         this.pendingErrorCheck = null;
@@ -981,46 +897,6 @@ Blockly.WorkspaceSvg.prototype.requestErrorChecking = function(block) {
     this.checkAllBlocks = true;
   }
 };
-
-/**
- * Sort the workspace's connection database. This only needs to be called if the bulkRendering
- * property of the workspace is set to true to false as any connections that Blockly attempted to
- * update during that time may be incorrectly ordered in the database.
- */
-/*
-Blockly.WorkspaceSvg.prototype.sortConnectionDB = function() {
-  goog.array.forEach(this.connectionDBList, function(connectionDB) {
-    connectionDB.sort(function(a, b) {
-      return a.y_ - b.y_;
-    });
-    // If we are rerendering due to a new error, we only redraw the error block, which means that
-    // we can't clear the database, otherwise all other connections disappear. Instead, we add
-    // the moved connections anyway, and at this point we can remove the duplicate entries in the
-    // database. We remove after sorting so that the operation is O(n) rather than O(n^2). This
-    // assumption may break in the future if Blockly decides on a different mechanism for indexing
-    // connections.
-    connectionDB.removeDupes();
-  });
-};
- */
-
-/**
- * Request an update to the connection database's order due to movement of a block while a bulk
- * rendering operation was in progress.
- */
-/*
-Blockly.WorkspaceSvg.prototype.requestConnectionDBUpdate = function() {
-  if (!this.pendingConnectionDBUpdate) {
-    this.pendingConnectionDBUpdate = setTimeout(function() {
-      try {
-        this.sortConnectionDB();
-      } finally {
-        this.pendingConnectionDBUpdate = null;
-      }
-    }.bind(this));
-  }
-};
-*/
 
 /*
 * Refresh the state of the backpack. Called from BlocklyPanel.java

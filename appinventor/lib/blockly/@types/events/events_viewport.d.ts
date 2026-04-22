@@ -3,9 +3,10 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { Workspace } from '../workspace.js';
 import { AbstractEventJson } from './events_abstract.js';
 import { UiBase } from './events_ui_base.js';
-import type { Workspace } from '../workspace.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners that the workspace surface's position or scale has
  * changed.
@@ -27,7 +28,7 @@ export declare class ViewportChange extends UiBase {
     scale?: number;
     /** The previous scale of the workspace. */
     oldScale?: number;
-    type: string;
+    type: EventType;
     /**
      * @param opt_top Top-edge of the visible portion of the workspace, relative
      *     to the workspace origin. Undefined for a blank event.
