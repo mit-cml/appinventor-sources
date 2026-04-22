@@ -8,12 +8,14 @@ package com.google.appinventor.shared.rpc.user;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
+import com.google.appinventor.shared.rpc.RestJSONObject;
+import jsinterop.annotations.JsProperty;
 
 /**
  * Data Transfer Object representing user data.
  *
  */
-public class User implements IsSerializable, UserInfoProvider, Serializable {
+public class User extends RestJSONObject implements IsSerializable, UserInfoProvider, Serializable {
   // Unique identifier for the user
   private String id;
 
@@ -81,12 +83,17 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   private User() {
   }
 
+  public User(Object json) {
+    super(json);
+  }
+
   /**
    * Returns the user's unique id.
    *
    * @return user id
    */
   @Override
+  @JsProperty(name = "id")
   public String getUserId() {
     return id;
   }
@@ -95,6 +102,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * Sets the userId. This is needed in the case where the stored
    * id in userData is different from what Google is now providing.
    */
+  @JsProperty(name = "id")
   public void setUserId(String id) {
     this.id = id;
   }
@@ -105,6 +113,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @return user email address
    */
   @Override
+  @JsProperty(name = "email")
   public String getUserEmail() {
     return email;
   }
@@ -112,6 +121,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   /**
    * Sets the user's email address.
    */
+  @JsProperty(name = "email")
   public void setUserEmail(String email) {
     this.email = email;
   }
@@ -121,6 +131,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    *
    * @return hashed password
    */
+  @JsProperty
   public String getPassword() {
     return password;
   }
@@ -131,6 +142,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    *
    * @param hashed password
    */
+  @JsProperty
   public void setPassword(String hashedpassword) {
     this.password = hashedpassword;
   }
@@ -161,6 +173,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param tos {@code true} if the user has accepted the terms of service,
    *            {@code false} otherwise
    */
+  @JsProperty(name = "tosAccepted")
   public void setUserTosAccepted(boolean tos) {
     tosAccepted = tos;
   }
@@ -172,11 +185,13 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    *         {@code false} otherwise
    */
   @Override
+  @JsProperty(name = "tosAccepted")
   public boolean getUserTosAccepted() {
     return tosAccepted;
   }
 
   @Override
+  @JsProperty
   public boolean getIsAdmin() {
     return isAdmin;
   }
@@ -187,6 +202,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param admin {@code true} if the user has admin priviledges,
    *              {@code false} otherwise
    */
+  @JsProperty
   public void setIsAdmin(boolean admin) {
     isAdmin = admin;
   }
@@ -232,20 +248,24 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @return sessionId
    */
   @Override
+  @JsProperty
   public String getSessionId() {
     return sessionId;
   }
 
   @Override
+  @JsProperty
   public void setSessionId(String sessionId) {
     this.sessionId = sessionId;
   }
 
   @Override
+  @JsProperty(name = "isReadOnly")
   public void setReadOnly(boolean value) {
     isReadOnly = value;
   }
 
+  @JsProperty(name = "isReadOnly")
   public boolean isReadOnly() {
     return isReadOnly;
   }
@@ -274,10 +294,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.fauxProjectName = fauxProjectName;
   }
 
+  @JsProperty
   public String getBackpackId() {
     return backPackId;
   }
 
+  @JsProperty
   public void setBackpackId(String backPackId) {
     this.backPackId = backPackId;
   }
