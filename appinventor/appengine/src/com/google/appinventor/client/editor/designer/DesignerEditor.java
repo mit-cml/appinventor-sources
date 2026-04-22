@@ -700,7 +700,7 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     }
     if (event.isAltKeyDown()) {
       MockComponent selectedComponent = root.getLastSelectedComponent();
-      if (selectedComponent != null && selectedComponent.isVisibleComponent()) {
+      if (selectedComponent != null) {
         MockContainer parent = selectedComponent.getContainer();
         if (parent != null) {
           // Snapshot sibling list before any mutation so indices are stable.
