@@ -12,6 +12,8 @@
     App Inventor
   </description>
 
+  <!-- Main build configuration file for MIT App Inventor project -->
+
   <target name="all">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
