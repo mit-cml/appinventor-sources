@@ -14,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+
 import com.google.appinventor.components.runtime.Component;
 
 /**
@@ -232,6 +235,68 @@ public final class ViewUtil {
       view.requestLayout();
     } else {
       Log.e("ViewUtil", "The view does not have relative layout parameters");
+    }
+  }
+
+  /**
+   * Sets the width of the child within a ConstraintLayout group.
+   * @param view the child view
+   * @param width the desired width
+   */
+  public static void setChildWidthForConstraintLayout(View view, int width) {
+    Object layoutParams = view.getLayoutParams();
+    if (layoutParams instanceof ConstraintLayout.LayoutParams) {
+      ConstraintLayout.LayoutParams p = (ConstraintLayout.LayoutParams) layoutParams;
+      switch (width) {
+        case Component.LENGTH_PREFERRED:
+          p.width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+          p.rightToRight = ConstraintLayout.LayoutParams.UNSET;
+          break;
+        case Component.LENGTH_FILL_PARENT:
+          // MATCH_CONSTRAINTS (0) + rightToRight=PARENT stretches from Left position to right edge.
+          p.width = 0;
+          p.rightToRight = ConstraintSet.PARENT_ID;
+          p.rightMargin = 0;
+          break;
+        default:
+          p.width = calculatePixels(view, width);
+          p.rightToRight = ConstraintLayout.LayoutParams.UNSET;
+          break;
+      }
+      view.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have constraint layout parameters");
+    }
+  }
+
+  /**
+   * Sets the height of the child within a ConstraintLayout group.
+   * @param view the child view
+   * @param height the desired height
+   */
+  public static void setChildHeightForConstraintLayout(View view, int height) {
+    Object layoutParams = view.getLayoutParams();
+    if (layoutParams instanceof ConstraintLayout.LayoutParams) {
+      ConstraintLayout.LayoutParams p = (ConstraintLayout.LayoutParams) layoutParams;
+      switch (height) {
+        case Component.LENGTH_PREFERRED:
+          p.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+          p.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
+          break;
+        case Component.LENGTH_FILL_PARENT:
+          // MATCH_CONSTRAINTS (0) + bottomToBottom=PARENT stretches from Top position to bottom edge.
+          p.height = 0;
+          p.bottomToBottom = ConstraintSet.PARENT_ID;
+          p.bottomMargin = 0;
+          break;
+        default:
+          p.height = calculatePixels(view, height);
+          p.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
+          break;
+      }
+      view.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have constraint layout parameters");
     }
   }
 

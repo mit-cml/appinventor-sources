@@ -57,6 +57,14 @@ let kMinimumToastWait = 10.0
   private var _highContrast = false
   private var _backGesture: UIGestureRecognizer? = nil
   private var _tapGesture: UITapGestureRecognizer? = nil
+  private var _relativeLayout: RelativeLayout? = nil
+  private var _absoluteContainerView: UIView? = nil
+  // Track width/height constraints we explicitly set so we only remove ours, not system intrinsic ones
+  private var _childWidthConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  private var _childHeightConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  // Track trailing/bottom constraints for Fill Parent anchoring in Absolute mode
+  private var _childTrailingConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  private var _childBottomConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -196,7 +204,11 @@ let kMinimumToastWait = 10.0
 
   open func add(_ component: ViewComponent) {
     _components.append(component)
-    _linearView.addItem(LinearViewItem(component.view))
+    if let rl = _relativeLayout {
+      rl.add(component)
+    } else {
+      _linearView.addItem(LinearViewItem(component.view))
+    }
     view.setNeedsLayout()
     view.setNeedsUpdateConstraints()
   }
@@ -221,6 +233,48 @@ let kMinimumToastWait = 10.0
   }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
+    if _relativeLayout != nil {
+      // Deactivate only the constraint we previously set (not system/intrinsic constraints)
+      let key = ObjectIdentifier(component)
+      _childWidthConstraints[key]?.isActive = false
+      _childWidthConstraints.removeValue(forKey: key)
+      if width <= kLengthPercentTag {
+        // Deactivate any trailing constraint when switching away from Fill Parent
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
+        let childWidth = logicalWidth * Int32(-(width - kLengthPercentTag)) / 100
+        component._lastSetWidth = width
+        let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
+        NSLayoutConstraint.activate([c])
+        _childWidthConstraints[key] = c
+      } else if width == kLengthPreferred {
+        // Deactivate any trailing constraint when switching away from Fill Parent
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
+        component._lastSetWidth = width
+        // No explicit constraint — let Auto Layout use intrinsic content size
+      } else if width == kLengthFillParent {
+        // Deactivate old trailing constraint before setting a new one
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
+        component._lastSetWidth = width
+        // Anchor trailing edge to parent — fills from Left position to right edge (not full width).
+        if let container = _absoluteContainerView {
+          let c = component.view.trailingAnchor.constraint(equalTo: container.trailingAnchor)
+          NSLayoutConstraint.activate([c])
+          _childTrailingConstraints[key] = c
+        }
+      } else {
+        // Deactivate any trailing constraint when switching away from Fill Parent
+        _childTrailingConstraints[key]?.isActive = false
+        _childTrailingConstraints.removeValue(forKey: key)
+        component._lastSetWidth = width
+        let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
+        NSLayoutConstraint.activate([c])
+        _childWidthConstraints[key] = c
+      }
+      return
+    }
     if width <= kLengthPercentTag {
       _linearView.setWidth(of: component.view, to: Length(percent: width, of: _scaleFrameLayout))
     } else if width == kLengthPreferred {
@@ -234,6 +288,49 @@ let kMinimumToastWait = 10.0
   }
 
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
+    if _relativeLayout != nil {
+      // Deactivate only the constraint we previously set (not system/intrinsic constraints)
+      let key = ObjectIdentifier(component)
+      _childHeightConstraints[key]?.isActive = false
+      _childHeightConstraints.removeValue(forKey: key)
+      if height <= kLengthPercentTag {
+        // Deactivate any bottom constraint when switching away from Fill Parent
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
+        let childHeight = logicalHeight * Int32(-(height - kLengthPercentTag)) / 100
+        component._lastSetHeight = height
+        let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
+        NSLayoutConstraint.activate([c])
+        _childHeightConstraints[key] = c
+      } else if height == kLengthPreferred {
+        // Deactivate any bottom constraint when switching away from Fill Parent
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
+        component._lastSetHeight = height
+        // No explicit constraint — let Auto Layout use intrinsic content size
+      } else if height == kLengthFillParent {
+        // Deactivate old bottom constraint before setting a new one
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
+        component._lastSetHeight = height
+        if !_scrollable, let container = _absoluteContainerView {
+          // Non-scrollable: anchor bottom edge to parent — fills from Top to bottom edge.
+          let c = component.view.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+          NSLayoutConstraint.activate([c])
+          _childBottomConstraints[key] = c
+        }
+        // Scrollable: bottom of screen is undefined — no constraint (behaves like Automatic).
+      } else {
+        // Deactivate any bottom constraint when switching away from Fill Parent
+        _childBottomConstraints[key]?.isActive = false
+        _childBottomConstraints.removeValue(forKey: key)
+        component._lastSetHeight = height
+        let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
+        NSLayoutConstraint.activate([c])
+        _childHeightConstraints[key] = c
+      }
+      return
+    }
     if height <= kLengthPercentTag {
       _linearView.setHeight(of: component.view, to: Length(percent: height, of: _scaleFrameLayout))
     } else if height == kLengthPreferred {
@@ -269,6 +366,9 @@ let kMinimumToastWait = 10.0
   }
 
   open func isVisible(component: ViewComponent) -> Bool {
+    if _relativeLayout != nil {
+      return !component.view.isHidden && component.view.superview != nil
+    }
     return _linearView.contains(component.view)
   }
 
@@ -277,7 +377,13 @@ let kMinimumToastWait = 10.0
     if visibility == visible {
       return
     }
-    if visibility {
+    if _relativeLayout != nil {
+      component.view.isHidden = !visibility
+      if visibility {
+        setChildWidth(of: component, to: component._lastSetWidth)
+        setChildHeight(of: component, to: component._lastSetHeight)
+      }
+    } else if visibility {
       _linearView.setVisibility(of: component.view, to: true)
       component.onAttach()
     } else {
@@ -285,8 +391,20 @@ let kMinimumToastWait = 10.0
     }
   }
 
+  open func setChildNeedsLayout(component: ViewComponent) {
+    _relativeLayout?.updateComponentPosition(component: component)
+  }
+
   open var scaleFrameLayout: ScaleFrameLayout {
     return _scaleFrameLayout
+  }
+
+  private var logicalWidth: Int32 {
+    return _compatibilityMode ? Int32(CGFloat(Width) / _scaleFrameLayout.scale) : Width
+  }
+
+  private var logicalHeight: Int32 {
+    return _compatibilityMode ? Int32(CGFloat(Height) / _scaleFrameLayout.scale) : Height
   }
 
   @objc open func clear() {
@@ -296,6 +414,13 @@ let kMinimumToastWait = 10.0
     }
     _linearView.resetView()
     _linearView.removeAllItems()
+    _absoluteContainerView?.removeFromSuperview()
+    _relativeLayout = nil
+    _absoluteContainerView = nil
+    _childWidthConstraints.removeAll()
+    _childHeightConstraints.removeAll()
+    _childTrailingConstraints.removeAll()
+    _childBottomConstraints.removeAll()
     initThunks.removeAllObjects()
     clearComponents()
     defaultPropertyValues()
@@ -303,6 +428,7 @@ let kMinimumToastWait = 10.0
 
   private func recomputeLayout() {
     _linearView.removeFromSuperview()
+    _absoluteContainerView?.removeFromSuperview()
     _scaleFrameLayout.removeFromSuperview()
     _linearView.accessibilityIdentifier = "Form root view"
     if _compatibilityMode {
@@ -311,16 +437,20 @@ let kMinimumToastWait = 10.0
       _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(origin: .zero, size: view.frame.size))
     }
     _scaleFrameLayout.mode = _compatibilityMode ? .Fixed : .Responsive
-    _linearView.scrollEnabled = _scrollable
-    _scaleFrameLayout.addSubview(_linearView)
+    if let container = _absoluteContainerView {
+      _scaleFrameLayout.addSubview(container)
+    } else {
+      _linearView.scrollEnabled = _scrollable
+      _scaleFrameLayout.addSubview(_linearView)
+      _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
+      _linearView.verticalAlignment = VerticalGravity(rawValue: _verticalAlignment)!
+    }
     view.addSubview(_scaleFrameLayout)
-    _linearView.horizontalAlignment = HorizontalGravity(rawValue: _horizontalAlignment)!
-    _linearView.verticalAlignment = VerticalGravity(rawValue: _verticalAlignment)!
     resetConstraints()
   }
 
   private func resetConstraints() {
-    _scaleFrameLayout.removeConstraints(_constraints)
+    view.removeConstraints(_constraints)
     _constraints.removeAll()
     if ShowStatusBar && !TitleVisible {
       _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height))
@@ -330,10 +460,11 @@ let kMinimumToastWait = 10.0
     _constraints.append(_scaleFrameLayout.leadingAnchor.constraint(equalTo: view.leadingAnchor))
     _constraints.append(_scaleFrameLayout.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
     _constraints.append(_scaleFrameLayout.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
-    _constraints.append(_linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor))
-    _constraints.append(_linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
-    _constraints.append(_linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor))
-    _constraints.append(_linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor))
+    let rootChild: UIView = _absoluteContainerView ?? _linearView
+    _constraints.append(rootChild.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor))
+    _constraints.append(rootChild.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
+    _constraints.append(rootChild.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor))
+    _constraints.append(rootChild.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor))
     view.addConstraints(_constraints)
   }
 
@@ -504,12 +635,20 @@ let kMinimumToastWait = 10.0
         // Already using this image
         return
       } else if path != "", let image = AssetManager.shared.imageFromPath(path: path) {
-        _linearView.image = image
         _backgroundImage = path
+        if let container = _absoluteContainerView {
+          container.backgroundColor = UIColor(patternImage: image)
+        } else {
+          _linearView.image = image
+        }
       } else {
         _backgroundImage = ""
-        _linearView.image = nil
-        _linearView.backgroundColor = argbToColor(_backgroundColor)
+        if let container = _absoluteContainerView {
+          container.backgroundColor = argbToColor(_backgroundColor)
+        } else {
+          _linearView.image = nil
+          _linearView.backgroundColor = argbToColor(_backgroundColor)
+        }
       }
     }
   }
@@ -700,6 +839,54 @@ let kMinimumToastWait = 10.0
     set(scrollable) {
       _scrollable = scrollable
       recomputeLayout()
+    }
+  }
+
+  @objc open var ScreenLayout: String {
+    get {
+      return _relativeLayout != nil ? "Absolute" : "Linear"
+    }
+    set(mode) {
+      if mode == "Absolute" {
+        guard _relativeLayout == nil else { return }
+        let rl = RelativeLayout(preferredEmptyWidth: Int(view.bounds.width),
+                                preferredEmptyHeight: Int(view.bounds.height))
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(rl.getLayoutManager())
+        rl.getLayoutManager().translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+          rl.getLayoutManager().topAnchor.constraint(equalTo: container.topAnchor),
+          rl.getLayoutManager().leftAnchor.constraint(equalTo: container.leftAnchor),
+          rl.getLayoutManager().rightAnchor.constraint(equalTo: container.rightAnchor),
+          rl.getLayoutManager().bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+        _relativeLayout = rl
+        _absoluteContainerView = container
+        _linearView.removeAllItems()
+        for child in _components {
+          if let child = child as? ViewComponent {
+            rl.add(child)
+          }
+        }
+        recomputeLayout()
+        onAttach()
+      } else {
+        guard _relativeLayout != nil else { return }
+        _absoluteContainerView?.removeFromSuperview()
+        _relativeLayout = nil
+        _absoluteContainerView = nil
+        _childWidthConstraints.removeAll()
+        _childHeightConstraints.removeAll()
+        _childTrailingConstraints.removeAll()
+        _childBottomConstraints.removeAll()
+        for child in _components {
+          if let child = child as? ViewComponent {
+            _linearView.addItem(LinearViewItem(child.view))
+          }
+        }
+        recomputeLayout()
+      }
     }
   }
 

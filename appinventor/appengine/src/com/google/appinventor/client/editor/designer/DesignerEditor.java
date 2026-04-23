@@ -101,6 +101,10 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
 
   private static final Logger LOG = Logger.getLogger(DesignerEditor.class.getName());
 
+  // Arrow-key nudge step sizes for Absolute layout positioning.
+  private static final int NUDGE_STEP_SMALL = 1;
+  private static final int NUDGE_STEP_LARGE = 8;
+
   protected final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners
       = new ArrayList<>();
 
@@ -697,6 +701,17 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     if (!isActiveEditor()) {
       return;  // Not the active editor
     }
+    // Arrow-key nudge: move selected component(s) 1px (or 8px with Shift) in Absolute mode.
+    if (!event.isAltKeyDown() && !event.isControlKeyDown() && !event.isMetaKeyDown()) {
+      int keyCode = event.getNativeKeyCode();
+      if (keyCode == KeyCodes.KEY_LEFT || keyCode == KeyCodes.KEY_RIGHT
+          || keyCode == KeyCodes.KEY_UP || keyCode == KeyCodes.KEY_DOWN) {
+        if (nudgeSelectedComponents(keyCode, event.isShiftKeyDown())) {
+          event.preventDefault();  // prevent browser scroll
+          return;
+        }
+      }
+    }
     if (event.isAltKeyDown()) {
       List<MockComponent> allComponents = new ArrayList<>(getComponents().values());
       MockComponent selectedComponent = root.getLastSelectedComponent();
@@ -1048,4 +1063,40 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       editor.@com.google.appinventor.client.editor.designer.DesignerEditor::pasteFromJsni(*)(data, editor.shiftDown);
     });
   }-*/;
+
+  private boolean nudgeSelectedComponents(int keyCode, boolean large) {
+    if (root == null) return false;
+    List<MockComponent> selected = root.getSelectedComponents();
+    if (selected.isEmpty()) return false;
+
+    boolean nudgedAny = false;
+    int delta = large ? NUDGE_STEP_LARGE : NUDGE_STEP_SMALL;
+
+    for (MockComponent component : selected) {
+      if (!(component instanceof MockVisibleComponent)) continue;
+      MockVisibleComponent visibleComponent = (MockVisibleComponent) component;
+      if (!visibleComponent.coordPropertiesVisible()) continue;  // not in Absolute mode
+      if (visibleComponent.getContainer() == null) continue;
+
+      int currentLeft = visibleComponent.getRenderedLeft();
+      int currentTop  = visibleComponent.getRenderedTop();
+
+      int newLeft = currentLeft;
+      int newTop  = currentTop;
+      switch (keyCode) {
+        case KeyCodes.KEY_LEFT:  newLeft -= delta; break;
+        case KeyCodes.KEY_RIGHT: newLeft += delta; break;
+        case KeyCodes.KEY_UP:    newTop  -= delta; break;
+        case KeyCodes.KEY_DOWN:  newTop  += delta; break;
+      }
+
+      newLeft = Math.max(0, newLeft);
+      newTop  = Math.max(0, newTop);
+
+      visibleComponent.changeProperty("Left", String.valueOf(newLeft));
+      visibleComponent.changeProperty("Top",  String.valueOf(newTop));
+      nudgedAny = true;
+    }
+    return nudgedAny;
+  }
 }

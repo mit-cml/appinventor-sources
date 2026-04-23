@@ -22,6 +22,8 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   private var _view: AbsoluteView
   private var _backgroundColor = UIColor.white
   private var _imagePath = ""
+  private var _childWidthConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
+  private var _childHeightConstraints: [ObjectIdentifier: NSLayoutConstraint] = [:]
 
   // Layout
   private var viewLayout: RelativeLayout
@@ -134,30 +136,29 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     guard let form = form else {
       return
     }
-    
+    let key = ObjectIdentifier(component)
+    _childWidthConstraints[key]?.isActive = false
+    _childWidthConstraints.removeValue(forKey: key)
     if width <= kLengthPercentTag {
       let parentWidth = form.Width
       let childWidth = parentWidth * Int32(-(width - kLengthPercentTag)) / 100
       component._lastSetWidth = width
-      
-      NSLayoutConstraint.activate([
-        component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
-      ])
+      let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
+      NSLayoutConstraint.activate([c])
+      _childWidthConstraints[key] = c
     } else if width == kLengthPreferred {
-      // Let view size itself
       component._lastSetWidth = width
-      // Remove width constraints
-      component.view.constraints.filter { $0.firstAttribute == .width }.forEach { $0.isActive = false }
+      // No explicit constraint — let Auto Layout use intrinsic content size
     } else if width == kLengthFillParent {
       component._lastSetWidth = width
-      NSLayoutConstraint.activate([
-        component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
-      ])
+      let c = component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
+      NSLayoutConstraint.activate([c])
+      _childWidthConstraints[key] = c
     } else {
       component._lastSetWidth = width
-      NSLayoutConstraint.activate([
-        component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
-      ])
+      let c = component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
+      NSLayoutConstraint.activate([c])
+      _childWidthConstraints[key] = c
     }
   }
   
@@ -165,30 +166,29 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     guard let form = form else {
       return
     }
-    
+    let key = ObjectIdentifier(component)
+    _childHeightConstraints[key]?.isActive = false
+    _childHeightConstraints.removeValue(forKey: key)
     if height <= kLengthPercentTag {
       let parentHeight = form.Height
       let childHeight = parentHeight * Int32(-(height - kLengthPercentTag)) / 100
       component._lastSetHeight = height
-      
-      NSLayoutConstraint.activate([
-        component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
-      ])
+      let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
+      NSLayoutConstraint.activate([c])
+      _childHeightConstraints[key] = c
     } else if height == kLengthPreferred {
-      // Let view size itself
       component._lastSetHeight = height
-      // Remove height constraints
-      component.view.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
+      // No explicit constraint — let Auto Layout use intrinsic content size
     } else if height == kLengthFillParent {
       component._lastSetHeight = height
-      NSLayoutConstraint.activate([
-        component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
-      ])
+      let c = component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
+      NSLayoutConstraint.activate([c])
+      _childHeightConstraints[key] = c
     } else {
       component._lastSetHeight = height
-      NSLayoutConstraint.activate([
-        component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
-      ])
+      let c = component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
+      NSLayoutConstraint.activate([c])
+      _childHeightConstraints[key] = c
     }
   }
   

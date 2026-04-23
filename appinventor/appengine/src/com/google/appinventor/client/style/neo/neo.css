@@ -165,6 +165,12 @@ body {
   pointer-events: none;
 }
 
+/* Snap-toggle button: lock width to the longer "Snap: OFF" label */
+.ode-SnapToggle {
+  min-width: 90px;
+  justify-content: center;
+}
+
 .bleft {
   border-radius: 4px 0 0 4px;
   flex-basis: 0;

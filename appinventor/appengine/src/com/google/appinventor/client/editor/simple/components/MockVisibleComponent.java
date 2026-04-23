@@ -12,12 +12,21 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.SimpleNonVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -110,22 +119,122 @@ public abstract class MockVisibleComponent extends MockComponent {
   }
 
   /**
-   * Creates a text property editor that throws an exception if an invalid
-   * number is entered.
+   * Creates a property editor for Left/Top coordinates that:
+   * - accepts plain integers ("80") or percent strings ("25%")
+   * - displays percent-encoded stored values (e.g. -1025) as "25%" in the panel
+   * - always commits the encoded integer form ("-1025") to the property, never "25%"
    *
-   * @return a text property editor object with an overridden validate method
+   * Storing only encoded integers prevents an infinite recursion that would occur if "25%"
+   * were stored: MockVisibleComponent.onPropertyChange would convert "25%" → "-1025", then
+   * DesignerEditor.onPropertyChange would re-set the property back to "25%", cycling forever.
    */
-  private static TextPropertyEditor makeCoordTextPropertyEditor() {
-    return new TextPropertyEditor() {
+  private static PropertyEditor makeCoordTextPropertyEditor() {
+    return new PropertyEditor() {
+      private final TextBox textBox = new TextBox();
+
+      {
+        textBox.addBlurHandler(new BlurHandler() {
+          @Override public void onBlur(BlurEvent event) { commitValue(); }
+        });
+        textBox.addKeyUpHandler(new KeyUpHandler() {
+          @Override public void onKeyUp(KeyUpEvent event) {
+            if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+              updateValue();
+              textBox.setFocus(false);
+            }
+          }
+        });
+        textBox.addKeyPressHandler(new KeyPressHandler() {
+          @Override public void onKeyPress(KeyPressEvent event) {
+            char c = event.getCharCode();
+            if (c == KeyCodes.KEY_ENTER || c == KeyCodes.KEY_TAB) {
+              event.preventDefault();
+              textBox.setFocus(false);
+            }
+          }
+        });
+        initWidget(textBox);
+        setHeight("2em");
+      }
+
       @Override
-      protected void validate(String text) throws InvalidTextException {
+      protected void updateValue() {
+        if (property == null) return;
+        String raw = property.getValue();
+        if (raw == null || raw.isEmpty()) {
+          textBox.setText("0");
+          return;
+        }
         try {
-          Integer.valueOf(text);
+          int v = Integer.parseInt(raw);
+          if (v <= LENGTH_PERCENT_TAG) {
+            textBox.setText(-(v - LENGTH_PERCENT_TAG) + "%");
+            return;
+          }
         } catch (NumberFormatException e) {
-          throw new InvalidTextException("invalid coordinate provided: " + text);
+          // fall through to default display
+        }
+        textBox.setText(raw);
+      }
+
+      /** Reads the text box, encodes to integer form, and stores to property. */
+      private void commitValue() {
+        if (property == null) return;
+        String text = textBox.getText().trim();
+        String encoded = encodeCoord(text);
+        if (encoded != null) {
+          property.setValue(encoded);
+        } else {
+          updateValue();  // restore on invalid input
+        }
+      }
+
+      /**
+       * Converts a user-typed coord string to its stored integer encoding, or returns null if
+       * the text is not a valid coordinate.
+       */
+      private String encodeCoord(String text) {
+        if (text.isEmpty()) return "0";
+        if (text.endsWith("%")) {
+          try {
+            int pct = Integer.parseInt(text.substring(0, text.length() - 1));
+            if (pct < 0 || pct > 100) return null;
+            return "" + (LENGTH_PERCENT_TAG - pct);
+          } catch (NumberFormatException e) {
+            return null;
+          }
+        } else {
+          try {
+            Integer.parseInt(text);
+            return text;
+          } catch (NumberFormatException e) {
+            return null;
+          }
+        }
+      }
+
+      @Override
+      public void setAriaLabelledBy(String labelId) {
+        if (labelId != null && !labelId.isEmpty()) {
+          textBox.getElement().setAttribute("aria-labelledby", labelId);
         }
       }
     };
+  }
+
+  private void upgradeCoordPropertyEditors() {
+    for (String propName : new String[]{PROPERTY_NAME_LEFT, PROPERTY_NAME_TOP}) {
+      EditableProperty prop = properties.getProperty(propName);
+      if (prop == null) continue;
+      String currentValue = prop.getValue();
+      properties.removeProperty(propName);
+      addProperty(propName, "0", propName, "Appearance",
+          PropertyTypeConstants.PROPERTY_TYPE_INTEGER, new String[0],
+          makeCoordTextPropertyEditor());
+      if (!currentValue.isEmpty() && !currentValue.equals("0")) {
+        changeProperty(propName, currentValue);
+      }
+    }
   }
 
   @Override
@@ -139,6 +248,7 @@ public abstract class MockVisibleComponent extends MockComponent {
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
         null, "Appearance", new TextPropertyEditor());
     addWidthHeightProperties();
+    upgradeCoordPropertyEditors();
   }
 
   protected void addWidthHeightProperties() {
@@ -160,6 +270,10 @@ public abstract class MockVisibleComponent extends MockComponent {
       // the visibility of x and y coordinates strictly depends on whether the component
       // is placed inside an absolute arrangement or not
       return this.coordPropertiesVisible;
+    } else if (propertyName.equals(PROPERTY_NAME_WIDTH)
+        || propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+      // Width/Height are always visible — in Absolute mode users still need to size components
+      return true;
     }
     return super.isPropertyVisible(propertyName);
   }
@@ -198,8 +312,26 @@ public abstract class MockVisibleComponent extends MockComponent {
       setVisibleProperty(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_LEFT)) {
+      if (newValue.endsWith("%")) {
+        try {
+          int pct = Integer.parseInt(newValue.substring(0, newValue.length() - 1));
+          changeProperty(PROPERTY_NAME_LEFT, "" + (LENGTH_PERCENT_TAG - pct));
+          return;
+        } catch (NumberFormatException e) {
+          // malformed — fall through to refreshForm
+        }
+      }
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TOP)) {
+      if (newValue.endsWith("%")) {
+        try {
+          int pct = Integer.parseInt(newValue.substring(0, newValue.length() - 1));
+          changeProperty(PROPERTY_NAME_TOP, "" + (LENGTH_PERCENT_TAG - pct));
+          return;
+        } catch (NumberFormatException e) {
+          // malformed — fall through to refreshForm
+        }
+      }
       refreshForm();
     }
   }
@@ -233,6 +365,12 @@ public abstract class MockVisibleComponent extends MockComponent {
       x.setType(x.getType() | EditableProperty.TYPE_INVISIBLE);
       y.setType(y.getType() | EditableProperty.TYPE_INVISIBLE);
     }
+
+    // Width/Height are always shown regardless of mode — users need sizing in Absolute mode too.
+    EditableProperty w = properties.getProperty(PROPERTY_NAME_WIDTH);
+    EditableProperty h = properties.getProperty(PROPERTY_NAME_HEIGHT);
+    if (w != null) w.setType(w.getType() & ~EditableProperty.TYPE_INVISIBLE);
+    if (h != null) h.setType(h.getType() & ~EditableProperty.TYPE_INVISIBLE);
   }
 
   /**
@@ -242,5 +380,23 @@ public abstract class MockVisibleComponent extends MockComponent {
    */
   public boolean coordPropertiesVisible() {
     return this.coordPropertiesVisible;
+  }
+
+  /**
+   * Returns the current rendered left pixel position of this component within its container,
+   * as laid out by the container's AbsolutePanel. Used for arrow-key nudge in Absolute mode.
+   */
+  public int getRenderedLeft() {
+    MockContainer container = getContainer();
+    return container == null ? 0 : container.getRootPanel().getWidgetLeft(this);
+  }
+
+  /**
+   * Returns the current rendered top pixel position of this component within its container,
+   * as laid out by the container's AbsolutePanel. Used for arrow-key nudge in Absolute mode.
+   */
+  public int getRenderedTop() {
+    MockContainer container = getContainer();
+    return container == null ? 0 : container.getRootPanel().getWidgetTop(this);
   }
 }
