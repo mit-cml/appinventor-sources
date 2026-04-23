@@ -14,7 +14,11 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.components.common.ChartType;
 import com.google.appinventor.components.common.ComponentConstants;
 
+import com.google.common.collect.Sets;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.pepstock.charba.client.resources.EmbeddedResources;
 import org.pepstock.charba.client.resources.ResourcesType;
@@ -33,6 +37,9 @@ import org.pepstock.charba.client.resources.ResourcesType;
  */
 public final class MockChart extends MockContainer {
   public static final String TYPE = "Chart";
+
+  public static final Set<String> ACCEPTABLE_TYPES = Collections.unmodifiableSet(
+      Sets.newHashSet(MockChartData2D.TYPE, MockTrendline.TYPE));
 
   private static final String PROPERTY_NAME_TYPE = "Type";
   private static final String PROPERTY_NAME_DESCRIPTION = "Description";
@@ -383,6 +390,11 @@ public final class MockChart extends MockContainer {
     return (component instanceof MockChartData2D)
         || (component instanceof MockTrendline)
         || (isComponentAcceptableDataFileSource(component));
+  }
+
+  @Override
+  public boolean willAcceptComponentType(String type) {
+    return ACCEPTABLE_TYPES.contains(type);
   }
 
   /**

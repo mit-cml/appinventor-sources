@@ -325,7 +325,9 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
   }
 
   public boolean willAcceptComponentType(String type) {
-    return !MockCanvas.ACCEPTABLE_TYPES.contains(type) && !MockMap.ACCEPTABLE_TYPES.contains(type);
+    return !MockCanvas.ACCEPTABLE_TYPES.contains(type)
+        && !MockMap.ACCEPTABLE_TYPES.contains(type)
+        && !MockChart.ACCEPTABLE_TYPES.contains(type);
   }
 
   /**
