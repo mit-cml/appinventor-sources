@@ -610,7 +610,9 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 233:
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 233;
+  // For YOUNG_ANDROID_VERSION 234:
+  // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 4
+  public static final int YOUNG_ANDROID_VERSION = 234;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1433,7 +1435,10 @@ public class YaVersion {
   //   property is set to False.
   // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
   // - The Language property was added.
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 4:
+  // - The AvailableLanguages property was added.
+  // - The AvailableCountries property was added.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 4;
 
   // For SPREADSHEET_COMPONENT_VERSION 2:
   // - Added the HasHeaders property
