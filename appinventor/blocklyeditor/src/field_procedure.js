@@ -108,15 +108,27 @@ AI.Blockly.AIProcedure.getAllProcedureDeclarationNames = function () {
   return procBlocks.map(function (decl) { return decl.getFieldValue('NAME'); });
 };
 
-AI.Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
+AI.Blockly.AIProcedure.removeProcedureValues = function(name, workspace, opt_excludedRoot) {
   if (workspace  // [lyn, 04/13/14] ensure workspace isn't undefined
       && workspace === Blockly.common.getMainWorkspace()) {
+    var isDescendantOf = function(block, root) {
+      if (!root) {
+        return false;
+      }
+      for (var parent = block.getParent(); parent; parent = parent.getParent()) {
+        if (parent === root) {
+          return true;
+        }
+      }
+      return false;
+    };
+
     var blockArray = workspace.getAllBlocks();
     for(var i=0;i<blockArray.length;i++){
       var block = blockArray[i];
       if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn" ||
                                                   block.type == "procedures_getWithDropdown") {
-        if(block.getFieldValue('PROCNAME') == name) {
+        if(block.getFieldValue('PROCNAME') == name && !isDescendantOf(block, opt_excludedRoot)) {
           block.removeProcedureValue();
         }
       }
