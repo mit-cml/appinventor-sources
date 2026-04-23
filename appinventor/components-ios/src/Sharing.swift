@@ -26,6 +26,11 @@ open class Sharing: NonvisibleComponent {
   @objc open func ShareMessage(_ message: String) {
     showActivityPicker([message])
   }
+  
+  // MARK: Clipboard Methods
+  @objc open func CopyToClipboard(_ text: String) {
+    UIPasteboard.general.string = text
+  }
 
 
   @objc open func ShareFile(_ file: String) {
