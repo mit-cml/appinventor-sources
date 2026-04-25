@@ -77,7 +77,48 @@ var ASSET_DRAG_TYPE = 'application/x-appinventor-asset';
  * @return {boolean} True if the payload contains the type.
  */
 var hasDragType = function(dataTransfer, type) {
-  return dataTransfer && dataTransfer.types && dataTransfer.types.indexOf(type) >= 0;
+  if (!dataTransfer || !dataTransfer.types) {
+    return false;
+  }
+  if (typeof dataTransfer.types.indexOf == 'function') {
+    return dataTransfer.types.indexOf(type) >= 0;
+  }
+  if (typeof dataTransfer.types.contains == 'function') {
+    return dataTransfer.types.contains(type);
+  }
+  for (var i = 0; i < dataTransfer.types.length; i++) {
+    if (dataTransfer.types[i] == type) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Returns the globally tracked asset drag name if one is in progress.
+ * @return {string} The asset name or empty string if unavailable.
+ */
+var getGlobalAssetDragName = function() {
+  if (window.__aiAssetDragName) {
+    return window.__aiAssetDragName;
+  }
+  try {
+    if (window.top && window.top.__aiAssetDragName) {
+      return window.top.__aiAssetDragName;
+    }
+  } catch (err) {
+    // Ignore cross-frame access errors. The data transfer payload is primary.
+  }
+  return '';
+};
+
+/**
+ * Returns true if the event represents an App Inventor asset drag.
+ * @param {DragEvent} e The drag/drop event.
+ * @return {boolean} True when an asset is being dragged.
+ */
+var isAssetDrag = function(e) {
+  return hasDragType(e.dataTransfer, ASSET_DRAG_TYPE) || !!getGlobalAssetDragName();
 };
 
 /**
@@ -92,7 +133,7 @@ var getDraggedAssetName = function(e) {
       return dataName;
     }
   }
-  return window.__aiAssetDragName || '';
+  return getGlobalAssetDragName();
 };
 
 /**
@@ -239,10 +280,11 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
       };
       // BEGIN: Configure drag and drop of blocks images to workspace
       result.addEventListener('dragenter', function(e) {
-        if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE) ||
+        var assetDrag = isAssetDrag(e);
+        if (assetDrag ||
             hasDragType(e.dataTransfer, 'Files') ||
             hasDragType(e.dataTransfer, 'text/uri-list')) {
-          if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE)) {
+          if (assetDrag) {
             e.dataTransfer.dropEffect = 'move';
             // Asset drags use a block preview instead of a full workspace tint.
             self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
@@ -256,10 +298,11 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
         }
       }, true);
       result.addEventListener('dragover', function(e) {
-        if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE) ||
+        var assetDrag = isAssetDrag(e);
+        if (assetDrag ||
             hasDragType(e.dataTransfer, 'Files') ||
             hasDragType(e.dataTransfer, 'text/uri-list')) {
-          if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE)) {
+          if (assetDrag) {
             e.dataTransfer.dropEffect = 'move';
             self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
             maybeUpdateAssetDragPreview(e);
@@ -281,7 +324,7 @@ Blockly.WorkspaceSvg.prototype.createDom = (function(func) {
       }, true);
       result.addEventListener('drop', function(e) {
         self.setGridSettings(self.options.gridOptions['enabled'], self.getGrid().shouldSnap());
-        if (hasDragType(e.dataTransfer, ASSET_DRAG_TYPE)) {
+        if (isAssetDrag(e)) {
           var assetName = getDraggedAssetName(e);
           if (assetName) {
             e.preventDefault();
