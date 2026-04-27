@@ -25,6 +25,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -563,8 +564,8 @@ public final class DataVisualizerPanel extends Dialog {
    * an existing entry (edit mode). Tags are not editable in edit mode because
    * renaming a Redis key requires a separate delete + add flow.
    *
-   * <p>The value editor has two tabs: a type-aware Structured editor that hides
-   * JSON syntax from beginners, and a Raw JSON tab for power users.
+   * <p>The value editor defaults to a type-aware visual editor. An "Edit as text"
+   * link below the editor reveals a raw JSON textarea for advanced users.
    */
   static final class EntryEditDialog extends Dialog {
 
@@ -579,8 +580,7 @@ public final class DataVisualizerPanel extends Dialog {
     private final JsonNodeEditor rootEditor;
     private final TextArea rawTextArea;
     private final Label errorLabel;
-    private final Button structuredTabBtn;
-    private final Button rawTabBtn;
+    private final Anchor modeLink;
     private final SimplePanel tabContentPanel;
     private int currentTab = TAB_STRUCTURED;
 
@@ -619,23 +619,6 @@ public final class DataVisualizerPanel extends Dialog {
       errorLabel.getElement().setAttribute("role", "alert");
       errorLabel.setVisible(false);
 
-      // Tab bar — two buttons styled as tabs.
-      structuredTabBtn = new Button("Structured");
-      rawTabBtn = new Button("Raw JSON");
-      structuredTabBtn.addStyleName("gwt-Button");
-      rawTabBtn.addStyleName("gwt-Button");
-      markTabActive(structuredTabBtn);
-      markTabInactive(rawTabBtn);
-      structuredTabBtn.addClickHandler(e -> switchToTab(TAB_STRUCTURED));
-      rawTabBtn.addClickHandler(e -> switchToTab(TAB_RAW));
-
-      FlowPanel tabBar = new FlowPanel();
-      tabBar.getElement().getStyle().setProperty("display", "flex");
-      tabBar.getElement().getStyle().setProperty("gap", "2px");
-      tabBar.getElement().getStyle().setProperty("marginBottom", "6px");
-      tabBar.add(structuredTabBtn);
-      tabBar.add(rawTabBtn);
-
       tabContentPanel = new SimplePanel();
       tabContentPanel.setWidget(rootEditor);
       tabContentPanel.setWidth("500px");
@@ -645,6 +628,19 @@ public final class DataVisualizerPanel extends Dialog {
       tabContentPanel.getElement().getStyle().setProperty("border", "1px solid #ddd");
       tabContentPanel.getElement().getStyle().setProperty("padding", "4px");
       tabContentPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
+
+      modeLink = new Anchor("Edit as text →");
+      modeLink.getElement().getStyle().setProperty("fontSize", "12px");
+      modeLink.getElement().getStyle().setProperty("cursor", "pointer");
+      modeLink.addClickHandler(e -> {
+        e.preventDefault();
+        switchToTab(currentTab == TAB_STRUCTURED ? TAB_RAW : TAB_STRUCTURED);
+      });
+
+      FlowPanel linkRow = new FlowPanel();
+      linkRow.getElement().getStyle().setProperty("textAlign", "right");
+      linkRow.getElement().getStyle().setProperty("marginTop", "2px");
+      linkRow.add(modeLink);
 
       Button saveButton = new Button(isAddMode ? "Add" : "Save");
       saveButton.addStyleName("gwt-Button");
@@ -668,8 +664,8 @@ public final class DataVisualizerPanel extends Dialog {
       layout.setSpacing(4);
       layout.add(new Label("Tag:"));
       layout.add(isAddMode ? tagBox : tagDisplayLabel);
-      layout.add(tabBar);
       layout.add(tabContentPanel);
+      layout.add(linkRow);
       layout.add(errorLabel);
       layout.add(buttonRow);
 
@@ -682,37 +678,23 @@ public final class DataVisualizerPanel extends Dialog {
       if (tab == currentTab) return;
       showError("");
       if (tab == TAB_RAW) {
-        // Sync structured → raw before switching.
         rawTextArea.setValue(rootEditor.getValue());
         tabContentPanel.setWidget(rawTextArea);
-        markTabActive(rawTabBtn);
-        markTabInactive(structuredTabBtn);
+        modeLink.setText("← Back to visual editor");
       } else {
-        // Sync raw → structured; abort switch on invalid JSON.
         String raw = rawTextArea.getValue().trim();
         if (!raw.isEmpty()) {
           try {
             rootEditor.setValue(JSONParser.parseStrict(raw));
           } catch (JSONException e) {
-            showError("Fix the JSON in the Raw tab before switching: " + e.getMessage());
+            showError("Fix the JSON before switching back: " + e.getMessage());
             return;
           }
         }
         tabContentPanel.setWidget(rootEditor);
-        markTabActive(structuredTabBtn);
-        markTabInactive(rawTabBtn);
+        modeLink.setText("Edit as text →");
       }
       currentTab = tab;
-    }
-
-    private static void markTabActive(Button btn) {
-      btn.getElement().getStyle().setProperty("fontWeight", "bold");
-      btn.getElement().getStyle().setProperty("textDecoration", "underline");
-    }
-
-    private static void markTabInactive(Button btn) {
-      btn.getElement().getStyle().clearProperty("fontWeight");
-      btn.getElement().getStyle().clearProperty("textDecoration");
     }
 
     private void onSave() {
