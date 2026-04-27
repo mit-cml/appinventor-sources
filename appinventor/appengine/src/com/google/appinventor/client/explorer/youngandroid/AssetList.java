@@ -146,10 +146,10 @@ public class AssetList extends Composite implements ProjectChangeListener {
         // Add the name to the tree. We need to enclose it in a span
         // because the CSS style for selection specifies a span.
         String assetName = node.getName();
-        String nodeName = assetName;
-        if (nodeName.length() > 20)
-          nodeName = nodeName.substring(0, 8) + "..." + nodeName.substring(nodeName.length() - 9,
-              nodeName.length());
+        String displayName = assetName;
+        if (displayName.length() > 20)
+          displayName = displayName.substring(0, 8) + "..." +
+              displayName.substring(displayName.length() - 9, displayName.length());
 
         String fileSuffix = node.getProjectId() + "/" + node.getFileId();
         String treeItemText = "<span style='cursor: grab'>";
@@ -160,7 +160,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         } else if (StorageUtil.isVideoFile(fileSuffix )) {
           treeItemText += new Image(images.mediaIconVideo());
         }
-        treeItemText += nodeName + "</span>";
+        treeItemText += displayName + "</span>";
         final HTML treeItemWidget = new HTML(treeItemText);
         final TreeItem treeItem = new TreeItem(treeItemWidget);
         // keep a pointer from the tree item back to the actual node
