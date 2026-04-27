@@ -3654,3 +3654,33 @@ div.dropdiv p {
   color: red;
   font-weight: bolder;
 }
+
+/* Permissions Panel */
+.ode-PermissionsPanel {
+  padding: 15px;
+  min-width: 400px;
+}
+.ode-PermissionsHeader {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #555;
+}
+.ode-PermissionsScrollPanel {
+  max-height: 400px;
+  border: 1px solid #ddd;
+  background: white;
+}
+.ode-PermissionsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ode-PermissionsTableHeader {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  border-bottom: 2px solid #ccc;
+}
+.ode-PermissionsTable td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}

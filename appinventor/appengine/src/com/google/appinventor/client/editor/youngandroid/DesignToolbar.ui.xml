@@ -36,6 +36,10 @@
                     align="center">
       <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="ProjectPermissions" caption="{messages.projectPermissionsText}"
+                    align="center">
+      <ya:ProjectPermissionsAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name="Gallery" caption="{messages.publishToGalleryButton}"
        ui:field="sendToGalleryItem" align="center">
       <actions:SendToGalleryAction />

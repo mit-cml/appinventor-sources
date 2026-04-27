@@ -19,17 +19,21 @@ import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.ComponentPermission;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
+import com.google.appinventor.shared.rpc.project.PermissionMetadata;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.util.Base64Util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -40,6 +44,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -665,6 +670,76 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public long addFile(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
+  }
+
+  @Override
+  public PermissionMetadata getProjectPermissionMetadata(long projectId) {
+    final String userId = userInfoProvider.getUserId();
+    storageIo.assertUserHasProject(userId, projectId);
+
+    List<ComponentPermission> componentPerms = Lists.newArrayList();
+    List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+
+    for (String fileId : sourceFiles) {
+      if (fileId.endsWith(".scm")) {
+        // This is a form (screen) file.
+        String content = storageIo.downloadFile(userId, projectId, fileId, StorageUtil.DEFAULT_CHARSET);
+        // Simple heuristic: extract component types.
+        // In a real implementation, we would parse the JSON properly.
+        extractPermissions(content, componentPerms);
+      }
+    }
+
+    return new PermissionMetadata(projectId, componentPerms);
+  }
+
+  private void extractPermissions(String scmContent, List<ComponentPermission> result) {
+    // Very simple regex-like search for component types in the SCM file
+    // SCM files containing JSON-like structure: "$Type":"ComponentName"
+    String[] lines = scmContent.split("\n");
+    for (String line : lines) {
+      if (line.contains("\"$Type\":\"")) {
+        int start = line.indexOf("\"$Type\":\"") + 9;
+        int end = line.indexOf("\"", start);
+        if (end > start) {
+          String type = line.substring(start, end);
+          addMockPermissionsForType(type, result);
+        }
+      }
+    }
+  }
+
+  private void addMockPermissionsForType(String type, List<ComponentPermission> result) {
+    // Check if we already added this type (to avoid duplicates from multiple screens)
+    for (ComponentPermission cp : result) {
+      if (cp.getComponentName().equals(type)) {
+        return;
+      }
+    }
+
+    Set<String> perms = Sets.newHashSet();
+    int minSdk = 1;
+
+    // Hardcoded mock data for PoC
+    if (type.equals("BluetoothClient") || type.equals("BluetoothServer")) {
+      perms.add("android.permission.BLUETOOTH");
+      perms.add("android.permission.BLUETOOTH_ADMIN");
+      minSdk = 5;
+    } else if (type.equals("LocationSensor")) {
+      perms.add("android.permission.ACCESS_FINE_LOCATION");
+      minSdk = 3;
+    } else if (type.equals("Camera")) {
+      perms.add("android.permission.CAMERA");
+      minSdk = 1;
+    } else if (type.equals("File")) {
+      perms.add("android.permission.READ_EXTERNAL_STORAGE");
+      perms.add("android.permission.WRITE_EXTERNAL_STORAGE");
+      minSdk = 4;
+    }
+
+    if (!perms.isEmpty()) {
+      result.add(new ComponentPermission(type, perms, minSdk));
+    }
   }
 
   @Override
