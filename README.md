@@ -12,7 +12,7 @@ to build MIT App Inventor applications.
 We provide this code for reference and for experienced people who wish
 to operate their own App Inventor instance and/or contribute to the project.
 
-This code is tested and known to work with Java 11.
+This code is tested and known to work with Java 17.
 
 ## Contributors
 
@@ -30,7 +30,7 @@ This is a quick guide to get started with the sources. More detailed instruction
 
 ### Dependencies
 
-You will need a full Java JDK (version 11, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
+You will need a full Java JDK (version 17, OpenJDK preferred; JRE is not enough) and [ant](http://ant.apache.org/) (version 1.10) to compile the sources.
 
 You will also need a copy of the [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/java/download) to run the development servers. When setting up the gcloud cli you might be asked if you'd like to install Python 3.11, as the cli depends on it. In case of any issues with Python versions, check the value of the CLOUDSDK_PYTHON environment variable, which the cli can use to point to the right version.
 
@@ -97,11 +97,15 @@ Before compiling the code, an [auth key](https://docs.google.com/document/pub?id
     $ cd appinventor
     $ ant MakeAuthKey
 
-Once the key is in place, type the following to compile (from the appinventor folder):
+Once the key is in place, type the following to compile the full project (from the appinventor folder):
 
     $ ant
 
 You will see a lot of stuff in the terminal and after a few minutes (it can take from 2 to 10 minutes, depending on your machine specs) you should see a message saying something like *Build Successful*.
+
+If you are only trying to run the local web application, you usually do not need the full `ant` target. In that case, prefer:
+
+    $ ant webapp
 
 ### Notes on compiling for iOS
 
