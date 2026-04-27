@@ -22,7 +22,6 @@ localbroadcastmanager.aar
 print.aar
 slidingpanelayout.aar
 swiperefreshlayout.aar
-vectordrawable.aar
 vectordrawable-animated.aar
 versionedparcelable.aar
 viewpager.aar
