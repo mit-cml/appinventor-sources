@@ -5894,4 +5894,248 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   @DefaultMessage("10 minutes")
   String timeInterval10Minutes();
+
+  @DefaultMessage("↻ Refresh")
+  @Description("Refresh button in the CloudDB data visualizer panel.")
+  String clouddbVizRefreshButton();
+
+  @DefaultMessage("Refresh data from store")
+  @Description("ARIA label for the Refresh button in the CloudDB data visualizer.")
+  String clouddbVizRefreshAriaLabel();
+
+  @DefaultMessage("Close")
+  @Description("Close button in the CloudDB data visualizer panel.")
+  String clouddbVizCloseButton();
+
+  @DefaultMessage("Close visualizer panel")
+  @Description("ARIA label for the Close button in the CloudDB data visualizer.")
+  String clouddbVizCloseAriaLabel();
+
+  @DefaultMessage("Auto: Off")
+  @Description("First option in the auto-refresh interval selector; means auto-refresh is disabled.")
+  String clouddbVizAutoOff();
+
+  @DefaultMessage("Auto-refresh interval")
+  @Description("ARIA label for the auto-refresh interval selector in the CloudDB visualizer.")
+  String clouddbVizAutoRefreshAriaLabel();
+
+  @DefaultMessage("Search tags, values, types…")
+  @Description("Placeholder text in the search/filter box in the CloudDB visualizer.")
+  String clouddbVizSearchPlaceholder();
+
+  @DefaultMessage("Filter entries")
+  @Description("ARIA label for the search/filter box in the CloudDB visualizer.")
+  String clouddbVizFilterAriaLabel();
+
+  @DefaultMessage("CloudDB Data Visualizer")
+  @Description("ARIA label for the CloudDB data visualizer panel (announced to screen readers as dialog title).")
+  String clouddbVizPanelTitle();
+
+  @DefaultMessage("Data: {0} ({1})")
+  @Description("Caption of the CloudDB visualizer panel showing component name and type.")
+  String clouddbVizCaption(String name, String type);
+
+  @DefaultMessage("Loading…")
+  @Description("Status message shown while data is loading in the CloudDB visualizer.")
+  String clouddbVizLoading();
+
+  @DefaultMessage("Error: {0}")
+  @Description("Status message shown when data loading fails in the CloudDB visualizer.")
+  String clouddbVizLoadError(String message);
+
+  @DefaultMessage("No data found for this project ID.")
+  @Description("Status message when no CloudDB entries exist for the current project.")
+  String clouddbVizNoData();
+
+  @DefaultMessage("No entries match “{0}”.")
+  @Description("Status message when the search filter returns no results. {0} is the search query.")
+  String clouddbVizNoMatch(String query);
+
+  @DefaultMessage("{0} of {1} entries")
+  @Description("Count label showing how many entries match the current filter. {0}=shown, {1}=total.")
+  String clouddbVizFilteredCount(int shown, int total);
+
+  @DefaultMessage("{0} entries")
+  @Description("Count label showing the total entry count in the CloudDB visualizer.")
+  String clouddbVizTotalCount(int total);
+
+  @DefaultMessage("Tag")
+  @Description("Column header for the tag column in the CloudDB data visualizer table.")
+  String clouddbVizColTag();
+
+  @DefaultMessage("Value")
+  @Description("Column header for the value column in the CloudDB data visualizer table.")
+  String clouddbVizColValue();
+
+  @DefaultMessage("Type")
+  @Description("Column header for the type column in the CloudDB data visualizer table.")
+  String clouddbVizColType();
+
+  @DefaultMessage("+ Add")
+  @Description("Button in the CloudDB visualizer table header to create a new entry.")
+  String clouddbVizAddButton();
+
+  @DefaultMessage("Add new entry")
+  @Description("ARIA label for the Add button in the CloudDB visualizer table header.")
+  String clouddbVizAddAriaLabel();
+
+  @DefaultMessage("Edit entry: {0}")
+  @Description("ARIA label for the Edit button next to a row in the CloudDB visualizer. {0} is the tag name.")
+  String clouddbVizEditEntryAriaLabel(String tag);
+
+  @DefaultMessage("Delete entry: {0}")
+  @Description("ARIA label for the Delete button next to a row in the CloudDB visualizer. {0} is the tag name.")
+  String clouddbVizDeleteEntryAriaLabel(String tag);
+
+  @DefaultMessage("Delete Entry")
+  @Description("Title of the confirmation dialog when deleting a CloudDB entry.")
+  String clouddbVizDeleteTitle();
+
+  @DefaultMessage("Delete entry “{0}”? This cannot be undone.")
+  @Description("Confirmation message when deleting a CloudDB entry. {0} is the tag name.")
+  String clouddbVizDeleteConfirm(String tag);
+
+  @DefaultMessage("Delete")
+  @Description("Confirm button in the CloudDB delete-entry confirmation dialog.")
+  String clouddbVizDeleteConfirmButton();
+
+  @DefaultMessage("Deleting…")
+  @Description("Status message shown while a CloudDB entry is being deleted.")
+  String clouddbVizDeleting();
+
+  @DefaultMessage("Delete failed: {0}")
+  @Description("Status message when deleting a CloudDB entry fails. {0} is the error detail.")
+  String clouddbVizDeleteFailed(String message);
+
+  @DefaultMessage("(empty)")
+  @Description("Display text shown for an empty CloudDB value in the visualizer table.")
+  String clouddbVizEmptyValue();
+
+  @DefaultMessage("Tag:")
+  @Description("Label for the tag field in the CloudDB entry editor dialog.")
+  String clouddbVizTagLabel();
+
+  @DefaultMessage("Add Entry")
+  @Description("Title of the dialog for adding a new CloudDB entry.")
+  String clouddbVizAddEntryTitle();
+
+  @DefaultMessage("Edit: {0}")
+  @Description("Title of the dialog for editing an existing CloudDB entry. {0} is the tag name.")
+  String clouddbVizEditEntryTitle(String tag);
+
+  @DefaultMessage("Add")
+  @Description("Submit button label in the Add CloudDB Entry dialog.")
+  String clouddbVizAddEntryButton();
+
+  @DefaultMessage("Save")
+  @Description("Submit button label in the Edit CloudDB Entry dialog.")
+  String clouddbVizSaveButton();
+
+  @DefaultMessage("Save new entry")
+  @Description("ARIA label for the submit button in the Add CloudDB Entry dialog.")
+  String clouddbVizSaveNewAriaLabel();
+
+  @DefaultMessage("Save changes to {0}")
+  @Description("ARIA label for the submit button in the Edit CloudDB Entry dialog. {0} is the tag name.")
+  String clouddbVizSaveChangesAriaLabel(String tag);
+
+  @DefaultMessage("Cancel and close dialog")
+  @Description("ARIA label for the Cancel button in the CloudDB entry editor dialog.")
+  String clouddbVizCancelAriaLabel();
+
+  @DefaultMessage("Edit as text →")
+  @Description("Link that switches the CloudDB entry editor from visual mode to raw JSON text mode.")
+  String clouddbVizEditAsText();
+
+  @DefaultMessage("← Back to visual editor")
+  @Description("Link that switches the CloudDB entry editor from raw JSON text mode back to visual mode.")
+  String clouddbVizBackToVisual();
+
+  @DefaultMessage("Add CloudDB Entry")
+  @Description("ARIA dialog label for the Add CloudDB Entry dialog (announced by screen readers).")
+  String clouddbVizAddEntryDialogAriaLabel();
+
+  @DefaultMessage("Edit CloudDB Entry")
+  @Description("ARIA dialog label for the Edit CloudDB Entry dialog (announced by screen readers).")
+  String clouddbVizEditEntryDialogAriaLabel();
+
+  @DefaultMessage("Tag must not be empty.")
+  @Description("Validation error when the user saves a CloudDB entry without specifying a tag.")
+  String clouddbVizTagEmpty();
+
+  @DefaultMessage("Value must not be empty.")
+  @Description("Validation error when the user saves a CloudDB entry without specifying a value.")
+  String clouddbVizValueEmpty();
+
+  @DefaultMessage("Fix the JSON before switching back: {0}")
+  @Description("Error shown when switching from text to visual editor but the JSON is invalid. {0} is the parse error detail.")
+  String clouddbVizJsonFixError(String detail);
+
+  @DefaultMessage("Invalid JSON: {0}")
+  @Description("Error shown when saving raw JSON that cannot be parsed. {0} is the parse error detail.")
+  String clouddbVizJsonInvalid(String detail);
+
+  @DefaultMessage("Save failed: {0}")
+  @Description("Error shown when saving a CloudDB entry fails. {0} is the error detail.")
+  String clouddbVizSaveFailed(String message);
+
+  @DefaultMessage("Text (string)")
+  @Description("Type selector option for a plain text value in the CloudDB entry visual editor.")
+  String clouddbVizTypeText();
+
+  @DefaultMessage("Number")
+  @Description("Type selector option for a numeric value in the CloudDB entry visual editor.")
+  String clouddbVizTypeNumber();
+
+  @DefaultMessage("True / False")
+  @Description("Type selector option for a boolean value in the CloudDB entry visual editor.")
+  String clouddbVizTypeBoolean();
+
+  @DefaultMessage("List  [ ]")
+  @Description("Type selector option for a list value in the CloudDB entry visual editor.")
+  String clouddbVizTypeList();
+
+  @DefaultMessage("Dictionary '{'  '}'")
+  @Description("Type selector option for a dictionary (object) value in the CloudDB entry visual editor.")
+  String clouddbVizTypeDict();
+
+  @DefaultMessage("Value type")
+  @Description("ARIA label for the type selector in the CloudDB entry visual editor.")
+  String clouddbVizValueTypeAriaLabel();
+
+  @DefaultMessage("Text value")
+  @Description("ARIA label for the text input in the CloudDB entry visual editor.")
+  String clouddbVizTextValueAriaLabel();
+
+  @DefaultMessage("Number value")
+  @Description("ARIA label for the number input in the CloudDB entry visual editor.")
+  String clouddbVizNumberValueAriaLabel();
+
+  @DefaultMessage("Remove item {0}")
+  @Description("ARIA label for the remove-item button in a list editor. {0} is the 1-based item index.")
+  String clouddbVizRemoveItem(int index);
+
+  @DefaultMessage("＋ Add item")
+  @Description("Button to add a new item to a list in the CloudDB entry visual editor.")
+  String clouddbVizAddItem();
+
+  @DefaultMessage("key:")
+  @Description("Label preceding the key input in a dictionary row in the CloudDB entry visual editor.")
+  String clouddbVizKeyLabel();
+
+  @DefaultMessage("Remove key {0}")
+  @Description("ARIA label for the remove-key button in a dictionary editor. {0} is the key name.")
+  String clouddbVizRemoveKey(String key);
+
+  @DefaultMessage("value:")
+  @Description("Label preceding the value editor in a dictionary row in the CloudDB entry visual editor.")
+  String clouddbVizValueRowLabel();
+
+  @DefaultMessage("＋ Add key")
+  @Description("Button to add a new key-value pair to a dictionary in the CloudDB entry visual editor.")
+  String clouddbVizAddKey();
+
+  @DefaultMessage("Key name")
+  @Description("ARIA label for the key name input in a dictionary row in the CloudDB entry visual editor.")
+  String clouddbVizKeyNameAriaLabel();
 }

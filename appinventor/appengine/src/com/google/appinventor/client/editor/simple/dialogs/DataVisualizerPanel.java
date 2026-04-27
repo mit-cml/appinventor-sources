@@ -5,6 +5,8 @@
 
 package com.google.appinventor.client.editor.simple.dialogs;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.editor.simple.DataStoreProvider;
 import com.google.appinventor.client.editor.simple.MutableDataStoreProvider;
 import com.google.appinventor.client.utils.MessageDialog;
@@ -138,23 +140,23 @@ public final class DataVisualizerPanel extends Dialog {
     countLabel = new Label();
     countLabel.addStyleName("ode-ProjectFieldLabel");
 
-    Button refreshButton = new Button("\u21BB Refresh");
+    Button refreshButton = new Button(MESSAGES.clouddbVizRefreshButton());
     refreshButton.addStyleName("gwt-Button");
-    refreshButton.getElement().setAttribute("aria-label", "Refresh data from store");
+    refreshButton.getElement().setAttribute("aria-label", MESSAGES.clouddbVizRefreshAriaLabel());
     refreshButton.addClickHandler(event -> refresh());
 
-    Button closeButton = new Button("Close");
+    Button closeButton = new Button(MESSAGES.clouddbVizCloseButton());
     closeButton.addStyleName("gwt-Button");
-    closeButton.getElement().setAttribute("aria-label", "Close visualizer panel");
+    closeButton.getElement().setAttribute("aria-label", MESSAGES.clouddbVizCloseAriaLabel());
     closeButton.addClickHandler(event -> hide());
 
     ListBox intervalBox = new ListBox();
-    intervalBox.addItem("Auto: Off", "0");
+    intervalBox.addItem(MESSAGES.clouddbVizAutoOff(), "0");
     intervalBox.addItem("5s",  "5000");
     intervalBox.addItem("10s", "10000");
     intervalBox.addItem("30s", "30000");
     intervalBox.addItem("60s", "60000");
-    intervalBox.getElement().setAttribute("aria-label", "Auto-refresh interval");
+    intervalBox.getElement().setAttribute("aria-label", MESSAGES.clouddbVizAutoRefreshAriaLabel());
     intervalBox.addChangeHandler(event -> {
       autoRefreshIntervalMs =
           Integer.parseInt(intervalBox.getValue(intervalBox.getSelectedIndex()));
@@ -180,8 +182,8 @@ public final class DataVisualizerPanel extends Dialog {
 
     filterBox = new TextBox();
     filterBox.getElement().setAttribute("type", "search");
-    filterBox.getElement().setAttribute("placeholder", "Search tags, values, types\u2026");
-    filterBox.getElement().setAttribute("aria-label", "Filter entries");
+    filterBox.getElement().setAttribute("placeholder", MESSAGES.clouddbVizSearchPlaceholder());
+    filterBox.getElement().setAttribute("aria-label", MESSAGES.clouddbVizFilterAriaLabel());
     filterBox.getElement().getStyle().setProperty("width", "100%");
     filterBox.getElement().getStyle().setProperty("boxSizing", "border-box");
     filterBox.getElement().getStyle().setProperty("marginBottom", "4px");
@@ -224,13 +226,13 @@ public final class DataVisualizerPanel extends Dialog {
     setWidget(root);
 
     // Wire up ARIA labelledby to the caption element created by Dialog/DialogBox.
-    configureAria("CloudDB Data Visualizer");
+    configureAria(MESSAGES.clouddbVizPanelTitle());
   }
 
   private void setProvider(DataStoreProvider provider) {
     this.currentProvider = provider;
-    setCaption("Data: " + provider.getDataStoreName()
-        + " (" + provider.getDataStoreType() + ")");
+    setCaption(MESSAGES.clouddbVizCaption(
+        provider.getDataStoreName(), provider.getDataStoreType()));
     // Re-wire aria-labelledby after caption text changes (caption element ID is stable).
     configureAria(null);
     // Show the Add button only for mutable providers.
@@ -248,7 +250,7 @@ public final class DataVisualizerPanel extends Dialog {
       return;
     }
     if (allEntries.isEmpty()) {
-      setStatus("Loading\u2026");
+      setStatus(MESSAGES.clouddbVizLoading());
     }
 
     currentProvider.fetchEntries(new AsyncCallback<List<DataEntry>>() {
@@ -260,7 +262,7 @@ public final class DataVisualizerPanel extends Dialog {
 
       @Override
       public void onFailure(Throwable caught) {
-        setStatus("Error: " + caught.getMessage());
+        setStatus(MESSAGES.clouddbVizLoadError(caught.getMessage()));
         countLabel.setText("");
       }
     });
@@ -290,8 +292,8 @@ public final class DataVisualizerPanel extends Dialog {
 
     if (filtered.isEmpty()) {
       setStatus(query.isEmpty()
-          ? "No data found for this project ID."
-          : "No entries match \u201C" + filterText.trim() + "\u201D.");
+          ? MESSAGES.clouddbVizNoData()
+          : MESSAGES.clouddbVizNoMatch(filterText.trim()));
     } else {
       setStatus("");
       for (DataEntry entry : filtered) {
@@ -302,9 +304,9 @@ public final class DataVisualizerPanel extends Dialog {
     int total = allEntries.size();
     int shown = filtered.size();
     if (!query.isEmpty() && shown != total) {
-      countLabel.setText(shown + " of " + total + " entr" + (total == 1 ? "y" : "ies"));
+      countLabel.setText(MESSAGES.clouddbVizFilteredCount(shown, total));
     } else {
-      countLabel.setText(total + " entr" + (total == 1 ? "y" : "ies"));
+      countLabel.setText(MESSAGES.clouddbVizTotalCount(total));
     }
   }
 
@@ -376,13 +378,13 @@ public final class DataVisualizerPanel extends Dialog {
     tagSortDec.setVisible(false);
     FlowPanel tagHeader = new FlowPanel();
     tagHeader.getElement().getStyle().setProperty("cursor", "pointer");
-    tagHeader.add(new InlineLabel("Tag"));
+    tagHeader.add(new InlineLabel(MESSAGES.clouddbVizColTag()));
     tagHeader.add(tagSortAsc);
     tagHeader.add(tagSortDec);
     tagHeader.addDomHandler(event -> onSortClicked(SortField.TAG), ClickEvent.getType());
     dataTable.setWidget(HEADER_ROW, COL_TAG, tagHeader);
 
-    dataTable.setText(HEADER_ROW, COL_VALUE, "Value");
+    dataTable.setText(HEADER_ROW, COL_VALUE, MESSAGES.clouddbVizColValue());
 
     // Type header — sortable
     typeSortAsc = new InlineLabel(" \u25b2");
@@ -391,7 +393,7 @@ public final class DataVisualizerPanel extends Dialog {
     typeSortDec.setVisible(false);
     FlowPanel typeHeader = new FlowPanel();
     typeHeader.getElement().getStyle().setProperty("cursor", "pointer");
-    typeHeader.add(new InlineLabel("Type"));
+    typeHeader.add(new InlineLabel(MESSAGES.clouddbVizColType()));
     typeHeader.add(typeSortAsc);
     typeHeader.add(typeSortDec);
     typeHeader.addDomHandler(event -> onSortClicked(SortField.TYPE), ClickEvent.getType());
@@ -408,9 +410,9 @@ public final class DataVisualizerPanel extends Dialog {
     dataTable.getCellFormatter().getElement(HEADER_ROW, COL_TYPE).setAttribute("aria-sort", "none");
 
     // Actions column header: Add button (hidden until a mutable provider is set).
-    headerAddButton = new Button("+ Add");
+    headerAddButton = new Button(MESSAGES.clouddbVizAddButton());
     headerAddButton.addStyleName("gwt-Button");
-    headerAddButton.getElement().setAttribute("aria-label", "Add new entry");
+    headerAddButton.getElement().setAttribute("aria-label", MESSAGES.clouddbVizAddAriaLabel());
     headerAddButton.addClickHandler(event -> onAddClicked());
     headerAddButton.setVisible(false);
     dataTable.setWidget(HEADER_ROW, COL_ACTIONS, headerAddButton);
@@ -459,13 +461,13 @@ public final class DataVisualizerPanel extends Dialog {
 
       Button editBtn = new Button("\u270F");
       editBtn.addStyleName("gwt-Button");
-      editBtn.getElement().setAttribute("aria-label", "Edit entry: " + tag);
+      editBtn.getElement().setAttribute("aria-label", MESSAGES.clouddbVizEditEntryAriaLabel(tag));
       editBtn.addClickHandler(event ->
           new EntryEditDialog(tag, rawValue, mutableProvider, DataVisualizerPanel.this).show());
 
       Button deleteBtn = new Button("\u2715");
       deleteBtn.addStyleName("gwt-Button");
-      deleteBtn.getElement().setAttribute("aria-label", "Delete entry: " + tag);
+      deleteBtn.getElement().setAttribute("aria-label", MESSAGES.clouddbVizDeleteEntryAriaLabel(tag));
       deleteBtn.addClickHandler(event -> onDeleteClicked(tag, mutableProvider));
 
       FlowPanel actionsPanel = new FlowPanel();
@@ -488,13 +490,13 @@ public final class DataVisualizerPanel extends Dialog {
 
   private void onDeleteClicked(final String tag, final MutableDataStoreProvider provider) {
     MessageDialog.messageDialog(
-        "Delete Entry",
-        "Delete entry \u201C" + tag + "\u201D? This cannot be undone.",
-        "Delete", "Cancel",
+        MESSAGES.clouddbVizDeleteTitle(),
+        MESSAGES.clouddbVizDeleteConfirm(tag),
+        MESSAGES.clouddbVizDeleteConfirmButton(), MESSAGES.cancelButton(),
         new MessageDialog.Actions() {
           @Override
           public void onOK() {
-            setStatus("Deleting\u2026");
+            setStatus(MESSAGES.clouddbVizDeleting());
             provider.deleteEntry(tag, new AsyncCallback<Void>() {
               @Override
               public void onSuccess(Void result) {
@@ -502,7 +504,7 @@ public final class DataVisualizerPanel extends Dialog {
               }
               @Override
               public void onFailure(Throwable caught) {
-                setStatus("Delete failed: " + caught.getMessage());
+                setStatus(MESSAGES.clouddbVizDeleteFailed(caught.getMessage()));
               }
             });
           }
@@ -517,7 +519,7 @@ public final class DataVisualizerPanel extends Dialog {
    * Trims JSON strings to a displayable length without truncating the type hint.
    */
   private static String formatValue(String raw) {
-    if (raw == null || raw.isEmpty()) return "(empty)";
+    if (raw == null || raw.isEmpty()) return MESSAGES.clouddbVizEmptyValue();
     if (raw.length() > 120) {
       return raw.substring(0, 117) + "\u2026";
     }
@@ -617,6 +619,10 @@ public final class DataVisualizerPanel extends Dialog {
       errorLabel = new Label();
       errorLabel.addStyleName("ode-ErrorMessage");
       errorLabel.getElement().setAttribute("role", "alert");
+      errorLabel.getElement().getStyle().setProperty("maxWidth", "510px");
+      errorLabel.getElement().getStyle().setProperty("wordWrap", "break-word");
+      errorLabel.getElement().getStyle().setProperty("overflowWrap", "break-word");
+      errorLabel.getElement().getStyle().setProperty("whiteSpace", "normal");
       errorLabel.setVisible(false);
 
       tabContentPanel = new SimplePanel();
@@ -629,7 +635,7 @@ public final class DataVisualizerPanel extends Dialog {
       tabContentPanel.getElement().getStyle().setProperty("padding", "4px");
       tabContentPanel.getElement().getStyle().setProperty("boxSizing", "border-box");
 
-      modeLink = new Anchor("Edit as text →");
+      modeLink = new Anchor(MESSAGES.clouddbVizEditAsText());
       modeLink.getElement().getStyle().setProperty("fontSize", "12px");
       modeLink.getElement().getStyle().setProperty("cursor", "pointer");
       modeLink.addClickHandler(e -> {
@@ -642,15 +648,18 @@ public final class DataVisualizerPanel extends Dialog {
       linkRow.getElement().getStyle().setProperty("marginTop", "2px");
       linkRow.add(modeLink);
 
-      Button saveButton = new Button(isAddMode ? "Add" : "Save");
+      Button saveButton = new Button(isAddMode
+          ? MESSAGES.clouddbVizAddEntryButton()
+          : MESSAGES.clouddbVizSaveButton());
       saveButton.addStyleName("gwt-Button");
-      saveButton.getElement().setAttribute("aria-label",
-          isAddMode ? "Save new entry" : "Save changes to " + existingTag);
+      saveButton.getElement().setAttribute("aria-label", isAddMode
+          ? MESSAGES.clouddbVizSaveNewAriaLabel()
+          : MESSAGES.clouddbVizSaveChangesAriaLabel(existingTag));
       saveButton.addClickHandler(event -> onSave());
 
-      Button cancelButton = new Button("Cancel");
+      Button cancelButton = new Button(MESSAGES.cancelButton());
       cancelButton.addStyleName("gwt-Button");
-      cancelButton.getElement().setAttribute("aria-label", "Cancel and close dialog");
+      cancelButton.getElement().setAttribute("aria-label", MESSAGES.clouddbVizCancelAriaLabel());
       cancelButton.addClickHandler(event -> hide());
 
       FlowPanel buttonRow = new FlowPanel();
@@ -662,7 +671,7 @@ public final class DataVisualizerPanel extends Dialog {
 
       VerticalPanel layout = new VerticalPanel();
       layout.setSpacing(4);
-      layout.add(new Label("Tag:"));
+      layout.add(new Label(MESSAGES.clouddbVizTagLabel()));
       layout.add(isAddMode ? tagBox : tagDisplayLabel);
       layout.add(tabContentPanel);
       layout.add(linkRow);
@@ -670,8 +679,12 @@ public final class DataVisualizerPanel extends Dialog {
       layout.add(buttonRow);
 
       setWidget(layout);
-      configureAria(isAddMode ? "Add CloudDB Entry" : "Edit CloudDB Entry");
-      setCaption(isAddMode ? "Add Entry" : "Edit: " + existingTag);
+      configureAria(isAddMode
+          ? MESSAGES.clouddbVizAddEntryDialogAriaLabel()
+          : MESSAGES.clouddbVizEditEntryDialogAriaLabel());
+      setCaption(isAddMode
+          ? MESSAGES.clouddbVizAddEntryTitle()
+          : MESSAGES.clouddbVizEditEntryTitle(existingTag));
     }
 
     private void switchToTab(int tab) {
@@ -680,19 +693,19 @@ public final class DataVisualizerPanel extends Dialog {
       if (tab == TAB_RAW) {
         rawTextArea.setValue(rootEditor.getValue());
         tabContentPanel.setWidget(rawTextArea);
-        modeLink.setText("← Back to visual editor");
+        modeLink.setText(MESSAGES.clouddbVizBackToVisual());
       } else {
         String raw = rawTextArea.getValue().trim();
         if (!raw.isEmpty()) {
           try {
             rootEditor.setValue(JSONParser.parseStrict(raw));
           } catch (JSONException e) {
-            showError("Fix the JSON before switching back: " + e.getMessage());
+            showError(MESSAGES.clouddbVizJsonFixError(e.getMessage()));
             return;
           }
         }
         tabContentPanel.setWidget(rootEditor);
-        modeLink.setText("Edit as text →");
+        modeLink.setText(MESSAGES.clouddbVizEditAsText());
       }
       currentTab = tab;
     }
@@ -700,7 +713,7 @@ public final class DataVisualizerPanel extends Dialog {
     private void onSave() {
       String tag = isAddMode ? tagBox.getValue().trim() : tagDisplayLabel.getText().trim();
       if (tag.isEmpty()) {
-        showError("Tag must not be empty.");
+        showError(MESSAGES.clouddbVizTagEmpty());
         return;
       }
 
@@ -708,14 +721,13 @@ public final class DataVisualizerPanel extends Dialog {
       if (currentTab == TAB_RAW) {
         value = rawTextArea.getValue().trim();
         if (value.isEmpty()) {
-          showError("Value must not be empty.");
+          showError(MESSAGES.clouddbVizValueEmpty());
           return;
         }
         try {
           JSONParser.parseStrict(value);
         } catch (JSONException e) {
-          showError("Invalid JSON: " + e.getMessage()
-              + " \u2014 Use double quotes, e.g. {\"k\":\"v\"} not {'k':'v'}");
+          showError(MESSAGES.clouddbVizJsonInvalid(e.getMessage()));
           return;
         }
       } else {
@@ -731,7 +743,7 @@ public final class DataVisualizerPanel extends Dialog {
         }
         @Override
         public void onFailure(Throwable caught) {
-          showError("Save failed: " + caught.getMessage());
+          showError(MESSAGES.clouddbVizSaveFailed(caught.getMessage()));
         }
       });
     }
@@ -785,12 +797,12 @@ public final class DataVisualizerPanel extends Dialog {
 
     JsonNodeEditor(JSONValue initialValue) {
       typeSelector = new ListBox();
-      typeSelector.addItem("Text (string)",   TYPE_TEXT);
-      typeSelector.addItem("Number",          TYPE_NUMBER);
-      typeSelector.addItem("True / False",    TYPE_BOOLEAN);
-      typeSelector.addItem("List  [ ]",       TYPE_LIST);
-      typeSelector.addItem("Dictionary { }",  TYPE_DICT);
-      typeSelector.getElement().setAttribute("aria-label", "Value type");
+      typeSelector.addItem(MESSAGES.clouddbVizTypeText(),    TYPE_TEXT);
+      typeSelector.addItem(MESSAGES.clouddbVizTypeNumber(),  TYPE_NUMBER);
+      typeSelector.addItem(MESSAGES.clouddbVizTypeBoolean(), TYPE_BOOLEAN);
+      typeSelector.addItem(MESSAGES.clouddbVizTypeList(),    TYPE_LIST);
+      typeSelector.addItem(MESSAGES.clouddbVizTypeDict(),    TYPE_DICT);
+      typeSelector.getElement().setAttribute("aria-label", MESSAGES.clouddbVizValueTypeAriaLabel());
 
       bodyPanel = new SimplePanel();
       bodyPanel.getElement().getStyle().setProperty("marginTop", "4px");
@@ -931,7 +943,7 @@ public final class DataVisualizerPanel extends Dialog {
       if (textBox == null) {
         textBox = new TextBox();
         textBox.setWidth("200px");
-        textBox.getElement().setAttribute("aria-label", "Text value");
+        textBox.getElement().setAttribute("aria-label", MESSAGES.clouddbVizTextValueAriaLabel());
       }
     }
 
@@ -939,7 +951,7 @@ public final class DataVisualizerPanel extends Dialog {
       if (numberBox == null) {
         numberBox = new TextBox();
         numberBox.setWidth("120px");
-        numberBox.getElement().setAttribute("aria-label", "Number value");
+        numberBox.getElement().setAttribute("aria-label", MESSAGES.clouddbVizNumberValueAriaLabel());
       }
     }
 
@@ -974,7 +986,7 @@ public final class DataVisualizerPanel extends Dialog {
 
         Button del = new Button("\u00D7");
         del.addStyleName("gwt-Button");
-        del.getElement().setAttribute("aria-label", "Remove item " + (i + 1));
+        del.getElement().setAttribute("aria-label", MESSAGES.clouddbVizRemoveItem(i + 1));
         del.getElement().getStyle().setProperty("padding", "0 6px");
         del.addClickHandler(e -> { listItems.remove(idx); renderBody(); });
 
@@ -984,7 +996,7 @@ public final class DataVisualizerPanel extends Dialog {
         vp.add(row);
       }
 
-      Button addBtn = new Button("\uFF0B Add item");
+      Button addBtn = new Button(MESSAGES.clouddbVizAddItem());
       addBtn.addStyleName("gwt-Button");
       addBtn.addClickHandler(e -> { listItems.add(new JsonNodeEditor()); renderBody(); });
       vp.add(addBtn);
@@ -1004,13 +1016,13 @@ public final class DataVisualizerPanel extends Dialog {
         headerRow.getElement().getStyle().setProperty("gap", "4px");
         headerRow.getElement().getStyle().setProperty("marginBottom", "2px");
 
-        Label keyLbl = new Label("key:");
+        Label keyLbl = new Label(MESSAGES.clouddbVizKeyLabel());
         keyLbl.getElement().getStyle().setProperty("flexShrink", "0");
 
         Button del = new Button("\u00D7");
         del.addStyleName("gwt-Button");
         del.getElement().setAttribute("aria-label",
-            "Remove key " + dictKeyBoxes.get(i).getValue());
+            MESSAGES.clouddbVizRemoveKey(dictKeyBoxes.get(i).getValue()));
         del.getElement().getStyle().setProperty("padding", "0 6px");
         del.addClickHandler(e -> {
           dictKeyBoxes.remove(idx);
@@ -1030,7 +1042,7 @@ public final class DataVisualizerPanel extends Dialog {
         valueRow.getElement().getStyle().setProperty("paddingLeft", "24px");
         valueRow.getElement().getStyle().setProperty("marginBottom", "6px");
 
-        Label valLbl = new Label("value:");
+        Label valLbl = new Label(MESSAGES.clouddbVizValueRowLabel());
         valLbl.getElement().getStyle().setProperty("paddingTop", "4px");
         valLbl.getElement().getStyle().setProperty("flexShrink", "0");
 
@@ -1041,7 +1053,7 @@ public final class DataVisualizerPanel extends Dialog {
         vp.add(valueRow);
       }
 
-      Button addBtn = new Button("\uFF0B Add key");
+      Button addBtn = new Button(MESSAGES.clouddbVizAddKey());
       addBtn.addStyleName("gwt-Button");
       addBtn.addClickHandler(e -> {
         dictKeyBoxes.add(newKeyBox(""));
@@ -1056,7 +1068,7 @@ public final class DataVisualizerPanel extends Dialog {
       TextBox kb = new TextBox();
       kb.setValue(value);
       kb.setWidth("110px");
-      kb.getElement().setAttribute("aria-label", "Key name");
+      kb.getElement().setAttribute("aria-label", MESSAGES.clouddbVizKeyNameAriaLabel());
       return kb;
     }
 
