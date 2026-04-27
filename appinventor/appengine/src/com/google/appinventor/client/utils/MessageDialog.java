@@ -57,6 +57,11 @@ public class MessageDialog {
    */
   public static void messageDialog(String title, String message, String OK, String Cancel,
     final Actions actions) {
+    messageDialog(title, message, OK, Cancel, actions, false);
+  }
+
+  public static void messageDialog(String title, String message, String OK, String Cancel,
+    final Actions actions, boolean dangerOk) {
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(title);
@@ -82,7 +87,11 @@ public class MessageDialog {
     messageHtml.setStyleName("DialogBox-message");
     messageHtml.getElement().setId(messageId);
     FlowPanel holder = new FlowPanel();
+    holder.addStyleName("buttonRow");
     Button okButton = new Button(OK);
+    if (dangerOk) {
+      okButton.addStyleName("destructive-action");
+    }
     okButton.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -90,7 +99,6 @@ public class MessageDialog {
             actions.onOK();
         }
       });
-    holder.add(okButton);
     if (Cancel != null) {
       Button cancelButton = new Button(Cancel);
       cancelButton.addClickListener(new ClickListener() {
@@ -101,7 +109,15 @@ public class MessageDialog {
               actions.onCancel();
           }
         });
-      holder.add(cancelButton);
+      if (dangerOk) {
+        holder.add(cancelButton);
+        holder.add(okButton);
+      } else {
+        holder.add(okButton);
+        holder.add(cancelButton);
+      }
+    } else {
+      holder.add(okButton);
     }
     DialogBoxContents.add(messageHtml);
     DialogBoxContents.add(holder);

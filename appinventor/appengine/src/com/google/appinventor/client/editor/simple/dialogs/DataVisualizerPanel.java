@@ -512,7 +512,7 @@ public final class DataVisualizerPanel extends Dialog {
           public void onCancel() {
             // nothing
           }
-        });
+        }, true);
   }
 
   /**
