@@ -35,9 +35,9 @@ import DGCharts
   @objc func DoesEntryExist(_ x: String, _ y: String) -> Bool{
     /* Original:
      DispatchQueue.main.sync {
-      var pair: YailList<AnyObject> = [x, y]
-      return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
-    }*/
+     var pair: YailList<AnyObject> = [x, y]
+     return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
+     }*/
 
     let group = DispatchGroup()
     group.enter()
@@ -56,6 +56,59 @@ import DGCharts
   @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int32) {
     if chartDataModel?.highlightPoints(dataPoints as [AnyObject], color) == true {
       onDataChange()
+    }
+  }
+
+  // MARK: - DataFile Integration
+
+  @objc open func ImportFromDataFile(_ dataFile: DataFile, _ xValueColumn: String, _ yValueColumn: String) {
+    NSLog("ChartData2D: Attempting to import X: '\(xValueColumn)', Y: '\(yValueColumn)'")
+
+    let xColumn = dataFile.getColumn(xValueColumn)
+    let yColumn = dataFile.getColumn(yValueColumn)
+
+    var xSwiftArray: [AnyObject] = []
+    for item in xColumn { xSwiftArray.append(item as AnyObject) }
+
+    var ySwiftArray: [AnyObject] = []
+    for item in yColumn { ySwiftArray.append(item as AnyObject) }
+
+    let count = min(xSwiftArray.count, ySwiftArray.count)
+    if count <= 1 {
+      NSLog("ChartData2D ERROR: Not enough data rows to plot.")
+      return
+    }
+
+    func attemptPlotting(retriesLeft: Int) {
+      if self.chartDataModel == nil {
+        if retriesLeft > 0 {
+          NSLog("ChartData2D: Chart canvas not ready yet. Waiting 0.1s... (\(retriesLeft) tries left)")
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            attemptPlotting(retriesLeft: retriesLeft - 1)
+          }
+          return
+        } else {
+          NSLog("ChartData2D FATAL ERROR: Chart failed to initialize after 1 second.")
+          return
+        }
+      }
+
+      for i in 1..<count {
+        let cleanX = "\(xSwiftArray[i])".trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanY = "\(ySwiftArray[i])".trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if cleanX.isEmpty && cleanY.isEmpty { continue }
+
+        let pair: YailList<AnyObject> = [cleanX as AnyObject, cleanY as AnyObject]
+        self.chartDataModel?.addEntryFromTuple(pair)
+      }
+
+      NSLog("ChartData2D: Import complete. Triggering chart redraw.")
+      self.onDataChange()
+    }
+
+    DispatchQueue.main.async {
+      attemptPlotting(retriesLeft: 10)
     }
   }
 }
