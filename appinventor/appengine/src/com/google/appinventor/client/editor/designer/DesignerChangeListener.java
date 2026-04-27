@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.designer;
 
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockDesignerRoot;
+import com.google.gwt.dom.client.NativeEvent;
 
 /**
  * Listener interface for receiving form change events.
@@ -64,4 +65,16 @@ public interface DesignerChangeListener {
    * @param selected  true if the component is selected, false if it is unselected
    */
   void onComponentSelectionChange(MockComponent component, boolean selected);
+
+  /**
+   * Invoked when the user clicks a tree item in the source structure explorer.
+   * Unlike {@link #onComponentSelectionChange}, this fires on every click,
+   * regardless of whether the selection state actually changes. The default
+   * implementation is a no-op for backward compatibility.
+   *
+   * @param component  the component whose tree item was clicked
+   * @param source  the native click event
+   */
+  default void onSourceStructureItemSelected(MockComponent component, NativeEvent source) {
+  }
 }
