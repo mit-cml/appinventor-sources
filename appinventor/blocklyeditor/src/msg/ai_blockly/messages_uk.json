@@ -90,6 +90,7 @@
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT": "для компонента",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL": "викликати ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "виклик ",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "Додати",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "коли будь-який ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO": "виконати",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN": "коли ",
