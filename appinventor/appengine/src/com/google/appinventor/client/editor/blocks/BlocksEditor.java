@@ -38,6 +38,7 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.HashMap;
@@ -430,6 +431,15 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     // not relevant for blocks editor - this happens on clicks in the mock form areas
+  }
+
+  @Override
+  public void onSourceStructureItemSelected(MockComponent component, NativeEvent source) {
+    // Call showComponentBlocks directly so its selectedDrawer toggle still
+    // closes the drawer on a second click of the same component.
+    if (loadComplete && Ode.getInstance().getCurrentFileEditor() == this) {
+      showComponentBlocks(component.getName());
+    }
   }
 
   // BlocksEditor implementation

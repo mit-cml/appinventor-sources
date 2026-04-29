@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.editor.blocks.BlocksEditor;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -88,7 +87,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -102,7 +100,6 @@ import java.util.stream.Collectors;
  */
 public abstract class MockComponent extends Composite implements PropertyChangeListener,
     SourcesMouseEvents, DragSource, HasAllTouchHandlers, DesignPreviewChangeListener {
-  private static final Logger LOG = Logger.getLogger(MockComponent.class.getName());
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
@@ -360,15 +357,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     sourceStructureExplorerItem = new SourceStructureExplorerItem() {
       @Override
       public void onSelected(NativeEvent source) {
-        // are we showing the blocks editor? if so, toggle the component drawer
-        if (Ode.getInstance().getCurrentFileEditor() instanceof BlocksEditor) {
-          BlocksEditor<?, ?> blocksEditor =
-              (BlocksEditor<?, ?>) Ode.getInstance().getCurrentFileEditor();
-          LOG.info("Showing item " + getName());
-          blocksEditor.showComponentBlocks(getName());
-        } else {
-          select(source);
-        }
+        // Fire a tree-click event; each editor decides how to react (issue #3882).
+        getRoot().fireSourceStructureItemSelected(MockComponent.this, source);
       }
 
       @Override
