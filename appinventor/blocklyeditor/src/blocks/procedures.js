@@ -376,7 +376,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     }
 
     // Call parent's destructor.
-    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
+    Object.getPrototypeOf(this).dispose.apply(this, arguments);
 
     var procDb = workspace.getProcedureDatabase();
     if (editable && procDb && workspace == Blockly.common.getMainWorkspace()) {
@@ -786,7 +786,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
     }
   },
   dispose: function() {
-    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
+    Object.getPrototypeOf(this).dispose.apply(this, arguments);
   },
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
