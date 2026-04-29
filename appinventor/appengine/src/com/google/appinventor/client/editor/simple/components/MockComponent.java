@@ -605,12 +605,22 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final void addProperty(String name, String defaultValue, String caption, String category,
                                 String editorType, String[] editorArgs, PropertyEditor editor) {
+    addProperty(name, defaultValue, caption, category, editorType, editorArgs, editor, "");
+  }
+
+  public final void addProperty(String name, String defaultValue, String caption, String category,
+                                String editorType, String[] editorArgs, PropertyEditor editor,
+                                String fallbackDescription) {
 
     String propertyDesc = ComponentTranslationTable.getPropertyDescription(name
       + "PropertyDescriptions");
     if (propertyDesc.equals(name + "PropertyDescriptions")) {
-      propertyDesc = ComponentTranslationTable.getPropertyDescription((type.equals("Form")
-          ? "Screen" : type) + "." + propertyDesc);
+      String compositeKey = (type.equals("Form") ? "Screen" : type) + "." + name + "PropertyDescriptions";
+      propertyDesc = ComponentTranslationTable.getPropertyDescription(compositeKey);
+      if (propertyDesc.equals(compositeKey)) {
+        propertyDesc = (fallbackDescription != null && !fallbackDescription.isEmpty())
+            ? fallbackDescription : "";
+      }
     }
 
     int propertyType = EditableProperty.TYPE_NORMAL;
@@ -624,7 +634,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       propertyType |= EditableProperty.TYPE_DOYAIL;
     }
     properties.addProperty(name, defaultValue, ComponentTranslationTable.getPropertyName(caption),
-        ComponentTranslationTable.getCategoryName(category),  propertyDesc, editor, propertyType, editorType, editorArgs);
+        ComponentTranslationTable.getCategoryName(category), propertyDesc, editor, propertyType, editorType, editorArgs);
   }
 
   /**
