@@ -47,6 +47,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import jsinterop.annotations.JsMethod;
+
 /**
  * BlocksEditor is an ancestor of all blocks editors in App Inventor.
  *
@@ -217,6 +219,7 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     return loadComplete;
   }
 
+  @JsMethod
   public WorkspaceSvg getWorkspace() {
     return blocksArea.getWorkspace();
   }
