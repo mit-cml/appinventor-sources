@@ -44,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.webrtc.CandidatePairChangeEvent;
 import org.webrtc.DataChannel.Buffer;
 import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
@@ -53,11 +54,13 @@ import org.webrtc.PeerConnection.ContinualGatheringPolicy;
 import org.webrtc.PeerConnection.IceConnectionState;
 import org.webrtc.PeerConnection.IceGatheringState;
 import org.webrtc.PeerConnection.Observer;
+import org.webrtc.PeerConnection.PeerConnectionState;
 import org.webrtc.PeerConnection.RTCConfiguration;
 import org.webrtc.PeerConnection.SignalingState;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.RtpReceiver;
+import org.webrtc.RtpTransceiver;
 import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
 
@@ -208,6 +211,20 @@ public class WebRTCNativeMgr {
           Log.d(LOG_TAG, "onSignalingChange: signalingState = " + signalingState);
         }
       }
+
+      public void onStandardizedIceConnectionChange(PeerConnection.IceConnectionState newState) {
+      }
+
+      public void onConnectionChange(PeerConnectionState newState) {
+        if (DEBUG) {
+          Log.d(LOG_TAG, "onConnectionChange: newState = " + newState);
+        }
+      }
+
+      public void onSelectedCandidatePairChanged(CandidatePairChangeEvent event) {}
+
+      public void onTrack(RtpTransceiver transceiver){};
+
     };
 
   /* Callback to process incoming data from the browser */
@@ -272,12 +289,20 @@ public class WebRTCNativeMgr {
 
     this.form = form;
     rCode = code;
+
     /* Initialize WebRTC globally */
-    PeerConnectionFactory.initializeAndroidGlobals(context, false);
-    /* Setup factory options */
+    PeerConnectionFactory.InitializationOptions initializationOptions =
+      PeerConnectionFactory.InitializationOptions.builder(context)
+        .createInitializationOptions();
+    PeerConnectionFactory.initialize(initializationOptions);
+
     PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-    /* Create the factory */
-    PeerConnectionFactory factory = new PeerConnectionFactory(options);
+    PeerConnectionFactory factory = PeerConnectionFactory.builder()
+      .setOptions(options)
+      // .setVideoEncoderFactory(new DefaultVideoEncoderFactory(eglBaseContext, true, true))
+      // .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglBaseContext))
+      .createPeerConnectionFactory();
+
     /* Create the peer connection using the iceServers we received in the constructor */
     RTCConfiguration rtcConfig = new RTCConfiguration(iceServers);
     rtcConfig.continualGatheringPolicy = ContinualGatheringPolicy.GATHER_CONTINUALLY;
