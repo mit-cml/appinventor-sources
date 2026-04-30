@@ -2705,11 +2705,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    @SimpleFunction(description = "Create a new ModelNode with default properties at the specified (x,y,z) position.")
+    @SimpleFunction(description = "Create a new ModelNode with default properties at the specified (x,y,z) position. ModelObjectString should refer to either the GLB (android) or USDZ (ios) pair of assets. System will determine platform specificity\"")
     public ModelNode CreateModelNode(float x, float y, float z, String modelObjectString) {
         if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
         try {
             ModelNode modelNode = new ModelNode(this);
+            modelObjectString = replaceExtension(modelObjectString, "glb");
             modelNode.Model(modelObjectString);
 
             float[] position = {x, y, z};
@@ -2727,10 +2728,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
     }
 
-    @SimpleFunction(description = "Create a new ModelNode with geo coords, if available")
+    @SimpleFunction(description = "Create a new ModelNode with geo coords, if available. ModelObjectString should refer to either the GLB (android) or USDZ (ios) pair of assets. System will determine platform specificity\"")
     public ModelNode CreateModelNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint, String modelObjectString) {
         if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
         ModelNode modelNode = new ModelNode(this);
+        modelObjectString = replaceExtension(modelObjectString, "glb");
         modelNode.Model(modelObjectString);
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
         modelNode.Anchor(geoAnchor);
@@ -2739,11 +2741,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return modelNode;
     }
 
-    @SimpleFunction(description = "Create a new ModelNode with default properties at the plane position.")
+    private String replaceExtension(String filename, String newExtension) {
+        if (filename.endsWith("." + newExtension)) return filename;
+        Log.i("ARView3D", "wrong model for android, converting " + ErrorMessages.WRONG_MODEL_FORMAT);
+        //let user know incorrect, but proceed
+        int dotIndex = filename.lastIndexOf('.');
+        if (dotIndex == -1) return filename + "." + newExtension;
+        return filename.substring(0, dotIndex) + "." + newExtension;
+    }
+
+    @SimpleFunction(description = "Create a new ModelNode with default properties at the plane position. ModelObjectString should refer to either the GLB (android) or USDZ (ios) pair of assets. System will determine platform specificity")
     public ModelNode CreateModelNodeAtPlane(ARDetectedPlane targetPlane, Object point, String modelObjectString) {
         Log.i("creating Capsule node", "with detected plane and pose");
         Pose pose = (Pose) point;
         ModelNode mNode = new ModelNode(this);
+
+        modelObjectString = replaceExtension(modelObjectString, "glb");
         mNode.Model(modelObjectString);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();

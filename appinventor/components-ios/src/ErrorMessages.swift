@@ -139,6 +139,7 @@ import Foundation
   case ERROR_WEBVIEWNODE_LOAD_FAILED = 3715
   case ERROR_IMAGEMARKER_MISSING_NAME = 3716
   case ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT = 3718
+  case ERROR_MODELNODE_WRONG_FORMAT  = 3719
 
   // Navigation Errors
   case ERROR_INVALID_API_KEY = 4001
@@ -401,7 +402,7 @@ import Foundation
     case .ERROR_ALREADY_FOLLOWING_IMAGEMARKER:
       return "The node could not follow the ImageMarker because it is already following an ImageMarker."
     case .ERROR_MODELNODE_COULD_NOT_LOAD:
-      return "The supplied model could not be loaded."
+      return "The supplied model could not be loaded. Should be GLB (android) or USDZ, OBJ (ios) format"
     case .ERROR_MODELNODE_NOT_LOADED:
       return "This function can only be called when a ModelNode has successfully loaded."
     case .ERROR_MODELNODE_CANNOT_COLOR_NODE:
@@ -422,7 +423,8 @@ import Foundation
       return "An image marker does not exist with name %s."
     case .ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT:
       return "ARKit could not detect a surface at the tapped location. Try tapping a different location or moving closer to the point."
-
+    case .ERROR_MODELNODE_WRONG_FORMAT:
+      return "ARKit can only load USDZ and OBJ at this time."
     // Navigation Errors
     case .ERROR_INVALID_API_KEY:
       return "No api key provided"

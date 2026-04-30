@@ -2134,6 +2134,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     @objc open func CreateModelNode(_ x: Float, _ y: Float, _ z: Float, _ modelObjString: String) -> ModelNode {
       let node:ModelNode = ModelNode(self)
       node.Name = "ModelNode"
+      let correctedModelObjString = replaceExtension(modelObjString, with: "usdz")
       node.Model = modelObjString
       node.Initialize()
 
@@ -2146,12 +2147,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
+    func replaceExtension(_ filename: String, with newExtension: String) -> String {
+        guard !filename.hasSuffix(".\(newExtension)") else { return filename }
+        print("wrong format for ios, converting " , ErrorMessage.ERROR_MODELNODE_WRONG_FORMAT.code)
+        let url = URL(fileURLWithPath: filename)
+        return url.deletingPathExtension().appendingPathExtension(newExtension).lastPathComponent
+    }
+    
     @objc open func CreateModelNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary, _ modelObjString: String) -> ModelNode? {
       
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
-      node.Model = modelObjString
+      
 
+      let correctedModelObjString = replaceExtension(modelObjString, with: "usdz")
+      node.Model = correctedModelObjString
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
       setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
@@ -2162,6 +2172,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
+      let correctedModelObjString = replaceExtension(modelObjString, with: "usdz")
       node.Model = modelObjString
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       
