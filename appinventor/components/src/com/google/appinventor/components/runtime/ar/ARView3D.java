@@ -31,6 +31,8 @@ import android.widget.FrameLayout;
 import com.google.appinventor.components.runtime.util.*;
 import com.google.ar.core.*;
 
+import com.google.ar.core.Camera;
+import com.google.ar.core.Point;
 import org.json.JSONException;
 
 
@@ -1088,7 +1090,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                     Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
-                    ClickOnDetectedPlaneAt(a.getPose(), arplane.DetectedPlane().getExtentX(), arplane.DetectedPlane().getExtentZ(), true);
+                    ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
                     a.detach(); // detach the temporary anchor — node creates its own
                     break; // ← only create one node per tap
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
@@ -2082,11 +2084,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         "the real-world coordinate of the point in meters. Also provided are the width and height of the detected plane.  isANodeAtPoint is true if a node is already " +
         "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
         "None, and the TrackingType is WorldTracking.")
-    public void LongClickOnDetectedPlaneAt( Object point, float planeWidth, float planeHeight, boolean isANodeAtPoint) {
+    public void LongClickOnDetectedPlaneAt( ARDetectedPlane detectedPlane, Object point, boolean isANodeAtPoint) {
         container.$form().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", point, planeWidth, planeHeight, isANodeAtPoint);
+                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", detectedPlane, point, isANodeAtPoint);
                 Log.i("dispatching Click On Detected Plane", "");
             }
         });
@@ -2097,11 +2099,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         "the real-world coordinate of the point in meters. Also provided are the width and height of the detected plane. isANodeAtPoint is true if a node is already " +
         "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
         "None, and the TrackingType is WorldTracking.")
-    public void ClickOnDetectedPlaneAt(Object point, float planeWidth, float planeHeight, boolean isANodeAtPoint) {
+    public void ClickOnDetectedPlaneAt( ARDetectedPlane detectedPlane, Object point, boolean isANodeAtPoint) {
         container.$form().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", point, planeWidth, planeHeight, isANodeAtPoint);
+                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", detectedPlane, point, isANodeAtPoint);
                 Log.i("dispatching Click On Detected Plane", "");
             }
         });

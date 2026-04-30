@@ -550,8 +550,8 @@ public final class AR3DFactory {
      List<ARDetectedPlane> DetectedPlanes();
 
      // Events
-     void ClickOnDetectedPlaneAt(Object point, float planeWidth, float planeHeight, boolean isANodeAtPoint);
-     void LongClickOnDetectedPlaneAt(Object point, float planeWidth, float planeHeight, boolean isANodeAtPoint;
+     void ClickOnDetectedPlaneAt( ARDetectedPlane detectedPlane, Object point, boolean isANodeAtPoint);
+     void LongClickOnDetectedPlaneAt( ARDetectedPlane detectedPlane, Object point, boolean isANodeAtPoint);
      void PlaneDetected(ARDetectedPlane detectedPlane);
      void DetectedPlaneUpdated(ARDetectedPlane detectedPlane);
      void DetectedPlaneRemoved(ARDetectedPlane detectedPlane);

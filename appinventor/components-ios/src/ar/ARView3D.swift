@@ -1275,8 +1275,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
       case .detectedPlane(let plane, let position, let normal):
         // Handle detected plane tap
-        ClickOnDetectedPlaneAt(position,
-                             Float(plane.Width), Float(plane.Height),
+        ClickOnDetectedPlaneAt(plane, position,
                              false)
       
         // Also dispatch general tap
@@ -2821,7 +2820,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             let distance = simd_distance(planeCenter, hitPoint)
             
             if distance < 0.5 { // 50cm threshold
-              LongClickOnDetectedPlaneAt(hitPoint, Float(detectedPlane.Width), Float(detectedPlane.Height), isNodeAtPoint)
+              LongClickOnDetectedPlaneAt(detectedPlane, hitPoint, isNodeAtPoint)
               break
             }
           }
@@ -2988,30 +2987,27 @@ extension ARView3D: ARDetectedPlaneContainer {
   }
   
   
-  @objc open func ClickOnDetectedPlaneAt( _ point: SIMD3<Float>, _ planeWidth: Float, _ planeHeight: Float, _ isANodeAtPoint: Bool) {
-    
+  @objc open func ClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ point: SIMD3<Float>,  _ isANodeAtPoint: Bool) {
     let pointArray: NSArray = [NSNumber(value: point.x),
                                NSNumber(value: point.y),
                                NSNumber(value: point.z)]
     
     EventDispatcher.dispatchEvent(of: self, called: "ClickOnDetectedPlaneAt",
-                                  arguments: pointArray as NSArray,
-                                  planeWidth as NSNumber,
-                                  planeHeight as NSNumber, isANodeAtPoint as NSNumber);
+                                  arguments: detectedPlane as AnyObject, pointArray as NSArray,
+                                 isANodeAtPoint as NSNumber);
   }
   
 
   
-  @objc open func LongClickOnDetectedPlaneAt( _ point: SIMD3<Float>, _ planeWidth: Float, _ planeHeight: Float, _ isANodeAtPoint: Bool) {
+  @objc open func LongClickOnDetectedPlaneAt( _ detectedPlane: ARDetectedPlane, _ point: SIMD3<Float>,  _ isANodeAtPoint: Bool) {
     
     let pointArray: NSArray = [NSNumber(value: point.x),
                                NSNumber(value: point.y),
                                NSNumber(value: point.z)]
     
     EventDispatcher.dispatchEvent(of: self, called: "LongClickOnDetectedPlaneAt",
-                                  arguments: pointArray as NSArray,
-                                  planeWidth as NSNumber,
-                                  planeHeight as NSNumber, isANodeAtPoint as NSNumber);
+                                  arguments: detectedPlane as AnyObject, pointArray as NSArray,
+                                  isANodeAtPoint as NSNumber);
   }
 
   @objc open func PlaneDetected(_ detectedPlane: ARDetectedPlane) {
