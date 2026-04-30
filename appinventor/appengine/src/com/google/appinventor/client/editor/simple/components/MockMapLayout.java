@@ -56,8 +56,8 @@ final class MockMapLayout extends MockLayout {
     if (source instanceof MockMapFeature) {
       MockMapFeature feature = (MockMapFeature) source;
       if (feature.onDrop(map, x, y, offsetX, offsetY)) {
+        // addToMap is called automatically via onChildAdded.
         map.addComponent(source);
-        feature.addToMap(map);
       }
       return true;
     }

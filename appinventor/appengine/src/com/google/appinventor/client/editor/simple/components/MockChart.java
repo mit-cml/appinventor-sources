@@ -333,7 +333,6 @@ public final class MockChart extends MockContainer {
       // TODO: More data component support
       MockChartData2D data = new MockChartData2D(editor);
       addComponent(data);
-      data.addToChart(this);
 
       // Change the properties of the instantiated data component
       data.changeProperty("DataFileYColumn", column);
@@ -383,6 +382,13 @@ public final class MockChart extends MockContainer {
     return (component instanceof MockChartData2D)
         || (component instanceof MockTrendline)
         || (isComponentAcceptableDataFileSource(component));
+  }
+
+  @Override
+  protected void onChildAdded(MockComponent component) {
+    if (component instanceof MockChartClient) {
+      ((MockChartClient) component).addToChart(this);
+    }
   }
 
   /**
