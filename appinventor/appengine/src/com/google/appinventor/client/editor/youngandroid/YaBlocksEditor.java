@@ -65,7 +65,9 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
           new BlocksCategory("Lists", IMAGES.lists()),
           new BlocksCategory("Dictionaries", IMAGES.dictionaries()),
           new BlocksCategory("Colors", IMAGES.colors()),
-          new BlocksCategory("Variables", IMAGES.variables()), new BlocksCategory("Procedures", IMAGES.procedures()));
+          new BlocksCategory("Variables", IMAGES.variables()),
+          new BlocksCategory("Procedures", IMAGES.procedures()),
+          new BlocksCategory("More", IMAGES.procedures()));
   private static final Logger LOG = Logger.getLogger(YaBlocksEditor.class.getName());
 
   // The project associated with this blocks editor.
