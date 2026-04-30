@@ -6138,4 +6138,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Key name")
   @Description("ARIA label for the key name input in a dictionary row in the CloudDB entry visual editor.")
   String clouddbVizKeyNameAriaLabel();
+
+  @DefaultMessage("A tag with this name already exists. Saving will overwrite its current value.")
+  @Description("Inline warning shown in add-entry dialog when the typed tag name matches an existing CloudDB entry.")
+  String clouddbVizTagExistsWarning();
 }

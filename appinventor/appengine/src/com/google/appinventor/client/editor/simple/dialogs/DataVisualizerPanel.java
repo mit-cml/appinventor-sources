@@ -582,6 +582,7 @@ public final class DataVisualizerPanel extends Dialog {
     private final JsonNodeEditor rootEditor;
     private final TextArea rawTextArea;
     private final Label errorLabel;
+    private final Label warningLabel;
     private final Anchor modeLink;
     private final SimplePanel tabContentPanel;
     private int currentTab = TAB_STRUCTURED;
@@ -624,6 +625,14 @@ public final class DataVisualizerPanel extends Dialog {
       errorLabel.getElement().getStyle().setProperty("overflowWrap", "break-word");
       errorLabel.getElement().getStyle().setProperty("whiteSpace", "normal");
       errorLabel.setVisible(false);
+
+      warningLabel = new Label();
+      warningLabel.addStyleName("ode-WarningMessage");
+      warningLabel.getElement().setAttribute("role", "status");
+      warningLabel.setVisible(false);
+
+      tagBox.addBlurHandler(event -> checkTagConflict());
+      tagBox.addKeyUpHandler(event -> checkTagConflict());
 
       tabContentPanel = new SimplePanel();
       tabContentPanel.setWidget(rootEditor);
@@ -673,6 +682,7 @@ public final class DataVisualizerPanel extends Dialog {
       layout.setSpacing(4);
       layout.add(new Label(MESSAGES.clouddbVizTagLabel()));
       layout.add(isAddMode ? tagBox : tagDisplayLabel);
+      layout.add(warningLabel);
       layout.add(tabContentPanel);
       layout.add(linkRow);
       layout.add(errorLabel);
@@ -751,6 +761,24 @@ public final class DataVisualizerPanel extends Dialog {
     private void showError(String message) {
       errorLabel.setText(message);
       errorLabel.setVisible(message != null && !message.isEmpty());
+    }
+
+    private void checkTagConflict() {
+      if (!isAddMode) return;
+      String tag = tagBox.getValue().trim();
+      if (tag.isEmpty()) {
+        warningLabel.setVisible(false);
+        return;
+      }
+      boolean exists = false;
+      for (DataEntry entry : panel.allEntries) {
+        if (entry.getTag().equals(tag)) {
+          exists = true;
+          break;
+        }
+      }
+      warningLabel.setText(exists ? MESSAGES.clouddbVizTagExistsWarning() : "");
+      warningLabel.setVisible(exists);
     }
   }
 

@@ -1289,6 +1289,10 @@ path.ode-SimpleMockMapFeature-selected {
   color: error;
 }
 
+.ode-WarningMessage {
+  color: #b45309;
+}
+
 .ode-InfoMessage {
   color: gray-900;
 }
