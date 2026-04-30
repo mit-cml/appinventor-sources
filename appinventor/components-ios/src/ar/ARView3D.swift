@@ -1175,9 +1175,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           
           return .invisibleFloor(worldPosition, surfaceNormal)
       }
-      
-    _container?.form?.dispatchErrorOccurredEventDialog(self, "No surface detected here",
-                                                       ErrorMessage.ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT.code)
+
     return .empty(SIMD3<Float>(0, 0, 0))
 
   }
@@ -1309,7 +1307,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
           
       case .empty (let position):
-        print("Tap hit nothing, but floating at position: \(position)")
+        print("Tap hit nothing: \(position)")
       }
   }
   
