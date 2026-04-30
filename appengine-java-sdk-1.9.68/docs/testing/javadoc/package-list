@@ -1,0 +1,16 @@
+com.google.appengine.api.appidentity.dev
+com.google.appengine.api.blobstore.dev
+com.google.appengine.api.capabilities.dev
+com.google.appengine.api.datastore.dev
+com.google.appengine.api.files.dev
+com.google.appengine.api.images.dev
+com.google.appengine.api.log.dev
+com.google.appengine.api.mail.dev
+com.google.appengine.api.memcache.dev
+com.google.appengine.api.prospectivesearch.dev
+com.google.appengine.api.search.dev
+com.google.appengine.api.socket.dev
+com.google.appengine.api.taskqueue.dev
+com.google.appengine.api.urlfetch.dev
+com.google.appengine.api.users.dev
+com.google.appengine.tools.development.testing
