@@ -55,6 +55,13 @@ let HORIZONTAL_LAYOUT = 1
 
   let COMPANION_CORRECTION = 5
 
+  // Computed helper that always returns a concrete (non-default) selection color
+  fileprivate var resolvedSelectionColor: Int32 {
+    return _selectionColor == Int32(bitPattern: Color.default.rawValue)
+      ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue)
+      : _selectionColor
+  }
+
   public override init(_ parent: ComponentContainer) {
     _view = UITableView(frame: .zero, style: .plain)
     _collectionView = UICollectionView(frame: .zero, collectionViewLayout: _horizontalLayout)
@@ -900,12 +907,11 @@ let HORIZONTAL_LAYOUT = 1
       cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
     }
 
-    if cell.selectedBackgroundView == nil {
-      cell.selectedBackgroundView = UIView()
-    }
-    cell.selectedBackgroundView?.backgroundColor =
-        argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue)
-        ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+    // Always create a fresh selectedBackgroundView so the color is never stale on reused cells
+    let selectionView = UIView()
+    selectionView.backgroundColor = argbToColor(resolvedSelectionColor)
+    cell.selectedBackgroundView = selectionView
+
     return cell
   }
 
@@ -1041,10 +1047,7 @@ let HORIZONTAL_LAYOUT = 1
         ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
         : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
 
-    (cell.selectedBackgroundView as? UIView)?.backgroundColor =
-        (_selectionColor == Color.default.int32)
-        ? argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor)
+    (cell.selectedBackgroundView as? UIView)?.backgroundColor = argbToColor(resolvedSelectionColor)
     
     _collectionView.backgroundColor =
         (_backgroundColor == Color.default.int32)
@@ -1095,9 +1098,6 @@ let HORIZONTAL_LAYOUT = 1
   public func collectionView(_ collectionView: UICollectionView,
                              layout collectionViewLayout: UICollectionViewLayout,
                              sizeForItemAt indexPath: IndexPath) -> CGSize {
-    // Make height roughly your rowHeight; width can scale with textSize
-    
-    //let h = max(CGFloat(_textSize) + 24, kDefaultItemSize.height)
     let h = collectionView.bounds.height
     let w: CGFloat
     switch _listViewLayoutMode {
