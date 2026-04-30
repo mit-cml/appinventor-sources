@@ -1176,8 +1176,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           return .invisibleFloor(worldPosition, surfaceNormal)
       }
       
-      _container?.form?.dispatchErrorOccurredEvent(self, "finding plane", ErrorMessage.ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT)
-      return .empty(SIMD3<Float>(0, 0, 0))
+    _container?.form?.dispatchErrorOccurredEventDialog(self, "No surface detected here",
+                                                       ErrorMessage.ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT.code)
+    return .empty(SIMD3<Float>(0, 0, 0))
+
   }
   
   
@@ -1275,8 +1277,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
       case .detectedPlane(let plane, let position, let normal):
         // Handle detected plane tap
-        ClickOnDetectedPlaneAt(plane, position,
-                             false)
+        let yDict = YailDictionary()
+        
+        yDict["x"] = position.x
+        yDict["y"] = position.y
+        yDict["z"] = position.z
+      
+        ClickOnDetectedPlaneAt(plane, yDict as YailDictionary, false)
       
         // Also dispatch general tap
         if let geoData = worldToGPS(position) {
@@ -2085,6 +2092,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
+    @objc open func CreateBoxNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary) -> BoxNode? {
+      let node:BoxNode = BoxNode(self)
+      node.Name = "BoxNode"
+
+      node.Initialize()
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      return node
+    }
+    
+    @objc open func CreateCapsuleNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary) -> CapsuleNode? {
+      let node:CapsuleNode = CapsuleNode(self)
+      node.Name = "BoxNode"
+
+      node.Initialize()
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      return node
+    }
+    
     @objc open func CreateCapsuleNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> CapsuleNode? {
       
       let node = CapsuleNode(self)
@@ -2112,14 +2139,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    @objc open func CreateModelNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>, _ modelObjString: String) -> ModelNode? {
+    @objc open func CreateModelNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary, _ modelObjString: String) -> ModelNode? {
       
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
       node.Model = modelObjString
+
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
       return node
     }
     
@@ -2145,13 +2173,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    @objc open func CreateSphereNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>) -> SphereNode? {
+    @objc open func CreateSphereNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary) -> SphereNode? {
       
       let node:SphereNode = SphereNode(self)
       node.Name = "SphereNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
       return node
     }
     
@@ -2178,23 +2206,23 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
-    @objc open func CreateTextNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>) -> TextNode? {
+    @objc open func CreateTextNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary) -> TextNode? {
       
       let node:TextNode = TextNode(self)
       node.Name = "TextNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
       return node
     }
     
-    @objc open func CreateVideoNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>) -> VideoNode? {
+    @objc open func CreateVideoNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary) -> VideoNode? {
       
       let node:VideoNode = VideoNode(self)
-      node.Name = "TextNode"
+      node.Name = "VideoNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
       return node
     }
     
@@ -2396,6 +2424,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
 
       node.setPosition(x: x, y: y, z: z)
+      return node
+    }
+    
+    @objc open func CreateWebViewNodeAtPlane(_ targetPlane: ARNode,_ point: YailDictionary) -> WebViewNode? {
+      
+      let node:WebViewNode = WebViewNode(self)
+      node.Name = "WebViewNode"
+      node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
       return node
     }
     
@@ -2820,7 +2858,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             let distance = simd_distance(planeCenter, hitPoint)
             
             if distance < 0.5 { // 50cm threshold
-              LongClickOnDetectedPlaneAt(detectedPlane, hitPoint, isNodeAtPoint)
+              LongClickOnDetectedPlaneAt(detectedPlane, hitPoint as AnyObject, isNodeAtPoint)
               break
             }
           }
@@ -2985,28 +3023,25 @@ extension ARView3D: ARDetectedPlaneContainer {
       return _detectedPlanesDict.values.map { $0 }
     }
   }
+
   
-  
-  @objc open func ClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ point: SIMD3<Float>,  _ isANodeAtPoint: Bool) {
-    let pointArray: NSArray = [NSNumber(value: point.x),
-                               NSNumber(value: point.y),
-                               NSNumber(value: point.z)]
-    
-    EventDispatcher.dispatchEvent(of: self, called: "ClickOnDetectedPlaneAt",
-                                  arguments: detectedPlane as AnyObject, pointArray as NSArray,
-                                 isANodeAtPoint as NSNumber);
+  @objc open func ClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ point: AnyObject,  _ isANodeAtPoint: Bool) {
+    NSLog("ClickOnDetectedPlaneAt called - point type: %@", type(of: point).description())
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "ClickOnDetectedPlaneAt",
+                                    arguments: detectedPlane as AnyObject, point as AnyObject,
+                                   isANodeAtPoint as NSNumber);
+    }
+   
   }
   
 
   
-  @objc open func LongClickOnDetectedPlaneAt( _ detectedPlane: ARDetectedPlane, _ point: SIMD3<Float>,  _ isANodeAtPoint: Bool) {
+  @objc open func LongClickOnDetectedPlaneAt( _ detectedPlane: ARDetectedPlane, _ point: AnyObject,  _ isANodeAtPoint: Bool) {
     
-    let pointArray: NSArray = [NSNumber(value: point.x),
-                               NSNumber(value: point.y),
-                               NSNumber(value: point.z)]
     
     EventDispatcher.dispatchEvent(of: self, called: "LongClickOnDetectedPlaneAt",
-                                  arguments: detectedPlane as AnyObject, pointArray as NSArray,
+                                  arguments: detectedPlane as AnyObject, point as AnyObject,
                                   isANodeAtPoint as NSNumber);
   }
 

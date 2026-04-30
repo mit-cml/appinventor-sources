@@ -1090,6 +1090,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                     Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
+
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
                     a.detach(); // detach the temporary anchor — node creates its own
                     break; // ← only create one node per tap
@@ -2024,7 +2025,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     //@Override
     @SimpleEvent(description = "The user tapped on a point on the ARView3D.  (x,y,z) is " +
-        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+        "the real-world coordinate of the point.  isANodeAtPoint is true if a node is already " +
         "at that point and false otherwise.")
     public void TapAtPoint(float x, float y, float z, boolean isANodeAtPoint) {
         Log.i("TAPPED at ARVIEW3D point", "");
@@ -2081,14 +2082,14 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     @SimpleEvent(description = "The user long-pressed on a point on a detected Plane.  (x,y,z) is " +
-        "the real-world coordinate of the point in meters. Also provided are the width and height of the detected plane.  isANodeAtPoint is true if a node is already " +
+        "the real-world coordinate of the point in meters in dictionary form. isANodeAtPoint is true if a node is already " +
         "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
         "None, and the TrackingType is WorldTracking.")
     public void LongClickOnDetectedPlaneAt( ARDetectedPlane detectedPlane, Object point, boolean isANodeAtPoint) {
         container.$form().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", detectedPlane, point, isANodeAtPoint);
+                EventDispatcher.dispatchEvent(ARView3D.this, "LongClickOnDetectedPlaneAt", detectedPlane, point, isANodeAtPoint);
                 Log.i("dispatching Click On Detected Plane", "");
             }
         });
@@ -2096,7 +2097,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @Override
     @SimpleEvent(description = "The user tapped on a point on a detected plane.  (x,y,z) is " +
-        "the real-world coordinate of the point in meters. Also provided are the width and height of the detected plane. isANodeAtPoint is true if a node is already " +
+        "the real-world coordinate of the point in meters in dictionary form. isANodeAtPoint is true if a node is already " +
         "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
         "None, and the TrackingType is WorldTracking.")
     public void ClickOnDetectedPlaneAt( ARDetectedPlane detectedPlane, Object point, boolean isANodeAtPoint) {
@@ -2430,7 +2431,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-            values.put(MediaStore.Images.Media.RELATIVE_PATH,
+            values.put("relativePath",
                 Environment.DIRECTORY_PICTURES + "/ARCaptures");
 
             Uri uri = $form().getContentResolver()
