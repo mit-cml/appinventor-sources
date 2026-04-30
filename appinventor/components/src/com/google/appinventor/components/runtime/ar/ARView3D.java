@@ -1,11 +1,20 @@
 package com.google.appinventor.components.runtime.ar;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.graphics.*;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.view.*;
 import com.google.appinventor.components.runtime.*;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.google.appinventor.components.runtime.ar.SphereNode.SPHERE_OBJ_RADIUS;
+
 
 import android.app.Activity;
 import android.opengl.GLES30;
@@ -13,17 +22,15 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
 import android.content.Context;
-import android.graphics.PointF;
 
-import android.graphics.PixelFormat;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 
-import com.google.appinventor.components.runtime.util.YailDictionary;
+import com.google.appinventor.components.runtime.util.*;
 import com.google.ar.core.*;
-import com.google.ar.core.Camera;
+
 import org.json.JSONException;
 
 
@@ -45,13 +52,15 @@ import com.google.appinventor.components.runtime.util.AR3DFactory.ARLight;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARLightContainer;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNode;
 import com.google.appinventor.components.runtime.util.AR3DFactory.ARNodeContainer;
-import com.google.appinventor.components.runtime.util.CameraVectors;
 
-import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.ar.core.Config.InstantPlacementMode;
 import com.google.ar.core.exceptions.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -1079,7 +1088,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
                     Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
-                    ClickOnDetectedPlaneAt(arplane, a.getPose(), false, true);
+                    ClickOnDetectedPlaneAt(a.getPose(), arplane.DetectedPlane().getExtentX(), arplane.DetectedPlane().getExtentZ(), true);
                     a.detach(); // detach the temporary anchor — node creates its own
                     break; // ← only create one node per tap
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
@@ -2081,23 +2090,30 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @Override
-    @SimpleEvent(description = "The user long-pressed on a DetectedPlane, detectedPlane.  (x,y,z) is " +
-        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
+    @SimpleEvent(description = "The user long-pressed on a point on a detected Plane.  (x,y,z) is " +
+        "the real-world coordinate of the point in meters. Also provided are the width and height of the detected plane.  isANodeAtPoint is true if a node is already " +
         "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
         "None, and the TrackingType is WorldTracking.")
-    public void LongClickOnDetectedPlaneAt(ARDetectedPlane detectedPlane, float x, float y, float z, boolean isANodeAtPoint) {
-    }
-
-    @Override
-    @SimpleEvent(description = "The user tapped on a DetectedPlane, detectedPlane.  (x,y,z) is " +
-        "the real-world coordinate of the point.  isANoteAtPoint is true if a node is already " +
-        "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
-        "None, and the TrackingType is WorldTracking.")
-    public void ClickOnDetectedPlaneAt(ARDetectedPlane targetPlane, Object p, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+    public void LongClickOnDetectedPlaneAt( Object point, float planeWidth, float planeHeight, boolean isANodeAtPoint) {
         container.$form().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", targetPlane, p, hasGeoCoordinates, isANodeAtPoint);
+                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", point, planeWidth, planeHeight, isANodeAtPoint);
+                Log.i("dispatching Click On Detected Plane", "");
+            }
+        });
+    }
+
+    @Override
+    @SimpleEvent(description = "The user tapped on a point on a detected plane.  (x,y,z) is " +
+        "the real-world coordinate of the point in meters. Also provided are the width and height of the detected plane. isANodeAtPoint is true if a node is already " +
+        "at that point and false otherwise.  This event will only trigger if PlaneDetection is not " +
+        "None, and the TrackingType is WorldTracking.")
+    public void ClickOnDetectedPlaneAt(Object point, float planeWidth, float planeHeight, boolean isANodeAtPoint) {
+        container.$form().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                EventDispatcher.dispatchEvent(ARView3D.this, "ClickOnDetectedPlaneAt", point, planeWidth, planeHeight, isANodeAtPoint);
                 Log.i("dispatching Click On Detected Plane", "");
             }
         });
@@ -2324,9 +2340,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Create a new BoxNode with default properties at the plane position.")
-    public BoxNode CreateBoxNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+    public BoxNode CreateBoxNodeAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating Capsule node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         BoxNode bNode = new BoxNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
@@ -2468,9 +2484,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     @SimpleFunction(description = "Create a new SphereNode with default properties at the detected plane position.")
-    public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object p, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+    public SphereNode CreateSphereNodeAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating Sphere node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         SphereNode sphereNode = new SphereNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
@@ -2524,9 +2540,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Create a new PlaneNode with default properties at the detected plane position.")
-    public PlaneNode CreatePlaneAtPlane(ARDetectedPlane targetPlane, Object p) {
+    public PlaneNode CreatePlaneAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating plane node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         PlaneNode vNode = new PlaneNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
@@ -2548,9 +2564,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Create a new CapsuleNode with default properties at the plane position.")
-    public CapsuleNode CreateCapsuleNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+    public CapsuleNode CreateCapsuleNodeAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating Capsule node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         CapsuleNode capNode = new CapsuleNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
@@ -2671,9 +2687,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Create a new ModelNode with default properties at the plane position.")
-    public ModelNode CreateModelNodeAtPlane(ARDetectedPlane targetPlane, Object p, String modelObjectString) {
+    public ModelNode CreateModelNodeAtPlane(ARDetectedPlane targetPlane, Object point, String modelObjectString) {
         Log.i("creating Capsule node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         ModelNode mNode = new ModelNode(this);
         mNode.Model(modelObjectString);
 
@@ -2718,9 +2734,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     @SimpleFunction(description = "Create a new TextNode with default properties at the detected plane position.")
-    public TextNode CreateTextNodeAtPlane(ARDetectedPlane targetPlane, Object p, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
+    public TextNode CreateTextNodeAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating text node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         TextNode textNode = new TextNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
@@ -2773,9 +2789,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     @SimpleFunction(description = "Create a new VideoNode with default properties at the detected plane position.")
-    public VideoNode CreateVideoNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+    public VideoNode CreateVideoNodeAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating video node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         VideoNode vNode = new VideoNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();
@@ -2854,9 +2870,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     @SimpleFunction(description = "Create a new WebViewNode with default properties at the detected plane position.")
-    public WebViewNode CreateWebViewNodeAtPlane(ARDetectedPlane targetPlane, Object p) {
+    public WebViewNode CreateWebViewNodeAtPlane(ARDetectedPlane targetPlane, Object point) {
         Log.i("creating web node", "with detected plane and pose");
-        Pose pose = (Pose) p;
+        Pose pose = (Pose) point;
         WebViewNode webNode = new WebViewNode(this);
 
         Trackable trackable = (Trackable) targetPlane.DetectedPlane();

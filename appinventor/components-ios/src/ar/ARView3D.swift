@@ -1275,8 +1275,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
       case .detectedPlane(let plane, let position, let normal):
         // Handle detected plane tap
-        ClickOnDetectedPlaneAt(plane, position.x, position.y, position.z, false)
-        
+        ClickOnDetectedPlaneAt(position,
+                             Float(plane.Width), Float(plane.Height),
+                             false)
+      
         // Also dispatch general tap
         if let geoData = worldToGPS(position) {
             TapAtLocation(position.x, position.y, position.z,
@@ -1298,7 +1300,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         } else {
           TapAtLocation(position.x, position.y, position.z, 0.0, 0.0, 0.0, false, false)
           TapAtPoint(position.x, position.y, position.z, false)
-          //ClickOnDetectedPlaneAt(plane, position.x, position.y, position.z, false)
         }
           
       case .empty (let position):
@@ -1918,32 +1919,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func TapAtPoint(_ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool) {
-      let xCm: Float = UnitHelper.metersToCentimeters(x)
-      let yCm: Float = UnitHelper.metersToCentimeters(y)
-      let zCm: Float = UnitHelper.metersToCentimeters(z)
-      print("tapped at \(xCm), \(yCm), \(zCm)")
-      EventDispatcher.dispatchEvent(of: self, called: "TapAtPoint", arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
+
+      print("tapped at \(x), \(y), \(z)")
+      EventDispatcher.dispatchEvent(of: self, called: "TapAtPoint", arguments: x as NSNumber, y as NSNumber, z as NSNumber, isANodeAtPoint as NSNumber)
     }
     
     @objc open func TapAtLocation(_ x: Float, _ y: Float, _ z: Float,
                                   _ lat: Double, _ lng: Double, _ alt: Double,
                                   _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) {
-      
-      // Convert world coordinates to centimeters for compatibility
-      let xCm = UnitHelper.metersToCentimeters(x)
-      let yCm = UnitHelper.metersToCentimeters(y)
-      let zCm = UnitHelper.metersToCentimeters(z)
+  
       
       if hasGeoCoordinates {
         // Dispatch with both world and geo coordinates
         EventDispatcher.dispatchEvent(of: self, called: "TapAtLocation",
-                                      arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber,
+                                      arguments: x as NSNumber, y as NSNumber, z as NSNumber,
                                       lat as NSNumber, lng as NSNumber, alt as NSNumber,
                                       true as NSNumber, isANodeAtPoint as NSNumber)
       } else {
         // Dispatch with only world coordinates
         EventDispatcher.dispatchEvent(of: self, called: "TapAtLocation",
-                                      arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber,
+                                      arguments: x as NSNumber, y as NSNumber, z as NSNumber,
                                       0.0 as NSNumber, 0.0 as NSNumber, 0.0 as NSNumber,
                                       false as NSNumber, isANodeAtPoint as NSNumber)
       }
@@ -1955,11 +1950,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func LongPressAtPoint(_ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool) {
-      let xCm: Float = UnitHelper.metersToCentimeters(x)
-      let yCm: Float = UnitHelper.metersToCentimeters(y)
-      let zCm: Float = UnitHelper.metersToCentimeters(z)
       
-      EventDispatcher.dispatchEvent(of: self, called: "LongPressAtPoint", arguments: xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
+      EventDispatcher.dispatchEvent(of: self, called: "LongPressAtPoint", arguments: x as NSNumber, y as NSNumber, z as NSNumber, isANodeAtPoint as NSNumber)
     }
     
     open func add(_ component: ViewComponent) {}
@@ -1976,24 +1968,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node = BoxNode(self)
       node.Name = "CreatedBoxNode"
       node.Initialize()
-      
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+
+      node.setPosition(x: x, y: y, z: z)
       return node
     }
     
     @objc open func CreateSphereNode(_ x: Float, _ y: Float, _ z: Float) -> SphereNode {
       let node = SphereNode(self)
       node.Initialize()
-      
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+
+      node.setPosition(x: x, y: y, z: z)
       return node
     }
 
@@ -2001,11 +1985,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node = PlaneNode(self)
       node.Name = "PlaneNode"
       node.Initialize()
-      
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+
+      node.setPosition(x: x, y: y, z: z)
       return node
     }
     /*
@@ -2014,9 +1995,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      node.Name = "CreatedCylinderNode"
      node.Initialize()
      
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
+
      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
      return node
      }
@@ -2025,10 +2004,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      let node = ConeNode(self)
      node.Name = "CreatedConeNode"
      node.Initialize()
-     
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
+
      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
      return node
      }
@@ -2038,14 +2014,20 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Name = "CapsuleNode"
       node.Initialize()
       
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+      node.setPosition(x: x, y: y, z: z)
       return node
     }
     
+    private func setupNonGeo(x: Float, y: Float, z: Float,  node: ARNodeBase) {
+      // For non-geo coordinates, use exact position and let physics handle floor collision
+
+      let groundLevel = GROUND_LEVEL
+      let safeY = max(y, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
+      
+      node.setPosition(x: x, y: safeY, z: z)
+      print("set up anchor and setting position \(x) \(y) \(z)")
+      
+    }
     
     private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
       print("SETUP LOCATION")
@@ -2064,26 +2046,22 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             
             if distance < 10.0 {
               // Close anchor: Use the EXACT tap position - let physics drop it
-              let xMeters: Float = UnitHelper.centimetersToMeters(x)
-              let yMeters: Float = UnitHelper.centimetersToMeters(y)
-              let zMeters: Float = UnitHelper.centimetersToMeters(z)
-              
-              
+
               let groundLevel = GROUND_LEVEL
               let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
               
               let scale = node.Scale
               let scaledHeight = (bounds.max.y - bounds.min.y) * scale
               let halfHeight = scaledHeight / 2
-              let safeY = min(yMeters + halfHeight + ARView3D.VERTICAL_OFFSET ,
+              let safeY = min(y + halfHeight + ARView3D.VERTICAL_OFFSET ,
                               max(groundLevel + ARView3D.VERTICAL_OFFSET,
-                                  yMeters  + ARView3D.VERTICAL_OFFSET)
+                                  y  + ARView3D.VERTICAL_OFFSET)
               )
               
               //node.setPosition(x: xMeters, y: safeY, z: zMeters)
-              node._modelEntity.setPosition(SIMD3<Float>(xMeters, safeY, zMeters), relativeTo: nil)
-              print("create node at x \(xMeters) y  \(yMeters) z \(zMeters) and safe is \(safeY)")
-              node._worldOffset = SIMD3<Float>(x: xMeters, y: yMeters, z: zMeters)
+              node._modelEntity.setPosition(SIMD3<Float>(x, safeY, z), relativeTo: nil)
+              print("create node at x \(x) y  \(y) z \(z) and safe is \(safeY)")
+              node._worldOffset = SIMD3<Float>(x: x, y: y, z: z)
               node._creatorSessionStart = anchorLocation
               print("saved world coords for offset \(String(describing: node._worldOffset))")
             }
@@ -2094,16 +2072,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
       }
       
-      // For non-geo coordinates, use exact position and let physics handle floor collision
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      
-      let groundLevel = GROUND_LEVEL
-      let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
-      
-      node.setPosition(x: xMeters, y: safeY, z: zMeters)
-      print("set up anchor and setting position \(xMeters) \(yMeters) \(zMeters)")
+      setupNonGeo(x: x, y: y, z: z, node: node)
     }
     
     @objc open func CreateBoxNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> BoxNode? {
@@ -2134,16 +2103,24 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Name = "ModelNode"
       node.Model = modelObjString
       node.Initialize()
-      
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
+
       
       let groundLevel = GROUND_LEVEL
-      let safeY = max(yMeters, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
+      let safeY = max(y, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
       
-      node.setPosition(x: xMeters, y: safeY, z: zMeters)
+      node.setPosition(x: x, y: safeY, z: z)
       
+      return node
+    }
+    
+    @objc open func CreateModelNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>, _ modelObjString: String) -> ModelNode? {
+      
+      let node:ModelNode = ModelNode(self)
+      node.Name = "GeoModelNode"
+      node.Model = modelObjString
+      node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
       return node
     }
     
@@ -2166,6 +2143,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
 
+      return node
+    }
+    
+    @objc open func CreateSphereNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>) -> SphereNode? {
+      
+      let node:SphereNode = SphereNode(self)
+      node.Name = "SphereNode"
+      node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
       return node
     }
     
@@ -2192,6 +2179,26 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return node
     }
     
+    @objc open func CreateTextNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>) -> TextNode? {
+      
+      let node:TextNode = TextNode(self)
+      node.Name = "TextNode"
+      node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
+      return node
+    }
+    
+    @objc open func CreateVideoNodeAtPlane(_ targetPlane: ARNode,_ point: SIMD3<Float>) -> VideoNode? {
+      
+      let node:VideoNode = VideoNode(self)
+      node.Name = "TextNode"
+      node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
+      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
+      setupNonGeo(x: point.x, y: point.y, z: point.z, node: node)
+      return node
+    }
+    
     @objc open func CreateVideoNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> VideoNode? {
       
       let node = VideoNode(self)
@@ -2208,10 +2215,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      let node = TubeNode(self)
      node.Name = "CreatedTubeNode"
      node.Initialize()
-     
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
+
      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
      return node
      }
@@ -2220,10 +2224,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      let node = TorusNode(self)
      node.Name = "CreatedTorusNode"
      node.Initialize()
-     
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
+
      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
      return node
      }
@@ -2233,34 +2234,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
      node.Name = "CreatedPyramidNode"
      node.Initialize()
      
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
+
      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
      return node
      }
-     
-     
-     
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
-     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
-     return node
-     }
+*/
      
      @objc open func CreateVideoNode(_ x: Float, _ y: Float, _ z: Float) -> VideoNode {
      let node = VideoNode(self)
      node.Name = "CreatedVideoNode"
      node.Initialize()
      
-     let xMeters: Float = UnitHelper.centimetersToMeters(x)
-     let yMeters: Float = UnitHelper.centimetersToMeters(y)
-     let zMeters: Float = UnitHelper.centimetersToMeters(z)
-     node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+     node.setPosition(x: x, y: y, z: z)
      return node
      }
-     */
+     
     
     @objc open func CreateImageMarker(_ imagePath: String) -> ImageMarker {
       let marker = ImageMarker(self)
@@ -2283,7 +2271,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     @objc open func TakePicture(_ dummyName: String, _ width: Float = 15.0) {
       captureSnapshot { [weak self] image in
         guard let self = self, let image = image else {
-            print("❌ Failed to make image for marker")
+            print("❌ Failed to take a picture")
             return
         }
           
@@ -2398,10 +2386,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node = TextNode(self)
       node.Name = "CreatedTextNode"
       node.Initialize()
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+
+      node.setPosition(x: x, y: y, z: z)
       return node
     }
     
@@ -2409,11 +2395,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node = WebViewNode(self)
       node.Name = "CreatedWebNode"
       node.Initialize()
-      
-      let xMeters: Float = UnitHelper.centimetersToMeters(x)
-      let yMeters: Float = UnitHelper.centimetersToMeters(y)
-      let zMeters: Float = UnitHelper.centimetersToMeters(z)
-      node.setPosition(x: xMeters, y: yMeters, z: zMeters)
+
+      node.setPosition(x: x, y: y, z: z)
       return node
     }
     
@@ -2838,7 +2821,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
             let distance = simd_distance(planeCenter, hitPoint)
             
             if distance < 0.5 { // 50cm threshold
-              LongClickOnDetectedPlaneAt(detectedPlane, hitPoint.x, hitPoint.y, hitPoint.z, isNodeAtPoint)
+              LongClickOnDetectedPlaneAt(hitPoint, Float(detectedPlane.Width), Float(detectedPlane.Height), isNodeAtPoint)
               break
             }
           }
@@ -2847,9 +2830,9 @@ extension ARView3D: UIGestureRecognizerDelegate {
         // Always dispatch the general long press event
         let position = result.worldTransform.translation
         LongPressAtPoint(
-          UnitHelper.metersToCentimeters(position.x),
-          UnitHelper.metersToCentimeters(position.y),
-          UnitHelper.metersToCentimeters(position.z),
+          position.x,
+          position.y,
+          position.z,
           isNodeAtPoint
         )
       }
@@ -3004,20 +2987,33 @@ extension ARView3D: ARDetectedPlaneContainer {
     }
   }
   
-  @objc open func ClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool) {
-    let xCm: Float = UnitHelper.metersToCentimeters(x)
-    let yCm: Float = UnitHelper.metersToCentimeters(y)
-    let zCm: Float = UnitHelper.metersToCentimeters(z)
-    EventDispatcher.dispatchEvent(of: self, called: "ClickOnDetectedPlaneAt", arguments: detectedPlane as AnyObject, xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
+  
+  @objc open func ClickOnDetectedPlaneAt( _ point: SIMD3<Float>, _ planeWidth: Float, _ planeHeight: Float, _ isANodeAtPoint: Bool) {
+    
+    let pointArray: NSArray = [NSNumber(value: point.x),
+                               NSNumber(value: point.y),
+                               NSNumber(value: point.z)]
+    
+    EventDispatcher.dispatchEvent(of: self, called: "ClickOnDetectedPlaneAt",
+                                  arguments: pointArray as NSArray,
+                                  planeWidth as NSNumber,
+                                  planeHeight as NSNumber, isANodeAtPoint as NSNumber);
   }
   
-  @objc open func LongClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool) {
-    let xCm: Float = UnitHelper.metersToCentimeters(x)
-    let yCm: Float = UnitHelper.metersToCentimeters(y)
-    let zCm: Float = UnitHelper.metersToCentimeters(z)
-    EventDispatcher.dispatchEvent(of: self, called: "LongClickOnDetectedPlaneAt", arguments: detectedPlane as AnyObject, xCm as NSNumber, yCm as NSNumber, zCm as NSNumber, isANodeAtPoint as NSNumber)
-  }
+
   
+  @objc open func LongClickOnDetectedPlaneAt( _ point: SIMD3<Float>, _ planeWidth: Float, _ planeHeight: Float, _ isANodeAtPoint: Bool) {
+    
+    let pointArray: NSArray = [NSNumber(value: point.x),
+                               NSNumber(value: point.y),
+                               NSNumber(value: point.z)]
+    
+    EventDispatcher.dispatchEvent(of: self, called: "LongClickOnDetectedPlaneAt",
+                                  arguments: pointArray as NSArray,
+                                  planeWidth as NSNumber,
+                                  planeHeight as NSNumber, isANodeAtPoint as NSNumber);
+  }
+
   @objc open func PlaneDetected(_ detectedPlane: ARDetectedPlane) {
     DispatchQueue.main.async {
       EventDispatcher.dispatchEvent(of: self, called: "PlaneDetected", arguments: detectedPlane as AnyObject)

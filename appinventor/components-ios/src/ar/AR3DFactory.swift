@@ -337,8 +337,8 @@ public protocol ARModel: ARNode {
 @objc public protocol ARDetectedPlaneContainer: ComponentContainer {
   var DetectedPlanes: [ARDetectedPlane] { get }
 
-  func ClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint: Bool)
-  func LongClickOnDetectedPlaneAt(_ detectedPlane: ARDetectedPlane, _ x: Float, _ y: Float, _ z: Float, _ isANodeAtPoint:Bool)
+  func ClickOnDetectedPlaneAt(_ point: SIMD3<Float>, _ planeWidth: Float, _ planeHeight: Float, _ isANodeAtPoint: Bool)
+  func LongClickOnDetectedPlaneAt(_ point: SIMD3<Float>,_ planeWidth: Float, _ planeHeight: Float, _ isANodeAtPoint:Bool)
   func PlaneDetected(_ detectedPlane: ARDetectedPlane)
   func DetectedPlaneUpdated(_ detectedPlane: ARDetectedPlane)
   func DetectedPlaneRemoved(_ detectedPlane: ARDetectedPlane)
