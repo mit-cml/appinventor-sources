@@ -921,8 +921,17 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     removeInvisibleFloor()
     //_detectedPlanesDict.removeAll()
     
-    for (node, _) in _nodeToAnchorDict {
+    for (node, anchor) in _nodeToAnchorDict {
         node.EnablePhysics(false)
+      // Remove the entity from the RealityKit scene
+      if let entity = _nodeToAnchorDict[node] {
+          entity.removeFromParent()
+          _nodeToAnchorDict.removeValue(forKey: node)
+          node.removeFromAnchor()
+        _arView.scene.removeAnchor(entity)
+      }
+      
+
     }
     
     // Pause and prepare for reset
