@@ -361,6 +361,8 @@ open class SphereNode: ARNodeBase, ARSphere {
       showCollisionFlash(intensity: speed, collisionType: .object)
     }
   
+    EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: otherNode)
+    
     // Analyze trajectory after collision response
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
         guard let self = self else { return }

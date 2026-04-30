@@ -163,6 +163,7 @@ import android.util.Log;
   @SimpleEvent(description = "Collision event detected between object and another object")
   public void ObjectCollidedWithObject(ARNode otherNode) {
       // eg play an animation or something by default?
+      EventDispatcher.dispatchEvent(this, "ObjectCollidedWithObject", otherNode);
   }
 
   @Override

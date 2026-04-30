@@ -1394,22 +1394,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 ARNodeBase a = (ARNodeBase) arNodes.get(i);
                 ARNodeBase b = (ARNodeBase) arNodes.get(j);
 
-                // log why pairs are skipped
-                if (!a.EnablePhysics() && !b.EnablePhysics()) {
-                    skipped++;
-                    continue;
-                }
+                if (!a.EnablePhysics() && !b.EnablePhysics()) continue;
 
-                totalChecks++;
-                float dist = a.collisionDistance(b);
-                float minDist = a.getCollisionVolume().getEffectiveRadius()
-                    + b.getCollisionVolume().getEffectiveRadius();
-
-                if (dist < minDist) {
-                    actualCollisions++;
-                    // log every actual collision
+                if (checkCollision(a, b)) {   // ← delegate, don't reimplement
+                    handleCollision(a, b);
                     Log.d(LOG_TAG, "COLLISION: " + a.NodeType() + " vs " + b.NodeType()
-                        + " dist=" + dist + " minDist=" + minDist
                         + " aPhysics=" + a.EnablePhysics()
                         + " bPhysics=" + b.EnablePhysics()
                         + " aDragged=" + a.isBeingDragged
@@ -1418,7 +1407,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         + " bVel=(" + b.currentVelocity[0] + "," + b.currentVelocity[2] + ")");
                 }
 
-                a.separateFrom(b);
             }
         }
 
@@ -1976,19 +1964,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleEvent(description = " Collision detected")
     public void CollisionDetected() {
-        EventDispatcher.dispatchEvent(this, "CollisionDetected");
+        EventDispatcher.dispatchEvent(ARView3D.this, "CollisionDetected");
 
     }
 
     @SimpleEvent(description = " Object collided with Scene detected")
     public void ObjectCollidedWithScene(ARNode node){
-        EventDispatcher.dispatchEvent(this, "ObjectCollidedWithScene", node);
+        EventDispatcher.dispatchEvent(ARView3D.this, "ObjectCollidedWithScene", node);
 
     }
 
     @SimpleEvent(description = " Object collided with Object detected")
     public void ObjectCollidedWithObject(ARNode node, ARNode node2) {
-        EventDispatcher.dispatchEvent( this, "ObjectCollidedWithObject", node, node2);
+        EventDispatcher.dispatchEvent(ARView3D.this, "ObjectCollidedWithObject", node, node2);
 
     }
 
@@ -2395,11 +2383,73 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         return imageMarker;
     }
 
-
     @SimpleFunction(description = "take picture and invoke listener for a successful capture")
-    public void TakePicture(String name, float width) {
-        //capture screenshot
-            //AfterPicture(image, name: name)
+    public void TakePicture(String name, float imageWidth) {
+        if (lastFrame == null) {
+            Log.w("ARView3D", "TakePicture: no frame available");
+            return;
+        }
+
+        try (android.media.Image image = lastFrame.acquireCameraImage()) {
+            // Convert YUV to Bitmap
+            int width = image.getWidth();
+            int height = image.getHeight();
+
+            // Extract YUV planes
+            android.media.Image.Plane[] planes = image.getPlanes();
+            ByteBuffer yBuffer = planes[0].getBuffer();
+            ByteBuffer uBuffer = planes[1].getBuffer();
+            ByteBuffer vBuffer = planes[2].getBuffer();
+
+            int ySize = yBuffer.remaining();
+            int uSize = uBuffer.remaining();
+            int vSize = vBuffer.remaining();
+
+            byte[] nv21 = new byte[ySize + uSize + vSize];
+            yBuffer.get(nv21, 0, ySize);
+            vBuffer.get(nv21, ySize, vSize);         // NV21 interleaves V then U
+            uBuffer.get(nv21, ySize + vSize, uSize);
+
+            // Convert NV21 to Bitmap via YuvImage
+            YuvImage yuvImage = new YuvImage(nv21, android.graphics.ImageFormat.NV21, width, height, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            yuvImage.compressToJpeg(new Rect(0, 0, width, height), 95, out);
+            byte[] jpegBytes = out.toByteArray();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(jpegBytes, 0, jpegBytes.length);
+
+            // ARCore camera image is landscape — rotate to match device orientation
+            android.graphics.Matrix matrix = new android.graphics.Matrix();
+            matrix.postRotate(90);
+            Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0,
+                bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+            // Save to gallery
+            String filename = "AR_" + name + "_" + System.currentTimeMillis() + ".jpg";
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            values.put(MediaStore.Images.Media.RELATIVE_PATH,
+                Environment.DIRECTORY_PICTURES + "/ARCaptures");
+
+            Uri uri = $form().getContentResolver()
+                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            if (uri != null) {
+                try (OutputStream stream = $form().getContentResolver().openOutputStream(uri)) {
+                    rotated.compress(Bitmap.CompressFormat.JPEG, 95, stream);
+                    Log.i("ARView3D", "Picture saved: " + filename);
+                    AfterPicture(uri.toString(), name, width);   // fire App Inventor event
+                }
+            }
+
+            bitmap.recycle();
+            rotated.recycle();
+
+        } catch (NotYetAvailableException e) {
+            Log.w("ARView3D", "Camera image not yet available — try again next frame");
+        } catch (Exception e) {
+            Log.e("ARView3D", "TakePicture failed: " + e.getMessage());
+        }
     }
 
     @SimpleEvent(description = "handle after picture")

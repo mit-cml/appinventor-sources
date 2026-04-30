@@ -143,7 +143,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   @SimpleEvent(description = "This event is triggered when a sphereNode collides with another object. Note: physics must be enabled")
   public void ObjectCollidedWithObject(ARNode otherNode) {
     showCollisionEffect();
-
+    EventDispatcher.dispatchEvent(this, "ObjectCollidedWithObject", otherNode);
     // Restore color after delay
     new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
       if (!isBeingDragged) {
@@ -151,7 +151,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
       }
     }, 800);
     Log.i("SphereNode", name + " collided with " + otherNode.getClass().getSimpleName());
-    // Dispatch event to app level
+
   }
 
   private void showCollisionEffect() {

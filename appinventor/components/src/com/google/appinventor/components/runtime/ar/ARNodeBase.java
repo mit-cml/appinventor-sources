@@ -518,6 +518,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     Log.i("ARNodeBase", name + " collided with " + otherNode.NodeType());
     handleObjectCollision(otherNode);
     // Event dispatching handled by container
+    EventDispatcher.dispatchEvent(this, "ObjectCollidedWithObject", otherNode);
   }
 
   protected void handleSceneCollision() {
