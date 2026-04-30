@@ -2135,7 +2135,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node:ModelNode = ModelNode(self)
       node.Name = "ModelNode"
       let correctedModelObjString = replaceExtension(modelObjString, with: "usdz")
-      node.Model = modelObjString
+      node.Model = correctedModelObjString
       node.Initialize()
 
       
@@ -2173,7 +2173,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node:ModelNode = ModelNode(self)
       node.Name = "GeoModelNode"
       let correctedModelObjString = replaceExtension(modelObjString, with: "usdz")
-      node.Model = modelObjString
+      node.Model = correctedModelObjString
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
