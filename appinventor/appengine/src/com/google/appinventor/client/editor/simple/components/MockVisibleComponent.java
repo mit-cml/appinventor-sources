@@ -135,19 +135,19 @@ public abstract class MockVisibleComponent extends MockComponent {
     // Add standard per-child layout properties
     // NOTE: Not all layouts use these properties
     addProperty(PROPERTY_NAME_COLUMN, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        null, "Appearance", new TextPropertyEditor());
+        null, "Appearance", null, new TextPropertyEditor(), null);
     addProperty(PROPERTY_NAME_ROW, "" + ComponentConstants.DEFAULT_ROW_COLUMN, null,
-        null, "Appearance", new TextPropertyEditor());
+        null, "Appearance", null, new TextPropertyEditor(), null);
     addWidthHeightProperties();
   }
 
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
         "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
-        new YoungAndroidLengthPropertyEditor());
+        new YoungAndroidLengthPropertyEditor(), null);
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
         "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
-        new YoungAndroidLengthPropertyEditor());
+        new YoungAndroidLengthPropertyEditor(), null);
   }
 
   @Override
