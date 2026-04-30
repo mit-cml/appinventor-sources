@@ -658,7 +658,7 @@ Blockly.Blocks.procedures_mutatorarg.validator = function(newVar) {
 };
 
 Blockly.Blocks['procedures_defanonnoreturn'] = {
-  category: 'Procedures',
+  category: 'More',
     helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL,
     bodyInputName: 'STACK',
     init: function() {
@@ -804,7 +804,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
 };
 
 Blockly.Blocks['procedures_defanonreturn'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_HELPURL,
   bodyInputName: 'RETURN',
   init: function() {
@@ -1168,7 +1168,7 @@ Blockly.Blocks['procedures_callreturn'] = {
 };
 
 Blockly.Blocks['procedures_callanonnoreturn'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
@@ -1209,7 +1209,7 @@ Blockly.Blocks['procedures_callanonnoreturn'] = {
 };
 
 Blockly.Blocks['procedures_callanonreturn'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
@@ -1246,7 +1246,7 @@ Blockly.Blocks['anon_proc_arg'] = {
 };
 
 Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
@@ -1268,7 +1268,7 @@ Blockly.Blocks['procedures_callanonnoreturn_inputlist'] = {
 };
 
 Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_CALLANONNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
@@ -1289,7 +1289,7 @@ Blockly.Blocks['procedures_callanonreturn_inputlist'] = {
 };
 
 Blockly.Blocks['procedures_numArgs'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_NUMARGS_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
@@ -1304,7 +1304,7 @@ Blockly.Blocks['procedures_numArgs'] = {
 };
 
 Blockly.Blocks['procedures_getWithName'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHNAME_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
@@ -1319,7 +1319,7 @@ Blockly.Blocks['procedures_getWithName'] = {
 };
 
 Blockly.Blocks['procedures_getWithDropdown'] = {
-  category: 'Procedures',
+  category: 'More',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_GETWITHDROPDOWN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
