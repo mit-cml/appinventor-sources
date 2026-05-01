@@ -1,5 +1,5 @@
 // -*- mode: Javascript; js-indent-level: 2; -*-
-// Copyright © 2020 MIT, All rights reserved
+// Copyright © 2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -163,3 +163,113 @@ Blockly.Util.xml.valueWithHelperXML = function(name, helperKey) {
   inputXml.firstChild.appendChild(helperXml.firstChild);
   return inputXml;
 }
+
+/**
+ * Creates XML for a value input pre-filled with a default block.
+ * Supported types: "text", "number", "boolean", "color", "list", "dictionary".
+ * @param {string} inputName  The input slot name (e.g. 'ARG0', 'VALUE').
+ * @param {Object} param The parameter object from components.json.
+ * @return {Node} (Nullable) A <xml> node whose first child is a <value> node.
+ */
+Blockly.Util.xml.valueWithDefaultXML = function (inputName, param) {
+  var xmlString = '<xml><value name="' + inputName + '">';
+
+  var typeStr = 'unknown';
+  if (param.editorType !== undefined) {
+    // Accepts param type from DesignerProperty
+    typeStr = param.editorType;
+  } else if (param.type !== undefined) {
+    // Not a DesignerProperty, take param type.
+    typeStr = param.type;
+  }
+  if ((typeStr === 'any' || typeStr === 'unknown') && param.defaultValueType !== undefined) {
+    // Take the optional defaultValueType if defined and only when the param type is 'any' or 'unknown'
+    typeStr = param.defaultValueType;
+  }
+
+  var valueStr = String(param.defaultValue);
+  var isNumericType = ['number', 'int', 'integer', 'float', 'double', 'short', 'long', 'non_negative_integer', 'non_negative_float'].includes(typeStr);
+
+  if ((isNumericType || typeStr === 'color')) {
+    if (valueStr.startsWith('&HFF')) {
+      // Convert DesignerProperty color value to Hex code
+      valueStr = valueStr.replace('&HFF', '#');
+    } else if (valueStr.startsWith('&H00')) {
+      // Convert DesignerProperty color value to Hex code
+      valueStr = valueStr.replace('&H00', '#');
+    }
+  }
+
+  if (valueStr.startsWith('#') && (isNumericType || typeStr === 'color')) {
+    xmlString += '<block type="color_white">';
+    xmlString += '<field name="COLOR">' + valueStr.toLowerCase() + '</field></block>';
+  } else if (isNumericType) {
+    xmlString += '<block type="math_number">';
+    xmlString += '<field name="NUM">' + valueStr + '</field></block>';
+  } else if (typeStr === 'boolean') {
+    xmlString += '<block type="logic_boolean">';
+    xmlString += '<field name="BOOL">' + valueStr.toUpperCase() + '</field></block>';
+  } else if (typeStr === 'list') {
+    xmlString += '<block type="lists_create_with">';
+    if (!valueStr.trim()) {
+      xmlString += '<mutation items="0"></mutation>';
+    } else {
+      var items = valueStr.split(',').map(item => item.trim());
+      xmlString += '<mutation items="' + items.length + '"></mutation>';
+      var blockType = 'text';
+      var fieldName = 'TEXT';
+      if (param.defaultValueType !== undefined && param.defaultValueType === 'number') {
+        blockType = 'math_number';
+        fieldName = 'NUM';
+      } else if (param.defaultValueType !== undefined && param.defaultValueType === 'color') {
+        blockType = 'color_white';
+        fieldName = 'COLOR';
+      } else if (param.defaultValueType !== undefined && param.defaultValueType === 'boolean') {
+        blockType = 'logic_boolean';
+        fieldName = 'BOOL';
+      }
+      items.forEach((item, idx) => {
+        xmlString += '<value name="ADD' + idx + '">' +
+          '<block type="' + blockType + '"><field name="' + fieldName + '">' + this.escapeXml(item) + '</field></block></value>';
+      });
+    }
+    xmlString += '</block>';
+  } else if (typeStr === 'dictionary') {
+    xmlString += '<block type="dictionaries_create_with">';
+    if (!valueStr.trim()) {
+      xmlString += '<mutation items="0"></mutation>';
+    } else {
+      var items = valueStr.split(',').map(item => item.trim());
+      xmlString += '<mutation items="' + items.length + '"></mutation>';
+      items.forEach((item, idx) => {
+        var [key, value] = item.split(':');
+        xmlString += '<value name="ADD' + idx + '"><block type="pair">';
+        xmlString += '<value name="KEY"><block type="text"><field name="TEXT">' + this.escapeXml(key) + '</field></block></value>';
+        xmlString += '<value name="VALUE"><block type="text"><field name="TEXT">' + this.escapeXml(value) + '</field></block></value>';
+        xmlString += '</block></value>';
+      });
+    }
+    xmlString += '</block>';
+  } else if (typeStr === 'text' || typeStr === 'textArea' || typeStr === 'string') {
+    xmlString += '<block type="text"><field name="TEXT">' + this.escapeXml(valueStr) + '</field></block>';
+  } else {
+    // Return null is the type is unknown
+    return null;
+  }
+
+  xmlString += '</value></xml>';
+  return Blockly.utils.xml.textToDom(xmlString);
+};
+
+/**
+ * Escapes special characters for use in XML text nodes.
+ * @param {string} unsafe The string to escape.
+ * @return {string} The escaped string safe for XML.
+ */
+Blockly.Util.xml.escapeXml = function (unsafe) {
+  return unsafe.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+};

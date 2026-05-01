@@ -1,11 +1,12 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.scripts;
 
+import com.google.appinventor.components.annotations.DefaultValue;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
@@ -58,6 +59,7 @@ import java.lang.reflect.Type;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -280,6 +282,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * The helper key associated with this parameter, if any.
      */
     protected HelperKey helper;
+
+    /**
+     * Default value for this parameter
+     */
+    protected String defaultValue;
+
+    /**
+     * Default value type
+     */
+    protected String defaultValueType;
 
     /**
      * Constructs a Parameter.
@@ -718,6 +730,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private String componentInfoName;
     private boolean color;
     private HelperKey helper;
+    private String defaultValue;
+    private String defaultValueType;
 
     protected Property(String name, String description, String longDescription,
         PropertyCategory category, boolean userVisible, boolean deprecated) {
@@ -804,6 +818,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     protected boolean isColor() {
       return color;
+    }
+
+    protected String getDefaultValue() {
+      return defaultValue;
+    }
+
+    protected String getDefaultValueType() {
+      return defaultValueType;
     }
 
     /**
@@ -2006,6 +2028,21 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         if (ve.getAnnotation(IsColor.class) != null) {
           property.color = true;
         }
+        DefaultValue dv = ve.getAnnotation(DefaultValue.class);
+        if (dv != null) {
+          boolean isDesigner = element.getAnnotation(DesignerProperty.class) != null;
+          if (isDesigner) {
+            messager.printMessage(Kind.ERROR,
+                "The @DefaultValue annotation is not allowed here because this property already uses @DesignerProperty. "
+                    + "Please use the 'defaultValue' attribute within @DesignerProperty instead!",
+                ve);
+          }
+          ensureEachPair(dv, ve, javaTypeToYailType(typeMirror));
+          property.defaultValue = dv.value();
+          if (dv.type() != null && !dv.type().getType().trim().isEmpty()) {
+            property.defaultValueType = dv.type().getType();
+          }
+        }
       }
     }
 
@@ -2371,7 +2408,37 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       Parameter param = new Parameter(varElem.getSimpleName().toString(), type,
           varElem.getAnnotation(IsColor.class) != null);
       param.helper = elementToHelperKey(varElem, varElem.asType());
+
+      DefaultValue dv = varElem.getAnnotation(DefaultValue.class);
+      if (dv != null) {
+        Element methodElem = varElem.getEnclosingElement();
+        boolean isEvent = methodElem.getAnnotation(SimpleEvent.class) != null;
+        if (isEvent) {
+          messager.printMessage(Kind.ERROR,
+              "Default values cannot be assigned to Event parameters because they are values provided by the component!",
+              varElem);
+        }
+        ensureEachPair(dv, varElem, javaTypeToYailType(type));
+        param.defaultValue = dv.value();
+        if (dv.type() != null && !dv.type().getType().trim().isEmpty()) {
+          param.defaultValueType = dv.type().getType();
+        }
+      }
       return param;
+    }
+  }
+
+  private void ensureEachPair(DefaultValue dv, VariableElement ve, String type) {
+    if (dv.value() != null && !dv.value().trim().isEmpty()
+        && (type.equals("dictionary") || "dictionary".equals(dv.type().getType().trim()))) {
+      String[] pairs = dv.value().split(",");
+      for (String pair : pairs) {
+        String trimmed = pair.trim();
+        String[] parts = trimmed.split(":", 2);
+        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+          messager.printMessage(Kind.ERROR, "Each dictionary entry must be a 'key:value' pair. Problem found in: '" + trimmed + "'", ve);
+        }
+      }
     }
   }
 
