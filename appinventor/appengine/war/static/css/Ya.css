@@ -1793,6 +1793,13 @@ path.ode-SimpleMockMapFeature-selected {
   margin: 8px 16px;
 }
 
+.ode-WarningMessage {
+  color: #b45309;
+  font-weight: bold;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
 .ode-InfoMessage {
   font-weight: bold;
   font-size: 13px;

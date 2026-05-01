@@ -563,10 +563,12 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     if (components.size() > 1) {
       // TODO: Localize
       designProperties.setPropertiesCaption(components.size() + " components selected");
+      designProperties.setPropertiesExtension(null);
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
       designProperties.setPropertiesCaption(components.get(0).getName());
+      designProperties.setPropertiesExtension(components.get(0).getPropertiesPanelExtension());
     }
   }
 

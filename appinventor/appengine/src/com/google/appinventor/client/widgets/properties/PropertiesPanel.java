@@ -12,7 +12,9 @@ import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeLis
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,6 +34,8 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
   private final Label componentName;
   private final Map<String, FlowPanel> propertyPanels;
   private final Map<String, CollapsibleCategoryPanel> headers;
+  // Optional widget rendered below all property categories (e.g. "View Data" button).
+  private Widget extensionWidget = null;
 
   /**
    * Creates a new properties panel.
@@ -147,13 +151,14 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
   }
 
   /**
-   * Removes all properties from the properties panel.
+   * Removes all properties from the properties panel, including any extension widget.
    */
   public void clear() {
     propertyPanels.clear();
     headers.clear();
     panel.clear();
     componentName.setText("");
+    extensionWidget = null;
   }
 
   /**
@@ -175,6 +180,32 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
    */
   public void setPropertiesCaption(String name) {
     componentName.setText(name);
+  }
+
+  /**
+   * Renders an optional extension widget below all property categories.
+   * Passing {@code null} removes any previously set extension.
+   * Call this after {@link #setPropertiesCaption} when a single component is selected.
+   *
+   * @param ext widget to add (e.g. a "View Data" button), or {@code null} to clear
+   */
+  public void setPropertiesExtension(Widget ext) {
+    // Remove previous widget if present
+    if (extensionWidget != null) {
+      panel.remove(extensionWidget);
+      extensionWidget = null;
+    }
+    if (ext != null) {
+      // Visually separate the widget from the property categories.
+      HTML separator = new HTML("<hr style='margin:4px 0; border:none; "
+          + "border-top:1px solid var(--color-border, #ccc);' "
+          + "role='separator' aria-hidden='true'/>");
+      FlowPanel wrapper = new FlowPanel();
+      wrapper.add(separator);
+      wrapper.add(ext);
+      extensionWidget = wrapper;
+      panel.add(extensionWidget);
+    }
   }
 
   @Override

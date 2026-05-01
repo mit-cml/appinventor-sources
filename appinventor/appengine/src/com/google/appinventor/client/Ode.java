@@ -71,6 +71,8 @@ import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.clouddb.CloudDBDataService;
+import com.google.appinventor.shared.rpc.clouddb.CloudDBDataServiceAsync;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthService;
 import com.google.appinventor.shared.rpc.tokenauth.TokenAuthServiceAsync;
 import com.google.appinventor.shared.rpc.user.Config;
@@ -276,6 +278,9 @@ public class Ode implements EntryPoint {
   // Web service for component related operations
   private final ComponentServiceAsync componentService = GWT.create(ComponentService.class);
   private final AdminInfoServiceAsync adminInfoService = GWT.create(AdminInfoService.class);
+
+  // Web service for reading CloudDB data from the designer visualizer.
+  private final CloudDBDataServiceAsync cloudDBDataService = GWT.create(CloudDBDataService.class);
 
   //Web service for Token authentication operations
   private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
@@ -763,6 +768,7 @@ public class Ode implements EntryPoint {
     setupOrigin(componentService);
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
+    setupOrigin(cloudDBDataService);
 
     Promise.<Config>call(MESSAGES.serverUnavailable(),
         c -> userInfoService.getSystemConfig(sessionId, c))
@@ -1248,6 +1254,15 @@ public class Ode implements EntryPoint {
    */
   public TokenAuthServiceAsync getTokenAuthService(){
     return tokenAuthService;
+  }
+
+  /**
+   * Returns the CloudDB data service used by the designer visualizer.
+   *
+   * @return CloudDB data web service instance
+   */
+  public CloudDBDataServiceAsync getCloudDBDataService() {
+    return cloudDBDataService;
   }
 
   /**
