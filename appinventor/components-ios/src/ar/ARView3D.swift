@@ -67,7 +67,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   private var _trackingType: ARTrackingType = .worldTracking
   private var _configuration: ARConfiguration = ARWorldTrackingConfiguration()
-  private var _planeDetection: ARPlaneDetectionType = .horizontal
+  private var _planeDetection: ARPlaneDetectionType = .none
   private var _enableOcclusion: Bool = false
   private var _showWorldOrigin: Bool = false
   private var _showFeaturePoints: Bool = false
@@ -249,7 +249,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _trackingSet = true
     _trackingType = .worldTracking
     _planeDetectionSet = true
-    _planeDetection = .horizontal
+    _planeDetection = .none
     _lightingEstimationSet = true
     _lightingEstimationEnabled = false
     
@@ -490,24 +490,28 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           EventDispatcher.dispatchEvent(of: self, called: "Mesh with reconstruction enabled")
         } else {
           print("CONFIG: Scene reconstruction not supported on this device")
-          //worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+          worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
         }
         
       // Configure plane detection
         switch _planeDetection {
           case .horizontal:
             worldTrackingConfiguration.planeDetection = .horizontal
+            break
           case .vertical:
             worldTrackingConfiguration.planeDetection = .vertical
+            break
           case .both:
             worldTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+            break
           case .none:
+            worldTrackingConfiguration.planeDetection = []
             break
         }
         
         worldTrackingConfiguration.environmentTexturing = .none //.automatic
-      _arView.renderOptions.insert(.disableMotionBlur)
-      _arView.renderOptions.insert(.disableGroundingShadows)
+        _arView.renderOptions.insert(.disableMotionBlur)
+        _arView.renderOptions.insert(.disableGroundingShadows)
         worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
         worldTrackingConfiguration.detectionImages = getReferenceImages()
         _configuration = worldTrackingConfiguration
@@ -519,11 +523,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         switch _planeDetection {
             case .horizontal:
               geoTrackingConfiguration.planeDetection = .horizontal
+              break
             case .vertical:
               geoTrackingConfiguration.planeDetection = .vertical
+              break
             case .both:
               geoTrackingConfiguration.planeDetection = [.horizontal, .vertical]
+              break
             case .none:
+              geoTrackingConfiguration.planeDetection = []
               break
             }
         geoTrackingConfiguration.detectionImages = getReferenceImages()
@@ -2138,7 +2146,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Model = correctedModelObjString
       node.Initialize()
 
-      
       let groundLevel = GROUND_LEVEL
       let safeY = max(y, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
       

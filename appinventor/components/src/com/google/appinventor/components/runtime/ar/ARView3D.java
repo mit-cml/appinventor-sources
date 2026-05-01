@@ -1451,20 +1451,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         config.setLightEstimationMode(Config.LightEstimationMode.AMBIENT_INTENSITY);
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
         Log.i(LOG_TAG, "PlaneDetectionType() = " + PlaneDetectionType());
-        // This is the critical part for plane detection
-        if (PlaneDetectionType() == 1) {
+        // we are on a drop down that starts with 1, not zero
+        int NONE = 1;
+        if (PlaneDetectionType() == NONE + 1) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
-        } else if (PlaneDetectionType() == 2) {
+        } else if (PlaneDetectionType() == NONE + 2) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.VERTICAL);
-        } else if (PlaneDetectionType() == 3) {
+        } else if (PlaneDetectionType() == NONE + 3) {
             config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
         } else {
-            //config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
-            config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL);
+            config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
         }
 
         floorManager = new FloorPlaneManager();
-
 
         boolean isGeospatialSupported =
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
