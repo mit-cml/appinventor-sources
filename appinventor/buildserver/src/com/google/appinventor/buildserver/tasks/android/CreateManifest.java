@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2025 MIT, All rights reserved
+// Copyright 2021-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -26,8 +26,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -255,6 +257,16 @@ public class CreateManifest implements AndroidTask {
       // Write theme info if we are not using the "Classic" theme (i.e., no theme)
       //      if (!"Classic".equalsIgnoreCase(project.getTheme())) {
       out.write("android:theme=\"@style/AppTheme\" ");
+
+      // Write all the user provided attributes here
+      Map<String, String> userAttributes = context.getComponentInfo().getApplicationAttributes();
+      for (Map.Entry<String, String> entry : userAttributes.entrySet()) {
+        String key = entry.getKey();
+        if (isAllowedAttribute(key)) {
+          out.write("android:" + key + "=\"" + entry.getValue() + "\" ");
+        }
+      }
+
       out.write(">\n");
 
       out.write("<uses-library android:name=\"org.apache.http.legacy\" "
@@ -509,5 +521,13 @@ public class CreateManifest implements AndroidTask {
 
   private String cleanName(String name) {
     return name.replace("&", "and");
+  }
+
+  private boolean isAllowedAttribute(String key) {
+    // Prevents overriding these important attributes
+    List<String> values = Arrays.asList("debuggable", "label",
+      "networkSecurityConfig", "requestLegacyExternalStorage", "preserveLegacyExternalStorage",
+      "icon", "roundIcon", "name", "theme");
+    return !values.contains(key);
   }
 }
