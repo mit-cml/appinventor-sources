@@ -271,6 +271,7 @@ public final class ErrorMessages {
 
   // Augmented Reality Errors
   public static final int ERROR_INVALID_CONFIGURATION_VALUE = 3700;
+  public static final int WRONG_MODEL_FORMAT = 3701;
 
   //SpeechRecognizer Errors
   public static final int ERROR_AUDIO = 3801;
@@ -720,6 +721,8 @@ public final class ErrorMessages {
     // Augmented Reality errors
     errorMessages.put(ERROR_INVALID_CONFIGURATION_VALUE,
         "Invalid value %1$d given for ARConfigurationType.  Valid settings are 1, 2, or 3.");
+    errorMessages.put(WRONG_MODEL_FORMAT,
+        "Invalid format %1$d given for ModelNode.  Valid format is GLB");
 
     //SpeechRecognizer Errors
     errorMessages.put(ERROR_AUDIO, "Audio Recording Error");

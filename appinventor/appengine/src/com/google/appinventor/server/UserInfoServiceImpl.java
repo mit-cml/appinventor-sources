@@ -246,4 +246,5 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     }
       storageIo.uploadRawUserFile(userInfoProvider.getUserId(), APPSTORE_CREDENTIALS_FILENAME, encrypted);
   }
+
 }

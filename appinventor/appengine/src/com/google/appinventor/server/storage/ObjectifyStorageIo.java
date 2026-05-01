@@ -6,26 +6,31 @@
 
 package com.google.appinventor.server.storage;
 
-import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
-import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
-
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.appidentity.AppIdentityServiceFailureException;
+
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+
 import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.memcache.Expiration;
+
 import com.google.apphosting.api.ApiProxy;
+
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
+
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
+
+import com.google.appinventor.server.properties.json.ServerJsonParser;
+
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
 import com.google.appinventor.server.storage.StoredData.Backpack;
@@ -34,37 +39,48 @@ import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
-import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.server.storage.StoredData.PWData;
+import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.SplashData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
-import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
+
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONValue;
-import com.google.appinventor.server.properties.json.ServerJsonParser;
+
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
+
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+
 import com.google.appinventor.shared.rpc.user.SplashConfig;
 import com.google.appinventor.shared.rpc.user.User;
+
 import com.google.appinventor.shared.settings.Settings;
+
 import com.google.appinventor.shared.storage.StorageUtil;
+
 import com.google.common.annotations.VisibleForTesting;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+
 import com.google.common.collect.Lists;
+
 import com.google.common.io.ByteStreams;
+
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -73,6 +89,9 @@ import com.googlecode.objectify.Query;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
+import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENTIALS_FILENAME;
 
 // GCS imports
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
@@ -108,6 +127,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import com.google.appinventor.shared.util.AccountUtil;
 
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
@@ -342,27 +362,41 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   // Get User from email address alone. This version will create the user
-  // if they don't exist
+  // if the create flag is true
   @Override
-  public User getUserFromEmail(String email) {
+  public User getUserFromEmail(String email, boolean create) {
     String emaillower = email.toLowerCase();
     LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
     Objectify datastore = ObjectifyService.begin();
     String newId = UUID.randomUUID().toString();
     // First try lookup using entered case (which will be the case for Google Accounts)
     UserData user = datastore.query(UserData.class).filter("email", email).get();
+    if (email == null ) {
+      user = createUser(datastore, newId, email);
+      User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
+      retUser.setPassword(user.password);
+      return retUser;
+    }
     if (user == null) {
       LOG.info("getUserFromEmail: first attempt failed using " + email);
       // Now try lower case version
       user = datastore.query(UserData.class).filter("emaillower", emaillower).get();
-      if (user == null) {       // Finally, create it (in lower case)
+      if (user == null && create) {       // Finally, create it (in lower case)
         LOG.info("getUserFromEmail: second attempt failed using " + emaillower);
         user = createUser(datastore, newId, email);
+      } else {
+        return null;
       }
     }
     User retUser = new User(user.id, email, user.tosAccepted, false, user.sessionid);
     retUser.setPassword(user.password);
     return retUser;
+  }
+
+  @Override
+  public void createUser(String userId, String email) {
+    Objectify datastore = ObjectifyService.begin();
+    createUser(datastore, userId, email);
   }
 
   private UserData createUser(Objectify datastore, String userId, String email) {
@@ -1008,30 +1042,6 @@ public class ObjectifyStorageIo implements StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return projectHistory.t;
-  }
-
-  // JIS XXX
-
-  @Override
-  public long getProjectDateCreated(final String userId, final long projectId) {
-    final Result<Long> dateCreated = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            dateCreated.t = pd.dateCreated;
-          } else {
-            dateCreated.t = (long) 0;
-          }
-        }
-      }, true);
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return dateCreated.t;
   }
 
   @Override
@@ -2872,6 +2882,43 @@ public class ObjectifyStorageIo implements StorageIo {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
     return result.t;
+  }
+
+  @Override
+    public User createAnonymousAccount() {
+    String strAnonId = AccountUtil.generateAccountId();
+    String strUserId = UUID.randomUUID().toString();
+    Objectify datastore = ObjectifyService.begin();
+    int trys = 0;
+    while (trys < 10) {         // Up to 10 attempts to find available ID
+      UserData user = datastore.query(UserData.class).filter("email", strAnonId).get();
+      if (user == null) {
+        break;
+      }
+      strAnonId = AccountUtil.generateAccountId();
+      trys += 1;
+    }
+    if (trys >= 10) {
+      throw CrashReport.createAndLogError(LOG, null, "Too Many Attempts to create Anon Id", null);
+    }
+    return getUser(strUserId, strAnonId);
+  }
+
+  @Override
+  public void setProjectName(final String userId, final long projectId, final String name) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          pd.name = name;
+          datastore.put(pd);
+        }
+      }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+        collectUserProjectErrorInfo(userId, projectId), e);
+    }
   }
 
   /*
