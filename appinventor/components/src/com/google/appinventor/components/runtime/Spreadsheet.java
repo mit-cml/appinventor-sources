@@ -94,7 +94,7 @@ import java.util.regex.Pattern;
  *
  * Instructions on how to create the Service Account, as well as where to find
  * other relevant information for using the Google Sheets Component, can be
- * found <a href='/reference/other/googlesheets-api-setup.html'>here</a>.
+ * found <a href='https://docs.google.com/document/d/10PcV0WGgtedebzxn1H1tu58BP1cSFOIVSUGPwVQ_rsQ/edit?tab=t.0'>here</a>.
  *
  * Row and column numbers are 1-indexed.
  */
@@ -108,7 +108,7 @@ import java.util.regex.Pattern;
       "finally create a Service Account for the Sheets API.</p>" +
       "<p>Instructions on how to create the Service Account, as well as where to " +
       "find other relevant information for using the Spreadsheet Component, " +
-      "can be found <a href='/reference/other/googlesheets-api-setup.html'>" +
+      "can be found <a href='https://docs.google.com/document/d/10PcV0WGgtedebzxn1H1tu58BP1cSFOIVSUGPwVQ_rsQ/edit?tab=t.0'>" +
       "here</a>.</p>",
     nonVisible = true,
     iconName = "images/spreadsheet.png")
