@@ -677,7 +677,12 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-ComponentHelpPopup-Link a {
   color: clr-primary-600;
 }
-  
+
+.ode-DialogBox .dialogContent td .ode-ComponentHelpPopup-Link a {
+  color: clr-primary-600;
+  text-decoration: underline;
+}
+
 .compiler-ErrorMarker {
   color:  v-red;
 }

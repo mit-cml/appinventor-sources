@@ -1076,6 +1076,10 @@ select.ode-PropertyEditor[disabled] {
     color: selected-color;
 }
 
+.ode-DialogBox .download-button span {
+  color: gray-800;
+}
+
 .ode-SimpleMockContainer {
     border: 2px solid tab-bar-color;
   }
@@ -2009,7 +2013,8 @@ display: contents;
   border-bottom: 1px solid gray-400;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+.ode-CollapsablePanel .gwt-DisclosurePanel .header,
+.ode-PaletteCategoryHeader {
   border-bottom: 1px solid gray-400;
   border-top: 0px;
   cursor: pointer;
@@ -2019,7 +2024,8 @@ display: contents;
   height: unset;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .content {
+.ode-CollapsablePanel .gwt-DisclosurePanel .content,
+.ode-PaletteCategoryContentInner {
   padding: 0px;
   border: 0px;
   margin-left: 0px;
