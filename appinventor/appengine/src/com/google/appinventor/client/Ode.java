@@ -768,6 +768,7 @@ public class Ode implements EntryPoint {
     setupOrigin(componentService);
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
+    setupOrigin(cloudDBDataService);
 
     Promise.<Config>call(MESSAGES.serverUnavailable(),
         c -> userInfoService.getSystemConfig(sessionId, c))
