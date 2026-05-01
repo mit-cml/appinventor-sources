@@ -524,6 +524,7 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
             this.setContents(contents, true);
             if (contents.length === 0) {
               this.shrink();
+              this.hide();
             }
             if (this.flyout_.isVisible()) {
               this.isAdded = true;
