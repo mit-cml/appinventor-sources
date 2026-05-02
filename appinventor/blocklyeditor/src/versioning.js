@@ -3163,7 +3163,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // The Language property was added.
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // The AvailableLanguages and AvailableCountries properties were added.
+    4: "noUpgrade"
 
   }, // End SpeechRecognizer upgraders
 

@@ -10,15 +10,18 @@ package com.google.appinventor.components.runtime;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.RECORD_AUDIO;
 
-import android.text.TextUtils;
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 
 import android.Manifest;
 
 import android.os.Build;
+import android.os.Bundle;
 
 import android.speech.RecognizerIntent;
+
+import android.text.TextUtils;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -36,6 +39,13 @@ import com.google.appinventor.components.annotations.androidmanifest.IntentFilte
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+
+import com.google.appinventor.components.runtime.util.YailList;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ![SpeechRecognizer icon](images/speechrecognizer.png)
@@ -70,6 +80,9 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
 
   private String language = "";
 
+  private YailList availableLanguages = YailList.makeEmptyList();
+  private YailList availableCountries = YailList.makeEmptyList();
+
   /**
    * Creates a SpeechRecognizer component.
    *
@@ -84,6 +97,38 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
     recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
     recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
     UseLegacy(useLegacy);
+    querySupportedLanguages();
+  }
+
+  /**
+   * List of the country codes available on this device for use with
+   * SpeechRecognizer. The country codes are derived from the region subtags of
+   * the supported BCP-47 language tags (for example, US from en-US). An empty
+   * list is returned if the device does not support speech recognition or if
+   * the list has not yet been populated.
+   */
+  @SimpleProperty(description = "List of the country codes available on this device "
+      + "for use with SpeechRecognizer. The country codes are derived from the "
+      + "region subtags of the supported language tags.",
+      category = PropertyCategory.BEHAVIOR)
+  public YailList AvailableCountries() {
+    return availableCountries;
+  }
+
+  /**
+   * List of the languages available on this device for use with SpeechRecognizer.
+   * The languages are provided as
+   * [BCP-47](https://en.wikipedia.org/wiki/IETF_language_tag) language tags
+   * such as en-US and es-MX. An empty list is returned if the device does not
+   * support speech recognition or if the list has not yet been populated.
+   */
+  @SimpleProperty(description = "List of the languages available on this device "
+      + "for use with SpeechRecognizer. The languages are provided as BCP-47 "
+      + "language tags such as en-US and es-MX. An empty list is returned if "
+      + "the device does not support speech recognition.",
+      category = PropertyCategory.BEHAVIOR)
+  public YailList AvailableLanguages() {
+    return availableLanguages;
   }
 
   /**
@@ -258,5 +303,57 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
     } else {
       speechRecognizerController = new ServiceBasedSpeechRecognizer(container, recognizerIntent);
     }
+  }
+
+  /**
+   * Queries the device for supported speech recognition languages by sending
+   * an ordered broadcast with
+   * {@link RecognizerIntent#ACTION_GET_LANGUAGE_DETAILS}. The results are
+   * cached in {@link #availableLanguages} and {@link #availableCountries}
+   * when the broadcast receiver fires.
+   */
+  private void querySupportedLanguages() {
+    // ACTION_GET_LANGUAGE_DETAILS requires API 11 (Honeycomb).
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+      return;
+    }
+    Intent detailsIntent =
+        new Intent(RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS);
+    container.$context().sendOrderedBroadcast(detailsIntent, null,
+        new BroadcastReceiver() {
+          @Override
+          public void onReceive(Context context, Intent intent) {
+            Bundle extras = getResultExtras(true);
+            if (extras == null) {
+              return;
+            }
+            ArrayList<String> supported = extras.getStringArrayList(
+                RecognizerIntent.EXTRA_SUPPORTED_LANGUAGES);
+            if (supported == null || supported.isEmpty()) {
+              return;
+            }
+            supported.removeAll(Collections.singleton(null));
+            Collections.sort(supported);
+            availableLanguages = YailList.makeList(supported);
+
+            Set<String> regions = new HashSet<String>();
+            for (String tag : supported) {
+              int sep = tag.lastIndexOf('-');
+              if (sep < 0) {
+                sep = tag.lastIndexOf('_');
+              }
+              if (sep >= 0 && sep < tag.length() - 1) {
+                String region = tag.substring(sep + 1);
+                if (region.length() == 2) {  // ISO 3166-1 alpha-2
+                  regions.add(region);
+                }
+              }
+            }
+            ArrayList<String> regionList =
+                new ArrayList<String>(regions);
+            Collections.sort(regionList);
+            availableCountries = YailList.makeList(regionList);
+          }
+        }, null, 0, null, null);
   }
 }
