@@ -788,6 +788,7 @@ Blockly.Blocks['procedures_defanonnoreturn'] = {
   dispose: function() {
     Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
   },
+  withLexicalVarsAndPrefix: Blockly.Blocks.procedures_defnoreturn.withLexicalVarsAndPrefix,
   getVars: Blockly.Blocks.procedures_defnoreturn.getVars,
   declaredNames: Blockly.Blocks.procedures_defnoreturn.declaredNames,
   renameVar: Blockly.Blocks.procedures_defnoreturn.renameVar,
