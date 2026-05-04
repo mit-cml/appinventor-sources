@@ -1346,6 +1346,10 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Added animated GIF support with Animated property and ResetAnimation method.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -1453,6 +1457,10 @@ public final class YoungAndroidFormUpgrader {
         }
       }
       srcCompVersion = 10;
+    }
+    if (srcCompVersion < 11) {
+      // Added animated GIF support with Animated property and ResetAnimation method.
+      srcCompVersion = 11;
     }
     return srcCompVersion;
   }

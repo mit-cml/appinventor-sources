@@ -444,6 +444,9 @@ Component for displaying images and basic animations.
 {:id="Image.AlternateText" .text .wo} *AlternateText*
 : A written description of what the image looks like.
 
+{:id="Image.Animated" .boolean} *Animated*
+: Controls whether an animated GIF image is playing. Setting to true resumes animation; setting to false pauses at the current frame. Has no effect on non-animated images.
+
 {:id="Image.Animation" .text .wo .bo} *Animation*
 : This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
@@ -500,8 +503,9 @@ Component for displaying images and basic animations.
 ### Methods  {#Image-Methods}
 
 {:.methods}
-None
 
+{:id="Image.ResetAnimation" class="method"} <i/> ResetAnimation()
+: Resets the animation of an animated GIF image to the first frame. If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.
 
 ## Label  {#Label}
 

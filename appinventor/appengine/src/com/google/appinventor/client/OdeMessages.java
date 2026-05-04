@@ -4596,6 +4596,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String ResetMethods();
 
+  @DefaultMessage("Reset Animation")
+  @Description("")
+  String ResetAnimationMethods();
+
   @DefaultMessage("Resume")
   @Description("")
   String ResumeMethods();
@@ -5630,6 +5634,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("AbsoluteStrength")
   @Description("")
   String AbsoluteStrengthProperties();
+
+  @DefaultMessage("Animated")
+  @Description("")
+  String AnimatedProperties();
 
   @DefaultMessage("<multiple>")
   @Description("String shown when multiple components have different values for a property")

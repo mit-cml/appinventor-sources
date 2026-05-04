@@ -16,6 +16,7 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Movie;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -456,6 +457,61 @@ public class MediaUtil {
     } else {
       return result;
     }
+  }
+
+  /**
+   * Loads the image specified by mediaPath and returns a Drawable that may be animated
+   * (for GIF images). Uses {@link Movie} for animated GIF rendering, falling back to
+   * {@link BitmapDrawable} for static images or on failure.
+   *
+   * @param form      the Form
+   * @param mediaPath the path to the media
+   * @return a Drawable (possibly GifMovieDrawable for animated GIFs), or null
+   */
+  public static Drawable getDrawable(Form form, String mediaPath) throws IOException {
+    if (mediaPath == null || mediaPath.isEmpty()) {
+      return null;
+    }
+
+    // For GIF files, try Movie-based animation first (works on all API levels)
+    if (isGifPath(mediaPath)) {
+      try {
+        Drawable gifDrawable = loadGifDrawable(form, mediaPath);
+        if (gifDrawable != null) {
+          return gifDrawable;
+        }
+      } catch (Exception e) {
+        Log.w(LOG_TAG, "Movie-based GIF load failed for " + mediaPath, e);
+      }
+    }
+
+    return getBitmapDrawable(form, mediaPath);
+  }
+
+  private static boolean isGifPath(String path) {
+    if (path == null) return false;
+    String lower = path.toLowerCase();
+    // Strip query params / fragments for URL paths
+    int q = lower.indexOf('?');
+    if (q >= 0) lower = lower.substring(0, q);
+    int h = lower.indexOf('#');
+    if (h >= 0) lower = lower.substring(0, h);
+    return lower.endsWith(".gif");
+  }
+
+  /**
+   * Attempts to load an animated GIF using {@link Movie}, returning a
+   * {@link GifMovieDrawable} if the GIF is animated, or null otherwise.
+   */
+  private static Drawable loadGifDrawable(Form form, String mediaPath) throws IOException {
+    Movie movie;
+    try (InputStream is = openMedia(form, mediaPath)) {
+      movie = Movie.decodeStream(is);
+    }
+    if (movie != null && movie.duration() > 0 && movie.width() > 0 && movie.height() > 0) {
+      return new GifMovieDrawable(movie);
+    }
+    return null;
   }
 
   /**
