@@ -118,6 +118,7 @@
     <script type="text/javascript" src="<%= odeBase %>ode/cdnok.js"></script>
     <script type="text/javascript" src="static/js/jszip.min.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/ode.nocache.js"></script>
+    <script type="text/javascript" src="static/js/appinventor-yjs.js"></script>
     <script src="static/leaflet/leaflet.js"></script>
     <script src="static/leaflet/leaflet.toolbar.js"></script>
     <script src="static/leaflet/leaflet-vector-markers.min.js"></script>

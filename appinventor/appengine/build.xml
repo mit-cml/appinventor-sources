@@ -186,6 +186,7 @@
         <include name="font-awesome/**/*"/>
       </fileset>
     </copy>
+    <copy todir="${build.static.dir}/js/" file="${lib.dir}/yjs/appinventor-yjs.js" />
   </target>
 
   <target name="CopyToBuildWarPost">

@@ -19,6 +19,9 @@ import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.yjs.Doc;
+import com.google.appinventor.client.editor.yjs.YMap;
+import com.google.appinventor.client.editor.yjs.YArray;
 import com.google.appinventor.client.editor.youngandroid.palette.YoungAndroidPalettePanel;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
@@ -87,6 +90,17 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
    */
   private final Map<String, MockComponent> componentsDb = new HashMap<>();
 
+  private Doc yDoc = new Doc();
+
+  // private Doc yDoc;
+  // private Doc yDoc = initDoc();
+
+  // private native Doc initDoc() /*-{
+  //   console.log('initDoc called, top.Y:', top.Y);
+  //   return new top.Y.Doc();
+  // }-*/;
+
+
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 
   /**
@@ -131,6 +145,12 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   public Map<String, MockComponent> getComponentsDb() {
     return componentsDb;
   }
+
+  @Override
+  public Doc getDoc() {
+    return yDoc;
+  }
+
 
   @Override
   public AbstractPalettePanel.Filter getPaletteFilter() {
@@ -186,6 +206,12 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   public void onComponentPropertyChanged(MockComponent component,
       String propertyName, String propertyValue) {
     super.onComponentPropertyChanged(component, propertyName, propertyValue);
+    // add fix here then try modifying in mock container instead following editable properties
+
+    // get component map
+    // YMap componentMap = (YMap) yDoc.getMap("components").get(component.getUuid());
+    // componentMap.set(propertyName, propertyValue);
+    // LOG.info("map set");
     if (isLoadComplete() && component.isPropertyPersisted(propertyName)) {
       updatePhone();          // Push changes to the phone if it is connected
     }
@@ -319,6 +345,11 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
 
   @Override
   protected void onFileLoaded(String content) {
+    // initWebsocketProvider(String.valueOf(getProjectId()));
+
+    initWebsocketProvider(String.valueOf(getProjectId()), () -> {
+      LOG.info("in YA form editor, websocket prov ready");
+    });
     JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(
         content, JSON_PARSER);
     try {
@@ -353,7 +384,60 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     // of in the blocks editor so that we don't risk it missing any updates.
     root.addDesignerChangeListener(((YaProjectEditor) projectEditor)
         .getBlocksFileEditor(root.getName()));
+
+    // LOG.info("ID" + getProjectId());
+    // initWebsocketProvider(String.valueOf(getProjectId()));
+
+    
+
   }
+  
+  // private native void initWebsocketProvider(String projectId) /*-{
+  //   console.log('project id:' + projectId);
+  //   var self = this;
+  //   var doc = this.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::yDoc;
+  //   console.log("client id: " + doc.clientID)
+  //   var WebsocketProvider = top.WebsocketProvider;
+  //   var provider = new WebsocketProvider(
+  //     'ws://localhost:1234',
+  //     projectId,
+  //     doc
+  //   );
+  //   console.log("provider.synced: " +provider.synced);
+  //   console.log("provider room: " + provider.roomname);
+  //   provider.on('status', function(e) {
+  //     console.log('YDoc status:', e.status);
+  //   });
+  //   provider.on('sync', function(isSynced) {
+  //     console.log('YDoc synced:', isSynced);
+  //   });
+
+  // }-*/;
+
+  private native void initWebsocketProvider(String projectId, Runnable afterSync) /*-{
+    console.log('top.Y:', top.Y);
+    console.log('top.WebsocketProvider:', top.WebsocketProvider);
+    
+    var Y = top.Y;
+    var doc = new Y.Doc();  // create using top.Y explicitly
+    console.log("doc id " + doc.clientID);
+    // Store yDoc so Java can access it
+    this.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::yDoc = doc;
+    
+    var provider = new top.WebsocketProvider('ws://localhost:1234', projectId, doc);
+
+    provider.on('status', function(e) { 
+      console.log('YaFormEditor status:', e.status); 
+    });
+    provider.on('sync', function(isSynced) {
+      console.log('YaFormEditor synced:', isSynced);
+      if (isSynced) {
+        console.log('Websocket provider ready!');
+        afterSync.@java.lang.Runnable::run()();
+      }
+    });
+  }-*/;
+
 
   /**
    * Reload the form's palette panel with a subset of all components.
@@ -555,6 +639,15 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     }
     return component;
   }
+
+  // @JsMethod
+  // public YMap getComponentMapByUuid(String uuid) {
+  //   YMap componentMap = (YMap) yDoc.getMap("components").get(uuid);
+  //   if (componentMap == null) {
+  //     throw new IllegalStateException("No component map exists with UUID \"" + uuid + "\"");
+  //   }
+  //   return componentMap;
+  // }
 
   /**
    * Converts JSON string to JSON object needed to create component.

@@ -31,6 +31,9 @@ import com.google.appinventor.client.editor.simple.palette.SimplePalettePanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.client.editor.yjs.Doc;
+import com.google.appinventor.client.editor.yjs.YMap;
+import com.google.appinventor.client.editor.yjs.YArray;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
@@ -591,6 +594,8 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
 
   public abstract Map<String, MockComponent> getComponentsDb();
 
+  public abstract Doc getDoc();
+
   protected MockComponent createMockComponent(JSONObject properties, MockContainer container, String rootType) {
     return createMockComponent(properties, container, rootType, null);
   }
@@ -677,13 +682,30 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       mockComponent.changeProperty(PROPERTY_NAME_NAME, componentName);
     }
 
+    YMap yComponentsMap = getDoc().getMap("components"); //map uuid to component
+    YMap entry = new YMap(); 
+
     // Set component properties
     for (String name : properties.keySet()) {
       if (name.charAt(0) != '$') { // Ignore special properties (name, type and nested components)
         mockComponent.changeProperty(name, properties.get(name).asString().getString());
+        entry.set(name, properties.get(name).asString().getString());
       }
     }
     componentsDb.put(mockComponent.getUuid(), mockComponent);
+    entry.set("$Name", mockComponent.getName()); // reflect any rename
+    entry.set("Uuid",  mockComponent.getUuid());
+    entry.set("$Components", new YArray());
+
+    yComponentsMap.set(mockComponent.getUuid(), entry);
+
+    // add UUID of nested componets to $Components in parent
+    if (parent != null) {
+      YMap parentEntry = (YMap) yComponentsMap.get(((MockComponent) parent).getUuid());
+      YArray parentChildren = (YArray) parentEntry.get("$Components");
+
+      parentChildren.push(new Object[]{mockComponent.getUuid()});
+    }
 
     // Add component type to the blocks editor
     BlocksEditor<?, ?> blockEditor = (BlocksEditor<?, ?>) projectEditor.getFileEditor(sourceNode.getEntityName(), BlocksEditor.EDITOR_TYPE);

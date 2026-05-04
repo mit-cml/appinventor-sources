@@ -19,6 +19,9 @@ import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.yjs.Doc;
+import com.google.appinventor.client.editor.yjs.YMap;
+import com.google.appinventor.client.editor.yjs.YArray;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.ClonedWidget;
@@ -319,6 +322,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   // Editor of Simple form source file the component belongs to
   protected final SimpleEditor editor;
 
+  // YDoc that the component belongs to
+  protected Doc yDoc;
+
   private final String type;
   private ComponentDefinition componentDefinition;
   private Image iconImage;
@@ -420,6 +426,15 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       addTouchEndHandler(dragSourceSupport);
       addTouchCancelHandler(dragSourceSupport);
     }
+    if (editor instanceof YaFormEditor) {
+      // LOG.info("editor is yaform editor");
+      yDoc = ((YaFormEditor) editor).getDoc(); //editor is ya form editor
+      LOG.info("doc found");
+    }
+    else {
+      yDoc = null;
+    }
+   
   }
 
   /**
@@ -687,6 +702,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public EditableProperties getProperties() {
     return properties;
   }
+
+  // public YMap getMapProperties() {
+  //   return yDoc.getComponentMapByUuid()
+  // }
 
   /**
    * Returns the children of this component. Note that the return value will
@@ -1185,6 +1204,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public void onDesignPreviewChanged() {
   }
 
+private native void logDocId() /*-{
+  var doc = this.@com.google.appinventor.client.editor.simple.components.MockComponent::yDoc;
+  console.log('mockcomponent doc clientID:', doc.clientID);
+}-*/;
+
   // PropertyChangeListener implementation
 
   @Override
@@ -1201,6 +1225,14 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
        * are not in containers.
        */
       getRoot().fireComponentPropertyChanged(this, propertyName, newValue);
+
+      // move outside if/elif?
+      YMap componentMap = (YMap) yDoc.getMap("components").get(this.getUuid());
+      if (componentMap != null) {
+        LOG.info("setting property");
+        componentMap.set(propertyName, newValue);
+      }
+      logDocId();
     }
   }
 
