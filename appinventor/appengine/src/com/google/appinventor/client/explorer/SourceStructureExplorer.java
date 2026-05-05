@@ -281,6 +281,14 @@ public class SourceStructureExplorer extends Composite {
           position = (relY < elHeight / 2) ? -1 : 1;
         }
 
+        // Suppress indicator for positions that would be rejected by canMoveTo
+        SourceStructureExplorerItem sourceItem = nameToItem.get(draggingName);
+        if (sourceItem == null || !sourceItem.canMoveTo(targetItem, position)) {
+          hideIndicator();
+          hoverName = null;
+          return;
+        }
+
         // Update visual indicator
         hoverName = targetName;
         hoverPosition = position;

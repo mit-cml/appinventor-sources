@@ -55,6 +55,17 @@ public interface SourceStructureExplorerItem {
   boolean isContainer();
 
   /**
+   * Returns true if this item can be moved to the given position relative to target.
+   * Used to suppress the drop indicator for invalid positions during drag-over.
+   *
+   * @param target the candidate drop target
+   * @param position -1 before, 0 into (last child), 1 after
+   */
+  default boolean canMoveTo(SourceStructureExplorerItem target, int position) {
+    return true;
+  }
+
+  /**
    * Moves this item relative to the given target.
    *
    * @param target the drop target item

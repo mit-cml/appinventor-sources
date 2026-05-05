@@ -1402,44 +1402,71 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
 
     @Override
-    public void moveTo(SourceStructureExplorerItem targetItem, int position) {
+    public boolean canMoveTo(SourceStructureExplorerItem targetItem, int position) {
       if (!(targetItem instanceof ComponentExplorerItem)) {
+        return false;
+      }
+      MockComponent source = MockComponent.this;
+      MockComponent target = ((ComponentExplorerItem) targetItem).getMockComponent();
+      if (source == target || isAncestorOf(source, target)) {
+        return false;
+      }
+      MockContainer targetContainer;
+      int insertIndex;
+      if (position == 0) {
+        if (!(target instanceof MockContainer)) {
+          return false;
+        }
+        targetContainer = (MockContainer) target;
+        insertIndex = targetContainer.getChildren().size();
+      } else {
+        targetContainer = target.getContainer();
+        if (targetContainer == null) {
+          return false;
+        }
+        int targetIdx = targetContainer.getChildren().indexOf(target);
+        insertIndex = (position < 0) ? targetIdx : targetIdx + 1;
+      }
+      if (!source.isVisibleComponent() && !targetContainer.isRoot()) {
+        return false;
+      }
+      List<MockComponent> currentChildren = targetContainer.getChildren();
+      if (source.isVisibleComponent()) {
+        for (int i = 0; i < insertIndex && i < currentChildren.size(); i++) {
+          MockComponent sibling = currentChildren.get(i);
+          if (sibling != source && !sibling.isVisibleComponent()) {
+            return false;
+          }
+        }
+      } else {
+        for (int i = insertIndex; i < currentChildren.size(); i++) {
+          MockComponent sibling = currentChildren.get(i);
+          if (sibling != source && sibling.isVisibleComponent()) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    @Override
+    public void moveTo(SourceStructureExplorerItem targetItem, int position) {
+      if (!canMoveTo(targetItem, position)) {
         return;
       }
       MockComponent source = MockComponent.this;
       MockComponent target = ((ComponentExplorerItem) targetItem).getMockComponent();
 
-      if (source == target) {
-        return;
-      }
-      // Cannot drop a component into one of its own descendants
-      if (isAncestorOf(source, target)) {
-        return;
-      }
-
       // Determine target container and insertion index
       MockContainer targetContainer;
       int insertIndex;
       if (position == 0) {
-        // Drop INTO target — target must be a container
-        if (!(target instanceof MockContainer)) {
-          return;
-        }
         targetContainer = (MockContainer) target;
         insertIndex = targetContainer.getChildren().size();
       } else {
-        // Drop BEFORE (position < 0) or AFTER (position > 0) target
         targetContainer = target.getContainer();
-        if (targetContainer == null) {
-          return; // target is root — can't insert before/after it
-        }
         int targetIdx = targetContainer.getChildren().indexOf(target);
         insertIndex = (position < 0) ? targetIdx : targetIdx + 1;
-      }
-
-      // Non-visible components must remain at the root (Screen) level
-      if (!source.isVisibleComponent() && !targetContainer.isRoot()) {
-        return;
       }
 
       // Handle coordinate properties when moving to/from AbsoluteArrangement
