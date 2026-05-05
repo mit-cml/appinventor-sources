@@ -202,7 +202,18 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
       refreshForm();
     }
 
+    onChildAdded(component);
     getRoot().fireComponentAdded(component);
+  }
+
+  /**
+   * Hook called after a child component has been added to this container.
+   * Subclasses can override to perform post-add initialization.
+   *
+   * @param component the component that was just added
+   */
+  protected void onChildAdded(MockComponent component) {
+    // Default: no-op
   }
 
   /**
