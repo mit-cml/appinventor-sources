@@ -970,6 +970,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("ARIA label for palette search box.")
   String paletteSearchAriaLabel();
 
+  @DefaultMessage("Search results")
+  @Description("ARIA label for palette search results list.")
+  String paletteSearchResultsAriaLabel();
+
   // Used in boxes/ProjectListBox.java
 
   @DefaultMessage("Projects")

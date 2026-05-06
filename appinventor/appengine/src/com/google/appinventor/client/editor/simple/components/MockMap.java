@@ -153,6 +153,13 @@ public final class MockMap extends MockContainer {
     return ACCEPTABLE_TYPES.contains(type);
   }
 
+  @Override
+  protected void onChildAdded(MockComponent component) {
+    if (component instanceof MockMapFeature) {
+      ((MockMapFeature) component).addToMap(this);
+    }
+  }
+
   private void setBackgroundColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
       text = "&HFFFFFFFF";

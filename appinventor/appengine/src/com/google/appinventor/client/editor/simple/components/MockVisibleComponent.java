@@ -175,13 +175,12 @@ public abstract class MockVisibleComponent extends MockComponent {
   }
 
   private void setVisibleProperty(String text) {
-    boolean visible = Boolean.parseBoolean(text);
-    if (!visible && !editor.isLoadComplete()) {
-      // As we are loading the scm file and encounter a visble property being set to false, set the
-      // expanded field to false. This will make that branch of the components tree initially
-      // collapsed.
-      expanded = false;
-    }
+  }
+
+  @Override
+  protected boolean isInitiallyExpanded() {
+    String visible = properties.getPropertyValue("Visible");
+    return visible == null || !visible.equalsIgnoreCase("false");
   }
 
   // PropertyChangeListener implementation
