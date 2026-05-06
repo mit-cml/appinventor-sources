@@ -7,6 +7,7 @@ package com.google.appinventor.client.editor.simple.dialogs;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.DataStoreProvider;
 import com.google.appinventor.client.editor.simple.MutableDataStoreProvider;
 import com.google.appinventor.client.utils.MessageDialog;
@@ -127,6 +128,9 @@ public final class DataVisualizerPanel extends Dialog {
     // Dialog defaults: draggable, non-modal, glass disabled.
     setModal(false);
     setGlassEnabled(false);
+    if (Ode.getUserDarkThemeEnabled()) {
+      addStyleName("cdbviz-dark");
+    }
 
     statusLabel = new Label();
     statusLabel.addStyleName("ode-InfoMessage");
@@ -622,6 +626,9 @@ public final class DataVisualizerPanel extends Dialog {
     EntryEditDialog(String existingTag, String existingValue,
         MutableDataStoreProvider provider, DataVisualizerPanel panel) {
       setGlassEnabled(false);
+      if (Ode.getUserDarkThemeEnabled()) {
+        addStyleName("cdbviz-dark");
+      }
       this.isAddMode = (existingTag == null);
       this.provider = provider;
       this.panel = panel;

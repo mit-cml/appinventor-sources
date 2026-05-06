@@ -527,6 +527,72 @@ div.StatusPanel {
 }
 
 /*
+ * CloudDB Visualizer dark mode
+ */
+.cdbviz-dark {
+  background-color: #1a1a1a;
+  color: #ddd;
+}
+
+.cdbviz-dark .dialogMiddleCenter {
+  background-color: #1a1a1a;
+}
+
+.cdbviz-dark .Caption {
+  background-color: #252525;
+  color: #ccc;
+  border-bottom: 1px solid #444;
+}
+
+.cdbviz-dark .dialogContent {
+  background-color: #1a1a1a;
+  color: #ddd;
+}
+
+.cdbviz-dark .ode-ComponentTable td {
+  color: #ddd;
+}
+
+.cdbviz-dark .ode-ComponentHeaderRow {
+  background: #252525;
+  border-bottom: 1px solid #444;
+}
+
+.cdbviz-dark .ode-ComponentHeaderLabel {
+  color: #99bbff;
+}
+
+.cdbviz-dark .ode-ComponentRowHighlighted {
+  background-color: #2d1a2a;
+  border-bottom: 1px solid #333;
+}
+
+.cdbviz-dark .ode-ComponentRowUnHighlighted {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+.cdbviz-dark .ode-Android-footer {
+  background-color: #252525;
+  border-top: 1px solid #444;
+  color: #bbb;
+}
+
+.cdbviz-dark .ode-InfoMessage {
+  color: #aaa;
+}
+
+.cdbviz-dark input[type="text"],
+.cdbviz-dark input[type="search"],
+.cdbviz-dark input[type="number"],
+.cdbviz-dark textarea,
+.cdbviz-dark select {
+  background-color: #2a2a2a;
+  color: #ddd;
+  border-color: #555;
+}
+
+/*
  * TopPanel
  */
 
