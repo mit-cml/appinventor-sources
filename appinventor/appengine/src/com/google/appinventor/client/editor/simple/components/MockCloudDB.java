@@ -258,6 +258,12 @@ public class MockCloudDB extends MockNonVisibleComponent implements MutableDataS
   }
 
   @Override
+  public void onRemoved() {
+    super.onRemoved();
+    DataVisualizerPanel.onProviderRemoved(this);
+  }
+
+  @Override
   public Widget getPropertiesPanelExtension() {
     Button viewDataButton = new Button("View Data \u2197");
     viewDataButton.addStyleName("gwt-Button");

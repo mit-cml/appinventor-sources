@@ -102,6 +102,8 @@ public final class DataVisualizerPanel extends Dialog {
   private InlineLabel tagSortAsc, tagSortDec;
   private InlineLabel typeSortAsc, typeSortDec;
 
+  private EntryEditDialog openEditDialog;
+
   private Timer autoRefreshTimer;
   private int autoRefreshIntervalMs = 0; // 0 = Off
 
@@ -230,6 +232,15 @@ public final class DataVisualizerPanel extends Dialog {
   }
 
   private void setProvider(DataStoreProvider provider) {
+    if (this.currentProvider != provider) {
+      allEntries.clear();
+      clearDataRows();
+      filterBox.setValue("");
+      filterText = "";
+      sortField = null;
+      refreshSortIndicators();
+      setStatus(MESSAGES.clouddbVizLoading());
+    }
     this.currentProvider = provider;
     setCaption(MESSAGES.clouddbVizCaption(
         provider.getDataStoreName(), provider.getDataStoreType()));
@@ -368,6 +379,22 @@ public final class DataVisualizerPanel extends Dialog {
     }
   }
 
+  @Override
+  public void hide() {
+    if (openEditDialog != null) {
+      openEditDialog.hide();
+      openEditDialog = null;
+    }
+    super.hide();
+  }
+
+  /** Called when the component backing this panel has been deleted from the designer. */
+  public static void onProviderRemoved(DataStoreProvider provider) {
+    if (instance != null && instance.isShowing() && instance.currentProvider == provider) {
+      instance.hide();
+    }
+  }
+
   private void buildTableHeader() {
     FlexCellFormatter fmt = dataTable.getFlexCellFormatter();
 
@@ -462,8 +489,11 @@ public final class DataVisualizerPanel extends Dialog {
       Button editBtn = new Button("\u270F");
       editBtn.addStyleName("gwt-Button");
       editBtn.getElement().setAttribute("aria-label", MESSAGES.clouddbVizEditEntryAriaLabel(tag));
-      editBtn.addClickHandler(event ->
-          new EntryEditDialog(tag, rawValue, mutableProvider, DataVisualizerPanel.this).show());
+      editBtn.addClickHandler(event -> {
+        openEditDialog = new EntryEditDialog(tag, rawValue, mutableProvider, DataVisualizerPanel.this);
+        openEditDialog.addCloseHandler(e -> openEditDialog = null);
+        openEditDialog.show();
+      });
 
       Button deleteBtn = new Button("\u2715");
       deleteBtn.addStyleName("gwt-Button");
@@ -484,8 +514,10 @@ public final class DataVisualizerPanel extends Dialog {
     if (!(currentProvider instanceof MutableDataStoreProvider)) {
       return;
     }
-    new EntryEditDialog(null, null,
-        (MutableDataStoreProvider) currentProvider, this).show();
+    openEditDialog = new EntryEditDialog(null, null,
+        (MutableDataStoreProvider) currentProvider, this);
+    openEditDialog.addCloseHandler(e -> openEditDialog = null);
+    openEditDialog.show();
   }
 
   private void onDeleteClicked(final String tag, final MutableDataStoreProvider provider) {
