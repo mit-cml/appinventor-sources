@@ -1033,7 +1033,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       shortcutKeybindings: {
         toolbox: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.T],
         clean_up_workspace: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.C],
-        list_shortcuts: [Blockly.utils.KeyCodes.CTRL_CMD, Blockly.utils.KeyCodes.SLASH],
+        list_shortcuts: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.SLASH],
         disconnect: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.X],
         start_move: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.M],
         duplicate: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.SHIFT, Blockly.utils.KeyCodes.D],
