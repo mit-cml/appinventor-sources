@@ -30,7 +30,8 @@ import com.google.appinventor.components.common.YaVersion;
     "components displayed next to one another, use " +
     "<code>HorizontalArrangement</code> instead.</p><p> " +
     "This version is scrollable",
-    category = ComponentCategory.LAYOUT)
+    category = ComponentCategory.LAYOUT,
+    iconName = "images/vertical.png")
 @SimpleObject
 public class VerticalScrollArrangement extends HVArrangement {
 

@@ -5,15 +5,15 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
-import com.google.appinventor.client.ComponentsTranslation;
+import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.utils.Color;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.widgetideas.graphics.client.Color;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -74,7 +74,12 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
   protected void onSelectedChange(boolean selected) {
     super.onSelectedChange(selected);
     setSelected(selected);
-    setEditing(selected);
+    boolean isVisible = getVisibleProperty();
+    setEditing(isVisible && selected);
+  }
+  
+  boolean getVisibleProperty() {
+    return Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_VISIBLE));
   }
 
   @Override
@@ -146,7 +151,7 @@ public abstract class MockMapFeatureBase extends MockVisibleComponent implements
     }
     name = name.replaceAll("[ \t]+", "_");
     if (name.equalsIgnoreCase("")) {
-      name = ComponentsTranslation.getComponentName(feature.getType()) + "1";
+      name = ComponentTranslationTable.getComponentName(feature.getType()) + "1";
     }
     name = ensureUniqueName(name, parent.editor.getComponentNames());
     parent.addVisibleComponent(feature, -1);

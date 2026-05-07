@@ -237,7 +237,7 @@ public class DocumentationGenerator extends ComponentProcessor {
         String returnType = method.getReturnType();
         writer.write(getMethodDefinition(
             method.name, method.toParameterString(),
-            returnType == null ? "" : javaTypeToYailType(returnType),
+            returnType == null ? "" : method.getYailReturnType(),
             method.description));
         definitionWritten = true;
       }

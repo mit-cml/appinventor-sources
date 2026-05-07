@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -34,28 +35,45 @@ public interface FileExporter {
   RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target)
       throws IOException;
 
+  RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target,
+      @Nullable String extension) throws IOException;
+
   /**
    * Exports the project source files as a zip.
    *
-   * @param userId the userId
-   * @param projectId the project id belonging to the userId
-   * @param includeProjectHistory indicates whether to include a file
-   *        containing the project's history in the zip
+   * @param userId                 the userId
+   * @param projectId              the project id belonging to the userId
+   * @param includeProjectHistory  indicates whether to include a file
+   *                               containing the project's history in the zip
    * @param includeAndroidKeystore indicates whether to include the user's android.keystore file
-   * @param zipName the desired name for the zip, or null for a name to be generated
-   * @param fatalError set to true to cause missing GCS file to throw exception
+   * @param zipName                the desired name for the zip, or null for a name to be generated
+   * @param fatalError             set to true to cause missing GCS file to throw exception
+   * @param forAppStore            set to true when building for the App Store
    * @return the zip file, which includes a count of the number of zipped files
-   *         and (indirectly) the name of the file and its contents
+   * and (indirectly) the name of the file and its contents
    * @throws IllegalArgumentException if download request cannot be fulfilled
-   *         (no source files)
-   * @throws IOException if files cannot be written
+   *                                  (no source files)
+   * @throws IOException              if files cannot be written
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
     boolean includeProjectHistory,
     boolean includeAndroidKeystore, @Nullable String zipName,
     boolean includeYail,
     boolean includeScreenShots,
-    boolean fatalError, boolean forGallery) throws IOException;
+    boolean fatalError, boolean forGallery, boolean forAppStore, boolean locallyCachedApp) throws IOException;
+
+  /**
+   * Exports projects selected by the user as a zip of zips.
+   *
+   * @param userId the userId
+   * @param zipName the desired name for the zip
+   * @param projectIds the list of project ids corresponding to selected projects
+   * @return the name, contents, and number of files in the zip
+   * @throws IllegalArgumentException if download request cannot be fulfilled
+   *         (no projects)
+   * @throws IOException if files cannot be written
+   */
+  ProjectSourceZip exportSelectedProjectsSourceZip(String userId, String zipName, List<Long> projectIds) throws IOException;
 
   /**
    * Exports all of the user's projects' source files as a zip of zips.

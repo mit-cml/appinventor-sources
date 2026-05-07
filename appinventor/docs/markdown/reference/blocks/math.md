@@ -4,6 +4,7 @@ layout: documentation
 ---
 
 * [0 (basic number block)](#number)
+* [0 (radix number block)](#number-radix)
 * [=](#=)
 * [≠](#not=)
 * [>](#gt)
@@ -20,7 +21,7 @@ layout: documentation
 * [random set seed to](#randomseed)
 * [min](#min)
 * [max](#max)
-* [sqrt](#sqrt)
+* [square root](#sqrt)
 * [abs](#abs)
 * [neg](#neg)
 * [log](#log)
@@ -46,6 +47,13 @@ layout: documentation
 * [bitwise and](#bitwise_and)
 * [bitwise or (inclusive)](#bitwise_ior)
 * [bitwise or (exclusive)](#bitwise_xor)
+* [average](#avg)
+* [list min](#minl)
+* [list max](#maxl)
+* [mode](#mode)
+* [geometric mean](#gm)
+* [standard deviation](#sd)
+* [standard error](#se)
 
 *Can't find the math block you're looking for in the built-in blocks?*
 
@@ -79,7 +87,29 @@ convert radians to degrees, convert degrees to radians
 
 ![](images/math/number.png)
 
-Can be used as any positive or negative number (decimals included). Clicking on the "0" in the block will allow you to change the number.
+Can be used as any positive or negative number. Clicking on the "0" in the block will allow you to change the number.
+
+The block supports normal base-10 numbers (for example: 2, 12, and 2.12), as well as C-like prefixes for other number bases. It supports:
+* Base-2 (binary) numbers, e.g. 0b10 (decimal 2)
+* Base-8 (octal) numbers, e.g. 0o14 (decimal 12)
+* Base-16 (hexadecimal) numbers, e.g. 0xd4 (decimal 212)
+
+
+### Radix Number Block {#number-radix}
+
+![](images/math/numberradix.png)
+
+Represents a base-10 number. Clicking on the "0" will allow you to change the number.
+
+Clicking the dropdown will allow you to input a number in a different number base (aka radix). The number will then be "translated" into decimal (aka base-10).
+
+For example, these three blocks are equivalent:
+
+![](images/math/numberradix_equivalent.png)
+
+The dropdown supports: decimal (base-10), binary (base-2), octal (base-8), and hexadecimal (base-16) input formats.
+
+Decimal mode allows you to input any positive or negative number (e.g. 2, -12, 2.12). The other modes only allow you to input a whole number (aka any positive number, or zero).
 
 ### =   {#=}
 
@@ -179,7 +209,7 @@ Returns the smallest value of a set of numbers. If there are unplugged sockets i
 
 Returns the largest value of a set of numbers. If there are unplugged sockets in the block, max will also consider 0 in its set of numbers. This block is a [mutator](../concepts/mutators.html) and a dropdown.
 
-### sqrt   {#sqrt}
+### square root   {#sqrt}
 
 ![](images/math/sqrt.png)
 
@@ -369,3 +399,32 @@ Example:
 |         |       6 | 0 1 1 0 |
 |         |       3 | 0 0 1 1 |
 | Result: |       5 | 0 1 0 1 |
+
+
+![](images/math/avg.png)
+
+Calculates the arithmetic mean of the elements in a list.
+
+![](images/math/minl.png)
+
+Returns the minimum element in a list.
+
+![](images/math/maxl.png)
+
+Returns the maximum element in a list.
+
+![](images/math/mode.png)
+
+Returns the most frequent element in a list.
+
+![](images/math/gm.png)
+
+Calculates the geometric mean of the elements in a list.
+
+![](images/math/sd.png)
+
+Calculates the (population) standard deviations of the elements in a list.
+
+![](images/math/se.png)
+
+Calculates the standard error of the elements in a list.

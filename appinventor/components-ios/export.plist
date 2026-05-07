@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>method</key>
+    <string>ad-hoc</string>
+    <key>provisioningProfiles</key>
+    <dict>
+      <key>com.evanpatton.aicompanion4</key>
+      <string>AI2 Companion Dist</string>
+    </dict>
+    <key>manifest</key>
+    <dict>
+      <key>appURL</key>
+      <string>MITAICompanion.ipa</string>
+      <key>displayImageURL</key>
+      <string>../images/yaicon.png</string>
+      <key>fullSizeImageURL</key>
+      <string>../images/yaicon512.png</string>
+    </dict>
+  </dict>
+</plist>

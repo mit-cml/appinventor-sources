@@ -1,15 +1,16 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
-import android.os.Environment;
-
+import android.content.Context;
+import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
 import gnu.lists.FString;
@@ -17,7 +18,8 @@ import gnu.lists.FString;
 import gnu.math.IntFraction;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ public class JsonUtil {
 
   private static final String BINFILE_DIR = "/AppInventorBinaries";
   private static final String LOG_TAG = "JsonUtil";
+  private static final String TYPE_FIELD = "\u0002$type$\u0003";
 
   /**
    * Prevent instantiation.
@@ -250,6 +253,10 @@ public class JsonUtil {
     if (value instanceof FString) {
       return JSONObject.quote(value.toString());
     }
+    if (value instanceof YailMatrix) {
+      return "{\"" + TYPE_FIELD.replace("\\", "\\\\") + "\":\"YailMatrix\",\"data\":"
+          + ((YailMatrix) value).toJSONString() + "}";
+    }
     if (value instanceof YailList) {
       return ((YailList) value).toJSONString();
     }
@@ -346,8 +353,25 @@ public class JsonUtil {
           (value instanceof Boolean)) {
         return value;
       } else if (value instanceof JSONArray) {
-        return getListFromJsonArray((JSONArray)value, useDicts);
+        return getListFromJsonArray((JSONArray) value, useDicts);
       } else if (value instanceof JSONObject) {
+        Log.d(LOG_TAG, "Got JSONObject");
+        for (Iterator<String> it = ((JSONObject) value).keys(); it.hasNext(); ) {
+          String key = it.next();
+          Log.d(LOG_TAG, "Key: " + key);
+        }
+        if (((JSONObject) value).has(TYPE_FIELD)) {
+          Log.d(LOG_TAG, "Got possible matrix");
+          String type = ((JSONObject) value).getString(TYPE_FIELD);
+          Log.d(LOG_TAG, "Got type: " + type);
+          if ("YailMatrix".equals(type)) {
+            JSONArray data = ((JSONObject) value).optJSONArray("data");
+            if (data != null) {
+              return YailMatrix.fromJsonArray(data);
+            }
+            Log.d(LOG_TAG, "YailMatrix missing data field");
+          }
+        }
         if (useDicts) {
           return getDictionaryFromJsonObject((JSONObject) value);
         } else {
@@ -356,6 +380,27 @@ public class JsonUtil {
       }
       throw new JSONException("Invalid JSON string.");
     }
+  }
+
+  /**
+   * This method converts a file path to a JSON representation.
+   * The code in the method was part of GetValue. For better modularity and reusability
+   * the logic is now part of this method, which can be invoked from wherever and
+   * whenever required.
+   *
+   * <p>
+   * This function is deprecated. Developers should use
+   * {@link #getJsonRepresentationIfValueFileName(Context, Object)} instead.
+   * </p>
+   *
+   * @param value value to be serialized into JSON
+   * @return JSON representation
+   */
+  @Deprecated
+  public static String getJsonRepresentationIfValueFileName(Object value) {
+    Log.w(LOG_TAG, "Calling deprecated function getJsonRepresentationIfValueFileName",
+        new IllegalAccessException());
+    return getJsonRepresentationIfValueFileName(Form.getActiveForm(), value);
   }
 
   /**
@@ -375,10 +420,11 @@ public class JsonUtil {
    *                   this function, we just do the initial JSON parsing
    *                   if we are handed a string.
    *
-   * @param file path
+   * @param context the Android context to use for placing files, if needed.
+   * @param value value to be serialized into JSON
    * @return JSON representation
    */
-  public static String getJsonRepresentationIfValueFileName(Object value){
+  public static String getJsonRepresentationIfValueFileName(Form context, Object value) {
     try {
       List<String> valueList;
       if (value instanceof String) {
@@ -392,7 +438,7 @@ public class JsonUtil {
       }
       if (valueList.size() == 2) {
         if (valueList.get(0).startsWith(".")) {
-          String filename = writeFile(valueList.get(1), valueList.get(0).substring(1));
+          String filename = writeFile(context, valueList.get(1), valueList.get(0).substring(1));
           System.out.println("Filename Written: " + filename);
           filename = filename.replace("file:/", "file:///");
           return getJsonRepresentation(filename);
@@ -409,37 +455,142 @@ public class JsonUtil {
   }
 
   /**
+   * Parses the specified JSON and returns a List of columns.
+   * A column consists of the key and all the entries
+   * of the value itself. Each column is a YailList.
+   *
+   * <p>E.g. "x: 5" would be a List (x 5), while
+   * "y: [1,2,3]" would be a List (y 1 2 3)</p>
+   *
+   * @param json  JSON string to parse
+   * @return  YailList of columns, where each entry is a YailList
+   */
+  public static YailList getColumnsFromJson(String json) throws JSONException {
+    // Parse object from JSON object
+    Object jsonObject = getObjectFromJson(json);
+
+    // Generate columns from parsed JSON object.
+    // Only proceed with column generation logic if the parsed
+    // object is a List. Otherwise, return empty columns
+    List<YailList> resultColumns = new ArrayList<>();
+
+    // JSON object is expected to be of type ArrayList.
+    // If that is not the case, parsing is not done.
+    if (jsonObject instanceof List) {
+      // Cast parsed object to List, which represents
+      // all the JSON entries
+      List<?> jsonList = (List<?>) jsonObject;
+
+      for (Object entry : jsonList) {
+        List<String> columnElements = new ArrayList<>();
+
+        // Expected type of the entry is a List (key, value pair)
+        // If this is not the case, add nothing to the column elements.
+        if (entry instanceof List) {
+          List<?> listEntry = (List<?>) entry;
+
+          // Add first value as a String to the column elements
+          // List. The first entry should always be a String,
+          // since it is the key.
+          columnElements.add(listEntry.get(0).toString());
+
+          // Get the value of the key-value pair
+          Object jsonValue = listEntry.get(1);
+
+          // List types require different handling
+          if (jsonValue instanceof List) {
+            // If the value is a List, then add all
+            // entries to the column
+            List<?> jsonValueList = (List<?>)jsonValue;
+
+            for (Object jsonValueListEntry : jsonValueList) {
+              columnElements.add(jsonValueListEntry.toString());
+            }
+          } else {
+            // If the value is not a List, then convert the value to a String and add it.
+            columnElements.add(jsonValue.toString());
+          }
+        }
+
+        // Convert parsed column elements to YailList, and add
+        // the column to the resulting columns list
+        resultColumns.add(YailList.makeList(columnElements));
+      }
+    }
+
+    // Construct and return a YailList from the resulting columns
+    return YailList.makeList(resultColumns);
+  }
+
+  /**
    * Accepts a base64 encoded string and a file extension (which must be three characters).
    * Decodes the string into a binary and saves it to a file on external storage and returns
    * the filename assigned.
    *
    * Written by Jeff Schiller (jis) for the BinFile Extension
    *
+   * @param context The Android context to use for placing the file in the file system
    * @param input Base64 input string
    * @param fileExtension three character file extension
    * @return the name of the created file
    */
-  private static String writeFile(String input, String fileExtension) {
-    FileOutputStream outStream = null;
-    try {
-      if (fileExtension.length() != 3 && fileExtension.length() != 4) {
-        throw new YailRuntimeError("File Extension must be three or four characters", "Write Error");
+  private static String writeFile(Form context, final String input, String fileExtension) {
+    String fullDirName = context.getDefaultPath(BINFILE_DIR);
+    String preAmble = Uri.parse(context.getDefaultPath("")).getPath();
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // What's going on here?                                                     //
+    //                                                                           //
+    // fullDirName is in fact the full path name of the BINFILE_DIR AS A URI!    //
+    // preAmble is the parent directory path as a plain path. FileWriteOperation //
+    // takes a path, but then uses the file scope to pre-pend the appropriate    //
+    // directory. However this is already included in the variable "dest"        //
+    // returned by File.createTempFile. So we use preAmble to remove it.         //
+    // Obscure for sure... but there it is!                                      //
+    ///////////////////////////////////////////////////////////////////////////////
+
+    File destDirectory = new File(Uri.parse(fullDirName).getPath());
+    if (!destDirectory.isDirectory()) {
+      if (!destDirectory.mkdirs()) {
+        throw new YailRuntimeError("Unable to create " + destDirectory, "Write");
       }
-      byte [] content = Base64.decode(input, Base64.DEFAULT);
-      String fullDirName = Environment.getExternalStorageDirectory() + BINFILE_DIR;
-      File destDirectory = new File(fullDirName);
-      destDirectory.mkdirs();
-      File dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
-      outStream = new FileOutputStream(dest);
-      outStream.write(content);
-      String retval = dest.toURI().toASCIIString();
-      trimDirectory(20, destDirectory);
-      return retval;
-    } catch (Exception e) {
-      throw new YailRuntimeError(e.getMessage(), "Write");
-    } finally {
-      IOUtils.closeQuietly(LOG_TAG, outStream);
     }
+    final Synchronizer<Boolean> result = new Synchronizer<>();
+    File dest;
+    try {
+      dest = File.createTempFile("BinFile", "." + fileExtension, destDirectory);
+      new FileWriteOperation(context, context, "Write",
+          dest.getAbsolutePath().replace(preAmble, ""),
+          context.DefaultFileScope(), false, true) {
+        @Override
+        protected boolean process(OutputStream stream) throws IOException {
+          try {
+            stream.write(Base64.decode(input, Base64.DEFAULT));
+            result.wakeup(true);
+            return true;
+          } catch (Exception e) {
+            result.caught(e);
+            return true;
+          }
+        }
+      }.run();
+      result.waitfor();
+      if (result.getThrowable() != null) {
+        Throwable t = result.getThrowable();
+        Log.e(LOG_TAG, "Error writing content", t);
+        if (t instanceof RuntimeException) {
+          throw (RuntimeException) t;
+        } else if (t instanceof IOException) {
+          throw (IOException) t;
+        } else {
+          throw new YailRuntimeError(t.getMessage(), "Write");
+        }
+      }
+    } catch (IOException e) {
+      throw new YailRuntimeError(e.getMessage() + " destDirectory: " + destDirectory, "Write");
+    }
+    trimDirectory(20, destDirectory);
+    return dest.getAbsolutePath();
   }
 
   // keep only the last N files, where N = maxSavedFiles

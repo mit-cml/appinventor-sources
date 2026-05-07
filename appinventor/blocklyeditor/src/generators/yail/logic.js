@@ -9,77 +9,82 @@
 
 'use strict';
 
-goog.provide('Blockly.Yail.logic');
+goog.provide('AI.Yail.logic');
 
-Blockly.Yail['logic_boolean'] = function() {
+AI.Yail.forBlock['logic_boolean'] = function(block, generator) {
   // Boolean values true and false.
-  var code = (this.getFieldValue('BOOL') == 'TRUE') ? Blockly.Yail.YAIL_TRUE
-      : Blockly.Yail.YAIL_FALSE;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  var code = (block.getFieldValue('BOOL') == 'TRUE') ? AI.Yail.YAIL_TRUE
+      : AI.Yail.YAIL_FALSE;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail['logic_false'] = function() {
-  return Blockly.Yail.logic_boolean.call(this);
-}
+AI.Yail.forBlock['logic_false'] = function(block, generator) {
+  return AI.Yail.forBlock['logic_boolean'](block, generator);
+};
 
-Blockly.Yail['logic_negate'] = function() {
+AI.Yail.forBlock['logic_negate'] = function(block, generator) {
   // negate operation
-  var argument = Blockly.Yail
-      .valueToCode(this, 'BOOL', Blockly.Yail.ORDER_NONE)
-      || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-not"
-      + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
-      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "boolean"
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "not"
-      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  var argument = generator
+      .valueToCode(block, 'BOOL', AI.Yail.ORDER_NONE)
+      || AI.Yail.YAIL_FALSE;
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-not"
+      + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_OPEN_COMBINATION
+      + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
+      + argument + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
+      + AI.Yail.YAIL_OPEN_COMBINATION + "boolean"
+      + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_DOUBLE_QUOTE + "not"
+      + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail['logic_operation'] = function() {
+AI.Yail.forBlock['logic_operation'] = function(block, generator) {
   // The and, or logic operations
-  // TODO: (Andrew) Make these take multiple arguments.
-  var mode = this.getFieldValue('OP');
-  var tuple = Blockly.Yail.logic_operation.OPERATORS[mode];
+  var mode = block.opField.getValue();
+  var tuple = AI.Yail.LOGIC_OPERATION_OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || Blockly.Yail.YAIL_FALSE;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_OPEN_COMBINATION + operator
-      + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_SPACER
-      + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  var defaultValue = tuple[2];
+  var argument0 = generator.valueToCode(block, 'A', order) || defaultValue;
+  var argument1 = generator.valueToCode(block, 'B', order) || defaultValue;
+  var code = AI.Yail.YAIL_OPEN_COMBINATION + operator
+      + AI.Yail.YAIL_SPACER + argument0 + AI.Yail.YAIL_SPACER
+      + argument1;
+  for (var i = 2; i < block.itemCount_; i++) {
+    var arg = generator.valueToCode(block, block.repeatingInputName + i, order) || AI.Yail.YAIL_FALSE;
+    code += AI.Yail.YAIL_SPACER + arg;
+  }
+  code += AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.logic_operation.OPERATORS = {
-  AND : [ 'and-delayed', Blockly.Yail.ORDER_NONE ],
-  OR : [ 'or-delayed', Blockly.Yail.ORDER_NONE ]
+AI.Yail.LOGIC_OPERATION_OPERATORS = {
+  AND : [ 'and-delayed', AI.Yail.ORDER_NONE, AI.Yail.YAIL_TRUE ],
+  OR : [ 'or-delayed', AI.Yail.ORDER_NONE, AI.Yail.YAIL_FALSE ]
 };
 
-Blockly.Yail['logic_or'] = function() {
-  return Blockly.Yail.logic_operation.call(this);
-}
+AI.Yail.forBlock['logic_or'] = function(block, generator) {
+  return AI.Yail.forBlock['logic_operation'](block, generator);
+};
 
-Blockly.Yail['logic_compare'] = function() {
+AI.Yail.forBlock['logic_compare'] = function(block, generator) {
   // Basic logic compare operators
   // // TODO: (Hal) handle any type?
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  var yailCommand = (this.getFieldValue('OP') == "NEQ" ? 'yail-not-equal?' : "yail-equal?" );
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + yailCommand
-      + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
-      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument0 + Blockly.Yail.YAIL_SPACER + argument1
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "any" + Blockly.Yail.YAIL_SPACER
-      + "any" + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "="
-      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  var argument0 = generator.valueToCode(block, 'A', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var argument1 = generator.valueToCode(block, 'B', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var yailCommand = (block.getFieldValue('OP') == "NEQ" ? 'yail-not-equal?' : "yail-equal?" );
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + yailCommand
+      + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_OPEN_COMBINATION
+      + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
+      + argument0 + AI.Yail.YAIL_SPACER + argument1
+      + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
+      + AI.Yail.YAIL_OPEN_COMBINATION + "any" + AI.Yail.YAIL_SPACER
+      + "any" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_DOUBLE_QUOTE + "="
+      + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };

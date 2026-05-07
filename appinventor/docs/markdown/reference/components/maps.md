@@ -13,6 +13,7 @@ Table of Contents:
 * [LineString](#LineString)
 * [Map](#Map)
 * [Marker](#Marker)
+* [Navigation](#Navigation)
 * [Polygon](#Polygon)
 * [Rectangle](#Rectangle)
 
@@ -81,7 +82,7 @@ The `Circle` component visualizes a circle of a given [`Radius`](#Circle.Radius)
  map feature.
 
 {:id="Circle.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For Circles, this returns the text "Circle".
+: Returns the type of the feature. For Circles, this returns MapFeature.Circle ("Circle").
 
 {:id="Circle.Visible" .boolean} *Visible*
 : Specifies whether the `Circle` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -169,8 +170,16 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 : Specifies the `FeatureCollection`'s vertical height as a percentage
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
+{:id="FeatureCollection.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="FeatureCollection.Source" .text .ro} *Source*
 : Specifies the source URL used to populate the feature collection. If the feature collection was not loaded from a URL, this will be the empty string.
+
+{:id="FeatureCollection.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="FeatureCollection.Visible" .boolean} *Visible*
 : Specifies whether the `FeatureCollection` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -287,8 +296,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 {:id="LineString.PointsFromString" .text .wo} *PointsFromString*
 : Set the points of the LineString from a specially-coded character string of the form:
- [[longitude1, latitude1], [longitude2, latitude2], ...]
- Note the reversal of latitude and longitude versus how they are typically represented.
+ [[latitude1, longitude1], [latitude2, longitude2], ...]
 
 {:id="LineString.StrokeColor" .color} *StrokeColor*
 : Sets or gets the color used to outline the `LineString`.
@@ -305,7 +313,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
  map feature.
 
 {:id="LineString.Type" .text .ro .bo} *Type*
-: Returns the type of the map feature. For LineString, this returns the text "LineString".
+: Returns the type of the map feature. For LineString, this returns MapFeature.LineString ("LineString").
 
 {:id="LineString.Visible" .boolean} *Visible*
 : Specifies whether the `LineString` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -363,7 +371,7 @@ A `FeatureCollection` groups one or more map features together. Any events that 
 
 A two-dimensional container that renders map tiles in the background and allows for multiple
  [`Marker`](#Marker) elements to identify points on the map. Map tiles are supplied by OpenStreetMap
- contributors and the the United States Geological Survey.
+ contributors and the the United States Geological Survey, or a custom basemap URL can be provided.
 
  The `Map` component provides three utilities for manipulating its boundaries with App Inventor.
  First, a locking mechanism is provided to allow the map to be moved relative to other components
@@ -393,6 +401,11 @@ A two-dimensional container that renders map tiles in the background and allows 
  [`PanTo`](#Map.PanTo) with numerical latitude and longitude rather than convert
  to the string representation for use with this property.
 
+{:id="Map.CustomUrl" .text} *CustomUrl*
+: Update the custom URL of the base tile layer in use by the map.
+ e.g. https://tile.openstreetmap.org/{z}/{x}/{y}.png
+ e.g. https://example.com/geoserver/gwc/service/tms/1.0.0/workspace:layername
+
 {:id="Map.EnablePan" .boolean} *EnablePan*
 : Enables or disables the ability of the user to move the Map.
 
@@ -403,7 +416,9 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Enables or disables the two-finger pinch gesture to zoom the Map.
 
 {:id="Map.Features" .list .bo} *Features*
-: Property for Features
+: Gets the list of features attached to the `Map` (without regard to the value of the
+ feature's `Visible`{:.getter.block} property). This list also includes any features created on
+ the `Map` by calls to [`FeatureFromDescription`](#Map.FeatureFromDescription).
 
 {:id="Map.Height" .number .bo} *Height*
 : Specifies the `Map`'s vertical height, measured in pixels.
@@ -416,8 +431,13 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Gets the latitude of the center of the Map. To change the latitude, use the
  [`PanTo`](#Map.PanTo) method.
 
+{:id="Map.Left" .number} *Left*
+: Specifies the position of the Left edge of the component relative to an
+ AbsoluteArrangement.
+
 {:id="Map.LocationSensor" .component} *LocationSensor*
-: Property for LocationSensor
+: Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
+ rather than the built-in location provider.
 
 {:id="Map.Longitude" .number .ro .bo} *Longitude*
 : Gets the longitude of the center of the Map. To change the longitude, use the
@@ -430,6 +450,7 @@ A two-dimensional container that renders map tiles in the background and allows 
    1. Roads
    2. Aerial
    3. Terrain
+   4. Custom
 
    **Note:** Road layers are provided by OpenStreetMap and aerial and terrain layers are
  provided by the U.S. Geological Survey.
@@ -438,7 +459,8 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Specifies the rotation of the map in decimal degrees, if any.
 
 {:id="Map.ScaleUnits" .number} *ScaleUnits*
-: Property for ScaleUnits
+: Specifies the units used for the scale overlay. 1 (the default) will give metric units
+ (km, m) whereas 2 will give imperial units (mi, ft).
 
 {:id="Map.ShowCompass" .boolean} *ShowCompass*
 : Specifies whether to a compass overlay on the Map. The compass will be rotated based on the
@@ -453,9 +475,11 @@ A two-dimensional container that renders map tiles in the background and allows 
  services enabled and which location providers are available.
 
 {:id="Map.ShowZoom" .boolean} *ShowZoom*
-: Shows or hides an icon indicating the user's current location on the [`Map`](#Map). The
- availability and accuracy of this feature will depend on whether the user has location
- services enabled and which location providers are available.
+: Specifies whether to show zoom controls or not.
+
+{:id="Map.Top" .number} *Top*
+: Specifies the position of the Top edge of the component relative to an
+ AbsoluteArrangement.
 
 {:id="Map.UserLatitude" .number .ro .bo} *UserLatitude*
 : Returns the user's latitude if ShowUser is enabled.
@@ -526,7 +550,7 @@ A two-dimensional container that renders map tiles in the background and allows 
  `when any ... StopDrag` event if one is provided.
 
 {:id="Map.GotFeatures"} GotFeatures(*url*{:.text},*features*{:.list})
-: The `GotFeatures` event is run when when a feature collection is successfully read from the
+: The `GotFeatures` event is run when a feature collection is successfully read from the
  given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
  feature descriptions that can be converted into components using the
  [`FeatureFromDescription`](#Map.FeatureFromDescription) method.
@@ -747,6 +771,80 @@ The `Marker` component indicates points on a [`Map`](#Map), such as buildings or
 : Shows the info box for the `Marker` if it is not visible. Otherwise, this method has no effect.
  This method can be used to show the info box even if [`EnableInfobox`](#Marker.EnableInfobox) is false.
 
+## Navigation  {#Navigation}
+
+The Navigation component generates directions between two locations using a service called
+ [OpenRouteService](https://openrouteservice.org). You must provide a valid API key from that
+ service in order for this component to work.
+
+
+
+### Properties  {#Navigation-Properties}
+
+{:.properties}
+
+{:id="Navigation.ApiKey" .text .wo} *ApiKey*
+: API Key for Open Route Service. Obtain an API key at
+ [https://openrouteservice.org](https://openrouteservice.org).
+
+{:id="Navigation.EndLatitude" .number} *EndLatitude*
+: The latitude of the end location.
+
+{:id="Navigation.EndLocation" .component .wo .bo} *EndLocation*
+: Set the end location.
+
+{:id="Navigation.EndLongitude" .number} *EndLongitude*
+: The longitude of the end location.
+
+{:id="Navigation.Language" .text} *Language*
+: The language to use for textual directions. Default is "en" for English.
+
+{:id="Navigation.ResponseContent" .dictionary .ro .bo} *ResponseContent*
+: The raw response from the server. This can be used to access more details beyond what the
+ [`GotDirections`](#Navigation.GotDirections) event provides.
+
+{:id="Navigation.StartLatitude" .number} *StartLatitude*
+: The latitude of the start location.
+
+{:id="Navigation.StartLocation" .component .wo .bo} *StartLocation*
+: Set the start location.
+
+{:id="Navigation.StartLongitude" .number} *StartLongitude*
+: The longitude of the start location.
+
+{:id="Navigation.TransportationMethod" .text} *TransportationMethod*
+: The transportation method used for determining the route. Valid options are:
+
+  - `foot-walking`: Route based on walking paths
+  - `driving-car`: Route based on vehicle paths
+  - `cycling-regular`: Route based on bicycle paths
+  - `wheelchair`: Route based on wheelchair accessible paths
+
+### Events  {#Navigation-Events}
+
+{:.events}
+
+{:id="Navigation.GotDirections"} GotDirections(*directions*{:.list},*points*{:.list},*distance*{:.number},*duration*{:.number})
+: Event indicating that a request has finished and has returned data. The following parameters
+ are provided:
+
+  - `directions`: A list of text directions, such as "Turn left at Massachusetts Avenue".
+  - `points`: A list of (latitude, longitude) points that represent the path to take. This can
+    be passed to [`LineString`'s `Points`](#LineString.Points) to draw the line on a [`Map`](#Map).
+  - `distance`: Estimated distance for the route, in meters.
+  - `duration`: Estimated duration for the route, in seconds.
+
+### Methods  {#Navigation-Methods}
+
+{:.methods}
+
+{:id="Navigation.RequestDirections" class="method"} <i/> RequestDirections()
+: Request directions from the routing service using the values of [`StartLatitude`](#Navigation.StartLatitude),
+ [`StartLongitude`](#Navigation.StartLongitude), [`EndLatitude`](#Navigation.EndLatitude), and [`EndLongitude`](#Navigation.EndLongitude). On success,
+ the [`GotDirections`](#Navigation.GotDirections) event block will run. If an
+ error occurs, the error will be reported via the
+ [`Screen's ErrorOccurred`](userinterface.html#Screen.ErrorOccurred) event.
+
 ## Polygon  {#Polygon}
 
 `Polygon` encloses an arbitrary 2-dimensional area on a [`Map`](#Map). `Polygon`s can be used for
@@ -810,7 +908,7 @@ The `Marker` component indicates points on a [`Map`](#Map), such as buildings or
  map feature.
 
 {:id="Polygon.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For polygons, this returns the text "Polygon".
+: Returns the type of the feature. For polygons, this returns MapFeature.Polygon ("Polygon").
 
 {:id="Polygon.Visible" .boolean} *Visible*
 : Specifies whether the `Polygon` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -920,7 +1018,7 @@ The `Marker` component indicates points on a [`Map`](#Map), such as buildings or
  map feature.
 
 {:id="Rectangle.Type" .text .ro .bo} *Type*
-: Returns the type of the feature. For rectangles, this returns the text "Rectangle".
+: Returns the type of the feature. For rectangles, this returns MapFeature.Rectangle ("Rectangle").
 
 {:id="Rectangle.Visible" .boolean} *Visible*
 : Specifies whether the `Rectangle` should be visible on the screen.  Value is `true`{:.logic.block}

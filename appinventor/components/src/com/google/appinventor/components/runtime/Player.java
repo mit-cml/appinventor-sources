@@ -1,11 +1,21 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+
+import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Vibrator;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -17,20 +27,12 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FroyoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.app.Activity;
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Vibrator;
-
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 
 // TODO: This implementation does nothing about releasing the Media
@@ -149,7 +151,7 @@ public final class Player extends AndroidNonvisibleComponent
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
-    playOnlyInForeground = false;
+    playOnlyInForeground = true;
     focusOn = false;
     am = (audioFocusSupported) ? FroyoUtil.setAudioManager(activity) : null;
     afChangeListener = (audioFocusSupported) ? FroyoUtil.setAudioFocusChangeListener(this) : null;
@@ -176,8 +178,23 @@ public final class Player extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Source(String path) {
-    sourcePath = (path == null) ? "" : path;
+  @UsesPermissions({READ_EXTERNAL_STORAGE, READ_MEDIA_AUDIO})
+  public void Source(@Asset String path) {
+    final String tempPath = (path == null) ? "" : path;
+    if (TiramisuUtil.requestAudioPermissions(form, path, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          Player.this.Source(tempPath);
+        } else {
+          form.dispatchPermissionDeniedEvent(Player.this, "Source", permission);
+        }
+      }
+    })) {
+      return;
+    }
+
+    sourcePath = tempPath;
 
     // Clear the previous MediaPlayer.
     if (playerState == State.PREPARED || playerState == State.PLAYING || playerState == State.PAUSED_BY_USER) {
@@ -288,7 +305,8 @@ public final class Player extends AndroidNonvisibleComponent
       editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = "50")
   @SimpleProperty(
-      description = "Sets the volume to a number between 0 and 100")
+      description = "Sets the volume to a number between 0 and 100",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     if (vol > 100 || vol < 0) {
       form.dispatchErrorOccurredEvent(this, "Volume", ErrorMessages.ERROR_PLAYER_INVALID_VOLUME, vol);
@@ -315,15 +333,15 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * If true, the `Player` will pause playing when leaving the current screen; if false
-   * (default option), the `Player` continues playing whenever the current screen is displaying or
+   * If true (the default option), the `Player` will pause playing when leaving the current screen;
+   * if false, the `Player` continues playing whenever the current screen is displaying or
    * not.
    *
    * @param shouldForeground determines whether plays only in foreground or always.
    */
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+      defaultValue = "True")
   @SimpleProperty
   public void PlayOnlyInForeground(boolean shouldForeground) {
     playOnlyInForeground = shouldForeground;

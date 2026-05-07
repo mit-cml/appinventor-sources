@@ -35,6 +35,7 @@ public class RpcResult implements IsSerializable {
    * other value indicates failure.
    */
   public static final int SUCCESS = 0;
+  public static final int GALLERY_HAS_EXTENSION = -20;
 
   private int result;
   private String output;

@@ -1,0 +1,40 @@
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<!-- As of Apr 2024, this template is not being used. CSS changes are handling all the changes
+to dialog we need currently. It is left here as an example of a dialog template in case we want
+to do that in the future. -->
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:e="urn:import:com.google.appinventor.client.editor.youngandroid.properties"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:w="urn:import:com.google.appinventor.client.widgets"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             xmlns:s="urn:import:com.google.appinventor.client.widgets.properties"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <wiz:Dialog ui:field="addDialog" caption="{messages.newYoungAndroidProjectWizardCaption}"
+              styleName="ode-DialogBox" width="340px" height="40px">
+    <g:FlowPanel>
+      <w:LabeledTextBox ui:field="projectNameTextBox" caption="{messages.projectNameLabel}"
+                        stylePrimaryName="ode-LabeledTextBox"/>
+      <!--Blocks-->
+      <g:FlowPanel ui:field="horizontalBlocksPanel" styleName="contentRow">
+        <g:Label text="{messages.blocksToolkitTitle}:" width="37%"/>
+        <s:SubsetJSONPropertyEditor ui:field="blockstoolkitEditor"/>
+      </g:FlowPanel>
+      <!--Theme-->
+      <g:FlowPanel ui:field="horizontalThemePanel" styleName="contentRow">
+        <g:Label text="{messages.themeTitle}:" width="37%"/>
+        <e:YoungAndroidThemeChoicePropertyEditor ui:field="themeEditor"/>
+      </g:FlowPanel>
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field='cancelButton' text='{messages.cancelButton}'/>
+        <g:Button ui:field='addButton' text='{messages.okButton}'/>
+      </g:FlowPanel>
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

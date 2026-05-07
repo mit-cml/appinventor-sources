@@ -28,7 +28,8 @@ import com.google.appinventor.components.common.YaVersion;
     description = "Checkbox that raises an event when the user clicks on it. " +
     "There are many properties affecting its appearance that can be set in " +
     "the Designer or Blocks Editor.",
-    category = ComponentCategory.USERINTERFACE)
+    category = ComponentCategory.USERINTERFACE,
+    iconName = "images/checkbox.png")
 @SimpleObject
 public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
 

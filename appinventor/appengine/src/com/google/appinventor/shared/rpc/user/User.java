@@ -23,12 +23,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // user display name
   private String name;
 
-  // user introduction link
-  private String link;
-
-  // email notification frequency
-  private int emailFrequency;
-
   // whether user has accepted terms of service
   private boolean tosAccepted;
 
@@ -42,11 +36,18 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // system by unsetting it on their client to cause mischief
   private boolean isReadOnly;
 
-  // which type the user has
-  private int type;
   private String sessionId;        // Used to ensure only one account active at a time
 
   private String password;      // Hashed password (if using local login system)
+
+  private long oneProjectId;    // If we are explicitly opening only one project
+                                // store it here.
+
+  private long dueDate;         // non-zero if this is a problem set. The value
+                                // is then the date it is due as a UNIX timestamp
+
+  private String fauxProjectName = null;
+                                // if non-null, use this as the project name
 
   private String backPackId = null; // If non-null we have a shared backpack
 
@@ -57,10 +58,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // properly generated, we don't have to worry about allocating specific prefixes and
   // ensuring that they are unique.
 
-  public static final int USER = 0;
-  public static final int MODERATOR = 1;
-  public static final int DEFAULT_EMAIL_NOTIFICATION_FREQUENCY = 5;
-
   /**
    * Creates a new user data transfer object.
    *
@@ -69,18 +66,11 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param tosAccepted TOS accepted?
    * @param sessionId client session Id
    */
-  public User(String id, String email, String name, String link, int emailFrequency, boolean tosAccepted, boolean isAdmin, int type, String sessionId) {
+  public User(String id, String email, boolean tosAccepted, boolean isAdmin, String sessionId) {
     this.id = id;
     this.email = email;
-    if (name==null)
-      this.name = getDefaultName();
-    else
-      this.name = name;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
-    this.link = link;
-    this.emailFrequency = emailFrequency;
-    this.type = type;
     this.sessionId = sessionId;
   }
 
@@ -150,7 +140,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * If user's name is missing (not set yet), return email instead.
    * @return user name
    */
-  @Override
   public String getUserName() {
     if (name != null) {
       return name;
@@ -164,40 +153,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    */
   public void setUserName(String name) {
     this.name = name;
-  }
-
-  /**
-   * Returns the user's link.
-   *
-   * @return user link
-   */
-  @Override
-  public String getUserLink() {
-    return link;
-  }
-
-  /**
-   * Sets the user's link.
-   */
-  public void setUserLink(String link) {
-    this.link = link;
-  }
-
-  /**
-   * Returns the email notification frequency set by user.
-   *
-   * @return emailFrequency email frequency
-   */
-  @Override
-  public int getUserEmailFrequency() {
-    return emailFrequency;
-  }
-
-  /**
-   * Sets the user's email notification frequency
-   */
-  public void setUserEmailFrequency(int emailFrequency) {
-    this.emailFrequency = emailFrequency;
   }
 
   /**
@@ -236,19 +191,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     isAdmin = admin;
   }
 
-  @Override
-  public int getType() {
-    return type;
-  }
-
-  /**
-   * Sets which type the user has.
-   *
-   * @param type `
-   */
-  public void setType(int type) {
-    this.type = type;
-  }
 
   /**
    * Returns this object.
@@ -270,13 +212,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return id.hashCode();
   }
 
-  public boolean isModerator() {
-    if(type == MODERATOR){
-      return true;
-    }
-    return false;
-  }
-
   public static String getDefaultName(String email)
   {
     if (email==null)
@@ -287,10 +222,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     } else {
       return email;
     }
-  }
-
-  public String getDefaultName() {
-    return getDefaultName(this.email);
   }
 
   /**
@@ -319,6 +250,29 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return isReadOnly;
   }
 
+  public void setOneProjectId(long projectId) {
+    this.oneProjectId = projectId;
+  }
+
+  public long getOneProjectId() {
+    return oneProjectId;
+  }
+
+  public long getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(long dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public String getFauxProjectName() {
+    return fauxProjectName;
+  }
+
+  public void setFauxProjectName(String fauxProjectName) {
+    this.fauxProjectName = fauxProjectName;
+  }
 
   public String getBackpackId() {
     return backPackId;
@@ -329,12 +283,16 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public User copy() {
-    User retval = new User(id, email, name, link, emailFrequency, tosAccepted, isAdmin, type, sessionId);
     // We set the isReadOnly flag in the copy in this fashion so we do not have to
     // modify all the places in the source where we create a "User" object. There are
     // only a few places where we assert or read the isReadOnly flag, so we want to
     // limit the places where we have to have knowledge of it to just those places that care
+    User retval =  new User(id, email, tosAccepted, isAdmin, sessionId);
     retval.setReadOnly(isReadOnly);
+    retval.setOneProjectId(oneProjectId);
+    // We also set the dueDate and fauxProjectName explicitly instead of in the constructor
+    retval.setDueDate(this.dueDate);
+    retval.setFauxProjectName(this.fauxProjectName);
     retval.setBackpackId(this.backPackId);
     retval.name = this.name;
     return retval;

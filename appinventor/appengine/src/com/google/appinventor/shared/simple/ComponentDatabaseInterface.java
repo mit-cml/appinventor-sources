@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2017 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -43,11 +43,13 @@ public interface ComponentDatabaseInterface {
     private final Map<String, String> propertiesTypesByName;
     private final boolean nonVisible;
     private final String iconName;
+    private final String licenseName;
     private final String typeDescription;
 
     public ComponentDefinition(String name, int version, String versionName, String dateBuilt, String type, boolean external,
               String categoryString, String helpString, String helpUrl,
-              boolean showOnPalette, boolean nonVisible, String iconName, String typeDescription) {
+              boolean showOnPalette, boolean nonVisible, String iconName,
+              String licenseName, String typeDescription) {
       this.name = name;
       this.version = version;
       this.versionName = versionName;
@@ -66,6 +68,7 @@ public interface ComponentDatabaseInterface {
       this.propertiesTypesByName = new HashMap<String, String>();
       this.nonVisible = nonVisible;
       this.iconName = iconName;
+      this.licenseName = licenseName;
       this.typeDescription = typeDescription;
     }
 
@@ -156,6 +159,10 @@ public interface ComponentDatabaseInterface {
       return iconName;
     }
 
+    public String getLicenseName() {
+      return licenseName;
+    }
+
     public String getTypeDescription() {
       return typeDescription;
     }
@@ -172,17 +179,21 @@ public interface ComponentDatabaseInterface {
     private final String caption;
     private final String editorType;
     private final String[] editorArgs;
+    private final String description;
+    private final String category;
 
-    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs) {
-      this(name, defaultValue, name, editorType, editorArgs);
+    public PropertyDefinition(String name, String defaultValue, String editorType, String[] editorArgs, String category, String description) {
+      this(name, defaultValue, name, editorType, editorArgs, category, description);
     }
 
-    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs) {
+    public PropertyDefinition(String name, String defaultValue, String caption, String editorType, String[] editorArgs, String category, String description) {
       this.name = name;
       this.defaultValue = defaultValue;
       this.caption = caption;
       this.editorType = editorType;
       this.editorArgs = editorArgs;
+      this.description = description;
+      this.category = category;
     }
 
     public String getName() {
@@ -203,6 +214,14 @@ public interface ComponentDatabaseInterface {
 
     public String[] getEditorArgs() {
       return editorArgs;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public String getCategory() {
+      return category;
     }
   }
 
@@ -462,6 +481,12 @@ public interface ComponentDatabaseInterface {
   String getIconName(String componentName);
 
   /**
+   * Returns the name of the license file used by the component. Intended for use
+   * by external components.
+   */
+  String getLicenseName(String componentName);
+
+  /**
    * Returns a list of a component's property definitions.
    *
    * @param componentName  name of component to query
@@ -514,4 +539,27 @@ public interface ComponentDatabaseInterface {
    * @param componentName  name of component to query
    */
   boolean isComponent(String componentName);
+
+  /**
+   * Add a listener for database changes.
+   *
+   * @param listener an object listening for component type changes
+   */
+  void addComponentDatabaseListener(ComponentDatabaseChangeListener listener);
+
+  /**
+   * Remove a database change listener.
+   *
+   * @param listener an object no longer listening for component type changes
+   */
+  void removeComponentDatabaseListener(ComponentDatabaseChangeListener listener);
+
+  /**
+   * Get the database in JSON format.
+   *
+   * @return a JSON serialization of the component database
+   */
+  String getComponentsJSONString();
+
+  ComponentDefinition getComponentDefinition(String type);
 }

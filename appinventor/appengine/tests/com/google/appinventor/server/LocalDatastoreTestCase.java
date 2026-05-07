@@ -10,7 +10,6 @@ import com.google.appinventor.common.testutils.TestUtils;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.apphosting.utils.config.GenerationDirectory;
 
 import junit.framework.TestCase;
 
@@ -23,12 +22,13 @@ public abstract class LocalDatastoreTestCase extends TestCase {
   private static final String APPENGINE_GENERATED_DIR = TestUtils.APP_INVENTOR_ROOT_DIR +
       "/appengine/build/tests/appengine-generated";
   private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig()
+          .setBackingStoreLocation(APPENGINE_GENERATED_DIR));
 
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    System.setProperty(GenerationDirectory.GENERATED_DIR_PROPERTY, APPENGINE_GENERATED_DIR);
+    System.setProperty("appengine.generated.dir", APPENGINE_GENERATED_DIR);
     helper.setUp();
   }
 

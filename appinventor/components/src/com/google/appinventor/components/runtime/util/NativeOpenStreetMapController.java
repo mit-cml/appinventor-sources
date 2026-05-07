@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2016-2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2016-2020 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,7 +16,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -25,9 +24,12 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
+import androidx.core.view.ViewCompat;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.MapType;
+import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.LocationSensor;
 import com.google.appinventor.components.runtime.util.MapFactory.HasFill;
@@ -42,20 +44,40 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 import com.google.appinventor.components.runtime.util.MapFactory.MapScaleUnits;
-import com.google.appinventor.components.runtime.util.MapFactory.MapType;
 import com.google.appinventor.components.runtime.view.ZoomControlView;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.MapTile;
+import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
+import org.osmdroid.tileprovider.modules.IFilesystemCache;
+import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
+import org.osmdroid.tileprovider.modules.MapTileSqlCacheProvider;
+import org.osmdroid.tileprovider.modules.SqlTileWriter;
+import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.MapView.OnTapListener;
+import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Marker.OnMarkerClickListener;
 import org.osmdroid.views.overlay.Marker.OnMarkerDragListener;
@@ -74,18 +96,6 @@ import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 class NativeOpenStreetMapController implements MapController, MapListener {
   /* copied from SVG */
   private static final long SPECIFIED_FILL                  =    1;
@@ -96,11 +106,26 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   /* end copied from SVG */
 
   private static final String TAG = NativeOpenStreetMapController.class.getSimpleName();
+  private static final ITileSource OSM_ROAD_TILE_SOURCE =
+    new XYTileSource(
+        "OSM-Road",
+        1,
+        20,
+        256,
+        ".png",
+        new String[] {
+            "https://a.tile.openstreetmap.org/",
+            "https://b.tile.openstreetmap.org/",
+            "https://c.tile.openstreetmap.org/"
+        },
+        "© OpenStreetMap contributors"
+  );
   private boolean caches;
   private final Form form;
   private RelativeLayout containerView;
   private MapView view;
   private MapType tileType;
+  private String customUrl;
   private boolean zoomEnabled;
   private boolean zoomControlEnabled;
   private CompassOverlay compass = null;
@@ -265,6 +290,10 @@ class NativeOpenStreetMapController implements MapController, MapListener {
       super(context, null, new MapReadyHandler());
     }
 
+    public CustomMapView(Context context, MapTileProviderBase tileProvider) {
+      super(context, tileProvider, new MapReadyHandler());
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
       scrollTo(getScrollX() + (oldw - w) / 2, getScrollY() + (oldh - h) / 2);
@@ -275,6 +304,24 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     public void onDetach() {
       // Suppress call to parent onDetach
     }
+  }
+
+  private static class CustomMapTileProviderBasic extends MapTileProviderBasic {
+    public CustomMapTileProviderBasic(Context context, ITileSource tileSource,
+        IFilesystemCache cacheWriter) {
+      super(context, tileSource, cacheWriter);
+      for (int i = 0; i < this.mTileProviderList.size(); i++) {
+        if (this.mTileProviderList.get(i) instanceof MapTileSqlCacheProvider) {
+          this.mTileProviderList.set(i,
+              new MapTileFilesystemProvider(mRegisterReceiver, tileSource));
+        }
+      }
+    }
+  }
+
+  CustomMapView createCustomMapView(Context context) {
+    return new CustomMapView(context, new CustomMapTileProviderBasic(context,
+        TileSourceFactory.DEFAULT_TILE_SOURCE, new TileWriter()));
   }
 
   private final AppInventorLocationSensorAdapter locationProvider;
@@ -292,11 +339,12 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     }
     this.form = form;
     this.touch = new TouchOverlay();
-    view = new CustomMapView(form.getApplicationContext());
+    view = createCustomMapView(form.getApplicationContext());
     locationProvider = new AppInventorLocationSensorAdapter();
     defaultInfoWindow = new OverlayInfoWindow(view);
     view.setTilesScaledToDpi(true);
     view.setMapListener(this);
+    view.getOverlayManager().add(new CopyrightOverlay(form));
     view.getOverlayManager().add(touch);
     view.addOnTapListener(new OnTapListener() {
       @Override
@@ -373,28 +421,72 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   }
 
   @Override
-  public void setMapType(MapType type) {
+  public void setMapType(MapFactory.MapType type) {
+    MapType mapType = MapType.fromUnderlyingValue(type.ordinal());
+    if (mapType != null) {
+      setMapTypeAbstract(mapType);
+    }
+  }
+
+  @Override
+  public MapFactory.MapType getMapType() {
+    return MapFactory.MapType.values()[tileType.toUnderlyingValue()];
+  }
+
+  @Override
+  public String getCustomUrl() {
+    return customUrl;
+  }
+
+  @Override
+  public void setCustomUrl(String url) {
+    if (!url.equals(this.customUrl)) {
+      // Clear any cached tiles if the custom URL changes
+      // TODO: even though isCleared returns true, the cache is still not empty.  Debug further.
+      // Only solution is to use Android's Storage > Clear cache, which does work.
+      SqlTileWriter sqlTileWriter = new SqlTileWriter();
+      boolean isCleared = sqlTileWriter.purgeCache(); //view.getTileProvider().getTileSource().name()); //"Custom"); 
+      // setRotationEnabled(isCleared);
+      view.getTileProvider().clearTileCache();
+    }
+    this.customUrl = url;
+    view.setTileSource(getCustomTileSource());
+  }
+
+  private ITileSource getCustomTileSource() {
+    final ITileSource tileSource = new XYTileSource("Custom", 1, 20, 256, "",
+      new String[] { customUrl }) {
+        @Override
+        public String getTileURLString(MapTile aTile) {
+          return getBaseUrl().replace("{z}", String.valueOf(aTile.getZoomLevel()))
+                             .replace("{x}", String.valueOf(aTile.getX()))
+                             .replace("{y}", String.valueOf(aTile.getY()));
+        }
+      };
+    return tileSource;
+  }
+
+  @Override
+  public void setMapTypeAbstract(MapType type) {
+    tileType = type;
     switch (type) {
-      case ROADS:
-        tileType = type;
-        view.setTileSource(TileSourceFactory.MAPNIK);
+      case Road:
+        view.setTileSource(OSM_ROAD_TILE_SOURCE);
         break;
-      case AERIAL:
-        tileType = type;
+      case Aerial:
         view.setTileSource(TileSourceFactory.USGS_SAT);
         break;
-      case TERRAIN:
-        tileType = type;
+      case Terrain:
         view.setTileSource(TileSourceFactory.USGS_TOPO);
         break;
-      case UNKNOWN:
-      default:
+      case Custom:
+        view.setTileSource(getCustomTileSource());
         break;
     }
   }
 
   @Override
-  public MapType getMapType() {
+  public MapType getMapTypeAbstract() {
     return tileType;
   }
 
@@ -989,19 +1081,19 @@ class NativeOpenStreetMapController implements MapController, MapListener {
 
   private void getMarkerDrawableRaster(final MapMarker aiMarker,
       final AsyncCallbackPair<Drawable> callback) {
-    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(),
-        new AsyncCallbackPair<BitmapDrawable>() {
-      @Override
-      public void onFailure(String message) {
-        callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
-      }
+    MediaUtil.getBitmapDrawableAsync(form, aiMarker.ImageAsset(), aiMarker.Width(),
+        aiMarker.Height(), new AsyncCallbackPair<BitmapDrawable>() {
+          @Override
+          public void onFailure(String message) {
+            callback.onSuccess(getDefaultMarkerDrawable(aiMarker));
+          }
 
-      @Override
-      public void onSuccess(BitmapDrawable result) {
-        result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
-        callback.onSuccess(result);
-      }
-    });
+          @Override
+          public void onSuccess(BitmapDrawable result) {
+            result.setAlpha((int) Math.round(aiMarker.FillOpacity() * 255.0f));
+            callback.onSuccess(result);
+          }
+        });
   }
 
   private Drawable getDefaultMarkerDrawable(MapMarker aiMarker) {
@@ -1218,7 +1310,15 @@ class NativeOpenStreetMapController implements MapController, MapListener {
   @Override
   public void showInfobox(MapFeature feature) {
     OverlayWithIW overlay = featureOverlays.get(feature);
-    overlay.showInfoWindow();
+    if (overlay instanceof org.osmdroid.views.overlay.Marker) {
+      overlay.showInfoWindow();
+    } else if (overlay instanceof org.osmdroid.views.overlay.Polyline) {
+      org.osmdroid.views.overlay.Polyline polyOverlay =  (org.osmdroid.views.overlay.Polyline)overlay;
+      polyOverlay.showInfoWindow(feature.getCentroid());
+    } else {
+      org.osmdroid.views.overlay.Polygon polyOverlay =  (org.osmdroid.views.overlay.Polygon)overlay;
+      polyOverlay.showInfoWindow(feature.getCentroid());
+    }
   }
 
   @Override
@@ -1315,6 +1415,33 @@ class NativeOpenStreetMapController implements MapController, MapListener {
         return MapScaleUnits.IMPERIAL;
       case metric:
         return MapScaleUnits.METRIC;
+      default:
+        throw new IllegalStateException("Somehow we have an unallowed unit system");
+    }
+  }
+
+  @Override
+  public void setScaleUnitsAbstract(ScaleUnits units) {
+    switch (units) {
+      case Metric:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.metric);
+        break;
+      case Imperial:
+        scaleBar.setUnitsOfMeasure(UnitsOfMeasure.imperial);
+        break;
+      default:
+        break;
+    }
+    view.invalidate();
+  }
+
+  @Override
+  public ScaleUnits getScaleUnitsAbstract() {
+    switch (scaleBar.getUnitsOfMeasure()) {
+      case imperial:
+        return ScaleUnits.Imperial;
+      case metric:
+        return ScaleUnits.Metric;
       default:
         throw new IllegalStateException("Somehow we have an unallowed unit system");
     }

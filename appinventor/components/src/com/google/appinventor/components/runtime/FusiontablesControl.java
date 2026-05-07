@@ -8,9 +8,7 @@ package com.google.appinventor.components.runtime;
 import com.google.api.client.extensions.android2.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.googleapis.services.GoogleKeyInitializer;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.services.fusiontables.Fusiontables;
 import com.google.api.services.fusiontables.Fusiontables.Query.Sql;
@@ -61,6 +59,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Appinventor fusiontables control.
@@ -137,13 +136,13 @@ import java.util.ArrayList;
     "android.permission.READ_EXTERNAL_STORAGE")
 @UsesLibraries(libraries =
     "fusiontables.jar," +
-    "google-api-client-beta.jar," +
+    "google-api-client.jar," +
     "google-api-client-android2-beta.jar," +
-    "google-http-client-beta.jar," +
+    "google-http-client.jar," +
     "google-http-client-android2-beta.jar," +
     "google-http-client-android3-beta.jar," +
-    "google-oauth-client-beta.jar," +
-    "guava-14.0.1.jar," +
+    "google-oauth-client.jar," +
+    "guava.jar," +
     "gson-2.1.jar")
 
 public class FusiontablesControl extends AndroidNonvisibleComponent implements Component {
@@ -570,45 +569,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
    * @return the HttpResponse if the request succeeded, or null
    */
   public com.google.api.client.http.HttpResponse sendQuery(String query, String authToken) {
-    errorMessage = standardErrorMessage; // In case we get an error without a message
-    Log.i(LOG_TAG, "executing " + query);
-    com.google.api.client.http.HttpResponse response = null;
-
-    // Create a Fusiontables service object (from Google API client lib)
-    Fusiontables service = new Fusiontables.Builder(
-          AndroidHttp.newCompatibleTransport(),
-          new GsonFactory(),
-          new GoogleCredential())
-    .setApplicationName("App Inventor Fusiontables/v2.0")
-    .setJsonHttpRequestInitializer(new GoogleKeyInitializer(ApiKey()))
-    .build();
-
-    try {
-
-      // Construct the SQL query and get a CSV result
-      Sql sql =
-        ((Fusiontables) service).query().sql(query);
-      sql.put("alt", "csv");
-
-      // Add the authToken to authentication header
-      sql.setOauthToken(authToken);
-
-      response = sql.executeUnparsed();
-
-    } catch (GoogleJsonResponseException e) {
-      e.printStackTrace();
-      errorMessage = e.getMessage();
-      Log.e(LOG_TAG, "JsonResponseException");
-      Log.e(LOG_TAG, "e.getMessage() is " + e.getMessage());
-      Log.e(LOG_TAG, "response is " + response);
-    } catch (IOException e) {
-      e.printStackTrace();
-      errorMessage = e.getMessage();
-      Log.e(LOG_TAG, "IOException");
-      Log.e(LOG_TAG, "e.getMessage() is " + e.getMessage());
-      Log.e(LOG_TAG, "response is " + response);
-    }
-    return response;
+    return null;
   }
 
   /**
@@ -893,7 +854,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       errorMessage = standardErrorMessage;
 
       final HttpTransport TRANSPORT = AndroidHttp.newCompatibleTransport();
-      final JsonFactory JSON_FACTORY = new GsonFactory();
+      final JsonFactory JSON_FACTORY = null;
 
       Log.i(STAG, "keyPath " + keyPath);
 
@@ -908,53 +869,11 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
             .setTransport(TRANSPORT)
             .setJsonFactory(JSON_FACTORY)
             .setServiceAccountId(serviceAccountEmail)
-            .setServiceAccountScopes(scope)
+            .setServiceAccountScopes(Collections.singleton(scope))
             .setServiceAccountPrivateKeyFromP12File(cachedServiceCredentials)
             .build();
 
-        Fusiontables fusiontables = new Fusiontables.Builder(TRANSPORT, JSON_FACTORY, credential)
-          .setJsonHttpRequestInitializer(new GoogleKeyInitializer(ApiKey()))
-          .build();
-
-        // See the try/catch below for the exception thrown if the query is bad SQL
-        Sql sql = fusiontables.query().sql(query);
-        sql.put("alt", "csv");
-
         com.google.api.client.http.HttpResponse response = null;
-
-        try {
-          // if an error is thrown here, the catch clauses take care of signaling a form error
-          // to the end user, and the response will be null.   The null response will cause
-          // the FusionTables.query command to return a standard error message as it result.
-        response = sql.executeUnparsed();
-
-        } catch (GoogleJsonResponseException e) {
-          // This is the exception that was thrown as a result of a bad query to fusion tables.
-          // I determined this experimentally since I could not find documentation, so I don't know
-          // if throwing this particular exception is officially supported.
-          Log.i(STAG, "Got a JsonResponse exception on sql.executeUnparsed");
-
-          // TODO(hal): In principle, we would parse the exception message to show a good user message.
-          // But for now parseJsonResponseException is a stub that returns the raw message
-          // Make the parser more intelligent
-          errorMessage = parseJsonResponseException(e.getMessage());
-          signalJsonResponseError(query, errorMessage);
-
-        } catch (Exception e) {
-          // Maybe there could be some other kind of exception thrown?
-          Log.i(STAG, "Got an unanticipated exception on sql.executeUnparsed");
-          Log.i(STAG, "Exception class is " + e.getClass());
-          Log.i(STAG, "Exception message is " + e.getMessage());
-          Log.i(STAG, "Exception is " + e);
-          Log.i(STAG, "Point e");
-          Log.i(STAG, "end of printing exception"); // e might have been multiline
-
-          // In the case of an unknown exception, we just show the user the exception message.
-          // If we knew the type of exception, we might be able to do something more useful
-          errorMessage = e.getMessage();
-          signalJsonResponseError(query, errorMessage);
-
-        }
 
         // Process the response
         if (response != null) {

@@ -1,13 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2015 MIT, All rights reserved
+// Copyright 2011-2019 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.youngandroid.palette;
 
+import com.google.appinventor.client.editor.simple.palette.PaletteHelper;
 import com.google.appinventor.client.editor.simple.palette.SimplePaletteItem;
 
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.InsertPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,11 +39,13 @@ abstract class OrderedPaletteHelper implements PaletteHelper {
   }
 
   @Override
-  public final void addPaletteItem(VerticalPanel panel, SimplePaletteItem component) {
+  public final void addPaletteItem(InsertPanel panel, SimplePaletteItem component) {
     int index = Collections.binarySearch(componentsAddedSoFar, component, componentsComparator);
-    int insertionPos = - index - 1;
-    componentsAddedSoFar.add(insertionPos, component);
-    panel.insert(component, insertionPos);
+    if (index < 0) {
+      int insertionPos = - index - 1;
+      componentsAddedSoFar.add(insertionPos, component);
+      panel.insert(component, insertionPos);
+    }
   }
 
   public void clear() {

@@ -1,0 +1,6 @@
+framework module SwiftSVG {
+  umbrella header "SwiftSVG-umbrella.h"
+
+  export *
+  module * { export * }
+}

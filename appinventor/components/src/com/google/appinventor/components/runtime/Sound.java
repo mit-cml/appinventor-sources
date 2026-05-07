@@ -6,6 +6,7 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -29,6 +30,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -174,8 +176,21 @@ public class Sound extends AndroidNonvisibleComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
-  public void Source(String path) {
-    sourcePath = (path == null) ? "" : path;
+  public void Source(@Asset String path) {
+    final String tempPath = (path == null) ? "" : path;
+    if (TiramisuUtil.requestAudioPermissions(form, path, new PermissionResultHandler() {
+      @Override
+      public void HandlePermissionResponse(String permission, boolean granted) {
+        if (granted) {
+          Sound.this.Source(tempPath);
+        } else {
+          form.dispatchPermissionDeniedEvent(Sound.this, "Source", permission);
+        }
+      }
+    })) {
+      return;
+    }
+    sourcePath = tempPath;
 
     // Clear the previous sound.
     if (streamId != 0) {

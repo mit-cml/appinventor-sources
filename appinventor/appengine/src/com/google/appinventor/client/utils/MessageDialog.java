@@ -7,6 +7,8 @@ package com.google.appinventor.client.utils;
 
 import com.google.appinventor.client.widgets.boxes.Box;
 
+import com.google.gwt.aria.client.Roles;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -63,9 +65,22 @@ public class MessageDialog {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
+
+    // Add ARIA attributes for accessibility
+    Roles.getDialogRole().set(dialogBox.getElement());
+    dialogBox.getElement().setAttribute("aria-modal", "true");
+
+    // Set aria-label for title and generate ID for message description
+    dialogBox.getElement().setAttribute("aria-label", title);
+
+    // Generate unique ID for message to use with aria-describedby
+    String messageId = Document.get().createUniqueId();
+    dialogBox.getElement().setAttribute("aria-describedby", messageId);
+
     VerticalPanel DialogBoxContents = new VerticalPanel();
     HTML messageHtml = new HTML("<p>" + message + "</p>");
     messageHtml.setStyleName("DialogBox-message");
+    messageHtml.getElement().setId(messageId);
     FlowPanel holder = new FlowPanel();
     Button okButton = new Button(OK);
     okButton.addClickListener(new ClickListener() {

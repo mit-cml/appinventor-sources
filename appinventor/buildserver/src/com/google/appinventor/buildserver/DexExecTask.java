@@ -16,6 +16,7 @@
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.Execution;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -44,6 +45,8 @@ public class DexExecTask {
     private int mChildProcessRamMb = 1024;
     private boolean mDisableDexMerger = false;
     private static Map<String, String> alreadyChecked = new HashMap<String, String>();
+    private String mainDexFile = null;
+    private boolean mPredex = true;
 
     private static final Object semaphore = new Object(); // Used to protect dex cache creation
 
@@ -66,6 +69,14 @@ public class DexExecTask {
         mVerbose = verbose;
     }
 
+
+    public void setMainDexClassesFile(String classList) {
+        mainDexFile = classList;
+        if (classList != null) {
+            mPredex = false;
+        }
+    }
+
     /**
      * Sets the value of the "output" attribute.
      *
@@ -77,6 +88,10 @@ public class DexExecTask {
 
     public void setDexedLibs(String dexedLibs) {
         mDexedLibs = dexedLibs;
+    }
+
+    public void setPredex(boolean predex) {
+        mPredex = predex;
     }
 
     /**
@@ -164,11 +179,13 @@ public class DexExecTask {
 
     public boolean execute(List<File> paths) {
         // pre dex libraries if needed
-        boolean successPredex = preDexLibraries(paths);
-        if (!successPredex) return false;
+        if (mPredex) {
+            boolean successPredex = preDexLibraries(paths);
+            if (!successPredex) return false;
+        }
 
         System.out.println(String.format(
-                "Converting compiled files and external libraries into %1$s...", mOutput));
+            "Converting compiled files and external libraries into %1$s...", mOutput));
 
         return runDx(paths, mOutput, mVerbose /*showInputs*/);
     }
@@ -188,6 +205,12 @@ public class DexExecTask {
 
         commandLineList.add("--dex");
         commandLineList.add("--positions=lines");
+
+        if (mainDexFile != null) {
+            commandLineList.add("--multi-dex");
+            commandLineList.add("--main-dex-list=" + mainDexFile);
+            commandLineList.add("--minimal-main-dex");
+        }
 
         if (mNoLocals) {
             commandLineList.add("--no-locals");
@@ -211,8 +234,8 @@ public class DexExecTask {
         String[] dxCommandLine = new String[commandLineList.size()];
         commandLineList.toArray(dxCommandLine);
 
-        boolean dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
-        return dxSuccess;
+        return Execution.execute(null, dxCommandLine, System.out, System.err,
+            Execution.Timeout.LONG);
 
     }
 

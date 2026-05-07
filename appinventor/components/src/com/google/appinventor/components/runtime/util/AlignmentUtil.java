@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime.util;
 
 import android.view.Gravity;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.HorizontalAlignment;
+import com.google.appinventor.components.common.VerticalAlignment;
 import com.google.appinventor.components.runtime.LinearLayout;
 
 /**
@@ -27,7 +29,7 @@ public class AlignmentUtil {
    * Throws an IllegalArgumentException if alignment has illegal value.
    * @param alignment
    */
-  public void setHorizontalAlignment (int alignment) throws IllegalArgumentException {
+  public void setHorizontalAlignment(int alignment) throws IllegalArgumentException {
     switch (alignment) {
       case ComponentConstants.GRAVITY_LEFT:
         viewLayout.setHorizontalGravity(Gravity.LEFT);
@@ -44,11 +46,31 @@ public class AlignmentUtil {
   }
 
   /**
+   * Sets the horizontal alignment of the view layout.
+   * @param alignment the alignment to set the view layout to.
+   */
+  public void setHorizontalAlignment(HorizontalAlignment alignment) {
+    switch (alignment) {
+      case Left:
+        viewLayout.setHorizontalGravity(Gravity.LEFT);
+        break;
+      case Center:
+        viewLayout.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
+        break;
+      case Right:
+        viewLayout.setHorizontalGravity(Gravity.RIGHT);
+        break;
+      default:
+        throw new IllegalArgumentException("Bad value to setHorizontalAlignment: " + alignment);
+    }
+  }
+
+  /**
    * Set the vertical alignment (gravity) of the alignment
    * Throws an IllegalArgumentException if alignment has illegal value.
    * @param alignment
    */
-  public void setVerticalAlignment (int alignment) throws IllegalArgumentException {
+  public void setVerticalAlignment(int alignment) throws IllegalArgumentException {
     switch (alignment) {
       case ComponentConstants.GRAVITY_TOP:
         viewLayout.setVerticalGravity(Gravity.TOP);
@@ -57,6 +79,26 @@ public class AlignmentUtil {
         viewLayout.setVerticalGravity(Gravity.CENTER_VERTICAL);
         break;
       case ComponentConstants.GRAVITY_BOTTOM:
+        viewLayout.setVerticalGravity(Gravity.BOTTOM);
+        break;
+      default:
+        throw new IllegalArgumentException("Bad value to setVerticalAlignment: " + alignment);
+    }
+  }
+
+  /**
+   * Sets the vertical alignment of the view layout.
+   * @param alignment the alignment to set the view layout to.
+   */
+  public void setVerticalAlignment(VerticalAlignment alignment) {
+    switch (alignment) {
+      case Top:
+        viewLayout.setVerticalGravity(Gravity.TOP);
+        break;
+      case Center:
+        viewLayout.setVerticalGravity(Gravity.CENTER_VERTICAL);
+        break;
+      case Bottom:
         viewLayout.setVerticalGravity(Gravity.BOTTOM);
         break;
       default:

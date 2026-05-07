@@ -10,6 +10,13 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.NxtMotorMode;
+import com.google.appinventor.components.common.NxtMotorPort;
+import com.google.appinventor.components.common.NxtRegulationMode;
+import com.google.appinventor.components.common.NxtRunState;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorPort;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
@@ -137,6 +144,7 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
   protected final void setOutputState(String functionName, int port, int power, int mode,
       int regulationMode, int turnRatio, int runState, long tachoLimit) {
     power = sanitizePower(power);
+    turnRatio = sanitizeTurnRatio(turnRatio);
     byte[] command = new byte[12];
     command[0] = (byte) 0x80;  // Direct command telegram, no response
     command[1] = (byte) 0x04;  // SETOUTPUTSTATE command
@@ -155,6 +163,26 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
     sendCommand(functionName, command);
   }
 
+  protected final void setOutputState(
+      String functionName,
+      NxtMotorPort port,
+      int power,
+      NxtMotorMode mode,
+      NxtRegulationMode regulationMode,
+      int turnRatio,
+      NxtRunState runState,
+      long tachoLimit) {
+    setOutputState(
+        functionName,
+        port.toInt(),
+        power,
+        mode.toUnderlyingValue(),
+        regulationMode.toUnderlyingValue(),
+        turnRatio,
+        runState.toUnderlyingValue(),
+        tachoLimit);
+  }
+
   protected final void setInputMode(String functionName, int port, int sensorType, int sensorMode) {
     byte[] command = new byte[5];
     command[0] = (byte) 0x80;  // Direct command telegram, no response
@@ -163,6 +191,14 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
     copyUBYTEValueToBytes(sensorType, command, 3);
     copyUBYTEValueToBytes(sensorMode, command, 4);
     sendCommand(functionName, command);
+  }
+
+  protected final void setInputMode(
+      String functionName,
+      NxtSensorPort port,
+      NxtSensorType type,
+      NxtSensorMode mode) {
+    setInputMode(functionName, port.toInt(), type.toUnderlyingValue(), mode.toUnderlyingValue());
   }
 
   protected final byte[] getInputValues(String functionName, int port) {
@@ -182,12 +218,20 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
     return null;
   }
 
+  protected final byte[] getInputValues(String functionName, NxtSensorPort port) {
+    return getInputValues(functionName, port.toInt());
+  }
+
   protected final void resetInputScaledValue(String functionName, int port) {
     byte[] command = new byte[3];
     command[0] = (byte) 0x80;  // Direct command telegram, no response
     command[1] = (byte) 0x08;  // RESETINPUTSCALEDVALUE command
     copyUBYTEValueToBytes(port, command, 2);
     sendCommand(functionName, command);
+  }
+
+  protected final void resetInputScaledValue(String functionName, NxtSensorPort port) {
+    resetInputScaledValue(functionName, port.toInt());
   }
 
   protected final int lsGetStatus(String functionName, int port) {
@@ -207,6 +251,10 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
     return 0;
   }
 
+  protected final int lsGetStatus(String functionName, NxtSensorPort port) {
+    return lsGetStatus(functionName, port.toInt());
+  }
+
   protected final void lsWrite(String functionName, int port, byte[] data, int rxDataLength) {
     if (data.length > 16) {
       throw new IllegalArgumentException("length must be <= 16");
@@ -220,6 +268,11 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
     System.arraycopy(data, 0, command, 5, data.length);
     byte[] returnPackage = sendCommandAndReceiveReturnPackage(functionName, command);
     evaluateStatus(functionName, returnPackage, command[1]);
+  }
+
+  protected final void lsWrite(String functionName, NxtSensorPort port, byte[] data,
+      int rxDataLength) {
+    lsWrite(functionName, port.toInt(), data, rxDataLength);
   }
 
   protected final byte[] lsRead(String functionName, int port) {
@@ -237,6 +290,10 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
       }
     }
     return null;
+  }
+
+  protected final byte[] lsRead(String functionName, NxtSensorPort port) {
+    return lsRead(functionName, port.toInt());
   }
 
 

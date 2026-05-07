@@ -24,7 +24,7 @@ public class WhitelistTest {
   public static final String ID = "dummyId";
 
   Whitelist whitelist;
-  LocalUser user = LocalUser.getInstance();;
+  LocalUser user = LocalUser.getInstance();
 
   @Test
   public void testValidWhitelist() throws Exception {
@@ -48,7 +48,7 @@ public class WhitelistTest {
   }
 
   LocalUser makeUser(String email) {
-    user.set(new User(ID, email, null, "http://www.appinventor.org/", 5, false, false, 0, "test-session"));
+    user.set(new User(ID, email, false, false, "test-session"));
     return user;
   }
 

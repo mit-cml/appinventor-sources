@@ -15,7 +15,9 @@
 
 goog.provide('AI.Blockly.Util');
 
-Blockly.Util = {};
+if (Blockly.Util === undefined) {
+  Blockly.Util = {};
+}
 
 // Blockly.Util.Dialog -- A way to get GWT Dialogs to appear from the top window.
 // There is some hair here because we need this code to work both when the GWT code is

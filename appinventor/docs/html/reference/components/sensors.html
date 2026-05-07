@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -139,6 +139,7 @@
   <li><a href="#Hygrometer">Hygrometer</a></li>
   <li><a href="#LightSensor">LightSensor</a></li>
   <li><a href="#LocationSensor">LocationSensor</a></li>
+  <li><a href="#MagneticFieldSensor">MagneticFieldSensor</a></li>
   <li><a href="#NearField">NearField</a></li>
   <li><a href="#OrientationSensor">OrientationSensor</a></li>
   <li><a href="#Pedometer">Pedometer</a></li>
@@ -173,7 +174,7 @@ gravity.</li>
  the sensor will generate events.  Otherwise, no events are
  generated even if the device is accelerated or shaken.</dd>
   <dt id="AccelerometerSensor.LegacyMode" class="boolean do"><em>LegacyMode</em></dt>
-  <dd>Property for LegacyMode</dd>
+  <dd>Prior to the release that added this property the AccelerometerSensor component passed through sensor values directly as received from the Android system. However these values do not compensate for tablets that default to Landscape mode, requiring the MIT App Inventor programmer to compensate. However compensating would result in incorrect results in Portrait mode devices such as phones. We now detect Landscape mode tablets and perform the compensation. However if your project is already compensating for the change, you will now get incorrect results. Although our preferred solution is for you to update your project, you can also just set this property to “true” and our compensation code will be deactivated. Note: We recommend that you update your project as we may remove this property in a future release.</dd>
   <dt id="AccelerometerSensor.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
   <dd>Specifies the minimum interval required between back-to-back <a href="#AccelerometerSensor.Shaking"><code class="highlighter-rouge">Shaking</code></a> events,
  in milliseconds.
@@ -612,6 +613,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="LocationSensor-Events">Events</h3>
 
 <dl class="events">
+  <dt id="LocationSensor.GotAddress">GotAddress(<em class="text">address</em>)</dt>
+  <dd>Reports the address in response to a ReverseGeocode request.</dd>
+  <dt id="LocationSensor.GotLocationFromAddress">GotLocationFromAddress(<em class="text">address</em>,<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Reports the latitude and longitude in response to a Geocode request.</dd>
   <dt id="LocationSensor.LocationChanged">LocationChanged(<em class="number">latitude</em>,<em class="number">longitude</em>,<em class="number">altitude</em>,<em class="number">speed</em>)</dt>
   <dd>Indicates that a new location has been detected. Speed is reported in meters/second
  Other values match their properties.</dd>
@@ -623,11 +628,49 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <h3 id="LocationSensor-Methods">Methods</h3>
 
 <dl class="methods">
+  <dt id="LocationSensor.Geocode" class="method"><i></i> Geocode(<em class="text">address</em>)</dt>
+  <dd>Converts an address into a latitude and longitude through the GotLocationFromAddress event.</dd>
   <dt id="LocationSensor.LatitudeFromAddress" class="method returns number"><i></i> LatitudeFromAddress(<em class="text">locationName</em>)</dt>
   <dd>Derives latitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
   <dt id="LocationSensor.LongitudeFromAddress" class="method returns number"><i></i> LongitudeFromAddress(<em class="text">locationName</em>)</dt>
   <dd>Derives longitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
+  <dt id="LocationSensor.ReverseGeocode" class="method"><i></i> ReverseGeocode(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
+  <dd>Determines the address associated with the given latitude and  and reports it through the GotAddress event.</dd>
 </dl>
+
+<h2 id="MagneticFieldSensor">MagneticFieldSensor</h2>
+
+<p>Component for MagneticFieldSensor</p>
+
+<h3 id="MagneticFieldSensor-Properties">Properties</h3>
+
+<dl class="properties">
+  <dt id="MagneticFieldSensor.AbsoluteStrength" class="number ro bo"><em>AbsoluteStrength</em></dt>
+  <dd>Indicates the absolute strength of the field.</dd>
+  <dt id="MagneticFieldSensor.Available" class="boolean ro bo"><em>Available</em></dt>
+  <dd>Indicates that there is a magnetic field sensor in the device and it is available.</dd>
+  <dt id="MagneticFieldSensor.Enabled" class="boolean"><em>Enabled</em></dt>
+  <dd>Indicates whether or not the magnetic field sensor is enabled and working.</dd>
+  <dt id="MagneticFieldSensor.MaximumRange" class="number ro bo"><em>MaximumRange</em></dt>
+  <dd>Indicates the maximum range the magnetic sensor can reach.</dd>
+  <dt id="MagneticFieldSensor.XStrength" class="number ro bo"><em>XStrength</em></dt>
+  <dd>Indicates the field’s strength in the X-axis.</dd>
+  <dt id="MagneticFieldSensor.YStrength" class="number ro bo"><em>YStrength</em></dt>
+  <dd>Indicates the field’s strength in the Y-axis.</dd>
+  <dt id="MagneticFieldSensor.ZStrength" class="number ro bo"><em>ZStrength</em></dt>
+  <dd>Indicates the field’s strength in the Z-axis.</dd>
+</dl>
+
+<h3 id="MagneticFieldSensor-Events">Events</h3>
+
+<dl class="events">
+  <dt id="MagneticFieldSensor.MagneticChanged">MagneticChanged(<em class="number">xStrength</em>,<em class="number">yStrength</em>,<em class="number">zStrength</em>,<em class="number">absoluteStrength</em>)</dt>
+  <dd>Triggers when magnetic field has changed, setting the new values in parameters.</dd>
+</dl>
+
+<h3 id="MagneticFieldSensor-Methods">Methods</h3>
+
+<p class="methods">None</p>
 
 <h2 id="NearField">NearField</h2>
 
@@ -800,7 +843,7 @@ etc.</li>
   <dd>If true, the sensor will generate events.  Otherwise, no events
  are generated.</dd>
   <dt id="ProximitySensor.KeepRunningWhenOnPause" class="boolean"><em>KeepRunningWhenOnPause</em></dt>
-  <dd>Returns value of keepRunningWhenOnPause</dd>
+  <dd>Returns value of keepRunningWhenOnPause.</dd>
   <dt id="ProximitySensor.MaximumRange" class="number ro bo"><em>MaximumRange</em></dt>
   <dd>Determines a sensor’s maximum range. Some proximity sensors return binary values
  that represent “near” or “far.” In this case, the sensor usually reports
@@ -931,7 +974,7 @@ etc.</li>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -950,15 +993,16 @@ etc.</li>
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>

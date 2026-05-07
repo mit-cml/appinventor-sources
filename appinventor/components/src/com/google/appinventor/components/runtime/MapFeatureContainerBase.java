@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2021 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.google.appinventor.components.runtime.util.GeoJSONUtil.getGeoJSONFeatures;
+import static com.google.appinventor.components.runtime.util.GeoJSONUtil.getGeoJSONType;
 import static com.google.appinventor.components.runtime.util.GeoJSONUtil.processGeoJSONFeature;
 
 @SimpleObject
@@ -258,16 +260,21 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   @SimpleFunction
   public Object FeatureFromDescription(YailList description) {
     try {
-      return processGeoJSONFeature(TAG, this, description);
+      Object feature = processGeoJSONFeature(TAG, this, description);
+      if (feature == null) {
+        return "No valid feature provided";
+      }
+      return feature;
     } catch(IllegalArgumentException e) {
+      Log.e(this.getClass().getSimpleName(), "Unable to create feature", e);
       $form().dispatchErrorOccurredEvent(this, "FeatureFromDescription",
-          ERROR_CODE_MALFORMED_GEOJSON, e.getMessage());
+          ErrorMessages.ERROR_INVALID_GEOJSON, e.getMessage());
       return e.getMessage();
     }
   }
 
   /**
-   * The `GotFeatures` event is run when when a feature collection is successfully read from the
+   * The `GotFeatures` event is run when a feature collection is successfully read from the
    * given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
    * feature descriptions that can be converted into components using the
    * {@link #FeatureFromDescription(YailList)} method.
@@ -327,6 +334,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   }
 
   @Override
+  public List<? extends Component> getChildren(){
+    return features;
+  }
+
+  @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
     throw new UnsupportedOperationException("Map.setChildWidth called");
   }
@@ -334,6 +346,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
     throw new UnsupportedOperationException("Map.setChildHeight called");
+  }
+
+  @Override
+  public void setChildNeedsLayout(AndroidViewComponent component) {
+    throw new UnsupportedOperationException("Map.setChildNeedsLayout called");
   }
 
   public void removeFeature(MapFactory.MapFeature feature) {
@@ -438,8 +455,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
 
   @SuppressWarnings("WeakerAccess")
   protected void processGeoJSON(final String url, final String content) throws JSONException {
-    JSONObject parsedData = new JSONObject(stripBOM(content));
-    String type = parsedData.optString(GEOJSON_TYPE);
+    String type = getGeoJSONType(content, GEOJSON_TYPE);
     if (!GEOJSON_FEATURECOLLECTION.equals(type) && !GEOJSON_GEOMETRYCOLLECTION.equals(type)) {
       $form().runOnUiThread(new Runnable() {
         public void run() {
@@ -449,71 +465,11 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       });
       return;
     }
-    JSONArray features = parsedData.getJSONArray(GEOJSON_FEATURES);
-    final List<YailList> yailFeatures = new ArrayList<YailList>();
-    for (int i = 0; i < features.length(); i++) {
-      yailFeatures.add(jsonObjectToYail(features.getJSONObject(i)));
-    }
+    final List<YailList> yailFeatures = getGeoJSONFeatures(TAG, content);
     $form().runOnUiThread(new Runnable() {
       public void run() {
         MapFeatureContainerBase.this.GotFeatures(url, YailList.makeList(yailFeatures));
       }
     });
   }
-
-  private YailList jsonObjectToYail(JSONObject object) throws JSONException {
-    List<YailList> pairs = new ArrayList<YailList>();
-    @SuppressWarnings("unchecked")  // json only allows String keys
-        Iterator<String> j = object.keys();
-    while (j.hasNext()) {
-      String key = j.next();
-      Object value = object.get(key);
-      if (value instanceof Boolean ||
-          value instanceof Integer ||
-          value instanceof Long ||
-          value instanceof Double ||
-          value instanceof String) {
-        pairs.add(YailList.makeList(new Object[] { key, value }));
-      } else if (value instanceof JSONArray) {
-        pairs.add(YailList.makeList(new Object[] { key, jsonArrayToYail((JSONArray) value)}));
-      } else if (value instanceof JSONObject) {
-        pairs.add(YailList.makeList(new Object[] { key, jsonObjectToYail((JSONObject) value)}));
-      } else if (!JSONObject.NULL.equals(value)) {
-        Log.wtf(TAG, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
-        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
-      }
-    }
-    return YailList.makeList(pairs);
-  }
-
-  private YailList jsonArrayToYail(JSONArray array) throws JSONException {
-    List<Object> items = new ArrayList<Object>();
-    for (int i = 0; i < array.length(); i++) {
-      Object value = array.get(i);
-      if (value instanceof Boolean ||
-          value instanceof Integer ||
-          value instanceof Long ||
-          value instanceof Double ||
-          value instanceof String) {
-        items.add(value);
-      } else if (value instanceof JSONArray) {
-        items.add(jsonArrayToYail((JSONArray) value));
-      } else if (value instanceof JSONObject) {
-        items.add(jsonObjectToYail((JSONObject) value));
-      } else if (!JSONObject.NULL.equals(value)) {
-        Log.wtf(TAG, ERROR_UNKNOWN_TYPE + ": " + value.getClass());
-        throw new IllegalArgumentException(ERROR_UNKNOWN_TYPE);
-      }
-    }
-    return YailList.makeList(items);
-  }
-
-  private static String stripBOM(String content) {
-    if (content.charAt(0) == '\uFEFF') {
-      return content.substring(1);
-    } else {
-      return content;
-    }
-  }
-
 }

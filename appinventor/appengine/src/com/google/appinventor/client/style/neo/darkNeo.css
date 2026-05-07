@@ -1,0 +1,59 @@
+/* -*- mode: java; c-basic-offset: 2; -
+* Copyright 2023-2025 MIT, All rights reserved
+* Released under the Apache License, Version 2.0
+* http://www.apache.org/licenses/LICENSE-2.0
+*/
+
+@def logo-image                         url('static/images/codi-logo-dark.svg');
+@def background-image                   url('static/images/squairy_dark.jpg');
+/* Greens */
+@def selected-color                     #6b9900;
+@def tab-bar-background-color           #a3b18a;
+@def bar-color                          #7a914a;
+
+/* Greys */
+@def v-white #111;
+@def v-white-shadow                     rgba(17, 17, 17, 0.025);
+@def v-black #aaa;
+@def v-black-shadow                     rgba(170, 170, 170, 0.025);
+@def container-shadow                   rgba(0,0,0,0.1);
+@def button-shadow-color                rgba(255, 255, 255, 0.15);
+@def gray-200 #222;
+@def gray-300 #555;
+@def gray-400 #bbb;
+@def gray-450 #ddd;
+@def gray-500 #999;
+@def gray-550 #888;
+@def gray-700 #bbb;
+@def gray-800 #ddd;
+@def gray-900 #999;
+
+@def  blockly-indicator #999;
+
+/* Colors */
+/* blue */
+@def explorer-border                    #D6E9F8;
+@def simple-panel-border                #67A7E3;
+@def simple-panel-shadow                rgba(82, 168, 236, 0.8);
+@def project-color                      #112abb;
+
+@def phoneLandscape                      url('static/images/dark_mode_mockups/dark-mode-phoneLandscapeModern.png');
+@def phonePortrait                       url('static/images/dark_mode_mockups/dark-mode-phonePortraitModern.png');
+@def phoneLandscapeTablet                url('static/images/dark_mode_mockups/dark-mode-phoneLandscapeTablet.png');
+@def phonePortraitTablet                 url('static/images/dark_mode_mockups/dark-mode-phonePortraitTablet.png');
+@def phoneLandscapeMonitor               url('static/images/dark_mode_mockups/dark-mode-phoneLandscapeMonitor.png');
+@def phonePortraitMonitor                url('static/images/dark_mode_mockups/dark-mode-phonePortraitMonitor.png');
+
+@def navigationbarPortrait               url('static/images/navigationbarPortrait.png');
+@def navigationbarLandscape              url('static/images/navigationbarLandscape.png');
+
+
+@def clr-primary-75 #7e8e82;
+@def clr-primary #6c8c24;
+
+@def error #ff6666;
+@def v-red   #ff0000;
+
+@def row-highlight  rgba(162, 21, 114, 0.47);
+@def text-highlight rgba(162, 21, 114, 1);
+/* rgb(121 2 80) or rgb(162 21 114 / 47%) instead of rgba(167, 36, 122, 0.21)*/

@@ -16,6 +16,7 @@ Table of Contents:
 * [Hygrometer](#Hygrometer)
 * [LightSensor](#LightSensor)
 * [LocationSensor](#LocationSensor)
+* [MagneticFieldSensor](#MagneticFieldSensor)
 * [NearField](#NearField)
 * [OrientationSensor](#OrientationSensor)
 * [Pedometer](#Pedometer)
@@ -52,7 +53,7 @@ Non-visible component that can detect shaking and measure acceleration approxima
  generated even if the device is accelerated or shaken.
 
 {:id="AccelerometerSensor.LegacyMode" .boolean .do} *LegacyMode*
-: Property for LegacyMode
+: Prior to the release that added this property the AccelerometerSensor component passed through sensor values directly as received from the Android system. However these values do not compensate for tablets that default to Landscape mode, requiring the MIT App Inventor programmer to compensate. However compensating would result in incorrect results in Portrait mode devices such as phones. We now detect Landscape mode tablets and perform the compensation. However if your project is already compensating for the change, you will now get incorrect results. Although our preferred solution is for you to update your project, you can also just set this property to “true” and our compensation code will be deactivated. Note: We recommend that you update your project as we may remove this property in a future release.
 
 {:id="AccelerometerSensor.MinimumInterval" .number} *MinimumInterval*
 : Specifies the minimum interval required between back-to-back [`Shaking`](#AccelerometerSensor.Shaking) events,
@@ -575,6 +576,12 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:.events}
 
+{:id="LocationSensor.GotAddress"} GotAddress(*address*{:.text})
+: Reports the address in response to a ReverseGeocode request.
+
+{:id="LocationSensor.GotLocationFromAddress"} GotLocationFromAddress(*address*{:.text},*latitude*{:.number},*longitude*{:.number})
+: Reports the latitude and longitude in response to a Geocode request.
+
 {:id="LocationSensor.LocationChanged"} LocationChanged(*latitude*{:.number},*longitude*{:.number},*altitude*{:.number},*speed*{:.number})
 : Indicates that a new location has been detected. Speed is reported in meters/second
  Other values match their properties.
@@ -587,11 +594,61 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
 {:.methods}
 
+{:id="LocationSensor.Geocode" class="method"} <i/> Geocode(*address*{:.text})
+: Converts an address into a latitude and longitude through the GotLocationFromAddress event.
+
 {:id="LocationSensor.LatitudeFromAddress" class="method returns number"} <i/> LatitudeFromAddress(*locationName*{:.text})
 : Derives latitude from the given `locationName`.
 
 {:id="LocationSensor.LongitudeFromAddress" class="method returns number"} <i/> LongitudeFromAddress(*locationName*{:.text})
 : Derives longitude from the given `locationName`.
+
+{:id="LocationSensor.ReverseGeocode" class="method"} <i/> ReverseGeocode(*latitude*{:.number},*longitude*{:.number})
+: Determines the address associated with the given latitude and  and reports it through the GotAddress event.
+
+## MagneticFieldSensor  {#MagneticFieldSensor}
+
+Component for MagneticFieldSensor
+
+
+
+### Properties  {#MagneticFieldSensor-Properties}
+
+{:.properties}
+
+{:id="MagneticFieldSensor.AbsoluteStrength" .number .ro .bo} *AbsoluteStrength*
+: Indicates the absolute strength of the field.
+
+{:id="MagneticFieldSensor.Available" .boolean .ro .bo} *Available*
+: Indicates that there is a magnetic field sensor in the device and it is available.
+
+{:id="MagneticFieldSensor.Enabled" .boolean} *Enabled*
+: Indicates whether or not the magnetic field sensor is enabled and working.
+
+{:id="MagneticFieldSensor.MaximumRange" .number .ro .bo} *MaximumRange*
+: Indicates the maximum range the magnetic sensor can reach.
+
+{:id="MagneticFieldSensor.XStrength" .number .ro .bo} *XStrength*
+: Indicates the field's strength in the X-axis.
+
+{:id="MagneticFieldSensor.YStrength" .number .ro .bo} *YStrength*
+: Indicates the field's strength in the Y-axis.
+
+{:id="MagneticFieldSensor.ZStrength" .number .ro .bo} *ZStrength*
+: Indicates the field's strength in the Z-axis.
+
+### Events  {#MagneticFieldSensor-Events}
+
+{:.events}
+
+{:id="MagneticFieldSensor.MagneticChanged"} MagneticChanged(*xStrength*{:.number},*yStrength*{:.number},*zStrength*{:.number},*absoluteStrength*{:.number})
+: Triggers when magnetic field has changed, setting the new values in parameters.
+
+### Methods  {#MagneticFieldSensor-Methods}
+
+{:.methods}
+None
+
 
 ## NearField  {#NearField}
 
@@ -775,7 +832,7 @@ A sensor component that can measure the proximity of an object (in cm) relative 
  case, the sensor usually reports its maximum range value in the far state and a lesser value
  in the near state. It reports the following value:
 
-  - **Distance**: The distance from the object to the device
+   - **Distance**: The distance from the object to the device
 
 
 
@@ -795,7 +852,7 @@ A sensor component that can measure the proximity of an object (in cm) relative 
  are generated.
 
 {:id="ProximitySensor.KeepRunningWhenOnPause" .boolean} *KeepRunningWhenOnPause*
-: Returns value of keepRunningWhenOnPause
+: Returns value of keepRunningWhenOnPause.
 
 {:id="ProximitySensor.MaximumRange" .number .ro .bo} *MaximumRange*
 : Determines a sensor's maximum range. Some proximity sensors return binary values

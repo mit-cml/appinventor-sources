@@ -1,0 +1,64 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
+/*
+ * Copyright 2020 MIT, All Rights Reserved.
+ * Released under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+.ode-SimpleMockFormDark {
+  height: auto !important;
+  background-color: #d2e0a6;
+  border: 2px solid black;
+  -webkit-display: flex;
+  display: flex;
+}
+
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockFormDark,
+.ode-SimpleMockFormPhoneLandscapeTablet .ode-SimpleMockFormDark,
+.ode-SimpleMockFormPhoneLandscapeMonitor .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSLandscape .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSLandscapeTablet .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSLandscapeMonitor .ode-SimpleMockFormDark {
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockFormDark,
+.ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockFormDark,
+.ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSPortrait .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSPortraitTablet .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSPortraitMonitor .ode-SimpleMockFormDark {
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+
+/* iPhoneX Dark Theme */
+.ode-SimpleMockFormIOSLandscape .ode-SimpleMockFormDark,
+.ode-SimpleMockFormIOSPortrait .ode-SimpleMockFormDark {
+  border-radius: 30px;
+}
+
+/* Dark Theme Buttons in all previews */
+.ode-SimpleMockFormDark-AndroidMaterial .ode-SimpleMockButton {
+  padding: 4px 8px;
+  text-shadow: none;
+  background-color: #5a595b;
+  color: #fff;
+  border: 0;
+  border-radius: 2px;
+}
+
+.ode-SimpleMockFormDark-AndroidHolo .ode-SimpleMockButton {
+  min-height: 34px;
+  padding: 4px 8px;
+  background-color: #353839;
+  color: white;
+}
+
+.ode-SimpleMockFormDark-iOS .ode-SimpleMockButton {
+  padding: 4px 8px;
+  background-color: black;
+  color : rgba(10, 132, 255);
+  font-family: iOSFont;
+}

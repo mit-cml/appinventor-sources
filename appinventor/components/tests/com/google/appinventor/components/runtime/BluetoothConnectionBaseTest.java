@@ -6,40 +6,56 @@
 
 package com.google.appinventor.components.runtime;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailList;
-
-import junit.framework.TestCase;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Test;
+
+import org.robolectric.annotation.Config;
+
+import org.robolectric.shadows.ShadowBluetoothAdapter;
 
 /**
  * Tests BluetoothConnectionBase.java.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-public class BluetoothConnectionBaseTest extends TestCase {
+@Config(shadows = { ShadowBluetoothAdapter.class })
+public class BluetoothConnectionBaseTest extends RobolectricTestBase {
   private BluetoothConnectionBase connection;
   private ByteArrayOutputStream outputStream;
   private int recordedErrorNumber;
   private PipedOutputStream pipe;
 
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() {
+    super.setUp();
 
     outputStream = new ByteArrayOutputStream();
     pipe = new PipedOutputStream();
+    PipedInputStream inputStream;
+    try {
+      inputStream = new PipedInputStream(pipe);
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to create piped input stream");
+    }
 
-    connection = new BluetoothConnectionBase(outputStream, new PipedInputStream(pipe)) {
+    connection = new BluetoothConnectionBase(outputStream, inputStream) {
       @Override
       protected void bluetoothError(String functionName, int errorNumber, Object... messageArgs) {
         recordedErrorNumber = errorNumber;
       }
+
       @Override
       protected void write(String functionName, byte b) {
         super.write(functionName, b);
@@ -49,6 +65,7 @@ public class BluetoothConnectionBaseTest extends TestCase {
           throw new RuntimeException(e);
         }
       }
+
       @Override
       protected void write(String functionName, byte[] bytes) {
         super.write(functionName, bytes);
@@ -58,9 +75,15 @@ public class BluetoothConnectionBaseTest extends TestCase {
           throw new RuntimeException(e);
         }
       }
+
+      @Override
+      public boolean IsConnected() {
+        return true;
+      }
     };
   }
 
+  @Test
   public void testSendAndReceiveText() {
     connection.SendText("Hello");
     assertEquals(5, connection.BytesAvailableToReceive());
@@ -111,6 +134,7 @@ public class BluetoothConnectionBaseTest extends TestCase {
     assertEquals((byte)  10, bytes[i++]);  // line feed
   }
 
+  @Test
   public void testSendandReceive1ByteNumber() {
     connection.Send1ByteNumber("0");
     assertEquals(0, connection.ReceiveUnsigned1ByteNumber());
@@ -157,6 +181,7 @@ public class BluetoothConnectionBaseTest extends TestCase {
     assertEquals((byte) 0xAB, bytes[i++]);  // 0xab
   }
 
+  @Test
   public void testSendAndReceive2ByteNumber() {
     connection.HighByteFirst(true);
     connection.Send2ByteNumber("0");
@@ -258,6 +283,7 @@ public class BluetoothConnectionBaseTest extends TestCase {
 
   }
 
+  @Test
   public void testSendAndReceive4ByteNumber() {
     connection.HighByteFirst(true);
     connection.Send4ByteNumber("0");
@@ -398,6 +424,7 @@ public class BluetoothConnectionBaseTest extends TestCase {
     assertEquals((byte) 0x00, bytes[i++]);
   }
 
+  @Test
   public void testSendAndReceiveBytes() {
     List<Object> list = new ArrayList<Object>();
     list.add((byte) 0);

@@ -75,6 +75,11 @@ public interface ITextToSpeech {
    */
   public void setSpeechRate(float speechRate);
 
+  /**
+   * Stops any current speech, if possible.
+   */
+  public void stop();
+
   public int isLanguageAvailable(Locale loc);
 
   public boolean isInitialized() ;

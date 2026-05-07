@@ -43,13 +43,28 @@ public class BooleanPropertyEditor extends PropertyEditor implements ValueChange
   // Updates the property value shown in the editor
   @Override
   protected void updateValue() {
-    checkbox.setValue(property.getValue().equals(trueValue));
+    if (isMultipleValues()) {
+      checkbox.setValue(false);
+      checkbox.getElement().getFirstChildElement().setPropertyBoolean("indeterminate", true);
+    } else {
+      checkbox.setValue(property.getValue().equals(trueValue));
+    }
+  }
+
+  @Override
+  public void setAriaLabelledBy(String labelId) {
+    if (labelId != null && !labelId.isEmpty()) {
+      // GWT CheckBox renders as <input type="checkbox"> inside the wrapper
+      // We need to set aria-labelledby on the input element
+      checkbox.getElement().getFirstChildElement().setAttribute("aria-labelledby", labelId);
+    }
   }
 
   // ValueChangeHandler implementation
 
   @Override
   public void onValueChange(ValueChangeEvent<Boolean> event) {
+    setMultipleValues(false);
     property.setValue(checkbox.getValue() ? trueValue : falseValue);
   }
 }

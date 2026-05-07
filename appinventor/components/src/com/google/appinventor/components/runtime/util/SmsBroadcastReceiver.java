@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,25 +8,25 @@
  * and was original published under Apache 2.0 license.
  *
  */
+
 package com.google.appinventor.components.runtime.util;
 
-import java.util.List;
-
-import android.support.v4.app.NotificationCompat;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.Texting;
-import com.google.appinventor.components.runtime.ReplForm;
-
-import android.R;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import androidx.core.app.NotificationCompat;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.Texting;
+import java.util.List;
 
 /**
  * This broadcast receiver accepts incoming SMS messages from either
@@ -57,6 +57,9 @@ import android.util.Log;
 public class SmsBroadcastReceiver extends BroadcastReceiver {
 
   public static final String TAG = "SmsBroadcastReceiver";
+
+  private static final String CHANNEL_ID = "sms_notifications";
+  private static final String CHANNEL_NAME = "SMS Notifications";
   public static final int NOTIFICATION_ID = 8647;
 
   /**
@@ -203,6 +206,13 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
    * @param msg
    */
   private void sendNotification(Context context, String phone, String msg) {
+    NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        nm.createNotificationChannel(new NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_DEFAULT));
+    }
     Log.i(TAG, "sendingNotification " + phone + ":" + msg);
 
     // Get this app's name
@@ -224,10 +234,10 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
       newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
       // Create the Notification
-      PendingIntent activity = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-      NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-      Notification note = new NotificationCompat.Builder(context)
-          .setSmallIcon(R.drawable.sym_call_incoming)
+      PendingIntent activity = PendingIntent.getActivity(context, 0, newIntent,
+          PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+      Notification note = new NotificationCompat.Builder(context, CHANNEL_ID)
+          .setSmallIcon(android.R.drawable.sym_call_incoming)
           .setTicker(phone + " : " + msg)
           .setWhen(System.currentTimeMillis())
           .setAutoCancel(true)

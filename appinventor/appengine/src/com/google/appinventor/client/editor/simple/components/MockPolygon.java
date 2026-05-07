@@ -168,7 +168,7 @@ public class MockPolygon extends MockPolygonBase {
     if (!polygon.clickHandler) {
       while (el.lastChild) el.removeChild(el.lastChild);  // clear the div
       polygon.clickHandler = function(e) {
-        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select()();
+        this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::select(*)(e);
         if (e.originalEvent) {
           if ((e.originalEvent.metaKey || e.originalEvent.ctrlKey) && polygon.editEnabled()) {
             polygon.editor.newHole(e.latlng);
@@ -215,6 +215,10 @@ public class MockPolygon extends MockPolygonBase {
     this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
       this.@com.google.appinventor.client.editor.simple.components.MockPolygon::getTooltip()()
     );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(polygon);
+    }
   }-*/;
 
   private native void preserveLayerData()/*-{

@@ -171,4 +171,23 @@ public class CsvUtilTest extends TestCase {
     String expectedCSVString = "\"field0\",\"field1\",\"field2\"";
     assertEquals(expectedCSVString, CsvUtil.toCsvRow(YailList.makeList(row)));
   }
+
+  public void testTrailingCommaRow() throws Exception {
+    String testString1 = "a,b,c,,,";
+    String testString2 = testString1 + "\n";
+    YailList list1 = CsvUtil.fromCsvRow(testString1);
+    YailList list2 = CsvUtil.fromCsvRow(testString2);
+    assertEquals(6, list1.size());
+    assertEquals(6, list2.size());
+    assertEquals(list2, list1);
+  }
+
+  public void testTrailingCommaTable() throws Exception {
+    String testString1 = "a,b,c,,,\nd,e,f,,,";
+    String testString2 = testString1 + "\n";
+    YailList list1 = CsvUtil.fromCsvTable(testString1);
+    YailList list2 = CsvUtil.fromCsvTable(testString2);
+    assertEquals(list2.getObject(0), list1.getObject(0));
+    assertEquals(list2.getObject(1), list1.getObject(1));
+  }
 }

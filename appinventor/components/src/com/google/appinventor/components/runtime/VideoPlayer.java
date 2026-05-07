@@ -1,11 +1,26 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2020 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.widget.MediaController;
+import android.widget.VideoView;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -23,20 +38,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
-
-import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.widget.MediaController;
-import android.widget.VideoView;
-
+import com.google.appinventor.components.runtime.util.TiramisuUtil;
 import java.io.IOException;
 
 /**
@@ -115,7 +117,8 @@ import java.io.IOException;
         + "by shortening them or re-encoding the video into a more compact format.</p>"
         + "<p>You can also set the media source to a URL that points to a streaming video, "
         + "but the URL must point to the video file itself, not to a program that plays the video.",
-    category = ComponentCategory.MEDIA)
+    category = ComponentCategory.MEDIA,
+    iconName = "images/videoPlayer.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class VideoPlayer extends AndroidViewComponent implements
@@ -195,7 +198,24 @@ public final class VideoPlayer extends AndroidViewComponent implements
       description = "The \"path\" to the video.  Usually, this will be the "
           + "name of the video file, which should be added in the Designer.",
       category = PropertyCategory.BEHAVIOR)
-  public void Source(String path) {
+  @UsesPermissions(READ_EXTERNAL_STORAGE)
+  public void Source(@Asset String path) {
+    final String tempPath = (path == null) ? "" : path;
+    if (TiramisuUtil.requestVideoPermissions(container.$form(), path,
+        new PermissionResultHandler() {
+          @Override
+          public void HandlePermissionResponse(String permission, boolean granted) {
+            if (granted) {
+              VideoPlayer.this.Source(tempPath);
+            } else {
+              container.$form().dispatchPermissionDeniedEvent(VideoPlayer.this, "Source",
+                  permission);
+            }
+          }
+        })) {
+      return;
+    }
+
     if (inFullScreen) {
       container.$form().fullScreenVideoAction(
           FullScreenVideoUtil.FULLSCREEN_VIDEO_ACTION_SOURCE, this, path);
@@ -280,7 +300,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100. " +
       "Values less than 0 will be treated as 0, and values greater than 100 " +
-      "will be treated as 100.")
+      "will be treated as 100.",
+      category = PropertyCategory.BEHAVIOR)
   public void Volume(int vol) {
     // clip volume to range [0, 100]
     vol = Math.max(vol, 0);

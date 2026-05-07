@@ -1,10 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019 MIT, All rights reserved
+// Copyright 2019-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.context.Resources;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.Clock;
 import java.text.SimpleDateFormat;
@@ -14,21 +15,27 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 
+@PowerMockIgnore({"gnu.*", "kawa.*"})
+@PrepareForTest({Clock.class})
 @RunWith(PowerMockRunner.class)
 public class YailAndroidTest {
   private Scheme scheme;
 
-  private static final String YAIL_SCHEME_TESTS = TestUtils.APP_INVENTOR_ROOT_DIR +
+  private static final String YAIL_SCHEME_TESTS =
+      TestUtils.windowsToUnix(TestUtils.APP_INVENTOR_ROOT_DIR) +
       "/buildserver/tests/com/google/appinventor/buildserver/YailEvalTest.scm";
 
   @Before
   public void setUp() throws Exception {
     scheme = new Scheme();
-    String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
+    String yailRuntimeLibrary = new Resources().getResource(Resources.YAIL_RUNTIME);
+    yailRuntimeLibrary = TestUtils.windowsToUnix(yailRuntimeLibrary);
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + YAIL_SCHEME_TESTS + "\")");

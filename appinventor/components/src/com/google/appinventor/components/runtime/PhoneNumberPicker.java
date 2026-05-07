@@ -65,7 +65,8 @@ import java.util.List;
     "<p>The PhoneNumberPicker component may not work on all Android " +
     "devices. For example, on Android systems before system 3.0, the " +
     "returned lists of phone numbers and email addresses will be empty.\n",
-    category = ComponentCategory.SOCIAL)
+    category = ComponentCategory.SOCIAL,
+    iconName = "images/phoneNumberPicker.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class PhoneNumberPicker extends ContactPicker {

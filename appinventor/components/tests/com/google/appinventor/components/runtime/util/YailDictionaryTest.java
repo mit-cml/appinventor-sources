@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 /**
  * Unit tests for the YailDictionary datatype.
@@ -35,6 +36,7 @@ import org.robolectric.RobolectricTestRunner;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 23, manifest="tests/AndroidManifest.xml")
 public class YailDictionaryTest {
 
   private static final String TEST_JSON = "{\"foo\":[{\"bar\":[0,{\"baz\":true}]}], \"num\": 1}";
@@ -245,7 +247,7 @@ public class YailDictionaryTest {
 
   @Test
   public void testDictToAlist() {
-    YailList target = getTestList();
+    YailList target = getDictToListTestList();
     YailDictionary dict = getTestDict();
     assertEquals(target, YailDictionary.dictToAlist(dict));
   }
@@ -372,15 +374,10 @@ public class YailDictionaryTest {
             YailList.makeList(new Object[] {
                 YailList.makeList(new Object[] { "a", "b" }), 2, 3})}),
         YailList.makeList(new Object[] { "dict",
+            YailDictionary.makeDictionary("a","b")}),
+        YailList.makeList(new Object[] { "list-with-dict", 
             YailList.makeList(new Object[] {
-                YailList.makeList(new Object[] { "a", "b" })})}),
-        YailList.makeList(new Object[] { "list-with-dict",
-            YailList.makeList(new Object[] {
-                YailList.makeList(new Object[] {
-                    YailList.makeList(new Object[] {
-                        "a", "b"
-                    })
-                })
+                YailDictionary.makeDictionary("a","b")
             })})
     });
   }
@@ -396,5 +393,21 @@ public class YailDictionaryTest {
     target.put("dict", abdict);
     target.put("list-with-dict", YailList.makeList(singletonList(abdict)));
     return target;
+  }
+
+  private static YailList getDictToListTestList() {
+    // Only the top level is converted to a list.
+    YailList ablist = YailList.makeList(Arrays.asList("a", "b"));
+    YailDictionary abdict = YailDictionary.makeDictionary("a", "b");
+    return YailList.makeList(new Object[] {
+         YailList.makeList(new Object[] { "number", 1 }),
+         YailList.makeList(new Object[] { "string", "foo" }),
+         YailList.makeList(new Object[] { "empty-list", YailList.makeEmptyList() }),
+         YailList.makeList(new Object[] { "list",
+             YailList.makeList(asList(ablist, 2, 3)) }),
+         YailList.makeList(new Object[] { "dict", abdict }),
+         YailList.makeList(new Object[] { "list-with-dict",
+             YailList.makeList(singletonList(abdict)) })
+    });
   }
 }

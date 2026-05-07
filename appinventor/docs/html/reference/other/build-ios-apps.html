@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="/static/css/fonts.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/mit_app_inventor.css">
+    <script type="text/javascript">
+     <!--//--><![CDATA[// ><!--
+
+                                   var gotoappinventor = function() {
+                                       var referrer = document.location.pathname;
+                                       var patt = /.*hour-of-code.*/;
+                                       if (referrer.match(patt)) {
+                                           window.open("http://code.appinventor.mit.edu/", "new");
+                                       } else {
+                                           window.open("http://ai2.appinventor.mit.edu/", "new");
+                                       }
+                                   }
+     //--><!]]>
+    </script>
+    <title>Building Apps for iOS with MIT App Inventor</title></head>
+<body class="mit_app_inventor"><nav class="navbar navbar-expand-xl navbar-light">
+    <a class="navbar-brand" href="http://appinventor.mit.edu/">
+	<img src="/static/images/logo2.png" alt="Logo">
+    </a>
+    <button type="button" class="btn create-btn" style="margin-right: 20px;" onclick="gotoappinventor();">Create Apps!</button>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle Navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+	<ul class="navbar-nav" style="margin-left: auto;">
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    About
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
+                    <a class="dropdown-item"
+                       href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/about/termsofservice" target="_blank">Terms of Service</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Educators
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/teach" target="_blank">Teach</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/news" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    News
+		</a>
+		<div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/news">In the news</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/events">Events</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/stories">Stories from the field</a>
+		</div>
+	    </li>
+	    <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu/explore/resources" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Resources
+		</a>
+		<div class="dropdown-menu">
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/get-started">Get Started</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/library">Documentation</a>
+		    <a class="dropdown-item" href="https://community.appinventor.mit.edu"
+                       target="_blank">Forums</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/ai2/tutorials">Tutorials</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/books">App Inventor Books</a>
+		    <a class="dropdown-item"
+                       href="https://github.com/mit-cml/appinventor-sources"
+                       target="_blank">Open Source Information</a>
+	            <a class="dropdown-item" href="http://appinventor.mit.edu/explore/research">Research</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/hour-of-code">Hour of Code</a>
+                    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/resources">Additional Resources</a>
+		</div>
+	    </li>
+            <li class="nav-item dropdown">
+		<a class="nav-link" href="http://appinventor.mit.edu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Blogs
+		</a>
+                <div class="dropdown-menu">
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/blog">App Inventor Blog</a>
+	        </div>
+            </li>
+        </ul>
+        <div style="display: inline-flex;margin-left:auto;margin-right:0">
+	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
+                <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
+            <script>
+             (function() {
+                 var cx = '005719495929270354943:tlvxrelje-e';
+                 var gcse = document.createElement('script');
+                 gcse.type = 'text/javascript';
+                 gcse.async = true;
+                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                 var s = document.getElementsByTagName('script')[0];
+                 s.parentNode.insertBefore(gcse, s);
+             })();
+            </script>
+            <gcse:searchbox-only></gcse:searchbox-only>
+        </div>
+	<!-- <form class="form-inline" action="/action_page.php">
+	     <div class="form-group has-search">
+	     <span class="fa fa-search form-control-feedback"></span>
+	     <input type="text" class="form-control" placeholder="Search">
+	     </div>
+	     </form> -->
+    </div>
+</nav>
+<div class="default-page">
+            <div class="header">
+	        <h1 class="font-weight-bold text-center offset-xl-2 col-xl-8">Building Apps for iOS with MIT App Inventor</h1>
+            </div>
+            <div class="container-fluid">
+                <article class="documentation">
+<p>First, you will need an active Apple Developer License. While this is typically $99/year, non-profit and educational organizations can often get a waiver for the fee. Every iOS app is signed using a private key and a certificate. The certificate is signed by Apple, and iOS devices will only install apps signed by a certificate signed by Apple. This document will take you through the process of setting up your App Inventor and Apple developer accounts so you can compile apps for your iOS devices.</p>
+
+<h2 id="retrieve-a-certificate-signing-request">Retrieve a Certificate Signing Request</h2>
+
+<p>Apple uses digital certificates to sign your apps to allow them to run on iOS devices or to upload them to App Store Connect. Certificates expire after 1 year, so you must continue to renew them over time while participating in the Apple Developer program. In order for Apple to issue you a certificate, you must first obtain a Certificate Signing Request (CSR). App Inventor can generate this request for you by selecting the “Download Certificate Request” menu item under Projects. The request will be tied to the same keystore used for signing your Android apps.</p>
+
+<p>Log into <a href="/">MIT App Inventor</a>.</p>
+
+<p>From the Project menu, select “Download Certificate Request”.</p>
+
+<p><img src="images/download-csr.png" alt="Download Certiifcate Request menu item under Projects" /></p>
+
+<p>Your browser will save your CSR to your computer.</p>
+
+<h2 id="submit-csr-to-apple">Submit CSR to Apple</h2>
+
+<p>Log into the <a href="https://developer.apple.com">Apple Developer portal</a>.</p>
+
+<p>In the Apple Developer Portal, go to the Certificates, Profiles &amp; Devices section.</p>
+
+<p><img src="images/developer-main.png" alt="Screenshot of Apple Developer Portal with Certificates, Identifiers &amp; Profiles highlighted" style="zoom:0.5" /></p>
+
+<p>Select Certificates, then click the + button to create a new certificate.</p>
+
+<p><img src="images/certificate-overview.png" alt="Screenshot of the Certificates page in the Apple Developer Portal" style="zoom:0.5" /></p>
+
+<p>When prompted for what type of certificate you would like, select Apple Distribution, and click Continue.</p>
+
+<p><img src="images/certificate-type.png" alt="" style="zoom:0.5" /></p>
+
+<p>On the next page, click “Choose File” and select the CSR file downloaded from App Inventor.</p>
+
+<p><img src="images/certificate-upload.png" alt="" style="zoom:0.5" /></p>
+
+<p>Once you’ve submitted the form and your certificate has been approved, click “All Certificates” to go back to the developer portal. <strong>You do not need to download your certificate.</strong></p>
+
+<h2 id="create-app-identifier">Create App Identifier</h2>
+
+<p>Click on Identifiers to open the Identifers section.</p>
+
+<p><img src="images/identifiers-main.png" alt="" style="zoom:0.5" /></p>
+
+<p>Click on the + button to create a new identifier for your app. Select App IDs and click Continue. For the identifier type, select App. Once you’ve done this, you will be presented with a registration screen.</p>
+
+<p><img src="images/identifiers-register.png" alt="" style="zoom:0.5" /></p>
+
+<h3 id="description">Description</h3>
+
+<p>The Description is a human-readable name that you can use to identify your profile. In most cases, it is best to use your app or project name as the description.</p>
+
+<h3 id="app-id-prefix">App ID Prefix</h3>
+
+<p>The App ID Prefix is an identifier that uniquely identifies your developer account to Apple. For this option, you will want to choose the identifier marked “(Team ID)”.</p>
+
+<h3 id="bundle-id">Bundle ID</h3>
+
+<p>App Inventor generally expects identifiers of the format <code class="highlighter-rouge">appinventor.ai-USERNAME.PROJECTNAME</code> where <code class="highlighter-rouge">USERNAME</code> is replaced with the first part of your email address preceding the <code class="highlighter-rouge">@</code> and <code class="highlighter-rouge">PROJECTNAME</code> is replaced with your project’s name. However, any reverse-DNS style identifier will do if you publish other applications that you wish to interact with.</p>
+
+<p>You can also use wildcard IDs, such as <code class="highlighter-rouge">appinventor.ai-USERNAME.*</code> to create a single provisioning profile you can reuse across all your projects.</p>
+
+<p>After completing the form, click Continue and then Register to complete the registration. Click “All Identifiers” to go back to the main interface.</p>
+
+<h2 id="add-devices">Add Device(s)</h2>
+
+<p><strong>App Store only:</strong> This section can be skipped for App Store builds.</p>
+
+<p>Click on Devices to open the Devices section.</p>
+
+<p><img src="images/devices-main.png" alt="" style="zoom:0.5" /></p>
+
+<p>Click on the + button to register a new device. On the registration form, you can either submit a single device or upload a file. See the section <a href="#udids">Notes on Device IDs</a> on how to retrieve the identifier for your devices.</p>
+
+<p><img src="images/devices-form.png" alt="" style="zoom:0.5" /></p>
+
+<p>Click Continue and then click Register to confirm addition of the new device. Click “All Devices” to return to the developer portal. You may also complete this step multiple times to add more devices.</p>
+
+<h2 id="create-profile">Create Profile</h2>
+
+<p>Our next step is to create a provisioning profile. This profiles ties together all of the previous items into a single package that is used for distributing your app. Click on Profiles to open the Profiles section and then click on the + button to create a new profile. App Inventor can build apps for either “Ad Hoc” or “App Store” distribution. To distribute to a limited number of devices without requiring App Store review, select “Ad Hoc.” If you plan to distribute to the App Store, select “App Store.”</p>
+
+<p><img src="images/profile-type.png" alt="" style="zoom:0.5" /></p>
+
+<p>On the next screen you will be asked to choose the App ID for this profile. Select the App ID created in the earlier step and click Continue.</p>
+
+<p><img src="images/profile-appid.png" alt="" style="zoom:0.5" /></p>
+
+<p>On the next screen you will be asked to choose the certificate used for signing apps when this profile is used. Select your Certifcate created in the earlier step and click Continue.</p>
+
+<p><img src="images/profile-certificate.png" alt="" style="zoom:0.5" /></p>
+
+<p><strong>For Ad Hoc profiles only:</strong> On the next screen you will be asked to choose the devices that will be allowed to run the app associated with this profile. Enable as many devices as you want in this step (minimum 1) and click Continue.</p>
+
+<p><img src="images/profile-devices.png" alt="" style="zoom:0.5" /></p>
+
+<p>On the next screen you will be asked to name your profile, review your selections, and confirm the creation of the profile. The name is only for readability purposes and you may call the profile whatever makes sense to you.</p>
+
+<p><img src="images/profile-confirmation.png" alt="" style="zoom:0.5" /></p>
+
+<p>After confirming your Profile, click the Download button to download the profile to your computer. After downloading your provisioning profile, you can close the tab with the Apple Developer Portal.</p>
+
+<h2 id="build-app">Build App</h2>
+
+<p>Return to your project in App Inventor. Upload your provisioning profile created in the previous step to the Media section of your app.</p>
+
+<p><img src="images/media-provisioning.png" alt="" /></p>
+
+<p>From the Build menu, select either <code class="highlighter-rouge">iOS Ad Hoc (.ipa)</code> to initiate an Ad Hoc build or <code class="highlighter-rouge">Upload to iOS App Store</code> to build and upload your app to the App Store. If this is your first App Store build, you will also need to provide an <a href="#asp">app-specific password</a> .</p>
+
+<p><strong>Note:</strong> It is possible to include two different mobile provisioning profiles in your assets to use both types of builds.</p>
+
+<p><img src="images/build-app.png" alt="" /></p>
+
+<p><strong>Ad Hoc only:</strong> When the build is complete, you will receive a QR code for scanning. On your iOS device, open the Camera app and point it at the QR code. It should show you a notification to open a link. Opening this link will initiate an installation of your app.</p>
+
+<p><img src="images/barcode-example.png" alt="" /></p>
+
+<p><strong>App Store only:</strong> After success, your app will need to be processed by Apple. You will receive a dialog confirming successful delivery with a link to open App Store Connect.</p>
+
+<p><img src="images/upload-example.png" alt="" style="zoom: 0.5" /></p>
+
+<h2 id="asp">Note on App Specific Passwords</h2>
+
+<p>For publishing to the App Store with MIT App Inventor, you will need to create an app-specific password for your Apple account.</p>
+
+<p>To create an app-specific password, go to <a href="https://appleid.apple.com">Apple ID</a> and sign in.</p>
+
+<p>At the dashboard, locate the App-Specific Password card and click on it.</p>
+
+<p><img src="images/asp-apple-id-dashboard.png" alt="" style="zoom: 0.5" /></p>
+
+<p>Next, click the + button to add a new password.</p>
+
+<p><img src="images/asp-overview-screen.png" alt="" style="zoom: 0.5" /></p>
+
+<p>You will be prompted for an app name. Enter “MIT App Inventor” and then click Create.</p>
+
+<p><img src="images/asp-generate-screen.png" alt="" style="zoom: 0.5" /></p>
+
+<p>At this point you may be prompted to re-enter your Apple ID password for security confirmation. Once you have done that, you should receive your app-specific password. Save this somewhere as this will be the only time it will be shown.</p>
+
+<p><img src="images/asp-finish-screen.png" alt="" style="zoom: 0.5" /></p>
+
+<p>Lastly, in App Inventor, you can provide your app specific password by going to the Settings menu and opening the App Store Settings dialog. You will need to provide both your Apple ID (usually your email address) and the App Specific Password created in the previous step. For most users, you can leave ASC Short Name blank.</p>
+
+<p><img src="images/asp-settings-dialog.png" alt="" style="zoom: 0.5" /></p>
+
+<p><strong>Note:</strong> These credentials are encrypted on the App Inventor server and cannot be decrypted by the server and cannot be retrieved after being set. If you need to change your credentials, you can set a new app-specific password by repeating the steps above.</p>
+
+<h2 id="devmode">Note on Developer Mode</h2>
+
+<p>Starting with iOS 16, Apple requires that users turn on Developer Mode before they can install apps packaged using the Ad Hoc approach.</p>
+
+<p>To enable Developer Mode, go to the Settings app and go to the Privacy &amp; Security section:</p>
+
+<p><img src="images/devmode-settings.png" alt="" style="zoom:0.5" /></p>
+
+<p>Scroll down to the Security section and select Developer Mode:</p>
+
+<p><img src="images/devmode-security.png" alt="" style="zoom:0.5" /></p>
+
+<p>Turn on the switch to enable Developer Mode:</p>
+
+<p><img src="images/devmode-devmode.png" alt="" style="zoom:0.5" /></p>
+
+<p>The device may request that you first restart before the option can be enabled:</p>
+
+<p><img src="images/devmode-restart.png" alt="" style="zoom:0.5" /></p>
+
+<p>After restarting your device, you will be prompted to turn on Developer Mode:</p>
+
+<p><img src="images/devmode-enable.png" alt="" style="zoom:0.5" /></p>
+
+<p>Once you have enabled Developer Mode, you can scan the QR code returned by App Inventor or install the downloaded IPA to your device.</p>
+
+<h2 id="udids">Note on Device IDs</h2>
+
+<p>Every iOS device has a unique identifier called the UDID. You can obtain the UDID for your device using iTunes or Finder (on macOS 10.14+).</p>
+
+<h3 id="macos">macOS</h3>
+
+<p>On newer versions of macOS without iTunes, your iOS device will appear in the Finder when connected via USB to your computer. Select the device in Finder and look for the device type under its name.</p>
+
+<p><img src="images/macos-udid.png" alt="" style="zoom:0.5" /></p>
+
+<p>Click on the device type (iPhone X in the example) to reveal the UDID. You can control-click or right-click to copy the UDID.</p>
+
+<p><img src="images/macos-copy-udid.png" alt="" style="zoom:0.5" /></p>
+
+<p>Paste the UDID into the form in the Apple Developer console when needed.</p>
+
+<h3 id="itunes-windows-or-mac-os-x">iTunes (Windows or Mac OS X)</h3>
+
+<p>Windows or older versions of Mac OS X prior to 10.14, you will be able to retrieve via iTunes. First, connect your device to your computer via USB cable and then open iTunes. Click on the device icon that appears in the toolbar:</p>
+
+<p><img src="images/itunes-open-iphone.png" alt="" style="zoom:0.5" /></p>
+
+<p>In the information window, click on the area where the Serial Number appears. This will change the entry to UDID.</p>
+
+<p><img src="images/itunes-serial.png" alt="" style="zoom:0.5" /></p>
+
+<p>Right click (or control click on Mac) to open the context menu to copy the UDID.</p>
+
+<p><img src="images/itunes-udid-copy.png" alt="" style="zoom:0.5" /></p>
+
+<p>Paste the UDID into the form in the Apple Developer console when needed.</p>
+
+</article>
+<script>
+  // Handle redirection to documentation based on locale query parameter (if specified)
+  (function() {
+      var locale = window.location.search.match('[&?]locale=([a-zA-Z-]*)');
+      if (locale) {
+          if (locale[1].indexOf('en') === 0) {
+              // English needs to stay at the top level to not break existing links
+              var page = window.location.pathname.split('/');
+              if (page.length === 5) {
+                  page.splice(2, 1);
+              } else {
+                  // already on english
+                  return;
+              }
+              window.location.href = page.join('/');
+          } else {
+              var page = window.location.pathname.split('/');
+              if (page.length === 4) {
+                  page.splice(2, 0, locale[1]);
+              } else if (page[2].toLowerCase() != locale[1].toLowerCase()) {
+                  page[2] = locale[1];
+              } else {
+                  return;  // already on the desired language
+              }
+              // Test that the page exists before redirecting.
+              var xhr = new XMLHttpRequest();
+              xhr.open('HEAD', page.join('/'), false);
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState == 4) {
+                      if ((xhr.status == 200 || xhr.status == 204)) {
+                          window.location.href = page.join('/');
+                      } else if (xhr.status  >= 400) {
+                          page.splice(2, 1);  // go to english version
+                          window.location.href = page.join('/');
+                      }
+                  }
+              };
+              xhr.send();
+          }
+      }
+  })();
+
+  // Handle embedded documentation in help by removing website template
+  if (window.self !== window.top) {
+      setTimeout(function() {
+          var videos = document.querySelectorAll('video');
+          for (var i = 0; i < videos.length; i++) {
+              if (parseInt(videos[i].getAttribute('width')) > 360) {
+                  var aspect = parseInt(videos[i].getAttribute('height')) / parseInt(videos[i].getAttribute('width'));
+                  videos[i].setAttribute('width', '360');
+                  videos[i].setAttribute('height', '' + (360 * aspect));
+              }
+          }
+          var h1 = document.querySelector('h1');
+          var article = document.querySelector('article');
+          article.insertBefore(h1, article.firstElementChild);
+          document.body.innerHTML = article.outerHTML;
+      });
+  }
+</script>
+
+            </div>
+            <div class="footer background-green">
+    <div class="row container">
+	<div class="col-xl-3">
+	    <h3>MIT App Inventor</h3>
+	    <!-- <form class="form-inline" action="/action_page.php">
+		 <div class="form-group has-search">
+		 <span class="fa fa-search form-control-feedback"></span>
+		 <input type="text" class="form-control" placeholder="Search">
+		 </div>
+		 </form> -->
+	</div>
+	<div class="col-xl-6 legal text-center">
+	    <ul>
+		<li>
+		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+		</li>
+		<li>
+		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
+                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+		</li>
+		<li>
+		    <a href="http://appinventor.mit.edu/about/termsofservice"
+                       target="_blank" class="btn btn-link" role="button">Terms of Service and Privacy Policy</a>
+		</li>
+	    </ul>
+	</div>
+	<div class="col-xl-3 links">
+            <a href="https://community.appinventor.mit.edu" target="_blank">Support / Help</a><br>
+            <a href="mailto:appinventor@mit.edu">Other Inquiries</a>
+	    <div>
+		<span>Twitter:</span>
+		<a href="https://twitter.com/mitappinventor"
+                   target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="/static/js/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="/static/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script async src="/static/js/widgets.js" charset="utf-8"></script>
+</div>
+    </body>
+</html>

@@ -17,6 +17,7 @@ import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;

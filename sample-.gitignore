@@ -9,8 +9,6 @@ reports/
 *~
 *.out
 .DS_Store*
-*.out
-*~
 *.iml
 .idea/
 .externalToolBuilders/
@@ -20,4 +18,6 @@ out/
 .vagrant/
 *.log
 .build/
-.jekyll-cache/
+*-cache/
+.bundle/
+vendor/

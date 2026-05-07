@@ -6,6 +6,10 @@
 
 package com.google.appinventor.shared.rpc;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+
 /**
  * Configuration of the URL namespace on the ODE server.
  *
@@ -50,20 +54,6 @@ public class ServerLayout {
 
   /**
    * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.project.GalleryService} within
-   * the ODE GWT module.
-   */
-  public static final String GALLERY_SERVICE = "gallery";
-
-
-  /**
-   * Relative path of the {@link com.google.appinventor.server.GalleryServlet}
-   * within the ODE GWT module.
-   */
-  public static final String GALLERY_SERVLET = "gallery_servlet";
-
-  /**
-   * Relative path of the
    * {@link com.google.appinventor.shared.rpc.user.UserInfoService} within the
    * ODE GWT module.
    */
@@ -103,6 +93,18 @@ public class ServerLayout {
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a project's sources for local device caching.
+   */
+  public static final String DOWNLOAD_PROJECT_CACHED = "project-cached";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading selected of a user's projects' sources.
+   */
+  public static final String DOWNLOAD_SELECTED_PROJECTS_SOURCE = "selected-projects-source";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
    * for downloading all of a user's projects' sources.
    */
   public static final String DOWNLOAD_ALL_PROJECTS_SOURCE = "all-projects-source";
@@ -125,6 +127,8 @@ public class ServerLayout {
    * for downloading a user file
    */
   public static final String DOWNLOAD_USERFILE = "userfile";
+
+  public static final String DOWNLOAD_CSR = "certificate-request";
 
   /**
    * Relative path of the {@link com.google.appinventor.server.UploadServlet}
@@ -155,12 +159,6 @@ public class ServerLayout {
    * for uploading a user file
    */
   public static final String UPLOAD_USERFILE = "userfile";
-
-  /**
-   * Relative path of the {@link com.google.appinventor.server.GetMotdServiceImpl}
-   * within the ODE GWT module.
-   */
-  public static final String GET_MOTD_SERVICE = "getmotd";
 
   /**
    * Relative path of the {@link com.google.appinventor.server.components.FirebaseAuthServiceImpl}
@@ -202,10 +200,10 @@ public class ServerLayout {
 
   /**
    * Relative path of the
-   * {@link com.google.appinventor.shared.rpc.cloudDB.CloudDBAuthService} within the
+   * {@link com.google.appinventor.shared.rpc.cloudDB.TokenAuthService} within the
    * ODE GWT module.
    */
-  public static final String CLOUD_DB_AUTH_SERVICE = "cloudDBAuth";
+  public static final String TOKEN_AUTH_SERVICE = "tokenauth";
 
   public static String genRelativeDownloadPath(long projectId, String target) {
     return DOWNLOAD_SERVLET_BASE + DOWNLOAD_PROJECT_OUTPUT + "/" + projectId + "/" + target;
@@ -214,4 +212,10 @@ public class ServerLayout {
   public static String genFullDownloadPath(long projectId, String target) {
     return ODE_BASEURL + genRelativeDownloadPath(projectId, target);
   }
+
+  public static String getModuleBaseURL() {
+    return Window.Location.getProtocol() + "//" + Window.Location.getHost() +
+      "/" + GWT.getModuleName() + "/";
+  }
+
 }

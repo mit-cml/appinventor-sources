@@ -18,15 +18,15 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   }
 
   @Override
-  public void onDeletedProjectAdded(Project project) {
+  public void onTrashProjectRestored(Project project) {
   }
 
   @Override
-  public void onProjectRemoved(Project project) {
+  public void onProjectTrashed(Project project) {
   }
 
   @Override
-  public void onDeletedProjectRemoved(Project project) {
+  public  void onProjectDeleted(Project project) {
   }
 
   /**
@@ -34,9 +34,6 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
    * already finished loading projects, this will be called immediately upon adding the listener.
    */
   @Override
-  public void onProjectsLoaded() { }
-
-  @Override
-  public void onProjectPublishedOrUnpublished() {
+  public void onProjectsLoaded() {
   }
 }

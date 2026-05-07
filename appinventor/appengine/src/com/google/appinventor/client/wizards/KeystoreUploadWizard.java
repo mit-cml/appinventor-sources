@@ -50,7 +50,7 @@ public class KeystoreUploadWizard extends Wizard {
       public void execute() {
         String filename = upload.getFilename();
         if (filename.endsWith(KEYSTORE_EXTENSION)) {
-          String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+          String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
               ServerLayout.UPLOAD_USERFILE + "/" + StorageUtil.ANDROID_KEYSTORE_FILENAME;
           Uploader.getInstance().upload(upload, uploadUrl,
               new OdeAsyncCallback<UploadResponse>(

@@ -14,7 +14,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 import org.junit.Before;
 import org.osmdroid.util.GeoPoint;
 import org.robolectric.annotation.Config;
-import org.robolectric.internal.Shadow;
+import org.robolectric.shadow.api.Shadow;
 
 import static com.google.appinventor.components.runtime.util.GeometryUtil.ONE_DEG_IN_METERS;
 

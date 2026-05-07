@@ -345,6 +345,7 @@ h1 { color: white; }
 .documentation span.control, .documentation span.event, .documentation code.control, .documentation code.event { background-color: #B18E35; }
 .documentation span.logic, .documentation code.logic { background-color: #77AB41; }
 .documentation span.math, .documentation code.math { background-color: #3F71B5; }
+.documentation span.matrix, .documentation code.matrix { background-color: #008B8B; }
 .documentation span.text, .documentation code.text { background-color: #B32D5E; }
 .documentation span.list, .documentation code.list { background-color: #49A6D4; }
 .documentation span.dictionary, .documentation code.dictionary { background-color: #2D1799; }
@@ -426,6 +427,12 @@ dt span.list i:after,
 .methods dt em.list:before,
 .events dt em.list:before
 { background-color: #70b3d8; content: "list"; }
+dt.matrix i:after,
+dt span.matrix i:after,
+.properties dt.matrix em:after,
+.methods dt em.matrix:before,
+.events dt em.matrix:before
+{ background-color: #008B8B; content: "matrix"; }
 dt.dictionary i:after,
 dt span.dictionary i:after,
 .properties dt.dictionary em:after,
@@ -455,3 +462,28 @@ span.ro { background-color: #f88; color: black; }
 span.wo { background-color: #8f8; color: black; }
 span.bo { background-color: #88f; color: black; }
 span.do { background-color: #ff8; color: black; }
+dt.FileScopeEnum i:after,
+dt span.FileScopeEnum i:after,
+dt.FileScopeEnum em:after,
+em.FileScopeEnum:before
+{ background-color: #BF4343; content: "FileScope"; }
+dt.ChartTypeEnum i:after,
+dt span.ChartTypeEnum i:after,
+dt.ChartTypeEnum em:after,
+em.ChartTypeEnum:before
+{ background-color: #BF4343; content: "ChartType"; }
+dt.LineTypeEnum i:after,
+dt span.LineTypeEnum i:after,
+dt.LineTypeEnum em:after,
+em.LineTypeEnum:before
+{ background-color: #BF4343; content: "LineType"; }
+dt.PointStyleEnum i:after,
+dt span.PointStyleEnum i:after,
+dt.PointStyleEnum em:after,
+em.PointStyleEnum:before
+{ background-color: #BF4343; content: "PointStyle"; }
+dt.LOBFValuesEnum i:after,
+dt span.LOBFValuesEnum i:after,
+dt.LOBFValuesEnum em:after,
+em.LOBFValuesEnum:before
+{ background-color: #BF4343; content: "LOBFValues"; }

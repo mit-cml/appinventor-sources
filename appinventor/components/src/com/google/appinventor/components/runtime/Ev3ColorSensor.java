@@ -7,11 +7,13 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ColorSensorMode;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -36,26 +38,18 @@ import android.os.Handler;
 @SimpleObject
 public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteable {
   private static final int SENSOR_TYPE = 29;
-  private static final int SENSOR_MODE_REFLECTED = 0;
-  private static final int SENSOR_MODE_AMBIENT = 1;
-  private static final int SENSOR_MODE_COLOR = 2;
-  private static final String SENSOR_MODE_REFLECTED_STRING = "reflected";
-  private static final String SENSOR_MODE_AMBIENT_STRING = "ambient";
-  private static final String SENSOR_MODE_COLOR_STRING = "color";
   private static final int DEFAULT_BOTTOM_OF_RANGE = 30;
   private static final int DEFAULT_TOP_OF_RANGE = 60;
-  private static final String DEFAULT_SENSOR_MODE_STRING = SENSOR_MODE_REFLECTED_STRING;
   private static final int DELAY_MILLISECONDS = 50;
 
-  private int mode = 0;
-  private String modeString = SENSOR_MODE_REFLECTED_STRING;
+  private ColorSensorMode mode = ColorSensorMode.Reflected;
   private Handler eventHandler;
   private final Runnable sensorValueChecker;
   private int bottomOfRange;
   private int topOfRange;
-  private int previousLightLevel = 0;
 
   private int previousColor = -1;
+  private int previousLightLevel = 0;
   private boolean belowRangeEventEnabled;
   private boolean withinRangeEventEnabled;
   private boolean aboveRangeEventEnabled;
@@ -73,7 +67,7 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
         String functionName = "";
 
         if (bluetooth != null && bluetooth.IsConnected()) {
-          if (mode == SENSOR_MODE_COLOR) {
+          if (mode == ColorSensorMode.Color) {
             int currentColor = getSensorValue(functionName);
 
             if (previousColor < 0) {
@@ -83,10 +77,10 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
             }
 
             if (currentColor != previousColor && colorChangedEventEnabled)
-              ColorChanged(currentColor, toColorName(functionName, currentColor));
+              ColorChanged(currentColor, toColorName(currentColor));
 
             previousColor = currentColor;
-          } else {                // mode == SENSOR_MODE_REFLECTED or mode == SENSOR_MODE_AMBIENT
+          } else { // Reflected or ambient mode.
             int currentLightLevel = getSensorValue(functionName);
             if (previousLightLevel < 0) {
               previousLightLevel = currentLightLevel;
@@ -121,7 +115,7 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
     AboveRangeEventEnabled(false);
     WithinRangeEventEnabled(false);
     ColorChangedEventEnabled(false);
-    Mode(DEFAULT_SENSOR_MODE_STRING);
+    ModeAbstract(ColorSensorMode.Reflected);
   }
 
   /**
@@ -130,11 +124,10 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
   @SimpleFunction(description = "It returns the light level in percentage, or " +
                                 "-1 when the light level cannot be read.")
   public int GetLightLevel() {
-    if (mode == SENSOR_MODE_COLOR)
+    if (mode == ColorSensorMode.Color) {
       return -1;
-
-    String functionName = "GetLightLevel";
-    return getSensorValue(functionName);
+    }
+    return getSensorValue("GetLightLevel");
   }
 
   /**
@@ -142,11 +135,10 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
    */
   @SimpleFunction(description = "It returns the color code from 0 to 7 corresponding to no color, black, blue, green, yellow, red, white and brown.")
   public int GetColorCode() {
-    if (mode != SENSOR_MODE_COLOR)
+    if (mode != ColorSensorMode.Color) {
       return 0;
-
-    String functionName = "GetColorCode";
-    return getSensorValue(functionName);
+    }
+    return getSensorValue("GetColorCode");
   }
 
   /**
@@ -154,12 +146,10 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
    */
   @SimpleFunction(description = "Return the color name in one of \"No Color\", \"Black\", \"Blue\", \"Green\", \"Yellow\", \"Red\", \"White\", \"Brown\".")
   public String GetColorName() {
-    if (mode != SENSOR_MODE_COLOR)
+    if (mode != ColorSensorMode.Color) {
       return "No Color";
-
-    String functionName = "GetColorName";
-    int colorCode = getSensorValue(functionName);
-    return toColorName(functionName, colorCode);
+    }
+    return toColorName(getSensorValue("GetColorName"));
   }
 
   /**
@@ -324,11 +314,14 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
                                     0, // assume layer = 0
                                     sensorPortNumber,
                                     SENSOR_TYPE,
-                                    mode);
+                                    mode.toInt());
 
-    // map values according to LEGO's convention
-    if (mode == SENSOR_MODE_COLOR) {
-      switch (level) {
+    if (mode != ColorSensorMode.Color) {
+      return level;  // No need to clean value.
+    }
+
+    // Map values according to LEGO's convention.
+    switch (level) {
       case 0:
         return 0;
       case 12:
@@ -347,15 +340,13 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
         return 7;
       default:
         return 0;
-      }
-    } else {
-      return level;
     }
   }
 
-  private String toColorName(String functionName, int colorCode) {
-    if (mode != SENSOR_MODE_COLOR)
+  private String toColorName(int colorCode) {
+    if (mode != ColorSensorMode.Color) {
       return "No Color";
+    }
 
     switch (colorCode) {
     case 0:
@@ -383,79 +374,82 @@ public class Ev3ColorSensor extends LegoMindstormsEv3Sensor implements Deleteabl
    * Specifies the mode of the sensor.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_EV3_COLOR_SENSOR_MODE,
-                    defaultValue = DEFAULT_SENSOR_MODE_STRING)
+                    defaultValue = "reflected")
   @SimpleProperty
-  public void Mode(String modeName) {
-    String functionName = "Mode";
-    try {
-      setMode(modeName);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
+  public void Mode(@Options(ColorSensorMode.class) String modeName) {
+    // Make sure modeName is a valid ColorSensorMode.
+    ColorSensorMode mode = ColorSensorMode.fromUnderlyingValue(modeName);
+    if (mode == null) {
+      form.dispatchErrorOccurredEvent(
+          this, "Mode", ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, modeName);
+      return;
     }
+    setMode(mode);
   }
 
   /**
-   * Returns the mode of the sensor.
+   * Sets the sensing mode of this color sensor.
+   */
+  @SuppressWarnings("RegularMethodName")
+  public void ModeAbstract(ColorSensorMode mode) {
+    setMode(mode);
+  }
+
+  /**
+   * Returns the current sensing mode of this color sensor.
+   * @return the current sensing mode of this color sensor.
+   */
+  @SuppressWarnings({"RegularMethodName", "unused"})
+  public ColorSensorMode ModeAbstract() {
+    return mode;
+  }
+
+  /**
+   * The current mode of the sensor. One of:
+   *     Reflected: Senses the current light level including light reflected by the sensor.
+   *     Ambient: Senses the current light level *not* including light reflected by the sensor.
+   *     Color: Senses the color the sensor is pointing at.
    */
   @SimpleProperty(description = "Get the current sensor mode.",
                   category = PropertyCategory.BEHAVIOR)
-  public String Mode() {
-    return modeString;
+  public @Options(ColorSensorMode.class) String Mode() {
+    return mode.toUnderlyingValue();
   }
 
   /**
    * Enter the color detection mode.
    */
   @SimpleFunction(description = "Enter the color detection mode.")
+  @Deprecated
   public void SetColorMode() {
-    String functionName = "SetColorMode";
-    try {
-      setMode(SENSOR_MODE_COLOR_STRING);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
-    }
+    setMode(ColorSensorMode.Color);
   }
 
   /**
    * Make the sensor read the light level with reflected light.
    */
   @SimpleFunction(description = "Make the sensor read the light level with reflected light.")
+  @Deprecated
   public void SetReflectedMode() {
-    String functionName = "SetReflectedMode";
-    try {
-      setMode(SENSOR_MODE_REFLECTED_STRING);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
-    }
+    setMode(ColorSensorMode.Reflected);
   }
 
   /**
    * Make the sensor read the light level without reflected light.
    */
   @SimpleFunction(description = "Make the sensor read the light level without reflected light.")
+  @Deprecated
   public void SetAmbientMode() {
-    String functionName = "SetAmbientMode";
-    try{
-      setMode(SENSOR_MODE_AMBIENT_STRING);
-    } catch(IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, functionName, ErrorMessages.ERROR_EV3_ILLEGAL_ARGUMENT, functionName);
-    }
+    setMode(ColorSensorMode.Ambient);
   }
 
-  private void setMode(String newModeString) {
+  /**
+   * Sets the current mode of this sensor, and resets previousColor and previousLightLevel.
+   */
+  private void setMode(ColorSensorMode newMode) {
     previousColor = -1;
     previousLightLevel = -1;
-
-    if (SENSOR_MODE_REFLECTED_STRING.equals(newModeString))
-      mode = SENSOR_MODE_REFLECTED;
-    else if (SENSOR_MODE_AMBIENT_STRING.equals(newModeString))
-      mode = SENSOR_MODE_AMBIENT;
-    else if (SENSOR_MODE_COLOR_STRING.equals(newModeString))
-      mode = SENSOR_MODE_COLOR;
-    else
-      throw new IllegalArgumentException();
-
-    this.modeString = newModeString;
+    mode = newMode;
   }
 
   // interface Deleteable implementation

@@ -5,35 +5,42 @@
 // This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 package com.google.appinventor.components.runtime.util;
+
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+
+import android.net.Uri;
+
+import android.os.Build;
+import android.os.Handler;
 import android.os.Looper;
+
+import android.util.Log;
+
+import com.google.appinventor.components.runtime.PhoneStatus;
 import com.google.appinventor.components.runtime.ReplForm;
+
+import gnu.expr.Language;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import java.net.InetAddress;
+import java.net.Socket;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import android.os.Build;
-import android.os.Handler;
-import android.util.Log;
-
 import kawa.standard.Scheme;
-import gnu.expr.Language;
 
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -250,6 +257,14 @@ public class AppInvHTTPD extends NanoHTTPD {
       return (res);
     } else if (uri.equals("/_extensions")) {
       return processLoadExtensionsRequest(parms);
+    } else if (uri.equals("/_proxy")) {
+      String popup = PhoneStatus.getPopup();
+      Response res = new Response(HTTP_OK, MIME_HTML, popup);
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      return(res);
     }
 
     if (method.equals("PUT")) { // Asset File Upload for newblocks
@@ -406,5 +421,4 @@ public class AppInvHTTPD extends NanoHTTPD {
   public void resetSeq() {
     seq = 1;
   }
-
 }

@@ -18,3 +18,4 @@
     <item android:state_enabled="false" android:color="@color/bright_foreground_disabled_material_dark"/>
     <item android:color="@color/bright_foreground_material_dark"/>
 </selector>
+<!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/color/abc_primary_text_disable_only_material_dark.xml -->

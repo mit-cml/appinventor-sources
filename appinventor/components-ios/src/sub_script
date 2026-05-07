@@ -1,0 +1,1 @@
+local key = KEYS[1];local value = ARGV[1];local topublish = cjson.decode(ARGV[2]);local project = ARGV[3];local newtable = {};table.insert(newtable, key);table.insert(newtable, topublish);redis.call("publish", project, cjson.encode(newtable));return redis.call('set', project .. ":" .. key, value);

@@ -1,0 +1,13 @@
+@def c-primary              gold;
+@def c-primary-dark         #7D9D36;
+@def c-highlight            rgba(167, 36, 122, 0.21);
+@def c-background           #222222;
+@def c-background-dark      #333333;
+@def c-danger               #FF7D7D;
+@def c-danger-dark          #C25F5F;
+
+@def c-text                 #DDDDDD;
+@def c-text-button          #444444;
+
+@def c-border-dark          #444444;
+@def c-border-light         #DDDDDD;

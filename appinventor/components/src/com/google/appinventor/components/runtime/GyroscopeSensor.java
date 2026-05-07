@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -22,6 +22,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Component providing data from the device's gyroscope sensor.
  */
@@ -36,7 +39,8 @@ import android.hardware.SensorManager;
 
 @SimpleObject
 public class GyroscopeSensor extends AndroidNonvisibleComponent
-    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener {
+    implements SensorEventListener, Deleteable, OnPauseListener, OnResumeListener,
+    RealTimeDataSource<String, Float> {
 
   // Properties
   private boolean enabled;
@@ -48,6 +52,9 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
   private final SensorManager sensorManager;
   private final Sensor gyroSensor;
   private boolean listening;
+
+  // Set of observers
+  private Set<DataSourceChangeListener> dataSourceObservers = new HashSet<>();
 
   /**
    * Creates a new GyroscopeSensor component.
@@ -207,6 +214,11 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
       yAngularVelocity = (float) Math.toDegrees(sensorEvent.values[1]);
       zAngularVelocity = (float) Math.toDegrees(sensorEvent.values[2]);
 
+      // Notify the Data Source observers with the updated values
+      notifyDataObservers("X", xAngularVelocity);
+      notifyDataObservers("Y", yAngularVelocity);
+      notifyDataObservers("Z", zAngularVelocity);
+
       // Raise event.
       GyroscopeChanged(xAngularVelocity, yAngularVelocity, zAngularVelocity,
           sensorEvent.timestamp);
@@ -235,6 +247,52 @@ public class GyroscopeSensor extends AndroidNonvisibleComponent
   public void onResume() {
     if (enabled) {
       startListening();
+    }
+  }
+
+  @Override
+  public void addDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.add(dataComponent);
+  }
+
+  @Override
+  public void removeDataObserver(DataSourceChangeListener dataComponent) {
+    dataSourceObservers.remove(dataComponent);
+  }
+
+  @Override
+  public void notifyDataObservers(String key, Object value) {
+    // Notify each Chart Data observer component of the Data value change
+    for (DataSourceChangeListener dataComponent : dataSourceObservers) {
+      dataComponent.onReceiveValue(this, key, value);
+    }
+  }
+
+  /**
+   * Returns a data value. Possible keys include:
+   * <ul>
+   *   <li>X - x direction angular velocity</li>
+   *   <li>Y - y direction angular velocity</li>
+   *   <li>Z - z direction angular velocity</li>
+   * </ul>
+   *
+   * @param key identifier of the value
+   * @return    Value corresponding to the key, or 0 if key is undefined.
+   */
+  @Override
+  public Float getDataValue(String key) {
+    switch (key) {
+      case "X":
+        return xAngularVelocity;
+
+      case "Y":
+        return yAngularVelocity;
+
+      case "Z":
+        return zAngularVelocity;
+
+      default:
+        return 0f;
     }
   }
 }

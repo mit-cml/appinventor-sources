@@ -6,6 +6,7 @@ layout: documentation
 * [if & else if](#if)
 * [for each number from to](#forrange)
 * [for each item in list](#foreach)
+* [for each key with value in dictionary](#foreachdict)
 * [while](#while)
 * [if then else](#choose)
 * [do with result](#doreturn)
@@ -47,6 +48,12 @@ Runs the blocks in the do section for each numeric value in the range starting f
 
 Runs the blocks in the do section for each item in the list. Use the given variable name, `item`{:.variable.block}, to refer to the current list item. You can change the name `item`{:.variable.block} to something else if you wish.
 
+### for each key with value in dictionary   {#foreachdict}
+
+![](images/control/foreachdict.png)
+
+Runs the blocks in the do section for each key-value entry in the dictionary. Use the given variables, `key`{:.variable.block} and `value`{:.variable.block}, to refer to the key and value of the current dictionary entry. You can change the names `key`{:.variable.block} and `value`{:.variable.block} to something else if you wish.
+
 ### while   {#while}
 
 ![](images/control/while.png)
@@ -75,7 +82,8 @@ Provides a "dummy socket" for fitting a block that has a plug on its left into a
 
 Opens the screen with the provided name.
 
-The screenName must be one of the Screens created using the Designer. The screenName should be entered into a Text component and typed exactly as named in the Designer. (Case is important, if the designed screen name is myNewScreen, what you use in the puzzle piece cannot be mynewscreen or MyNewScreen for example.)
+The screenName must be one of the Screens created using the Designer. The
+screenName should be selected from the connected screen name dropdown block.
 
 If you do open another screen, you should close it when returning to your main screen to free system memory. Failure to close a screen upon leaving it will eventually lead to memory problems.
 

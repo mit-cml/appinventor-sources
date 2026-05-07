@@ -11,9 +11,7 @@
 
 'use strict';
 
-goog.provide('Blockly.ExportBlocksImage');
-goog.require('goog.Timer');
-
+goog.provide('AI.Blockly.ExportBlocksImage');
 
 /**
  * saveSvgAsPng
@@ -38,7 +36,13 @@ goog.require('goog.Timer');
         console.warn("Cannot include styles from other hosts: "+sheets[i].href);
         continue;
       }
-      var rules = sheets[i].cssRules;
+      var rules = null;
+      try {
+        rules = sheets[i].cssRules;
+      } catch (e) {
+        console.warn('Skipping a potentially injected stylesheet', e);
+        continue;
+      }
       if (rules != null) {
         for (var j = 0; j < rules.length; j++) {
           var rule = rules[j];
@@ -114,6 +118,7 @@ goog.require('goog.Timer');
     clone.setAttribute("width", width);
     clone.setAttribute("height", height);
     clone.setAttribute("style", 'background-color: rgba(255, 255, 255, 0);');
+    clone.setAttribute("class", "geras2_renderer-renderer classic-theme");
     outer.appendChild(clone);
 
     var css = styles(el, options.selectorRemap);
@@ -212,8 +217,8 @@ goog.require('goog.Timer');
  * Call to initiate blockly SVG conversion to PNG
  *
  */
-Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
-  saveSvgAsPng((opt_workspace || Blockly.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
+AI.Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
+  saveSvgAsPng((opt_workspace || Blockly.common.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
 }
 
 
@@ -221,9 +226,9 @@ Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace)
  * Get the workspace as an image URI
  *
  */
-Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
+AI.Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
   var theUri;
-  var workspace = opt_workspace || Blockly.mainWorkspace;
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
   var metrics = workspace.getMetrics();
   if (metrics == null || metrics.viewHeight == 0) {
     return null;
@@ -304,6 +309,7 @@ function PNG() {
  * @const
  */
 PNG.HEADER = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+var pHY_data =  [0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16, 0x25, 0x01];
 
 /**
  * Chunk represents the four components of a PNG file chunk.
@@ -456,18 +462,28 @@ Blockly.exportBlockAsPng = function(block) {
   var xml = document.createElement('xml');
   xml.appendChild(Blockly.Xml.blockToDom(block, true));
   var code = Blockly.Xml.domToText(xml);
-  svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
+  svgAsDataUri(block.getSvgRoot(), block.workspace.getMetrics(), null, function(uri) {
     var img = new Image();
     img.src = uri;
     img.onload = function() {
       var canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = 2 * img.width;
+      canvas.height = 2 * img.height;
       var context = canvas.getContext('2d');
-      context.drawImage(img, 0, 0);
+      context.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
 
       function download(png) {
         png.setCodeChunk(code);
+        for (var i = 0; i < png.chunks.length; i++) {
+          var phy = [112, 72, 89, 115];
+          if (png.chunks[i].type == 'pHYs') {
+            png.chunks.splice(i, 1, new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); //replacing existing pHYs chunk
+            break;
+          } else if (png.chunks[i].type == 'IDAT') {
+            png.chunks.splice(i, 0, new PNG.Chunk(9, 'pHYs', pHY_data, crc32(phy.concat(pHY_data)))); // adding new pHYs chunk
+            break;
+          }
+        }
         var blob = png.toBlob();
         var a = document.createElement('a');
         a.download = (block.getChildren().length === 0 ? block.type : 'blocks') + '.png';
@@ -501,9 +517,71 @@ Blockly.exportBlockAsPng = function(block) {
 };
 
 /**
+ * Extracts the block types from the given XML.
+ * @param {Document} xml - The XML document containing blocks.
+ * @returns {Array<string>} An array of block types.
+ */
+function extractBlockTypes(xml) {
+  var blockTypes = [];
+  var mutations = xml.getElementsByTagName('mutation');
+
+  for (var i = 0; i < mutations.length; i++) {
+    var componentType = mutations[i].getAttribute('component_type');
+    if (componentType) {
+      blockTypes.push(componentType);
+    }
+  }
+
+  return blockTypes;
+}
+
+/**
+ * Validates the block types against the component database in the workspace.
+ * @param {Array<string>} blockTypes - The block types to validate.
+ * @param {Blockly.WorkspaceSvg} workspace - The workspace containing the component database.
+ * @returns {Array<string>} An array of missing component types.
+ */
+function validateBlockTypes(blockTypes, workspace) {
+  if (!blockTypes || blockTypes.length === 0) {
+    return [];
+  }
+
+  var componentDb = workspace.getComponentDatabase();
+  var missingExtensions = [];
+  for (var i = 0; i < blockTypes.length; i++) {
+    const typeDescriptor = componentDb.getType(blockTypes[i]);
+    if (!typeDescriptor || !typeDescriptor.componentInfo || typeDescriptor.componentInfo.name !== blockTypes[i]) {
+      missingExtensions.push(blockTypes[i]);
+    }
+  }
+
+  if (missingExtensions.length > 0) {
+    console.warn('Missing component types:', missingExtensions.join(', '));
+  }
+  return missingExtensions;
+}
+
+/**
+ * Displays a dialog showing the missing extensions.
+ * @param {Array<string>} missingExtensions - The missing component types.
+ */
+function showMissingExtensionDialog(missingExtensions) {
+  // Filter out undefined or null values
+  missingExtensions = missingExtensions.filter(function(extension) {
+    return extension !== undefined && extension !== null;
+  });
+
+  if (missingExtensions.length > 0) {
+    var message = Blockly.Msg['REQUIRED_EXTENSIONS_MISSING'];
+    message += missingExtensions.join('\n');
+    alert(message);
+  }
+}
+
+/**
  * Imports a block from a PNG file if the code chunk is present.
  * @param {!Blockly.WorkspaceSvg} workspace the target workspace for the block
- * @param {goog.math.Coordinate} xy the coordinate to place the block
+ * @param {{x: number, y: number}} xy the coordinate to place the block
  * @param {Blob} png the blob representing the PNG file
  */
 Blockly.importPngAsBlock = function(workspace, xy, png) {
@@ -511,9 +589,23 @@ Blockly.importPngAsBlock = function(workspace, xy, png) {
     var xmlChunk = png.getCodeChunk();
     if (xmlChunk) {
       var xmlText = new TextDecoder().decode(xmlChunk.data);
-      var xml = /** @type {!Element} */ Blockly.Xml.textToDom(xmlText);
+      var xml = /** @type {!Element} */ (Blockly.utils.xml.textToDom(xmlText));
+      if (!xml) {
+        var message = Blockly.Msg['ERROR_PARSING_XML'];
+        alert(message);
+        console.error('Failed to parse XML from PNG.');
+        return;
+      }
+      var blockTypes = extractBlockTypes(xml);
+
+      var missingExtensions = validateBlockTypes(blockTypes, workspace);
+      if (missingExtensions.length > 0) {
+        showMissingExtensionDialog(missingExtensions);
+        return;
+      }
+
       xml = xml.firstElementChild;
-      var block = /** @type {Blockly.BlockSvg} */ Blockly.Xml.domToBlock(xml, workspace);
+      var block = /** @type {Blockly.BlockSvg} */ (Blockly.Xml.domToBlock(xml, workspace));
       block.moveBy(xy.x, xy.y);
       block.initSvg();
       workspace.requestRender(block);

@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2018 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2018-2020 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,14 +7,14 @@ package com.google.appinventor.components.runtime.shadows;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 /**
  * A shadow implementation of ActivityCompat that allows one to
  * grant/deny permissions requested when the app calls
- * {@link ActivityCompat#requestPermission(Activity,String,String)}.
+ * {@link ActivityCompat#requestPermissions(Activity, String[], int)}.
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
@@ -22,7 +22,7 @@ import org.robolectric.annotation.Implements;
 public class ShadowActivityCompat {
 
   private static Activity activity;
-  private static String[] permissions;
+  private static String[] permissions = null;
   private static int requestCode;
 
   @Implementation
@@ -47,6 +47,9 @@ public class ShadowActivityCompat {
    * Denies the last set of permissions requested by the app.
    */
   public static void denyLastRequestedPermissions() {
+    if (permissions == null) {
+      return;
+    }
     int[] result = new int[permissions.length];
     for (int i = 0; i < result.length; i++) {
       result[i] = PackageManager.PERMISSION_DENIED;

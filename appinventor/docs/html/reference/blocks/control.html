@@ -40,7 +40,7 @@
 		<div class="dropdown-menu">
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/about-us">About App Inventor</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/our-team">Our Team</a>
-		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/master-trainers">Master Trainers</a>
+		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/expert-trainers">Expert Trainers</a>
 		    <a class="dropdown-item" href="http://appinventor.mit.edu/explore/app-month-gallery">App of the Month</a>
                     <a class="dropdown-item"
                        href="http://appinventor.mit.edu/ai2/ReleaseNotes">Release Notes</a>
@@ -129,6 +129,7 @@
   <li><a href="#if">if &amp; else if</a></li>
   <li><a href="#forrange">for each number from to</a></li>
   <li><a href="#foreach">for each item in list</a></li>
+  <li><a href="#foreachdict">for each key with value in dictionary</a></li>
   <li><a href="#while">while</a></li>
   <li><a href="#choose">if then else</a></li>
   <li><a href="#doreturn">do with result</a></li>
@@ -168,6 +169,12 @@
 
 <p>Runs the blocks in the do section for each item in the list. Use the given variable name, <code class="variable block highlighter-rouge">item</code>, to refer to the current list item. You can change the name <code class="variable block highlighter-rouge">item</code> to something else if you wish.</p>
 
+<h3 id="foreachdict">for each key with value in dictionary</h3>
+
+<p><img src="images/control/foreachdict.png" alt="" /></p>
+
+<p>Runs the blocks in the do section for each key-value entry in the dictionary. Use the given variables, <code class="variable block highlighter-rouge">key</code> and <code class="variable block highlighter-rouge">value</code>, to refer to the key and value of the current dictionary entry. You can change the names <code class="variable block highlighter-rouge">key</code> and <code class="variable block highlighter-rouge">value</code> to something else if you wish.</p>
+
 <h3 id="while">while</h3>
 
 <p><img src="images/control/while.png" alt="" /></p>
@@ -196,7 +203,8 @@
 
 <p>Opens the screen with the provided name.</p>
 
-<p>The screenName must be one of the Screens created using the Designer. The screenName should be entered into a Text component and typed exactly as named in the Designer. (Case is important, if the designed screen name is myNewScreen, what you use in the puzzle piece cannot be mynewscreen or MyNewScreen for example.)</p>
+<p>The screenName must be one of the Screens created using the Designer. The
+screenName should be selected from the connected screen name dropdown block.</p>
 
 <p>If you do open another screen, you should close it when returning to your main screen to free system memory. Failure to close a screen upon leaving it will eventually lead to memory problems.</p>
 
@@ -330,7 +338,7 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2020 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
 		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
@@ -349,15 +357,16 @@
 		<span>Twitter:</span>
 		<a href="https://twitter.com/mitappinventor"
                    target="_blank" class="btn btn-link" role="button">@MITAppInventor</a>
-		<div>
-		    <div>
-			<span>GitHub:</span>
-			<a href="https://github.com/mit-cml" class="btn btn-link" role="button"
-                           target="_blank">mit-cml</a>
-			<div>
-			</div>
-	            </div>
-	        </div>
+	    </div>
+	    <div>
+	      <span>GitHub:</span>
+	      <a href="https://github.com/mit-cml" class="btn btn-link" role="button"
+                 target="_blank">mit-cml</a>
+	    </div>
+            <div>
+              <span>Accessibility:</span>
+              <a href="https://accessibility.mit.edu" role="button"
+                 targe="_blank">accessibility.mit.edu</a>
             </div>
         </div>
     </div>
