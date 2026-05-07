@@ -14,7 +14,6 @@ open class DatePicker: Picker, DateTimePickerDelegate {
   fileprivate var _year, _month, _day: Int
   fileprivate var _instant: Date
   fileprivate var _localizedMonths: [String]
-  fileprivate var _customDate = false
   fileprivate let _isPhone = UIDevice.current.userInterfaceIdiom == .phone
   
   public override init(_ parent: ComponentContainer) {
@@ -91,13 +90,17 @@ open class DatePicker: Picker, DateTimePickerDelegate {
     }
     _instant = date
     _viewController?.setDate(_instant)
-    _customDate = true
+    _year = Int(year)
+    _month = Int(month)
+    _day = Int(day)
   }
   
   @objc open func SetDateToDisplayFromInstant(_ instant: Date) {
     _instant = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: instant)!
     self._viewController?.setDate(_instant)
-    _customDate = true
+    _year = Calendar.current.component(.year, from: _instant)
+    _month = Calendar.current.component(.month, from: _instant)
+    _day = Calendar.current.component(.day, from: _instant)
   }
   
   @objc open func LaunchPicker() {
@@ -119,13 +122,6 @@ open class DatePicker: Picker, DateTimePickerDelegate {
   }
   
   open override func click() {
-    if !_customDate {
-      let now = Date()
-      _instant = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: now)!
-      _viewController?.setDate(_instant)
-    } else {
-      _customDate = false
-    }
     if !_isPhone {
       if let popover = (_viewController as! UIViewController).popoverPresentationController {
         popover.delegate = self
