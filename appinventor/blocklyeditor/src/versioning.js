@@ -2261,7 +2261,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Add HTMLFormat property
     4: "noUpgrade",
 
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // TextAlignment, FontBold, FontItalic, FontTypeface, HTMLFormat properties made visible
+    // in block editor.
+    6: "noUpgrade"
 
   }, // End Label upgraders
 
