@@ -37,16 +37,23 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class AIModeSelectionDialog {
 
   private final AIContextCollector contextCollector;
+  private final boolean editingModesEnabled;
   private final Runnable onModeSelected;
 
   /**
    * Constructs a mode selection dialog.
    *
-   * @param contextCollector used to read the current project ID
-   * @param onModeSelected   called after the mode is set and editors are saved
+   * @param contextCollector    used to read the current project ID
+   * @param editingModesEnabled when {@code false}, the ScreenEditor and
+   *                            ProjectEditor radios are hidden and Advisor
+   *                            is the only available choice
+   * @param onModeSelected      called after the mode is set and editors are
+   *                            saved
    */
-  public AIModeSelectionDialog(AIContextCollector contextCollector, Runnable onModeSelected) {
+  public AIModeSelectionDialog(AIContextCollector contextCollector,
+      boolean editingModesEnabled, Runnable onModeSelected) {
     this.contextCollector = contextCollector;
+    this.editingModesEnabled = editingModesEnabled;
     this.onModeSelected = onModeSelected;
   }
 
@@ -78,13 +85,17 @@ public class AIModeSelectionDialog {
     advisorRadio.setValue(true);
 
     panel.add(advisorRadio);
-    panel.add(screenEditorRadio);
-    panel.add(projectEditorRadio);
+    if (editingModesEnabled) {
+      panel.add(screenEditorRadio);
+      panel.add(projectEditorRadio);
+    }
 
-    Label warning = new Label(MESSAGES.aiModeWarning());
-    warning.getElement().getStyle().setColor("#c0392b");
-    warning.getElement().getStyle().setFontSize(12, Unit.PX);
-    panel.add(warning);
+    if (editingModesEnabled) {
+      Label warning = new Label(MESSAGES.aiModeWarning());
+      warning.getElement().getStyle().setColor("#c0392b");
+      warning.getElement().getStyle().setFontSize(12, Unit.PX);
+      panel.add(warning);
+    }
 
     HorizontalPanel buttons = new HorizontalPanel();
     buttons.setSpacing(8);

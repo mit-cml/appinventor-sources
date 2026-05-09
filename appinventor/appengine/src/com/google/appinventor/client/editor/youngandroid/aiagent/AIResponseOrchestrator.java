@@ -120,9 +120,10 @@ public class AIResponseOrchestrator {
   private boolean autoAcceptAll;
   private boolean pendingPlanProposal;
   private boolean debugBannerShown;
-  private boolean debugEnabled;
-  private boolean orchestrationEnabled;
-  private boolean planEditEnabled;
+  // Static feature-flag values now flow through {@code Ode.getSystemConfig()}
+  // (populated once at login by {@code UserInfoServiceImpl.getSystemConfig}).
+  // Per-request runtime bits (conversationId, debug banner trigger) still
+  // arrive on {@link AIStreamStatus}.
 
   /** Manages parallel child conversations during multi-screen plan execution. */
   private AIOrchestrationManager orchestrationManager;
@@ -365,40 +366,43 @@ public class AIResponseOrchestrator {
   }
 
   /**
-   * Applies configuration from an {@link AIStreamStatus} poll result.
-   * Shows the debug banner (once) and updates the feedback context.
+   * Applies per-request bits from an {@link AIStreamStatus} poll result:
+   * conversation ID for the feedback link and a one-shot debug banner.
+   * Static feature flags are not read from the status — see
+   * {@link Ode#getSystemConfig()}.
    */
   private void applyConfig(AIStreamStatus status) {
     if (status == null) {
       return;
     }
-    this.debugEnabled = status.isDebugEnabled();
-    if (status.isDebugEnabled() && !debugBannerShown) {
+    if (isDebugEnabled() && !debugBannerShown) {
       debugBannerShown = true;
       callback.showDebugBanner();
     }
     if (status.getConversationId() != null) {
-      callback.setFeedbackContext(status.isDebugEnabled(), status.getConversationId());
+      callback.setFeedbackContext(isDebugEnabled(), status.getConversationId());
     }
-    orchestrationEnabled = status.isOrchestrationEnabled();
-    planEditEnabled = status.isPlanEditEnabled();
     callback.onConfigLoaded();
   }
 
-  /**
-   * Returns whether the {@code ai.agent.features.orchestration} server flag is enabled.
-   * Updated on every status poll via {@link #applyConfig}.
-   */
-  public boolean isOrchestrationEnabled() {
-    return orchestrationEnabled;
+  /** Whether {@code ai.agent.debug} is on for this server. */
+  public boolean isDebugEnabled() {
+    return Ode.getSystemConfig().getAiAgentDebugEnabled();
   }
 
-  /**
-   * Returns whether the {@code ai.agent.features.plan-edit} server flag is enabled.
-   * Updated on every status poll via {@link #applyConfig}.
-   */
+  /** Whether {@code ai.agent.features.orchestration} is on for this server. */
+  public boolean isOrchestrationEnabled() {
+    return Ode.getSystemConfig().getAiAgentOrchestrationEnabled();
+  }
+
+  /** Whether {@code ai.agent.features.plan-edit} is on for this server. */
   public boolean isPlanEditEnabled() {
-    return planEditEnabled;
+    return Ode.getSystemConfig().getAiAgentPlanEditEnabled();
+  }
+
+  /** Whether {@code ai.agent.features.editing-modes} is on for this server. */
+  public boolean isEditingModesEnabled() {
+    return Ode.getSystemConfig().getAiAgentEditingModesEnabled();
   }
 
   /**
@@ -454,7 +458,7 @@ public class AIResponseOrchestrator {
   private void updateCurrentConversationId(String convId) {
     this.currentConversationId = convId;
     if (convId != null && !convId.isEmpty()) {
-      callback.setFeedbackContext(debugEnabled, convId);
+      callback.setFeedbackContext(isDebugEnabled(), convId);
     }
   }
 
@@ -532,12 +536,15 @@ public class AIResponseOrchestrator {
   }
 
   /**
-   * One-shot status poll to pick up the conversation ID and debug flag.
-   * Called after each response in case polling never fired (fast requests).
+   * One-shot status poll to pick up the conversation ID and feature flags.
+   * When {@code then} is non-null, runs it after the response is applied
+   * (or immediately on early-out / failure) so callers that need the flags
+   * before rendering can chain on completion.
    */
-  private void ensureFeedbackContext() {
+  private void ensureFeedbackContext(final Runnable then) {
     long projectId = contextCollector.getCurrentProjectId();
     if (projectId == 0) {
+      if (then != null) then.run();
       return;
     }
     aiAgentService.getRequestStatus(projectId,
@@ -545,17 +552,25 @@ public class AIResponseOrchestrator {
           @Override
           public void onSuccess(AIStreamStatus status) {
             applyConfig(status);
+            if (then != null) then.run();
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            // Fall back to defaults so the UI can still proceed.
+            if (then != null) then.run();
           }
         });
   }
 
   /**
-   * Fetches server config flags (orchestration enabled, debug enabled, plan
-   * edit enabled) eagerly. Called when the dialog opens so feature gates
-   * like the Plan &amp; Execute toggle can render before any message is sent.
+   * One-shot status poll. Picks up the conversation ID for the feedback link
+   * and triggers {@link ChatCallback#onConfigLoaded()}. Static feature flags
+   * are sourced from {@code Ode.getSystemConfig()} and are already available
+   * before this call returns.
    */
   public void loadConfig() {
-    ensureFeedbackContext();
+    ensureFeedbackContext(null);
   }
 
   /**
@@ -998,7 +1013,7 @@ public class AIResponseOrchestrator {
     // before the first status poll fired, so do a one-shot fetch.  The
     // retroactive scan in setFeedbackContext will patch up any messages
     // that were rendered before the conversation ID arrived.
-    ensureFeedbackContext();
+    ensureFeedbackContext(null);
     handleResponse(response);
   }
 

@@ -220,6 +220,7 @@
     <property name="ai.agent.features.retry-narration" value="false" />
     <property name="ai.agent.features.plan-edit" value="false" />
     <property name="ai.agent.features.companion-context" value="true" />
+    <property name="ai.agent.features.editing-modes" value="true" />
 
     <!-- Bedrock provider configuration (only needed when ai.agent.provider=bedrock) -->
     <property name="ai.agent.provider.bedrock.region" value="us-east-1" />

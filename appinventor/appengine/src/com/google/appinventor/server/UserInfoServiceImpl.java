@@ -106,6 +106,13 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     }
 
     config.setAiAgentAvailable(Flag.createFlag("ai.agent.available", false).get());
+    config.setAiAgentEditingModesEnabled(
+        Flag.createFlag("ai.agent.features.editing-modes", true).get());
+    config.setAiAgentOrchestrationEnabled(
+        Flag.createFlag("ai.agent.features.orchestration", false).get());
+    config.setAiAgentPlanEditEnabled(
+        Flag.createFlag("ai.agent.features.plan-edit", false).get());
+    config.setAiAgentDebugEnabled(Flag.createFlag("ai.agent.debug", false).get());
 
     String expirationDate = Flag.createFlag("service.expires.time", "").get();
     if (!expirationDate.isEmpty()) {

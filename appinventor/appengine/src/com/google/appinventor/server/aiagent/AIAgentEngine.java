@@ -29,6 +29,8 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_ADVISOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_PROJECT_EDITOR;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_SCREEN_EDITOR;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,6 +82,14 @@ public class AIAgentEngine {
 
   private static final Flag<Boolean> ORCHESTRATION_FLAG = Flag.createFlag("ai.agent.features.orchestration", false);
   private static final Flag<Boolean> PLAN_EDIT_FLAG = Flag.createFlag("ai.agent.features.plan-edit", false);
+  /**
+   * When {@code true} (default), users may choose ScreenEditor or
+   * ProjectEditor mode in addition to Advisor. When {@code false}, only
+   * Advisor is offered in the mode-selection UI and any pre-existing
+   * editor-mode setting on a project is coerced to Advisor at read time.
+   */
+  private static final Flag<Boolean> EDITING_MODES_FLAG =
+      Flag.createFlag("ai.agent.features.editing-modes", true);
 
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
@@ -865,11 +875,9 @@ public class AIAgentEngine {
   public AIStreamStatus getRequestStatus(long projectId, String targetScreen) {
     StreamBuffer streamBuffer = new StreamBuffer(storageIo, projectId, targetScreen);
     AIStreamStatus status = streamBuffer.consume();
-    // Piggyback config fields on every status poll so the client can
-    // detect debug mode and build feedback links without a separate RPC.
-    status.setDebugEnabled(AIDebug.enabled());
-    status.setOrchestrationEnabled(ORCHESTRATION_FLAG.get());
-    status.setPlanEditEnabled(PLAN_EDIT_FLAG.get());
+    // Static feature flags now flow through {@code Config} (see
+    // {@code UserInfoServiceImpl.getSystemConfig}). The status response only
+    // carries per-request runtime state.
     // Screen-scoped requests still piggyback the conversationId so the
     // client can correlate child-agent status with the parent orchestrator.
     // Main-path requests get the conversationId back on the RPC response
@@ -912,7 +920,7 @@ public class AIAgentEngine {
               String mode = props.optString(
                   SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE, AI_AGENT_MODE_OFF);
               if (!mode.isEmpty()) {
-                return mode;
+                return coerceMode(mode);
               }
             }
           }
@@ -922,6 +930,20 @@ public class AIAgentEngine {
       LOG.log(Level.WARNING, "Failed to read AI agent mode for project " + projectId, e);
     }
     return AI_AGENT_MODE_OFF;
+  }
+
+  /**
+   * Coerces an editor-only mode (ScreenEditor / ProjectEditor) to Advisor
+   * when {@code ai.agent.features.editing-modes} is disabled. This protects
+   * legacy projects whose stored mode was selected before the flag flipped.
+   */
+  private static String coerceMode(String mode) {
+    if (!EDITING_MODES_FLAG.get()
+        && (AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)
+        || AI_AGENT_MODE_PROJECT_EDITOR.equals(mode))) {
+      return AI_AGENT_MODE_ADVISOR;
+    }
+    return mode;
   }
 
   // ---------- Conversation init ----------

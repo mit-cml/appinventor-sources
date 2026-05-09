@@ -116,7 +116,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `AIOperation.java` | Single operation: type enum (including `PROPOSE_PLAN` and `READ_RUNTIME`) + JSON payload string |
 | `AIOperationResult.java` | Execution result: `SUCCEEDED` / `FAILED` / `SKIPPED` for mutations (mapped to canned outcome strings server-side) or `RUNTIME_READ` for `READ_RUNTIME` results (summary passed through verbatim as the LLM tool result) |
 | `AIConversationMessage.java` | Message for chat history display |
-| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag, reset streaming flag, `orchestrationEnabled` config flag |
+| `AIStreamStatus.java` | Streaming poll response: status text, text delta, thinking delta, done flag, reset streaming flag, and per-request `conversationId`. Static feature flags do **not** travel here — they are populated once at login on `Config` (see `UserInfoServiceImpl.getSystemConfig`) and read on the client via `Ode.getSystemConfig()`. |
 
 ### Client -- `client/editor/youngandroid/aiagent/`
 
@@ -210,7 +210,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `companion_instructions.md` | Debugging/pedagogical instructions loaded by `CompanionModule` and prepended to its context section. Tells the LLM how to trace runtime errors back to specific blocks, when to use each read tool, and presentation rules (never expose YAIL/Scheme/blockids to the user) |
 | `tutorial_instructions.md` | Pedagogical instructions for tutorial-aware mode |
 | `continuation_instructions.md` | Instructions injected on continuation/retry requests |
-| `editor_view_rules.md` | View-specific rules (Designer vs Blocks) for mode instructions |
+| `editor_view_rules.md` | Edit-mode instructions: tool-call mandate ("Action, Not Narration"), Designer/Blocks view rules, `toggle_editor`/`switch_screen`/`create_screen` solo-batch rules, and tool-call batching order. Loaded by `ModeModule` only for ScreenEditor/ProjectEditor — never injected in Advisor mode. |
 | `mode_advisor.md` | Mode instructions for Advisor mode |
 | `mode_screen_editor.md` | Mode instructions for Screen Editor mode |
 | `mode_project_editor.md` | Mode instructions for Project Editor mode |
@@ -993,6 +993,7 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 | `ai.agent.features.retry-narration` | `false` | Retry with a nudge when the LLM responds with text only (no tool calls) in editing modes. When `false`, narration-only responses are returned as-is. |
 | `ai.agent.features.plan-edit` | `false` | Show the "Edit & Approve" button on Plan & Execute plan cards, allowing the user to manually edit the plan JSON before approval. When `false`, only Approve and Reject are shown. |
 | `ai.agent.features.companion-context` | `true` | Emit `CompanionModule` context and the three Companion read tool definitions (`read_component_property`, `read_variable`, `read_recent_logs`) when the Companion share toggle is on. When `false`, the snapshot field in `AIAgentRequest` is ignored and the tools are never sent to the LLM. |
+| `ai.agent.features.editing-modes` | `true` | Make ScreenEditor and ProjectEditor modes available alongside Advisor. When `false`, `AIModeSelectionDialog` only offers Advisor, the Designer property editor (`YoungAndroidAIAgentModeChoicePropertyEditor`) hides editor choices on Screen1, and `AIAgentEngine.getProjectAIMode` coerces any pre-existing editor-mode setting to Advisor at read time. Surfaced to the client via `Config.aiAgentEditingModesEnabled` (populated by `UserInfoServiceImpl.getSystemConfig`). |
 
 | Property | Default | Description |
 |----------|---------|-------------|

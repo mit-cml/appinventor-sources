@@ -425,12 +425,14 @@ public class AIChatDialog extends DialogBox
   public void show() {
     String mode = contextCollector.getCurrentAIAgentMode();
     if (AI_AGENT_MODE_OFF.equals(mode)) {
-      new AIModeSelectionDialog(contextCollector, new Runnable() {
-        @Override
-        public void run() {
-          AIChatDialog.this.show();
-        }
-      }).show();
+      new AIModeSelectionDialog(contextCollector,
+          Ode.getSystemConfig().getAiAgentEditingModesEnabled(),
+          new Runnable() {
+            @Override
+            public void run() {
+              AIChatDialog.this.show();
+            }
+          }).show();
       return;
     }
     super.show();
