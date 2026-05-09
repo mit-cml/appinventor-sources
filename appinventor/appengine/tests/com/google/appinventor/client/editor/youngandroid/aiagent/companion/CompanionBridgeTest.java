@@ -224,10 +224,13 @@ public class CompanionBridgeTest extends GWTTestCase {
 
   public void testPerTurnBudgetEnforcedAt10() {
     // Dispatch 10 reads — all should succeed (be sent).
+    // Reads are serialized (one in-flight at a time), so we must resolve each
+    // before the next can dispatch from the waiting queue.
     for (int i = 0; i < 10; i++) {
       RecordingCallback cb = new RecordingCallback();
       bridge.readVariable("v" + i, cb);
       assertFalse("Read " + i + " should not fail immediately", cb.failed());
+      resolveLatest("OK", "x");
     }
     assertEquals("All 10 reads should be dispatched", 10, transport.sent.size());
 
@@ -242,6 +245,7 @@ public class CompanionBridgeTest extends GWTTestCase {
   public void testResetTurnBudgetAllowsMoreReads() {
     for (int i = 0; i < 10; i++) {
       bridge.readVariable("v" + i, new RecordingCallback());
+      resolveLatest("OK", "x");
     }
 
     bridge.resetTurnBudget();
@@ -261,6 +265,7 @@ public class CompanionBridgeTest extends GWTTestCase {
       clock.advance(1000); // stay within the 60s window
       for (int i = 0; i < 10; i++) {
         bridge.readVariable("v" + (turn * 10 + i), new RecordingCallback());
+        resolveLatest("OK", "x");
       }
     }
     assertEquals("30 reads should be dispatched", 30, transport.sent.size());
@@ -279,6 +284,7 @@ public class CompanionBridgeTest extends GWTTestCase {
       bridge.resetTurnBudget();
       for (int i = 0; i < 10; i++) {
         bridge.readVariable("v" + (turn * 10 + i), new RecordingCallback());
+        resolveLatest("OK", "x");
       }
     }
 
@@ -290,5 +296,13 @@ public class CompanionBridgeTest extends GWTTestCase {
     bridge.readVariable("afterWindow", cb);
     assertFalse("Read after window expiry should succeed", cb.failed());
     assertEquals(31, transport.sent.size());
+  }
+
+  // ---- Helpers ----
+
+  /** Resolves the most recently sent read so the next waiting one can dispatch. */
+  private void resolveLatest(String status, String value) {
+    String blockId = transport.sent.get(transport.sent.size() - 1).blockId;
+    bridge.resolvePending(blockId, status, value);
   }
 }
