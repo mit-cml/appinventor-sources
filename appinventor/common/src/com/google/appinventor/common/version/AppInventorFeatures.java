@@ -190,16 +190,6 @@ public final class AppInventorFeatures {
   }
 
   /**
-   * If set to true, ScreenEditor and ProjectEditor AI agent modes are
-   * available alongside Advisor. When false, only Advisor is offered and
-   * any pre-existing editor-mode setting is coerced to Advisor at read
-   * time.
-   */
-  public static boolean aiAgentEditingModesEnabled() {
-    return false;
-  }
-
-  /**
    * If set to true, Plan & Execute mode (multi-agent orchestration) is
    * available in Project Editor mode. When false, the orchestration
    * system is hidden everywhere.
@@ -239,6 +229,16 @@ public final class AppInventorFeatures {
    * narration-only responses are returned as-is.
    */
   public static boolean aiAgentRetryNarrationEnabled() {
+    return false;
+  }
+
+  /**
+   * If set to true, ScreenEditor and ProjectEditor AI agent modes are
+   * available alongside Advisor. When false, only Advisor is offered and
+   * any pre-existing editor-mode setting is coerced to Advisor at read
+   * time.
+   */
+  public static boolean aiAgentEditingModesEnabled() {
     return false;
   }
 }
