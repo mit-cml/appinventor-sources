@@ -844,6 +844,70 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Open wizard for user interface settings")
   String uiSettings();
 
+  @DefaultMessage("AI Settings")
+  @Description("Caption for the AI Settings menu item in the Settings dropdown.")
+  String aiSettings();
+
+  @DefaultMessage("AI Agent — Bring Your Own Key")
+  @Description("Title of the AI Settings dialog.")
+  String aiSettingsTitle();
+
+  @DefaultMessage("Configure your own AI provider, model, and API key. Leave the provider blank to use the server default.")
+  @Description("Intro paragraph in the AI Settings dialog.")
+  String aiSettingsIntro();
+
+  @DefaultMessage("Provider")
+  @Description("Label for the provider selector in AI Settings.")
+  String aiSettingsProviderLabel();
+
+  @DefaultMessage("Use server default")
+  @Description("Provider-selector item meaning fall back to the server-configured provider.")
+  String aiSettingsProviderDefaultOption();
+
+  @DefaultMessage("Model")
+  @Description("Label for the model selector in AI Settings.")
+  String aiSettingsModelLabel();
+
+  @DefaultMessage("API Key")
+  @Description("Label for the API key field in AI Settings.")
+  String aiSettingsApiKeyLabel();
+
+  @DefaultMessage("Base URL")
+  @Description("Label for the base URL field in AI Settings (compatible providers).")
+  String aiSettingsBaseUrlLabel();
+
+  @DefaultMessage("Reasoning Effort")
+  @Description("Label for the reasoning effort selector in AI Settings.")
+  String aiSettingsReasoningLabel();
+
+  @DefaultMessage("None")
+  @Description("Reasoning-effort option: do not request reasoning.")
+  String aiSettingsReasoningNone();
+
+  @DefaultMessage("Low")
+  @Description("Reasoning-effort option: low.")
+  String aiSettingsReasoningLow();
+
+  @DefaultMessage("Medium")
+  @Description("Reasoning-effort option: medium.")
+  String aiSettingsReasoningMedium();
+
+  @DefaultMessage("High")
+  @Description("Reasoning-effort option: high.")
+  String aiSettingsReasoningHigh();
+
+  @DefaultMessage("Apply")
+  @Description("Apply button in the AI Settings dialog.")
+  String aiSettingsApply();
+
+  @DefaultMessage("Clear BYOK")
+  @Description("Button to wipe BYOK settings and revert to server defaults.")
+  String aiSettingsClear();
+
+  @DefaultMessage("Provider, model, and API key are required when a provider is selected.")
+  @Description("Validation error shown when AI Settings fields are incomplete.")
+  String aiSettingsValidationIncomplete();
+
   @DefaultMessage("App Store Settings")
   @Description("Title for the App Store Settings menu item")
   String appStoreSettingsMenuTitle();

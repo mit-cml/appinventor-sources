@@ -12,6 +12,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
   <ui:with field="isAvailable" type="java.lang.Boolean"/>
+  <ui:with field="aiAgentAvailable" type="java.lang.Boolean"/>
 
   <g:FlowPanel styleName="ode-TopToolbar">
     <!-- Projects Menu -->
@@ -144,6 +145,9 @@
                        styleName="ode-TopPanelButton" ui:field="settingsDropDown">
       <ai:DropDownItem name="UISettings" caption="{messages.uiSettings}">
         <actions:UISettingsAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="AISettings" caption="{messages.aiSettings}" visible="{aiAgentAvailable}">
+        <actions:AISettingsAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="AutoloadLastProject" caption="{messages.disableAutoload}"
           visible="{hasWriteAccess}">

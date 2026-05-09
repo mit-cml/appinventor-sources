@@ -7,6 +7,7 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.server.aiagent.context.ContextUtils;
 import com.google.appinventor.server.aiagent.llm.ChatMessage;
+import com.google.appinventor.server.aiagent.llm.BYOKConfig;
 import com.google.appinventor.server.aiagent.llm.LLMProvider;
 import com.google.appinventor.server.aiagent.llm.LLMProviderException;
 import com.google.appinventor.server.aiagent.llm.LLMProviderRegistry;
@@ -181,13 +182,13 @@ public class AIAgentEngine {
       AIConversationState conv;
       boolean isNew;
       if (routingScreen != null) {
-        ConversationInit init = initConversation(projectId, routingScreen);
+        ConversationInit init = initConversation(userId, projectId, routingScreen);
         conv = init.conv;
         isNew = init.isNew;
         convId = conv.getConversationId();
       } else {
         convId = resolveOrCreateConversationId(userId, projectId, requestedConversationId);
-        ConversationInit init = initMainConversation(convId);
+        ConversationInit init = initMainConversation(userId, convId);
         conv = init.conv;
         isNew = init.isNew;
       }
@@ -220,7 +221,8 @@ public class AIAgentEngine {
       // Build history. Multi-conversation model always replays persisted
       // history (both stateless and stateful providers); stateful providers
       // may choose to ignore when a providerRef is still live.
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
+      BYOKConfig byok = BYOKResolver.resolveForUser(userId);
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
       List<ChatMessage> history = conversationManager.loadConversation(conv.getConversationId());
       if (AIDebug.enabled()) {
         StringBuilder histInfo = new StringBuilder("History loaded: " + history.size() + " messages");
@@ -376,7 +378,7 @@ public class AIAgentEngine {
           // Rehydrate a minimal state so a cold memcache doesn't prevent
           // continuation bookkeeping. providerRef remains null below, which
           // is still handled by the guard.
-          conv = new AIConversationState(getConfiguredProvider(), convId, null);
+          conv = new AIConversationState(pinnedProviderForUser(userId), convId, null);
           conversationManager.saveConversation(convId, conv);
         }
       }
@@ -422,7 +424,8 @@ public class AIAgentEngine {
       }
 
       // Get provider and rebuild tools
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
+      BYOKConfig byok = BYOKResolver.resolveForUser(userId);
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
           companionSnapshot != null);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
@@ -597,7 +600,7 @@ public class AIAgentEngine {
           // Cold memcache — rehydrate minimal state so continuation bookkeeping
           // works. The providerRef==null guard below still fires because a
           // rehydrated state has no providerRef.
-          conv = new AIConversationState(getConfiguredProvider(), convId, null);
+          conv = new AIConversationState(pinnedProviderForUser(userId), convId, null);
           conversationManager.saveConversation(convId, conv);
         }
       }
@@ -685,7 +688,8 @@ public class AIAgentEngine {
           locale, languageDisplayName, companionSnapshot, enforcementContext);
 
       // Get provider, tools, and resolver
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName());
+      BYOKConfig byok = BYOKResolver.resolveForUser(userId);
+      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
           companionSnapshot != null);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
@@ -774,7 +778,8 @@ public class AIAgentEngine {
           companionSnapshot != null);
       LLMProvider provider;
       try {
-        provider = LLMProviderRegistry.get(conv.getProviderName());
+        BYOKConfig byok = BYOKResolver.resolveForUser(userId);
+        provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
       } catch (LLMProviderException e) {
         LOG.log(Level.WARNING, "LLM provider unavailable in continuation fallback", e);
         streamBuffer.clear();
@@ -952,14 +957,14 @@ public class AIAgentEngine {
    * Get or create the screen-scoped conversation state (orchestration child
    * agents). Resets when the configured provider changes.
    */
-  ConversationInit initConversation(long projectId, String screenName) {
+  ConversationInit initConversation(String userId, long projectId, String screenName) {
     AIConversationState conv = conversationManager.getConversation(projectId, screenName);
     boolean isNew = (conv == null);
     if (isNew) {
-      conv = new AIConversationState(getConfiguredProvider(),
+      conv = new AIConversationState(pinnedProviderForUser(userId),
           UUID.randomUUID().toString(), null);
     }
-    String currentProvider = getConfiguredProvider();
+    String currentProvider = pinnedProviderForUser(userId);
     if (!currentProvider.equals(conv.getProviderName())) {
       conversationManager.clearConversation(projectId, screenName);
       conv = new AIConversationState(currentProvider,
@@ -995,13 +1000,13 @@ public class AIAgentEngine {
    * fresh state if none exists in memcache. Resets state when the configured
    * provider changes.
    */
-  ConversationInit initMainConversation(String conversationId) {
+  ConversationInit initMainConversation(String userId, String conversationId) {
     AIConversationState conv = conversationManager.getConversation(conversationId);
     boolean isNew = (conv == null);
     if (isNew) {
-      conv = new AIConversationState(getConfiguredProvider(), conversationId, null);
+      conv = new AIConversationState(pinnedProviderForUser(userId), conversationId, null);
     }
-    String currentProvider = getConfiguredProvider();
+    String currentProvider = pinnedProviderForUser(userId);
     if (!currentProvider.equals(conv.getProviderName())) {
       conversationManager.clearConversationState(conversationId);
       conv = new AIConversationState(currentProvider, conversationId, null);
@@ -1388,6 +1393,14 @@ public class AIAgentEngine {
 
   static String getConfiguredProvider() {
     return Flag.createFlag("ai.agent.provider", "anthropic").get();
+  }
+
+  /** Returns the provider name to pin to a new conversation:
+   *  the user's BYOK provider when fully configured, otherwise the server
+   *  default from the {@code ai.agent.provider} flag. */
+  static String pinnedProviderForUser(String userId) {
+    BYOKConfig byok = BYOKResolver.resolveForUser(userId);
+    return byok != null ? byok.getProvider() : getConfiguredProvider();
   }
 
   static String getConfiguredModel() {

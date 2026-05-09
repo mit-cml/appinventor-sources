@@ -77,24 +77,37 @@ public class LLMProviderRegistry {
   }
 
   /**
-   * Returns an {@link LLMProvider} instance for the given provider name.
-   *
-   * @param providerName the provider name ("anthropic", "openai", "gemini", "ollama", or "minimax")
-   * @return the configured provider instance
-   * @throws LLMProviderException if the provider name is unknown or configuration is invalid
+   * Returns an {@link LLMProvider}. When {@code byok} is non-null, BYOK
+   * fields are used in place of the {@code ai.agent.*} system properties.
+   * When {@code byok} is null, behavior matches the legacy
+   * {@link #get(String)} signature.
    */
-  public static LLMProvider get(String providerName) throws LLMProviderException {
-    if (providerName == null || providerName.isEmpty()) {
+  public static LLMProvider get(String providerName, BYOKConfig byok)
+      throws LLMProviderException {
+    if (byok != null) {
+      providerName = byok.getProvider();
+    } else if (providerName == null || providerName.isEmpty()) {
       providerName = PROVIDER_FLAG.get();
     }
     providerName = providerName.toLowerCase().trim();
 
-    String apiKey = API_KEY_FLAG.get();
-    String model = MODEL_FLAG.get();
-    String baseUrl = BASE_URL_FLAG.get();
-    String reasoningEffort = REASONING_EFFORT_FLAG.get();
+    String apiKey;
+    String model;
+    String baseUrl;
+    String reasoningEffort;
 
-    // Use default model if none specified
+    if (byok != null) {
+      apiKey = byok.getApiKey();
+      model = byok.getModel();
+      baseUrl = byok.getBaseUrl();
+      reasoningEffort = byok.getReasoningEffort();
+    } else {
+      apiKey = API_KEY_FLAG.get();
+      model = MODEL_FLAG.get();
+      baseUrl = BASE_URL_FLAG.get();
+      reasoningEffort = REASONING_EFFORT_FLAG.get();
+    }
+
     if (model == null || model.isEmpty()) {
       model = DEFAULT_MODELS.get(providerName);
       if (model == null) {
@@ -102,24 +115,25 @@ public class LLMProviderRegistry {
       }
     }
 
-    LOG.info("Creating LLM provider: " + providerName + " with model: " + model);
+    LOG.info("Creating LLM provider: " + providerName + " with model: " + model
+        + (byok != null ? " (BYOK)" : ""));
 
     switch (providerName) {
       case "anthropic":
-        validateApiKey(apiKey, "Anthropic");
+        validateApiKey(apiKey, "Anthropic", byok != null);
         return new AnthropicCompatibleProvider(apiKey, model, baseUrl, reasoningEffort);
 
       case "anthropic-compatible":
-        validateApiKey(apiKey, "Anthropic-Compatible");
+        validateApiKey(apiKey, "Anthropic-Compatible", byok != null);
         validateBaseUrl(baseUrl, "Anthropic-Compatible");
         return new AnthropicCompatibleProvider(apiKey, model, baseUrl, reasoningEffort);
 
       case "openai":
-        validateApiKey(apiKey, "OpenAI");
+        validateApiKey(apiKey, "OpenAI", byok != null);
         return new OpenAIProvider(apiKey, model, reasoningEffort);
 
       case "gemini":
-        validateApiKey(apiKey, "Gemini");
+        validateApiKey(apiKey, "Gemini", byok != null);
         return new GeminiProvider(apiKey, model, reasoningEffort);
 
       case "ollama":
@@ -129,18 +143,18 @@ public class LLMProviderRegistry {
         return new OllamaProvider(baseUrl, model, apiKey);
 
       case "minimax":
-        validateApiKey(apiKey, "MiniMax");
+        validateApiKey(apiKey, "MiniMax", byok != null);
         if (baseUrl != null && !baseUrl.isEmpty()) {
           return new OpenAIChatCompletionsProvider(apiKey, model, baseUrl);
         }
         return new MiniMaxProvider(apiKey, model);
 
       case "openrouter":
-        validateApiKey(apiKey, "OpenRouter");
+        validateApiKey(apiKey, "OpenRouter", byok != null);
         return new OpenRouterProvider(apiKey, model);
 
       case "openai-compatible":
-        validateApiKey(apiKey, "OpenAI-Compatible");
+        validateApiKey(apiKey, "OpenAI-Compatible", byok != null);
         validateBaseUrl(baseUrl, "OpenAI-Compatible");
         return new OpenAIChatCompletionsProvider(apiKey, model, baseUrl);
 
@@ -174,6 +188,11 @@ public class LLMProviderRegistry {
     }
   }
 
+  /** Legacy entry point kept for callers that have no BYOK context. */
+  public static LLMProvider get(String providerName) throws LLMProviderException {
+    return get(providerName, null);
+  }
+
   /**
    * Returns an {@link LLMProvider} instance using the default provider
    * from the system property {@code ai.agent.provider}.
@@ -185,15 +204,27 @@ public class LLMProviderRegistry {
     return get(PROVIDER_FLAG.get());
   }
 
-  private static void validateApiKey(String apiKey, String providerName)
+  private static void validateApiKey(String apiKey, String providerName,
+                                     boolean isByok)
       throws LLMProviderException {
     if (apiKey == null || apiKey.isEmpty()) {
+      String userMessage = isByok
+          ? "Your AI Agent settings are incomplete. Open Settings > AI Settings"
+              + " and provide an API key for " + providerName + "."
+          : "AI Agent is not configured. Set up your own provider in"
+              + " Settings > AI Settings, or contact your administrator.";
       throw new LLMProviderException(
           "No API key configured for " + providerName
-              + ". Set the ai.agent.api.key system property.",
-          "The AI agent is not configured. Please ask your administrator "
-              + "to set up the API key.");
+              + (isByok ? " (BYOK)" : "")
+              + ". Set the ai.agent.api.key system property"
+              + (isByok ? " or BYOK key." : "."),
+          userMessage);
     }
+  }
+
+  private static void validateApiKey(String apiKey, String providerName)
+      throws LLMProviderException {
+    validateApiKey(apiKey, providerName, false);
   }
 
   private static void validateBaseUrl(String baseUrl, String providerName)

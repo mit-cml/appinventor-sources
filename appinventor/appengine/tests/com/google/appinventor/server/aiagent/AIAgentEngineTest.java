@@ -84,7 +84,7 @@ public class AIAgentEngineTest extends LocalDatastoreTestCase {
     String convId = cm.createConversation(USER_A, PROJECT_1);
     cm.saveConversation(convId,
         new AIConversationState("anthropic", convId, "ref-x"));
-    AIAgentEngine.ConversationInit init = engine.initMainConversation(convId);
+    AIAgentEngine.ConversationInit init = engine.initMainConversation(USER_A, convId);
     assertFalse("should not be marked new when cached state exists", init.isNew);
     assertEquals(convId, init.conv.getConversationId());
     assertEquals("ref-x", init.conv.getProviderRef());

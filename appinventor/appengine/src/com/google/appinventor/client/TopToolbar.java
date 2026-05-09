@@ -89,6 +89,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
   @UiField (provided = true) protected Boolean isAvailable;
+  @UiField (provided = true) protected Boolean aiAgentAvailable;
 
   protected boolean readOnly;
 
@@ -119,6 +120,7 @@ public class TopToolbar extends Composite {
     boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
 
     isAvailable = !oneProjectMode && hasWriteAccess;
+    aiAgentAvailable = Ode.getSystemConfig().getAiAgentAvailable();
 
     bindUI();
     if (iamChromebook) {
