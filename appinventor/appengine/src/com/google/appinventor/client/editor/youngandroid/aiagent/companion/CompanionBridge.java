@@ -76,7 +76,8 @@ public final class CompanionBridge {
    */
   public static CompanionBridge getInstance() {
     if (instance == null) {
-      instance = new CompanionBridge(new PutYailTransport(), new SystemClock());
+      instance = new CompanionBridge(new PutYailTransport(), new SystemClock(),
+          new HexIdGenerator(), new GwtTimerScheduler());
     }
     return instance;
   }
@@ -104,6 +105,8 @@ public final class CompanionBridge {
 
   private final ReplTransport transport;
   private final Clock clock;
+  private final IdGenerator idGenerator;
+  private final Scheduler scheduler;
 
   /**
    * Maps synthetic blockId → pending read awaiting a Companion reply.
@@ -138,12 +141,15 @@ public final class CompanionBridge {
   // ---- Package-private constructor for tests ----
 
   /**
-   * Creates a bridge with the given transport and clock.
+   * Creates a bridge with the given collaborators.
    * Package-private so tests can inject fakes.
    */
-  CompanionBridge(ReplTransport transport, Clock clock) {
+  CompanionBridge(ReplTransport transport, Clock clock,
+                  IdGenerator idGenerator, Scheduler scheduler) {
     this.transport = transport;
     this.clock = clock;
+    this.idGenerator = idGenerator;
+    this.scheduler = scheduler;
   }
 
   // ---- Public API ----
@@ -266,21 +272,8 @@ public final class CompanionBridge {
   }
 
   private String generateBlockId() {
-    return BLOCK_ID_PREFIX + randomHex(16);
+    return BLOCK_ID_PREFIX + idGenerator.nextHex(16);
   }
-
-  /**
-   * Generates a random hex string of the requested length.
-   * Uses {@code Math.random()} via JSNI — GWT does not provide
-   * {@code java.util.UUID} in its JRE emulation.
-   */
-  private native String randomHex(int len) /*-{
-    var s = '';
-    while (s.length < len) {
-      s += Math.floor(Math.random() * 0x100000000).toString(16);
-    }
-    return s.substring(0, len);
-  }-*/;
 
   /**
    * Dispatches a read or enqueues it behind the currently-in-flight one.
@@ -378,6 +371,53 @@ public final class CompanionBridge {
     }
   }
 
+  /** Generates synthetic block-id suffixes. Abstracted for testability. */
+  interface IdGenerator {
+    /** Returns a hex string of the requested length. */
+    String nextHex(int len);
+  }
+
+  /** Production id generator using {@code Math.random()} via JSNI. */
+  static final class HexIdGenerator implements IdGenerator {
+    @Override
+    public native String nextHex(int len) /*-{
+      var s = '';
+      while (s.length < len) {
+        s += Math.floor(Math.random() * 0x100000000).toString(16);
+      }
+      return s.substring(0, len);
+    }-*/;
+  }
+
+  /** Schedules a one-shot callback after a delay. Abstracted for testability. */
+  interface Scheduler {
+    Cancellable schedule(int delayMs, Runnable task);
+
+    interface Cancellable {
+      void cancel();
+    }
+  }
+
+  /** Production scheduler backed by {@link Timer}. */
+  static final class GwtTimerScheduler implements Scheduler {
+    @Override
+    public Cancellable schedule(int delayMs, final Runnable task) {
+      final Timer timer = new Timer() {
+        @Override
+        public void run() {
+          task.run();
+        }
+      };
+      timer.schedule(delayMs);
+      return new Cancellable() {
+        @Override
+        public void cancel() {
+          timer.cancel();
+        }
+      };
+    }
+  }
+
   /**
    * A read waiting behind the currently-in-flight one. Holds the params
    * needed by {@link #sendNow} so the dispatch is just a pop-and-send.
@@ -399,27 +439,26 @@ public final class CompanionBridge {
    */
   private static final class PendingRead {
     final Callback callback;
-    /** GWT Timer that fires {@link CompanionBridge#timeoutRead} if no reply arrives. */
-    Timer timer;
+    /** Cancellable handle for the timeout task. */
+    Scheduler.Cancellable timeout;
 
     PendingRead(Callback cb) {
       this.callback = cb;
     }
 
     void scheduleTimeout(final CompanionBridge bridge, final String blockId) {
-      this.timer = new Timer() {
+      this.timeout = bridge.scheduler.schedule(TIMEOUT_MS, new Runnable() {
         @Override
         public void run() {
           bridge.timeoutRead(blockId);
         }
-      };
-      timer.schedule(TIMEOUT_MS);
+      });
     }
 
     void cancelTimeout() {
-      if (timer != null) {
-        timer.cancel();
-        timer = null;
+      if (timeout != null) {
+        timeout.cancel();
+        timeout = null;
       }
     }
   }

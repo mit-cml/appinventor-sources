@@ -5,25 +5,21 @@
 
 package com.google.appinventor.client.editor.youngandroid.aiagent.companion;
 
-import com.google.gwt.junit.client.GWTTestCase;
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GWT client-side unit tests for {@link CompanionBridge}.
+ * Pure-JVM unit tests for {@link CompanionBridge}.
  *
- * <p>Tests use a fake {@link ReplTransport} and fake {@link CompanionBridge.Clock} so that no
- * real Companion connection is needed. The bridge is constructed directly (package-private
- * constructor) rather than via {@link CompanionBridge#getInstance()}, so the singleton is
- * not affected.</p>
+ * <p>Tests inject fake {@link ReplTransport}, {@link CompanionBridge.Clock},
+ * {@link CompanionBridge.IdGenerator} and {@link CompanionBridge.Scheduler}
+ * so the bridge runs without GWT, JSNI or a real Companion connection. The
+ * bridge is constructed directly (package-private constructor) rather than
+ * via {@link CompanionBridge#getInstance()}, so the singleton is unaffected.</p>
  */
-public class CompanionBridgeTest extends GWTTestCase {
-
-  @Override
-  public String getModuleName() {
-    return "com.google.appinventor.YaClient";
-  }
+public class CompanionBridgeTest extends TestCase {
 
   // ---- Fakes ----
 
@@ -82,6 +78,32 @@ public class CompanionBridgeTest extends GWTTestCase {
     boolean failed()    { return failureCount > 0; }
   }
 
+  /** Counter-based id generator — deterministic and JSNI-free. */
+  static class CountingIdGenerator implements CompanionBridge.IdGenerator {
+    int counter = 0;
+
+    @Override
+    public String nextHex(int len) {
+      String s = Integer.toHexString(counter++);
+      while (s.length() < len) {
+        s = "0" + s;
+      }
+      return s;
+    }
+  }
+
+  /** No-op scheduler — tests never let timeouts fire. */
+  static class NoopScheduler implements CompanionBridge.Scheduler {
+    @Override
+    public Cancellable schedule(int delayMs, Runnable task) {
+      return new Cancellable() {
+        @Override
+        public void cancel() {
+        }
+      };
+    }
+  }
+
   // ---- Fixtures ----
 
   private RecordingTransport transport;
@@ -89,10 +111,12 @@ public class CompanionBridgeTest extends GWTTestCase {
   private CompanionBridge bridge;
 
   @Override
-  public void gwtSetUp() {
+  protected void setUp() throws Exception {
+    super.setUp();
     transport = new RecordingTransport();
     clock = new FakeClock();
-    bridge = new CompanionBridge(transport, clock);
+    bridge = new CompanionBridge(transport, clock,
+        new CountingIdGenerator(), new NoopScheduler());
   }
 
   // ---- Tests: readComponentProperty ----
