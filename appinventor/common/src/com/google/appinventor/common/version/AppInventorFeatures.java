@@ -176,7 +176,7 @@ public final class AppInventorFeatures {
    * not appear, and Blockly's AI assistance integration is disabled.
    */
   public static boolean aiAgentAvailable() {
-    return false;
+    return true;
   }
 
   /**
