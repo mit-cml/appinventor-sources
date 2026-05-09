@@ -79,6 +79,20 @@ public final class BlockSelectorBox extends Box {
     @Override
     public void delete() {
     }
+
+    @Override
+    public boolean canDrag() {
+      return false;
+    }
+
+    @Override
+    public boolean isContainer() {
+      return false;
+    }
+
+    @Override
+    public void moveTo(SourceStructureExplorerItem target, int position) {
+    }
   }
 
   // Singleton block selector box instance
@@ -222,6 +236,14 @@ public final class BlockSelectorBox extends Box {
       advanced.addItem(itemNode);
     }
     return advanced;
+  }
+
+  /**
+   * Clears the cached built-in blocks tree so the next access rebuilds from
+   * the latest BlocksToolkit value.
+   */
+  public void clearBuiltInBlocksCache() {
+    languageTreeItems.clear();
   }
 
   public void addBlockDrawerSelectionListener(BlockDrawerSelectionListener listener) {

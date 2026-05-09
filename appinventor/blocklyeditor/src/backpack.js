@@ -297,7 +297,7 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
   }
 
   onDragEnter(e) {
-    if (e instanceof Blockly.BlockSvg) {
+    if (e instanceof Blockly.BlockSvg || e.toFlyoutInfo !== undefined) {
       // switch to open backpack icon
       this.setOpen_(true);
     }
@@ -312,6 +312,17 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     try {
       if (dragElement instanceof Blockly.BlockSvg) {
         this.addToBackpack(/** @type {!Blockly.BlockSvg} */ (dragElement), true);
+      } else if (dragElement.toFlyoutInfo !== undefined) {
+        const headlessWorkspace = new Blockly.Workspace();
+        headlessWorkspace.targetWorkspace = this.workspace_;
+        try {
+          for (const blockInfo of dragElement.toFlyoutInfo()) {
+            const tempBlock = Blockly.serialization.blocks.append(blockInfo, headlessWorkspace);
+            this.addToBackpack(tempBlock, true);
+          }
+        } finally {
+          headlessWorkspace.dispose();
+        }
       }
     } finally {
       this.setOpen_(false);
@@ -375,10 +386,10 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
           if (contents === undefined || contents.length === 0) {
             return;
           }
-          let headlessWorkspace = null;
           let lastPastedBlock = null;
+          const headlessWorkspace = new Blockly.Workspace();
+          headlessWorkspace.targetWorkspace = this.workspace_;
           try {
-            headlessWorkspace = new Blockly.Workspace();
             Blockly.Events.setGroup(true);
             for (let i = 0; i < contents.length; i++) {
               const xml = Blockly.utils.xml.textToDom(contents[i]);
