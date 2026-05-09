@@ -151,12 +151,16 @@ public class OperationPreviewPanel {
       previewPanel.add(aiLabel);
     }
 
-    Label header = new Label(MESSAGES.aiChatProposedChanges());
+    List<AIOperation> operations = response.getOperations();
+    Label header = new Label(MESSAGES.aiChatProposedChanges() + " (" + operations.size() + ")");
     header.getElement().getStyle().setProperty("fontWeight", "bold");
     header.getElement().getStyle().setMarginBottom(4, Unit.PX);
     previewPanel.add(header);
 
-    List<AIOperation> operations = response.getOperations();
+    FlowPanel opsList = new FlowPanel();
+    opsList.getElement().getStyle().setProperty("maxHeight", "200px");
+    opsList.getElement().getStyle().setProperty("overflowY", "auto");
+    opsList.getElement().getStyle().setProperty("overflowX", "hidden");
     for (AIOperation op : operations) {
       Label opLabel = new Label(AIOperationFormatter.formatOperation(op));
       opLabel.getElement().getStyle().setFontSize(12, Unit.PX);
@@ -176,8 +180,9 @@ public class OperationPreviewPanel {
       } else {
         opLabel.getElement().getStyle().setColor("#1565c0");
       }
-      previewPanel.add(opLabel);
+      opsList.add(opLabel);
     }
+    previewPanel.add(opsList);
 
     previewPanel.setVisible(true);
     applyButton.setVisible(true);
