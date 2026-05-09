@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.aiagent;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.aiagent.context.ContextUtils;
 import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.aiagent.llm.BYOKConfig;
@@ -58,14 +59,6 @@ public class AIAgentEngine {
   private static final Logger LOG = Logger.getLogger(AIAgentEngine.class.getName());
 
   /**
-   * When {@code true}, the engine retries with a nudge message if the LLM
-   * responds with text only (no tool calls) in an editing mode.  Set to
-   * {@code false} to disable the narration retry entirely.
-   */
-  private static final Flag<Boolean> RETRY_NARRATION =
-      Flag.createFlag("ai.agent.features.retry-narration", false);
-
-  /**
    * Instruction appended to the context messages on every continuation call.
    * Steers the model away from refactoring or undoing prior user-requested
    * changes when it receives the fresh project state in a continuation.
@@ -80,17 +73,6 @@ public class AIAgentEngine {
     }
     return continuationScopeInstruction;
   }
-
-  private static final Flag<Boolean> ORCHESTRATION_FLAG = Flag.createFlag("ai.agent.features.orchestration", false);
-  private static final Flag<Boolean> PLAN_EDIT_FLAG = Flag.createFlag("ai.agent.features.plan-edit", false);
-  /**
-   * When {@code true} (default), users may choose ScreenEditor or
-   * ProjectEditor mode in addition to Advisor. When {@code false}, only
-   * Advisor is offered in the mode-selection UI and any pre-existing
-   * editor-mode setting on a project is coerced to Advisor at read time.
-   */
-  private static final Flag<Boolean> EDITING_MODES_FLAG =
-      Flag.createFlag("ai.agent.features.editing-modes", true);
 
   private final StorageIo storageIo;
   private final AIContextBuilder contextBuilder;
@@ -200,9 +182,9 @@ public class AIAgentEngine {
           + ", msg=" + userMessage);
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
-      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+      if (AppInventorFeatures.aiAgentOrchestrationEnabled() && executionPhase) {
         enforcementContext = EnforcementContext.EXECUTION;
-      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+      } else if (AppInventorFeatures.aiAgentOrchestrationEnabled() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
       } else if (orchestrationMode) {
         enforcementContext = EnforcementContext.CHILD_EXECUTION;
@@ -415,9 +397,9 @@ public class AIAgentEngine {
           + ", screen=" + screenName + ", mode=" + mode);
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
-      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+      if (AppInventorFeatures.aiAgentOrchestrationEnabled() && executionPhase) {
         enforcementContext = EnforcementContext.EXECUTION;
-      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+      } else if (AppInventorFeatures.aiAgentOrchestrationEnabled() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
       } else if (orchestrationMode) {
         enforcementContext = EnforcementContext.CHILD_EXECUTION;
@@ -675,7 +657,7 @@ public class AIAgentEngine {
       patchedRef = patchSystemPrompt(patchedRef, systemPrompt);
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
-      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+      if (AppInventorFeatures.aiAgentOrchestrationEnabled() && executionPhase) {
         enforcementContext = EnforcementContext.EXECUTION;
       } else if (orchestrationMode) {
         enforcementContext = EnforcementContext.CHILD_EXECUTION;
@@ -761,9 +743,9 @@ public class AIAgentEngine {
           + ", msg=" + (syntheticUserMessage == null ? "(null)" : syntheticUserMessage));
 
       EnforcementContext enforcementContext = EnforcementContext.STANDARD;
-      if (ORCHESTRATION_FLAG.get() && executionPhase) {
+      if (AppInventorFeatures.aiAgentOrchestrationEnabled() && executionPhase) {
         enforcementContext = EnforcementContext.EXECUTION;
-      } else if (ORCHESTRATION_FLAG.get() && planExecuteMode) {
+      } else if (AppInventorFeatures.aiAgentOrchestrationEnabled() && planExecuteMode) {
         enforcementContext = EnforcementContext.PLANNING;
       } else if (orchestrationMode) {
         enforcementContext = EnforcementContext.CHILD_EXECUTION;
@@ -939,11 +921,12 @@ public class AIAgentEngine {
 
   /**
    * Coerces an editor-only mode (ScreenEditor / ProjectEditor) to Advisor
-   * when {@code ai.agent.features.editing-modes} is disabled. This protects
-   * legacy projects whose stored mode was selected before the flag flipped.
+   * when {@link AppInventorFeatures#aiAgentEditingModesEnabled()} is false.
+   * This protects legacy projects whose stored mode was selected before
+   * the flag flipped.
    */
   private static String coerceMode(String mode) {
-    if (!EDITING_MODES_FLAG.get()
+    if (!AppInventorFeatures.aiAgentEditingModesEnabled()
         && (AI_AGENT_MODE_SCREEN_EDITOR.equals(mode)
         || AI_AGENT_MODE_PROJECT_EDITOR.equals(mode))) {
       return AI_AGENT_MODE_ADVISOR;
@@ -1112,7 +1095,7 @@ public class AIAgentEngine {
       ReadOnlyToolResolver resolver, StreamBuffer streamBuffer,
       EnforcementContext enforcementContext)
       throws LLMProviderException {
-    if (!RETRY_NARRATION.get()) {
+    if (!AppInventorFeatures.aiAgentRetryNarrationEnabled()) {
       return;
     }
     boolean isEditingMode = !AI_AGENT_MODE_ADVISOR.equals(mode);

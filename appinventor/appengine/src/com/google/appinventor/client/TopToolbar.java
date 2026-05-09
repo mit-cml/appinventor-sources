@@ -120,7 +120,7 @@ public class TopToolbar extends Composite {
     boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
 
     isAvailable = !oneProjectMode && hasWriteAccess;
-    aiAgentAvailable = Ode.getSystemConfig().getAiAgentAvailable();
+    aiAgentAvailable = AppInventorFeatures.aiAgentAvailable();
 
     bindUI();
     if (iamChromebook) {

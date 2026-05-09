@@ -179,7 +179,7 @@ public class DesignToolbar extends Toolbar {
     setVisibleItem(sendToGalleryItem, Ode.getSystemConfig().getGalleryEnabled()
         && !Ode.getInstance().getGalleryReadOnly());
     // Is the AI Agent available?
-    setVisibleItem(toggleAIChatItem, Ode.getSystemConfig().getAiAgentAvailable());
+    setVisibleItem(toggleAIChatItem, AppInventorFeatures.aiAgentAvailable());
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);

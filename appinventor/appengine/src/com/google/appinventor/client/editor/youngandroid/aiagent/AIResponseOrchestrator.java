@@ -9,6 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.client.editor.blocks.BlocksEditor;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentRequest;
 import com.google.appinventor.shared.rpc.aiagent.AIAgentResponse;
@@ -120,10 +121,9 @@ public class AIResponseOrchestrator {
   private boolean autoAcceptAll;
   private boolean pendingPlanProposal;
   private boolean debugBannerShown;
-  // Static feature-flag values now flow through {@code Ode.getSystemConfig()}
-  // (populated once at login by {@code UserInfoServiceImpl.getSystemConfig}).
-  // Per-request runtime bits (conversationId, debug banner trigger) still
-  // arrive on {@link AIStreamStatus}.
+  // AI agent feature toggles are compile-time and read directly from
+  // {@link AppInventorFeatures}. Per-request runtime bits (conversationId,
+  // debug banner trigger) arrive on {@link AIStreamStatus}.
 
   /** Manages parallel child conversations during multi-screen plan execution. */
   private AIOrchestrationManager orchestrationManager;
@@ -385,24 +385,24 @@ public class AIResponseOrchestrator {
     callback.onConfigLoaded();
   }
 
-  /** Whether {@code ai.agent.debug} is on for this server. */
+  /** Whether AI agent debug logging is compiled in. */
   public boolean isDebugEnabled() {
-    return Ode.getSystemConfig().getAiAgentDebugEnabled();
+    return AppInventorFeatures.aiAgentDebugEnabled();
   }
 
-  /** Whether {@code ai.agent.features.orchestration} is on for this server. */
+  /** Whether the AI agent orchestration feature is compiled in. */
   public boolean isOrchestrationEnabled() {
-    return Ode.getSystemConfig().getAiAgentOrchestrationEnabled();
+    return AppInventorFeatures.aiAgentOrchestrationEnabled();
   }
 
-  /** Whether {@code ai.agent.features.plan-edit} is on for this server. */
+  /** Whether the AI agent plan-edit feature is compiled in. */
   public boolean isPlanEditEnabled() {
-    return Ode.getSystemConfig().getAiAgentPlanEditEnabled();
+    return AppInventorFeatures.aiAgentPlanEditEnabled();
   }
 
-  /** Whether {@code ai.agent.features.editing-modes} is on for this server. */
+  /** Whether AI agent editing modes (ScreenEditor / ProjectEditor) are compiled in. */
   public boolean isEditingModesEnabled() {
-    return Ode.getSystemConfig().getAiAgentEditingModesEnabled();
+    return AppInventorFeatures.aiAgentEditingModesEnabled();
   }
 
   /**
@@ -565,9 +565,9 @@ public class AIResponseOrchestrator {
 
   /**
    * One-shot status poll. Picks up the conversation ID for the feedback link
-   * and triggers {@link ChatCallback#onConfigLoaded()}. Static feature flags
-   * are sourced from {@code Ode.getSystemConfig()} and are already available
-   * before this call returns.
+   * and triggers {@link ChatCallback#onConfigLoaded()}. AI agent feature
+   * toggles come from {@link AppInventorFeatures} (compile-time) and are
+   * already available before this call returns.
    */
   public void loadConfig() {
     ensureFeedbackContext(null);

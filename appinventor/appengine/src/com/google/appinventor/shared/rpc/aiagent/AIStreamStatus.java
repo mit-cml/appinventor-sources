@@ -7,11 +7,10 @@ import java.io.Serializable;
  * Status update returned by {@link AIAgentService#getRequestStatus}.
  * Contains incremental text deltas and per-request runtime state.
  *
- * <p>Static feature flags ({@code ai.agent.features.*}, {@code ai.agent.debug})
- * are <strong>not</strong> carried on this DTO. They flow through
- * {@code Config} (populated once at login by
- * {@code UserInfoServiceImpl.getSystemConfig}) and are read on the client via
- * {@code Ode.getSystemConfig()}.
+ * <p>Static feature flags are <strong>not</strong> carried on this DTO.
+ * AI agent feature toggles live in
+ * {@link com.google.appinventor.common.version.AppInventorFeatures}
+ * (compile-time, read directly by both client and server).
  */
 public class AIStreamStatus implements IsSerializable, Serializable {
   private static final long serialVersionUID = 1L;

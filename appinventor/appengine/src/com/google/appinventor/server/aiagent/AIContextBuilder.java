@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.aiagent;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.aiagent.context.CatalogModule;
 import com.google.appinventor.server.aiagent.context.CompanionModule;
 import com.google.appinventor.server.aiagent.context.ContextParams;
@@ -17,7 +18,6 @@ import com.google.appinventor.server.aiagent.context.ReferenceModule;
 import com.google.appinventor.server.aiagent.context.ScreenModule;
 import com.google.appinventor.server.aiagent.context.TutorialModule;
 import com.google.appinventor.server.aiagent.llm.LLMTool;
-import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
@@ -60,23 +60,6 @@ import java.util.logging.Logger;
 public class AIContextBuilder {
 
   private static final Logger LOG = Logger.getLogger(AIContextBuilder.class.getName());
-
-  /**
-   * Controls whether tutorial context is included in LLM requests.
-   * When {@code true}, if the project has a TutorialURL set, the tutorial
-   * page content is fetched and included as an additional context message.
-   */
-  private static final Flag<Boolean> INCLUDE_TUTORIAL_CONTEXT =
-      Flag.createFlag("ai.agent.features.tutorial-context", true);
-
-  /**
-   * Controls whether Companion runtime state is included in LLM requests.
-   * When {@code true}, if the client attaches a non-null companionSnapshot
-   * to the request, that state is rendered into a context message and the
-   * companion read tools are exposed to the LLM.
-   */
-  private static final Flag<Boolean> INCLUDE_COMPANION_CONTEXT =
-      Flag.createFlag("ai.agent.features.companion-context", true);
 
   /** Cached parsed tool definitions from {@code tool_definitions.json}. */
   private static volatile JSONObject cachedToolDefs;
@@ -206,7 +189,7 @@ public class AIContextBuilder {
     AIDebug.log(LOG, "Context message 3 (screen): " + screenCtx.length() + " chars");
 
     // Message 4: Companion runtime state (if enabled and snapshot present)
-    if (INCLUDE_COMPANION_CONTEXT.get()) {
+    if (AppInventorFeatures.aiAgentCompanionContextEnabled()) {
       String companionCtx = companionModule.build(params);
       if (companionCtx != null) {
         messages.add(companionCtx);
@@ -215,7 +198,7 @@ public class AIContextBuilder {
     }
 
     // Message 5: Tutorial context (if enabled and active)
-    if (INCLUDE_TUTORIAL_CONTEXT.get()) {
+    if (AppInventorFeatures.aiAgentTutorialContextEnabled()) {
       String tutorialCtx = tutorialModule.build(params);
       if (tutorialCtx != null) {
         messages.add(tutorialCtx);
@@ -259,7 +242,7 @@ public class AIContextBuilder {
     // Companion runtime reads: available in all non-PLANNING modes when the
     // client has attached a companion snapshot and the feature flag is on.
     // Advisor + ScreenEditor + ProjectEditor all get them.
-    if (INCLUDE_COMPANION_CONTEXT.get() && companionSharing) {
+    if (AppInventorFeatures.aiAgentCompanionContextEnabled() && companionSharing) {
       tools.add(toolFromDefs(defs, AIToolNames.READ_COMPONENT_PROPERTY));
       tools.add(toolFromDefs(defs, AIToolNames.READ_VARIABLE));
       tools.add(toolFromDefs(defs, AIToolNames.READ_RECENT_LOGS));

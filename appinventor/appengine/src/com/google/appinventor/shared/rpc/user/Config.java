@@ -48,11 +48,6 @@ public class Config implements IsSerializable, Serializable {
   private String iosExtensions;
   private String surveyUrl;
   private boolean iosBuildServer;
-  private boolean aiAgentAvailable;
-  private boolean aiAgentEditingModesEnabled = true;
-  private boolean aiAgentOrchestrationEnabled;
-  private boolean aiAgentPlanEditEnabled;
-  private boolean aiAgentDebugEnabled;
 
   public Config() {
   }
@@ -279,45 +274,5 @@ public class Config implements IsSerializable, Serializable {
 
   public void setiOSBuildServer(boolean value) {
     iosBuildServer = value;
-  }
-
-  public boolean getAiAgentAvailable() {
-    return aiAgentAvailable;
-  }
-
-  public void setAiAgentAvailable(boolean value) {
-    aiAgentAvailable = value;
-  }
-
-  public boolean getAiAgentEditingModesEnabled() {
-    return aiAgentEditingModesEnabled;
-  }
-
-  public void setAiAgentEditingModesEnabled(boolean value) {
-    aiAgentEditingModesEnabled = value;
-  }
-
-  public boolean getAiAgentOrchestrationEnabled() {
-    return aiAgentOrchestrationEnabled;
-  }
-
-  public void setAiAgentOrchestrationEnabled(boolean value) {
-    aiAgentOrchestrationEnabled = value;
-  }
-
-  public boolean getAiAgentPlanEditEnabled() {
-    return aiAgentPlanEditEnabled;
-  }
-
-  public void setAiAgentPlanEditEnabled(boolean value) {
-    aiAgentPlanEditEnabled = value;
-  }
-
-  public boolean getAiAgentDebugEnabled() {
-    return aiAgentDebugEnabled;
-  }
-
-  public void setAiAgentDebugEnabled(boolean value) {
-    aiAgentDebugEnabled = value;
   }
 }

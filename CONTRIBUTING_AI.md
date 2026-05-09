@@ -76,7 +76,7 @@ Each module extends `ContextModule` and contributes one section of the LLM syste
 | `ReferenceModule` | App Inventor reference guide |
 | `ModeModule` | Mode-specific instructions and constraints |
 | `TutorialModule` | Tutorial content and pedagogical instructions (when TutorialURL is set) |
-| `CompanionModule` | Runtime snapshot (connection kind, active screen, last 10 logs, last 3 errors) prefixed with pedagogical instructions from `companion_instructions.md`; injected as message 4 when `companionSnapshot` is present and `ai.agent.features.companion-context` is `true` |
+| `CompanionModule` | Runtime snapshot (connection kind, active screen, last 10 logs, last 3 errors) prefixed with pedagogical instructions from `companion_instructions.md`; injected as message 4 when `companionSnapshot` is present and `AppInventorFeatures.aiAgentCompanionContextEnabled()` is `true` |
 
 To add a new context section, create a class extending `ContextModule`, implement `build(ContextParams)`, and register it in `AIContextBuilder`.
 
@@ -206,7 +206,7 @@ GWT-RPC interfaces and DTOs shared between client and server.
 | `appinventor_reference.md` | System prompt reference guide for the LLM |
 | `yail_grammar.md` | YAIL syntax documentation for block generation |
 | `few_shot_examples.json` | Few-shot examples for in-context learning |
-| `tool_definitions.json` | Tool schemas loaded by `AIContextBuilder.buildTools()`; includes the three Companion read tools: `read_component_property`, `read_variable`, `read_recent_logs` (emitted only when `ai.agent.features.companion-context` is `true`) |
+| `tool_definitions.json` | Tool schemas loaded by `AIContextBuilder.buildTools()`; includes the three Companion read tools: `read_component_property`, `read_variable`, `read_recent_logs` (emitted only when `AppInventorFeatures.aiAgentCompanionContextEnabled()` is `true`) |
 | `companion_instructions.md` | Debugging/pedagogical instructions loaded by `CompanionModule` and prepended to its context section. Tells the LLM how to trace runtime errors back to specific blocks, when to use each read tool, and presentation rules (never expose YAIL/Scheme/blockids to the user) |
 | `tutorial_instructions.md` | Pedagogical instructions for tutorial-aware mode |
 | `continuation_instructions.md` | Instructions injected on continuation/retry requests |
@@ -272,7 +272,7 @@ flowchart LR
 - The **system prompt** layers are cached after first build (they are static across requests).
 - **Never inject user-controlled or project-specific strings into the system prompt.** The system prompt is cached process-wide and shared across all requests -- any per-user or per-project data placed there would (a) leak across tenants and (b) widen the prompt-injection surface. Project metadata, extension names, component trees, YAIL, asset names, tutorial text, and anything else derived from user input MUST live in per-request context messages (`ProjectModule`, `ScreenModule`, `TutorialModule`, etc.). The only things that belong in the cached system prompt are static reference material shipped in the repo (`simple_components.json`, `yail_grammar.md`, `appinventor_reference.md`, `few_shot_examples.json`). When adding a new context module, if its output depends on the request, register it in `buildContextMessages`, not `build`.
 - The **context messages** are built fresh per-request and sent as separate user messages before the user's actual message. Crucially, `ProjectModule` and `ScreenModule` parse the **client-provided JSON** (projectSnapshot, screenComponentsJson, blocksYail) rather than reading from `StorageIo`. This means the LLM always sees exactly what the user sees -- including unsaved changes. The one exception is extension component type names: the snapshot carries package names only, so `ProjectModule` reads `assets/external_comps/<pkg>/components.json` via `StorageIo` to expand each package into its component types.
-- **Message 4 (TutorialModule)** is only included when `ai.agent.features.tutorial-context` is `true` and the project has a non-empty `TutorialURL`. The tutorial page content is fetched via HTTP by `TutorialContentCache` and cached in memory (8h TTL). When active, the LLM receives pedagogical instructions (from `tutorial_instructions.md`) alongside the full tutorial text, shifting its behavior to guide users step-by-step rather than doing everything at once.
+- **Message 4 (TutorialModule)** is only included when `AppInventorFeatures.aiAgentTutorialContextEnabled()` is `true` and the project has a non-empty `TutorialURL`. The tutorial page content is fetched via HTTP by `TutorialContentCache` and cached in memory (8h TTL). When active, the LLM receives pedagogical instructions (from `tutorial_instructions.md`) alongside the full tutorial text, shifting its behavior to guide users step-by-step rather than doing everything at once.
 
 ### Why a Client/Server Hybrid?
 
@@ -946,19 +946,17 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 ### Configuration (appengine-web.xml)
 
 ```xml
-<property name="ai.agent.available" value="true" />
 <property name="ai.agent.provider" value="anthropic" />
 <property name="ai.agent.model" value="" />
 <property name="ai.agent.api.key" value="YOUR_KEY" />
 <property name="ai.agent.base.url" value="" />
 <property name="ai.agent.rate.limit" value="10" />
-<property name="ai.agent.debug" value="false" />
 
-<!-- Feature flags (ai.agent.features.*) -->
-<property name="ai.agent.features.orchestration" value="false" />
-<property name="ai.agent.features.tutorial-context" value="true" />
-<property name="ai.agent.features.retry-narration" value="false" />
-<property name="ai.agent.features.plan-edit" value="false" />
+<!-- Feature toggles live in AppInventorFeatures (compile-time), not here.
+     See aiAgentAvailable / aiAgentDebugEnabled /
+     aiAgentEditingModesEnabled / aiAgentOrchestrationEnabled /
+     aiAgentPlanEditEnabled / aiAgentTutorialContextEnabled /
+     aiAgentCompanionContextEnabled / aiAgentRetryNarrationEnabled. -->
 
 <!-- Bedrock-specific (only when ai.agent.provider=bedrock) -->
 <property name="ai.agent.provider.bedrock.region" value="us-east-1" />
@@ -974,26 +972,28 @@ Cancellation is best-effort: if the LLM call completes before the flag is checke
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `ai.agent.available` | `true` | Feature toggle |
 | `ai.agent.provider` | `anthropic` | Provider name: `anthropic`, `anthropic-compatible`, `openai`, `gemini`, `ollama`, `minimax`, `openrouter`, `openai-compatible`, `bedrock`, `vertex` |
 | `ai.agent.model` | (per-provider) | Model override. Defaults: `claude-sonnet-4-20250514`, `gpt-4o`, `gemini-2.0-flash`, `llama3.1`, `MiniMax-M2`, `anthropic.claude-sonnet-4-20250514-v1:0` (bedrock), `anthropic/claude-sonnet-4` (openrouter) |
 | `ai.agent.reasoning.effort` | (empty) | Reasoning/thinking effort level. Empty = use model default. Values vary by provider: OpenAI (`low`, `medium`, `high`, `xhigh`), Anthropic (`low`, `medium`, `high`), Gemini (`LOW`, `MEDIUM`, `HIGH`). When set, also enables thinking content streaming to the UI. |
 | `ai.agent.api.key` | (empty) | API key for the selected provider |
 | `ai.agent.base.url` | (empty) | Base URL override (required for `ollama`, `openai-compatible`, `anthropic-compatible`; optional for `anthropic`, `minimax`) |
 | `ai.agent.rate.limit` | `10` | Max requests per user per minute |
-| `ai.agent.debug` | `false` | Enable debug logging. **Dev mode:** writes to `build/logs/aiagent/<conversationId>/<timestamp>.txt`. **Production:** routes to the `aiagent.debug` logger for external ingestion. Nothing goes to the console in either mode. |
 | `ai.agent.log.dir` | (auto-detected) | Override the base directory for dev-mode debug log files. When empty, derived automatically from the class location (typically `appengine/build/logs/aiagent/`). |
 
-**Feature flags (`ai.agent.features.*`):**
+**Feature flags (compile-time, `AppInventorFeatures`):**
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `ai.agent.features.orchestration` | `false` | Enable Plan & Execute mode (multi-agent orchestration). When `true`, Project Editor mode shows a Direct/Plan & Execute toggle. When `false`, the entire orchestration system is hidden. |
-| `ai.agent.features.tutorial-context` | `true` | Include tutorial content in LLM context when the project has a `TutorialURL`. When `false`, tutorial context is never sent regardless of project settings. |
-| `ai.agent.features.retry-narration` | `false` | Retry with a nudge when the LLM responds with text only (no tool calls) in editing modes. When `false`, narration-only responses are returned as-is. |
-| `ai.agent.features.plan-edit` | `false` | Show the "Edit & Approve" button on Plan & Execute plan cards, allowing the user to manually edit the plan JSON before approval. When `false`, only Approve and Reject are shown. |
-| `ai.agent.features.companion-context` | `true` | Emit `CompanionModule` context and the three Companion read tool definitions (`read_component_property`, `read_variable`, `read_recent_logs`) when the Companion share toggle is on. When `false`, the snapshot field in `AIAgentRequest` is ignored and the tools are never sent to the LLM. |
-| `ai.agent.features.editing-modes` | `true` | Make ScreenEditor and ProjectEditor modes available alongside Advisor. When `false`, `AIModeSelectionDialog` only offers Advisor, the Designer property editor (`YoungAndroidAIAgentModeChoicePropertyEditor`) hides editor choices on Screen1, and `AIAgentEngine.getProjectAIMode` coerces any pre-existing editor-mode setting to Advisor at read time. Surfaced to the client via `Config.aiAgentEditingModesEnabled` (populated by `UserInfoServiceImpl.getSystemConfig`). |
+AI agent feature toggles live in `appinventor/common/src/com/google/appinventor/common/version/AppInventorFeatures.java` rather than `appengine-web.xml`. They are compile-time constants read directly by both client (GWT) and server, so flipping one requires a rebuild — there is no runtime override and no `Config` round-trip.
+
+| Method | Default | Description |
+|--------|---------|-------------|
+| `aiAgentAvailable()` | `false` | Master switch for the AI agent feature. When `false`, the Form `AIAgentMode` property is hidden, the chat dialog toolbar entry does not appear, and Blockly's AI assistance integration is disabled. |
+| `aiAgentDebugEnabled()` | `true` | Enable debug logging. **Dev mode:** writes to `build/logs/aiagent/<conversationId>/<timestamp>.txt`. **Production:** routes to the `aiagent.debug` logger for external ingestion. Nothing goes to the console in either mode. |
+| `aiAgentOrchestrationEnabled()` | `true` | Enable Plan & Execute mode (multi-agent orchestration). When `true`, Project Editor mode shows a Direct/Plan & Execute toggle. When `false`, the entire orchestration system is hidden. |
+| `aiAgentTutorialContextEnabled()` | `true` | Include tutorial content in LLM context when the project has a `TutorialURL`. When `false`, tutorial context is never sent regardless of project settings. |
+| `aiAgentRetryNarrationEnabled()` | `false` | Retry with a nudge when the LLM responds with text only (no tool calls) in editing modes. When `false`, narration-only responses are returned as-is. |
+| `aiAgentPlanEditEnabled()` | `false` | Show the "Edit & Approve" button on Plan & Execute plan cards, allowing the user to manually edit the plan JSON before approval. When `false`, only Approve and Reject are shown. |
+| `aiAgentCompanionContextEnabled()` | `true` | Emit `CompanionModule` context and the three Companion read tool definitions (`read_component_property`, `read_variable`, `read_recent_logs`) when the Companion share toggle is on. When `false`, the snapshot field in `AIAgentRequest` is ignored and the tools are never sent to the LLM. |
+| `aiAgentEditingModesEnabled()` | `false` | Make ScreenEditor and ProjectEditor modes available alongside Advisor. When `false`, `AIModeSelectionDialog` only offers Advisor, the Designer property editor (`YoungAndroidAIAgentModeChoicePropertyEditor`) hides editor choices on Screen1, and `AIAgentEngine.coerceMode` rewrites any pre-existing editor-mode setting to Advisor at read time. |
 
 | Property | Default | Description |
 |----------|---------|-------------|
@@ -1095,12 +1095,12 @@ The AI Agent supports two execution modes in Project Editor:
 - **Direct** (default): the current single-agent flow. The LLM has full tool access and works through screens sequentially.
 - **Plan & Execute**: a two-phase workflow where the LLM first proposes a structured plan, then the client manages parallel child conversations -- one per screen -- to execute the plan concurrently.
 
-Plan & Execute is gated behind the `ai.agent.features.orchestration` server flag. When enabled, `PlanExecuteToggle` appears in the chat dialog toolbar (Project Editor mode only, hidden in Advisor and Screen Editor). When `TutorialURL` is set, a confirmation warning is shown before activating.
+Plan & Execute is gated behind `AppInventorFeatures.aiAgentOrchestrationEnabled()`. When enabled, `PlanExecuteToggle` appears in the chat dialog toolbar (Project Editor mode only, hidden in Advisor and Screen Editor). When `TutorialURL` is set, a confirmation warning is shown before activating.
 
 ```mermaid
 flowchart TB
     subgraph "Mode Selection"
-        Flag{"ai.agent.features.orchestration<br/>enabled?"}
+        Flag{"AppInventorFeatures<br/>.aiAgentOrchestrationEnabled()?"}
         Mode{"AI Mode?"}
         Toggle["PlanExecuteToggle visible<br/>(Direct / Plan & Execute)"]
         Hidden["Toggle hidden<br/>(Direct mode only)"]
@@ -1327,7 +1327,7 @@ A secondary button on the runtime-error dialog and a context-menu entry on any b
 
 ### Feature Flag
 
-`ai.agent.features.companion-context` (default `true`) gates server-side emission of `CompanionModule` and the three runtime-read tool definitions. When off, tools are never shipped to the LLM and any `companionSnapshot` in the request is ignored.
+`AppInventorFeatures.aiAgentCompanionContextEnabled()` (default `true`) gates server-side emission of `CompanionModule` and the three runtime-read tool definitions. When off, tools are never shipped to the LLM and any `companionSnapshot` in the request is ignored.
 
 ---
 
@@ -1432,7 +1432,7 @@ Edit the relevant `ContextModule` in `server/aiagent/context/`. Each module's `b
 - **`ScreenExecutionContext` replaces `AIEditorState` for all executor code.** `AIDesignerOperations`, `AIBlockOperations`, and `AIOperationExecutor` accept `ScreenExecutionContext` instead of calling `AIEditorState.getCurrentFormEditor()` / `getCurrentBlocksEditor()`. Use `ScreenExecutionContext.forCurrentScreen()` for the single-agent flow.
 - **`PROPOSE_PLAN` exclusivity is enforced in the parser, not `ModeEnforcer`.** If `propose_plan` appears alongside other tool calls, `LLMResponseParser` discards the others.
 - **`__project__` is a reserved sentinel value** for plan steps targeting project-level operations. `LLMResponseParser` rejects it as a screen name in non-plan tool calls.
-- **Tutorial context is gated by `ai.agent.features.tutorial-context`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Set to `false` to disable via `appengine-web.xml`.
+- **Tutorial context is gated by `AppInventorFeatures.aiAgentTutorialContextEnabled()`.** When `true` (default), projects with a `TutorialURL` get tutorial page content and pedagogical instructions injected into the LLM context. Flip the constant in `AppInventorFeatures.java` to disable; requires a rebuild.
 - **Runtime reads never mutate.** The three Companion read tools (`read_component_property`, `read_variable`, `read_recent_logs`) resolve client-side through `CompanionBridge` with identifier-regex validation and hard-coded Scheme templates. No arbitrary-Scheme tool exists; no method-call or setter tool exists. The LLM's only path to runtime state is through these three structured reads, gated by the per-session share toggle.
 - **Companion read Scheme templates are bare.** Do not wrap `(get-property ...)` / `(get-var ...)` in `get-display-representation` inside `CompanionBridge` — `runtime.scm`'s `process-repl-input` macro already does that on the device. Wrapping twice double-quotes strings (`trrg` → `""trrg""`). Identifier regex (`^[A-Za-z_][A-Za-z0-9_]*$`) is the only parameterization allowed in those templates.
 - **Companion reads are serialized, not parallel.** At most one `ai-read-*` blockid in `phoneState.phoneQueue` at a time. The HTTP/ADB `pollphone` chunker concatenates queued items into a single `(begin ...)` block tagged with blockid `"-2"`, returning only the last expression's value; parallel reads there would silently lose intermediate results. `CompanionBridge` enforces this with a `waiting` FIFO queue behind the single-slot `pending` map. Budget (`turnCount`, `windowTimestamps`) is refunded on timeout and on Companion NOK so failed reads don't count against the LLM's per-turn quota.

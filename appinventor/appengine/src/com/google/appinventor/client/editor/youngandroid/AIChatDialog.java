@@ -18,6 +18,7 @@ import com.google.appinventor.client.editor.youngandroid.aiagent.AIDialogResizeH
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIModeSelectionDialog;
 import com.google.appinventor.client.editor.youngandroid.aiagent.AIResponseOrchestrator;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.client.editor.youngandroid.aiagent.dialog.ChatInputHandler;
 import com.google.appinventor.client.editor.youngandroid.aiagent.dialog.ConversationListPanel;
 import com.google.appinventor.client.editor.youngandroid.aiagent.dialog.OperationPreviewPanel;
@@ -426,7 +427,7 @@ public class AIChatDialog extends DialogBox
     String mode = contextCollector.getCurrentAIAgentMode();
     if (AI_AGENT_MODE_OFF.equals(mode)) {
       new AIModeSelectionDialog(contextCollector,
-          Ode.getSystemConfig().getAiAgentEditingModesEnabled(),
+          AppInventorFeatures.aiAgentEditingModesEnabled(),
           new Runnable() {
             @Override
             public void run() {

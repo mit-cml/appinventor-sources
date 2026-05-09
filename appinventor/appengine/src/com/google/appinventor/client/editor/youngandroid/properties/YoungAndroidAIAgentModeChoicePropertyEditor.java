@@ -5,8 +5,8 @@
 
 package com.google.appinventor.client.editor.youngandroid.properties;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.settings.SettingsConstants;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -14,11 +14,11 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * Property editor for the AI agent mode setting on Screen1.
  *
- * <p>The ScreenEditor and ProjectEditor choices are gated by the
- * {@code ai.agent.features.editing-modes} server flag, exposed via
- * {@link Ode#getSystemConfig()}. When disabled, only Off and Advisor are
- * offered; the server additionally coerces any pre-existing editor-mode
- * setting to Advisor at read time (see {@code AIAgentEngine.coerceMode}).
+ * <p>The ScreenEditor and ProjectEditor choices are gated by
+ * {@link AppInventorFeatures#aiAgentEditingModesEnabled()}. When disabled,
+ * only Off and Advisor are offered; the server additionally coerces any
+ * pre-existing editor-mode setting to Advisor at read time (see
+ * {@code AIAgentEngine.coerceMode}).
  */
 public class YoungAndroidAIAgentModeChoicePropertyEditor extends ChoicePropertyEditor {
 
@@ -31,7 +31,7 @@ public class YoungAndroidAIAgentModeChoicePropertyEditor extends ChoicePropertyE
         SettingsConstants.AI_AGENT_MODE_OFF);
     Choice advisor = new Choice(MESSAGES.aiAgentModeAdvisor(),
         SettingsConstants.AI_AGENT_MODE_ADVISOR);
-    if (!Ode.getSystemConfig().getAiAgentEditingModesEnabled()) {
+    if (!AppInventorFeatures.aiAgentEditingModesEnabled()) {
       return new Choice[] { off, advisor };
     }
     return new Choice[] {

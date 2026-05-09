@@ -205,22 +205,12 @@
     <property name="stoken.key" value="changeme"/>
 
     <!-- AI Agent configuration -->
-    <property name="ai.agent.available" value="false" />
     <property name="ai.agent.provider" value="anthropic" />
     <property name="ai.agent.model" value="claude-sonnet-4-20250514" />
     <property name="ai.agent.reasoning.effort" value="" />
     <property name="ai.agent.api.key" value="" />
     <property name="ai.agent.base.url" value="" />
     <property name="ai.agent.rate.limit" value="10" />
-    <property name="ai.agent.debug" value="true" />
-
-    <!-- AI Agent features -->
-    <property name="ai.agent.features.orchestration" value="true" />
-    <property name="ai.agent.features.tutorial-context" value="true" />
-    <property name="ai.agent.features.retry-narration" value="false" />
-    <property name="ai.agent.features.plan-edit" value="false" />
-    <property name="ai.agent.features.companion-context" value="true" />
-    <property name="ai.agent.features.editing-modes" value="false" />
 
     <!-- Bedrock provider configuration (only needed when ai.agent.provider=bedrock) -->
     <property name="ai.agent.provider.bedrock.region" value="us-east-1" />

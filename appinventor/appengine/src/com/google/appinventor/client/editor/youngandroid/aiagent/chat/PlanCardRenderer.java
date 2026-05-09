@@ -30,8 +30,7 @@ public class PlanCardRenderer {
 
   /**
    * Whether the "Edit & Approve" button is shown on plan cards.
-   * Controlled by the {@code ai.agent.features.plan-edit} server flag,
-   * propagated to the client via {@link com.google.appinventor.shared.rpc.aiagent.AIStreamStatus}.
+   * Controlled by {@link com.google.appinventor.common.version.AppInventorFeatures#aiAgentPlanEditEnabled()}.
    */
   private boolean planEditEnabled;
 
@@ -54,8 +53,6 @@ public class PlanCardRenderer {
 
   /**
    * Sets whether the "Edit & Approve" button should be shown on future plan cards.
-   * Updated from the {@code ai.agent.features.plan-edit} server flag on every
-   * status poll.
    */
   public void setPlanEditEnabled(boolean enabled) {
     this.planEditEnabled = enabled;

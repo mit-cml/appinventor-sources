@@ -22,6 +22,7 @@ import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Promise.WrappedException;
 import com.google.appinventor.components.common.YaVersion;
@@ -324,7 +325,7 @@ public class BlocklyPanel extends HTMLPanel {
    * Called from Blockly JS via the exported bridge function.
    */
   public static boolean isAIAgentAvailable() {
-    return Ode.getSystemConfig().getAiAgentAvailable();
+    return AppInventorFeatures.aiAgentAvailable();
   }
 
   /**

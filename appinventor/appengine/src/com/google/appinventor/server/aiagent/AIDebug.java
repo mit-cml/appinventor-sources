@@ -6,7 +6,7 @@
 package com.google.appinventor.server.aiagent;
 
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 /**
  * Centralized debug-logging utility for the AI agent pipeline.
  *
- * <p>When the {@code ai.agent.debug} system property is {@code true},
+ * <p>When {@link AppInventorFeatures#aiAgentDebugEnabled()} is {@code true},
  * debug messages are captured for the current request scope.
  *
  * <h3>Development mode (local dev server)</h3>
@@ -42,9 +42,6 @@ import java.util.logging.Logger;
  * {@link #log} call signature is unchanged for call-site compatibility.
  */
 public final class AIDebug {
-
-  private static final Flag<Boolean> FLAG =
-      Flag.createFlag("ai.agent.debug", false);
 
   /** Dedicated logger for production AI debug output. */
   private static final Logger AI_LOGGER =
@@ -92,7 +89,7 @@ public final class AIDebug {
    */
   public static boolean enabled() {
     try {
-      return FLAG.get();
+      return AppInventorFeatures.aiAgentDebugEnabled();
     } catch (Exception e) {
       return false;
     }

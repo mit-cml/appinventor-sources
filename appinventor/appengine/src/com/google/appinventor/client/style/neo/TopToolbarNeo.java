@@ -9,6 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -40,7 +41,7 @@ public class TopToolbarNeo extends TopToolbar {
 
     boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
     isAvailable = !oneProjectMode && hasWriteAccess;
-    aiAgentAvailable = Ode.getSystemConfig().getAiAgentAvailable();
+    aiAgentAvailable = AppInventorFeatures.aiAgentAvailable();
 
     initWidget(uibinder.createAndBindUi(this));
     super.fileDropDown = fileDropDown;
