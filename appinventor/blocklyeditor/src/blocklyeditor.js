@@ -1154,10 +1154,10 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Blockly.WorkspaceSvg} workspace
  */
 AI.inject = function(container, workspace, isDarkMode=false) {
+  Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   if (isDarkMode) {
     Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
   }
-  Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();
   var gridSnap = top.BlocklyPanel_getSnapEnabled && top.BlocklyPanel_getSnapEnabled();
