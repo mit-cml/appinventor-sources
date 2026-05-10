@@ -155,7 +155,7 @@ public final class MockMap extends MockContainer {
 
   @Override
   protected void onChildAdded(MockComponent component) {
-    if (component instanceof MockMapFeature) {
+    if (component instanceof MockMapFeature && mapInstance != null) {
       ((MockMapFeature) component).addToMap(this);
     }
   }
