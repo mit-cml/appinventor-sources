@@ -303,6 +303,15 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
               .put("content", "Understood."));
         }
       }
+      // The trailing assistant ack would leave the model with no prompt
+      // to respond to (last role = assistant) and it would return an
+      // empty completion. Drop it so the final context message (the
+      // continuation-scope instruction) is the last turn instead.
+      if (messages.length() > 0
+          && "assistant".equals(messages.getJSONObject(
+              messages.length() - 1).optString("role"))) {
+        messages.remove(messages.length() - 1);
+      }
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);

@@ -250,6 +250,14 @@ public class OllamaProvider implements LLMProvider {
               .put("content", "Understood."));
         }
       }
+      // Drop the trailing assistant ack so the final context message
+      // (continuation scope) is the last turn — otherwise the model
+      // sees an assistant ack and stops.
+      if (messages.length() > 0
+          && "assistant".equals(messages.getJSONObject(
+              messages.length() - 1).optString("role"))) {
+        messages.remove(messages.length() - 1);
+      }
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);

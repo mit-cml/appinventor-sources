@@ -352,6 +352,14 @@ public class GeminiProvider implements LLMProvider {
               .put("parts", ackParts));
         }
       }
+      // Drop the trailing model ack so the final context message
+      // (continuation scope) is the last turn — generateContent
+      // returns empty when the last role is "model".
+      if (contents.length() > 0
+          && "model".equals(contents.getJSONObject(
+              contents.length() - 1).optString("role"))) {
+        contents.remove(contents.length() - 1);
+      }
     }
 
     JSONArray toolDeclarations = buildToolDeclarations(tools);

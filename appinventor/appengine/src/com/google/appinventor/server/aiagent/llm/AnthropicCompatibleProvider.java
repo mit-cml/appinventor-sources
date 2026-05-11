@@ -330,6 +330,15 @@ public class AnthropicCompatibleProvider implements LLMProvider {
               .put("content", "Understood."));
         }
       }
+      // Anthropic Messages prefills from a trailing assistant turn —
+      // the model would "continue" the Understood ack and stop. Drop
+      // the trailing ack so the final context message (continuation
+      // scope) is the last turn and the model produces real work.
+      if (messages.length() > 0
+          && "assistant".equals(messages.getJSONObject(
+              messages.length() - 1).optString("role"))) {
+        messages.remove(messages.length() - 1);
+      }
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);

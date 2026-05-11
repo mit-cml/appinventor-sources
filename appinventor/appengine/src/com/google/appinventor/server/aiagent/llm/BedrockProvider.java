@@ -255,6 +255,14 @@ class BedrockProvider implements LLMProvider {
                   new JSONObject().put("text", "Understood."))));
         }
       }
+      // Bedrock Converse routes to Anthropic Messages which prefills
+      // from a trailing assistant turn. Drop the trailing ack so the
+      // continuation-scope instruction is the last turn.
+      if (messages.length() > 0
+          && "assistant".equals(messages.getJSONObject(
+              messages.length() - 1).optString("role"))) {
+        messages.remove(messages.length() - 1);
+      }
     }
 
     JSONArray toolDefs = buildToolDefinitions(tools);
