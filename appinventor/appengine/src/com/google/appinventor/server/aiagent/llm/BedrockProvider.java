@@ -99,6 +99,8 @@ class BedrockProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Bedrock response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("Bedrock", model,
+            TokenUsage.fromBedrock(responseJson.optJSONObject("usage")));
       }
 
       String stopReason = responseJson.optString("stopReason", "end_turn");
@@ -280,6 +282,8 @@ class BedrockProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Bedrock continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("Bedrock", model,
+            TokenUsage.fromBedrock(responseJson.optJSONObject("usage")));
       }
 
       String stopReason = responseJson.optString("stopReason", "end_turn");

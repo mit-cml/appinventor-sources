@@ -158,6 +158,8 @@ public class AnthropicCompatibleProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, getProviderName() + " response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage(getProviderName(), model,
+            TokenUsage.fromAnthropic(responseJson.optJSONObject("usage")));
       }
 
       // Parse the response content blocks
@@ -367,6 +369,8 @@ public class AnthropicCompatibleProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, getProviderName() + " continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage(getProviderName(), model,
+            TokenUsage.fromAnthropic(responseJson.optJSONObject("usage")));
       }
 
       String stopReason = responseJson.optString("stop_reason", "end_turn");

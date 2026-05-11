@@ -199,6 +199,8 @@ public class OpenAIProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("OpenAI", model,
+            TokenUsage.fromOpenAIResponses(responseJson.optJSONObject("usage")));
       }
 
       // Check for incomplete response (e.g. max_output_tokens exceeded)
@@ -376,6 +378,8 @@ public class OpenAIProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "OpenAI continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("OpenAI", model,
+            TokenUsage.fromOpenAIResponses(responseJson.optJSONObject("usage")));
       }
 
       // Check for incomplete response (e.g. max_output_tokens exceeded)

@@ -165,6 +165,8 @@ class VertexProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Vertex response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("Vertex", model,
+            TokenUsage.fromGemini(responseJson.optJSONObject("usageMetadata")));
       }
 
       // Parse candidates
@@ -406,6 +408,8 @@ class VertexProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Vertex continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("Vertex", model,
+            TokenUsage.fromGemini(responseJson.optJSONObject("usageMetadata")));
       }
 
       JSONArray candidates = responseJson.optJSONArray("candidates");

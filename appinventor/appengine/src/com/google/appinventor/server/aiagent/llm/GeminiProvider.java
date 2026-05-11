@@ -161,6 +161,8 @@ public class GeminiProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Gemini response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("Gemini", model,
+            TokenUsage.fromGemini(responseJson.optJSONObject("usageMetadata")));
       }
 
       // Parse candidates
@@ -397,6 +399,8 @@ public class GeminiProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, "Gemini continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage("Gemini", model,
+            TokenUsage.fromGemini(responseJson.optJSONObject("usageMetadata")));
       }
 
       JSONArray candidates = responseJson.optJSONArray("candidates");

@@ -7,6 +7,7 @@ package com.google.appinventor.server.aiagent;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.server.aiagent.llm.TokenUsage;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -71,6 +72,13 @@ public final class AIDebug {
     final String conversationId;
     final long timestamp;
     final List<String> messages;
+    long totalInputTokens;
+    long totalOutputTokens;
+    long totalCachedInputTokens;
+    long totalCacheCreationTokens;
+    long totalReasoningTokens;
+    double totalCostUsd;
+    int llmCalls;
 
     RequestLog(String conversationId) {
       this.conversationId = conversationId;
@@ -154,6 +162,31 @@ public final class AIDebug {
   }
 
   /**
+   * Records token usage for one LLM API call. Adds to per-request totals
+   * and emits a per-call log line tagged with provider and model.
+   *
+   * @param provider provider name (e.g. "Anthropic", "OpenAI")
+   * @param model    model identifier
+   * @param usage    parsed token counts (no-op if {@code null})
+   */
+  public static void recordUsage(String provider, String model, TokenUsage usage) {
+    if (!enabled() || usage == null) {
+      return;
+    }
+    RequestLog rl = CURRENT_REQUEST.get();
+    if (rl != null) {
+      rl.totalInputTokens += usage.getInputTokens();
+      rl.totalOutputTokens += usage.getOutputTokens();
+      rl.totalCachedInputTokens += usage.getCachedInputTokens();
+      rl.totalCacheCreationTokens += usage.getCacheCreationTokens();
+      rl.totalReasoningTokens += usage.getReasoningTokens();
+      rl.totalCostUsd += usage.getCostUsd();
+      rl.llmCalls++;
+    }
+    log(AI_LOGGER, "Token usage [" + provider + "/" + model + "]: " + usage);
+  }
+
+  /**
    * Ends the current request scope and flushes buffered messages.
    * In development mode this writes to a log file. Safe to call even
    * if {@link #beginRequest} was never called or debug is disabled.
@@ -161,7 +194,39 @@ public final class AIDebug {
   public static void endRequest() {
     RequestLog rl = CURRENT_REQUEST.get();
     CURRENT_REQUEST.remove();
-    if (rl == null || rl.messages.isEmpty()) {
+    if (rl == null) {
+      return;
+    }
+    if (rl.llmCalls > 0) {
+      String summary = "Token usage TOTAL: calls=" + rl.llmCalls
+          + " input=" + rl.totalInputTokens
+          + " output=" + rl.totalOutputTokens
+          + " cachedInput=" + rl.totalCachedInputTokens
+          + " cacheCreation=" + rl.totalCacheCreationTokens
+          + " reasoning=" + rl.totalReasoningTokens
+          + " grandTotal=" + (rl.totalInputTokens + rl.totalOutputTokens)
+          + String.format(" cost=$%.6f", rl.totalCostUsd);
+      String timestamp = TIME_FORMAT.get().format(new Date());
+      String line = "[" + timestamp + "] " + summary;
+      if (isProductionMode()) {
+        JsonObject entry = new JsonObject();
+        entry.addProperty("severity", "INFO");
+        entry.addProperty("message", summary);
+        entry.addProperty("conversationId", rl.conversationId);
+        entry.addProperty("messageId", rl.timestamp);
+        entry.addProperty("llmCalls", rl.llmCalls);
+        entry.addProperty("inputTokens", rl.totalInputTokens);
+        entry.addProperty("outputTokens", rl.totalOutputTokens);
+        entry.addProperty("cachedInputTokens", rl.totalCachedInputTokens);
+        entry.addProperty("cacheCreationTokens", rl.totalCacheCreationTokens);
+        entry.addProperty("reasoningTokens", rl.totalReasoningTokens);
+        entry.addProperty("costUsd", rl.totalCostUsd);
+        System.out.println(GSON.toJson(entry));
+      } else {
+        rl.messages.add(line);
+      }
+    }
+    if (rl.messages.isEmpty()) {
       return;
     }
     // Only dev mode buffers; production logs immediately in log().

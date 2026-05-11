@@ -135,6 +135,10 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       requestBody.put("max_tokens", getMaxTokens());
       if (streamBuffer != null) {
         requestBody.put("stream", true);
+        if (AIDebug.enabled()) {
+          requestBody.put("stream_options",
+              new JSONObject().put("include_usage", true));
+        }
       }
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
@@ -149,6 +153,8 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, getProviderName() + " response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage(getProviderName(), model,
+            TokenUsage.fromOpenAIChat(responseJson.optJSONObject("usage")));
       }
 
       // Parse the response
@@ -324,6 +330,10 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       requestBody.put("max_tokens", getMaxTokens());
       if (streamBuffer != null) {
         requestBody.put("stream", true);
+        if (AIDebug.enabled()) {
+          requestBody.put("stream_options",
+              new JSONObject().put("include_usage", true));
+        }
       }
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
@@ -338,6 +348,8 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, getProviderName() + " continue response (iteration " + iteration + "):\n"
             + responseJson.toString(2));
+        AIDebug.recordUsage(getProviderName(), model,
+            TokenUsage.fromOpenAIChat(responseJson.optJSONObject("usage")));
       }
 
       JSONArray choices = responseJson.optJSONArray("choices");
@@ -786,6 +798,7 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
     String responseModel = null;
     StringBuilder contentBuilder = new StringBuilder();
     String finishReason = null;
+    JSONObject lastUsage = null;
     // Tool call accumulation: indexed by tool call index
     JSONArray accumulatedToolCalls = new JSONArray();
 
@@ -825,6 +838,13 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
         }
         if (responseModel == null) {
           responseModel = chunk.optString("model", null);
+        }
+
+        // Usage (when stream_options.include_usage = true) typically arrives
+        // in the final chunk, which has an empty choices array.
+        JSONObject chunkUsage = chunk.optJSONObject("usage");
+        if (chunkUsage != null) {
+          lastUsage = chunkUsage;
         }
 
         JSONArray choices = chunk.optJSONArray("choices");
@@ -931,6 +951,9 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       response.put("model", responseModel);
     }
     response.put("choices", new JSONArray().put(choiceObj));
+    if (lastUsage != null) {
+      response.put("usage", lastUsage);
+    }
 
     return response;
   }
