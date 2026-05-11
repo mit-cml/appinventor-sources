@@ -17,17 +17,24 @@ import java.io.Serializable;
  */
 public class AIConversationState implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
   private final String providerName;
   private final String conversationId;
   private final String providerRef;
+  private final String lastRole;
 
   public AIConversationState(String providerName, String conversationId,
       String providerRef) {
+    this(providerName, conversationId, providerRef, null);
+  }
+
+  public AIConversationState(String providerName, String conversationId,
+      String providerRef, String lastRole) {
     this.providerName = providerName;
     this.conversationId = conversationId;
     this.providerRef = providerRef;
+    this.lastRole = lastRole;
   }
 
   public String getProviderName() {
@@ -40,5 +47,12 @@ public class AIConversationState implements Serializable {
 
   public String getProviderRef() {
     return providerRef;
+  }
+
+  /** Name of the last {@code AgentRole} that processed this conversation,
+   *  or {@code null} for a fresh conversation. Used to decide whether the
+   *  stateful {@code providerRef} must be cleared on the next call. */
+  public String getLastRole() {
+    return lastRole;
   }
 }

@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.aiagent.llm;
 
+import com.google.appinventor.server.aiagent.AgentRole;
 import com.google.appinventor.server.flags.Flag;
 
 import java.util.HashMap;
@@ -84,29 +85,47 @@ public class LLMProviderRegistry {
    */
   public static LLMProvider get(String providerName, BYOKConfig byok)
       throws LLMProviderException {
-    if (byok != null) {
-      providerName = byok.getProvider();
-    } else if (providerName == null || providerName.isEmpty()) {
-      providerName = PROVIDER_FLAG.get();
-    }
-    providerName = providerName.toLowerCase().trim();
-
+    String resolvedProvider;
     String apiKey;
     String model;
     String baseUrl;
     String reasoningEffort;
 
     if (byok != null) {
+      resolvedProvider = byok.getProvider();
       apiKey = byok.getApiKey();
       model = byok.getModel();
       baseUrl = byok.getBaseUrl();
       reasoningEffort = byok.getReasoningEffort();
     } else {
+      resolvedProvider = (providerName == null || providerName.isEmpty())
+          ? PROVIDER_FLAG.get() : providerName;
       apiKey = API_KEY_FLAG.get();
       model = MODEL_FLAG.get();
       baseUrl = BASE_URL_FLAG.get();
       reasoningEffort = REASONING_EFFORT_FLAG.get();
     }
+
+    return buildProvider(resolvedProvider, apiKey, model, baseUrl,
+        reasoningEffort, byok != null);
+  }
+
+  /** Per-role entry point. Reads role-keyed flags via
+   *  {@link RoleConfigResolver}; BYOK still wins when provided. */
+  public static LLMProvider get(AgentRole role, BYOKConfig byok)
+      throws LLMProviderException {
+    if (byok != null) {
+      return get(byok.getProvider(), byok);
+    }
+    RoleConfig cfg = RoleConfigResolver.resolve(role);
+    return buildProvider(cfg.getProvider(), cfg.getApiKey(), cfg.getModel(),
+        cfg.getBaseUrl(), cfg.getReasoningEffort(), false);
+  }
+
+  private static LLMProvider buildProvider(String providerName, String apiKey,
+      String model, String baseUrl, String reasoningEffort, boolean isByok)
+      throws LLMProviderException {
+    providerName = providerName == null ? "" : providerName.toLowerCase().trim();
 
     if (model == null || model.isEmpty()) {
       model = DEFAULT_MODELS.get(providerName);
@@ -116,24 +135,24 @@ public class LLMProviderRegistry {
     }
 
     LOG.info("Creating LLM provider: " + providerName + " with model: " + model
-        + (byok != null ? " (BYOK)" : ""));
+        + (isByok ? " (BYOK)" : ""));
 
     switch (providerName) {
       case "anthropic":
-        validateApiKey(apiKey, "Anthropic", byok != null);
+        validateApiKey(apiKey, "Anthropic", isByok);
         return new AnthropicCompatibleProvider(apiKey, model, baseUrl, reasoningEffort);
 
       case "anthropic-compatible":
-        validateApiKey(apiKey, "Anthropic-Compatible", byok != null);
+        validateApiKey(apiKey, "Anthropic-Compatible", isByok);
         validateBaseUrl(baseUrl, "Anthropic-Compatible");
         return new AnthropicCompatibleProvider(apiKey, model, baseUrl, reasoningEffort);
 
       case "openai":
-        validateApiKey(apiKey, "OpenAI", byok != null);
+        validateApiKey(apiKey, "OpenAI", isByok);
         return new OpenAIProvider(apiKey, model, reasoningEffort);
 
       case "gemini":
-        validateApiKey(apiKey, "Gemini", byok != null);
+        validateApiKey(apiKey, "Gemini", isByok);
         return new GeminiProvider(apiKey, model, reasoningEffort);
 
       case "ollama":
@@ -143,18 +162,18 @@ public class LLMProviderRegistry {
         return new OllamaProvider(baseUrl, model, apiKey);
 
       case "minimax":
-        validateApiKey(apiKey, "MiniMax", byok != null);
+        validateApiKey(apiKey, "MiniMax", isByok);
         if (baseUrl != null && !baseUrl.isEmpty()) {
           return new OpenAIChatCompletionsProvider(apiKey, model, baseUrl);
         }
         return new MiniMaxProvider(apiKey, model);
 
       case "openrouter":
-        validateApiKey(apiKey, "OpenRouter", byok != null);
-        return new OpenRouterProvider(apiKey, model);
+        validateApiKey(apiKey, "OpenRouter", isByok);
+        return new OpenRouterProvider(apiKey, model, reasoningEffort);
 
       case "openai-compatible":
-        validateApiKey(apiKey, "OpenAI-Compatible", byok != null);
+        validateApiKey(apiKey, "OpenAI-Compatible", isByok);
         validateBaseUrl(baseUrl, "OpenAI-Compatible");
         return new OpenAIChatCompletionsProvider(apiKey, model, baseUrl);
 

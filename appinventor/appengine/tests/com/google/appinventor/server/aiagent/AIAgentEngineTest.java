@@ -6,6 +6,7 @@
 package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.server.LocalDatastoreTestCase;
+import com.google.appinventor.server.aiagent.AgentRole;
 import com.google.appinventor.server.storage.AIConversationState;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -109,5 +110,32 @@ public class AIAgentEngineTest extends LocalDatastoreTestCase {
     assertEquals(2, cm.loadConversation(convId).size());
     // And the metadata row is intact too:
     assertNotNull(cm.getConversationMetadata(convId));
+  }
+
+  public void testClearRefOnRoleChangeWhenRoleChanges() {
+    AIConversationState before = new AIConversationState(
+        "openrouter", "conv-1", "ref-xyz", AgentRole.PROJECT_EDITOR_PLANNER.name());
+    AIConversationState after = engine.clearRefOnRoleChange(
+        before, AgentRole.PROJECT_EDITOR);
+    assertEquals("conv-1", after.getConversationId());
+    assertNull("providerRef must be cleared on role change", after.getProviderRef());
+  }
+
+  public void testClearRefOnRoleChangeWhenRoleUnchanged() {
+    AIConversationState before = new AIConversationState(
+        "openrouter", "conv-1", "ref-xyz", AgentRole.PROJECT_EDITOR.name());
+    AIConversationState after = engine.clearRefOnRoleChange(
+        before, AgentRole.PROJECT_EDITOR);
+    assertSame("state should not be rewritten when role is unchanged",
+        before, after);
+  }
+
+  public void testClearRefOnRoleChangeWhenLastRoleNull() {
+    AIConversationState before = new AIConversationState(
+        "openrouter", "conv-1", "ref-xyz");
+    AIConversationState after = engine.clearRefOnRoleChange(
+        before, AgentRole.PROJECT_EDITOR);
+    assertSame("first-call (lastRole=null) should not clear ref",
+        before, after);
   }
 }

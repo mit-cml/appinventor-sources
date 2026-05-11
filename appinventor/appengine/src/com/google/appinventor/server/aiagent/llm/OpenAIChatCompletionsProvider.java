@@ -102,6 +102,16 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
     return "OpenAI-Compatible";
   }
 
+  /**
+   * Hook for subclasses to add provider-specific fields to the request
+   * body (e.g. {@code reasoning} for OpenRouter). Called after the
+   * standard {@code model}/{@code messages}/{@code tools} fields are set.
+   * Default no-op.
+   */
+  protected void decorateRequestBody(JSONObject requestBody) {
+    // no-op by default
+  }
+
   @Override
   public boolean isStateless() {
     return true;
@@ -129,6 +139,7 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
+      decorateRequestBody(requestBody);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, getProviderName() + " request (iteration " + iteration + "):\n"
             + requestBody.toString(2));
@@ -308,6 +319,7 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
       if (toolDefs.length() > 0) {
         requestBody.put("tools", toolDefs);
       }
+      decorateRequestBody(requestBody);
       if (AIDebug.enabled()) {
         AIDebug.log(LOG, getProviderName() + " continue request (iteration " + iteration + "):\n"
             + requestBody.toString(2));

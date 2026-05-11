@@ -6,6 +6,7 @@
 package com.google.appinventor.server.aiagent;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.components.common.AIAgentMode;
 import com.google.appinventor.server.aiagent.context.ContextUtils;
 import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.aiagent.llm.BYOKConfig;
@@ -203,8 +204,10 @@ public class AIAgentEngine {
       // Build history. Multi-conversation model always replays persisted
       // history (both stateless and stateful providers); stateful providers
       // may choose to ignore when a providerRef is still live.
+      AgentRole role = roleFor(mode, enforcementContext);
+      conv = clearRefOnRoleChange(conv, role);
       BYOKConfig byok = BYOKResolver.resolveForUser(userId);
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
+      LLMProvider provider = LLMProviderRegistry.get(role, byok);
       List<ChatMessage> history = conversationManager.loadConversation(conv.getConversationId());
       if (AIDebug.enabled()) {
         StringBuilder histInfo = new StringBuilder("History loaded: " + history.size() + " messages");
@@ -219,7 +222,8 @@ public class AIAgentEngine {
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
 
       AIDebug.log(LOG, "Pre-LLM: toolCount=" + tools.size()
-          + ", provider=" + conv.getProviderName() + ", model=" + getConfiguredModel());
+          + ", role=" + role.name()
+          + ", provider=" + conv.getProviderName());
 
       // Save user message to history BEFORE calling the LLM,
       // so it is persisted even if the LLM call fails.
@@ -288,7 +292,7 @@ public class AIAgentEngine {
           + ", textLen=" + assistantText.length());
 
       return finalizeResponse(llmResponse, assistantText, parsed,
-          conv, projectId, isNew, routingScreen);
+          conv, projectId, isNew, routingScreen, role);
 
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Request cancelled by user for project " + projectId);
@@ -406,8 +410,10 @@ public class AIAgentEngine {
       }
 
       // Get provider and rebuild tools
+      AgentRole role = roleFor(mode, enforcementContext);
+      conv = clearRefOnRoleChange(conv, role);
       BYOKConfig byok = BYOKResolver.resolveForUser(userId);
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
+      LLMProvider provider = LLMProviderRegistry.get(role, byok);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
           companionSnapshot != null);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
@@ -426,7 +432,8 @@ public class AIAgentEngine {
       contextMessages = new ArrayList<String>(contextMessages);
       contextMessages.add(AIAgentRequest.wrapPlatformMessage(getContinuationScopeInstruction()));
 
-      AIDebug.log(LOG, "continueRequest: provider=" + conv.getProviderName()
+      AIDebug.log(LOG, "continueRequest: role=" + role.name()
+          + ", provider=" + conv.getProviderName()
           + ", providerRef length=" + providerRef.length());
 
       // Save continuation marker to history BEFORE calling the LLM,
@@ -480,7 +487,7 @@ public class AIAgentEngine {
           + ", textLen=" + assistantText.length());
 
       return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false,
-          routingScreen);
+          routingScreen, role);
 
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Continuation cancelled by user for project " + projectId);
@@ -670,8 +677,10 @@ public class AIAgentEngine {
           locale, languageDisplayName, companionSnapshot, enforcementContext);
 
       // Get provider, tools, and resolver
+      AgentRole role = roleFor(mode, enforcementContext);
+      conv = clearRefOnRoleChange(conv, role);
       BYOKConfig byok = BYOKResolver.resolveForUser(userId);
-      LLMProvider provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
+      LLMProvider provider = LLMProviderRegistry.get(role, byok);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
           companionSnapshot != null);
       ReadOnlyToolResolver resolver = toolResolver.createResolver(userId, projectId);
@@ -698,7 +707,7 @@ public class AIAgentEngine {
           + ", hasMore=" + (llmResponse.hasMore() && !parsed.operations.isEmpty()));
 
       return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId, false,
-          routingScreen);
+          routingScreen, role);
 
     } catch (StreamBuffer.CancelledException e) {
       LOG.info("Error retry cancelled by user for project " + projectId);
@@ -758,10 +767,12 @@ public class AIAgentEngine {
           locale, languageDisplayName, companionSnapshot, enforcementContext);
       List<LLMTool> tools = contextBuilder.buildTools(mode, currentView, enforcementContext,
           companionSnapshot != null);
+      AgentRole role = roleFor(mode, enforcementContext);
+      conv = clearRefOnRoleChange(conv, role);
       LLMProvider provider;
       try {
         BYOKConfig byok = BYOKResolver.resolveForUser(userId);
-        provider = LLMProviderRegistry.get(conv.getProviderName(), byok);
+        provider = LLMProviderRegistry.get(role, byok);
       } catch (LLMProviderException e) {
         LOG.log(Level.WARNING, "LLM provider unavailable in continuation fallback", e);
         streamBuffer.clear();
@@ -794,7 +805,7 @@ public class AIAgentEngine {
         assistantText = nrs.assistantText;
 
         return finalizeResponse(llmResponse, assistantText, parsed, conv, projectId,
-            false, null);
+            false, null, role);
       } catch (StreamBuffer.CancelledException e) {
         LOG.info("Continuation-fallback cancelled for project " + projectId);
         conversationManager.storeMessage(convId, MessageRole.ASSISTANT,
@@ -1173,7 +1184,7 @@ public class AIAgentEngine {
 
   AIAgentResponse finalizeResponse(LLMResponse llmResponse, String assistantText,
       ParsedResult parsed, AIConversationState conv, long projectId, boolean isNew,
-      String screenName) {
+      String screenName, AgentRole role) {
     // Annotate the continuation state with per-tool-call results so that
     // continueWithToolResults() can send accurate feedback instead of blanket "Done.".
     String annotatedRef = annotateToolCallResults(
@@ -1181,7 +1192,7 @@ public class AIAgentEngine {
 
     // Save updated conversation state
     AIConversationState updated = new AIConversationState(conv.getProviderName(),
-        conv.getConversationId(), annotatedRef);
+        conv.getConversationId(), annotatedRef, role.name());
     if (screenName != null) {
       conversationManager.saveConversation(projectId, screenName, updated);
     } else {
@@ -1373,6 +1384,27 @@ public class AIAgentEngine {
   }
 
   // ---------- Helpers ----------
+
+  /** Resolves the provider for the given role and clears the stateful
+   *  {@code providerRef} on {@code conv} when the role differs from the
+   *  one last recorded. Returns the (possibly rewritten) state. */
+  AIConversationState clearRefOnRoleChange(AIConversationState conv,
+      AgentRole role) {
+    if (conv == null) {
+      return null;
+    }
+    if (conv.getLastRole() == null || conv.getLastRole().equals(role.name())) {
+      return conv;
+    }
+    AIDebug.log(LOG, "Role changed " + conv.getLastRole() + " -> " + role.name()
+        + "; clearing providerRef");
+    return new AIConversationState(conv.getProviderName(),
+        conv.getConversationId(), null, role.name());
+  }
+
+  private AgentRole roleFor(String mode, EnforcementContext ec) {
+    return AgentRoleResolver.resolve(AIAgentMode.fromUnderlyingValue(mode), ec);
+  }
 
   static String getConfiguredProvider() {
     return Flag.createFlag("ai.agent.provider", "anthropic").get();

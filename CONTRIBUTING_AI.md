@@ -1005,6 +1005,32 @@ AI agent feature toggles live in `appinventor/common/src/com/google/appinventor/
 | `ai.agent.provider.vertex.region` | `us-central1` | GCP region |
 | `ai.agent.provider.vertex.service.account` | (empty) | Path to service account JSON key file |
 
+### Per-Role Model Routing
+
+Each LLM call is associated with an `AgentRole`, derived from the user-facing `AIAgentMode` and the server-side `EnforcementContext`:
+
+| Role | Mode | Enforcement |
+|------|------|-------------|
+| `ADVISOR` | `Advisor` | any |
+| `SCREEN_EDITOR` | `ScreenEditor` | any |
+| `PROJECT_EDITOR` | `ProjectEditor` | `STANDARD` or `EXECUTION` |
+| `PROJECT_EDITOR_PLANNER` | `ProjectEditor` | `PLANNING` |
+| `PROJECT_EDITOR_CHILD` | `ProjectEditor` | `CHILD_EXECUTION` |
+
+Resolution happens in `AgentRoleResolver.resolve(...)`. The role is passed to `LLMProviderRegistry.get(AgentRole, BYOKConfig)`, which reads role-keyed flags via `RoleConfigResolver`:
+
+```
+ai.agent.role.<role-flag-key>.provider
+ai.agent.role.<role-flag-key>.model
+ai.agent.role.<role-flag-key>.api.key
+ai.agent.role.<role-flag-key>.base.url
+ai.agent.role.<role-flag-key>.reasoning.effort
+```
+
+Where `<role-flag-key>` is the lowercase, snake-cased role name (e.g. `project_editor_planner`). Each field falls back to the corresponding global `ai.agent.*` flag when the per-role value is empty. BYOK overrides everything when configured (BYOK is uniform across roles in v1).
+
+When a conversation's role changes between calls (parent agent transitioning from `PLANNING` to `EXECUTION`, for example), the stateful `providerRef` is cleared so that stateful providers (OpenAI/Gemini/Vertex) don't try to resume against the previous model.
+
 ### Stateful vs. Stateless Providers
 
 ```mermaid
