@@ -483,6 +483,12 @@ public final class DataVisualizerPanel extends Dialog {
     dataTable.getCellFormatter().addStyleName(row, COL_VALUE, "ode-ComponentNameLabel");
     dataTable.getCellFormatter().getElement(row, COL_VALUE)
         .getStyle().setProperty("wordBreak", "break-word");
+    dataTable.getCellFormatter().getElement(row, COL_VALUE)
+        .getStyle().setProperty("maxHeight", "5.6em");
+    dataTable.getCellFormatter().getElement(row, COL_VALUE)
+        .getStyle().setProperty("overflowY", "auto");
+    dataTable.getCellFormatter().getElement(row, COL_VALUE)
+        .getStyle().setProperty("display", "block");
 
     // Actions column: Edit + Delete buttons for mutable providers only.
     // The cell must be created (via setWidget) before its ARIA role can be set.
@@ -551,14 +557,8 @@ public final class DataVisualizerPanel extends Dialog {
         }, true);
   }
 
-  /**
-   * Trims JSON strings to a displayable length without truncating the type hint.
-   */
   private static String formatValue(String raw) {
     if (raw == null || raw.isEmpty()) return MESSAGES.clouddbVizEmptyValue();
-    if (raw.length() > 120) {
-      return raw.substring(0, 117) + "\u2026";
-    }
     return raw;
   }
 
