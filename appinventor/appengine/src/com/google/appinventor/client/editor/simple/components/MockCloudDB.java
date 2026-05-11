@@ -235,6 +235,11 @@ public class MockCloudDB extends MockNonVisibleComponent implements MutableDataS
   private String[] getConnectionParams() {
     String projectId = getPropertyValue(PROPERTY_NAME_PROJECT_ID);
     String token = getPropertyValue(PROPERTY_NAME_TOKEN);
+    // The % prefix is an internal App Inventor marker; strip it before sending
+    // to Redis, mirroring the same logic in the Android CloudDB component.
+    if (token != null && token.startsWith("%")) {
+      token = token.substring(1);
+    }
     String redisServer = getPropertyValue(PROPERTY_NAME_REDIS_SERVER);
     if (redisServer == null || redisServer.isEmpty()) {
       redisServer = "DEFAULT";

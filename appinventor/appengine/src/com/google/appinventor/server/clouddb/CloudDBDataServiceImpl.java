@@ -12,10 +12,10 @@ import com.google.appinventor.shared.rpc.clouddb.DataEntry;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisShardInfo;
+import redis.clients.jedis.Pipeline;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -32,6 +32,7 @@ public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
 
   private static final Logger LOG = Logger.getLogger(CloudDBDataServiceImpl.class.getName());
   private static final int CONNECTION_TIMEOUT_MS = 10000;
+  private static final int MAX_VIZ_ENTRIES = 2000;
 
   private final String defaultServer = Flag.createFlag("clouddb.server", "").get();
 
@@ -39,9 +40,11 @@ public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
   public List<DataEntry> getEntries(String projectId, String token, String redisServer,
       int redisPort, boolean useSSL) throws Exception {
 
+    String tokenPrefix = (token == null || token.isEmpty()) ? "<empty>"
+        : token.substring(0, Math.min(8, token.length())) + "...";
     LOG.info("getEntries: projectId=" + projectId + " server=" + redisServer
         + " port=" + redisPort + " useSSL=" + useSSL
-        + " tokenEmpty=" + (token == null || token.isEmpty()));
+        + " tokenPrefix=" + tokenPrefix);
 
     if (token == null || token.isEmpty()) {
       throw new Exception("No CloudDB token available. "
@@ -53,14 +56,33 @@ public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
     try {
       jedis = buildJedis(host, redisPort, useSSL, token);
 
+      // MIT's CloudDB server does not support SCAN or PING — use KEYS.
+      // KEYS returns all matching keys in one response; we cap at
+      // MAX_VIZ_ENTRIES and pipeline all GETs to avoid N round-trips.
       String prefix = projectId + ":";
-      Set<String> keys = jedis.keys(prefix + "*");
+      List<String> keys = new ArrayList<String>(jedis.keys(prefix + "*"));
 
-      List<DataEntry> entries = new ArrayList<DataEntry>();
+      if (keys.size() > MAX_VIZ_ENTRIES) {
+        LOG.info("getEntries: result capped at " + MAX_VIZ_ENTRIES
+            + " for projectId=" + projectId + " (found " + keys.size() + " total)");
+        keys = new ArrayList<String>(keys.subList(0, MAX_VIZ_ENTRIES));
+      }
+
+      if (keys.isEmpty()) {
+        return new ArrayList<DataEntry>();
+      }
+
+      Pipeline pipe = jedis.pipelined();
       for (String key : keys) {
-        String tag = key.substring(prefix.length());
-        String value = jedis.get(key);
-        entries.add(new DataEntry(tag, value != null ? value : ""));
+        pipe.get(key);
+      }
+      List<Object> rawValues = pipe.syncAndReturnAll();
+
+      List<DataEntry> entries = new ArrayList<DataEntry>(keys.size());
+      for (int i = 0; i < keys.size(); i++) {
+        String tag = keys.get(i).substring(prefix.length());
+        Object v = rawValues.get(i);
+        entries.add(new DataEntry(tag, v != null ? v.toString() : ""));
       }
       return entries;
 
