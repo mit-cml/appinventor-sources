@@ -205,12 +205,53 @@
     <property name="stoken.key" value="changeme"/>
 
     <!-- AI Agent configuration -->
-    <property name="ai.agent.provider" value="anthropic" />
-    <property name="ai.agent.model" value="claude-sonnet-4-20250514" />
+    <property name="ai.agent.provider" value="openrouter" />
+    <property name="ai.agent.model" value="" />
     <property name="ai.agent.reasoning.effort" value="" />
     <property name="ai.agent.api.key" value="" />
     <property name="ai.agent.base.url" value="" />
     <property name="ai.agent.rate.limit" value="10" />
+
+    <!--
+      Per-role overrides. Each role inherits the global ai.agent.* values
+      above; set any field below to override for that role.
+
+      Roles:
+        advisor                  AIAgentMode.Advisor
+        screen_editor            AIAgentMode.ScreenEditor
+        project_editor           AIAgentMode.ProjectEditor + STANDARD/EXECUTION
+        project_editor_planner   AIAgentMode.ProjectEditor + PLANNING
+        project_editor_child     AIAgentMode.ProjectEditor + CHILD_EXECUTION
+
+      Active configuration:
+
+        ai.agent.provider                                = openrouter
+        ai.agent.api.key                                 = <openrouter-key>   (set above)
+        ai.agent.role.advisor.model                      = openai/gpt-4o
+        ai.agent.role.screen_editor.model                = anthropic/claude-sonnet-4
+        ai.agent.role.project_editor.model               = anthropic/claude-opus-4
+        ai.agent.role.project_editor_planner.model       = google/gemini-2.5-pro
+        ai.agent.role.project_editor_child.model         = anthropic/claude-sonnet-4
+
+      Rationale:
+        advisor                  conversational read-only Q&A.
+        screen_editor            strict tool-call discipline for single-screen edits.
+        project_editor           top-tier reasoning for multi-screen nav + writes.
+        project_editor_planner   large-context reasoning model; fires once per Plan.
+        project_editor_child     mid-tier reasoning for parallel sub-agents.
+
+      Available fields per role (all optional, fall back to global):
+        ai.agent.role.<role>.provider
+        ai.agent.role.<role>.model
+        ai.agent.role.<role>.api.key
+        ai.agent.role.<role>.base.url
+        ai.agent.role.<role>.reasoning.effort
+    -->
+    <property name="ai.agent.role.advisor.model"                value="openai/gpt-4o" />
+    <property name="ai.agent.role.screen_editor.model"          value="anthropic/claude-sonnet-4" />
+    <property name="ai.agent.role.project_editor.model"         value="anthropic/claude-opus-4" />
+    <property name="ai.agent.role.project_editor_planner.model" value="google/gemini-2.5-pro" />
+    <property name="ai.agent.role.project_editor_child.model"   value="anthropic/claude-sonnet-4" />
 
     <!-- Bedrock provider configuration (only needed when ai.agent.provider=bedrock) -->
     <property name="ai.agent.provider.bedrock.region" value="us-east-1" />
