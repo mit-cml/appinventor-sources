@@ -179,8 +179,8 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   @Override
   protected boolean isInitiallyExpanded() {
-    String visible = properties.getPropertyValue("Visible");
-    return visible == null || !visible.equalsIgnoreCase("false");
+    EditableProperty visible = properties.getProperty(PROPERTY_NAME_VISIBLE);
+    return visible == null || !"false".equalsIgnoreCase(visible.getValue());
   }
 
   // PropertyChangeListener implementation
