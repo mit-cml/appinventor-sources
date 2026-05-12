@@ -1305,16 +1305,15 @@ public final class ListView extends AndroidViewComponent {
    * Sets new dividers or margins in RecyclerView
    */
   private void setDivider() {
-    DividerItemDecoration dividerDecoration = new DividerItemDecoration();
-    dividerDecoration.removeLayoutChangeListener();
     for (int i = 0; i < recyclerView.getItemDecorationCount(); i++) {
       RecyclerView.ItemDecoration decoration = recyclerView.getItemDecorationAt(i);
       if (decoration instanceof DividerItemDecoration) {
+        ((DividerItemDecoration) decoration).removeLayoutChangeListener();
         recyclerView.removeItemDecorationAt(i);
         break;
       }
     }
-    recyclerView.addItemDecoration(dividerDecoration);
+    recyclerView.addItemDecoration(new DividerItemDecoration());
   }
 
   public void setListAdapter(ListAdapterWithRecyclerView adapter) {
