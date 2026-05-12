@@ -1883,6 +1883,8 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
     // Added ServiceURL property
     5: "noUpgrade",
+    // Added GetModels and GetProviders methods with GotModels and GotProviders events
+    6: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
