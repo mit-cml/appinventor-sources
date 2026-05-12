@@ -926,7 +926,9 @@ public class YaVersion {
   // - Added CreateImage and GotResponseWithImage blocks
   // For CHATBOT_COMPONENT_VERSION 5:
   // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
-  public static final int CHATBOT_COMPONENT_VERSION = 5;
+  // For CHATBOT_COMPONENT_VERSION 6:
+  // - Added GetModels and GetProviders methods with GotModels and GotProviders events
+  public static final int CHATBOT_COMPONENT_VERSION = 6;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

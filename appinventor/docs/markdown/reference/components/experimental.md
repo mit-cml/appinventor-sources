@@ -59,6 +59,12 @@ The ChatBot component is a non-visible component for chatting with an AI
  other error signaled by ChatGPT or PaLM. See
  https://appinv.us/chatbot for current information.
 
+{:id="ChatBot.GotModels"} GotModels(*models*{:.list})
+: Event fired when models list is fetched.
+
+{:id="ChatBot.GotProviders"} GotProviders(*providers*{:.list})
+: Event fired when providers list is fetched.
+
 {:id="ChatBot.GotResponse"} GotResponse(*responseText*{:.text})
 : Event indicating that a request has finished and has returned data (output from ChatBot).
 
@@ -78,6 +84,12 @@ The ChatBot component is a non-visible component for chatting with an AI
 
 {:id="ChatBot.CreateImage" class="method"} <i/> CreateImage(*description*{:.text})
 : Create an Image. Note: Only Gemini is currently supported. Do not specify a model in order to get the most up-to-date model to use.
+
+{:id="ChatBot.GetModels" class="method"} <i/> GetModels()
+: Get the list of available models.
+
+{:id="ChatBot.GetProviders" class="method"} <i/> GetProviders()
+: Get the list of available providers.
 
 {:id="ChatBot.ResetConversation" class="method"} <i/> ResetConversation()
 : Reset the current conversation, Chat bot will forget any previous conversation when responding in the future.

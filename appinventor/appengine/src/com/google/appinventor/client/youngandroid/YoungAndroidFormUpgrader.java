@@ -910,6 +910,10 @@ public final class YoungAndroidFormUpgrader {
       // The ServiceURL property was added.
       srcCompVersion = 5;
     }
+    if  (srcCompVersion < 6) {
+      // The GetModels and GetProviders methods with GotModels and GotProviders events were added
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
