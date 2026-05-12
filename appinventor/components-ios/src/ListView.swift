@@ -3,7 +3,6 @@
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
-
 import Foundation
 
 fileprivate let kListViewDefaultBackgroundColor = Color.black
@@ -24,6 +23,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
     
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _elements = [String]()
   fileprivate var _items: [[String: AnyObject]] = []
   fileprivate var _selection = ""
   fileprivate var _selectionDetailText = ""
@@ -154,11 +154,12 @@ let HORIZONTAL_LAYOUT = 1
       if _items.count > 0 {
         return _items as [AnyObject]
       } else {
-        return _items as [AnyObject]
+        return _elements as [AnyObject]
       }
     }
     set(elements) {
       _items = []
+      _elements = []
       guard !elements.isEmpty else {
         _view.reloadData()
         return
@@ -179,16 +180,26 @@ let HORIZONTAL_LAYOUT = 1
       if !elements.isEmpty {
         let testItemsForDict = _items.first(where: { $0 is NSDictionary })
         let testElementsForDict = elements.first(where: { $0 is NSDictionary })
-        let filteredListElements = elements.filter { $0 is YailList<AnyObject> }
+        //let filteredListElements = elements.filter { $0 is YailList<AnyObject> }
         
-        let otherElements = elements.filter { !($0 is YailList<AnyObject>) && !($0 is NSDictionary) }
+        let otherElements = elements.filter { !($0 is NSDictionary) }
         
         let useDictFormat = testItemsForDict?["Text1"] != nil || testElementsForDict?["Text1"] != nil
        
         
         if useDictFormat {
           _items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
-        } else if filteredListElements.count > 0 {
+          
+          for item in otherElements {
+            // Fall back to simple text item
+            if let str = item as? String {
+              _items.append(makeListItem(text1: str))
+            } else if let n = item as? NSNumber {
+              _items.append(makeListItem(text1: n.stringValue))
+              
+            }
+          }
+        }/*a else if filteredListElements.count > 0 {
           var dict: [String: AnyObject] = [:]
           print("item type is YailList \(dict)")
           for kvPair in filteredListElements {
@@ -199,9 +210,10 @@ let HORIZONTAL_LAYOUT = 1
             }
           }
           _items.append(dict)
-        }
-        
-        for item in otherElements {
+        }*/
+        _elements.insert(contentsOf: otherElements.toStringArray(), at: 0)
+        /* don't add to items
+         for item in otherElements {
             // Fall back to simple text item
             if let str = item as? String {
               _items.append(makeListItem(text1: str))
@@ -209,12 +221,13 @@ let HORIZONTAL_LAYOUT = 1
               _items.append(makeListItem(text1: n.stringValue))
 
             }
-        }
+        }*/
         elementsCount()
       }
     }
   func elementsCount() {
-    let rows = max(_items.count, _items.count)
+    //let rows = max(_items.count, _items.count)
+    let rows = max(_elements.count, _items.count)
     _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
     if let searchBar = _view.tableHeaderView as? UISearchBar {
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
@@ -439,7 +452,7 @@ let HORIZONTAL_LAYOUT = 1
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _items.firstIndex(where: { $0["Text1"] as? String == selection }) {
+      if let index = _elements.firstIndex(of: selection) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
@@ -488,10 +501,10 @@ let HORIZONTAL_LAYOUT = 1
       return _selectionIndex
     }
     set(selectionIndex) {
-      if selectionIndex > 0 && selectionIndex <= Int32(_items.count) {
+      if selectionIndex > 0 && selectionIndex <= Int32(_elements.count) {
         _selectionIndex = selectionIndex
-        _selection = _items[Int(selectionIndex) - 1] as? String ?? ""
-        _selectionDetailText = _items[Int(selectionIndex) - 1] as? String ?? ""
+        _selection = _elements[Int(selectionIndex) - 1] as? String ?? ""
+        _selectionDetailText = _elements[Int(selectionIndex) - 1] as? String ?? ""
         _view.selectRow(at: IndexPath(row: Int(_selectionIndex) - 1, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       } else {
         _selectionIndex = 0
@@ -578,11 +591,14 @@ let HORIZONTAL_LAYOUT = 1
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
+    guard addIndex > 0 && addIndex <= _items.count + 1 else {
+      return
+    }
     _items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
   }
 
   @objc open func AddItems(_ items: [AnyObject]) {
-    guard !items.isEmpty else {
+    guard !_elements.isEmpty else {
         return
     }
     addElements(items)
@@ -645,7 +661,7 @@ let HORIZONTAL_LAYOUT = 1
   }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
-    if index < 1 || index > max(_items.count, _items.count) {
+    if index < 1 || index > max(_items.count, _elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
@@ -653,8 +669,8 @@ let HORIZONTAL_LAYOUT = 1
     if _items.count >= index {
       _items.remove(at: Int(index - 1))
     }
-    if _items.count >= index {
-      _items.remove(at: Int(index - 1))
+    if _elements.count >= index {
+      _elements.remove(at: Int(index - 1))
     }
     _view.reloadData()
   }
@@ -671,7 +687,7 @@ let HORIZONTAL_LAYOUT = 1
     let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
 
-      let listDataIndex = indexPath.row - _items.count
+      let listDataIndex = indexPath.row - _elements.count
       let item = _items[indexPath.row] 
       if _listViewLayoutMode == 0 {
           // Simple text-only layout
@@ -930,10 +946,10 @@ let HORIZONTAL_LAYOUT = 1
     _results = nil
     if !searchText.isEmpty  {
       _results = [String]()
-      let results = _items.filter { item in
-        item.values.first { value in
-              (value as? String)?.contains(searchText) == true
-          } != nil
+      for item in _elements {
+        if item.starts(with: searchText) {
+          _results?.append(item)
+        }
       }
     }
     _view.reloadData()
@@ -996,10 +1012,13 @@ let HORIZONTAL_LAYOUT = 1
   required init?(coder: NSCoder) { fatalError() }
   }
 
+  var elements: [String] {
+      return _results ?? _elements
+    }
+    
   // UICollectionViewDataSource
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return _items.count
-    //_items.isEmpty ? elements.count : _items.count
+    return _items.isEmpty ? _elements.count : _items.count
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -1020,7 +1039,7 @@ let HORIZONTAL_LAYOUT = 1
         image = AssetManager.shared.imageFromPath(path: path)
       }
     } else {
-      mainText = _items[indexPath.item] as? String ?? ""
+      mainText = _elements[indexPath.item] //_items[indexPath.item] as? String ?? ""
       detailText = ""
     }
 
