@@ -445,7 +445,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty
   public void Hint(String hint) {
     this.hint = hint;
-    view.setHint(hint);
+    view.setHint(container.$form().getTextIfKey(hint));
     view.invalidate();
   }
 

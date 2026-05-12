@@ -377,11 +377,14 @@ private void setLabelMargins(boolean hasMargins) {
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
+    String resolvedText = container.$form().getTextIfKey(text);
+
     if (htmlFormat) {
-      TextViewUtil.setTextHTML(view, text);
+      TextViewUtil.setTextHTML(view, resolvedText);
     } else {
-      TextViewUtil.setText(view, text);
+      TextViewUtil.setText(view, resolvedText);
     }
+
     htmlContent = text;
   }
 

@@ -791,7 +791,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
-    TextViewUtil.setText(view, text);
+    TextViewUtil.setText(view, container.$form().getTextIfKey(text));
   }
 
   /**
