@@ -6,6 +6,7 @@
 import Foundation
 
 open class Image: ViewComponent, AbstractMethodsForViewComponent {
+  private let gifAnimationKey = "AppInventorGifAnimation"
   fileprivate let _view = UIImageView()
   fileprivate var _image: UIImage? = nil
   fileprivate var _gif: AnimatedGif? = nil
@@ -190,7 +191,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc open var Animated: Bool {
     get {
-      return _gif != nil && _view.isAnimating
+      return _gif != nil && _view.layer.animation(forKey: gifAnimationKey) != nil && _view.layer.speed != 0
     }
     set(animated) {
       _animated = animated
@@ -198,22 +199,22 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
         return
       }
       if animated {
-        _view.startAnimating()
+        resumeGifAnimation()
       } else {
-        _view.stopAnimating()
+        pauseGifAnimation()
       }
     }
   }
 
   @objc open func ResetAnimation() {
-    guard let gif = _gif else {
+    guard _gif != nil else {
       return
     }
-    let wasAnimating = _view.isAnimating
-    _view.stopAnimating()
-    _view.image = gif.firstFrame
+    let wasAnimating = Animated
+    stopGifAnimation()
+    _view.image = _image
     if wasAnimating {
-      _view.startAnimating()
+      applyGifAnimation()
     }
   }
 
@@ -221,22 +222,14 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
   @objc open var Scaling: Int32 = 0
 
   private func updateImage(_ image: UIImage?, _ gif: AnimatedGif? = nil) {
-    _view.stopAnimating()
-    _view.animationImages = nil
-    _view.animationDuration = 0
-    _view.animationRepeatCount = 0
+    stopGifAnimation()
     _gif = gif
     if let image = image {
       _image = image
       _view.image = image
       _view.frame.size = image.size
-      if let gif = gif {
-        _view.animationImages = gif.images
-        _view.animationDuration = gif.duration
-        _view.animationRepeatCount = gif.loopCount
-        if _animated {
-          _view.startAnimating()
-        }
+      if gif != nil {
+        applyGifAnimation()
       }
     } else {
       _image = nil
@@ -246,5 +239,52 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     _view.invalidateIntrinsicContentSize()
     _view.setNeedsUpdateConstraints()
     _view.setNeedsLayout()
+  }
+
+  private func applyGifAnimation() {
+    guard let gif = _gif else {
+      return
+    }
+    stopGifAnimation()
+    let animation = CAKeyframeAnimation(keyPath: "contents")
+    animation.values = gif.cgImages
+    animation.keyTimes = gif.keyTimes
+    animation.duration = gif.duration
+    animation.calculationMode = .discrete
+    animation.repeatCount = gif.loopCount == 0 ? .infinity : Float(gif.loopCount)
+    animation.isRemovedOnCompletion = false
+    _view.layer.add(animation, forKey: gifAnimationKey)
+    if !_animated {
+      pauseGifAnimation()
+    }
+  }
+
+  private func pauseGifAnimation() {
+    guard _view.layer.animation(forKey: gifAnimationKey) != nil, _view.layer.speed != 0 else {
+      return
+    }
+    let pausedTime = _view.layer.convertTime(CACurrentMediaTime(), from: nil)
+    _view.layer.speed = 0
+    _view.layer.timeOffset = pausedTime
+  }
+
+  private func resumeGifAnimation() {
+    guard _view.layer.animation(forKey: gifAnimationKey) != nil else {
+      applyGifAnimation()
+      return
+    }
+    let pausedTime = _view.layer.timeOffset
+    _view.layer.speed = 1
+    _view.layer.timeOffset = 0
+    _view.layer.beginTime = 0
+    let timeSincePause = _view.layer.convertTime(CACurrentMediaTime(), from: nil) - pausedTime
+    _view.layer.beginTime = timeSincePause
+  }
+
+  private func stopGifAnimation() {
+    _view.layer.removeAnimation(forKey: gifAnimationKey)
+    _view.layer.speed = 1
+    _view.layer.timeOffset = 0
+    _view.layer.beginTime = 0
   }
 }
