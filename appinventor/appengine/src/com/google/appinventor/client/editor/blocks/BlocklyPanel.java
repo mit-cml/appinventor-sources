@@ -724,6 +724,20 @@ public class BlocklyPanel extends HTMLPanel {
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl, String targetLang)/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
+    // Stage the BlocklyPanel element in a hidden div before initializing the workspace.
+    // GWT later moves it into the ProjectEditor deck when the editor is added.
+    // Blockly measures a hidden workspace using computed CSS, which requires
+    // the workspace element to be attached to the document.
+    // https://github.com/RaspberryPiFoundation/blockly/pull/8572
+    var hiddenStagingId = 'appinventor-blockly-hidden-staging';
+    var hiddenStaging = $doc.getElementById(hiddenStagingId);
+    if (!hiddenStaging) {
+      hiddenStaging = $doc.createElement('div');
+      hiddenStaging.id = hiddenStagingId;
+      hiddenStaging.style.display = 'none';
+      $doc.body.appendChild(hiddenStaging);
+    }
+    hiddenStaging.appendChild(el);
     var workspace = $wnd.Blockly.BlocklyEditor.create(el,
       this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::formName,
       readOnly, rtl, targetLang);
