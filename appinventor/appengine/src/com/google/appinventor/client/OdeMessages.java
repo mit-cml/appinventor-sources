@@ -6099,6 +6099,15 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Type selector option for a dictionary (object) value in the CloudDB entry visual editor.")
   String clouddbVizTypeDict();
 
+  @DefaultMessage("Matrix")
+  @Description("Type selector option for a YailMatrix value in the CloudDB entry visual editor.")
+  String clouddbVizTypeMatrix();
+
+
+  @DefaultMessage("Matrix data must be a uniform rectangular array of numbers.")
+  @Description("Error shown when the user tries to save a matrix entry whose data is not a valid uniform numeric array.")
+  String clouddbVizMatrixInvalidData();
+
   @DefaultMessage("Value type")
   @Description("ARIA label for the type selector in the CloudDB entry visual editor.")
   String clouddbVizValueTypeAriaLabel();

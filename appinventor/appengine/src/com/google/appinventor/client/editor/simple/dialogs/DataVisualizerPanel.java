@@ -559,6 +559,22 @@ public final class DataVisualizerPanel extends Dialog {
 
   private static String formatValue(String raw) {
     if (raw == null || raw.isEmpty()) return MESSAGES.clouddbVizEmptyValue();
+    String v = raw.trim();
+    if (v.startsWith("{")) {
+      try {
+        JSONValue parsed = JSONParser.parseStrict(v);
+        if (parsed instanceof JSONObject) {
+          JSONValue typeVal = ((JSONObject) parsed).get(JsonNodeEditor.YAIL_TYPE_KEY);
+          if (typeVal instanceof JSONString
+              && "YailMatrix".equals(((JSONString) typeVal).stringValue())) {
+            JSONValue data = ((JSONObject) parsed).get("data");
+            return data != null ? data.toString() : "Matrix";
+          }
+        }
+      } catch (JSONException e) {
+        // fall through to raw display
+      }
+    }
     return raw;
   }
 
@@ -570,7 +586,21 @@ public final class DataVisualizerPanel extends Dialog {
     if (value == null || value.isEmpty()) return "";
     String v = value.trim();
     if (v.startsWith("["))  return "list";
-    if (v.startsWith("{"))  return "dict";
+    if (v.startsWith("{")) {
+      try {
+        JSONValue parsed = JSONParser.parseStrict(v);
+        if (parsed instanceof JSONObject) {
+          JSONValue typeVal = ((JSONObject) parsed).get(JsonNodeEditor.YAIL_TYPE_KEY);
+          if (typeVal instanceof JSONString
+              && "YailMatrix".equals(((JSONString) typeVal).stringValue())) {
+            return "matrix";
+          }
+        }
+      } catch (JSONException e) {
+        // fall through
+      }
+      return "dict";
+    }
     if ("true".equals(v) || "false".equals(v)) return "boolean";
     if (v.startsWith("\"")) return "text";
     try {
@@ -740,14 +770,25 @@ public final class DataVisualizerPanel extends Dialog {
       if (tab == currentTab) return;
       showError("");
       if (tab == TAB_RAW) {
-        rawTextArea.setValue(rootEditor.getValue());
+        // For matrices: show only the data array, not the TYPE_FIELD wrapper.
+        String rawVal = rootEditor.getValue();
+        if (JsonNodeEditor.TYPE_MATRIX.equals(rootEditor.currentType)) {
+          try {
+            JSONValue parsed = JSONParser.parseStrict(rawVal);
+            if (parsed instanceof JSONObject) {
+              JSONValue data = ((JSONObject) parsed).get("data");
+              if (data != null) rawVal = data.toString();
+            }
+          } catch (JSONException e) { /* keep full value */ }
+        }
+        rawTextArea.setValue(rawVal);
         tabContentPanel.setWidget(rawTextArea);
         modeLink.setText(MESSAGES.clouddbVizBackToVisual());
       } else {
         String raw = rawTextArea.getValue().trim();
         if (!raw.isEmpty()) {
           try {
-            rootEditor.setValue(JSONParser.parseStrict(raw));
+            rootEditor.setValue(JSONParser.parseStrict(wrapMatrixDataIfNeeded(raw)));
           } catch (JSONException e) {
             showError(MESSAGES.clouddbVizJsonFixError(e.getMessage()));
             return;
@@ -757,6 +798,19 @@ public final class DataVisualizerPanel extends Dialog {
         modeLink.setText(MESSAGES.clouddbVizEditAsText());
       }
       currentTab = tab;
+    }
+
+    /** Re-wraps a bare data array with the YailMatrix TYPE_FIELD if rootEditor is in matrix mode. */
+    private String wrapMatrixDataIfNeeded(String raw) {
+      if (!JsonNodeEditor.TYPE_MATRIX.equals(rootEditor.currentType)) return raw;
+      try {
+        JSONValue parsed = JSONParser.parseStrict(raw);
+        if (parsed instanceof JSONArray) {
+          String typeKey = new JSONString(JsonNodeEditor.YAIL_TYPE_KEY).toString();
+          return "{" + typeKey + ":\"YailMatrix\",\"data\":" + raw + "}";
+        }
+      } catch (JSONException e) { /* fall through */ }
+      return raw;
     }
 
     private void onSave() {
@@ -774,6 +828,7 @@ public final class DataVisualizerPanel extends Dialog {
           return;
         }
         try {
+          value = wrapMatrixDataIfNeeded(value);
           JSONParser.parseStrict(value);
         } catch (JSONException e) {
           showError(MESSAGES.clouddbVizJsonInvalid(e.getMessage()));
@@ -781,6 +836,11 @@ public final class DataVisualizerPanel extends Dialog {
         }
       } else {
         value = rootEditor.getValue();
+        String matrixError = validateMatrixIfNeeded(value);
+        if (matrixError != null) {
+          showError(matrixError);
+          return;
+        }
       }
       showError("");
 
@@ -795,6 +855,45 @@ public final class DataVisualizerPanel extends Dialog {
           showError(MESSAGES.clouddbVizSaveFailed(caught.getMessage()));
         }
       });
+    }
+
+    private static String validateMatrixIfNeeded(String value) {
+      if (value == null || !value.trim().startsWith("{")) return null;
+      try {
+        JSONValue parsed = JSONParser.parseStrict(value);
+        if (!(parsed instanceof JSONObject)) return null;
+        JSONObject obj = (JSONObject) parsed;
+        JSONValue typeVal = obj.get(JsonNodeEditor.YAIL_TYPE_KEY);
+        if (!(typeVal instanceof JSONString)
+            || !"YailMatrix".equals(((JSONString) typeVal).stringValue())) {
+          return null;
+        }
+        JSONValue data = obj.get("data");
+        if (!(data instanceof JSONArray)) return MESSAGES.clouddbVizMatrixInvalidData();
+        JSONArray arr = (JSONArray) data;
+        if (arr.size() == 0) return null;
+        JSONValue first = arr.get(0);
+        if (first instanceof JSONNumber) {
+          for (int i = 0; i < arr.size(); i++) {
+            if (!(arr.get(i) instanceof JSONNumber)) return MESSAGES.clouddbVizMatrixInvalidData();
+          }
+        } else if (first instanceof JSONArray) {
+          int rowLen = ((JSONArray) first).size();
+          for (int i = 0; i < arr.size(); i++) {
+            if (!(arr.get(i) instanceof JSONArray)) return MESSAGES.clouddbVizMatrixInvalidData();
+            JSONArray row = (JSONArray) arr.get(i);
+            if (row.size() != rowLen) return MESSAGES.clouddbVizMatrixInvalidData();
+            for (int j = 0; j < row.size(); j++) {
+              if (!(row.get(j) instanceof JSONNumber)) return MESSAGES.clouddbVizMatrixInvalidData();
+            }
+          }
+        } else {
+          return MESSAGES.clouddbVizMatrixInvalidData();
+        }
+      } catch (JSONException e) {
+        return MESSAGES.clouddbVizJsonInvalid(e.getMessage());
+      }
+      return null;
     }
 
     private void showError(String message) {
@@ -837,6 +936,10 @@ public final class DataVisualizerPanel extends Dialog {
     private static final String TYPE_BOOLEAN = "boolean";
     private static final String TYPE_LIST    = "list";
     private static final String TYPE_DICT    = "dict";
+    private static final String TYPE_MATRIX  = "matrix";
+
+    // The TYPE_FIELD key used by JsonUtil to tag YailMatrix in JSON.
+    private static final String YAIL_TYPE_KEY = "\u0002$type$\u0003";
 
     private final String uid = "jne" + (++instanceCounter);
     private final ListBox typeSelector;
@@ -869,6 +972,7 @@ public final class DataVisualizerPanel extends Dialog {
       typeSelector.addItem(MESSAGES.clouddbVizTypeBoolean(), TYPE_BOOLEAN);
       typeSelector.addItem(MESSAGES.clouddbVizTypeList(),    TYPE_LIST);
       typeSelector.addItem(MESSAGES.clouddbVizTypeDict(),    TYPE_DICT);
+      typeSelector.addItem(MESSAGES.clouddbVizTypeMatrix(),  TYPE_MATRIX);
       typeSelector.getElement().setAttribute("aria-label", MESSAGES.clouddbVizValueTypeAriaLabel());
 
       bodyPanel = new SimplePanel();
@@ -921,13 +1025,27 @@ public final class DataVisualizerPanel extends Dialog {
           listItems.add(new JsonNodeEditor(arr.get(i)));
         }
       } else if (v instanceof JSONObject) {
-        selectType(TYPE_DICT);
-        dictKeyBoxes.clear();
-        dictValueEditors.clear();
         JSONObject obj = (JSONObject) v;
-        for (String key : obj.keySet()) {
-          dictKeyBoxes.add(newKeyBox(key));
-          dictValueEditors.add(new JsonNodeEditor(obj.get(key)));
+        JSONValue typeVal = obj.get(YAIL_TYPE_KEY);
+        if (typeVal instanceof JSONString
+            && "YailMatrix".equals(((JSONString) typeVal).stringValue())) {
+          selectType(TYPE_MATRIX);
+          listItems.clear();
+          JSONValue data = obj.get("data");
+          if (data instanceof JSONArray) {
+            JSONArray arr = (JSONArray) data;
+            for (int i = 0; i < arr.size(); i++) {
+              listItems.add(new JsonNodeEditor(arr.get(i)));
+            }
+          }
+        } else {
+          selectType(TYPE_DICT);
+          dictKeyBoxes.clear();
+          dictValueEditors.clear();
+          for (String key : obj.keySet()) {
+            dictKeyBoxes.add(newKeyBox(key));
+            dictValueEditors.add(new JsonNodeEditor(obj.get(key)));
+          }
         }
       }
       renderBody();
@@ -966,6 +1084,16 @@ public final class DataVisualizerPanel extends Dialog {
           }
           return sb.append("}").toString();
         }
+        case TYPE_MATRIX: {
+          StringBuilder sb = new StringBuilder("[");
+          for (int i = 0; i < listItems.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(listItems.get(i).getValue());
+          }
+          sb.append("]");
+          String typeKey = new JSONString(YAIL_TYPE_KEY).toString();
+          return "{" + typeKey + ":\"YailMatrix\",\"data\":" + sb + "}";
+        }
         default:
           return "null";
       }
@@ -1000,6 +1128,9 @@ public final class DataVisualizerPanel extends Dialog {
           break;
         case TYPE_DICT:
           bodyPanel.setWidget(buildDictWidget());
+          break;
+        case TYPE_MATRIX:
+          bodyPanel.setWidget(buildListWidget());
           break;
         default:
           break;
