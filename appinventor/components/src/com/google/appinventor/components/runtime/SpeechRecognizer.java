@@ -246,10 +246,6 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   public void onError(int errorNumber) {
     state = RecognizerState.IDLE;
 
-    // Ignore NO_MATCH (not a real failure)
-    if (errorNumber == 3806) {
-      return;
-    }
     String functionName = "GetText";
     form.dispatchErrorOccurredEvent(this, functionName, errorNumber);
   }
