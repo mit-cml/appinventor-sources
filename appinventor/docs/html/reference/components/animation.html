@@ -429,6 +429,8 @@
 <h3 id="ImageSprite-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="ImageSprite.Animated" class="boolean"><em>Animated</em></dt>
+  <dd>Controls whether an animated GIF image is playing. Setting to true resumes animation; setting to false pauses at the current frame. Has no effect on non-animated images.</dd>
   <dt id="ImageSprite.Enabled" class="boolean"><em>Enabled</em></dt>
   <dd>Controls whether the <code class="highlighter-rouge">ImageSprite</code> moves when its speed is non-zero.</dd>
   <dt id="ImageSprite.Heading" class="number"><em>Heading</em></dt>
@@ -539,6 +541,8 @@
   <dt id="ImageSprite.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
   <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
  to the line joining the origins of the two sprites.</dd>
+  <dt id="ImageSprite.ResetAnimation" class="method"><i></i> ResetAnimation()</dt>
+  <dd>Resets the animation of an animated GIF image to the first frame. If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.</dd>
 </dl>
 
 </article>

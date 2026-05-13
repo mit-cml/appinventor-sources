@@ -8,6 +8,8 @@ import Foundation
 open class Image: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate let _view = UIImageView()
   fileprivate var _image: UIImage? = nil
+  fileprivate var _gif: AnimatedGif? = nil
+  fileprivate var _animated = true
   fileprivate var _picturePath = ""
   fileprivate var _rotationAngle = 0.0
   fileprivate var _scaleToFit = true
@@ -114,8 +116,8 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(path) {
       _picturePath = path
-      if let image = AssetManager.shared.imageFromPath(path: path) {
-        updateImage(image)
+      if let gif = AssetManager.shared.animatedGifFromPath(path: path), let image = gif.firstFrame {
+        updateImage(image, gif)
       } else if (path.starts(with: "http://") || path.starts(with: "https://")), let url = URL(string: path) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
           DispatchQueue.main.async {
@@ -123,12 +125,18 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
               self.updateImage(nil)
               return
             }
-            self.updateImage(UIImage(data: data))
+            if let gif = AnimatedGif(data: data), let image = gif.firstFrame {
+              self.updateImage(image, gif)
+            } else {
+              self.updateImage(UIImage(data: data))
+            }
             self._container?.form?.view.setNeedsLayout()
           }
         }
         task.priority = 1.0
         task.resume()
+      } else if let image = AssetManager.shared.imageFromPath(path: path) {
+        updateImage(image)
       } else {
         updateImage(nil)
       }
@@ -179,14 +187,57 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
       EventDispatcher.dispatchEvent(of: self, called: "Click")
     }
   }
+
+  @objc open var Animated: Bool {
+    get {
+      return _gif != nil && _view.isAnimating
+    }
+    set(animated) {
+      _animated = animated
+      guard _gif != nil else {
+        return
+      }
+      if animated {
+        _view.startAnimating()
+      } else {
+        _view.stopAnimating()
+      }
+    }
+  }
+
+  @objc open func ResetAnimation() {
+    guard let gif = _gif else {
+      return
+    }
+    let wasAnimating = _view.isAnimating
+    _view.stopAnimating()
+    _view.image = gif.firstFrame
+    if wasAnimating {
+      _view.startAnimating()
+    }
+  }
+
   // Deprecated
   @objc open var Scaling: Int32 = 0
 
-  private func updateImage(_ image: UIImage?) {
+  private func updateImage(_ image: UIImage?, _ gif: AnimatedGif? = nil) {
+    _view.stopAnimating()
+    _view.animationImages = nil
+    _view.animationDuration = 0
+    _view.animationRepeatCount = 0
+    _gif = gif
     if let image = image {
       _image = image
       _view.image = image
       _view.frame.size = image.size
+      if let gif = gif {
+        _view.animationImages = gif.images
+        _view.animationDuration = gif.duration
+        _view.animationRepeatCount = gif.loopCount
+        if _animated {
+          _view.startAnimating()
+        }
+      }
     } else {
       _image = nil
       _view.image = nil
