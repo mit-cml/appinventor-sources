@@ -50,6 +50,11 @@ class JsonUtilTests: XCTestCase {
     XCTAssertThrowsError(try getJsonRepresentation(NSObject()), "Expected bad object to throw")
   }
 
+  func testSerializeMatrix() throws {
+    XCTAssertEqual("{\"data\":[[1,2],[3,4]],\"\\u0002$type$\\u0003\":\"YailMatrix\"}",
+                   try getJsonRepresentation(try YailMatrix(rows: 2, cols: 2, data: [[1, 2], [3, 4]])))
+  }
+
   // MARK: Parsing Tests
 
   func testParseEmpty() throws {
@@ -147,5 +152,18 @@ class JsonUtilTests: XCTestCase {
       return
     }
     XCTAssertEqual(7, list.length)
+  }
+
+  func testParseMatrix() throws {
+    let result = try getYailObjectFromJson("{\"data\":[[1,2],[3,4]],\"\\u0002$type$\\u0003\":\"YailMatrix\"}", true)
+    guard let matrix = result as? YailMatrix else {
+      XCTFail("Expected result to be a YailMatrix")
+      return
+    }
+    XCTAssertEqual([2, 2], matrix.getDimensions())
+    XCTAssertEqual(1, matrix.getCell(1, 1))
+    XCTAssertEqual(2, matrix.getCell(1, 2))
+    XCTAssertEqual(3, matrix.getCell(2, 1))
+    XCTAssertEqual(4, matrix.getCell(2, 2))
   }
 }

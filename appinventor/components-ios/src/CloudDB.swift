@@ -445,7 +445,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   @objc open func DataChanged(_ tag: String, _ value: AnyObject?) {
     var tagValue = "" as AnyObject?
     if let valAsString = value as? String {
-      tagValue = try? getObjectFromJson(valAsString) ?? "" as AnyObject
+      tagValue = try? getYailObjectFromJson(valAsString, true)
     }
     EventDispatcher.dispatchEvent(of: self, called: "DataChanged", arguments: tag as AnyObject, tagValue ?? "" as AnyObject)
   }
