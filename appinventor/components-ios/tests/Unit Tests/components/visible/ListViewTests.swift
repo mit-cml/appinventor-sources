@@ -17,7 +17,7 @@ class ListViewTests: AppInventorTestCase {
   }
 
   func testSelectionIndex() {
-    testList.Elements = ["apple", "banana", "cherry"] as YailList
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
     testList.Selection = "apple"
     XCTAssertEqual(1, testList.SelectionIndex)
     XCTAssertEqual("apple", testList.Selection)
@@ -31,17 +31,54 @@ class ListViewTests: AppInventorTestCase {
 
   func testCreateElement() {
     testList.Elements = [testList.CreateElement("MainText", "DetailText", "Image")]
-    XCTAssertEqual(2, testList.Elements.count)
-    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[1] as! Dictionary)))
-    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[1] as! Dictionary)))
-    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[1] as! Dictionary)))
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
   }
+  
+  func testElementAsDictItems() {
+    testList.Elements = [["Text1": "MainText","Text2": "DetailText", "Image": "Image"] as YailDictionary]
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItems3Args() {
+    testList.AddItems([["Text1": "MainText","Text2": "DetailText", "Image": "Image"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItems2Args() {
+    testList.AddItems([["Text1": "MainText","Text2": "DetailText"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItemsMixed2Args() {
+    testList.AddItems([["Text1": "MainText","Image": "Image"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+    XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+  
+  func testAddDictItems1Args() {
+    testList.AddItems([["Text1": "MainText"] as YailDictionary])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+
 
   func testBackgroundColor() {
     testList.BackgroundColor = Color.blue.int32
     testList.ElementColor = Color.none.int32
-    testList.Elements = ["Test"] as YailList
-
+    testList.Elements = ["Test"] as [AnyObject]
+    
     // Handle both table view and collection view
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
       let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
@@ -63,8 +100,8 @@ class ListViewTests: AppInventorTestCase {
   func testElementColor() {
     testList.BackgroundColor = Color.blue.int32
     testList.ElementColor = Color.red.int32
-    testList.Elements = ["Test"] as YailList
-
+    testList.Elements = ["Test"] as [AnyObject]
+    
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
       var cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
       XCTAssertNotNil(cell)
@@ -94,8 +131,39 @@ class ListViewTests: AppInventorTestCase {
       } else {
         // Fallback on earlier versions
       }
-       
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
+  }
+  
+  func testSelectionColor() {
+    testList.BackgroundColor = Color.blue.int32
+    testList.ElementColor = Color.red.int32
+    testList.Elements = ["Test", "Best", "Fest"] as [AnyObject]
+
+    testList.SelectionColor = Color.yellow.int32
+    
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      var cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertNotNil(cell)
+      XCTAssertEqual(Color.red.uiColor, cell.backgroundColor)
       
+      // Change selection
+      testList.Selection = "Best"
+      var selCell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 1, section: 0))
+      XCTAssertEqual(/*testList.ElementColor*/ Color.yellow.uiColor, selCell.selectedBackgroundView?.backgroundColor)  // testList background color
+
+      testList.SelectionColor = Color.none.int32
+      selCell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 1, section: 0))
+      XCTAssertNotNil(selCell)
+      XCTAssertEqual(/*testList.ElementColor*/ Color.none.uiColor, selCell.selectedBackgroundView?.backgroundColor)  // testList background color
+      
+      testList.SelectionColor = Color.default.int32
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      let expectedColor = preferredTextColor(form)
+      XCTAssertNotNil(cell)
+      // Compare resolved colors to handle dynamic colors
+
 
     } else {
       XCTFail("Expected UITableView to be visible")
@@ -103,8 +171,8 @@ class ListViewTests: AppInventorTestCase {
   }
   
   func testDividerColor() {
-    testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as YailList
-
+    testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as [AnyObject]
+    
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
       testList.DividerColor = Color.green.int32
       XCTAssertEqual(Color.green.int32, testList.DividerColor)
@@ -118,8 +186,8 @@ class ListViewTests: AppInventorTestCase {
   }
   
   func testCornerRadius() {
-    testList.Elements = ["Test"] as YailList
-
+    testList.Elements = ["Test"] as [AnyObject]
+    
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
       let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
       XCTAssertNotNil(cell)
@@ -132,15 +200,15 @@ class ListViewTests: AppInventorTestCase {
   }
 
   func testMixedElements() {
-    testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as YailList
-    XCTAssertEqual(3, testList.Elements.count)
+    testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as [AnyObject]
+    XCTAssertEqual(2, testList.Elements.count)
     // The second element should be promoted to a dictionary
-    XCTAssertNotNil(testList.Elements[2] as? Dictionary<String, String>)
+    XCTAssertNotNil(testList.Elements[1] as? Dictionary<String, String>)
   }
 
   func testFontTypeface() {
     testList.FontTypeface = "2"
-    testList.Elements = ["Test"] as YailList
+    testList.Elements = ["Test"] as [AnyObject]
     testList.Refresh()
     
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
@@ -154,13 +222,13 @@ class ListViewTests: AppInventorTestCase {
 
   func testListData() {
     testList.ListData = "[{\"Text1\": \"apple\", \"Text2\": \"2.99\", \"Image\": \"apple.jpg\"}]"
-    XCTAssertEqual(2, testList.Elements.count)
-    XCTAssertEqual(["Text1": "apple", "Text2": "2.99", "Image": "apple.jpg"], testList.Elements[1] as? [String:String])
+    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual([["Text1": "apple", "Text2": "2.99", "Image": "apple.jpg"]], testList.Elements as? [[String:String]])
   }
 
   func testBadListData() {
     testList.ListData = "this is not json"
-    XCTAssertEqual(1, testList.Elements.count)
+    XCTAssertEqual(0, testList.Elements.count)
   }
 
   // MARK: Events
@@ -170,12 +238,18 @@ class ListViewTests: AppInventorTestCase {
       XCTAssertEqual(2, testList.SelectionIndex)
       XCTAssertEqual("banana", testList.Selection)
     }
-    testList.Elements = ["apple", "banana", "cantaloupe"] as YailList
+    testList.Elements = ["apple", "banana", "cantaloupe"] as [AnyObject]
+    testList.SelectionColor = Color.yellow.int32
     testList.Refresh()
     
     // Handle both orientations
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
       testList.tableView(tableView, didSelectRowAt: IndexPath(row: 1, section: 0))
+      let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 2, section: 0))
+      
+      XCTAssertNotNil(cell)
+      XCTAssertEqual(Color.yellow.uiColor, cell.selectedBackgroundView?.backgroundColor)
+      
     } else if let collectionView = testList.view.subviews.first(where: { $0 is UICollectionView && !$0.isHidden }) as? UICollectionView {
       testList.collectionView(collectionView, didSelectItemAt: IndexPath(row: 1, section: 0))
     } else {
@@ -188,8 +262,8 @@ class ListViewTests: AppInventorTestCase {
   // New test for horizontal orientation
   func testHorizontalOrientation() {
     testList.Orientation = Int32(HORIZONTAL_LAYOUT)
-    testList.Elements = ["Test1", "Test2"] as YailList
-
+    testList.Elements = ["Test1", "Test2"] as [AnyObject]
+    
     if let collectionView = testList.view.subviews.first(where: { $0 is UICollectionView && !$0.isHidden }) as? UICollectionView {
       XCTAssertFalse(collectionView.isHidden)
       XCTAssertEqual(2, testList.collectionView(collectionView, numberOfItemsInSection: 0))
