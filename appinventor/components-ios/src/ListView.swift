@@ -698,15 +698,52 @@ let HORIZONTAL_LAYOUT = 1
           // Simple text-only layout
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
+          
+          let stackView = UIStackView()
+          stackView.axis = .horizontal
+          stackView.alignment = .leading
+          stackView.distribution = .fill
+          stackView.spacing = 8.0
+
+          stackView.addArrangedSubview(cell.textLabel!)
         }
       } else {
         let item = _items[indexPath.row]
-        if _listViewLayoutMode == 1 {
-          
+        if _listViewLayoutMode == 1  || _listViewLayoutMode == 2 {
           tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
+          tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
+          let stackView = UIStackView()
+
+          if _listViewLayoutMode == 2 {
+            stackView.axis = .horizontal
+          } else {
+            stackView.axis = .vertical
+          }
+
+          stackView.alignment = .leading
+          stackView.distribution = .fill
+          stackView.spacing = 8.0
+          
+          // Add the labels to the stack view
+          stackView.addArrangedSubview(cell.detailTextLabel!)
+          stackView.addArrangedSubview(cell.textLabel!)
+          
+          // Add the stack view to the cell's content view
+          cell.contentView.addSubview(stackView)
+          
+          // Set up constraints
+          stackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+          ])
+          
         } else if _listViewLayoutMode == 3 {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 60
@@ -838,13 +875,11 @@ let HORIZONTAL_LAYOUT = 1
               cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
             ])
           }
-        
-        
-      } else {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 44
-        cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
-      }
+        } else {
+          tableView.rowHeight = UITableView.automaticDimension
+          tableView.estimatedRowHeight = 44
+          cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
+        }
     }
 
     cell.textLabel?.numberOfLines = 0
@@ -934,22 +969,27 @@ let HORIZONTAL_LAYOUT = 1
     return cell
   }
 
-  open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _items.isEmpty ? _items.count : _items.count
-  }
-
-  // MARK: UITableViewDelegate
-
-  open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    if _items.count > 0 {
-      let listDataIndex = indexPath.row - _items.count
-      _selectionIndex = Int32(indexPath.row) + 1
-      _selection = _items[Int(indexPath.row)]["Text1"] as? String ?? ""
-      _selectionDetailText = _items[Int(indexPath.row)]["Text2"] as? String ?? ""
+  
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+      return _items.isEmpty ? _elements.count : _items.count
     }
-    AfterPicking()
-  }
 
+    // MARK: UITableViewDelegate
+
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+      if indexPath.row < _elements.count {
+        _selectionIndex = Int32(indexPath.row) + 1
+        _selection = _elements[indexPath.row]
+        _selectionDetailText = ""
+      } else if indexPath.row < _elements.count + _items.count {
+        let listDataIndex = indexPath.row - _elements.count
+        _selectionIndex = Int32(indexPath.row) + 1
+        _selection = _items[listDataIndex]["Text1"] as! String
+        _selectionDetailText = _items[listDataIndex]["Text2"] as! String
+      }
+      AfterPicking()
+    }
+    
   // MARK: UISearchBarDelegate
 
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
