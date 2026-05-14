@@ -934,22 +934,27 @@ let HORIZONTAL_LAYOUT = 1
     return cell
   }
 
-  open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return _items.isEmpty ? _items.count : _items.count
-  }
-
-  // MARK: UITableViewDelegate
-
-  open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    if _items.count > 0 {
-      let listDataIndex = indexPath.row - _items.count
-      _selectionIndex = Int32(indexPath.row) + 1
-      _selection = _items[Int(indexPath.row)]["Text1"] as? String ?? ""
-      _selectionDetailText = _items[Int(indexPath.row)]["Text2"] as? String ?? ""
+  
+    open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+      return _items.isEmpty ? _elements.count : _items.count
     }
-    AfterPicking()
-  }
 
+    // MARK: UITableViewDelegate
+
+    open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+      if indexPath.row < _elements.count {
+        _selectionIndex = Int32(indexPath.row) + 1
+        _selection = _elements[indexPath.row]
+        _selectionDetailText = ""
+      } else if indexPath.row < _elements.count + _items.count {
+        let listDataIndex = indexPath.row - _elements.count
+        _selectionIndex = Int32(indexPath.row) + 1
+        _selection = _items[listDataIndex]["Text1"] as! String
+        _selectionDetailText = _items[listDataIndex]["Text2"] as! String
+      }
+      AfterPicking()
+    }
+    
   // MARK: UISearchBarDelegate
 
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
