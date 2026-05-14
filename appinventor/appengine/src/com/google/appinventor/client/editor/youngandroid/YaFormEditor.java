@@ -415,16 +415,25 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   // }-*/;
 
   private native void initWebsocketProvider(String projectId, Runnable afterSync) /*-{
-    console.log('top.Y:', top.Y);
+    // console.log('top.Y:', top.Y);
     console.log('top.WebsocketProvider:', top.WebsocketProvider);
     
     var Y = top.Y;
-    var doc = new Y.Doc();  // create using top.Y explicitly
+    var doc = new Y.Doc();  // create using top.Y
     console.log("doc id " + doc.clientID);
     // Store yDoc so Java can access it
     this.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::yDoc = doc;
     
     var provider = new top.WebsocketProvider('ws://localhost:1234', projectId, doc);
+    top.Awareness = provider.awareness;
+    // var awareness = provider.awareness;
+
+    // set user identity
+    top.Awareness.setLocalStateField('user', {
+      name: 'AppInventorUser',
+      color: '#f4a543ff',
+      activeComponent: null
+    });
 
     provider.on('status', function(e) { 
       console.log('YaFormEditor status:', e.status); 
@@ -436,6 +445,57 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
         afterSync.@java.lang.Runnable::run()();
       }
     });
+
+    var self = this; 
+    
+    doc.getMap('components').observeDeep(function(events) {
+    events.forEach(function(event) {
+
+      var componentsMap = doc.getMap('components')
+      if (event.path.length === 0) {
+        event.changes.keys.forEach(function(change, uuid) {
+          if (change.action === 'add') {
+
+            //avoid duplicate changes if i made them
+            if (event.transaction.local) return
+            
+            //dont want to add twice on load
+            var existing = self.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getComponentByUuid(Ljava/lang/String;)(uuid)
+            if (existing != null) return
+
+            var componentMap = event.target.get(uuid)
+            var componentJson = JSON.stringify(componentMap.toJSON())
+            var jsonObject = self.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::parseJsonString(Ljava/lang/String;)(componentJson)
+            self.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::createMockComponentFromJson(Lcom/google/appinventor/shared/properties/json/JSONObject;)(jsonObject)
+          }
+
+          else if (change.action === 'delete') {
+            if (event.transaction.local) return
+            var component = self.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getComponentByUuid(Ljava/lang/String;)(uuid)
+            if (component != null) {
+              component.@com.google.appinventor.client.editor.simple.components.MockComponent::delete()();
+            }
+          }
+        })
+      }
+
+      else if (event.path.length > 0) {
+
+        var uuid = event.path[0] //actually want the last thing? for nested changes
+
+        event.changes.keys.forEach(function(change, key) {
+          if (change.action === 'add' || change.action === 'update') {
+
+            var newValue = event.target.get(key)
+            var component = self.@com.google.appinventor.client.editor.youngandroid.YaFormEditor::getComponentByUuid(Ljava/lang/String;)(uuid)
+            if (component != null) {
+              component.@com.google.appinventor.client.editor.simple.components.MockComponent::changeProperty(Ljava/lang/String;Ljava/lang/String;)(key, newValue)
+            }
+          }
+        })
+      }
+    })
+  })
   }-*/;
 
 

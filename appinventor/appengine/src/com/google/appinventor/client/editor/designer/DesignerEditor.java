@@ -326,9 +326,23 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
     if (loadComplete) {
+      YMap allComponentsMap = (YMap) getDoc().getMap("components");
       if (permanentlyDeleted) {
         onStructureChange();
+        allComponentsMap.delete(component.getUuid());
       }
+      else {
+        MockContainer container = component.getContainer();
+        YMap containerMap = (YMap) allComponentsMap.get(container.getUuid());
+        YArray componentsArray = (YArray) containerMap.get("$Components");
+        for (int i = 0; i < componentsArray.length(); i++) {
+          if (componentsArray.get(i).equals(component.getUuid())) {
+            componentsArray.delete(i, 1);
+            break;
+          }
+        }
+      }
+
     } else {
       LOG.severe("onComponentRemoved called when loadComplete is false");
     }
@@ -339,7 +353,47 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     if (loadComplete) {
       selectedProperties = component.getProperties();
       onStructureChange();
-    } else {
+
+      YMap allComponentsMap = (YMap) getDoc().getMap("components");
+      //check if component already exists which means it is getting moved
+      boolean isMoved = allComponentsMap.get(component.getUuid()) != null;
+
+      if (isMoved) {
+        // LOG.info("getting moved");
+        MockContainer newParent = component.getContainer();
+        YMap parentEntry = (YMap) allComponentsMap.get(newParent.getUuid());
+        if (parentEntry != null) {
+          YArray parentChildren = (YArray) parentEntry.get("$Components");
+          parentChildren.push(new Object[]{component.getUuid()});
+        }
+      }
+      else {
+        getComponentsDb().put(component.getUuid(), component);
+        // YMap allComponentsMap = (YMap) getDoc().getMap("components");
+        YMap componentProperties = new YMap();
+        componentProperties.set("$Name", component.getName()); // reflect any rename
+        componentProperties.set("Uuid",  component.getUuid());
+        componentProperties.set("$Components", new YArray());
+
+        boolean first = true;
+        for (EditableProperty property : selectedProperties) {
+          String propertyName = property.getName();
+          // LOG.info("added " + propertyName + " "+ property.getValue());
+          // Ignore UUID and NAME properties (can't be edited and always unique)
+          if ("Uuid".equals(propertyName) || "Name".equals(propertyName)) {
+            continue;
+          }
+          else {
+            // only add ones that are not default?
+            componentProperties.set(propertyName, property.getValue());
+            // LOG.info("in on comp added " + property.getDefaultValue());
+          }
+        }
+        allComponentsMap.set(component.getUuid(), componentProperties);
+        // LOG.info("selected properties " + selectedProperties);
+      }
+    }
+    else {
       LOG.severe("onComponentAdded called when loadComplete is false");
     }
   }

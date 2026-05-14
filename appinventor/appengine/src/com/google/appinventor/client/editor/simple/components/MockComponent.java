@@ -808,12 +808,22 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   protected void onSelectedChange(boolean selected) {
     if (selected) {
-      addStyleDependentName("selected");
+      updateAwareness(this.getName());
     } else {
       removeStyleDependentName("selected");
     }
     getRoot().fireComponentSelectionChange(this, selected);
   }
+
+  private native void updateAwareness(String componentName) /*-{
+  if ($wnd.top && $wnd.top.Awareness) {
+    $wnd.top.Awareness.setLocalStateField("user", {
+      name: "AppInventorUser",
+      color: "#f4a543ff",
+      activeComponent: componentName
+    });
+  }
+}-*/;
 
   /**
    * Returns whether this component is selected.
@@ -1204,10 +1214,10 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public void onDesignPreviewChanged() {
   }
 
-private native void logDocId() /*-{
-  var doc = this.@com.google.appinventor.client.editor.simple.components.MockComponent::yDoc;
-  console.log('mockcomponent doc clientID:', doc.clientID);
-}-*/;
+// private native void logDocId() /*-{
+//   var doc = this.@com.google.appinventor.client.editor.simple.components.MockComponent::yDoc;
+//   console.log('mockcomponent doc clientID:', doc.clientID);
+//   }-*/;
 
   // PropertyChangeListener implementation
 
@@ -1232,7 +1242,16 @@ private native void logDocId() /*-{
         LOG.info("setting property");
         componentMap.set(propertyName, newValue);
       }
-      logDocId();
+      // logDocId();
+      // Doc currentDoc = (editor instanceof YaFormEditor) 
+      //   ? ((YaFormEditor) editor).getDoc() 
+      //   : null;
+      // if (currentDoc != null) {
+      //       YMap componentMap = (YMap) currentDoc.getMap("components").get(this.getUuid());
+      //       if (componentMap != null) {
+      //           componentMap.set(propertyName, newValue);
+      //       }
+      //   }
     }
   }
 
