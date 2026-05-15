@@ -979,6 +979,10 @@ public class YaVersion {
   // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
   public static final int EMAILPICKER_COMPONENT_VERSION = 7;
 
+  // For EMAIL_SENDER_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int EMAIL_SENDER_COMPONENT_VERSION = 1;
+
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
   // - Initial FeatureCollection implementation for Maps
   // For FEATURE_COLLECTION_COMPONENT_VERSION 2:
