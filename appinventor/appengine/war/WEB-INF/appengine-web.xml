@@ -247,11 +247,11 @@
         ai.agent.role.<role>.base.url
         ai.agent.role.<role>.reasoning.effort
     -->
-    <property name="ai.agent.role.advisor.model"                value="openai/gpt-4o" />
-    <property name="ai.agent.role.screen_editor.model"          value="anthropic/claude-sonnet-4" />
-    <property name="ai.agent.role.project_editor.model"         value="anthropic/claude-opus-4" />
-    <property name="ai.agent.role.project_editor_planner.model" value="google/gemini-2.5-pro" />
-    <property name="ai.agent.role.project_editor_child.model"   value="anthropic/claude-sonnet-4" />
+    <property name="ai.agent.role.advisor.model"                value="" />
+    <property name="ai.agent.role.screen_editor.model"          value="" />
+    <property name="ai.agent.role.project_editor.model"         value="" />
+    <property name="ai.agent.role.project_editor_planner.model" value="" />
+    <property name="ai.agent.role.project_editor_child.model"   value="" />
 
     <!-- Bedrock provider configuration (only needed when ai.agent.provider=bedrock) -->
     <property name="ai.agent.provider.bedrock.region" value="us-east-1" />
