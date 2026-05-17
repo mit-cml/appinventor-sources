@@ -235,6 +235,69 @@ public final class AIDebug {
     }
   }
 
+  /**
+   * Returns the conversation id and timestamp of the current request
+   * scope, formatted as {@code "<convId>/<timestamp>"}, or {@code null}
+   * if no scope is active. Useful for background threads that need to
+   * append to the current request's log file after the response thread
+   * has ended.
+   */
+  public static String currentRequestRef() {
+    RequestLog rl = CURRENT_REQUEST.get();
+    if (rl == null) {
+      return null;
+    }
+    return rl.conversationId + "/" + rl.timestamp;
+  }
+
+  /**
+   * Appends a single line to a specific conversation log file. Intended
+   * for use from background threads (e.g. async OpenRouter generation
+   * meta fetches) that fire after {@link #endRequest} has run. In
+   * production mode the line is emitted as a structured log entry.
+   *
+   * @param requestRef value previously obtained from
+   *                   {@link #currentRequestRef()}, must not be null
+   * @param msg        message text
+   */
+  public static void appendToRequestLog(String requestRef, String msg) {
+    if (!enabled() || requestRef == null) {
+      return;
+    }
+    String timestamp = TIME_FORMAT.get().format(new Date());
+    String line = "[" + timestamp + "] " + msg;
+    int slash = requestRef.indexOf('/');
+    if (slash < 0) {
+      return;
+    }
+    String conversationId = requestRef.substring(0, slash);
+    String requestTs = requestRef.substring(slash + 1);
+
+    if (isProductionMode()) {
+      JsonObject entry = new JsonObject();
+      entry.addProperty("severity", "INFO");
+      entry.addProperty("message", msg);
+      entry.addProperty("conversationId", conversationId);
+      entry.addProperty("messageId", requestTs);
+      System.out.println(GSON.toJson(entry));
+      return;
+    }
+    try {
+      File baseDir = getLogBaseDir();
+      File convDir = new File(baseDir, conversationId);
+      if (!convDir.exists()) {
+        convDir.mkdirs();
+      }
+      File logFile = new File(convDir, requestTs + ".txt");
+      try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(
+          new FileOutputStream(logFile, true), "UTF-8"))) {
+        writer.println(line);
+      }
+    } catch (Exception e) {
+      System.err.println("[AIDebug] appendToRequestLog failed: " + e.getMessage());
+    }
+  }
+
   // ---- Dev-mode file output ----
 
   private static void writeToFile(RequestLog rl) {

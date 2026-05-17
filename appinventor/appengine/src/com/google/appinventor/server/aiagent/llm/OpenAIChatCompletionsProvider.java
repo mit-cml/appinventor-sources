@@ -46,7 +46,7 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
   private static final int MAX_TOOL_ITERATIONS = 5;
   private static final int MAX_RETRIES = 3;
   private static final long INITIAL_BACKOFF_MS = 1000;
-  private static final int MAX_TOKENS = 131072;
+  private static final int MAX_TOKENS = 16384;
   private static final int CONNECT_TIMEOUT_MS = 30000;
   private static final int READ_TIMEOUT_MS = 600000;
 
@@ -112,6 +112,15 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
     // no-op by default
   }
 
+  /**
+   * Hook called after a successful API response is received and logged.
+   * Subclasses may inspect the response and emit additional diagnostics
+   * (e.g. upstream provider lookup). Default no-op.
+   */
+  protected void onResponseLogged(JSONObject responseJson) {
+    // no-op by default
+  }
+
   @Override
   public boolean isStateless() {
     return true;
@@ -155,6 +164,7 @@ public class OpenAIChatCompletionsProvider implements LLMProvider {
             + responseJson.toString(2));
         AIDebug.recordUsage(getProviderName(), model,
             TokenUsage.fromOpenAIChat(responseJson.optJSONObject("usage")));
+        onResponseLogged(responseJson);
       }
 
       // Parse the response
