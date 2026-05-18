@@ -933,6 +933,16 @@ This is a visible component that displays a list of text and image elements in y
 : Sets visibility of the filter bar. `true`{:.logic.block} will show the bar,
  `false`{:.logic.block} will hide it.
 
+{:id="ListView.TextAlignmentDetail" .number} *TextAlignmentDetail*
+: Specifies the alignment of the detail text in ListView elements: center, normal
+ (e.g., left-justified if text is written left to right), or opposite
+ (e.g., right-justified if text is written left to right).
+
+{:id="ListView.TextAlignmentMain" .number} *TextAlignmentMain*
+: Specifies the alignment of the main text in ListView elements: center, normal
+ (e.g., left-justified if text is written left to right), or opposite
+ (e.g., right-justified if text is written left to right).
+
 {:id="ListView.TextColor" .color} *TextColor*
 : The text color of the `ListView` items.
 

@@ -52,6 +52,8 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _elementMarginsWidth = Int32(0)
   fileprivate var _imageHeight = Int32(200)
   fileprivate var _imageWidth = Int32(200)
+  fileprivate var _textAlignmentMain = Alignment.normal.rawValue
+  fileprivate var _textAlignmentDetail = Alignment.normal.rawValue
 
   let COMPANION_CORRECTION = 5
 
@@ -551,6 +553,56 @@ let HORIZONTAL_LAYOUT = 1
     }
   }
 
+  @objc open var TextAlignmentMain: Int32 {
+    get {
+      return _textAlignmentMain
+    }
+    set(alignment) {
+      if Alignment(rawValue: alignment) != nil {
+        _textAlignmentMain = alignment
+        _view.reloadData()
+        _collectionView.reloadData()
+      }
+    }
+  }
+
+  @objc open var TextAlignmentDetail: Int32 {
+    get {
+      return _textAlignmentDetail
+    }
+    set(alignment) {
+      if Alignment(rawValue: alignment) != nil {
+        _textAlignmentDetail = alignment
+        _view.reloadData()
+        _collectionView.reloadData()
+      }
+    }
+  }
+
+  fileprivate func nsTextAlignment(for value: Int32, in view: UIView) -> NSTextAlignment {
+    var rtl = false
+    if #available(iOS 9.0, *) {
+      if UIView.userInterfaceLayoutDirection(for: view.semanticContentAttribute) == .rightToLeft {
+        rtl = true
+      }
+    } else {
+      if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
+        rtl = true
+      }
+    }
+    guard let align = Alignment(rawValue: value) else {
+      return rtl ? .right : .left
+    }
+    switch align {
+      case .normal:
+        return rtl ? .right : .left
+      case .center:
+        return .center
+      case .opposite:
+        return rtl ? .left : .right
+    }
+  }
+
   // MARK: Methods
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
@@ -666,6 +718,12 @@ let HORIZONTAL_LAYOUT = 1
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
 
+        // Both labels wrap inside their 50% half (matches the Designer mock).
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        cell.detailTextLabel?.numberOfLines = 0
+        cell.detailTextLabel?.lineBreakMode = .byWordWrapping
+
         // Configure the layout
         cell.layoutMargins = UIEdgeInsets.zero
         cell.separatorInset = UIEdgeInsets.zero
@@ -675,7 +733,7 @@ let HORIZONTAL_LAYOUT = 1
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .fill
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
 
         // Add the labels to the stack view
         stackView.addArrangedSubview(cell.textLabel!)
@@ -906,6 +964,10 @@ let HORIZONTAL_LAYOUT = 1
     cell.selectedBackgroundView?.backgroundColor =
         argbToColor(_selectionColor == Int32(bitPattern: Color.default.rawValue)
         ? Int32(bitPattern: kListViewDefaultSelectionColor.rawValue) : _selectionColor)
+
+    cell.textLabel?.textAlignment = nsTextAlignment(for: _textAlignmentMain, in: cell)
+    cell.detailTextLabel?.textAlignment = nsTextAlignment(for: _textAlignmentDetail, in: cell)
+
     return cell
   }
 
@@ -1072,6 +1134,9 @@ let HORIZONTAL_LAYOUT = 1
     // Image
     cell.imageView.image = image
     cell.imageView.isHidden = (image == nil)
+
+    cell.titleLabel.textAlignment = nsTextAlignment(for: _textAlignmentMain, in: cell)
+    cell.detailLabel.textAlignment = nsTextAlignment(for: _textAlignmentDetail, in: cell)
 
     return cell
   }

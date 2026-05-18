@@ -68,8 +68,6 @@ public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     TextViewUtil.setFontTypeface(container.$form(), textViewSecond, textDetailFont, false, false);
     textViewSecond.setTextColor(textDetailColor);
     textViewSecond.setLayoutParams(layoutParams2);
-    textViewSecond.setMaxLines(1);
-    textViewSecond.setEllipsize(null);
     TextViewUtil.setAlignment(textViewSecond, textDetailAlignment, false);
 
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
