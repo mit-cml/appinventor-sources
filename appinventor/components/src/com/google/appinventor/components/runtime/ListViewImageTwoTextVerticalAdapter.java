@@ -34,11 +34,13 @@ public class ListViewImageTwoTextVerticalAdapter extends ListAdapterWithRecycler
   private String textDetailFont;
   private int imageWidth;
   private int imageHeight;
+  private int textMainAlignment;
+  private int textDetailAlignment;
 
   public ListViewImageTwoTextVerticalAdapter(ComponentContainer container, List<Object> data,
       int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
       float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight) {
+      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
     super(container, data, backgroundColor, selectionColor, radius);
     this.container = container;
     this.textMainColor = textMainColor;
@@ -46,9 +48,11 @@ public class ListViewImageTwoTextVerticalAdapter extends ListAdapterWithRecycler
     this.textMainFont = textMainFont;
     this.textDetailColor = textDetailColor;
     this.textDetailSize = textDetailSize;
-    this.textDetailFont = textDetailFont;    
+    this.textDetailFont = textDetailFont;
     this.imageWidth = imageWidth;
     this.imageHeight = imageHeight;
+    this.textMainAlignment = textMainAlignment;
+    this.textDetailAlignment = textDetailAlignment;
   }  
 
   @Override
@@ -69,11 +73,12 @@ public class ListViewImageTwoTextVerticalAdapter extends ListAdapterWithRecycler
     TextView textViewFirst = new TextView(container.$context());
     final int idFirst = ViewCompat.generateViewId();
     textViewFirst.setId(idFirst);
-    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
     TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
+    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
 
     // DetailText
     TextView textViewSecond = new TextView(container.$context());
@@ -81,11 +86,12 @@ public class ListViewImageTwoTextVerticalAdapter extends ListAdapterWithRecycler
     textViewSecond.setId(idSecond);
     LinearLayout.LayoutParams layoutParams2 =
             new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     textViewSecond.setTextSize(textDetailSize);
     TextViewUtil.setFontTypeface(container.$form(), textViewSecond, textDetailFont, false, false);
     textViewSecond.setTextColor(textDetailColor);
     textViewSecond.setLayoutParams(layoutParams2);
+    TextViewUtil.setAlignment(textViewSecond, textDetailAlignment, false);
 
     LinearLayout linearLayout2 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear2 =

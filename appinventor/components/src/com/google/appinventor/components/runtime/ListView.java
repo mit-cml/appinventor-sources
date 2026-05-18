@@ -124,6 +124,9 @@ public final class ListView extends AndroidViewComponent {
   private int layout;
   private String propertyValue;  // JSON string representing data entered through the Designer
 
+  private int textAlignmentMain;
+  private int textAlignmentDetail;
+
   private boolean multiSelect;
   private Paint dividerPaint;
   private int dividerColor;
@@ -233,6 +236,8 @@ public final class ListView extends AndroidViewComponent {
     ElementCornerRadius(DEFAULT_RADIUS);
     MultiSelect(false);
     BounceEdgeEffect(false);
+    TextAlignmentMain(Component.ALIGNMENT_NORMAL);
+    TextAlignmentDetail(Component.ALIGNMENT_NORMAL);
     ElementsFromString("");
     ListData("");
 
@@ -788,6 +793,70 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
+   * Returns the alignment of the main text in ListView elements: center, normal
+   * (e.g., left-justified if text is written left to right), or opposite
+   * (e.g., right-justified if text is written left to right).
+   *
+   * @return one of {@link Component#ALIGNMENT_NORMAL},
+   *         {@link Component#ALIGNMENT_CENTER} or
+   *         {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @SimpleProperty(description = "Specifies the alignment of the main text in ListView elements.",
+      category = PropertyCategory.APPEARANCE)
+  public int TextAlignmentMain() {
+    return textAlignmentMain;
+  }
+
+  /**
+   * Specifies the alignment of the main text in ListView elements: center, normal
+   * (e.g., left-justified if text is written left to right), or opposite
+   * (e.g., right-justified if text is written left to right).
+   *
+   * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
+   *                  {@link Component#ALIGNMENT_CENTER} or
+   *                  {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+      defaultValue = Component.ALIGNMENT_NORMAL + "")
+  @SimpleProperty
+  public void TextAlignmentMain(int alignment) {
+    textAlignmentMain = alignment;
+    setAdapterData();
+  }
+
+  /**
+   * Returns the alignment of the detail text in ListView elements: center, normal
+   * (e.g., left-justified if text is written left to right), or opposite
+   * (e.g., right-justified if text is written left to right).
+   *
+   * @return one of {@link Component#ALIGNMENT_NORMAL},
+   *         {@link Component#ALIGNMENT_CENTER} or
+   *         {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @SimpleProperty(description = "Specifies the alignment of the detail text in ListView elements.",
+      category = PropertyCategory.APPEARANCE)
+  public int TextAlignmentDetail() {
+    return textAlignmentDetail;
+  }
+
+  /**
+   * Specifies the alignment of the detail text in ListView elements: center, normal
+   * (e.g., left-justified if text is written left to right), or opposite
+   * (e.g., right-justified if text is written left to right).
+   *
+   * @param alignment one of {@link Component#ALIGNMENT_NORMAL},
+   *                  {@link Component#ALIGNMENT_CENTER} or
+   *                  {@link Component#ALIGNMENT_OPPOSITE}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
+      defaultValue = Component.ALIGNMENT_NORMAL + "")
+  @SimpleProperty
+  public void TextAlignmentDetail(int alignment) {
+    textAlignmentDetail = alignment;
+    setAdapterData();
+  }
+
+  /**
    * Returns the image width of ListView layouts containing images
    *
    * @return width of image
@@ -1263,34 +1332,40 @@ public final class ListView extends AndroidViewComponent {
       case LISTVIEW_LAYOUT_SINGLE_TEXT:
         setListAdapter(new ListViewSingleTextAdapter(container, items,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
+            elementColor, selectionColor, radius, imageWidth, imageHeight,
+            textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT:
         setListAdapter(new ListViewTwoTextAdapter(container, items,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
+            elementColor, selectionColor, radius, imageWidth, imageHeight,
+            textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT_LINEAR:
         setListAdapter(new ListViewTwoTextLinearAdapter(container, items,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
+            elementColor, selectionColor, radius, imageWidth, imageHeight,
+            textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT:
         setListAdapter(new ListViewImageSingleTextAdapter(container, items,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
+            elementColor, selectionColor, radius, imageWidth, imageHeight,
+            textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
         setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight));
+            elementColor, selectionColor, radius, imageWidth, imageHeight,
+            textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
         setListAdapter(new ListViewImageTopTwoTextAdapter(container, items,
-          textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-          elementColor, selectionColor, radius, imageWidth, imageHeight));
+            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
+            elementColor, selectionColor, radius, imageWidth, imageHeight,
+            textAlignmentMain, textAlignmentDetail));
         break;
-    }    
+    }
   }
 
   /**
