@@ -46,12 +46,24 @@ import Foundation
     "AccelerometerSensor": [
       "Sensitivity": Sensitivity.fromUnderlyingValue(_:)
     ],
+    "Button": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
+    ],
     "Chart": [
       "Type": ChartType.fromUnderlyingValue(_:)
     ],
     "ChartData2D": [
       "LineType": LineType.fromUnderlyingValue(_:),
       "PointShape": PointStyle.fromUnderlyingValue(_:)
+    ],
+    "ContactPicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
+    ],
+    "DatePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
+    ],
+    "FilePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
     ],
     "Form": [
       "AlignHorizontal": HorizontalAlignment.fromUnderlyingValue(_:),
@@ -65,6 +77,12 @@ import Foundation
       "AlignHorizontal": HorizontalAlignment.fromUnderlyingValue(_:),
       "AlignVertical": VerticalAlignment.fromUnderlyingValue(_:)
     ],
+    "ImagePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
+    ],
+    "ListPicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
+    ],
     "ListView": [
       "ListViewLayout": LayoutType.fromUnderlyingValue(_:),
       "Orientation": ListOrientation.fromUnderlyingValue(_:)
@@ -77,8 +95,14 @@ import Foundation
       "AnchorHorizontal": HorizontalAlignment.fromUnderlyingValue(_:),
       "AnchorVertical": VerticalAlignment.fromUnderlyingValue(_:)
     ],
+    "PhoneNumberPicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
+    ],
     "Texting": [
       "ReceivingEnabled": ReceivingState.fromUnderlyingValue(_:)
+    ],
+    "TimePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:)
     ],
     "Trendline": [
       "StrokeStyle": StrokeStyle.fromUnderlyingValue(_:)

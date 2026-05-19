@@ -32,11 +32,13 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewOutlineProvider;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.ButtonShape;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
 import com.google.appinventor.components.runtime.util.KitkatUtil;
@@ -220,7 +222,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
-  public int Shape() {
+  public @Options(ButtonShape.class) int Shape() {
     return shape;
   }
 
@@ -243,7 +245,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
   @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
       " rectangular, oval). The shape will not be visible if an Image is being displayed.")
-  public void Shape(int shape) {
+  public void Shape(@Options(ButtonShape.class) int shape) {
     this.shape = shape;
     updateAppearance();
   }

@@ -64,6 +64,7 @@
 		0641606B2EA75C0400FF5BD7 /* LayoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606A2EA75C0100FF5BD7 /* LayoutType.swift */; };
 		0641606D2EA75CC600FF5BD7 /* ListOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */; };
 		0641606F2EA75D3600FF5BD7 /* ScaleUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606E2EA75D3200FF5BD7 /* ScaleUnits.swift */; };
+		064160712EA75E0000FF5BD7 /* ButtonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160702EA75E0000FF5BD7 /* ButtonShape.swift */; };
 		064218BC2C776D7100F10FBD /* Vector2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064218BB2C776D7100F10FBD /* Vector2D.swift */; };
 		064326B9289602770001297F /* Spreadsheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064326B8289602770001297F /* Spreadsheet.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
@@ -480,6 +481,7 @@
 		0641606A2EA75C0100FF5BD7 /* LayoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutType.swift; sourceTree = "<group>"; };
 		0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrientation.swift; sourceTree = "<group>"; };
 		0641606E2EA75D3200FF5BD7 /* ScaleUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleUnits.swift; sourceTree = "<group>"; };
+		064160702EA75E0000FF5BD7 /* ButtonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonShape.swift; sourceTree = "<group>"; };
 		064218BB2C776D7100F10FBD /* Vector2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector2D.swift; sourceTree = "<group>"; };
 		064326B8289602770001297F /* Spreadsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spreadsheet.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
@@ -1495,6 +1497,7 @@
 		681D59032A84137D007B5DB5 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				064160702EA75E0000FF5BD7 /* ButtonShape.swift */,
 				0641605B2EA7529F00FF5BD7 /* ColorSensorMode.swift */,
 				06C43B332D44699100BEF000 /* FileAction.swift */,
 				681D59042A84138A007B5DB5 /* FileScope.swift */,
@@ -2053,6 +2056,7 @@
 				06604B732034EFE70066C459 /* CsvUtil.swift in Sources */,
 				22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */,
 				06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */,
+				064160712EA75E0000FF5BD7 /* ButtonShape.swift in Sources */,
 				064160652EA759C700FF5BD7 /* HorizontalAlignment.swift in Sources */,
 				061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
