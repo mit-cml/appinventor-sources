@@ -689,24 +689,15 @@ let HORIZONTAL_LAYOUT = 1
       let hasElements = _elements.count > 0
       
       let listDataIndex = indexPath.row - _items.count
-      
       if _listViewLayoutMode == 0 { // assume only strings (no dicts]
         if hasElements {
           let item = _elements[indexPath.row]
-          cell.textLabel?.text = item
-          cell.detailTextLabel?.text = ""
-          // Simple text-only layout
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
-          
-          let stackView = UIStackView()
-          stackView.axis = .horizontal
-          stackView.alignment = .leading
-          stackView.distribution = .fill
-          stackView.spacing = 8.0
-
-          stackView.addArrangedSubview(cell.textLabel!)
+          cell.textLabel?.text = item as? String
+        } else{
+          let item = _items[indexPath.row]
+          cell.textLabel?.text = item["Text1"] as? String
         }
+        
       } else {
         let item = _items[indexPath.row]
         if _listViewLayoutMode == 1  || _listViewLayoutMode == 2 {
@@ -727,8 +718,8 @@ let HORIZONTAL_LAYOUT = 1
           stackView.spacing = 8.0
           
           // Add the labels to the stack view
-          stackView.addArrangedSubview(cell.detailTextLabel!)
           stackView.addArrangedSubview(cell.textLabel!)
+          stackView.addArrangedSubview(cell.detailTextLabel!)
           
           // Add the stack view to the cell's content view
           cell.contentView.addSubview(stackView)
@@ -914,16 +905,11 @@ let HORIZONTAL_LAYOUT = 1
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
     
-    if _elementColor != Color.none.int32 {
-      // if elementColor at the table cell level, laid over backgroundColor
-      if _elementColor == Color.default.int32 {
-        cell.backgroundColor = preferredTextColor(form)
-      } else {
-        cell.backgroundColor = argbToColor(_elementColor)
-      }
-    } else {
-      cell.backgroundColor = argbToColor(_backgroundColor)
-    }
+    (cell.backgroundView as? UIView)?.backgroundColor =
+          (_elementColor != Color.none.int32)
+          ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
+          : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+
     
     //maintext
     if _textColor == Color.default.int32 {
