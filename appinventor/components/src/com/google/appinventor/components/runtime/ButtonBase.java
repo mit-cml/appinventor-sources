@@ -39,7 +39,9 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ButtonShape;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TextAlignment;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
 import com.google.appinventor.components.runtime.util.KitkatUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
@@ -190,7 +192,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Left, center, or right.")
-  public int TextAlignment() {
+  public @Options(TextAlignment.class) int TextAlignment() {
     return textAlignment;
   }
 
@@ -207,7 +209,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty
-  public void TextAlignment(int alignment) {
+  public void TextAlignment(@Options(TextAlignment.class) int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, true);
   }
@@ -506,7 +508,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Font family for %type% text.")
-  public String FontTypeface() {
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 
@@ -523,7 +525,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty
-  public void FontTypeface(String typeface) {
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }

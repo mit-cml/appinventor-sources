@@ -13,11 +13,14 @@ import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TextAlignment;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
@@ -145,7 +148,7 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
-  public int TextAlignment() {
+  public @Options(TextAlignment.class) int TextAlignment() {
     return textAlignment;
   }
 
@@ -161,7 +164,7 @@ public final class Label extends AndroidViewComponent implements AccessibleCompo
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
       defaultValue = Component.ALIGNMENT_NORMAL + "")
   @SimpleProperty
-  public void TextAlignment(int alignment) {
+  public void TextAlignment(@Options(TextAlignment.class) int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, false);
   }
@@ -328,7 +331,7 @@ private void setLabelMargins(boolean hasMargins) {
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
-  public String FontTypeface() {
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 
@@ -344,7 +347,7 @@ private void setLabelMargins(boolean hasMargins) {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty
-  public void FontTypeface(String typeface) {
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }

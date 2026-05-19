@@ -29,6 +29,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.common.LayoutType;
@@ -734,7 +735,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public String FontTypeface() {
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 
@@ -750,7 +751,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(userVisible = false)
-  public void FontTypeface(String typeface) {
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     setAdapterData();
   }
@@ -766,7 +767,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       userVisible = false)
-  public String FontTypefaceDetail() {
+  public @Options(FontTypeface.class) String FontTypefaceDetail() {
     return fontTypeDetail;
   }
 
@@ -782,7 +783,7 @@ public final class ListView extends AndroidViewComponent {
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(userVisible = false)
-  public void FontTypefaceDetail(String typeface) {
+  public void FontTypefaceDetail(@Options(FontTypeface.class) String typeface) {
     fontTypeDetail = typeface;
     setAdapterData();
   }

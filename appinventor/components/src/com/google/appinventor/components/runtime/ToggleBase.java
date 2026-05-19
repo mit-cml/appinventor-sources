@@ -8,10 +8,12 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
@@ -295,7 +297,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       description = "Specifies the text font face of the %type%.")
-  public void FontTypeface(String typeface) {
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
@@ -312,7 +314,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
-  public String FontTypeface() {
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 
