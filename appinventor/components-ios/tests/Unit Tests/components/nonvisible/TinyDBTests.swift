@@ -18,6 +18,10 @@ class TinyDBTests: XCTestCase {
 
   override func tearDown() {
     db.ClearAll()
+    releaseTestResources(form: form, interpreter: nil)
+    form = nil
+    db = nil
+    super.tearDown()
   }
 
   func testGetTags() {

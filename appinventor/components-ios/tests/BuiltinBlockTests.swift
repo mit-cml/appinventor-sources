@@ -121,6 +121,7 @@ class BuiltinBlockTests: XCTestCase {
     }
     print("Passed: \(passing)")
     print("Failed: \(failing)")
+    releaseTestResources(form: Screen1, interpreter: interpreter)
   }
 
   func testBitwiseAnd() throws {

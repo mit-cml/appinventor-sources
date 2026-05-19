@@ -22,7 +22,31 @@ public func getInterpreterForTesting() throws -> SCMInterpreter {
       throw TestFailure()
     }
   }
+  SCMInterpreter.setDefault(interpreter)
   return interpreter
+}
+
+/// Tears down per-test interpreter and form state so XCTest runs do not retain memory across methods.
+///
+/// `EventDispatcher` stores each form's dispatch delegate in a static registry. Calling
+/// `unregisterAllEventsForDelegation()` only clears event names (as when reusing a live form);
+/// tests that construct a new form must call `removeDispatchDelegate` or delegates accumulate.
+public func releaseTestResources(form: Form?, interpreter: SCMInterpreter?) {
+  if let form = form {
+    EventDispatcher.removeDispatchDelegate(form)
+    if Form.activeForm === form {
+      Form.activeForm = nil
+    }
+    if let replForm = form as? ReplForm, ReplForm.topform === replForm {
+      ReplForm.topform = nil
+    }
+  }
+  if let interpreter = interpreter {
+    interpreter.runGC()
+    if SCMInterpreter.shared === interpreter {
+      SCMInterpreter.setDefault(nil)
+    }
+  }
 }
 
 @objc class CoercionTestHelper: NSObject {

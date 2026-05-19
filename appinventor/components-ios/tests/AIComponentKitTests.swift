@@ -26,6 +26,7 @@ class AIComponentKitTests: XCTestCase {
   func testEventDispatch() {
     let interpreter = try! getInterpreterForTesting()
     let form = ReplForm()
+    defer { releaseTestResources(form: form, interpreter: interpreter) }
     form.formName = "Screen1"
     interpreter.setCurrentForm(form)
     form.makeActive()

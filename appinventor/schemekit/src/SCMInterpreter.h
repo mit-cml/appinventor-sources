@@ -12,7 +12,7 @@
 
 @interface SCMInterpreter : NSObject
 
-+ (void)setDefault:(nonnull SCMInterpreter *)defaultInterpreter;
++ (void)setDefault:(nullable SCMInterpreter *)defaultInterpreter;
 @property (class, readonly) SCMInterpreter * _Nonnull shared;
 
 - (nonnull NSString *)evalForm:(nonnull NSString *)form;

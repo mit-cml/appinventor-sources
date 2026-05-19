@@ -18,6 +18,11 @@ class LinearViewTests: XCTestCase {
     window.addSubview(testForm.view)
   }
 
+  override func tearDown() {
+    releaseTestResources(form: testForm, interpreter: nil)
+    super.tearDown()
+  }
+
   func testAddItem() {
     let Button1 = Button(testForm)
     XCTAssertFalse(testView.contains(Button1.view))

@@ -20,6 +20,13 @@ class ImageTests: XCTestCase {
     image = Image(form)
   }
 
+  override func tearDown() {
+    releaseTestResources(form: form, interpreter: nil)
+    form = nil
+    image = nil
+    super.tearDown()
+  }
+
   // Tests the fix for appinventor-sources-ios#310
   func testVisible() {
     XCTAssert(image.Visible)

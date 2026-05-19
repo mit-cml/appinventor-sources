@@ -17,6 +17,13 @@ class MapTests: XCTestCase {
     testMap = Map(testForm)
   }
 
+  override func tearDown() {
+    releaseTestResources(form: testForm, interpreter: nil)
+    testForm = nil
+    testMap = nil
+    super.tearDown()
+  }
+
   /**
    * This tests that setting the `Features` property of the `Map` to an empty list will remove
    * any existing components from the `Map`.
