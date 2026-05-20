@@ -707,11 +707,33 @@ let HORIZONTAL_LAYOUT = 1
       cell.textLabel?.lineBreakMode = .byWordWrapping
     } else {
       let listDataIndex = indexPath.row - _elements.count
-      if _listViewLayoutMode == 1{
+      if _listViewLayoutMode == 1 {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
         cell.textLabel?.text = _listData[listDataIndex]["Text1"]
         cell.detailTextLabel?.text = _listData[listDataIndex]["Text2"]
+
+        // Wrap system labels in a full-width vertical stack so textAlignment
+        // is visible for short strings. (UIKit's default subtitle layout
+        // sizes labels to content for short text, making centering invisible.)
+        cell.layoutMargins = UIEdgeInsets.zero
+        cell.separatorInset = UIEdgeInsets.zero
+        cell.preservesSuperviewLayoutMargins = true
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.addArrangedSubview(cell.textLabel!)
+        stackView.addArrangedSubview(cell.detailTextLabel!)
+        cell.contentView.addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
+        ])
       } else if _listViewLayoutMode == 2 {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
@@ -729,10 +751,14 @@ let HORIZONTAL_LAYOUT = 1
         cell.separatorInset = UIEdgeInsets.zero
         cell.preservesSuperviewLayoutMargins = true
 
-        // Create a stack view to hold the labels horizontally
+        // Create a stack view to hold the labels horizontally. Align by
+        // first baseline so the labels' first text lines line up visually
+        // regardless of font-size differences (top alignment makes the
+        // smaller detail font appear higher than main due to font metrics;
+        // .fill stretches labels vertically and centers the text inside).
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.alignment = .fill
+        stackView.alignment = .firstBaseline
         stackView.distribution = .fillEqually
 
         // Add the labels to the stack view
@@ -811,10 +837,12 @@ let HORIZONTAL_LAYOUT = 1
           horizontalStackView.distribution = .fill
           horizontalStackView.spacing = 8.0
 
-          // Create a vertical stack view to hold the textLabel and detailTextLabel
+          // Create a vertical stack view to hold the textLabel and detailTextLabel.
+          // Use .fill so labels span the inner stack width and textAlignment is
+          // visible regardless of text length.
           let verticalStackView = UIStackView()
           verticalStackView.axis = .vertical
-          verticalStackView.alignment = .leading
+          verticalStackView.alignment = .fill
           verticalStackView.distribution = .fill
           verticalStackView.spacing = 8.0
 
@@ -855,22 +883,31 @@ let HORIZONTAL_LAYOUT = 1
           cell.separatorInset = UIEdgeInsets.zero
           cell.preservesSuperviewLayoutMargins = true
 
-          // Create a vertical stack view
+          // Inner stack: labels with .fill so they span the full label-stack
+          // width, making textAlignment visible regardless of text length.
+          let labelsStackView = UIStackView()
+          labelsStackView.axis = .vertical
+          labelsStackView.alignment = .fill
+          labelsStackView.distribution = .fill
+          labelsStackView.spacing = 8.0
+          labelsStackView.addArrangedSubview(cell.textLabel!)
+          labelsStackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Outer stack: image (centered) + labels stack
           let verticalStackView = UIStackView()
           verticalStackView.axis = .vertical
           verticalStackView.alignment = .center
           verticalStackView.distribution = .fill
           verticalStackView.spacing = 8.0
-
-          // Add the imageView, textLabel and detailTextLabel to the vertical stack view
           verticalStackView.addArrangedSubview(cell.imageView!)
-          verticalStackView.addArrangedSubview(cell.textLabel!)
-          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+          verticalStackView.addArrangedSubview(labelsStackView)
 
-          // Add the horizontal stack view to the cell's content view
+          // Add the outer stack to the cell's content view
           cell.contentView.addSubview(verticalStackView)
 
-          // Set up constraints
+          // Set up constraints. The labelsStackView width is pinned to the
+          // outer stack so labels span full row width while the image stays
+          // centered at its intrinsic / explicit size.
           verticalStackView.translatesAutoresizingMaskIntoConstraints = false
           NSLayoutConstraint.activate([
             verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
@@ -878,7 +915,8 @@ let HORIZONTAL_LAYOUT = 1
             verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
             verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
             cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
-            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4)),
+            labelsStackView.widthAnchor.constraint(equalTo: verticalStackView.widthAnchor)
           ])
         }
       } else {
@@ -889,6 +927,8 @@ let HORIZONTAL_LAYOUT = 1
 
       cell.textLabel?.numberOfLines = 0
       cell.textLabel?.lineBreakMode = .byWordWrapping
+      cell.detailTextLabel?.numberOfLines = 0
+      cell.detailTextLabel?.lineBreakMode = .byWordWrapping
     }
 
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSize))

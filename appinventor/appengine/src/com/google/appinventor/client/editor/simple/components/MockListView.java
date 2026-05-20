@@ -229,6 +229,7 @@ public final class MockListView extends MockVisibleComponent {
     detail.getElement().getStyle().setDisplay(Display.BLOCK);
     container.add(main);
     container.add(detail);
+    container.setWidth("100%");
     setItemHeight(true, false);
     decorateWidget(verticalItemPanel);
     container.getElement().getStyle().setProperty("flex-direction", "column");
@@ -250,8 +251,12 @@ public final class MockListView extends MockVisibleComponent {
     detail.setWidth("50%");
     horizontalItemPanel.add(main);
     horizontalItemPanel.add(detail);
-    horizontalItemPanel.getElement().getStyle().setVerticalAlign(VerticalAlign.BASELINE);  
-    //horizontalItemPanel.getElement().getStyle().setAlignItems(Style.AlignItems.BASELINE);
+    // The parent .listViewItemStyle is `display: flex; align-items: center`,
+    // which collapses mismatched-height labels to the vertical center.
+    // Override with baseline so the labels' first text lines align visually
+    // (top alignment makes the smaller detail font appear higher than the
+    // larger main font due to font-metric differences).
+    horizontalItemPanel.getElement().getStyle().setProperty("alignItems", "baseline");
     setItemHeight(false, false);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
@@ -270,6 +275,9 @@ public final class MockListView extends MockVisibleComponent {
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);    
     horizontalItemPanel.add(createImage(image, imageWidth + "px", imageHeight + "px"));
     horizontalItemPanel.add(main);
+    // Top-align image + text so the image stays at the top of the row when
+    // text wraps (parent .listViewItemStyle defaults to align-items: center).
+    horizontalItemPanel.getElement().getStyle().setProperty("alignItems", "flex-start");
     setItemHeight(false, true);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
@@ -297,6 +305,9 @@ public final class MockListView extends MockVisibleComponent {
     verticalItemPanel.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);    
     horizontalItemPanel.add(createImage(image, imageWidth + "px", imageHeight + "px"));
     horizontalItemPanel.add(verticalItemPanel);
+    // Top-align image + label stack so the image stays at the top of the row
+    // when text wraps (parent .listViewItemStyle defaults to align-items: center).
+    horizontalItemPanel.getElement().getStyle().setProperty("alignItems", "flex-start");
     setItemHeight(true, true);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
