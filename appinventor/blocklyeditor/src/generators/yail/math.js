@@ -24,6 +24,19 @@ AI.Yail.forBlock['math_number_radix'] = function(block, generator) {
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
+AI.Yail.forBlock['math_compare_tolerance'] = function(block, generator) {
+  var argument0 = generator.valueToCode(block, 'A', AI.Yail.ORDER_NONE) || 0;
+  var argument1 = generator.valueToCode(block, 'B', AI.Yail.ORDER_NONE) || 0;
+  var tolerance = generator.valueToCode(block, 'TOL', AI.Yail.ORDER_NONE) || 0;
+  var subtraction = AI.Yail.YAIL_OPEN_COMBINATION + "- "
+  		+ argument0 + AI.Yail.YAIL_SPACER + argument1 + AI.Yail.YAIL_CLOSE_COMBINATION;
+  var absolute = AI.Yail.YAIL_OPEN_COMBINATION + "abs "
+  		+ subtraction + AI.Yail.YAIL_CLOSE_COMBINATION;
+  var code = AI.Yail.YAIL_OPEN_COMBINATION + "<= " + absolute + AI.Yail.YAIL_SPACER
+			+ tolerance + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, AI.Yail.ORDER_ATOMIC];
+};
+
 AI.Yail.forBlock['math_compare'] = function(block, generator) {
   // Basic compare operators
   var mode = block.getFieldValue('OP');

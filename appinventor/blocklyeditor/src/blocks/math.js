@@ -110,6 +110,26 @@ Blockly.Blocks.math_number_radix.RADIX = {
   'HEX': 16
 };
 
+Blockly.Blocks['math_compare_tolerance'] = {
+  category: 'Math',
+  helpUrl: Blockly.Msg.LAND_MATH_COMPARE_TOLERANCE_HELPURL,
+  init: function() {
+  	this.setColour(Blockly.MATH_CATEGORY_HUE);
+  	this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
+  	this.appendValueInput('A')
+				.setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
+		this.appendValueInput('B')
+				.setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+				.appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE);
+		this.appendValueInput('TOL')
+				.setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+				.appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE);
+		this.setInputsInline(true);
+		this.setTooltip(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TOOLTIP);
+  },
+	typeblock: [{translatedName: Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE}]
+};
+
 Blockly.Blocks['math_compare'] = {
   // Basic arithmetic operator.
   // TODO(Andrew): equality block needs to have any on the sockets.
