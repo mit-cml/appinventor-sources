@@ -140,7 +140,14 @@ public class QUtil {
     }
     if ((!legacy && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) || forcePrivate) {
       // Q no longer allows using getExternalStorageDirectory()
-      return context.getExternalFilesDir(null);
+      File externalStorage = context.getExternalFilesDir(null);
+      if (externalStorage == null) {
+        // This can happen if the external storage is not currently mounted, but we need some
+        // place to put assets, etc. Fall back to internal storage in this case.
+        return context.getFilesDir();
+      } else {
+        return externalStorage;
+      }
     } else {
       return Environment.getExternalStorageDirectory();
     }
@@ -167,6 +174,30 @@ public class QUtil {
       return getExternalStoragePath(context, forcePrivate) + "/assets/";
     } else {
       return getExternalStoragePath(context, forcePrivate) + "/AppInventor/assets/";
+    }
+  }
+
+  /**
+   * Get the SDK-specific path where the REPL databases live. On Android Q and later, this is always
+   * an app-private directory on the "external" storage. On earlier versions of Android, this
+   * returns the external storage path for all apps (although possibly user-specific).
+   * If the {@code forcePrivate} flag is true, then the app-private directory will always be
+   * returned on devices running Android 2.2 Froyo or later.
+   *
+   * <p>
+   * For more details on why this is needed, see the deprecation notice at
+   * https://developer.android.com/reference/android/os/Environment#getExternalStorageDirectory()
+   * </p>
+   *
+   * @param context a context, such as a Form
+   * @param forcePrivate force the use of the context-specific path
+   * @return the path to the REPL's database storage
+   */
+  public static String getReplDatabasePath(Context context, boolean forcePrivate) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return getExternalStoragePath(context, forcePrivate) + "/databases/";
+    } else {
+      return getExternalStoragePath(context, forcePrivate) + "/AppInventor/databases/";
     }
   }
 

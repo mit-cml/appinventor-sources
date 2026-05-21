@@ -27,6 +27,11 @@ public abstract class AbstractPaletteItemWidget extends Image {
     AbstractImagePrototype.create(image).applyTo(this);
     this.addStyleName("ode-SimplePaletteItem-button");
 
+    String altText = getAltText();
+    if (altText != null && !altText.isEmpty()) {
+      getElement().setAttribute("alt", altText);
+    }
+
     addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -52,4 +57,11 @@ public abstract class AbstractPaletteItemWidget extends Image {
    * Handles when the user clicks (or taps) on the button.
    */
   protected abstract void handleClick();
+
+  /**
+   * Returns the alternative text for this button's image (for screen readers).
+   *
+   * @return The alt text string for this button
+   */
+  public abstract String getAltText();
 }

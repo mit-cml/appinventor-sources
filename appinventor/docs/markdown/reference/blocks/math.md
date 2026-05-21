@@ -21,7 +21,7 @@ layout: documentation
 * [random set seed to](#randomseed)
 * [min](#min)
 * [max](#max)
-* [sqrt](#sqrt)
+* [square root](#sqrt)
 * [abs](#abs)
 * [neg](#neg)
 * [log](#log)
@@ -47,6 +47,13 @@ layout: documentation
 * [bitwise and](#bitwise_and)
 * [bitwise or (inclusive)](#bitwise_ior)
 * [bitwise or (exclusive)](#bitwise_xor)
+* [average](#avg)
+* [list min](#minl)
+* [list max](#maxl)
+* [mode](#mode)
+* [geometric mean](#gm)
+* [standard deviation](#sd)
+* [standard error](#se)
 
 *Can't find the math block you're looking for in the built-in blocks?*
 
@@ -202,7 +209,7 @@ Returns the smallest value of a set of numbers. If there are unplugged sockets i
 
 Returns the largest value of a set of numbers. If there are unplugged sockets in the block, max will also consider 0 in its set of numbers. This block is a [mutator](../concepts/mutators.html) and a dropdown.
 
-### sqrt   {#sqrt}
+### square root   {#sqrt}
 
 ![](images/math/sqrt.png)
 
@@ -392,3 +399,32 @@ Example:
 |         |       6 | 0 1 1 0 |
 |         |       3 | 0 0 1 1 |
 | Result: |       5 | 0 1 0 1 |
+
+
+![](images/math/avg.png)
+
+Calculates the arithmetic mean of the elements in a list.
+
+![](images/math/minl.png)
+
+Returns the minimum element in a list.
+
+![](images/math/maxl.png)
+
+Returns the maximum element in a list.
+
+![](images/math/mode.png)
+
+Returns the most frequent element in a list.
+
+![](images/math/gm.png)
+
+Calculates the geometric mean of the elements in a list.
+
+![](images/math/sd.png)
+
+Calculates the (population) standard deviations of the elements in a list.
+
+![](images/math/se.png)
+
+Calculates the standard error of the elements in a list.

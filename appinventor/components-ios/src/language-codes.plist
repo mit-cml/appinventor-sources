@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>aar</key><string>aa</string>
+<key>abk</key><string>ab</string>
+<key>afr</key><string>af</string>
+<key>aka</key><string>ak</string>
+<key>alb (B)</key><string>sq</string>
+<key>amh</key><string>am</string>
+<key>ara</key><string>ar</string>
+<key>arg</key><string>an</string>
+<key>arm (B)</key><string>hy</string>
+<key>asm</key><string>as</string>
+<key>ava</key><string>av</string>
+<key>ave</key><string>ae</string>
+<key>aym</key><string>ay</string>
+<key>aze</key><string>az</string>
+<key>bak</key><string>ba</string>
+<key>bam</key><string>bm</string>
+<key>baq (B)</key><string>eu</string>
+<key>bel</key><string>be</string>
+<key>ben</key><string>bn</string>
+<key>bih</key><string>bh</string>
+<key>bis</key><string>bi</string>
+<key>tib (B)</key><string>bo</string>
+<key>bos</key><string>bs</string>
+<key>bre</key><string>br</string>
+<key>bul</key><string>bg</string>
+<key>bur (B)</key><string>my</string>
+<key>cat</key><string>ca</string>
+<key>cze (B)</key><string>cs</string>
+<key>cha</key><string>ch</string>
+<key>che</key><string>ce</string>
+<key>chi (B)</key><string>zh</string>
+<key>chu</key><string>cu</string>
+<key>chv</key><string>cv</string>
+<key>cor</key><string>kw</string>
+<key>cos</key><string>co</string>
+<key>cre</key><string>cr</string>
+<key>wel (B)</key><string>cy</string>
+<key>cze (B)</key><string>cs</string>
+<key>dan</key><string>da</string>
+<key>ger (B)</key><string>de</string>
+<key>div</key><string>dv</string>
+<key>dut (B)</key><string>nl</string>
+<key>dzo</key><string>dz</string>
+<key>gre (B)</key><string>el</string>
+<key>eng</key><string>en</string>
+<key>epo</key><string>eo</string>
+<key>est</key><string>et</string>
+<key>baq (B)</key><string>eu</string>
+<key>ewe</key><string>ee</string>
+<key>fao</key><string>fo</string>
+<key>per (B)</key><string>fa</string>
+<key>fij</key><string>fj</string>
+<key>fin</key><string>fi</string>
+<key>fre (B)</key><string>fr</string>
+<key>fre (B)</key><string>fr</string>
+<key>fry</key><string>fy</string>
+<key>ful</key><string>ff</string>
+<key>geo (B)</key><string>ka</string>
+<key>ger (B)</key><string>de</string>
+<key>gla</key><string>gd</string>
+<key>gle</key><string>ga</string>
+<key>glg</key><string>gl</string>
+<key>glv</key><string>gv</string>
+<key>gre (B)</key><string>el</string>
+<key>grn</key><string>gn</string>
+<key>guj</key><string>gu</string>
+<key>hat</key><string>ht</string>
+<key>hau</key><string>ha</string>
+<key>heb</key><string>he</string>
+<key>her</key><string>hz</string>
+<key>hin</key><string>hi</string>
+<key>hmo</key><string>ho</string>
+<key>hrv</key><string>hr</string>
+<key>hun</key><string>hu</string>
+<key>arm (B)</key><string>hy</string>
+<key>ibo</key><string>ig</string>
+<key>ice (B)</key><string>is</string>
+<key>ido</key><string>io</string>
+<key>iii</key><string>ii</string>
+<key>iku</key><string>iu</string>
+<key>ile</key><string>ie</string>
+<key>ina</key><string>ia</string>
+<key>ind</key><string>id</string>
+<key>ipk</key><string>ik</string>
+<key>ice (B)</key><string>is</string>
+<key>ita</key><string>it</string>
+<key>jav</key><string>jv</string>
+<key>jpn</key><string>ja</string>
+<key>kal</key><string>kl</string>
+<key>kan</key><string>kn</string>
+<key>kas</key><string>ks</string>
+<key>geo (B)</key><string>ka</string>
+<key>kau</key><string>kr</string>
+<key>kaz</key><string>kk</string>
+<key>khm</key><string>km</string>
+<key>kik</key><string>ki</string>
+<key>kin</key><string>rw</string>
+<key>kir</key><string>ky</string>
+<key>kom</key><string>kv</string>
+<key>kon</key><string>kg</string>
+<key>kor</key><string>ko</string>
+<key>kua</key><string>kj</string>
+<key>kur</key><string>ku</string>
+<key>lao</key><string>lo</string>
+<key>lat</key><string>la</string>
+<key>lav</key><string>lv</string>
+<key>lim</key><string>li</string>
+<key>lin</key><string>ln</string>
+<key>lit</key><string>lt</string>
+<key>ltz</key><string>lb</string>
+<key>lub</key><string>lu</string>
+<key>lug</key><string>lg</string>
+<key>mac (B)</key><string>mk</string>
+<key>mah</key><string>mh</string>
+<key>mal</key><string>ml</string>
+<key>mao (B)</key><string>mi</string>
+<key>mar</key><string>mr</string>
+<key>may (B)</key><string>ms</string>
+<key>mac (B)</key><string>mk</string>
+<key>mlg</key><string>mg</string>
+<key>mlt</key><string>mt</string>
+<key>mon</key><string>mn</string>
+<key>mao (B)</key><string>mi</string>
+<key>may (B)</key><string>ms</string>
+<key>bur (B)</key><string>my</string>
+<key>nau</key><string>na</string>
+<key>nav</key><string>nv</string>
+<key>nbl</key><string>nr</string>
+<key>nde</key><string>nd</string>
+<key>ndo</key><string>ng</string>
+<key>nep</key><string>ne</string>
+<key>dut (B)</key><string>nl</string>
+<key>nno</key><string>nn</string>
+<key>nob</key><string>nb</string>
+<key>nor</key><string>no</string>
+<key>nya</key><string>ny</string>
+<key>oci</key><string>oc</string>
+<key>oji</key><string>oj</string>
+<key>ori</key><string>or</string>
+<key>orm</key><string>om</string>
+<key>oss</key><string>os</string>
+<key>pan</key><string>pa</string>
+<key>per (B)</key><string>fa</string>
+<key>pli</key><string>pi</string>
+<key>pol</key><string>pl</string>
+<key>por</key><string>pt</string>
+<key>pus</key><string>ps</string>
+<key>que</key><string>qu</string>
+<key>roh</key><string>rm</string>
+<key>rum (B)</key><string>ro</string>
+<key>rum (B)</key><string>ro</string>
+<key>run</key><string>rn</string>
+<key>rus</key><string>ru</string>
+<key>sag</key><string>sg</string>
+<key>san</key><string>sa</string>
+<key>sin</key><string>si</string>
+<key>slo (B)</key><string>sk</string>
+<key>slo (B)</key><string>sk</string>
+<key>slv</key><string>sl</string>
+<key>sme</key><string>se</string>
+<key>smo</key><string>sm</string>
+<key>sna</key><string>sn</string>
+<key>snd</key><string>sd</string>
+<key>som</key><string>so</string>
+<key>sot</key><string>st</string>
+<key>spa</key><string>es</string>
+<key>alb (B)</key><string>sq</string>
+<key>srd</key><string>sc</string>
+<key>srp</key><string>sr</string>
+<key>ssw</key><string>ss</string>
+<key>sun</key><string>su</string>
+<key>swa</key><string>sw</string>
+<key>swe</key><string>sv</string>
+<key>tah</key><string>ty</string>
+<key>tam</key><string>ta</string>
+<key>tat</key><string>tt</string>
+<key>tel</key><string>te</string>
+<key>tgk</key><string>tg</string>
+<key>tgl</key><string>tl</string>
+<key>tha</key><string>th</string>
+<key>tib (B)</key><string>bo</string>
+<key>tir</key><string>ti</string>
+<key>ton</key><string>to</string>
+<key>tsn</key><string>tn</string>
+<key>tso</key><string>ts</string>
+<key>tuk</key><string>tk</string>
+<key>tur</key><string>tr</string>
+<key>twi</key><string>tw</string>
+<key>uig</key><string>ug</string>
+<key>ukr</key><string>uk</string>
+<key>urd</key><string>ur</string>
+<key>uzb</key><string>uz</string>
+<key>ven</key><string>ve</string>
+<key>vie</key><string>vi</string>
+<key>vol</key><string>vo</string>
+<key>wel (B)</key><string>cy</string>
+<key>wln</key><string>wa</string>
+<key>wol</key><string>wo</string>
+<key>xho</key><string>xh</string>
+<key>yid</key><string>yi</string>
+<key>yor</key><string>yo</string>
+<key>zha</key><string>za</string>
+<key>chi (B)</key><string>zh</string>
+<key>zul</key><string>zu</string>
+</dict>
+</plist>

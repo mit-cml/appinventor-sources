@@ -1,0 +1,21 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_ewpatton.LogicBlocksTest.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (p$test_logic_boolean ) #t)
+(def (p$test_logic_false ) (call-yail-primitive yail-not (*list-for-runtime* #f) '(boolean) "not"))
+(def (p$test_logic_negate ) (call-yail-primitive yail-not (*list-for-runtime* #f) '(boolean) "not"))
+(def (p$test_logic_compare ) (call-yail-primitive yail-equal? (*list-for-runtime* #t #t) '(any any) "="))
+(def (p$test_logic_operation ) (and-delayed #t #t))
+(def (p$test_logic_or ) (or-delayed #f #t))
+;;; Screen1
+#|
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AppName "LogicBlocksTest" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+(init-runtime)
+|#

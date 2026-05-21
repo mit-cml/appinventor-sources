@@ -191,7 +191,7 @@ Consider the following JSON and blocks:
     "last_name": "Beaver"
   },{
     "first_name": "John",
-    "last_name": "Smith",
+    "last_name": "Smith"
   },{
     "first_name": "Jane",
     "last_name": "Doe"

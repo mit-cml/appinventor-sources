@@ -18,18 +18,45 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" antfile="ios-build.xml"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayAppExtras"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="Emulator"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="Companion"/>
   </target>
 
   <target name="MakeAuthKey">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="MakeAuthKey"/>
   </target>
 
+  <target name="android">
+    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
+  <target name="webapp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
+  </target>
+
   <target name="comps">
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
+  </target>
+
+  <target name="ios">
+    <ant inheritAll="false" antfile="ios-build.xml"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="Companion"/>
+  </target>
+
+  <target name="ioscomps">
+    <ant inheritAll="false" antfile="ios-build.xml" target="install"/>
+  </target>
+
+  <target name="iostests">
+    <ant inheritAll="false" antfile="ios-build.xml" target="tests"/>
   </target>
 
   <target name="comps1">
@@ -94,6 +121,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="tests"/>
     <mkdir dir="reports"/>
     <junitreport todir="reports">
       <fileset dir="appengine/reports/raw" includes="TEST-*.xml"/>
@@ -169,6 +197,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
+    <ant inheritAll="false" antfile="ios-build.xml" target="clean"/>
     <delete dir="build"/>
     <delete dir="reports"/>
   </target>

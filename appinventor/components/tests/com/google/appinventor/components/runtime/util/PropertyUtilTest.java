@@ -39,6 +39,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -69,6 +72,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -110,6 +116,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -152,6 +161,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -180,6 +192,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -209,6 +224,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -233,6 +251,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -262,6 +283,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -293,6 +317,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -330,6 +357,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -364,6 +394,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -492,6 +525,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
 
     TestClass sourceObj = new TestClass();
@@ -553,6 +589,9 @@ public class PropertyUtilTest extends TestCase {
       public HandlesEventDispatching getDispatchDelegate() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void setComponentName(final String componentName) {}
     }
     @SimpleObject
     class TestClass extends SuperTestClass {

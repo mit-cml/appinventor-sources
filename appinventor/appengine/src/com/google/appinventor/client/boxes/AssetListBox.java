@@ -41,6 +41,9 @@ public final class AssetListBox extends Box {
 
     alist = new AssetList();
     setContent(alist);
+
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.assetListAriaLabel());
   }
 
   /**

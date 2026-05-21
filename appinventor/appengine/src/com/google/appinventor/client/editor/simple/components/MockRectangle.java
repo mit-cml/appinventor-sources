@@ -184,6 +184,10 @@ public class MockRectangle extends MockPolygonBase {
     this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
       this.@com.google.appinventor.client.editor.simple.components.MockPolygon::getTooltip()()
     );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(rect);
+    }
   }-*/;
 
   private native void setBounds(double south, double west, double north, double east)/*-{

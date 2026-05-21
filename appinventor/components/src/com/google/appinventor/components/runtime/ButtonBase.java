@@ -6,8 +6,30 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.animation.StateListAnimator;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnLongClickListener;
+import android.view.ViewOutlineProvider;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -18,25 +40,8 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
 import com.google.appinventor.components.runtime.util.KitkatUtil;
-import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-import android.view.MotionEvent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
-import android.graphics.drawable.shapes.RectShape;
-import android.graphics.drawable.shapes.RoundRectShape;
-import android.graphics.PorterDuff;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnLongClickListener;
-
-import java.io.IOException;
 
 /**
  * Underlying base class for click-based components, not directly accessible to Simple programmers.
@@ -44,12 +49,10 @@ import java.io.IOException;
  */
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-public abstract class ButtonBase extends AndroidViewComponent
-    implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
+public abstract class ButtonBase extends TouchComponent<android.widget.Button>
+    implements OnClickListener, OnFocusChangeListener, OnLongClickListener, AccessibleComponent {
 
   private static final String LOG_TAG = "ButtonBase";
-
-  private final android.widget.Button view;
 
   // Constant for shape
   // 10px is the radius of the rounded corners.
@@ -66,17 +69,11 @@ public abstract class ButtonBase extends AndroidViewComponent
   // Backing for text alignment
   private int textAlignment;
 
-  // Backing for background color
-  private int backgroundColor;
-
   // Backing for font typeface
-  private int fontTypeface;
+  private String fontTypeface;
 
   // Backing for font bold
   private boolean bold;
-
-  // Used for determining if visual feedback should be provided for buttons that have images
-  private boolean showFeedback=true;
 
   // Backing for font italic
   private boolean italic;
@@ -87,21 +84,22 @@ public abstract class ButtonBase extends AndroidViewComponent
   // Backing for button shape
   private int shape;
 
-  // Image path
-  private String imagePath = "";
-
-  // This is our handle on Android's nice 3-d default button.
-  private Drawable defaultButtonDrawable;
-
   private Drawable myBackgroundDrawable = null;
 
   // This is our handle in Android's default button color states;
   private ColorStateList defaultColorStateList;
 
-  // This is the Drawable corresponding to the Image property.
-  // If an Image has never been set or if the most recent Image
-  // could not be loaded, this is null.
-  private Drawable backgroundImageDrawable;
+  // This is the original outline provider created for the button.
+  private Object defaultOutlineProvider;
+
+  // This is the original state animator created for the button.
+  private Object defaultStateAnimator;
+
+  //Whether or not the button is in high contrast mode
+  private boolean isHighContrast = false;
+
+  //Whether or not the button is in big text mode
+  private boolean isBigText = false;
 
   /**
    * The minimum width of a button for the current theme.
@@ -127,87 +125,35 @@ public abstract class ButtonBase extends AndroidViewComponent
     view = new android.widget.Button(container.$context());
 
     // Save the default values in case the user wants them back later.
-    defaultButtonDrawable = view.getBackground();
     defaultColorStateList = view.getTextColors();
     defaultButtonMinWidth = KitkatUtil.getMinWidth(view);
     defaultButtonMinHeight = KitkatUtil.getMinHeight(view);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      defaultOutlineProvider = view.getOutlineProvider();
+      defaultStateAnimator = view.getStateListAnimator();
+    }
 
-    // Adds the component to its designated container
-    container.$add(this);
+    // Initialize TouchComponent attributes
+    initToggle();
 
     // Listen to clicks and focus changes
     view.setOnClickListener(this);
     view.setOnFocusChangeListener(this);
     view.setOnLongClickListener(this);
-    view.setOnTouchListener(this);
     IceCreamSandwichUtil.setAllCaps(view, false);
 
     // Default property values
     TextAlignment(Component.ALIGNMENT_CENTER);
-    // BackgroundColor and Image are dangerous properties:
-    // Once either of them is set, the 3D bevel effect for the button is
-    // irretrievable, except by reloading defaultButtonDrawable, defined above.
-    BackgroundColor(Component.COLOR_DEFAULT);
-    Image("");
-    Enabled(true);
     fontTypeface = Component.TYPEFACE_DEFAULT;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
     Shape(Component.BUTTON_SHAPE_DEFAULT);
   }
 
-    /**
-     * If a custom background images is specified for the button, then it will lose the pressed
-     * and disabled image effects; no visual feedback.
-     * The approach below is to provide a visual feedback if and only if an image is assigned
-     * to the button. In this situation, we overlay a gray background when pressed and
-     * release when not-pressed.
-     */
-    @Override
-    public boolean onTouch(View view, MotionEvent me) {
-      //NOTE: We ALWAYS return false because we want to indicate that this listener has not
-      //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
-      if (me.getAction() == MotionEvent.ACTION_DOWN) {
-        //button pressed, provide visual feedback AND return false
-        if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-          view.getBackground().setAlpha(70); // translucent
-          view.invalidate();
-        }
-        TouchDown();
-      } else if (me.getAction() == MotionEvent.ACTION_UP ||
-              me.getAction() == MotionEvent.ACTION_CANCEL) {
-        //button released, set button back to normal AND return false
-        if (ShowFeedback() && (AppInventorCompatActivity.isClassicMode() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-          view.getBackground().setAlpha(255); // opaque
-          view.invalidate();
-        }
-        TouchUp();
-      }
-
-      return false;
-    }
-
-  @Override
-  public View getView() {
-    return view;
-  }
-
-  /**
-   * Indicates that the `%type%` was pressed down.
-   */
-  @SimpleEvent(description = "Indicates that the %type% was pressed down.")
-  public void TouchDown() {
-    EventDispatcher.dispatchEvent(this, "TouchDown");
-  }
-
-  /**
-   * Indicates that the `%type%` has been released.
-   */
-  @SimpleEvent(description = "Indicates that the %type% has been released.")
-  public void TouchUp() {
-    EventDispatcher.dispatchEvent(this, "TouchUp");
+  public void Initialize(){
+    updateAppearance();
   }
 
   /**
@@ -305,96 +251,10 @@ public abstract class ButtonBase extends AndroidViewComponent
     updateAppearance();
   }
 
-  /**
-   * Returns the path of the `%type%`'s image.
-   *
-   * @return  the path of the button's image
-   */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      description = "Image to display on button.")
-  public String Image() {
-    return imagePath;
-  }
-
-  /**
-   * Specifies the path of the `%type%`'s image. If there is both an `Image` and a
-   * {@link #BackgroundColor()} specified, only the `Image` will be visible.
-   *
-   * @internaldoc
-   * <p/>See {@link MediaUtil#determineMediaSource} for information about what
-   * a path can be.
-   *
-   * @param path  the path of the button's image
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
-      defaultValue = "")
-  @SimpleProperty(description = "Specifies the path of the image of the %type%.  " +
-      "If there is both an Image and a BackgroundColor, only the Image will be " +
-      "visible.")
-  public void Image(String path) {
-    // If it's the same as on the prior call and the prior load was successful,
-    // do nothing.
-    if (path.equals(imagePath) && backgroundImageDrawable != null) {
-      return;
-    }
-
-    imagePath = (path == null) ? "" : path;
-
-    // Clear the prior background image.
-    backgroundImageDrawable = null;
-
-    // Load image from file.
-    if (imagePath.length() > 0) {
-      try {
-        backgroundImageDrawable = MediaUtil.getBitmapDrawable(container.$form(), imagePath);
-      } catch (IOException ioe) {
-        // TODO(user): Maybe raise Form.ErrorOccurred.
-        Log.e(LOG_TAG, "Unable to load " + imagePath);
-        // Fall through with a value of null for backgroundImageDrawable.
-      }
-    }
-
-    // Update the appearance based on the new value of backgroundImageDrawable.
-    updateAppearance();
-  }
-
-  /**
-   * Returns the `%type%`'s background color as an alpha-red-green-blue
-   * integer.
-   *
-   * @return  background RGB color with alpha
-   */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      description = "Returns the button's background color")
-  @IsColor
-  public int BackgroundColor() {
-    return backgroundColor;
-  }
-
-  /**
-   * Specifies the `%type%`'s background color as an alpha-red-green-blue
-   * integer.  If an {@link #Image(String)} has been set, the color
-   * change will not be visible until the {@link #Image(String)} is removed.
-   *
-   * @internaldoc
-   * If the parameter is {@link Component#COLOR_DEFAULT}, the original beveling is restored.
-   *
-   * @param argb background RGB color with alpha
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-                    defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
-  @SimpleProperty(description = "Specifies the background color of the %type%. " +
-      "The background color will not be visible if an Image is being displayed.")
-  public void BackgroundColor(int argb) {
-    backgroundColor = argb;
-    updateAppearance();
-  }
-
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
   // Images take precedence over background colors.
-  private void updateAppearance() {
+  @Override
+  protected void updateAppearance() {
     // If there is no background image,
     // the appearance depends solely on the background color and shape.
     if (backgroundImageDrawable == null) {
@@ -402,20 +262,16 @@ public abstract class ButtonBase extends AndroidViewComponent
         if (backgroundColor == Component.COLOR_DEFAULT) {
           // If there is no background image and color is default,
           // restore original 3D bevel appearance.
-          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
-        } else if (backgroundColor == Component.COLOR_NONE) {
-          // Clear the background image.
-          ViewUtil.setBackgroundDrawable(view, null);
-          //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
-          view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
+          if (isHighContrast || container.$form().HighContrast()) {
+            ViewUtil.setBackgroundDrawable(view, null);
+            ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
+            view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
+          }
+          else {
+            super.updateAppearance();
+          }
         } else {
-          // Clear the background image.
-          ViewUtil.setBackgroundDrawable(view, null);
-          //Now we set again the default drawable
-          ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
-          //@Author NMD (Next Mobile Development) [nmdofficialhelp@gmail.com]
-          view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
+          super.updateAppearance();
         }
       } else {
         // If there is no background image and the shape is something other than default,
@@ -424,15 +280,48 @@ public abstract class ButtonBase extends AndroidViewComponent
       }
       TextViewUtil.setMinSize(view, defaultButtonMinWidth, defaultButtonMinHeight);
     } else {
-      // If there is a background image
-      ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
-      TextViewUtil.setMinSize(view, 0, 0);
+      if ((shape == Component.BUTTON_SHAPE_DEFAULT)) {
+        super.updateAppearance();
+        TextViewUtil.setMinSize(view, 0, 0);
+      } else {
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+
+        Bitmap backgroundBitmap = ((BitmapDrawable) backgroundImageDrawable).getBitmap();
+        float displayDensity = view.getContext().getResources().getDisplayMetrics().density;
+        int shapeHeight = Math.round(backgroundImageDrawable.getIntrinsicHeight() * displayDensity);
+        int shapeWidth = Math.round(backgroundImageDrawable.getIntrinsicWidth() * displayDensity);
+
+        Bitmap result = Bitmap.createBitmap(shapeWidth, shapeHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+
+        switch (shape) {
+          case Component.BUTTON_SHAPE_ROUNDED:
+            canvas.drawRoundRect(new RectF(0, 0,shapeWidth, shapeHeight), 100f, 100f, paint);
+            //100f was used because the rounded feature could not be seen with 10f in companion, emulator, and phone. 
+            break;
+          case Component.BUTTON_SHAPE_RECT:
+            canvas.drawRect(new RectF(0, 0, shapeWidth, shapeHeight), paint);
+            break;
+          case Component.BUTTON_SHAPE_OVAL:
+            canvas.drawOval(new RectF(0, 0, shapeWidth, shapeHeight), paint);
+            break;
+          default:
+            throw new IllegalArgumentException();
+        }
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        canvas.drawBitmap(backgroundBitmap, null, new Rect(0, 0, shapeWidth, shapeHeight), paint);
+
+        ViewUtil.setBackgroundImage(view, new BitmapDrawable(result));
+      }
     }
   }
 
   private Drawable getSafeBackgroundDrawable() {
     if (myBackgroundDrawable == null) {
-      Drawable.ConstantState state = defaultButtonDrawable.getConstantState();
+      Drawable.ConstantState state = defaultDrawable.getConstantState();
       if (state != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
         try {
           myBackgroundDrawable = state.newDrawable().mutate();
@@ -440,11 +329,11 @@ public abstract class ButtonBase extends AndroidViewComponent
           // We see this on SDK 7, but given we can't easily test every version
           // this is meant as a safeguard.
           Log.e(LOG_TAG, "Unable to clone button drawable", e);
-          myBackgroundDrawable = defaultButtonDrawable;
+          myBackgroundDrawable = defaultDrawable;
         }
       } else {
         // Since we can't make a copy of the default we'll just use it directly
-        myBackgroundDrawable = defaultButtonDrawable;
+        myBackgroundDrawable = defaultDrawable;
       }
     }
     return myBackgroundDrawable;
@@ -479,6 +368,10 @@ public abstract class ButtonBase extends AndroidViewComponent
         throw new IllegalArgumentException();
     }
 
+    if (backgroundColor != Component.COLOR_DEFAULT && !container.$form().HighContrast()) {
+      drawable.getPaint().setColor(backgroundColor);
+    }
+
     // Set drawable to the background of the button.
     if (!AppInventorCompatActivity.isClassicMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       ViewUtil.setBackgroundDrawable(view, new RippleDrawable(createRippleState(), drawable, drawable));
@@ -486,41 +379,30 @@ public abstract class ButtonBase extends AndroidViewComponent
       ViewUtil.setBackgroundDrawable(view, drawable);
     }
 
+    // Hides the button shadow on Material UI if the background is NONE
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (backgroundColor == Component.COLOR_NONE) {
+        view.setOutlineProvider(null);
+        view.setStateListAnimator(null);
+      } else {
+        view.setOutlineProvider((ViewOutlineProvider) defaultOutlineProvider);
+        view.setStateListAnimator((StateListAnimator) defaultStateAnimator);
+      }
+    }
+
     if (backgroundColor == Component.COLOR_NONE) {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.CLEAR);
-    }
-    else if (backgroundColor == Component.COLOR_DEFAULT) {
-      view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
-    }
-    else {
+    } else if (backgroundColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast || container.$form().HighContrast()) {
+        view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
+      } else {
+        view.getBackground().setColorFilter(SHAPED_DEFAULT_BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
+      }
+    } else {
       view.getBackground().setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP);
     }
 
     view.invalidate();
-  }
-
-  /**
-   * If set, user can tap `%type%` to cause action.
-   *
-   * @return  {@code true} indicates enabled, {@code false} disabled
-   */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR,
-      description = "If set, user can tap %type% to cause action.")
-  public boolean Enabled() {
-    return TextViewUtil.isEnabled(view);
-  }
-
-  /**
-   * Specifies whether the `%type%` should be active and clickable.
-   *
-   * @param enabled  {@code true} for enabled, {@code false} disabled
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
-  @SimpleProperty
-  public void Enabled(boolean enabled) {
-    TextViewUtil.setEnabled(view, enabled);
   }
 
   /**
@@ -549,42 +431,10 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE)
   public void FontBold(boolean bold) {
     this.bold = bold;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
-   * Specifies if a visual feedback should be shown when a `%type%` with an assigned
-   * {@link #Image()} is pressed.
-   *
-   * @param showFeedback  {@code true} enables showing feedback,
-   *                 {@code false} disables it
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-          defaultValue = "True")
-  @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
-          " for a %type% that has an image as background.")
-
-  public void ShowFeedback(boolean showFeedback) {
-    this.showFeedback =showFeedback;
-  }
-
-    /**
-     * Returns true if the text of the `%type%` should be bold.
-     * If bold has been requested, this property will return true, even if the
-     * font does not support bold.
-     *
-     * @suppressdoc
-     * @return {@code true} indicates visual feedback will be shown,
-     *                 {@code false} visual feedback will not be shown
-     */
-    @SimpleProperty(
-            category = PropertyCategory.APPEARANCE,
-            description = "Returns the visual feedback state of the %type%")
-    public boolean ShowFeedback() {
-        return showFeedback;
-    }
-
-    /**
    * If set, the text of the `%type%` will attempt to use an italic font.
    * If italic has been requested, this property will return `true`{:.logic.block}, even if the
    * font does not support italic.
@@ -610,7 +460,7 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE)
   public void FontItalic(boolean italic) {
     this.italic = italic;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -638,12 +488,16 @@ public abstract class ButtonBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public void FontSize(float size) {
-    TextViewUtil.setFontSize(view, size);
+    if (size == FONT_DEFAULT_SIZE && container.$form().BigDefaultText()) {
+      TextViewUtil.setFontSize(view, 24);
+    } else {
+      TextViewUtil.setFontSize(view, size);
+    }
   }
 
   /**
-   * The text font face of the `%type%`. Valid values are `0` (default), `1` (serif), `2` (sans
-   * serif), or `3` (monospace).
+   * The text font face of the `%type%`. Valid values are default, serif, sans serif, monospace,
+   * and .ttf or .otf font file.
    *
    * @return  one of {@link Component#TYPEFACE_DEFAULT},
    *          {@link Component#TYPEFACE_SERIF},
@@ -654,13 +508,14 @@ public abstract class ButtonBase extends AndroidViewComponent
       category = PropertyCategory.APPEARANCE,
       description = "Font family for %type% text.",
       userVisible = false)
-  public int FontTypeface() {
+  public String FontTypeface() {
     return fontTypeface;
   }
 
   /**
    * Specifies the text font face of the `%type%` as default, serif, sans
-   * serif, or monospace.
+   * serif, monospace, or custom font typeface. To add a custom typeface,
+   * upload a .ttf file to the project's media.
    *
    * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
    *                  {@link Component#TYPEFACE_SERIF},
@@ -671,9 +526,9 @@ public abstract class ButtonBase extends AndroidViewComponent
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(int typeface) {
+  public void FontTypeface(String typeface) {
     fontTypeface = typeface;
-    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+    TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
 
   /**
@@ -729,7 +584,12 @@ public abstract class ButtonBase extends AndroidViewComponent
     if (argb != Component.COLOR_DEFAULT) {
       TextViewUtil.setTextColor(view, argb);
     } else {
-      TextViewUtil.setTextColors(view, defaultColorStateList);
+      if (isHighContrast || container.$form().HighContrast()){
+        TextViewUtil.setTextColor(view, Color.WHITE);
+      }
+      else {
+        TextViewUtil.setTextColors(view, defaultColorStateList);
+      }
     }
   }
 
@@ -766,6 +626,50 @@ public abstract class ButtonBase extends AndroidViewComponent
   @Override
   public boolean onLongClick(View view) {
     return longClick();
+  }
+
+  @Override
+  public void setHighContrast(boolean isHighContrast) {
+    //background of button
+    if (backgroundImageDrawable == null && shape == Component.BUTTON_SHAPE_DEFAULT && backgroundColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast) {
+        ViewUtil.setBackgroundDrawable(view, null);
+        ViewUtil.setBackgroundDrawable(view, getSafeBackgroundDrawable());
+        view.getBackground().setColorFilter(Component.COLOR_BLACK, PorterDuff.Mode.SRC_ATOP);
+      } else {
+        ViewUtil.setBackgroundDrawable(view, defaultDrawable);
+      }
+    }
+
+    //color of text
+    if (textColor == Component.COLOR_DEFAULT) {
+      if (isHighContrast) {
+        TextViewUtil.setTextColor(view, Color.WHITE);
+      } else {
+        TextViewUtil.setTextColors(view, defaultColorStateList);
+      }
+    }
+  }
+
+  @Override
+  public boolean getHighContrast() {
+    return isHighContrast;
+  }
+
+  @Override
+  public void setLargeFont(boolean isLargeFont) {
+    if (TextViewUtil.getFontSize(view, container.$context()) == 24.0 || TextViewUtil.getFontSize(view, container.$context()) == Component.FONT_DEFAULT_SIZE) {
+      if (isLargeFont) {
+        TextViewUtil.setFontSize(view, 24);
+      } else {
+        TextViewUtil.setFontSize(view, Component.FONT_DEFAULT_SIZE);
+      }
+    }
+  }
+
+  @Override
+  public boolean getLargeFont() {
+    return isBigText;
   }
 
 }

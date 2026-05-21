@@ -9,91 +9,91 @@
 
 'use strict';
 
-goog.provide('Blockly.Yail.color');
+goog.provide('AI.Yail.color');
 
-Blockly.Yail.color = function() {
+AI.Yail.color = function(block) {
   // Convert hex value to numeric value
-  var code = -1 * (window.Math.pow(16,6) - window.parseInt("0x" + this.getFieldValue('COLOR').substr(1)));
-  return [code, Blockly.Yail.ORDER_ATOMIC];
+  var code = -1 * (window.Math.pow(16,6) - window.parseInt("0x" + block.getFieldValue('COLOR').substr(1)));
+  return [code, AI.Yail.ORDER_ATOMIC];
 };
 
-Blockly.Yail['color_black'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_black'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_blue'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_blue'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_cyan'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_cyan'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_dark_gray'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_dark_gray'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_gray'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_gray'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_green'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_green'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_light_gray'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_light_gray'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_magenta'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_magenta'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_pink'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_pink'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_red'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_red'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_white'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_white'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_orange'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_orange'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_yellow'] = function() {
-  return Blockly.Yail.color.call(this);
+AI.Yail.forBlock['color_yellow'] = function(block, generator) {
+  return AI.Yail.color(block);
 };
 
-Blockly.Yail['color_make_color'] = function() {
+AI.Yail.forBlock['color_make_color'] = function(block, generator) {
   var blackList = "(call-yail-primitive make-yail-list (*list-for-runtime* 0 0 0)  '( any any any)  \"make a list\")";
-  var argument0 = Blockly.Yail.valueToCode(this, 'COLORLIST', Blockly.Yail.ORDER_NONE) || blackList;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-color" + Blockly.Yail.YAIL_SPACER;
-  code += Blockly.Yail.YAIL_OPEN_COMBINATION
-      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "list"
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code += Blockly.Yail.YAIL_DOUBLE_QUOTE + "make-color"
-      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  var argument0 = generator.valueToCode(block, 'COLORLIST', AI.Yail.ORDER_NONE) || blackList;
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "make-color" + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_OPEN_COMBINATION
+      + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
+      + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
+      + AI.Yail.YAIL_OPEN_COMBINATION + "list"
+      + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_DOUBLE_QUOTE + "make-color"
+      + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail['color_split_color'] = function() {
-  var argument0 = Blockly.Yail.valueToCode(this, 'COLOR', Blockly.Yail.ORDER_NONE) || -1;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "split-color" + Blockly.Yail.YAIL_SPACER;
-  code += Blockly.Yail.YAIL_OPEN_COMBINATION
-      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "number"
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code += Blockly.Yail.YAIL_DOUBLE_QUOTE + "split-color"
-      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+AI.Yail.forBlock['color_split_color'] = function(block, generator) {
+  var argument0 = generator.valueToCode(block, 'COLOR', AI.Yail.ORDER_NONE) || -1;
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "split-color" + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_OPEN_COMBINATION
+      + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
+      + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
+      + AI.Yail.YAIL_OPEN_COMBINATION + "number"
+      + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code += AI.Yail.YAIL_DOUBLE_QUOTE + "split-color"
+      + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };

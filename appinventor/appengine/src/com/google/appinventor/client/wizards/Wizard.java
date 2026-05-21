@@ -7,6 +7,9 @@
 package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.gwt.aria.client.Roles;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -84,6 +87,29 @@ public abstract class Wizard extends DialogBox {
 
     setStylePrimaryName("ode-DialogBox");
     setText(title);
+
+    // Add ARIA role for dialog accessibility
+    Roles.getDialogRole().set(getElement());
+    if (modal) {
+      getElement().setAttribute("aria-modal", "true");
+    }
+
+    // Set aria-label for accessibility (using title since caption element is not easily accessible)
+    getElement().setAttribute("aria-label", title);
+
+    // Add global Escape key handler for accessibility
+    Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+      @Override
+      public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if (event.getTypeInt() == Event.ONKEYDOWN &&
+            isShowing() &&
+            event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+          event.getNativeEvent().preventDefault();
+          event.getNativeEvent().stopPropagation();
+          handleCancelClick();
+        }
+      }
+    });
 
     ClickListener buttonListener = new ClickListener() {
       @Override
@@ -287,6 +313,10 @@ public abstract class Wizard extends DialogBox {
     okButton.setEnabled(true);
   }
 
+  protected HorizontalPanel getButtonPanel() {
+    return buttonPanel;
+  }
+
   /*
    * Hides the wizard.
    * Note that we are not overriding hide() because it is called by center() which can some
@@ -312,6 +342,12 @@ public abstract class Wizard extends DialogBox {
 
     // Show page
     pageDeck.showWidget(currentPageIndex);
+
+    // Announce page change to screen readers for multi-page wizards
+    if (pageDeck.getWidgetCount() > 1) {
+      String pageAnnouncement = "Page " + (currentPageIndex + 1) + " of " + pageDeck.getWidgetCount();
+      getElement().setAttribute("aria-label", pageAnnouncement);
+    }
 
     // Because pages are embedded in scroll panels it is important to set the size of the page to
     // the current height of the content panel

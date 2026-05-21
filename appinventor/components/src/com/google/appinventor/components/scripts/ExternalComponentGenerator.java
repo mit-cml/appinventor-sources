@@ -12,8 +12,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.json.JSONException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -156,24 +161,35 @@ public class ExternalComponentGenerator {
 
 
   private static void generateExternalComponentBuildFiles(String packageName, List<ExternalComponentInfo> extensions) throws IOException {
-    String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
     String extensionTempDirPath = externalComponentsTempDirPath + File.separator + packageName;
-    String  extensionFileDirPath = extensionDirPath + File.separator + "files";
-    copyRelatedExternalClasses(androidRuntimeClassDirPath, packageName, extensionTempDirPath);
+    copyRelatedExternalClasses(androidRuntimeClassDirPath, androidRuntimeClassDirPath, packageName,
+        extensionTempDirPath);
+    File commonConstants = new File(new File(androidRuntimeClassDirPath).getParentFile(),
+        "CommonConstants");
+    copyRelatedExternalClasses(commonConstants.getAbsolutePath(), commonConstants.getAbsolutePath(),
+        packageName, extensionTempDirPath);
 
     JSONArray buildInfos = new JSONArray();
     for (ExternalComponentInfo info : extensions) {
       JSONObject componentBuildInfo = info.buildInfo;
       try {
         JSONArray librariesNeeded = componentBuildInfo.getJSONArray("libraries");
+        JSONArray librariesAar = new JSONArray();
+        boolean ensureFreshDir = true;
+
         for (int j = 0; j < librariesNeeded.length(); ++j) {
           // Copy Library files for Unjar and Jaring
           String library = librariesNeeded.getString(j);
           copyFile(buildServerClassDirPath + File.separator + library,
               extensionTempDirPath + File.separator + library);
+          if (library.endsWith(".aar")) {
+            copyExternalAar(library, packageName, ensureFreshDir);
+            librariesAar.put(library);
+            ensureFreshDir = false;
+          }
         }
         //empty the libraries meta-data to avoid redundancy
-        componentBuildInfo.put("libraries", new JSONArray());
+        componentBuildInfo.put("libraries", librariesAar);
       } catch(JSONException e) {
         // bad
         throw new IllegalStateException("Unexpected JSON exception parsing simple_components.json",
@@ -183,6 +199,8 @@ public class ExternalComponentGenerator {
     }
 
     // Create component_build_info.json
+    String extensionDirPath = externalComponentsDirPath + File.separator + packageName;
+    String extensionFileDirPath = extensionDirPath + File.separator + "files";
     ensureDirectory(extensionFileDirPath, "Unable to create path for component_build_info.json");
     FileWriter extensionBuildInfoFile = null;
     try {
@@ -339,58 +357,81 @@ public class ExternalComponentGenerator {
     return true;
   }
 
+  private static void copyExternalAar(String library, String packageName, boolean ensureFreshDir) throws IOException {
+    File sourceDir = new File(buildServerClassDirPath + File.separator);
+    File aarFile = new File(sourceDir, library);
+    if (!aarFile.exists() || !library.endsWith(".aar")) {
+      return;
+    }
+    // Get aar dest directory
+    File destDir = new File(externalComponentsDirPath + File.separator + packageName + File.separator);
+    File aarDestDir = new File(destDir, "aars");
+    if (ensureFreshDir) {
+      // Ensure fresh directory before put the first library
+      ensureFreshDirectory(aarDestDir.getPath(), "Unable to delete the aars directory for the extension.");
+    }
+
+    System.out.println("Extensions : " + "Copying file aar " + library);
+    copyFile(aarFile.getAbsolutePath(), aarDestDir.getAbsolutePath() + File.separator + library);
+  }
+
   /**
-   * Copy a compiled classes related to a given extension in his package folder
+   * Copy a compiled classes related to a given extension in his package folder.
    *
+   * @param basedir the root directory where classes were compiled
    * @param srcPath the folder in which to check compiled classes
    * @param extensionPackage the classpath of the extension
    * @param destPath where the compiled classes will be copied
    */
-  private static void copyRelatedExternalClasses(final String srcPath, String extensionPackage,
-                                                 final String destPath) throws IOException {
+  private static void copyRelatedExternalClasses(final String basedir, final String srcPath,
+      String extensionPackage, final String destPath) throws IOException {
     File srcFolder = new File(srcPath);
     File[] files = srcFolder.listFiles();
     if (files == null) {
       return;
     }
-    for (File fileEntry : files){
+    for (File fileEntry : files) {
       if (fileEntry.isFile()) {
-        if (isRelatedExternalClass(fileEntry.getAbsolutePath(), extensionPackage)) {
-          System.out.println("Extensions : " + "Copying file " +
-              getClassPackage(fileEntry.getAbsolutePath()).replace(".", File.separator)
+        if (isRelatedExternalClass(basedir, fileEntry.getAbsolutePath(), extensionPackage)) {
+          System.out.println("Extensions : Copying file "
+              + getClassPackage(basedir, fileEntry.getAbsolutePath()).replace(".", File.separator)
               + File.separator + fileEntry.getName());
           copyFile(fileEntry.getAbsolutePath(), destPath + File.separator + fileEntry.getName());
         }
       } else if (fileEntry.isDirectory()) {
-        String newDestPath=destPath + fileEntry.getAbsolutePath().substring(srcFolder.getAbsolutePath().length());
+        String newDestPath = destPath + fileEntry.getAbsolutePath()
+            .substring(srcFolder.getAbsolutePath().length());
         ensureDirectory(newDestPath, "Unable to create temporary path for extension build");
-        copyRelatedExternalClasses(fileEntry.getAbsolutePath(), extensionPackage, newDestPath);
+        copyRelatedExternalClasses(basedir, fileEntry.getAbsolutePath(), extensionPackage,
+            newDestPath);
       }
     }
   }
 
   /**
-   * Returns true if a class is related to an external component
-   * Current implementation returns true for all files in the same package as that of the external component
-   * A better implementation is possible but might be more complex
+   * Returns true if a class is related to an external component.
+   * The current implementation returns true for all files in the same package as that of the
+   * external component. A better implementation is possible but might be more complex
+   *
+   * @param basedir the root directory where classes were compiled
    * @param testClassAbsolutePath absolute path of the class file
    * @param extensionPackage package of the external component
    * @return {@code true} if the Java class file at {@code testClassAbsolutePath} is a member of
    * {@code extensionPackage}, {@code false} otherwise
    */
-  private static boolean isRelatedExternalClass(final String testClassAbsolutePath, final String extensionPackage ) {
+  private static boolean isRelatedExternalClass(final String basedir,
+      final String testClassAbsolutePath, final String extensionPackage) {
     if (!testClassAbsolutePath.endsWith(".class")) {  // Ignore things that aren't class files...
       return false;
     }
     String componentPackagePath = extensionPackage.replace(".", File.separator);
 
-    String testClassPath = getClassPackage(testClassAbsolutePath);
+    String testClassPath = getClassPackage(basedir, testClassAbsolutePath);
     testClassPath = testClassPath.replace(".", File.separator);
     return testClassPath.startsWith(componentPackagePath);
   }
 
-  private static String getClassPackage(String classAbsolutePath) {
-    String parentPath = androidRuntimeClassDirPath;
+  private static String getClassPackage(String parentPath, String classAbsolutePath) {
     if (!parentPath.endsWith("/")) {
       parentPath += "/";
     }

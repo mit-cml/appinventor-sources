@@ -194,6 +194,29 @@ public class JavaStringUtils {
     return join(listOfStrings, separator);
   }
 
+  /**
+   * Splits the given {@code text} into one or more parts separated by {@code at}. This version
+   * attempts to match the behavior of Java 8+ where:
+   *
+   * <p><quote>
+   *   When there is a positive-width match at the beginning of this string then an empty leading
+   *   substring is included at the beginning of the resulting array. A zero-width match at the
+   *   beginning however never produces such empty leading substring.
+   * </quote></p>
+   *
+   * @param text the string to split
+   * @param at the substring to split on
+   * @return a YailList of one or more substrings
+   */
+  public static YailList split(String text, String at) {
+    List<String> parts = new ArrayList<>();
+    Collections.addAll(parts, text.split(at));
+    if (Pattern.quote("").equals(at) && parts.get(0).equals("")) {
+      parts.remove(0);
+    }
+    return YailList.makeList(parts);
+  }
+
   private static String join(List<Object> list, String separator)
   {
     StringBuilder sb = new StringBuilder();

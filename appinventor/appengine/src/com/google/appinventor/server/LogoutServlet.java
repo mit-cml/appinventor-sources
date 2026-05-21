@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LogoutServlet extends OdeServlet {
 
   private static final Flag<Boolean> useGoogle = Flag.createFlag("auth.usegoogle", true);
+  private static final Flag<String> logoutUrl = Flag.createFlag("logout.url", "");
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -44,7 +45,11 @@ public class LogoutServlet extends OdeServlet {
       res.sendRedirect(UserServiceFactory.getUserService().createLogoutURL("/"));
       res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
     } else {
-      res.sendRedirect("/");
+      if (!logoutUrl.get().isEmpty()) {
+        res.sendRedirect(logoutUrl.get());
+      } else {
+        res.sendRedirect("/");
+      }
     }
   }
 }

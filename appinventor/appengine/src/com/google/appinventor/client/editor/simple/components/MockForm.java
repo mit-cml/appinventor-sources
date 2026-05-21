@@ -7,15 +7,19 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import static java.util.Arrays.asList;
 
+import com.google.appinventor.client.editor.designer.DesignerChangeListener;
+import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
+import com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -35,6 +39,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +57,8 @@ import java.util.Map;
  * Normal size is a 1:1 with pixels on a device with dpi:160. We use that as the baseline for the
  * browser too. All UI elements should be scaled to DP for buckets other than 'normal'.
  */
-public final class MockForm extends MockContainer {
+public final class MockForm extends MockDesignerRoot implements DesignerRootComponent {
+  private static final Logger LOG = Logger.getLogger(MockForm.class.getName());
 
   /*
    * Widget for the mock form title bar.
@@ -174,6 +182,7 @@ public final class MockForm extends MockContainer {
      */
     PhoneBar() {
       Image phoneBarImage = new Image(images.phonebar());
+      phoneBarImage.setAltText("Android status bar");
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
       bar.add(phoneBarImage, DockPanel.EAST);
@@ -185,6 +194,7 @@ public final class MockForm extends MockContainer {
 
     PhoneBar(String color) {
       Image phoneBarAndroidMaterial = new Image(images.phonebarAndroidMaterial());
+      phoneBarAndroidMaterial.setAltText("Android status bar");
 
       bar = new DockPanel();
       bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
@@ -199,9 +209,13 @@ public final class MockForm extends MockContainer {
     PhoneBar(boolean blackIcons, int size, String color) {
       // icons for iPhone
       blackIconsLeft = new Image(images.phonebariPhoneLeftBlack());
+      blackIconsLeft.setAltText("iOS status bar left");
       blackIconsRight = new Image(images.phonebariPhoneRightBlack());
+      blackIconsRight.setAltText("iOS status bar right");
       whiteIconsLeft = new Image(images.phonebariPhoneLeftWhite());
+      whiteIconsLeft.setAltText("iOS status bar left");
       whiteIconsRight = new Image(images.phonebariPhoneRightWhite());
+      whiteIconsRight.setAltText("iOS status bar right");
 
       phoneBarLeftPanel = new HorizontalPanel();
       phoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeft");
@@ -210,9 +224,13 @@ public final class MockForm extends MockContainer {
 
       //icons for iPad
       iPadWhiteIconsLeft = new Image(images.phonebariPadLeftWhite());
+      iPadWhiteIconsLeft.setAltText("iOS status bar left");
       iPadWhiteIconsRight = new Image(images.phonebariPadRightWhite());
+      iPadWhiteIconsRight.setAltText("iOS status bar right");
       iPadBlackIconsLeft = new Image(images.phonebariPadLeftBlack());
+      iPadBlackIconsLeft.setAltText("iOS status bar left");
       iPadBlackIconsRight = new Image(images.phonebariPadRightBlack());
+      iPadBlackIconsRight.setAltText("iOS status bar right");
 
       iPadPhoneBarLeftPanel = new HorizontalPanel();
       iPadPhoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeftIPad");
@@ -236,15 +254,19 @@ public final class MockForm extends MockContainer {
       if (size == 0) {
         bar.removeStyleDependentName("iPad");
         bar.addStyleDependentName("iPhone");
-        phoneBarLeftPanel.remove(blackIcons ? whiteIconsLeft : blackIconsLeft);
-        phoneBarRightPanel.remove(blackIcons ? whiteIconsRight : blackIconsRight);
+        phoneBarLeftPanel.remove(whiteIconsLeft);
+        phoneBarLeftPanel.remove(blackIconsLeft);
+        phoneBarRightPanel.remove(whiteIconsRight);
+        phoneBarRightPanel.remove(blackIconsRight);
         phoneBarLeftPanel.add(blackIcons ? blackIconsLeft : whiteIconsLeft);
         phoneBarRightPanel.add(blackIcons ? blackIconsRight : whiteIconsRight);
       } else {
         bar.removeStyleDependentName("iPhone");
         bar.addStyleDependentName("iPad");
-        iPadPhoneBarLeftPanel.remove(blackIcons? iPadWhiteIconsLeft : iPadBlackIconsLeft);
-        iPadPhoneBarRightPanel.remove(blackIcons ? iPadWhiteIconsRight : iPadBlackIconsRight);
+        iPadPhoneBarLeftPanel.remove(iPadWhiteIconsLeft);
+        iPadPhoneBarLeftPanel.remove(iPadBlackIconsLeft);
+        iPadPhoneBarRightPanel.remove(iPadWhiteIconsRight);
+        iPadPhoneBarRightPanel.remove(iPadBlackIconsRight);
         iPadPhoneBarLeftPanel.add(blackIcons ? iPadBlackIconsLeft : iPadWhiteIconsLeft);
         iPadPhoneBarRightPanel.add(blackIcons? iPadBlackIconsRight : iPadWhiteIconsRight);
       }
@@ -356,6 +378,26 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_PRIMARY_COLOR_DARK = "PrimaryColorDark";
   private static final String PROPERTY_NAME_ACCENT_COLOR = "AccentColor";
   private static final String PROPERTY_NAME_THEME = "Theme";
+  private static final String PROPERTY_NAME_DEFAULTFILESCOPE = "DefaultFileScope";
+  private static final String PROPERTY_NAME_BUILD_NUMBER = "BuildNumber";
+  private static final String PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE;
+  private static final String PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE;
+  private static final String PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCONTACTSUSAGE;
+  private static final String PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE;
+  private static final String PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
+  private static final String PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
+  private static final String PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
+
+  private static final Set<String> IOS_PERMISSION_PROPERTIES = new HashSet<>(
+      asList(
+          PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION,
+          PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION
+      ));
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -367,16 +409,11 @@ public final class MockForm extends MockContainer {
   private TitleBar titleBar;
   private PhoneBar phoneBar;
   private NavigationBar navigationBar;
-  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>(Collections.singleton(this));
-  private MockContainer pasteTarget = this;
 
   int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
   int usableScreenHeight;       // TEMP: Make package visible so we can use it MockHVLayoutBase
   int usableScreenWidth;
-
-  // Set of listeners for any changes of the form
-  final HashSet<FormChangeListener> formChangeListeners = new HashSet<FormChangeListener>();
 
   // Set of listeners for DesignPreviewChanges
   final HashSet<DesignPreviewChangeListener> designPreviewChangeListeners = new HashSet<DesignPreviewChangeListener>();
@@ -446,7 +483,7 @@ public final class MockForm extends MockContainer {
     try {
       myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
     } catch (BadPropertyEditorException e) {
-      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
+      LOG.info(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
     enableAndDisableDropdowns();
@@ -498,14 +535,22 @@ public final class MockForm extends MockContainer {
 
   private void setPhoneStyle() {
     if (landscape) {
-      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
-      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
-      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      if (idxPhoneSize == 1) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeTablet");
+      } else if (idxPhoneSize == 2) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscapeMonitor");
+      } else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhoneLandscape");
+      }
       navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarLandscape");
     } else {
-      if (idxPhoneSize == 0) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
-      else if (idxPhoneSize == 1) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
-      else if (idxPhoneSize == 2) phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+      if (idxPhoneSize == 1) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitTablet");
+      } else if (idxPhoneSize == 2) {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortraitMonitor");
+      } else {
+        phoneWidget.setStylePrimaryName("ode-SimpleMockFormPhonePortrait");
+      }
       navigationBar.setStylePrimaryName("ode-SimpleMockFormNavigationBarPortrait");
     }
     if (idxPhonePreviewStyle == 2) {
@@ -543,6 +588,11 @@ public final class MockForm extends MockContainer {
   private void resizePanel(int newWidth, int newHeight){
     screenWidth = newWidth;
     screenHeight = newHeight;
+    int scrollbarWidth = 0;
+    if (Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE))) {
+      // only display space for a scrollbar if the form is scrollable
+      scrollbarWidth = getVerticalScrollbarWidth();
+    }
 
     if (landscape) {
       String val = editor.getProjectEditor().getProjectSettingsProperty(
@@ -559,13 +609,22 @@ public final class MockForm extends MockContainer {
       usableScreenHeight = screenHeight - phoneBar.getHeight() - titleBar.getHeight() - navigationBar.getHeight();
     }
     rootPanel.setPixelSize(usableScreenWidth, usableScreenHeight);
-    scrollPanel.setPixelSize(usableScreenWidth + getVerticalScrollbarWidth(), usableScreenHeight);
-    formWidget.setPixelSize(screenWidth + getVerticalScrollbarWidth(), screenHeight);
+    // This margin is to ensure the mockform aligns to the left when there is space for a scrollbar
+    rootPanel.getElement().getStyle().setProperty("marginRight", scrollbarWidth + "px");
+    scrollPanel.setPixelSize(usableScreenWidth + scrollbarWidth, usableScreenHeight);
+    formWidget.setPixelSize(screenWidth + scrollbarWidth, screenHeight);
+    // Added width to phoneWidget to prevent it from expanding wider than intended
+    // if the SimpleComponentsPanel menu is wider than the phonebar.
+    phoneWidget.setWidth(usableScreenWidth + scrollbarWidth + "px");
     // Store properties
-    changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
+    if (hasProperty(PROPERTY_NAME_WIDTH)) {  // Not true when project initializing
+      changeProperty(PROPERTY_NAME_WIDTH, "" + usableScreenWidth);
+    }
     boolean scrollable = Boolean.parseBoolean(getPropertyValue(PROPERTY_NAME_SCROLLABLE));
     if (!scrollable) {
-      changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
+      if (hasProperty(PROPERTY_NAME_HEIGHT)) {  // Not true when project initializing
+        changeProperty(PROPERTY_NAME_HEIGHT, "" + usableScreenHeight);
+      }
     }
   }
 
@@ -712,10 +771,10 @@ public final class MockForm extends MockContainer {
   @Override
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + PORTRAIT_WIDTH, null,
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
-        PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
+        "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
         new YoungAndroidLengthPropertyEditor());
   }
 
@@ -757,8 +816,17 @@ public final class MockForm extends MockContainer {
       case PROPERTY_NAME_PRIMARY_COLOR:
       case PROPERTY_NAME_PRIMARY_COLOR_DARK:
       case PROPERTY_NAME_ACCENT_COLOR:
-      case PROPERTY_NAME_THEME: {
-        return editor.isScreen1();
+      case PROPERTY_NAME_THEME:
+      case PROPERTY_NAME_BUILD_NUMBER:
+      case PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION:
+      case PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION:
+      case PROPERTY_NAME_DEFAULTFILESCOPE: {
+        return false;
       }
 
       default: {
@@ -844,6 +912,7 @@ public final class MockForm extends MockContainer {
       int heightHint = scrollable ? LENGTH_PREFERRED : usableScreenHeight;
       changeProperty(PROPERTY_NAME_HEIGHT, "" + heightHint);
     }
+    resizePanel(screenWidth, screenHeight);
   }
 
   private void setIconProperty(String icon) {
@@ -929,6 +998,7 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET, asJson);
+
       if (editor.isLoadComplete()) {
         ((YaFormEditor)editor).reloadComponentPalette(asJson);
       }
@@ -1042,6 +1112,31 @@ public final class MockForm extends MockContainer {
 
   }
 
+  private void setDefaultFileScope(String defaultFileScope) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_DEFAULTFILESCOPE, defaultFileScope);
+    }
+  }
+
+  private void setBuildNumber(String buildNumber) {
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_BUILDNUMBER, buildNumber);
+    }
+  }
+
+  @Override
+  protected boolean isPropertyforYail(String propertyName) {
+    if (IOS_PERMISSION_PROPERTIES.contains(propertyName)) {
+      // These are project-level properties, not per form.
+      return false;
+    }
+    return super.isPropertyforYail(propertyName);
+  }
+
   /**
    * Forces a re-layout of the child components of the container.
    *
@@ -1084,6 +1179,20 @@ public final class MockForm extends MockContainer {
       }
     };
     refreshTimer.schedule(0);
+  }
+
+  public void refresh(boolean force) {
+    if (force) {
+      // If we are forcing a refresh, cancel any pending refresh timer.
+      if (refreshTimer != null) {
+        refreshTimer.cancel();
+        refreshTimer = null;
+      }
+      doRefresh();
+    } else {
+      // Otherwise, we use the throttled refresh.
+      refresh();
+    }
   }
 
   /*
@@ -1159,24 +1268,6 @@ public final class MockForm extends MockContainer {
   }
 
   /**
-   * Adds an {@link FormChangeListener} to the listener set if it isn't already in there.
-   *
-   * @param listener  the {@code FormChangeListener} to be added
-   */
-  public void addFormChangeListener(FormChangeListener listener) {
-    formChangeListeners.add(listener);
-  }
-
-  /**
-   * Removes an {@link FormChangeListener} from the listener list.
-   *
-   * @param listener  the {@code FormChangeListener} to be removed
-   */
-  public void removeFormChangeListener(FormChangeListener listener) {
-    formChangeListeners.remove(listener);
-  }
-
-  /**
    * Adds an {@link DesignPreviewChangeListener} to the listener set if it isn't already
    * there.
    *
@@ -1197,138 +1288,12 @@ public final class MockForm extends MockContainer {
   }
 
   /**
-   * Triggers a component property change event to be sent to the listener on the listener list.
-   */
-  protected void fireComponentPropertyChanged(MockComponent component, String propertyName,
-      String propertyValue) {
-    for (FormChangeListener listener : formChangeListeners) {
-      listener.onComponentPropertyChanged(component, propertyName, propertyValue);
-    }
-  }
-
-  /**
-   * Triggers a component removed event to be sent to the listener on the listener list.
-   */
-  protected void fireComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
-    for (FormChangeListener listener : formChangeListeners) {
-      listener.onComponentRemoved(component, permanentlyDeleted);
-    }
-  }
-
-  /**
-   * Triggers a component added event to be sent to the listener on the listener list.
-   */
-  protected void fireComponentAdded(MockComponent component) {
-    for (FormChangeListener listener : formChangeListeners) {
-      listener.onComponentAdded(component);
-    }
-  }
-
-  /**
-   * Triggers a component renamed event to be sent to the listener on the listener list.
-   */
-  protected void fireComponentRenamed(MockComponent component, String oldName) {
-    for (FormChangeListener listener : formChangeListeners) {
-      listener.onComponentRenamed(component, oldName);
-    }
-  }
-
-  /**
-   * Triggers a component selection change event to be sent to the listener on the listener list.
-   */
-  protected void fireComponentSelectionChange(MockComponent component, boolean selected) {
-    for (FormChangeListener listener : formChangeListeners) {
-      listener.onComponentSelectionChange(component, selected);
-    }
-  }
-
-  /**
    * Triggers the DesignChangePreviewChange listeners
    */
   protected void fireDesignPreviewChange() {
     for (DesignPreviewChangeListener listener : designPreviewChangeListeners) {
       listener.onDesignPreviewChanged();
     }
-  }
-
-  private boolean shouldSelectMultipleComponents(NativeEvent e) {
-    if (e == null) {
-      return false;
-    }
-    if (Window.Navigator.getPlatform().toLowerCase().startsWith("mac")) {
-      return e.getMetaKey();
-    } else {
-      return e.getCtrlKey();
-    }
-  }
-
-  /**
-   * Changes the component that is currently selected in the form.
-   * <p>
-   * There will always be exactly one component selected in a form
-   * at any given time.
-   */
-  public final void setSelectedComponent(MockComponent newSelectedComponent, NativeEvent event) {
-    if (newSelectedComponent == null) {
-      throw new IllegalArgumentException("at least one component must always be selected");
-    }
-    boolean shouldSelectMultipleComponents = shouldSelectMultipleComponents(event);
-    if (selectedComponents.size() == 1 && selectedComponents.contains(newSelectedComponent)) {
-      // Attempting to change the selection from old to new when they are the same breaks
-      // Marker drag. See https://github.com/mit-cml/appinventor-sources/issues/1936
-      return;
-    }
-
-    // Remove an previously selected component from the list of selected components, but only if
-    // there would still be something selected.
-    if (shouldSelectMultipleComponents && selectedComponents.contains(newSelectedComponent)
-        && selectedComponents.size() > 1) {
-      selectedComponents.remove(newSelectedComponent);
-      newSelectedComponent.onSelectedChange(false);
-      return;
-    }
-    if (newSelectedComponent instanceof MockContainer) {
-      pasteTarget = (MockContainer) newSelectedComponent;
-    } else {
-      pasteTarget = newSelectedComponent.getContainer();
-    }
-
-    if (!shouldSelectMultipleComponents) {
-      for (MockComponent component : selectedComponents) {
-        if (component != newSelectedComponent) {
-          component.onSelectedChange(false);
-        }
-      }
-      selectedComponents.clear();
-    }
-    selectedComponents.add(newSelectedComponent);
-    newSelectedComponent.onSelectedChange(true);
-  }
-
-  public final List<MockComponent> getSelectedComponents() {
-    return selectedComponents;
-  }
-
-  public final MockComponent getLastSelectedComponent() {
-    return selectedComponents.get(selectedComponents.size() - 1);
-  }
-
-  public final MockContainer getPasteTarget() {
-    return pasteTarget;
-  }
-
-  public final void setPasteTarget(MockContainer target) {
-    this.pasteTarget = target;
-  }
-
-  /**
-   * Builds a tree of the component hierarchy of the form for display in the
-   * {@code SourceStructureExplorer}.
-   *
-   * @return  tree showing the component hierarchy of the form
-   */
-  public TreeItem buildComponentsTree() {
-    return buildTree();
   }
 
   // PropertyChangeListener implementation
@@ -1351,10 +1316,10 @@ public final class MockForm extends MockContainer {
       titleBar.changeTitle(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SIZING)) {
       if (newValue.equals("Fixed")){ // Disable Tablet Preview
-        editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(false);
+        ((YaVisibleComponentsPanel) editor.getVisibleComponentsPanel()).enableTabletPreviewCheckBox(false);
       }
       else {
-        editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(true);
+        ((YaVisibleComponentsPanel) editor.getVisibleComponentsPanel()).enableTabletPreviewCheckBox(true);
       }
       setSizingProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ICON)) {
@@ -1377,13 +1342,15 @@ public final class MockForm extends MockContainer {
       setActionBarProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_THEME)) {
       if ("Classic".equals(newValue)) {
-        editor.getVisibleComponentsPanel().enablePhonePreviewCheckBox(false);
+        ((YaVisibleComponentsPanel) editor.getVisibleComponentsPanel()).enablePhonePreviewCheckBox(false);
         getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("False");
       } else {
-        editor.getVisibleComponentsPanel().enablePhonePreviewCheckBox(true);
+        ((YaVisibleComponentsPanel) editor.getVisibleComponentsPanel()).enablePhonePreviewCheckBox(true);
         getProperties().getExistingProperty(PROPERTY_NAME_ACTIONBAR).setValue("True");
       }
       setTheme(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_DEFAULTFILESCOPE)) {
+      setDefaultFileScope(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_PRIMARY_COLOR)) {
       setPrimaryColor(newValue);
       if (idxPhonePreviewStyle == 2) {
@@ -1406,6 +1373,21 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_TITLEVISIBLE)) {
       setTitleVisibleProperty(newValue);
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_BUILD_NUMBER)) {
+      setBuildNumber(newValue);
+    } else if (
+        propertyName.equals(PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSCONTACTSUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION)) {
+      if (editor.isScreen1()) {
+        editor.getProjectEditor().changeProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            propertyName, newValue);
+      }
     }
   }
 
@@ -1424,6 +1406,10 @@ public final class MockForm extends MockContainer {
     } else {
       myVAlignmentPropertyEditor.enable();
     }
+  }
+
+  public void projectPropertyChanged() {
+    ((YaFormEditor) editor).refreshCurrentPropertiesPanel();
   }
 
   @Override

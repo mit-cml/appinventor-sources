@@ -33,9 +33,12 @@ import java.io.File;
  *
  * The file path can be taken directly from other components such as the
  * [`Camera`](media.html#Camera) or the [`ImagePicker`](media.html#ImagePicker), but can also be
- * specified directly to read from storage. Be aware that different devices treat storage
- * differently, so a few things to try if, for instance, you have a file called `arrow.gif` in the
- * folder `Appinventor/assets`, would be:
+ * specified directly to read from storage. The default behaviour is to share files from the private
+ * data directory associated with your app. If the file path starts with a slash (`/`), then the file
+ * relative to `/` is shared.
+ * 
+ * Be aware that different devices treat storage differently, so a few things to try if, for
+ * instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
  *
  * - `"file:///sdcard/Appinventor/assets/arrow.gif"`; or
  * - `"/storage/Appinventor/assets/arrow.gif"`
@@ -50,8 +53,10 @@ import java.io.File;
         "and will allow the user to choose one to share the content with, for instance a " +
         "mail app, a social network app, a texting app, and so on.<br>" +
         "The file path can be taken directly from other components such as the Camera or the " +
-        "ImagePicker, but can also be specified directly to read from storage. Be aware that " +
-        "different devices treat storage differently, so a few things to try if, " +
+        "ImagePicker, but can also be specified directly to read from storage. The default " +
+        "behaviour is to share files from the private data directory associated with your app. " +
+        "If the file path starts with a slash (/), the the file relative to / is shared.<br>" +
+        "Be aware that different devices treat storage differently, so a few things to try if, " +
         "for instance, you have a file called arrow.gif in the folder " +
         "<code>Appinventor/assets</code>, would be: <ul>" +
         "<li><code>\"file:///sdcard/Appinventor/assets/arrow.gif\"</code></li> or " +
@@ -103,8 +108,15 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of available apps and allowing the user to " +
       " choose one from the list. The selected app will open with the file and message inserted on it.")
   public void ShareFileWithMessage(String file, String message) {
-    if (!file.startsWith("file://"))
-      file = "file://" + file;
+    if (!file.startsWith("file://")) {
+      if (!file.startsWith("/")) {
+        // Files specified using a relative path should be resolved based on the form's default
+        // file scope.
+        file = form.getDefaultPath(file);
+      } else {
+        file = "file://" + file;
+      }
+    }
 
     Uri uri  = Uri.parse(file);
     File imageFile = new File(uri.getPath());

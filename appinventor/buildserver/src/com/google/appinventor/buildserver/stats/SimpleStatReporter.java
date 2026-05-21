@@ -59,6 +59,7 @@ public class SimpleStatReporter implements StatReporter {
   }
 
   private final Map<Compiler, BuildStats> activeBuilds = new HashMap<>();
+  private final Map<Compiler, String> currentStages = new HashMap<>();
 
   private final Deque<BuildStats> successfulBuilds = new LinkedList<>();
   private final Deque<BuildStats> failedBuilds = new LinkedList<>();
@@ -70,24 +71,31 @@ public class SimpleStatReporter implements StatReporter {
   }
 
   @Override
-  public void nextStage(Compiler compiler, String stage) {
+  public void nextStage(Compiler compiler, String newStage) {
     BuildStats stats;
+    String previousStage;
     synchronized (this) {
       stats = activeBuilds.get(compiler);
+      previousStage = currentStages.get(compiler);
     }
     if (stats == null) {
       LOG.warning("Got compiler with uninitialized stats object");
       return;
     }
-    stats.stages.put(stage, System.currentTimeMillis() - stats.last);
+    if (previousStage != null) {
+      stats.stages.put(previousStage, System.currentTimeMillis() - stats.last);
+    }
+    currentStages.put(compiler, newStage);
     stats.last = System.currentTimeMillis();
   }
 
   @Override
   public void stopBuild(Compiler compiler, boolean success) {
     BuildStats stats;
+    String previousStage;
     synchronized (this) {
       stats = activeBuilds.remove(compiler);
+      previousStage = currentStages.remove(compiler);
     }
     if (stats == null) {
       LOG.warning("Got compiler with uninitialized stats object");
@@ -95,6 +103,9 @@ public class SimpleStatReporter implements StatReporter {
     }
     stats.end = System.currentTimeMillis();
     stats.duration = stats.end - stats.start;
+    if (previousStage != null) {
+      stats.stages.put(previousStage, stats.end - stats.last);
+    }
     queueAndExpire(stats, success ? successfulBuilds : failedBuilds);
     queueAndExpire(stats, orderedBuilds);
   }

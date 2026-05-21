@@ -78,6 +78,13 @@ public class InternalTextToSpeech implements ITextToSpeech {
     speak(message, loc, 0);
   }
 
+  @Override
+  public void stop() {
+    if (tts != null) {
+      tts.stop();
+    }
+  }
+
   public boolean isInitialized() {
     return isTtsInitialized;
   }
@@ -86,8 +93,9 @@ public class InternalTextToSpeech implements ITextToSpeech {
   private void speak(final String message, final Locale loc, final int retries) {
     Log.d(LOG_TAG, "InternalTTS speak called, message = " + message);
     if (retries > ttsMaxRetries) {
-      Log.d(LOG_TAG, "max number of speak retries exceeded: speak will fail");
+      Log.d(LOG_TAG, "max number of speak retries exceeded (" + ttsMaxRetries + "): speak will fail");
       callback.onFailure();
+      return;
     }
     // If speak was called before initialization was complete, we retry after a delay.
     // Keep track of the number of retries and fail if there are too many.

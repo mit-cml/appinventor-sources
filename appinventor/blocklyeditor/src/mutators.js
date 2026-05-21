@@ -10,9 +10,7 @@
 
 'use strict';
 
-goog.provide('Blockly.Blocks.mutators');
-
-goog.require('AI.Blockly.Instrument');
+goog.provide('AI.Blocks.mutators');
 
 //container block for all mutators
 Blockly.Blocks['mutator_container'] = {
@@ -126,35 +124,4 @@ Blockly.saveConnections = function(containerBlock) {
     itemBlock = itemBlock.nextConnection &&
       itemBlock.nextConnection.targetBlock();
   }
-}
-
-Blockly.Mutator.prototype.createEditor_ = (function(func) {
-  if (func.isWrapped) {
-    return func;
-  } else {
-    var wrappedFunc = function() {
-      var result = func.call(this);
-
-      //when mutator bubble is clicked, do not close mutator
-      Blockly.bindEvent_(this.svgDialog_, 'mousedown', this.svgDialog_,
-          function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-          });
-
-      return result;
-    };
-    wrappedFunc.isWrapped = true;
-    return wrappedFunc;
-  }
-})(Blockly.Mutator.prototype.createEditor_);
-
-if (Blockly.Instrument.useRenderDown) {
-  /**
-   * Override's the render function in the mutator to take advantage of the
-   * render down functionality.
-   */
-  Blockly.Mutator.prototype.renderWorkspace = function() {
-    this.rootBlock_.render();
-  };
 }

@@ -28,10 +28,12 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   @Override
   public  void onProjectDeleted(Project project) {
   }
+
   /**
    * Invoked after all projects have been loaded by ProjectManager. If the ProjectManager has
    * already finished loading projects, this will be called immediately upon adding the listener.
    */
   @Override
-  public void onProjectsLoaded() { }
+  public void onProjectsLoaded() {
+  }
 }

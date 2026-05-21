@@ -1,17 +1,19 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2022 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.server;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
+
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
@@ -26,6 +28,7 @@ import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
+
 import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
@@ -35,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -166,7 +170,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
                 new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
               json += in.readLine() +  ", ";
             } catch (IOException e) {
-              LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
+              LOG.log(Level.SEVERE, "I/O Exception reading template json file: " + templateName, e);
               throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
                 new IllegalArgumentException("Cannot Read Internal Project Template"));
             }
@@ -188,7 +192,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public UserProject copyProject(long oldProjectId, String newName){
     final String userId = userInfoProvider.getUserId();
     long projectId = getProjectRpcImpl(userId, oldProjectId).
-        copyProject(userId, oldProjectId, newName);
+      copyProject(userId, oldProjectId, newName, null);
     return makeUserProject(userId, projectId);
   }
 
@@ -208,9 +212,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    */
   @Override
   public UserProject moveToTrash(long projectId) {
-      String userId = userInfoProvider.getUserId();
-      storageIo.setMoveToTrashFlag(userId,projectId,true);
-      return storageIo.getUserProject(userId,projectId);
+    String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).setMovedToTrash(userId, projectId, true);
   }
 
   /**
@@ -219,9 +222,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    */
   @Override
   public UserProject restoreProject(long projectId) {
-      String userId = userInfoProvider.getUserId();
-      storageIo.setMoveToTrashFlag(userId,projectId,false);
-      return storageIo.getUserProject(userId,projectId);
+    String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).setMovedToTrash(userId, projectId, false);
   }
 
   /**
@@ -318,7 +320,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public String loadProjectSettings(long projectId) {
     String userId = userInfoProvider.getUserId();
-    return storageIo.loadProjectSettings(userId, projectId);
+    return getProjectRpcImpl(userId, projectId).loadProjectSettings(userId, projectId);
   }
 
   /**
@@ -394,6 +396,25 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. After
+   * loading the file, the contents of it are parsed.
+   *
+   * <p>Expected format is either JSON or CSV. If the first character of the
+   * file's contents is a left curly bracket ( { ), then JSON parsing is
+   * attempted. Otherwise, CSV parsing is done.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  List of parsed columns (each column is a List of Strings)
+   */
+  @Override
+  public List<List<String>> loadDataFile(long projectId, String fileId) {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).loadDataFile(userId, projectId, fileId);
   }
 
   /**
@@ -561,14 +582,18 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @param projectId  project ID
    * @param target  build target (optional, implementation dependent)
    *
+   * @param foriOS
+   * @param forAppStore
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab) {
+  public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver,
+      boolean isAab, boolean foriOS, boolean forAppStore) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-      userInfoProvider.getUser(), projectId, nonce, target, secondBuildserver, isAab);
+      userInfoProvider.getUser(), projectId, nonce, target, secondBuildserver,
+        isAab, foriOS, forAppStore);
   }
 
   /**
@@ -616,6 +641,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Returns the RPC implementation for the given project type.
    */
   private CommonProjectService getProjectRpcImpl(final String userId, long projectId) {
+    storageIo.assertUserHasProject(userId, projectId);
     String projectType = storageIo.getProjectType(userId, projectId);
     if (!projectType.isEmpty()) {
       return getProjectRpcImpl(userId, projectType);
@@ -666,7 +692,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     if (sessionId.equals("force")) { // If we are forcing our way -- no check
       return;
     }
-    if (!storedSessionId.equals(sessionId))
+    if (storedSessionId == null || !storedSessionId.equals(sessionId))
       if (AppInventorFeatures.requireOneLogin()) {
         throw new InvalidSessionException("A more recent login has occurred since we started. No further changes will be saved.");
       }

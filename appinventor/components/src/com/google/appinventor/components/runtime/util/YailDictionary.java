@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2019-2020 MIT, All rights reserved
+// Copyright 2019-2024 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -40,15 +40,37 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
     }
   };
 
+  public interface KeyTransformer {
+    Object transform(Object key);
+  }
+
+  private static final KeyTransformer IDENTITY = new KeyTransformer() {
+    @Override
+    public Object transform(Object key) {
+      return key;
+    }
+  };
+
+  private final KeyTransformer keyTransformer;
+
   /**
    * Create an empty YailDictionary.
    */
   public YailDictionary() {
     super();
+    keyTransformer = IDENTITY;
   }
 
-  public YailDictionary(Map<Object, Object> prevMap) {
-    super(prevMap);
+  @SuppressWarnings("UseBulkOperation")  // Use of put handles type casting
+  public YailDictionary(Map<?, ?> prevMap) {
+    this(prevMap, IDENTITY);
+  }
+
+  public YailDictionary(Map<?, ?> prevMap, KeyTransformer keyTransformer) {
+    this.keyTransformer = keyTransformer;
+    for (Map.Entry<?, ?> entry : prevMap.entrySet()) {
+      put(entry.getKey(), entry.getValue());
+    }
   }
 
   /**
@@ -148,7 +170,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
 
   @SuppressWarnings("WeakerAccess")  // Called from runtime.scm
   public static YailDictionary alistToDict(YailList alist) {
-    LinkedHashMap<Object, Object> map = new LinkedHashMap<>();
+    YailDictionary map = new YailDictionary();
 
     for (Object o : ((LList) alist.getCdr())) {
       YailList currentPair = (YailList) o;
@@ -167,7 +189,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
       }
     }
 
-    return new YailDictionary(map);
+    return map;
   }
 
   private static YailList checkList(YailList list) {
@@ -490,9 +512,9 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   @Override
   public boolean containsKey(Object key) {
     if (key instanceof FString) {
-      return super.containsKey(key.toString());
+      key = key.toString();
     }
-    return super.containsKey(key);
+    return super.containsKey(keyTransformer.transform(key));
   }
 
   @Override
@@ -506,8 +528,9 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   @Override
   public Object get(Object key) {
     if (key instanceof FString) {
-      return super.get(key.toString());
+      key = key.toString();
     }
+    key = keyTransformer.transform(key);
     return super.get(key);
   }
 
@@ -516,6 +539,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
     if (key instanceof FString) {
       key = key.toString();
     }
+    key = keyTransformer.transform(key);
     if (value instanceof FString) {
       value = value.toString();
     }
@@ -525,8 +549,9 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   @Override
   public Object remove(Object key) {
     if (key instanceof FString) {
-      return super.remove(key.toString());
+      key = key.toString();
     }
+    key = keyTransformer.transform(key);
     return super.remove(key);
   }
 

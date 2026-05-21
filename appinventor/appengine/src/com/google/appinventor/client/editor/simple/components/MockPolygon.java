@@ -215,6 +215,10 @@ public class MockPolygon extends MockPolygonBase {
     this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::setNativeTooltip(*)(
       this.@com.google.appinventor.client.editor.simple.components.MockPolygon::getTooltip()()
     );
+    var isVisible = this.@com.google.appinventor.client.editor.simple.components.MockMapFeatureBase::getVisibleProperty()();
+    if (!isVisible) {
+      map.removeLayer(polygon);
+    }
   }-*/;
 
   private native void preserveLayerData()/*-{

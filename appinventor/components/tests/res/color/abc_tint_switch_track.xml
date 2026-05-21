@@ -19,4 +19,4 @@
     <item android:state_enabled="false" android:color="?android:attr/colorForeground" app:alpha="0.1"/>
     <item android:state_checked="true" android:color="?attr/colorControlActivated" app:alpha="0.3"/>
     <item android:color="?android:attr/colorForeground" app:alpha="0.3"/>
-</selector>
+</selector><!-- From: file:/var/folders/3_/4jx_426x3zg68w642z0zd1yh0000gn/T/1629913635566_0.8713256614538494-0/youngandroidproject/../build/exploded-aars/androidx.appcompat/res/color/abc_tint_switch_track.xml -->

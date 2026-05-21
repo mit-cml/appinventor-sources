@@ -8,10 +8,12 @@ package com.google.appinventor.components.runtime;
 
 import android.Manifest;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -108,7 +110,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
         "<br />And if the Web page contains Javascript that executes the command " +
         "<br /><em>window.AppInventor.setWebViewString(\"hello from Javascript\")</em>, " +
         "<br />then the value of the WebViewString property will be " +
-        "<br /><em>hello from Javascript</em>. ")
+        "<br /><em>hello from Javascript</em>. ",
+    iconName = "images/webviewer.png")
 
 // TODO(halabelson): Integrate control of the Back key, when we provide it
 
@@ -138,23 +141,30 @@ public final class WebViewer extends AndroidViewComponent {
   // Flag to mark whether we have received permission to read external storage
   private boolean havePermission = false;
 
+  private boolean usesCamera = false;
+
+  private boolean usesMicrophone = false;
+
   /**
    * Creates a new WebViewer component.
    *
    * @param container  container the component will be placed in
    */
+  @androidx.annotation.RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
   public WebViewer(ComponentContainer container) {
     super(container);
 
     webview = new WebView(container.$context());
     resetWebViewClient();       // Set up the web view client
-    webview.getSettings().setJavaScriptEnabled(true);
+    final WebSettings settings = webview.getSettings();
+    settings.setJavaScriptEnabled(true);
+    settings.setAllowFileAccess(true);
     webview.setFocusable(true);
     // adds a way to send strings to the javascript
     wvInterface = new WebViewInterface();
     webview.addJavascriptInterface(wvInterface, "AppInventor");
     // enable pinch zooming and zoom controls
-    webview.getSettings().setBuiltInZoomControls(true);
+    settings.setBuiltInZoomControls(true);
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
       EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
@@ -466,6 +476,51 @@ public final class WebViewer extends AndroidViewComponent {
   }
 
   /**
+   * Specifies whether this `WebViewer` can access the camera.
+   *
+   * @param uses -- Whether the camera is available
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "Whether or not to give the application permission to use the camera. " +
+              "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
+  @UsesPermissions({
+      Manifest.permission.CAMERA
+  })
+  public void UsesCamera(boolean uses) {
+    this.usesCamera = uses;
+  }
+
+  public boolean UsesCamera() {
+    return usesCamera;
+  }
+
+  /**
+   * Specifies whether this `WebViewer` can access the microphone.
+   *
+   * @param uses -- Whether the microphone is available
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+      description = "Whether or not to give the application permission to use the microphone. " +
+          "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
+  @UsesPermissions({
+      Manifest.permission.RECORD_AUDIO,
+      Manifest.permission.MODIFY_AUDIO_SETTINGS
+  })
+  public void UsesMicrophone(boolean uses) {
+    this.usesMicrophone = uses;
+  }
+
+  public boolean UsesMicrophone() {
+    return usesMicrophone;
+  }
+
+  /**
    * Specifies whether or not this `WebViewer` can access the JavaScript
    * geolocation API.
    *
@@ -475,7 +530,8 @@ public final class WebViewer extends AndroidViewComponent {
       defaultValue = "False")
   @SimpleProperty(userVisible = false,
       description = "Whether or not to give the application permission to use the Javascript geolocation API. " +
-          "This property is available only in the designer.")
+          "This property is available only in the designer.",
+      category = PropertyCategory.BEHAVIOR)
   public void UsesLocation(boolean uses) {
     // We don't actually do anything here (the work is in the MockWebViewer)
   }
@@ -504,7 +560,7 @@ public final class WebViewer extends AndroidViewComponent {
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleProperty(userVisible = true)
+  @SimpleProperty(userVisible = true, category = PropertyCategory.BEHAVIOR)
   public void PromptforPermission(boolean prompt) {
     this.prompt = prompt;
   }

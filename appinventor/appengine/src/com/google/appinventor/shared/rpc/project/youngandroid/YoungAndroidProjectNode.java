@@ -100,5 +100,12 @@ public final class YoungAndroidProjectNode extends ProjectRootNode
     // Should never happen!
     throw new IllegalStateException("Couldn't find component folder");
   }
-
+  
+  @Override
+  public boolean hasExtensions() {
+    if (getComponentsFolder().getChildren().size() > 0) {
+      return true;
+    }
+    return false;
+  }
 }

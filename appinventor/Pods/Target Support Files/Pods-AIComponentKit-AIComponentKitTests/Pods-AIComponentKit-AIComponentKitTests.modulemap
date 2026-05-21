@@ -1,0 +1,6 @@
+framework module Pods_AIComponentKit_AIComponentKitTests {
+  umbrella header "Pods-AIComponentKit-AIComponentKitTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

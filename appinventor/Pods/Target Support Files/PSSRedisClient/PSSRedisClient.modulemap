@@ -1,0 +1,6 @@
+framework module PSSRedisClient {
+  umbrella header "PSSRedisClient-umbrella.h"
+
+  export *
+  module * { export * }
+}

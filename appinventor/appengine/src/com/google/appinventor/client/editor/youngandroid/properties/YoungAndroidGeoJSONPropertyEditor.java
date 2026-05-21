@@ -6,7 +6,7 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
@@ -39,7 +39,7 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
   private final ListWithNone choices;
   private final YoungAndroidAssetsFolder assetsFolder;
 
-  public YoungAndroidGeoJSONPropertyEditor(final YaFormEditor editor) {
+  public YoungAndroidGeoJSONPropertyEditor(final DesignerEditor<?, ?, ?, ?, ?> editor) {
     Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
     assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
     project.addProjectChangeListener(this);
@@ -100,9 +100,8 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
             closeAdditionalChoiceDialog(true);
           }
         };
-        FileUploadWizard uploader = new FileUploadWizard(assetsFolder,
-            Collections.singleton(".geojson"), callback);
-        uploader.show();
+        new FileUploadWizard(assetsFolder,
+            Collections.singleton(".geojson"), callback).show();
       }
     });
     Button urlButton = new Button(MESSAGES.fromUrlButton());
@@ -200,7 +199,7 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
     if (node instanceof YoungAndroidAssetNode) {
       String assetName = node.getName();
       if (!choices.containsValue(assetName)) {
-        choices.addItem(assetName);;
+        choices.addItem(assetName);
       }
       String currentValue = property.getValue();
       if (assetName.equals(currentValue)) {

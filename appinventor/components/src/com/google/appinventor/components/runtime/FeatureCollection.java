@@ -33,7 +33,8 @@ import org.json.JSONException;
     description = "A FeatureCollection contains one or more map features as a group. Any events " +
         "fired on a feature in the collection will also trigger the corresponding event on the " +
         "collection object. FeatureCollections can be loaded from external resources as a means " +
-        "of populating a Map with content.")
+        "of populating a Map with content.",
+    iconName = "images/featurecollection.png")
 @SimpleObject
 public class FeatureCollection extends MapFeatureContainerBase implements MapFeatureCollection {
   private String source = "";
@@ -55,7 +56,8 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)
   @SimpleProperty(description = "Loads a collection of features from the given string. If the " +
       "string is not valid GeoJSON, the ErrorLoadingFeatureCollection error will be run with " +
-      "url = <string>.")
+      "url = <string>.",
+      category = PropertyCategory.APPEARANCE)
   public void FeaturesFromGeoJSON(String geojson) {
     try {
       processGeoJSON("<string>", geojson);

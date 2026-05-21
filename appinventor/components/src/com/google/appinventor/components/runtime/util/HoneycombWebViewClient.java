@@ -45,7 +45,7 @@ public class HoneycombWebViewClient extends FroyoWebViewClient<WebViewer> {
   @Override
   public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
     Log.d(TAG, "scheme = " + request.getUrl().getScheme());
-    if (request.getUrl().getAuthority().equals("localhost")
+    if ("localhost".equals(request.getUrl().getAuthority())
         || request.getUrl().toString().startsWith(ASSET_PREFIX)) {
       return handleAppRequest(request.getUrl().toString());
     }
@@ -68,7 +68,8 @@ public class HoneycombWebViewClient extends FroyoWebViewClient<WebViewer> {
       String mimeType = URLConnection.getFileNameMap().getContentTypeFor(path);
       String encoding = "utf-8";
       Log.i(TAG, "Mime type = " + mimeType);
-      if (!mimeType.startsWith("text/")) {
+      if (mimeType == null
+          || (!mimeType.startsWith("text/") && !mimeType.equals("application/javascript"))) {
         encoding = null;
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

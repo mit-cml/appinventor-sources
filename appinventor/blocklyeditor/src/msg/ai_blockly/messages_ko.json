@@ -16,6 +16,8 @@
 	"Blockly.Msg.EXTERNAL_INPUTS": "외부 입력값",
 	"Blockly.Msg.INLINE_INPUTS": "인라인 입력값",
 	"Blockly.Msg.HORIZONTAL_PARAMETERS": "가로로 배열하기",
+	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "이 이미지는 프로젝트에 없는 확장을 요구하는 다음 블록들을 참조합니다:\n\n",
+	"Blockly.Msg.ERROR_PARSING_XML": "오류: PNG 파일에서 XML을 파싱하지 못했습니다. 다시 시도해 주세요.",
 	"Blockly.Msg.VERTICAL_PARAMETERS": "세로로 배열하기",
 	"Blockly.Msg.CONFIRM_DELETE": "삭제 확인",
 	"Blockly.Msg.DELETE_ALL_BLOCKS": "모든 %1 블록을 삭제 하시겠습니까?",

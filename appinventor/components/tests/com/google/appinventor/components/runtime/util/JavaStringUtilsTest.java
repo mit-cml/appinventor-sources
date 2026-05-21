@@ -5,13 +5,12 @@
 
 package com.google.appinventor.components.runtime.util;
 
-import org.junit.Test;
+import static junit.framework.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
+import java.util.regex.Pattern;
+import org.junit.Test;
 
 /**
  * Test class for JavaStringUtils utility methods.
@@ -29,6 +28,12 @@ public class JavaStringUtilsTest {
     final String result = JavaStringUtils.replaceAllMappingsDictionaryOrder(text, mappings);
 
     assertEquals(result, text);
+  }
+
+  @Test 
+  public void testSplitString() {
+    YailList text = JavaStringUtils.split("abcde", Pattern.quote(""));
+    assertEquals(5, text.size());
   }
 
   /**

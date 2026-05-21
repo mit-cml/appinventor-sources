@@ -7,7 +7,6 @@
 package com.google.appinventor.server.storage;
 
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
-import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
@@ -19,7 +18,6 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -160,6 +158,14 @@ public interface StorageIo {
   List<Long> getProjects(String userId);
 
   /**
+   * Returns an array with the user's project's names
+   *
+   * @param userId  user ID
+   * @return  list of projects names
+   */
+  List<String> getProjectNames(String userId);
+
+  /**
    * Returns a string with the project settings.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId project ID
@@ -194,6 +200,13 @@ public interface StorageIo {
   UserProject getUserProject(String userId, long projectId);
 
   /**
+   * Return the userId of the owner of a project
+   * @param projectId project id
+   * @return userId
+   */
+
+  String getProjectUserId(long projectId) throws StoredData.ProjectNotFoundException;
+  /**
    * Bulk version of getUserProject.
    * @param userId a userId
    * @param projectIds a List of project ids
@@ -219,6 +232,25 @@ public interface StorageIo {
    * @return long milliseconds
    */
   long getProjectDateModified(String userId, long projectId);
+
+  /**
+   * Returns the date the project was last exported.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+  long getProjectDateBuilt(String userId, long projectId);
+
+  /**
+   * Sets the date the project was last exported.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   * @long  builtDate the date to set
+   *
+   * @return long milliseconds
+   */
+  long updateProjectBuiltDate(String userId, long projectId, long builtDate);
 
   /**
    * Returns the specially formatted list of project history.
@@ -495,25 +527,17 @@ public interface StorageIo {
 
   void deleteTempFile(String fileName) throws IOException;
 
-  // MOTD management
-
   /**
-   * Returns the most recent motd.
+   * Exports project files as a zip archive
    *
-   * @return  motd
-   */
-  Motd getCurrentMotd();
-
-  /**
-   *  Exports project files as a zip archive
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project ID
+   * @param userId                 a user Id (the request is made on behalf of this user)
+   * @param projectId              project ID
    * @param includeProjectHistory  whether or not to include the project history
-   * @param includeAndroidKeystore  whether or not to include the Android keystore
-   * @param zipName  the name of the zip file, if a specific one is desired
-   * @param fatalError set true to cause missing GCS file to throw exception
-   *
-   * @return  project with the content as requested by params.
+   * @param includeAndroidKeystore whether or not to include the Android keystore
+   * @param zipName                the name of the zip file, if a specific one is desired
+   * @param fatalError             set true to cause missing GCS file to throw exception
+   * @param forAppStore            true if the app is being built for the App Store
+   * @return project with the content as requested by params.
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
     boolean includeProjectHistory,
@@ -522,7 +546,7 @@ public interface StorageIo {
     final boolean includeYail,
     final boolean includeScreenShots,
     final boolean forGallery,
-    final boolean fatalError) throws IOException;
+    final boolean fatalError, boolean forAppStore, boolean locallyCachedApp) throws IOException;
 
   /**
    * Find a user's id given their email address. Note that this query is case
@@ -570,13 +594,6 @@ public interface StorageIo {
 
   // Cleanup expired nonces
   void cleanupNonces();
-
-  // Check to see if user needs projects upgraded (moved to GCS)
-  // if so, add task to task queue
-  void checkUpgrade(String userId);
-
-  // Called by the task queue to actually upgrade user's projects
-  void doUpgrade(String userId);
 
   // Retrieve the current Splash Screen Version
   SplashConfig getSplashConfig();
@@ -651,4 +668,26 @@ public interface StorageIo {
    */
   void assertUserHasProject(String userId, long projectId);
 
+  List<String> getTutorialsUrlAllowed();
+
+  /**
+   * Delete a user account.
+   *
+   * This requires that all of the user's projects are delete, or at
+   * least has the projectMovedToTrashFlag set.  If so, this method
+   * will remove all vestiges of the user's account and returns
+   * true. Otherwise returns false.
+   *
+   * Note: If a user attempts to login again after this method is run,
+   * a new account will automatically be created.
+   *
+   * @param userId id for the user
+   * @return true on successful account deletion, otherwise false
+   */
+  boolean deleteAccount(String userId);
+
+  String getIosExtensionsConfig();
+
 }
+
+

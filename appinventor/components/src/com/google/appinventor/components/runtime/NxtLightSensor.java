@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
@@ -104,8 +106,8 @@ public class NxtLightSensor extends LegoMindstormsNxtSensor implements Deleteabl
   @Override
   protected void initializeSensor(String functionName) {
     setInputMode(functionName, port,
-        generateLight ? SENSOR_TYPE_LIGHT_ACTIVE : SENSOR_TYPE_LIGHT_INACTIVE,
-        SENSOR_MODE_PCTFULLSCALEMODE);
+        generateLight ? NxtSensorType.LightOn : NxtSensorType.LightOff,
+        NxtSensorMode.Percentage);
   }
 
   /**

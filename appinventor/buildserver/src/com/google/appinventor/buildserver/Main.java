@@ -1,12 +1,14 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2021 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.stats.NullStatReporter;
+import com.google.appinventor.buildserver.tasks.android.AndroidBuildFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +26,6 @@ import org.kohsuke.args4j.spi.StringArrayOptionHandler;
  * @author markf@google.com (Mark Friedman)
  */
 public final class Main {
-
-  public final static String APK_EXTENSION_VALUE = "apk";
-  public final static String AAB_EXTENSION_VALUE = "aab";
 
   static class CommandLineOptions {
     @Option(name = "--isForCompanion", usage = "create the MIT AI2 Companion APK")
@@ -98,6 +97,17 @@ public final class Main {
       System.exit(1);
     }
 
+    if (commandLineOptions.dexCacheDir != null) {
+      File cacheDir = new File(commandLineOptions.dexCacheDir);
+      if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw new IllegalArgumentException(new IOException("Unable to create dex cache dir "
+            + commandLineOptions.dexCacheDir));
+      }
+    }
+
+    AndroidBuildFactory.install();
+    // TODO(ewpatton): Install iOS build factory once published
+
     ProjectBuilder projectBuilder = new ProjectBuilder(new NullStatReporter());
     ZipFile zip = null;
     try {
@@ -106,6 +116,12 @@ public final class Main {
       LOG.severe("Problem opening inout zip file: " + commandLineOptions.inputZipFile.getName());
       System.exit(1);
     }
+
+    if (commandLineOptions.isForCompanion) {
+      // If we are building for the Companion, disable timeouts
+      Execution.disableTimeouts();
+    }
+
     Result result = projectBuilder.build(commandLineOptions.userName,
                                          zip,
                                          commandLineOptions.outputDir,
@@ -117,7 +133,7 @@ public final class Main {
                                          commandLineOptions.childProcessRamMb,
                                          commandLineOptions.dexCacheDir,
                                          null,
-                                         AAB_EXTENSION_VALUE.equals(commandLineOptions.ext));
+                                         commandLineOptions.ext);
     System.exit(result.getResult());
   }
 

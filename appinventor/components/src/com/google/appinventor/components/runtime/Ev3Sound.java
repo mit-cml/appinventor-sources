@@ -1,33 +1,20 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2016 MIT, All rights reserved
+// Copyright 2016-2021 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.UsesPermissions;
+
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.YailList;
 import com.google.appinventor.components.runtime.util.Ev3BinaryParser;
 import com.google.appinventor.components.runtime.util.Ev3Constants;
-
-import android.util.Log;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ![EV3 component icon](images/legoMindstormsEv3.png)
@@ -45,9 +32,6 @@ import java.util.List;
                    nonVisible = true,
                    iconName = "images/legoMindstormsEv3.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET," +
-                                   "android.permission.WRITE_EXTERNAL_STORAGE," +
-                                   "android.permission.READ_EXTERNAL_STORAGE")
 public class Ev3Sound extends LegoMindstormsEv3Base {
   /**
    * Creates a new Ev3Sound component.

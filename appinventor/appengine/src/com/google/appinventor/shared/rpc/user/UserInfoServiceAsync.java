@@ -27,11 +27,6 @@ public interface UserInfoServiceAsync {
   void getUserBackpack(AsyncCallback<String> callback);
 
   /**
-   * @see UserInfoService#getUserInformation()
-   */
-  void getUserInformation(String sessionId, AsyncCallback<User> callback);
-
-  /**
    * @see UserInfoService#loadUserSettings()
    */
   void loadUserSettings(AsyncCallback<String> callback);
@@ -70,5 +65,16 @@ public interface UserInfoServiceAsync {
    * @see UserInfoService#storeSharedBackpack(String, String)
    */
   void storeSharedBackpack(String backPackId, String content, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#deleteAccount()
+   */
+
+  void deleteAccount(AsyncCallback<String> callback);
+
+  /**
+   * @see UserInfoService#storeAppStoreSettings(String)
+   */
+  void storeAppStoreSettings(String content, AsyncCallback<Void> callback);
 
 }

@@ -14,6 +14,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NxtSensorMode;
+import com.google.appinventor.components.common.NxtSensorType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
@@ -84,7 +86,7 @@ public class NxtTouchSensor extends LegoMindstormsNxtSensor implements Deleteabl
 
   @Override
   protected void initializeSensor(String functionName) {
-    setInputMode(functionName, port, SENSOR_TYPE_SWITCH, SENSOR_MODE_BOOLEANMODE);
+    setInputMode(functionName, port, NxtSensorType.Touch, NxtSensorMode.Boolean);
   }
 
   /**

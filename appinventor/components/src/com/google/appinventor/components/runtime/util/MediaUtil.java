@@ -1,20 +1,25 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2020 MIT, All rights reserved
+// Copyright 2011-2023 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_VIDEO;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
@@ -28,6 +33,8 @@ import android.widget.VideoView;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.PermissionException;
+import com.google.appinventor.components.runtime.util.FroyoUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,50 +59,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MediaUtil {
 
-  private enum MediaSource { ASSET, REPL_ASSET, SDCARD, FILE_URL, URL, CONTENT_URI, CONTACT_URI }
+  private enum MediaSource {
+    ASSET,
+    REPL_ASSET,
+    SDCARD,
+    FILE_URL,
+    URL,
+    CONTENT_URI,
+    CONTACT_URI,
+    PRIVATE_DATA
+  }
 
   private static final String LOG_TAG = "MediaUtil";
 
   // tempFileMap maps cached media (assets, etc) to their respective temp files.
   private static final Map<String, File> tempFileMap = new HashMap<String, File>();
-
-  // this class is used by getBitmapDrawable so it can call the asynchronous version
-  // (getBitMapDrawableAsync) and await the result (blocking the UI Thread :-()
-  private static class Synchronizer<T> {
-    private volatile boolean finished = false;
-    private T result;
-    private String error;
-
-    public synchronized void waitfor() {
-      while (!finished) {
-        try {
-          wait();
-        } catch (InterruptedException e) {
-        }
-      }
-    }
-
-    public synchronized void wakeup(T result) {
-      finished = true;
-      this.result = result;
-      notifyAll();
-    }
-
-    public synchronized void error(String error) {
-      finished = true;
-      this.error = error;
-      notifyAll();
-    }
-
-    public T getResult() {
-      return result;
-    }
-
-    public String getError() {
-      return error;
-    }
-
-  }
 
   private MediaUtil() {
   }
@@ -141,12 +119,17 @@ public class MediaUtil {
 
     } else if (mediaPath.startsWith("content://")) {
       return MediaSource.CONTENT_URI;
+    } else if (mediaPath.startsWith("/data/")) {
+      return MediaSource.PRIVATE_DATA;
     }
 
     try {
-      new URL(mediaPath);
+      URL url = new URL(mediaPath);
       // It's a well formed URL.
       if (mediaPath.startsWith("file:")) {
+        if (url.getPath().startsWith("/android_asset/")) {
+          return MediaSource.ASSET;
+        }
         return MediaSource.FILE_URL;
       }
 
@@ -299,18 +282,46 @@ public class MediaUtil {
       throws IOException {
     switch (mediaSource) {
       case ASSET:
-        return getAssetsIgnoreCaseInputStream(form,mediaPath);
+        if (mediaPath.startsWith("file:")) {
+          mediaPath = mediaPath.substring(mediaPath.indexOf("/android_asset/")
+              + "/android_asset/".length());
+        }
+        return getAssetsIgnoreCaseInputStream(form, mediaPath);
+
+      case PRIVATE_DATA:
+        return new FileInputStream(mediaPath);
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          // App specific storage does not need read permission
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        try {
+          return new FileInputStream(new java.io.File(URI.create(form.getAssetPath(mediaPath))));
+        } catch (Exception e) {
+          // URI.create can throw IllegalArgumentException under certain cirumstances
+          // on certain platforms. This crashes the Companion, which makes our crash
+          // statistics that big-G looks at, look not so good. So turn them into any
+          // Exception into an IOException which we handle without crashing.
+          if (SdkLevel.getLevel() < SdkLevel.LEVEL_GINGERBREAD) {
+            Log.d(LOG_TAG, "Error in REPL_ASSET Fetching: " + Log.getStackTraceString(e));
+            FroyoUtil.throwIOException(e);
+            // doesn't return
+          } else {
+            throw new IOException(e);
+          }
+        }
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          // App specific storage does not need read permission
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
         return new FileInputStream(mediaPath);
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
+        if (isExternalFileUrl(form, mediaPath)
+            && RUtil.needsFilePermission(form, mediaPath, null)) {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
       case URL:
@@ -421,7 +432,7 @@ public class MediaUtil {
     if (mediaPath == null || mediaPath.length() == 0) {
       return null;
     }
-    final Synchronizer syncer = new Synchronizer<BitmapDrawable>();
+    final Synchronizer<BitmapDrawable> syncer = new Synchronizer<>();
     final AsyncCallbackPair<BitmapDrawable> continuation = new AsyncCallbackPair<BitmapDrawable>() {
         @Override
         public void onFailure(String message) {
@@ -434,7 +445,7 @@ public class MediaUtil {
       };
     getBitmapDrawableAsync(form, mediaPath, continuation);
     syncer.waitfor();
-    BitmapDrawable result = (BitmapDrawable) syncer.getResult();
+    BitmapDrawable result = syncer.getResult();
     if (result == null) {
       String error = syncer.getError();
       if (error.startsWith("PERMISSION_DENIED:")) {
@@ -448,17 +459,35 @@ public class MediaUtil {
   }
 
   /**
+   * Loads the image specified by mediaPath and returns a {@link Drawable}.
+   *
+   * <p/>If mediaPath is null or empty, null is returned.
+   *
+   * @param form the Form
+   * @param mediaPath the path to the media
+   * @param continuation An AsyncCallbackPair that will receive a BitmapDrawable on success.
+   *                     On exception or failure the appropriate handler will be triggered.
+   */
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+       final AsyncCallbackPair<BitmapDrawable> continuation) {
+    getBitmapDrawableAsync(form, mediaPath, -1, -1, continuation);
+  }
+
+  /**
    * Loads the image specified by mediaPath and returns a Drawable.
    *
    * <p/>If mediaPath is null or empty, null is returned.
    *
    * @param form the Form
    * @param mediaPath the path to the media
-   * @param continuation An AsyncCallbackPair that will receive a
-   * BitmapDrawable on success. On exception or failure the appropriate
-   * handler will be triggered.
+   * @param desiredWidth the desired width of the image
+   * @param desiredHeight the desired height of the image
+   * @param continuation An AsyncCallbackPair that will receive a BitmapDrawable on success.
+   *                     On exception or failure the appropriate handler will be triggered.
    */
-  public static void getBitmapDrawableAsync(final Form form, final String mediaPath, final AsyncCallbackPair<BitmapDrawable> continuation) {
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+      final int desiredWidth, final int desiredHeight,
+      final AsyncCallbackPair<BitmapDrawable> continuation) {
     if (mediaPath == null || mediaPath.length() == 0) {
       continuation.onSuccess(null);
       return;
@@ -489,7 +518,7 @@ public class MediaUtil {
         } catch (PermissionException e) {
           continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
           return;
-        } catch(IOException e) {
+        } catch (IOException e) {
           if (mediaSource == MediaSource.CONTACT_URI) {
             // There's no photo for this contact, return a placeholder image.
             BitmapDrawable drawable = new BitmapDrawable(form.getResources(),
@@ -505,7 +534,7 @@ public class MediaUtil {
           if (is != null) {
             try {
               is.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
               // suppress error on close
               Log.w(LOG_TAG, "Unexpected error on close", e);
             }
@@ -513,7 +542,7 @@ public class MediaUtil {
           is = null;
           try {
             bos.close();
-          } catch(IOException e) {
+          } catch (IOException e) {
             // Should never fail to close a ByteArrayOutputStream
           }
           bos = null;
@@ -523,9 +552,13 @@ public class MediaUtil {
         buf = null;
         try {
           bis.mark(read);
+          int exifOrientation = getExifOrientation(bis);
           BitmapFactory.Options options = getBitmapOptions(form, bis, mediaPath);
           bis.reset();
-          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(), decodeStream(bis, null, options));
+          Bitmap decodedBitmap = decodeStream(bis, null, options);
+          Bitmap orientedBitmap = applyExifRotation(decodedBitmap, exifOrientation);
+          BitmapDrawable originalBitmapDrawable = new BitmapDrawable(form.getResources(),
+              orientedBitmap);
           // If options.inSampleSize == 1, then the image was not unreasonably large and may represent
           // the actual size the user intended for the image. However we still have to scale it by
           // the device density.
@@ -540,30 +573,36 @@ public class MediaUtil {
           //   5. set the density in the scaled bitmap.
 
           originalBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
-          if ((options.inSampleSize != 1) || (form.deviceDensity() == 1.0f)) {
+          boolean needsResize = desiredWidth > 0 && desiredHeight >= 0;
+          if (!needsResize && (options.inSampleSize != 1 || form.deviceDensity() == 1.0f)) {
             continuation.onSuccess(originalBitmapDrawable);
             return;
           }
-          int scaledWidth = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicWidth());
-          int scaledHeight = (int) (form.deviceDensity() * originalBitmapDrawable.getIntrinsicHeight());
+          int scaledWidth = (int) (form.deviceDensity()
+              * (desiredWidth > 0 ? desiredWidth : originalBitmapDrawable.getIntrinsicWidth()));
+          int scaledHeight = (int) (form.deviceDensity()
+              * (desiredHeight > 0 ? desiredHeight : originalBitmapDrawable.getIntrinsicHeight()));
           Log.d(LOG_TAG, "form.deviceDensity() = " + form.deviceDensity());
-          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = " + originalBitmapDrawable.getIntrinsicWidth());
-          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = " + originalBitmapDrawable.getIntrinsicHeight());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicWidth() = "
+              + originalBitmapDrawable.getIntrinsicWidth());
+          Log.d(LOG_TAG, "originalBitmapDrawable.getIntrinsicHeight() = "
+              + originalBitmapDrawable.getIntrinsicHeight());
           Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmapDrawable.getBitmap(),
               scaledWidth, scaledHeight, false);
-          BitmapDrawable scaledBitmapDrawable = new BitmapDrawable(form.getResources(), scaledBitmap);
+          BitmapDrawable scaledBitmapDrawable =
+              new BitmapDrawable(form.getResources(), scaledBitmap);
           scaledBitmapDrawable.setTargetDensity(form.getResources().getDisplayMetrics());
           originalBitmapDrawable = null; // So it will get GC'd on the next line
           System.gc();                   // We likely used a lot of memory, so gc now.
           continuation.onSuccess(scaledBitmapDrawable);
-        } catch(Exception e) {
+        } catch (Exception e) {
           Log.w(LOG_TAG, "Exception while loading media.", e);
           continuation.onFailure(e.getMessage());
         } finally {
           if (bis != null) {
             try {
               bis.close();
-            } catch(IOException e) {
+            } catch (IOException e) {
               // suppress error on close
               Log.w(LOG_TAG, "Unexpected error on close", e);
             }
@@ -647,6 +686,116 @@ public class MediaUtil {
     return options;
   }
 
+  /**
+   * Reads the EXIF orientation tag from the given image stream.
+   *
+   * <p>The stream is marked before reading and reset afterward so that subsequent
+   * reads (e.g. bitmap decoding) see the full image data from the beginning.
+   *
+   * <p>On API 24+, uses the {@link ExifInterface#ExifInterface(InputStream)} constructor directly.
+   * On older devices, writes the stream contents to a temporary file and uses
+   * {@link ExifInterface#ExifInterface(String)} since the InputStream constructor is unavailable
+   * before API 24.
+   *
+   * @param bis a {@link ByteArrayInputStream} containing the image data, already marked by the
+   *            caller so that it can be reset after EXIF reading
+   * @return one of the ExifInterface.ORIENTATION_* constants
+   */
+  private static int getExifOrientation(ByteArrayInputStream bis) {
+    File tempFile = null;
+    try {
+      ExifInterface exif;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        // API 24+ supports the ExifInterface(InputStream) constructor, so we can
+        // read directly from the stream without a temp file.
+        exif = new ExifInterface(bis);
+      } else {
+        // Prior to API 24, ExifInterface only accepts a file path. Write the
+        // stream contents to a temporary file so we can still read the EXIF data
+        // on devices running API 14–23.
+        tempFile = File.createTempFile("exif_", null);
+        java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
+        try {
+          byte[] buffer = new byte[4096];
+          int len;
+          while ((len = bis.read(buffer)) != -1) {
+            fos.write(buffer, 0, len);
+          }
+        } finally {
+          fos.close();
+        }
+        exif = new ExifInterface(tempFile.getAbsolutePath());
+      }
+      return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+          ExifInterface.ORIENTATION_UNDEFINED);
+    } catch (IOException e) {
+      Log.w(LOG_TAG, "Failed to read EXIF orientation", e);
+    } finally {
+      // Reset the stream so the caller can read from the beginning for bitmap decoding.
+      bis.reset();
+      // Clean up the temporary file after we are completely done with it.
+      if (tempFile != null) {
+        tempFile.delete();
+      }
+    }
+    return ExifInterface.ORIENTATION_UNDEFINED;
+  }
+
+  /**
+   * Applies the rotation/flip indicated by the EXIF orientation value to the given bitmap.
+   *
+   * <p>If the orientation is normal/undefined or the transformation fails, the original bitmap
+   * is returned unchanged.
+   *
+   * @param bitmap the source bitmap
+   * @param orientation one of the ExifInterface.ORIENTATION_* constants
+   * @return a correctly oriented bitmap (may be the same instance if no transform was needed)
+   */
+  private static Bitmap applyExifRotation(Bitmap bitmap, int orientation) {
+    if (bitmap == null) {
+      return null;
+    }
+    Matrix matrix = new Matrix();
+    switch (orientation) {
+      case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+        matrix.setScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_180:
+        matrix.setRotate(180);
+        break;
+      case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+        matrix.setScale(1, -1);
+        break;
+      case ExifInterface.ORIENTATION_TRANSPOSE:
+        matrix.setRotate(90);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_90:
+        matrix.setRotate(90);
+        break;
+      case ExifInterface.ORIENTATION_TRANSVERSE:
+        matrix.setRotate(-90);
+        matrix.postScale(-1, 1);
+        break;
+      case ExifInterface.ORIENTATION_ROTATE_270:
+        matrix.setRotate(-90);
+        break;
+      case ExifInterface.ORIENTATION_NORMAL:
+      case ExifInterface.ORIENTATION_UNDEFINED:
+      default:
+        return bitmap;
+    }
+    try {
+      Bitmap oriented = Bitmap.createBitmap(bitmap, 0, 0,
+          bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+      bitmap.recycle();
+      return oriented;
+    } catch (OutOfMemoryError e) {
+      Log.w(LOG_TAG, "Out of memory applying EXIF rotation; returning original bitmap", e);
+      return bitmap;
+    }
+  }
+
   // SoundPool related methods
 
   /**
@@ -691,16 +840,23 @@ public class MediaUtil {
         return soundPool.load(getAssetsIgnoreCaseAfd(form,mediaPath), 1);
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        return soundPool.load(QUtil.getReplAssetPath(form) + mediaPath, 1);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        return soundPool.load(fileUrlToFilePath(form.getAssetPath(mediaPath)), 1);
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
+        }
         return soundPool.load(mediaPath, 1);
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (isExternalFileUrl(form, mediaPath)
+            || RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
         }
         return soundPool.load(fileUrlToFilePath(mediaPath), 1);
 
@@ -744,18 +900,25 @@ public class MediaUtil {
 
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        mediaPlayer.setDataSource(form.getAssetPath(mediaPath));
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        mediaPlayer.setDataSource(fileUrlToFilePath(form.getAssetPath(mediaPath)));
         return;
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
+        }
         mediaPlayer.setDataSource(mediaPath);
         return;
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (isExternalFileUrl(form, mediaPath)
+            || RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_AUDIO : READ_EXTERNAL_STORAGE);
         }
         mediaPlayer.setDataSource(fileUrlToFilePath(mediaPath));
         return;
@@ -801,18 +964,25 @@ public class MediaUtil {
         return;
 
       case REPL_ASSET:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
-        videoView.setVideoPath(form.getAssetPath(mediaPath));
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(READ_EXTERNAL_STORAGE);
+        }
+        videoView.setVideoPath(fileUrlToFilePath(form.getAssetPath(mediaPath)));
         return;
 
       case SDCARD:
-        form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_VIDEO : READ_EXTERNAL_STORAGE);
+        }
         videoView.setVideoPath(mediaPath);
         return;
 
       case FILE_URL:
-        if (isExternalFileUrl(form, mediaPath)) {
-          form.assertPermission(READ_EXTERNAL_STORAGE);
+        if (isExternalFileUrl(form, mediaPath)
+            || RUtil.needsFilePermission(form, mediaPath, null)) {
+          form.assertPermission(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+              ? READ_MEDIA_VIDEO : READ_EXTERNAL_STORAGE);
         }
         videoView.setVideoPath(fileUrlToFilePath(mediaPath));
         return;

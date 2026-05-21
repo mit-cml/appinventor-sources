@@ -81,7 +81,9 @@ suite('Blocks', function() {
       }
       var icons = block.getIcons();
       for (var i = 0, icon; (icon = icons[i]); i++) {
-        chai.assert.isFalse(icon.isVisible());
+        if (icon.bubbleIsVisible) {
+          chai.assert.isFalse(icon.bubbleIsVisible());
+        }
       }
 
       var input = block.getInput(Blockly.BlockSvg.COLLAPSED_INPUT_NAME);
@@ -388,6 +390,7 @@ suite('Blocks', function() {
         blockA.setCollapsed(true);
         assertCollapsed(blockA);
         blockA.appendDummyInput('NAME');
+        Blockly.renderManagement.triggerQueuedRenders();
         assertCollapsed(blockA);
         chai.assert.isNotNull(blockA.getInput('NAME'));
       });

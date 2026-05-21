@@ -3,12 +3,13 @@ package com.google.appinventor.components.runtime;
 import android.content.Intent;
 import android.provider.Telephony.Sms.Intents;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.SmsBroadcastReceiver;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
-import org.robolectric.shadows.ShadowSmsManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class TextingTest extends RobolectricTestBase {
 
-  private final static String PHONE = "555-555-5555";
+  private final static String PHONE = "(555) 555-5555";
 
   private Texting texting;
 
@@ -66,13 +67,14 @@ public class TextingTest extends RobolectricTestBase {
    * @return An SMS_RECEIVED_ACTION intent with its pdus extra populated with one or more PDUs
    */
   private static Intent makeSmsIntent(String phone, String message) {
-    List<String> parts = ShadowSmsManager.getDefault().divideMessage(message);
+    List<String> parts = SmsManager.getDefault().divideMessage(message);
     byte[][] messages = new byte[SmsMessage.calculateLength(message, false)[0]][];
     for (int i = 0; i < parts.size(); i++) {
       messages[i] = createFakePdu(phone, parts.get(i));
     }
     Intent i = new Intent(Intents.SMS_RECEIVED_ACTION);
     i.putExtra("pdus", messages);
+    i.putExtra("format", "3gpp");
     return i;
   }
 

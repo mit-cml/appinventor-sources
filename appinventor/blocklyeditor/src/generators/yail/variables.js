@@ -9,7 +9,7 @@
 
 'use strict';
 
-goog.provide('Blockly.Yail.variables');
+goog.provide('AI.Yail.variables');
 
 
 /**
@@ -32,122 +32,122 @@ goog.provide('Blockly.Yail.variables');
  *
  * Why use '$'?  Because $ means money, which is "valuable", and "valuable" sounds like "variable"!
  */
-Blockly.Yail.YAIL_GLOBAL_VAR_TAG = 'g$';
-Blockly.Yail.YAIL_LOCAL_VAR_TAG = '$';
+AI.Yail.YAIL_GLOBAL_VAR_TAG = 'g$';
+AI.Yail.YAIL_LOCAL_VAR_TAG = '$';
 
 // Global variable definition block
-Blockly.Yail['global_declaration'] = function() {
-  var name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + this.getFieldValue('NAME');
-  var argument0 = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || '0';
-  var code = Blockly.Yail.YAIL_DEFINE +  name + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+AI.Yail.forBlock['global_declaration'] = function(block, generator) {
+  var name = AI.Yail.YAIL_GLOBAL_VAR_TAG + block.getFieldValue('NAME');
+  var argument0 = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || '0';
+  var code = AI.Yail.YAIL_DEFINE +  name + AI.Yail.YAIL_SPACER + argument0 + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // Global variable getter block
-Blockly.Yail['lexical_variable_get'] = function() {
+AI.Yail.forBlock['lexical_variable_get'] = function(block, generator) {
   var code = "";
-  var name = this.getFieldValue('VAR');
-  if (this.eventparam) {        // If this exists, its the english (default) value
-    name = this.eventparam;     // which is what we should use in the Yail
+  var name = block.getFieldValue('VAR');
+  if (block.eventparam) {        // If this exists, its the english (default) value
+    name = block.eventparam;     // which is what we should use in the Yail
   } else {
-    Blockly.LexicalVariable.getEventParam(this);
-    if (this.eventparam) {
-      name = this.eventparam;
+    Blockly.LexicalVariable.getEventParam(block);
+    if (block.eventparam) {
+      name = block.eventparam;
     }
   }
-  var commandAndName = Blockly.Yail.getVariableCommandAndName(name);
+  var commandAndName = AI.Yail.getVariableCommandAndName(name);
   code += commandAndName[0];
   name = commandAndName[1];
   
-  code += name + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  code += name + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
 // Global variable setter block
-Blockly.Yail['lexical_variable_set'] = function() {
-  var argument0 = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || '0';
+AI.Yail.forBlock['lexical_variable_set'] = function(block, generator) {
+  var argument0 = generator.valueToCode(block, 'VALUE', AI.Yail.ORDER_NONE) || '0';
   var code = "";
-  var name = this.getFieldValue('VAR');
-  if (this.eventparam) {        // If this exists, its the english (default) value
-    name = this.eventparam;     // which is what we should use in the Yail
+  var name = block.getFieldValue('VAR');
+  if (block.eventparam) {        // If this exists, its the english (default) value
+    name = block.eventparam;     // which is what we should use in the Yail
   } else {
-    Blockly.LexicalVariable.getEventParam(this);
-    if (this.eventparam) {
-      name = this.eventparam;
+    Blockly.LexicalVariable.getEventParam(block);
+    if (block.eventparam) {
+      name = block.eventparam;
     }
   }
-  var commandAndName = Blockly.Yail.setVariableCommandAndName(name);
+  var commandAndName = AI.Yail.setVariableCommandAndName(name);
   code += commandAndName[0];
   name = commandAndName[1];
-  code += name + Blockly.Yail.YAIL_SPACER + argument0
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code += name + AI.Yail.YAIL_SPACER + argument0
+      + AI.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
 // [lyn, 12/27/2012] Handle prefixes abstractly
-Blockly.Yail['getVariableCommandAndName'] = function(name){
+AI.Yail['getVariableCommandAndName'] = function(name){
   var command = "";
   var pair = Blockly.unprefixName(name);
   var prefix = pair[0];
   var unprefixedName = pair[1];
   if (prefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX || prefix === Blockly.GLOBAL_KEYWORD) {
-    name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
-    command = Blockly.Yail.YAIL_GET_VARIABLE;
+    name = AI.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
+    command = AI.Yail.YAIL_GET_VARIABLE;
   } else {
-    name = Blockly.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
-    command = Blockly.Yail.YAIL_LEXICAL_VALUE;
+    name = AI.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
+    command = AI.Yail.YAIL_LEXICAL_VALUE;
   }
   return [command,name]
 }
 
 // [lyn, 12/27/2012] New
-Blockly.Yail['setVariableCommandAndName'] = function(name){
+AI.Yail['setVariableCommandAndName'] = function(name){
   var command = "";
   var pair = Blockly.unprefixName(name);
   var prefix = pair[0];
   var unprefixedName = pair[1];
   if (prefix === Blockly.Msg.LANG_VARIABLES_GLOBAL_PREFIX || prefix === Blockly.GLOBAL_KEYWORD) {
-    name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
-    command = Blockly.Yail.YAIL_SET_VARIABLE;
+    name = AI.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
+    command = AI.Yail.YAIL_SET_VARIABLE;
   } else {
-    name = Blockly.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
-    command = Blockly.Yail.YAIL_SET_LEXICAL_VALUE;
+    name = AI.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
+    command = AI.Yail.YAIL_SET_LEXICAL_VALUE;
   }
   return [command,name]
 }
 
-Blockly.Yail['local_declaration_statement'] = function() {
-  return Blockly.Yail.local_variable(this,false);
-}
+AI.Yail.forBlock['local_declaration_statement'] = function(block, generator) {
+  return AI.Yail.local_variable(block, generator, false);
+};
 
-Blockly.Yail['local_declaration_expression'] = function() {
-  return Blockly.Yail.local_variable(this,true);
-}
+AI.Yail.forBlock['local_declaration_expression'] = function(block, generator) {
+  return AI.Yail.local_variable(block, generator, true);
+};
 
-Blockly.Yail['local_variable'] = function(block,isExpression) {
-  var code = Blockly.Yail.YAIL_LET;
-  code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_SPACER;
+AI.Yail['local_variable'] = function(block, generator, isExpression) {
+  var code = AI.Yail.YAIL_LET;
+  code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_SPACER;
   for(var i=0;block.getFieldValue("VAR" + i);i++){
-    code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.usePrefixInYail ? "local_" : "") + block.getFieldValue("VAR" + i);
-    code += Blockly.Yail.YAIL_SPACER + ( Blockly.Yail.valueToCode(block, 'DECL' + i, Blockly.Yail.ORDER_NONE) || '0' );
-    code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+    code += AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.usePrefixInYail ? "local_" : "") + block.getFieldValue("VAR" + i);
+    code += AI.Yail.YAIL_SPACER + ( generator.valueToCode(block, 'DECL' + i, AI.Yail.ORDER_NONE) || '0' );
+    code += AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
   }
-  code += Blockly.Yail.YAIL_SPACER +  Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code += AI.Yail.YAIL_SPACER +  AI.Yail.YAIL_CLOSE_COMBINATION;
   // [lyn, 01/15/2013] Added to fix bug in local declaration expressions:
   if(isExpression){
     if(!block.getInputTargetBlock("RETURN")){
-      code += Blockly.Yail.YAIL_SPACER + "0";
+      code += AI.Yail.YAIL_SPACER + "0";
     } else {
-      code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.valueToCode(block, 'RETURN', Blockly.Yail.ORDER_NONE);
+      code += AI.Yail.YAIL_SPACER + generator.valueToCode(block, 'RETURN', AI.Yail.ORDER_NONE);
     }
   } else {
-    code += Blockly.Yail.YAIL_SPACER +
-      (Blockly.Yail.statementToCode(block, 'STACK', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE);
+    var stackCode = generator.statementToCode(block, 'STACK') || AI.Yail.YAIL_FALSE;
+    code += AI.Yail.YAIL_SPACER + stackCode;
   }
-  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code += AI.Yail.YAIL_SPACER + AI.Yail.YAIL_CLOSE_COMBINATION;
   if(!isExpression){
     return code;
   } else {
-    return [ code, Blockly.Yail.ORDER_ATOMIC ];
+    return [ code, AI.Yail.ORDER_ATOMIC ];
   }
 };
