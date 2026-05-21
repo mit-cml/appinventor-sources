@@ -201,6 +201,19 @@ public final class BlockSelectorBox extends Box {
         }
       };
       itemNode.setUserObject(sourceItem);
+      if ("Procedures".equals(category.getCategory())) {
+        TreeItem moreItemNode = new TreeItem(new HTML("<span>" + MESSAGES.builtinMoreLabel()
+            + "</span>"));
+        SourceStructureExplorerItem moreSourceItem = new BlockSelectorItem() {
+          @Override
+          public void onSelected(NativeEvent event) {
+            fireBuiltinDrawerSelected("ProceduresMore");
+          }
+        };
+        moreItemNode.setUserObject(moreSourceItem);
+        itemNode.addItem(moreItemNode);
+        itemNode.setState(true);
+      }
       rootItem.addItem(itemNode);
     }
     rootItem.setState(true);
