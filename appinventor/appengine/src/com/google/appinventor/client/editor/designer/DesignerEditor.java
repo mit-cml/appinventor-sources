@@ -379,18 +379,25 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
         for (EditableProperty property : selectedProperties) {
           String propertyName = property.getName();
           // LOG.info("added " + propertyName + " "+ property.getValue());
-          // Ignore UUID and NAME properties (can't be edited and always unique)
+          // Ignore UUID and NAME properties
           if ("Uuid".equals(propertyName) || "Name".equals(propertyName)) {
             continue;
           }
           else {
-            // only add ones that are not default?
             componentProperties.set(propertyName, property.getValue());
-            // LOG.info("in on comp added " + property.getDefaultValue());
           }
         }
         allComponentsMap.set(component.getUuid(), componentProperties);
-        // LOG.info("selected properties " + selectedProperties);
+
+        //handle case where directly adding to container
+        MockContainer parent = component.getContainer();
+        if (parent != null) {
+          YMap parentEntry = (YMap) allComponentsMap.get(((MockComponent) parent).getUuid());
+          if (parentEntry != null) {
+            YArray parentChildren = (YArray) parentEntry.get("$Components");
+            parentChildren.push(new Object[]{component.getUuid()});
+          }
+        }
       }
     }
     else {
@@ -736,7 +743,7 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       mockComponent.changeProperty(PROPERTY_NAME_NAME, componentName);
     }
 
-    YMap yComponentsMap = getDoc().getMap("components"); //map uuid to component
+    YMap allComponentsMap = getDoc().getMap("components"); //map uuid to component
     YMap entry = new YMap(); 
 
     // Set component properties
@@ -751,11 +758,11 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     entry.set("Uuid",  mockComponent.getUuid());
     entry.set("$Components", new YArray());
 
-    yComponentsMap.set(mockComponent.getUuid(), entry);
+    allComponentsMap.set(mockComponent.getUuid(), entry);
 
     // add UUID of nested componets to $Components in parent
     if (parent != null) {
-      YMap parentEntry = (YMap) yComponentsMap.get(((MockComponent) parent).getUuid());
+      YMap parentEntry = (YMap) allComponentsMap.get(((MockComponent) parent).getUuid());
       YArray parentChildren = (YArray) parentEntry.get("$Components");
 
       parentChildren.push(new Object[]{mockComponent.getUuid()});

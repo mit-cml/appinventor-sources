@@ -703,10 +703,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return properties;
   }
 
-  // public YMap getMapProperties() {
-  //   return yDoc.getComponentMapByUuid()
-  // }
-
   /**
    * Returns the children of this component. Note that the return value will
    * never be {@code null} but rather an empty array for components without
@@ -1214,11 +1210,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   public void onDesignPreviewChanged() {
   }
 
-// private native void logDocId() /*-{
-//   var doc = this.@com.google.appinventor.client.editor.simple.components.MockComponent::yDoc;
-//   console.log('mockcomponent doc clientID:', doc.clientID);
-//   }-*/;
-
   // PropertyChangeListener implementation
 
   @Override
@@ -1239,19 +1230,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       // move outside if/elif?
       YMap componentMap = (YMap) yDoc.getMap("components").get(this.getUuid());
       if (componentMap != null) {
-        LOG.info("setting property");
+        // LOG.info("setting property");
         componentMap.set(propertyName, newValue);
       }
-      // logDocId();
-      // Doc currentDoc = (editor instanceof YaFormEditor) 
-      //   ? ((YaFormEditor) editor).getDoc() 
-      //   : null;
-      // if (currentDoc != null) {
-      //       YMap componentMap = (YMap) currentDoc.getMap("components").get(this.getUuid());
-      //       if (componentMap != null) {
-      //           componentMap.set(propertyName, newValue);
-      //       }
-      //   }
     }
   }
 
