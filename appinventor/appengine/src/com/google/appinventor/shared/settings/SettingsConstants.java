@@ -78,7 +78,10 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE = "NSCameraUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE = "NSSpeechRecognitionUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE = "NSLocationWhenInUseUsageDescription";
-
+  
+  // temporary setting for testing the new i18n system
+  public static final String YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS = "I18nTranslations";
+  
   /**
    * Settings for the Blocks editor.
    */

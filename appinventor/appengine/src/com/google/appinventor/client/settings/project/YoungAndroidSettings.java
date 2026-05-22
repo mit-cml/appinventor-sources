@@ -29,6 +29,8 @@ public final class YoungAndroidSettings extends Settings {
 
     addProperty(new EditableProperty(this, SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON,
         "", EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS,
+        "", EditableProperty.TYPE_NORMAL));
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS,
         "False", EditableProperty.TYPE_INVISIBLE));

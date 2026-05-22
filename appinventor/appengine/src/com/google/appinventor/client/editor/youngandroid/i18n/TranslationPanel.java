@@ -2,53 +2,49 @@
 package com.google.appinventor.client.editor.youngandroid.i18n;
 
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.TextBox;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-/**
- * First draft of the Translation UI.
- *
- * This intentionally starts small:
- * - show screens/components
- * - generate an internal i18n key
- *
- * Next slice:
- * - scan Designer properties
- * - filter text/string properties
- * - show base text and translation columns
- */
 public final class TranslationPanel extends Composite {
   private static final String FIRST_LANGUAGE = "hi";
 
   private final YaProjectEditor projectEditor;
   private final FlexTable table;
   private final TextArea jsonPreview;
+  private final Label saveStatus;
   private final Map<String, String> translationValues;
   private final Map<String, TranslationEntry> translationEntries;
+
+  private boolean savedTranslationsLoaded;
 
   public TranslationPanel(YaProjectEditor projectEditor) {
     this.projectEditor = projectEditor;
     this.table = new FlexTable();
+    this.jsonPreview = new TextArea();
+    this.saveStatus = new Label("");
     this.translationValues = new HashMap<String, String>();
     this.translationEntries = new HashMap<String, TranslationEntry>();
-    this.jsonPreview = new TextArea();
+    this.savedTranslationsLoaded = false;
 
     FlowPanel root = new FlowPanel();
     root.setStylePrimaryName("ode-i18n-panel");
@@ -60,14 +56,10 @@ public final class TranslationPanel extends Composite {
 
     Label description = new Label(
         "This table lists translatable Designer properties and assigns safe internal "
-            + "translation keys. Translation values are currently stored in memory.");
+            + "translation keys. Translation values are stored in project settings.");
 
     table.setStylePrimaryName("ode-i18n-table");
     table.setWidth("100%");
-
-    root.add(title);
-    root.add(description);
-    root.add(table);
 
     Button exportButton = new Button("Export JSON");
     exportButton.addClickHandler(new ClickHandler() {
@@ -77,18 +69,34 @@ public final class TranslationPanel extends Composite {
       }
     });
 
+    Button saveButton = new Button("Save JSON");
+    saveButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        saveJson();
+      }
+    });
+
     jsonPreview.setWidth("100%");
     jsonPreview.setVisibleLines(12);
     jsonPreview.getElement().setAttribute("spellcheck", "false");
 
+    root.add(title);
+    root.add(description);
+    root.add(table);
     root.add(exportButton);
+    root.add(saveButton);
+    root.add(saveStatus);
     root.add(jsonPreview);
 
     initWidget(root);
   }
 
   public void refresh() {
+    loadSavedTranslations();
+
     clearTable();
+    translationEntries.clear();
 
     addHeader();
 
@@ -122,6 +130,7 @@ public final class TranslationPanel extends Composite {
               componentName, propertyName);
           String generatedKey = TranslationKeyGenerator.generate(formName, componentName,
               propertyName);
+
           translationEntries.put(generatedKey, new TranslationEntry(generatedKey, formName,
               componentName, componentType, propertyName, propertyValue));
 
@@ -146,8 +155,71 @@ public final class TranslationPanel extends Composite {
     table.setText(0, 3, "Property");
     table.setText(0, 4, "Internal Key");
     table.setText(0, 5, "Base Text");
-    table.setText(0, 6, "hi");
+    table.setText(0, 6, FIRST_LANGUAGE);
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
+  }
+
+  private void saveJson() {
+    String json = exportJson();
+
+    projectEditor.changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS,
+        json);
+
+    jsonPreview.setText(json);
+    saveStatus.setText("Saved translations.");
+  }
+
+  private void loadSavedTranslations() {
+    if (savedTranslationsLoaded) {
+      return;
+    }
+
+    savedTranslationsLoaded = true;
+
+    try {
+      String savedJson = projectEditor.getProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS);
+
+      if (savedJson == null || savedJson.length() == 0) {
+        return;
+      }
+
+      JSONValue parsed = JSONParser.parseStrict(savedJson);
+      JSONObject root = parsed.isObject();
+      if (root == null) {
+        return;
+      }
+
+      JSONValue entriesValue = root.get("entries");
+      if (entriesValue == null || entriesValue.isObject() == null) {
+        return;
+      }
+
+      JSONObject entries = entriesValue.isObject();
+      for (String key : entries.keySet()) {
+        JSONValue entryValue = entries.get(key);
+        if (entryValue == null || entryValue.isObject() == null) {
+          continue;
+        }
+
+        JSONObject entry = entryValue.isObject();
+        JSONValue translationsValue = entry.get("translations");
+        if (translationsValue == null || translationsValue.isObject() == null) {
+          continue;
+        }
+
+        JSONObject translations = translationsValue.isObject();
+        JSONValue translatedValue = translations.get(FIRST_LANGUAGE);
+        if (translatedValue != null && translatedValue.isString() != null) {
+          translationValues.put(key, translatedValue.isString().stringValue());
+        }
+      }
+    } catch (RuntimeException e) {
+      saveStatus.setText("");
+    }
   }
 
   private String exportJson() {
@@ -197,12 +269,19 @@ public final class TranslationPanel extends Composite {
   private TextBox createTranslationTextBox(final String translationKey) {
     final TextBox textBox = new TextBox();
     textBox.setWidth("100%");
-    textBox.setValue(translationValues.get(translationKey));
+
+    String savedValue = translationValues.get(translationKey);
+    textBox.setValue(savedValue == null ? "" : savedValue);
 
     textBox.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        translationValues.put(translationKey, textBox.getValue());
+        String value = textBox.getValue();
+        if (value == null || value.length() == 0) {
+          translationValues.remove(translationKey);
+        } else {
+          translationValues.put(translationKey, value);
+        }
       }
     });
 
