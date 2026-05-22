@@ -31,6 +31,7 @@ import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -476,6 +477,42 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     List<String> formNames = new ArrayList<String>(editorMap.keySet());
     Collections.sort(formNames);
     return formNames;
+  }
+
+  public List<String> getComponentPropertyNames(String formName, String componentName) {
+    List<String> propertyNames = new ArrayList<String>();
+
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null) {
+      return propertyNames;
+    }
+
+    MockComponent component = editorSet.formEditor.getComponents().get(componentName);
+    if (component == null) {
+      return propertyNames;
+    }
+
+    for (EditableProperty property : component.getProperties()) {
+      propertyNames.add(property.getName());
+    }
+
+    Collections.sort(propertyNames);
+    return propertyNames;
+  }
+
+  public String getComponentPropertyValue(String formName, String componentName,
+     String propertyName) {
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null) {
+      return "";
+    }
+
+    MockComponent component = editorSet.formEditor.getComponents().get(componentName);
+    if (component == null || !component.hasProperty(propertyName)) {
+      return "";
+    }
+
+    return component.getPropertyValue(propertyName);
   }
 
   public String getComponentType(String formName, String componentName) {

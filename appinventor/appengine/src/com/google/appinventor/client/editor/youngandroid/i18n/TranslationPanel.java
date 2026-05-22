@@ -37,9 +37,8 @@ public final class TranslationPanel extends Composite {
     title.setStylePrimaryName("ode-i18n-title");
 
     Label description = new Label(
-        "This is the first i18n table view. It lists Designer components and assigns "
-            + "safe internal translation keys. Text/String property detection will be added next.");
-    description.setStylePrimaryName("ode-i18n-description");
+        "This table lists translatable Designer properties and assigns safe internal "
+            + "translation keys. Language columns and editing support will be added next.");
 
     table.setStylePrimaryName("ode-i18n-table");
     table.setWidth("100%");
@@ -75,18 +74,27 @@ public final class TranslationPanel extends Composite {
 
       for (String componentName : componentNames) {
         String componentType = projectEditor.getComponentType(formName, componentName);
-        String propertyName = "Text";
-        String generatedKey = TranslationKeyGenerator.generate(formName, componentName,
-            propertyName);
 
-        table.setText(row, 0, formName);
-        table.setText(row, 1, componentName);
-        table.setText(row, 2, componentType);
-        table.setText(row, 3, propertyName);
-        table.setText(row, 4, generatedKey);
-        table.setText(row, 5, "TODO: scan text/string properties");
+        for (String propertyName : projectEditor.getComponentPropertyNames(formName,
+            componentName)) {
+          if (!isTranslatableProperty(propertyName)) {
+            continue;
+          }
 
-        row++;
+          String propertyValue = projectEditor.getComponentPropertyValue(formName,
+              componentName, propertyName);
+          String generatedKey = TranslationKeyGenerator.generate(formName, componentName,
+              propertyName);
+
+          table.setText(row, 0, formName);
+          table.setText(row, 1, componentName);
+          table.setText(row, 2, componentType);
+          table.setText(row, 3, propertyName);
+          table.setText(row, 4, generatedKey);
+          table.setText(row, 5, propertyValue);
+
+          row++;
+        }
       }
     }
   }
@@ -97,8 +105,15 @@ public final class TranslationPanel extends Composite {
     table.setText(0, 2, "Type");
     table.setText(0, 3, "Property");
     table.setText(0, 4, "Internal Key");
-    table.setText(0, 5, "Status");
+    table.setText(0, 5, "Base Text");
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
+  }
+
+  private boolean isTranslatableProperty(String propertyName) {
+    return "Text".equals(propertyName)
+        || "Hint".equals(propertyName)
+        || "Title".equals(propertyName)
+        || "Prompt".equals(propertyName);
   }
 
   private void clearTable() {
