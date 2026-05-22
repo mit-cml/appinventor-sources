@@ -29,11 +29,13 @@ public final class TranslationPanel extends Composite {
   private final YaProjectEditor projectEditor;
   private final FlexTable table;
   private final Map<String, String> translationValues;
+  private final Map<String, TranslationEntry> translationEntries;
 
   public TranslationPanel(YaProjectEditor projectEditor) {
     this.projectEditor = projectEditor;
     this.table = new FlexTable();
     this.translationValues = new HashMap<String, String>();
+    this.translationEntries = new HashMap<String, TranslationEntry>();
 
     FlowPanel root = new FlowPanel();
     root.setStylePrimaryName("ode-i18n-panel");
@@ -92,6 +94,8 @@ public final class TranslationPanel extends Composite {
               componentName, propertyName);
           String generatedKey = TranslationKeyGenerator.generate(formName, componentName,
               propertyName);
+          translationEntries.put(generatedKey, new TranslationEntry(generatedKey, formName,
+              componentName, componentType, propertyName, propertyValue));
 
           table.setText(row, 0, formName);
           table.setText(row, 1, componentName);
