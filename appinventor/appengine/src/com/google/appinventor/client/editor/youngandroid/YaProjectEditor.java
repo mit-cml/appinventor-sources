@@ -24,6 +24,7 @@ import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.youngandroid.i18n.TranslationEditor;
 import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -127,6 +128,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
    // variable which open the ProjectPropertyDialog(per project)
   private ProjectPropertiesDialogBox propertyDialogBox = null;
+  private TranslationEditor translationEditor = null;
 
   private String defaultCloudDBToken = null;
 
@@ -323,6 +325,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       }
     }
 
+    addTranslationEditor();
+
     // New project loading logic
     // 1. Create all editors
     // 2. Load all files
@@ -466,6 +470,22 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       components.addAll(getComponentInstances(formName));
     }
     return components;
+  }
+
+  public List<String> getFormNames() {
+    List<String> formNames = new ArrayList<String>(editorMap.keySet());
+    Collections.sort(formNames);
+    return formNames;
+  }
+
+  public String getComponentType(String formName, String componentName) {
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null) {
+      return "";
+    }
+
+    MockComponent component = editorSet.formEditor.getComponents().get(componentName);
+    return component == null ? "" : component.getType();
   }
 
   public Set<String> getComponentTypes(String formName) {
@@ -619,6 +639,18 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editorMap.put(entityName, editors);
     }
     addFileEditorByType(newBlocksEditor);
+  }
+
+  private void addTranslationEditor() {
+    if (translationEditor != null) {
+      return;
+    }
+
+    translationEditor = new TranslationEditor(this, projectRootNode);
+    insertFileEditor(translationEditor, fileIds.size());
+    addFileEditorByType(translationEditor);
+    Ode.getInstance().getDesignToolbar().addTranslationEditor(projectRootNode.getProjectId(),
+        translationEditor);
   }
 
   private void removeFormEditor(String formName) {
