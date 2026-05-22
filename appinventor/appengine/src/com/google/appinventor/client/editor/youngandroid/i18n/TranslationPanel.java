@@ -6,6 +6,11 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 /**
@@ -23,10 +28,12 @@ import java.util.List;
 public final class TranslationPanel extends Composite {
   private final YaProjectEditor projectEditor;
   private final FlexTable table;
+  private final Map<String, String> translationValues;
 
   public TranslationPanel(YaProjectEditor projectEditor) {
     this.projectEditor = projectEditor;
     this.table = new FlexTable();
+    this.translationValues = new HashMap<String, String>();
 
     FlowPanel root = new FlowPanel();
     root.setStylePrimaryName("ode-i18n-panel");
@@ -38,7 +45,7 @@ public final class TranslationPanel extends Composite {
 
     Label description = new Label(
         "This table lists translatable Designer properties and assigns safe internal "
-            + "translation keys. Language columns and editing support will be added next.");
+            + "translation keys. Translation values are currently stored in memory.");
 
     table.setStylePrimaryName("ode-i18n-table");
     table.setWidth("100%");
@@ -92,6 +99,7 @@ public final class TranslationPanel extends Composite {
           table.setText(row, 3, propertyName);
           table.setText(row, 4, generatedKey);
           table.setText(row, 5, propertyValue);
+          table.setWidget(row, 6, createTranslationTextBox(generatedKey));
 
           row++;
         }
@@ -106,7 +114,23 @@ public final class TranslationPanel extends Composite {
     table.setText(0, 3, "Property");
     table.setText(0, 4, "Internal Key");
     table.setText(0, 5, "Base Text");
+    table.setText(0, 6, "hi");
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
+  }
+
+  private TextBox createTranslationTextBox(final String translationKey) {
+    final TextBox textBox = new TextBox();
+    textBox.setWidth("100%");
+    textBox.setValue(translationValues.get(translationKey));
+
+    textBox.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        translationValues.put(translationKey, textBox.getValue());
+      }
+    });
+
+    return textBox;
   }
 
   private boolean isTranslatableProperty(String propertyName) {
