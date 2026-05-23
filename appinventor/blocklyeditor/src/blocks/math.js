@@ -133,6 +133,30 @@ Blockly.Blocks['math_compare'] = {
       var mode = thisBlock.getFieldValue('OP');
       return Blockly.Blocks.math_compare.TOOLTIPS()[mode];
     });
+    this.setMutator(new Blockly.icons.MutatorIcon(['math_tolerance_mutator_item'], this));
+    this.repeatingInputName = 'TOL';
+    this.itemCount_ = 0;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
+  },
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'math_tolerance_mutator_item', this);
+  },
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
+  },
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function() {},
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE);
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE, "CONTAINER_TEXT");
   },
   // Potential clash with logic equal, using '=' for now
   typeblock: [{
@@ -220,24 +244,17 @@ Blockly.Blocks.math_compare.HELPURLS = function () {
   }
 };
 
-Blockly.Blocks['math_compare_tolerance'] = {
-  category: 'Math',
-  helpUrl: Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_HELPURL,
-  init: function() {
-  	this.setColour(Blockly.MATH_CATEGORY_HUE);
-  	this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("boolean", AI.BlockUtils.OUTPUT));
-  	this.appendValueInput('A')
-				.setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
-		this.appendValueInput('B')
-				.setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-				.appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE);
-		this.appendValueInput('TOL')
-				.setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-				.appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE);
-		this.setInputsInline(true);
-		this.setTooltip(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TOOLTIP);
-  },
-	typeblock: [{translatedName: Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE}]
+Blockly.Blocks['math_tolerance_mutator_item'] = {
+  // Add items.
+  init: function () {
+    this.setColour(Blockly.MATH_CATEGORY_HUE);
+    this.appendDummyInput()
+        .appendField("number");
+    this.setPreviousStatement(true);
+    this.setNextStatement(false);
+    this.setTooltip(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TOOLTIP);
+    this.contextMenu = false;
+  }
 };
 
 Blockly.Blocks['math_add'] = {
