@@ -493,6 +493,26 @@ public class MediaUtil {
       return;
     }
 
+    // SVG files cannot be decoded by BitmapFactory; rasterize them via androidsvg instead.
+    if (SvgUtil.isSvg(mediaPath)) {
+      AsynchUtil.runAsynchronously(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            BitmapDrawable drawable =
+                SvgUtil.getBitmapDrawableFromSvg(form, mediaPath, desiredWidth, desiredHeight);
+            continuation.onSuccess(drawable);
+          } catch (com.google.appinventor.components.runtime.errors.PermissionException e) {
+            continuation.onFailure("PERMISSION_DENIED:" + e.getPermissionNeeded());
+          } catch (Exception e) {
+            Log.w(LOG_TAG, "Exception while loading SVG: " + mediaPath, e);
+            continuation.onFailure(e.getMessage());
+          }
+        }
+      });
+      return;
+    }
+
     final MediaSource mediaSource = determineMediaSource(form, mediaPath);
 
     Runnable loadImage = new Runnable() {

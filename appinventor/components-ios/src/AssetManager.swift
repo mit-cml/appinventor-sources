@@ -161,8 +161,23 @@ open class AssetManager: NSObject {
     } else if path.starts(with: "file://"), let image = UIImage(contentsOfFile: path.chopPrefix(count: 7).removingPercentEncoding ?? "") {
       return image
     }
+
+    // SVG files cannot be decoded by UIImage directly. Resolve the path and
+    // rasterize via SvgUtil (which uses the SwiftSVG CocoaPod).
+    if SvgUtil.isSvg(path) {
+      let resolvedPath = pathForExistingFileAsset(path)
+      if !resolvedPath.isEmpty, let image = SvgUtil.imageFromSvgFile(resolvedPath) {
+        return image
+      }
+      // Also try the path as-is (e.g., an absolute path already passed in).
+      if let image = SvgUtil.imageFromSvgFile(path) {
+        return image
+      }
+    }
+
     return nil
   }
+
   
   @objc public func transformPotentialAndroidPath(path: String) -> String {
     let relativePathComp = path.components(separatedBy: "sdcard/").last!
