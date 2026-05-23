@@ -220,6 +220,13 @@ public final class BlockSelectorBox extends Box {
     Map<String, String> typesAndIcons = Maps.newHashMap();
     form.collectTypesAndIcons(typesAndIcons);
     TreeItem advanced = new TreeItem(new HTML("<span>" + MESSAGES.anyComponentLabel() + "</span>"));
+    advanced.getElement().setAttribute("data-name", "AnyComponent");
+    advanced.setUserObject(new BlockSelectorItem() {
+      @Override
+      public boolean isInitiallyExpanded() {
+        return false;
+      }
+    });
     List<String> typeList = new ArrayList<String>(typesAndIcons.keySet());
     Collections.sort(typeList);
     for (final String typeName : typeList) {
