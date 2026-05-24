@@ -12,13 +12,16 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,12 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 public final class TranslationPanel extends Composite {
-  private static final String DEFAULT_LANGUAGE = "English";
+  private static final String DEFAULT_LANGUAGE = "hi";
 
   private final YaProjectEditor projectEditor;
   private final FlexTable table;
-  private final TextArea jsonPreview;
-  private final Label saveStatus;
   private final Map<String, Map<String, String>> translationValues;
   private final Map<String, TranslationEntry> translationEntries;
   private final List<String> languages;
@@ -42,8 +43,6 @@ public final class TranslationPanel extends Composite {
   public TranslationPanel(YaProjectEditor projectEditor) {
     this.projectEditor = projectEditor;
     this.table = new FlexTable();
-    this.jsonPreview = new TextArea();
-    this.saveStatus = new Label("");
     this.translationValues = new HashMap<String, Map<String, String>>();
     this.translationEntries = new HashMap<String, TranslationEntry>();
     this.savedTranslationsLoaded = false;
@@ -70,7 +69,9 @@ public final class TranslationPanel extends Composite {
     exportButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        jsonPreview.setText(exportJson());
+      showJsonDialog("Export Translation JSON",
+          "Copy or inspect the current i18n JSON below.",
+          exportJson());
       }
     });
 
@@ -81,10 +82,6 @@ public final class TranslationPanel extends Composite {
         saveJson();
       }
     });
-
-    jsonPreview.setWidth("100%");
-    jsonPreview.setVisibleLines(12);
-    jsonPreview.getElement().setAttribute("spellcheck", "false");
 
     root.add(title);
     root.add(description);
@@ -108,8 +105,6 @@ public final class TranslationPanel extends Composite {
     root.add(addLanguageButton);
     root.add(exportButton);
     root.add(saveButton);
-    root.add(saveStatus);
-    root.add(jsonPreview);
 
     initWidget(root);
   }
@@ -186,6 +181,40 @@ public final class TranslationPanel extends Composite {
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
   }
 
+  private void showJsonDialog(String title, String message, String json) {
+    final DialogBox dialog = new DialogBox(false, true);
+    dialog.setText(title);
+    dialog.setGlassEnabled(false);
+    dialog.setAnimationEnabled(true);
+
+    VerticalPanel panel = new VerticalPanel();
+    panel.setSpacing(8);
+    panel.setWidth("720px");
+
+    Label messageLabel = new Label(message);
+
+    TextArea jsonTextArea = new TextArea();
+    jsonTextArea.setText(json);
+    jsonTextArea.setWidth("700px");
+    jsonTextArea.setVisibleLines(16);
+    jsonTextArea.getElement().setAttribute("spellcheck", "false");
+
+    Anchor closeLink = new Anchor("Close");
+    closeLink.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        dialog.hide();
+      }
+    });
+
+    panel.add(messageLabel);
+    panel.add(jsonTextArea);
+    panel.add(closeLink);
+
+    dialog.setWidget(panel);
+    dialog.center();
+  }
+
   private void saveJson() {
     String json = exportJson();
 
@@ -194,8 +223,9 @@ public final class TranslationPanel extends Composite {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS,
         json);
 
-    jsonPreview.setText(json);
-    saveStatus.setText("Saved translations.");
+    showJsonDialog("Translations Saved",
+        "Saved translations to project settings.",
+        json);
   }
 
   private void loadSavedTranslations() {
@@ -265,7 +295,7 @@ public final class TranslationPanel extends Composite {
         }
       }
     } catch (RuntimeException e) {
-      saveStatus.setText("");
+      // Ignore invalid saved data for now. The table can still rebuild from the current project.
     }
   }
 
