@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class TranslationPanel extends Composite {
-  private static final String FIRST_LANGUAGE = "hi";
+  private static final String DEFAULT_LANGUAGE = "English";
 
   private final YaProjectEditor projectEditor;
   private final FlexTable table;
@@ -34,6 +34,8 @@ public final class TranslationPanel extends Composite {
   private final Label saveStatus;
   private final Map<String, Map<String, String>> translationValues;
   private final Map<String, TranslationEntry> translationEntries;
+  private final List<String> languages;
+  private final TextBox languageTextBox;
 
   private boolean savedTranslationsLoaded;
 
@@ -45,6 +47,9 @@ public final class TranslationPanel extends Composite {
     this.translationValues = new HashMap<String, Map<String, String>>();
     this.translationEntries = new HashMap<String, TranslationEntry>();
     this.savedTranslationsLoaded = false;
+    this.languages = new ArrayList<String>();
+    this.languages.add(DEFAULT_LANGUAGE);
+    this.languageTextBox = new TextBox();
 
     FlowPanel root = new FlowPanel();
     root.setStylePrimaryName("ode-i18n-panel");
@@ -84,6 +89,23 @@ public final class TranslationPanel extends Composite {
     root.add(title);
     root.add(description);
     root.add(table);
+
+    Label languageLabel = new Label("Language code:");
+    languageTextBox.setWidth("80px");
+
+    Button addLanguageButton = new Button("Add Language");
+    addLanguageButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        addLanguage(languageTextBox.getValue());
+        languageTextBox.setValue("");
+        refresh();
+      }
+    });
+
+    root.add(languageLabel);
+    root.add(languageTextBox);
+    root.add(addLanguageButton);
     root.add(exportButton);
     root.add(saveButton);
     root.add(saveStatus);
@@ -140,7 +162,10 @@ public final class TranslationPanel extends Composite {
           table.setText(row, 3, propertyName);
           table.setText(row, 4, generatedKey);
           table.setText(row, 5, propertyValue);
-          table.setWidget(row, 6, createTranslationTextBox(generatedKey, FIRST_LANGUAGE));
+          for (int i = 0; i < languages.size(); i++) {
+            String language = languages.get(i);
+            table.setWidget(row, 6 + i, createTranslationTextBox(generatedKey, language));
+          }
 
           row++;
         }
@@ -155,7 +180,9 @@ public final class TranslationPanel extends Composite {
     table.setText(0, 3, "Property");
     table.setText(0, 4, "Internal Key");
     table.setText(0, 5, "Base Text");
-    table.setText(0, 6, FIRST_LANGUAGE);
+    for (int i = 0; i < languages.size(); i++) {
+      table.setText(0, 6 + i, languages.get(i));
+    }
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
   }
 
@@ -193,6 +220,23 @@ public final class TranslationPanel extends Composite {
         return;
       }
 
+      JSONValue languagesValue = root.get("languages");
+      if (languagesValue != null && languagesValue.isArray() != null) {
+        JSONArray savedLanguages = languagesValue.isArray();
+        languages.clear();
+
+        for (int i = 0; i < savedLanguages.size(); i++) {
+          JSONValue languageValue = savedLanguages.get(i);
+          if (languageValue != null && languageValue.isString() != null) {
+            addLanguage(languageValue.isString().stringValue());
+          }
+        }
+
+        if (languages.isEmpty()) {
+          languages.add(DEFAULT_LANGUAGE);
+        }
+      }
+
       JSONValue entriesValue = root.get("entries");
       if (entriesValue == null || entriesValue.isObject() == null) {
         return;
@@ -212,9 +256,12 @@ public final class TranslationPanel extends Composite {
         }
 
         JSONObject translations = translationsValue.isObject();
-        JSONValue translatedValue = translations.get(FIRST_LANGUAGE);
-        if (translatedValue != null && translatedValue.isString() != null) {
-          setTranslationValue(key, FIRST_LANGUAGE, translatedValue.isString().stringValue());
+        for (String language : translations.keySet()) {
+          JSONValue translatedValue = translations.get(language);
+          if (translatedValue != null && translatedValue.isString() != null) {
+            addLanguage(language);
+            setTranslationValue(key, language, translatedValue.isString().stringValue());
+          }
         }
       }
     } catch (RuntimeException e) {
@@ -227,9 +274,11 @@ public final class TranslationPanel extends Composite {
 
     root.put("baseLanguage", new JSONString("en"));
 
-    JSONArray languages = new JSONArray();
-    languages.set(0, new JSONString(FIRST_LANGUAGE));
-    root.put("languages", languages);
+    JSONArray languagesJson = new JSONArray();
+    for (int i = 0; i < languages.size(); i++) {
+      languagesJson.set(i, new JSONString(languages.get(i)));
+    }
+    root.put("languages", languagesJson);
 
     JSONObject entries = new JSONObject();
     ArrayList<String> keys = new ArrayList<String>(translationEntries.keySet());
@@ -252,9 +301,11 @@ public final class TranslationPanel extends Composite {
       entryObject.put("source", source);
 
       JSONObject translations = new JSONObject();
-      String translatedValue = getTranslationValue(key, FIRST_LANGUAGE);
-      if (translatedValue.length() > 0) {
-        translations.put(FIRST_LANGUAGE, new JSONString(translatedValue));
+      for (String language : languages) {
+        String translatedValue = getTranslationValue(key, language);
+        if (translatedValue.length() > 0) {
+          translations.put(language, new JSONString(translatedValue));
+        }
       }
       entryObject.put("translations", translations);
 
@@ -264,6 +315,19 @@ public final class TranslationPanel extends Composite {
     root.put("entries", entries);
 
     return root.toString();
+  }
+
+  private void addLanguage(String language) {
+    if (language == null) {
+      return;
+    }
+
+    language = language.trim();
+    if (language.length() == 0 || languages.contains(language)) {
+      return;
+    }
+
+    languages.add(language);
   }
 
   private String getTranslationValue(String translationKey, String language) {
@@ -321,4 +385,3 @@ public final class TranslationPanel extends Composite {
     }
   }
 }
-
