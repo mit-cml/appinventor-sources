@@ -32,7 +32,7 @@ public final class TranslationPanel extends Composite {
   private final FlexTable table;
   private final TextArea jsonPreview;
   private final Label saveStatus;
-  private final Map<String, String> translationValues;
+  private final Map<String, Map<String, String>> translationValues;
   private final Map<String, TranslationEntry> translationEntries;
 
   private boolean savedTranslationsLoaded;
@@ -42,7 +42,7 @@ public final class TranslationPanel extends Composite {
     this.table = new FlexTable();
     this.jsonPreview = new TextArea();
     this.saveStatus = new Label("");
-    this.translationValues = new HashMap<String, String>();
+    this.translationValues = new HashMap<String, Map<String, String>>();
     this.translationEntries = new HashMap<String, TranslationEntry>();
     this.savedTranslationsLoaded = false;
 
@@ -140,7 +140,7 @@ public final class TranslationPanel extends Composite {
           table.setText(row, 3, propertyName);
           table.setText(row, 4, generatedKey);
           table.setText(row, 5, propertyValue);
-          table.setWidget(row, 6, createTranslationTextBox(generatedKey));
+          table.setWidget(row, 6, createTranslationTextBox(generatedKey, FIRST_LANGUAGE));
 
           row++;
         }
@@ -214,7 +214,7 @@ public final class TranslationPanel extends Composite {
         JSONObject translations = translationsValue.isObject();
         JSONValue translatedValue = translations.get(FIRST_LANGUAGE);
         if (translatedValue != null && translatedValue.isString() != null) {
-          translationValues.put(key, translatedValue.isString().stringValue());
+          setTranslationValue(key, FIRST_LANGUAGE, translatedValue.isString().stringValue());
         }
       }
     } catch (RuntimeException e) {
@@ -252,8 +252,8 @@ public final class TranslationPanel extends Composite {
       entryObject.put("source", source);
 
       JSONObject translations = new JSONObject();
-      String translatedValue = translationValues.get(key);
-      if (translatedValue != null && translatedValue.length() > 0) {
+      String translatedValue = getTranslationValue(key, FIRST_LANGUAGE);
+      if (translatedValue.length() > 0) {
         translations.put(FIRST_LANGUAGE, new JSONString(translatedValue));
       }
       entryObject.put("translations", translations);
@@ -266,22 +266,42 @@ public final class TranslationPanel extends Composite {
     return root.toString();
   }
 
-  private TextBox createTranslationTextBox(final String translationKey) {
+  private String getTranslationValue(String translationKey, String language) {
+    Map<String, String> values = translationValues.get(translationKey);
+    if (values == null) {
+      return "";
+    }
+
+    String value = values.get(language);
+    return value == null ? "" : value;
+  }
+
+  private void setTranslationValue(String translationKey, String language, String value) {
+    Map<String, String> values = translationValues.get(translationKey);
+    if (values == null) {
+      values = new HashMap<String, String>();
+      translationValues.put(translationKey, values);
+    }
+
+    if (value == null || value.length() == 0) {
+      values.remove(language);
+      if (values.isEmpty()) {
+        translationValues.remove(translationKey);
+      }
+    } else {
+      values.put(language, value);
+    }
+  }
+
+  private TextBox createTranslationTextBox(final String translationKey, final String language) {
     final TextBox textBox = new TextBox();
     textBox.setWidth("100%");
-
-    String savedValue = translationValues.get(translationKey);
-    textBox.setValue(savedValue == null ? "" : savedValue);
+    textBox.setValue(getTranslationValue(translationKey, language));
 
     textBox.addChangeHandler(new ChangeHandler() {
       @Override
       public void onChange(ChangeEvent event) {
-        String value = textBox.getValue();
-        if (value == null || value.length() == 0) {
-          translationValues.remove(translationKey);
-        } else {
-          translationValues.put(translationKey, value);
-        }
+        setTranslationValue(translationKey, language, textBox.getValue());
       }
     });
 
@@ -301,3 +321,4 @@ public final class TranslationPanel extends Composite {
     }
   }
 }
+
