@@ -19,9 +19,11 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +39,8 @@ public final class TranslationPanel extends Composite {
   private final Map<String, TranslationEntry> translationEntries;
   private final List<String> languages;
   private final TextBox languageTextBox;
+  private final ListBox languageListBox;
+  private String selectedLanguage;
 
   private boolean savedTranslationsLoaded;
 
@@ -48,7 +52,9 @@ public final class TranslationPanel extends Composite {
     this.savedTranslationsLoaded = false;
     this.languages = new ArrayList<String>();
     this.languages.add(DEFAULT_LANGUAGE);
+    this.selectedLanguage = DEFAULT_LANGUAGE;
     this.languageTextBox = new TextBox();
+    this.languageListBox = new ListBox();
 
     FlowPanel root = new FlowPanel();
     root.setStylePrimaryName("ode-i18n-panel");
@@ -94,9 +100,30 @@ public final class TranslationPanel extends Composite {
     addLanguageButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        addLanguage(languageTextBox.getValue());
+        addLanguage(languageTextBox.getValue(), true);
         languageTextBox.setValue("");
         refresh();
+      }
+    });
+
+    Label languagesLabel = new Label("Languages:");
+    languageListBox.setVisibleItemCount(1);
+    languageListBox.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        int selectedIndex = languageListBox.getSelectedIndex();
+        if (selectedIndex >= 0) {
+          selectedLanguage = languageListBox.getItemText(selectedIndex);
+          refresh();
+        }
+      }
+    });
+
+    Button deleteLanguageButton = new Button("Delete Language");
+    deleteLanguageButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        deleteSelectedLanguage();
       }
     });
 
@@ -105,12 +132,17 @@ public final class TranslationPanel extends Composite {
     root.add(addLanguageButton);
     root.add(exportButton);
     root.add(saveButton);
+    root.add(languagesLabel);
+    root.add(languageListBox);
+    root.add(deleteLanguageButton);
 
     initWidget(root);
   }
 
   public void refresh() {
     loadSavedTranslations();
+    ensureSelectedLanguage();
+    refreshLanguageListBox();
 
     clearTable();
     translationEntries.clear();
@@ -157,11 +189,7 @@ public final class TranslationPanel extends Composite {
           table.setText(row, 3, propertyName);
           table.setText(row, 4, generatedKey);
           table.setText(row, 5, propertyValue);
-          for (int i = 0; i < languages.size(); i++) {
-            String language = languages.get(i);
-            table.setWidget(row, 6 + i, createTranslationTextBox(generatedKey, language));
-          }
-
+          table.setWidget(row, 6, createTranslationTextBox(generatedKey, selectedLanguage));
           row++;
         }
       }
@@ -175,9 +203,7 @@ public final class TranslationPanel extends Composite {
     table.setText(0, 3, "Property");
     table.setText(0, 4, "Internal Key");
     table.setText(0, 5, "Base Text");
-    for (int i = 0; i < languages.size(); i++) {
-      table.setText(0, 6 + i, languages.get(i));
-    }
+    table.setText(0, 6, selectedLanguage);
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
   }
 
@@ -258,7 +284,7 @@ public final class TranslationPanel extends Composite {
         for (int i = 0; i < savedLanguages.size(); i++) {
           JSONValue languageValue = savedLanguages.get(i);
           if (languageValue != null && languageValue.isString() != null) {
-            addLanguage(languageValue.isString().stringValue());
+            addLanguage(languageValue.isString().stringValue(), false);
           }
         }
 
@@ -289,7 +315,7 @@ public final class TranslationPanel extends Composite {
         for (String language : translations.keySet()) {
           JSONValue translatedValue = translations.get(language);
           if (translatedValue != null && translatedValue.isString() != null) {
-            addLanguage(language);
+            addLanguage(language, false);
             setTranslationValue(key, language, translatedValue.isString().stringValue());
           }
         }
@@ -347,17 +373,85 @@ public final class TranslationPanel extends Composite {
     return root.toString();
   }
 
-  private void addLanguage(String language) {
+  private void addLanguage(String language, boolean selectLanguage) {
     if (language == null) {
       return;
     }
 
     language = language.trim();
-    if (language.length() == 0 || languages.contains(language)) {
+    if (language.length() == 0) {
       return;
     }
 
-    languages.add(language);
+    if (!languages.contains(language)) {
+      languages.add(language);
+    }
+
+    if (selectLanguage) {
+      selectedLanguage = language;
+    }
+  }
+
+  private void ensureSelectedLanguage() {
+    if (languages.isEmpty()) {
+      languages.add(DEFAULT_LANGUAGE);
+    }
+
+    if (selectedLanguage == null || !languages.contains(selectedLanguage)) {
+      selectedLanguage = languages.get(0);
+    }
+  }
+
+  private void refreshLanguageListBox() {
+    languageListBox.clear();
+
+    for (int i = 0; i < languages.size(); i++) {
+      String language = languages.get(i);
+      languageListBox.addItem(language);
+
+      if (language.equals(selectedLanguage)) {
+        languageListBox.setSelectedIndex(i);
+      }
+    }
+  }
+
+  private void deleteSelectedLanguage() {
+    ensureSelectedLanguage();
+
+    if (languages.size() <= 1) {
+      Window.alert("At least one translation language must remain.");
+      return;
+    }
+
+    String languageToDelete = selectedLanguage;
+    boolean confirmed = Window.confirm("Delete language '" + languageToDelete
+        + "' and all translation values for this language?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    languages.remove(languageToDelete);
+
+    ArrayList<String> emptyKeys = new ArrayList<String>();
+    for (String key : translationValues.keySet()) {
+      Map<String, String> values = translationValues.get(key);
+      if (values == null) {
+        continue;
+      }
+
+      values.remove(languageToDelete);
+      if (values.isEmpty()) {
+        emptyKeys.add(key);
+      }
+    }
+
+    for (String key : emptyKeys) {
+      translationValues.remove(key);
+    }
+
+    selectedLanguage = languages.get(0);
+    refresh();
   }
 
   private String getTranslationValue(String translationKey, String language) {
