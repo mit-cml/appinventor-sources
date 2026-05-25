@@ -877,6 +877,24 @@ Blockly.ComponentDatabase.prototype.getOptionList = function(key) {
 }
 
 /**
+ * Returns the option list key whose className matches the given Java class name.
+ * YAIL static-field expressions use the full class name (e.g.
+ * "com.google.appinventor.components.common.ScreenOrientation") while option
+ * lists are keyed by their short name (e.g. "ScreenOrientation").
+ * @param {!string} className The full Java class name.
+ * @return {?string} The matching option list key, or null if not found.
+ */
+Blockly.ComponentDatabase.prototype.getOptionListKeyByClassName = function(className) {
+  for (var key in this.optionLists_) {
+    if (this.optionLists_.hasOwnProperty(key) &&
+        this.optionLists_[key].className === className) {
+      return key;
+    }
+  }
+  return null;
+}
+
+/**
  * Iterate over all option list definitions calling the callback function with
  * the OptionList
  *

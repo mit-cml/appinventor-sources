@@ -26,8 +26,11 @@ import com.google.appinventor.server.GalleryExtensionException;
 import com.google.appinventor.server.Server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
+import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.server.storage.StoredData.AllowedIosExtensions;
 import com.google.appinventor.server.storage.StoredData.AllowedTutorialUrls;
+import com.google.appinventor.server.storage.StoredData.ConversationData;
+import com.google.appinventor.server.storage.StoredData.ConversationMessageData;
 import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
@@ -43,10 +46,13 @@ import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.properties.json.JSONArray;
+import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -92,6 +98,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -210,6 +218,8 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(Backpack.class);
     ObjectifyService.register(AllowedTutorialUrls.class);
     ObjectifyService.register(AllowedIosExtensions.class);
+    ObjectifyService.register(ConversationMessageData.class);
+    ObjectifyService.register(ConversationData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     // gcsBucket is where project storage goes
@@ -660,6 +670,23 @@ public class ObjectifyStorageIo implements StorageIo {
           datastore.delete(projectKey);
         }
       }, true);
+      // third job cascades AI agent conversations: metadata rows and their
+      // messages. Runs before blob/GCS cleanup because it's a pure-datastore
+      // operation and keeps the delete order readable. Uses no transaction
+      // because queries span entity groups (ConversationData and
+      // ConversationMessageData have no common ancestor).
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          List<ConversationData> convs = datastore.query(ConversationData.class)
+              .filter("projectId", projectId).list();
+          for (ConversationData cd : convs) {
+            datastore.delete(datastore.query(ConversationMessageData.class)
+                .filter("conversationId", cd.conversationId).fetchKeys());
+          }
+          datastore.delete(convs);
+        }
+      }, false);
       // have to delete the blobs outside of the user and project jobs
       for (String blobKeyString: blobKeys) {
         deleteBlobstoreFile(blobKeyString);
@@ -2023,6 +2050,10 @@ public class ObjectifyStorageIo implements StorageIo {
         if (data == null) {     // This happens if file creation is interrupted
           data = new byte[0];
         }
+        // Strip AIAgentMode from .scm files so exported AIAs never carry it.
+        if (fileName.endsWith(".scm") && data.length > 0) {
+          data = stripAIAgentModeFromScm(data);
+        }
         out.putNextEntry(new ZipEntry(fileName));
         out.write(data, 0, data.length);
         out.closeEntry();
@@ -2095,6 +2126,28 @@ public class ObjectifyStorageIo implements StorageIo {
         new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);
     projectSourceZip.setMetadata(projectName.t);
     return projectSourceZip;
+  }
+
+  /**
+   * Removes the AIAgentMode property from an SCM file's Properties so that
+   * exported/imported projects never carry an active AI mode.
+   */
+  private byte[] stripAIAgentModeFromScm(byte[] scmBytes) {
+    try {
+      String scm = new String(scmBytes, StandardCharsets.UTF_8);
+      JSONObject root = YoungAndroidSourceAnalyzer.parseSourceFile(scm, new ServerJsonParser());
+      JSONValue propsValue = root.get("Properties");
+      if (propsValue != null) {
+        Map<String, JSONValue> props = propsValue.asObject().getProperties();
+        if (props.remove(SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE) != null) {
+          return YoungAndroidSourceAnalyzer.generateSourceFile(root)
+              .getBytes(StandardCharsets.UTF_8);
+        }
+      }
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "Failed to strip AIAgentMode from SCM", e);
+    }
+    return scmBytes;
   }
 
   // Find a user by email address. This version does *not* create a new user
@@ -2885,6 +2938,408 @@ public class ObjectifyStorageIo implements StorageIo {
     } else {
       return GCS_BUCKET_NAME;
     }
+  }
+
+  // ---------- AI Agent conversation storage ----------
+
+  private static final String AI_CONV_CACHE_KEY_PREFIX = "ai_conv:";
+
+  private static final int CONVERSATION_TTL_SECONDS = 24 * 60 * 60; // 24 hours
+
+  @Override
+  public void saveAIConversationStateByConvId(String conversationId, AIConversationState state) {
+    memcache.put(AI_CONV_CACHE_KEY_PREFIX + conversationId, state,
+        Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
+  }
+
+  @Override
+  public AIConversationState getAIConversationStateByConvId(String conversationId) {
+    return (AIConversationState) memcache.get(AI_CONV_CACHE_KEY_PREFIX + conversationId);
+  }
+
+  @Override
+  public void clearAIConversationStateByConvId(String conversationId) {
+    memcache.delete(AI_CONV_CACHE_KEY_PREFIX + conversationId);
+  }
+
+  @Override
+  public void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, StoredData.MessageRole role, String text, boolean display) {
+    storeAIConversationMessage(conversationId, timestamp, sequence, role, text,
+        null, display);
+  }
+
+  @Override
+  public void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, StoredData.MessageRole role, String text,
+      String structuredContent, boolean display) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationMessageData msg = new ConversationMessageData();
+    msg.conversationId = conversationId;
+    msg.timestamp = timestamp;
+    msg.sequence = sequence;
+    msg.role = role.name().toLowerCase();
+    msg.text = text;
+    msg.display = display;
+    // No TTL under multi-conversation model; retained until user deletes.
+    msg.expiresAt = 0;
+
+    // Safety: if the structured content would push the entity past ~900KB,
+    // drop it and fall back to text-only (Datastore limit is 1MB per entity).
+    if (structuredContent != null && structuredContent.length() > 900_000) {
+      LOG.warning("Structured content too large (" + structuredContent.length()
+          + " chars), storing text-only fallback");
+      structuredContent = null;
+    }
+    msg.structuredContent = structuredContent;
+
+    ofy.put(msg);
+  }
+
+  @Override
+  public List<ChatMessage> loadAIConversationMessages(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    // Note: timestamp and sequence are @Unindexed (class-level annotation),
+    // so we cannot use .order() on them — Datastore silently drops entities
+    // from results when ordering by unindexed fields.  Filter on the indexed
+    // conversationId, then sort in memory.
+    List<ConversationMessageData> messages =
+        ofy.query(ConversationMessageData.class)
+            .filter("conversationId", conversationId)
+            .list();
+
+    // Sort by timestamp, then sequence
+    Collections.sort(messages, new Comparator<ConversationMessageData>() {
+      @Override
+      public int compare(ConversationMessageData a, ConversationMessageData b) {
+        int cmp = Long.compare(a.timestamp, b.timestamp);
+        return cmp != 0 ? cmp : Integer.compare(a.sequence, b.sequence);
+      }
+    });
+
+    List<ChatMessage> result = new ArrayList<>();
+    for (ConversationMessageData m : messages) {
+      result.add(new ChatMessage(
+          m.role != null ? m.role : "user",
+          m.text, m.structuredContent, m.display, m.timestamp));
+    }
+    return result;
+  }
+
+  @Override
+  public void deleteAIConversationMessages(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    ofy.delete(ofy.query(ConversationMessageData.class)
+        .filter("conversationId", conversationId)
+        .fetchKeys());
+  }
+
+  @Override
+  public String createConversation(String userId, long projectId) {
+    String convId = UUID.randomUUID().toString();
+    long now = System.currentTimeMillis();
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = new ConversationData();
+    cd.conversationId = convId;
+    cd.projectId = projectId;
+    cd.userId = userId;
+    cd.title = null;
+    cd.createdAt = now;
+    cd.updatedAt = now;
+    ofy.put(cd);
+    return convId;
+  }
+
+  @Override
+  public ConversationData getConversationMetadata(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    return ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+  }
+
+  @Override
+  public List<ConversationData> listConversations(String userId, long projectId) {
+    Objectify ofy = ObjectifyService.begin();
+    List<ConversationData> results = ofy.query(ConversationData.class)
+        .filter("projectId", projectId).list();
+    List<ConversationData> filtered = new ArrayList<>(results.size());
+    for (ConversationData cd : results) {
+      if (userId.equals(cd.userId)) filtered.add(cd);
+    }
+    Collections.sort(filtered, new Comparator<ConversationData>() {
+      @Override public int compare(ConversationData a, ConversationData b) {
+        return Long.compare(b.updatedAt, a.updatedAt);
+      }
+    });
+    return filtered;
+  }
+
+  @Override
+  public void renameConversation(String conversationId, String title) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+    if (cd == null) return;
+    if (title != null) {
+      title = title.trim();
+      if (title.isEmpty()) title = null;
+      else if (title.length() > 120) title = title.substring(0, 120);
+    }
+    cd.title = title;
+    ofy.put(cd);
+  }
+
+  @Override
+  public void touchConversation(String conversationId, long updatedAt) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+    if (cd == null) return;
+    cd.updatedAt = updatedAt;
+    ofy.put(cd);
+  }
+
+  @Override
+  public void deleteConversation(String conversationId) {
+    Objectify ofy = ObjectifyService.begin();
+    ConversationData cd = ofy.query(ConversationData.class)
+        .filter("conversationId", conversationId).get();
+    if (cd != null) ofy.delete(cd);
+    ofy.delete(ofy.query(ConversationMessageData.class)
+        .filter("conversationId", conversationId).fetchKeys());
+    memcache.delete(AI_CONV_CACHE_KEY_PREFIX + conversationId);
+  }
+
+  // --- AI Stream Buffer ---
+  private static final String AI_STREAM_PREFIX = "ai_stream:";
+  private static final int STREAM_TTL_SECONDS = 60;
+
+  private String streamKey(long projectId, String suffix) {
+    return AI_STREAM_PREFIX + projectId + ":" + suffix;
+  }
+
+  private String streamKey(long projectId, String screenName, String suffix) {
+    return AI_STREAM_PREFIX + projectId + ":" + screenName + ":" + suffix;
+  }
+
+  private String convKey(long projectId, String screenName) {
+    return AI_CONV_CACHE_KEY_PREFIX + projectId + ":" + screenName;
+  }
+
+  @Override
+  public void initAIStreamBuffer(long projectId) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Object oldWc = memcache.get(streamKey(projectId, "wc"));
+    if (oldWc != null) {
+      long oldCount = Long.parseLong(oldWc.toString());
+      List<String> keysToDelete = new ArrayList<>();
+      for (long i = 0; i <= oldCount; i++) {
+        keysToDelete.add(streamKey(projectId, "chunk:" + i));
+      }
+      keysToDelete.add(streamKey(projectId, "done"));
+      keysToDelete.add(streamKey(projectId, "cancelled"));
+      memcache.deleteAll(keysToDelete);
+    }
+    memcache.put(streamKey(projectId, "wc"), 0L, exp);
+    memcache.put(streamKey(projectId, "rc"), 0L, exp);
+    memcache.delete(streamKey(projectId, "cancelled"));
+  }
+
+  @Override
+  public void appendAIStreamChunk(long projectId, String chunk) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Long index = memcache.increment(streamKey(projectId, "wc"), 1, 0L);
+    memcache.put(streamKey(projectId, "chunk:" + index), chunk, exp);
+  }
+
+  @Override
+  public List<String> consumeAIStreamChunks(long projectId) {
+    Object wcObj = memcache.get(streamKey(projectId, "wc"));
+    Object rcObj = memcache.get(streamKey(projectId, "rc"));
+    if (wcObj == null || rcObj == null) {
+      return Collections.emptyList();
+    }
+    long wc = Long.parseLong(wcObj.toString());
+    long rc = Long.parseLong(rcObj.toString());
+    if (rc >= wc) {
+      return Collections.emptyList();
+    }
+    List<String> keys = new ArrayList<>();
+    for (long i = rc + 1; i <= wc; i++) {
+      keys.add(streamKey(projectId, "chunk:" + i));
+    }
+    Map<String, Object> results = memcache.getAll(keys);
+    List<String> chunks = new ArrayList<>();
+    for (String key : keys) {
+      Object val = results.get(key);
+      if (val != null) {
+        chunks.add(val.toString());
+      }
+    }
+    memcache.put(streamKey(projectId, "rc"), wc,
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+    return chunks;
+  }
+
+  @Override
+  public void markAIStreamDone(long projectId) {
+    memcache.put(streamKey(projectId, "done"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamDone(long projectId) {
+    return memcache.get(streamKey(projectId, "done")) != null;
+  }
+
+  @Override
+  public void clearAIStreamBuffer(long projectId) {
+    Object wcObj = memcache.get(streamKey(projectId, "wc"));
+    long wc = 0;
+    if (wcObj != null) {
+      wc = Long.parseLong(wcObj.toString());
+    }
+    List<String> keys = new ArrayList<>();
+    keys.add(streamKey(projectId, "wc"));
+    keys.add(streamKey(projectId, "rc"));
+    keys.add(streamKey(projectId, "done"));
+    for (long i = 0; i <= wc; i++) {
+      keys.add(streamKey(projectId, "chunk:" + i));
+    }
+    memcache.deleteAll(keys);
+  }
+
+  @Override
+  public void setAIStreamCancelled(long projectId) {
+    memcache.put(streamKey(projectId, "cancelled"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamCancelled(long projectId) {
+    return memcache.get(streamKey(projectId, "cancelled")) != null;
+  }
+
+  @Override
+  public void clearAIStreamCancelled(long projectId) {
+    memcache.delete(streamKey(projectId, "cancelled"));
+  }
+
+  // ---- Screen-scoped AI methods (for multi-agent orchestration) ----
+
+  @Override
+  public void saveAIConversationState(long projectId, String screenName, AIConversationState state) {
+    memcache.put(convKey(projectId, screenName), state,
+        Expiration.byDeltaSeconds(CONVERSATION_TTL_SECONDS));
+  }
+
+  @Override
+  public AIConversationState getAIConversationState(long projectId, String screenName) {
+    return (AIConversationState) memcache.get(convKey(projectId, screenName));
+  }
+
+  @Override
+  public void clearAIConversationState(long projectId, String screenName) {
+    memcache.delete(convKey(projectId, screenName));
+  }
+
+  @Override
+  public void initAIStreamBuffer(long projectId, String screenName) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Object oldWc = memcache.get(streamKey(projectId, screenName, "wc"));
+    if (oldWc != null) {
+      long oldCount = Long.parseLong(oldWc.toString());
+      List<String> keysToDelete = new ArrayList<>();
+      for (long i = 0; i <= oldCount; i++) {
+        keysToDelete.add(streamKey(projectId, screenName, "chunk:" + i));
+      }
+      keysToDelete.add(streamKey(projectId, screenName, "done"));
+      keysToDelete.add(streamKey(projectId, screenName, "cancelled"));
+      memcache.deleteAll(keysToDelete);
+    }
+    memcache.put(streamKey(projectId, screenName, "wc"), 0L, exp);
+    memcache.put(streamKey(projectId, screenName, "rc"), 0L, exp);
+    memcache.delete(streamKey(projectId, screenName, "cancelled"));
+  }
+
+  @Override
+  public void appendAIStreamChunk(long projectId, String screenName, String chunk) {
+    Expiration exp = Expiration.byDeltaSeconds(STREAM_TTL_SECONDS);
+    Long index = memcache.increment(streamKey(projectId, screenName, "wc"), 1, 0L);
+    memcache.put(streamKey(projectId, screenName, "chunk:" + index), chunk, exp);
+  }
+
+  @Override
+  public List<String> consumeAIStreamChunks(long projectId, String screenName) {
+    Object wcObj = memcache.get(streamKey(projectId, screenName, "wc"));
+    Object rcObj = memcache.get(streamKey(projectId, screenName, "rc"));
+    if (wcObj == null || rcObj == null) {
+      return Collections.emptyList();
+    }
+    long wc = Long.parseLong(wcObj.toString());
+    long rc = Long.parseLong(rcObj.toString());
+    if (rc >= wc) {
+      return Collections.emptyList();
+    }
+    List<String> keys = new ArrayList<>();
+    for (long i = rc + 1; i <= wc; i++) {
+      keys.add(streamKey(projectId, screenName, "chunk:" + i));
+    }
+    Map<String, Object> results = memcache.getAll(keys);
+    List<String> chunks = new ArrayList<>();
+    for (String key : keys) {
+      Object val = results.get(key);
+      if (val != null) {
+        chunks.add(val.toString());
+      }
+    }
+    memcache.put(streamKey(projectId, screenName, "rc"), wc,
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+    return chunks;
+  }
+
+  @Override
+  public void markAIStreamDone(long projectId, String screenName) {
+    memcache.put(streamKey(projectId, screenName, "done"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamDone(long projectId, String screenName) {
+    return memcache.get(streamKey(projectId, screenName, "done")) != null;
+  }
+
+  @Override
+  public void clearAIStreamBuffer(long projectId, String screenName) {
+    Object wcObj = memcache.get(streamKey(projectId, screenName, "wc"));
+    long wc = 0;
+    if (wcObj != null) {
+      wc = Long.parseLong(wcObj.toString());
+    }
+    List<String> keys = new ArrayList<>();
+    keys.add(streamKey(projectId, screenName, "wc"));
+    keys.add(streamKey(projectId, screenName, "rc"));
+    keys.add(streamKey(projectId, screenName, "done"));
+    for (long i = 0; i <= wc; i++) {
+      keys.add(streamKey(projectId, screenName, "chunk:" + i));
+    }
+    memcache.deleteAll(keys);
+  }
+
+  @Override
+  public void setAIStreamCancelled(long projectId, String screenName) {
+    memcache.put(streamKey(projectId, screenName, "cancelled"), "true",
+        Expiration.byDeltaSeconds(STREAM_TTL_SECONDS));
+  }
+
+  @Override
+  public boolean isAIStreamCancelled(long projectId, String screenName) {
+    return memcache.get(streamKey(projectId, screenName, "cancelled")) != null;
+  }
+
+  @Override
+  public void clearAIStreamCancelled(long projectId, String screenName) {
+    memcache.delete(streamKey(projectId, screenName, "cancelled"));
   }
 
 }

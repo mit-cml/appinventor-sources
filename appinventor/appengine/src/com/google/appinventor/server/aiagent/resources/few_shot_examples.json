@@ -1,0 +1,241 @@
+[
+  {
+    "description": "Advisor mode -- text-only advice with no tool calls",
+    "user": "How should I organize a multi-screen quiz app?",
+    "assistant_text": "Here's a good approach for a multi-screen quiz app:\n\n1. **Screen1** -- A welcome screen with a Start button. Store the score in a global variable.\n2. **QuestionScreen** -- Display one question at a time using a Label and four Button options. Use a global list variable to hold your questions and another for the correct answers. Track the current question index.\n3. **ResultScreen** -- Show the final score. Use a Label to display it and a Button to restart.\n\nFor navigation, use `open another screen with start value` to pass the score between screens. Keep your questions in a list so you can easily add more later.\n\nWould you like me to build any of these screens?",
+    "tool_calls": []
+  },
+  {
+    "description": "Simple component addition with explanation",
+    "user": "Add a red button that says Hello",
+    "assistant_text": "I'll add a red button labeled \"Hello\" to your screen.",
+    "tool_calls": [
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "Button",
+          "component_name": "HelloButton",
+          "properties": {
+            "Text": "Hello",
+            "BackgroundColor": "&HFFFF0000"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "description": "Counter app -- Designer ops only (current view: Designer), blocks follow after toggle",
+    "user": "Create a counter app with a label showing the count and a button to increment it",
+    "assistant_text": "I'll start by adding the UI components for the counter app. First, I'll place a label to display the count and a button to increment it. After that, I'll switch to the Blocks editor to wire up the logic.",
+    "tool_calls": [
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "Label",
+          "component_name": "CounterLabel",
+          "properties": {
+            "Text": "0",
+            "FontSize": "24",
+            "TextAlignment": "1",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "Button",
+          "component_name": "IncrementButton",
+          "properties": {
+            "Text": "Add 1",
+            "Width": "-2"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "description": "Login screen -- Designer ops only (current view: Designer), blocks follow after toggle",
+    "user": "Make a login screen with username, password, and a submit button that checks if the username is 'admin' and password is '1234'",
+    "assistant_text": "I'll build the login screen UI first with the input fields, a submit button, and a notifier. Then I'll switch to the Blocks editor to add the credential-checking logic.",
+    "tool_calls": [
+      {
+        "tool": "set_property",
+        "arguments": {
+          "component_name": "Screen1",
+          "property_name": "Title",
+          "value": "Login"
+        }
+      },
+      {
+        "tool": "set_property",
+        "arguments": {
+          "component_name": "Screen1",
+          "property_name": "AlignHorizontal",
+          "value": "3"
+        }
+      },
+      {
+        "tool": "set_property",
+        "arguments": {
+          "component_name": "Screen1",
+          "property_name": "AlignVertical",
+          "value": "2"
+        }
+      },
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "Label",
+          "component_name": "TitleLabel",
+          "properties": {
+            "Text": "Welcome",
+            "FontSize": "28",
+            "FontBold": "True",
+            "TextAlignment": "1",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "TextBox",
+          "component_name": "UsernameBox",
+          "properties": {
+            "Hint": "Enter username",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "PasswordTextBox",
+          "component_name": "PasswordBox",
+          "properties": {
+            "Hint": "Enter password",
+            "Width": "-2"
+          }
+        }
+      },
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "Button",
+          "component_name": "LoginButton",
+          "properties": {
+            "Text": "Submit",
+            "Width": "-2",
+            "BackgroundColor": "&HFF2196F3",
+            "TextColor": "&HFFFFFFFF"
+          }
+        }
+      },
+      {
+        "tool": "add_component",
+        "arguments": {
+          "component_type": "Notifier",
+          "component_name": "LoginNotifier"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Deleting a block",
+    "user": "Remove the click event handler from Button1",
+    "assistant_text": "I'll remove the Click event handler from Button1.",
+    "tool_calls": [
+      {
+        "tool": "delete_block",
+        "arguments": {
+          "block": "define-event Button1 Click"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Procedure with return value using def-return",
+    "user": "Create a procedure called 'double' that takes a number and returns it multiplied by 2",
+    "assistant_text": "I'll create a procedure called 'double' that takes a number parameter and returns it multiplied by 2.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(def-return (p$double $num)\n  (call-yail-primitive *\n    (*list-for-runtime* (lexical-value $num) 2)\n    '(number number)\n    \"*\"))"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Toggle to Blocks view and continue with block ops (current view: Designer)",
+    "user": "Add a click handler for Button1 that shows a notification saying 'Hello!'",
+    "assistant_text": "I'll switch to the Blocks editor and then write the click handler for Button1.",
+    "tool_calls": [
+      {
+        "tool": "toggle_editor",
+        "arguments": {
+          "view": "Blocks"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Create a matrix and read a cell value",
+    "user": "Create a 2x2 identity matrix and show the value at row 1, column 1 when Button1 is clicked",
+    "assistant_text": "I'll create a 2x2 identity matrix as a global variable and add a click handler that displays the cell at (1,1).",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(def g$identity\n  (call-yail-primitive make-yail-matrix\n    (*list-for-runtime* 2 2 1 0 0 1)\n    '(number number number number number number)\n    \"create a matrix\"))"
+        }
+      },
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-event Button1 Click ()\n  (set-this-form)\n  (set-and-coerce-property! 'Label1 'Text\n    (call-yail-primitive yail-matrix-get-cell\n      (*list-for-runtime* (get-var g$identity) 1 1)\n      '(matrix number number)\n      \"get matrix cell\")\n    'text))"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Arithmetic with TextBox input (auto-coercion, no string->number needed)",
+    "user": "When AddButton is clicked, add the numbers from NumberBox1 and NumberBox2 and show the result in ResultLabel",
+    "assistant_text": "I'll add a click handler for AddButton that reads both text boxes, adds them, and displays the result.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-event AddButton Click ()\n  (set-this-form)\n  (set-and-coerce-property! 'ResultLabel 'Text\n    (call-yail-primitive string-append\n      (*list-for-runtime* \"Result: \"\n        (call-yail-primitive +\n          (*list-for-runtime* (get-property 'NumberBox1 'Text) (get-property 'NumberBox2 'Text))\n          '(number number) \"+\"))\n      '(text any) \"join\")\n    'text))"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Anonymous procedure with delayed execution",
+    "user": "Make Button1 show 'Wait...' immediately and then show 'Done!' after 3 seconds",
+    "assistant_text": "I'll set the label to 'Wait...' on click, then use an anonymous procedure with run-after-period to update it after 3 seconds.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-event Button1 Click ()\n  (set-this-form)\n  (set-and-coerce-property! 'Label1 'Text \"Wait...\" 'text)\n  (call-yail-primitive run-after-period\n    (*list-for-runtime* 3000\n      (call-yail-primitive create-yail-procedure\n        (*list-for-runtime* (lambda ()\n          (set-and-coerce-property! 'Label1 'Text \"Done!\" 'text)))\n        '(any) \"create procedure\"))\n    '(any any) \"run after period\"))"
+        }
+      }
+    ]
+  },
+  {
+    "description": "Generic (any-Button) event handler with cascading if/begin dispatch -- uses canonical $component $notAlreadyHandled params and deep nesting",
+    "user": "When any of the three buttons is clicked, set global choice based on which one, then update ChoiceLabel",
+    "assistant_text": "I'll add a single any-Button.Click handler that checks which button fired via $component, sets the global choice accordingly, then updates ChoiceLabel. This replaces three per-button handlers with one.",
+    "tool_calls": [
+      {
+        "tool": "write_block",
+        "arguments": {
+          "yail": "(define-generic-event Button Click ($component $notAlreadyHandled)\n  (set-this-form)\n  (if (call-yail-primitive yail-equal?\n        (*list-for-runtime* (lexical-value $component) (get-component RockButton))\n        '(any any) \"=\")\n    (begin\n      (set-var! g$choice (get-var g$ROCK)))\n    (begin\n      (if (call-yail-primitive yail-equal?\n            (*list-for-runtime* (lexical-value $component) (get-component PaperButton))\n            '(any any) \"=\")\n        (begin\n          (set-var! g$choice (get-var g$PAPER)))\n        (begin\n          (if (call-yail-primitive yail-equal?\n                (*list-for-runtime* (lexical-value $component) (get-component ScissorsButton))\n                '(any any) \"=\")\n            (begin\n              (set-var! g$choice (get-var g$SCISSORS)))\n            (begin\n              (set-var! g$choice 0)))))))\n  (set-and-coerce-property! 'ChoiceLabel 'Text\n    (call-yail-primitive yail-list-get-item\n      (*list-for-runtime* (get-var g$choiceNames) (get-var g$choice))\n      '(list number) \"select list item\")\n    'text))"
+        }
+      }
+    ]
+  }
+]

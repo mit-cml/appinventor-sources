@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appinventor.server.aiagent.llm.ChatMessage;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -687,6 +688,153 @@ public interface StorageIo {
   boolean deleteAccount(String userId);
 
   String getIosExtensionsConfig();
+
+  // ---------- AI Agent conversation storage ----------
+
+  /**
+   * Stores an AI conversation message to the Datastore.
+   *
+   * @param conversationId  the conversation UUID
+   * @param timestamp       server-side timestamp (millis)
+   * @param sequence        ordering tiebreaker within same millisecond
+   * @param role            the message role
+   * @param text            message content (human-readable summary)
+   * @param display         true if this message should appear in the client chat UI
+   */
+  void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, StoredData.MessageRole role, String text, boolean display);
+
+  /**
+   * Stores an AI conversation message with optional structured content.
+   *
+   * @param conversationId    the conversation UUID
+   * @param timestamp         server-side timestamp (millis)
+   * @param sequence          ordering tiebreaker within same millisecond
+   * @param role              the message role
+   * @param text              message content (human-readable summary)
+   * @param structuredContent provider-agnostic JSON array of content parts,
+   *                          or null for plain-text-only messages
+   * @param display           true if this message should appear in the client chat UI
+   */
+  void storeAIConversationMessage(String conversationId, long timestamp,
+      int sequence, StoredData.MessageRole role, String text,
+      String structuredContent, boolean display);
+
+  /**
+   * Loads all non-expired AI conversation messages for a conversation,
+   * ordered by timestamp and sequence.
+   *
+   * @param conversationId the conversation UUID
+   * @return list of {@link ChatMessage} instances ordered chronologically
+   */
+  List<ChatMessage> loadAIConversationMessages(String conversationId);
+
+  /**
+   * Deletes all AI conversation messages for a conversation from the Datastore.
+   *
+   * @param conversationId the conversation UUID
+   */
+  void deleteAIConversationMessages(String conversationId);
+
+  // ---------- Multi-conversation support ----------
+
+  /**
+   * Creates a new conversation for the given user and project.
+   *
+   * @param userId    the owning user
+   * @param projectId the project this conversation belongs to
+   * @return the newly generated conversation UUID
+   */
+  String createConversation(String userId, long projectId);
+
+  /**
+   * Loads the metadata entity for a conversation.
+   *
+   * @param conversationId the conversation UUID
+   * @return the metadata entity, or null if no such conversation exists
+   */
+  StoredData.ConversationData getConversationMetadata(String conversationId);
+
+  /**
+   * Lists conversations for a user within a project, sorted most-recent first.
+   *
+   * @param userId    the owning user
+   * @param projectId the project to list conversations for
+   * @return list of conversation metadata entities
+   */
+  List<StoredData.ConversationData> listConversations(String userId, long projectId);
+
+  /**
+   * Renames a conversation. Titles are trimmed; empty titles are stored as
+   * null and titles longer than 120 chars are truncated.
+   *
+   * @param conversationId the conversation UUID
+   * @param title          the new title (may be null/empty)
+   */
+  void renameConversation(String conversationId, String title);
+
+  /**
+   * Updates the updatedAt timestamp for a conversation.
+   *
+   * @param conversationId the conversation UUID
+   * @param updatedAt      the new updatedAt timestamp
+   */
+  void touchConversation(String conversationId, long updatedAt);
+
+  /**
+   * Deletes a conversation along with all of its messages and cached state.
+   *
+   * @param conversationId the conversation UUID
+   */
+  void deleteConversation(String conversationId);
+
+  // ---------- ConversationId-keyed AI conversation state ----------
+
+  /**
+   * Saves an AI conversation state to memcache, keyed by conversationId.
+   */
+  void saveAIConversationStateByConvId(String conversationId, AIConversationState state);
+
+  /**
+   * Loads an AI conversation state from memcache by conversationId.
+   *
+   * @return the conversation state, or null if not found
+   */
+  AIConversationState getAIConversationStateByConvId(String conversationId);
+
+  /**
+   * Clears an AI conversation state from memcache by conversationId.
+   */
+  void clearAIConversationStateByConvId(String conversationId);
+
+  // --- AI Stream Buffer ---
+  void initAIStreamBuffer(long projectId);
+  void appendAIStreamChunk(long projectId, String chunk);
+  List<String> consumeAIStreamChunks(long projectId);
+  void markAIStreamDone(long projectId);
+  boolean isAIStreamDone(long projectId);
+  void clearAIStreamBuffer(long projectId);
+
+  void setAIStreamCancelled(long projectId);
+  boolean isAIStreamCancelled(long projectId);
+  void clearAIStreamCancelled(long projectId);
+
+  // ---- Screen-scoped AI methods (for multi-agent orchestration) ----
+
+  void saveAIConversationState(long projectId, String screenName, AIConversationState state);
+  AIConversationState getAIConversationState(long projectId, String screenName);
+  void clearAIConversationState(long projectId, String screenName);
+
+  void initAIStreamBuffer(long projectId, String screenName);
+  void appendAIStreamChunk(long projectId, String screenName, String chunk);
+  List<String> consumeAIStreamChunks(long projectId, String screenName);
+  void markAIStreamDone(long projectId, String screenName);
+  boolean isAIStreamDone(long projectId, String screenName);
+  void clearAIStreamBuffer(long projectId, String screenName);
+
+  void setAIStreamCancelled(long projectId, String screenName);
+  boolean isAIStreamCancelled(long projectId, String screenName);
+  void clearAIStreamCancelled(long projectId, String screenName);
 
 }
 

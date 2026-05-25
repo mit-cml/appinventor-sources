@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" width="240" height="160">
+  <defs>
+    <style>
+      .asm-b1 { animation: asmDrop1 5s ease-out infinite; }
+      .asm-b2 { animation: asmDrop2 5s ease-out infinite; }
+      .asm-b3 { animation: asmDrop3 5s ease-out infinite; }
+      .asm-val { animation: asmSlide 5s ease-out infinite; }
+      @keyframes asmDrop1 {
+        0%   { transform: translateY(-80px); opacity: 0; }
+        5%   { opacity: 1; }
+        12%  { transform: translateY(3px); }
+        16%, 75% { transform: translateY(0); opacity: 1; }
+        90%, 100% { transform: translateY(-80px); opacity: 0; }
+      }
+      @keyframes asmDrop2 {
+        0%, 16% { transform: translateY(-80px); opacity: 0; }
+        21% { opacity: 1; }
+        30% { transform: translateY(3px); }
+        34%, 75% { transform: translateY(0); opacity: 1; }
+        90%, 100% { transform: translateY(-80px); opacity: 0; }
+      }
+      @keyframes asmDrop3 {
+        0%, 34% { transform: translateY(-80px); opacity: 0; }
+        39% { opacity: 1; }
+        48% { transform: translateY(3px); }
+        52%, 75% { transform: translateY(0); opacity: 1; }
+        90%, 100% { transform: translateY(-80px); opacity: 0; }
+      }
+      @keyframes asmSlide {
+        0%, 48% { transform: translateX(80px); opacity: 0; }
+        53% { opacity: 1; }
+        62% { transform: translateX(-3px); }
+        66%, 75% { transform: translateX(0); opacity: 1; }
+        90%, 100% { transform: translateX(80px); opacity: 0; }
+      }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
+    </style>
+  </defs>
+
+  <!-- Event block with C-shape statement input (gold) -->
+  <!-- W=165, header=28, inner pocket=28, bottom=8. Total=72 -->
+  <!-- Inner notch at H50, inner left at x=20, concave arcs 0,0 -->
+  <g transform="translate(20, 10)">
+    <g class="asm-b1">
+      <path transform="translate(1,1)" fill="#8e722a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 157 V 28 H 50 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 14 a 8 8 0 0,0 8,8 H 165 V 72 h -157 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#b18e35" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 157 V 28 H 50 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 14 a 8 8 0 0,0 8,8 H 165 V 72 h -157 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#c8b072" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 165 M 28,58 a 8.5 8.5 0 0,0 6,2.5 H 165 M 0.5,64 V 8"/>
+      <text class="bt" x="14" y="18">when Screen1 .Initialize</text>
+      <text class="bt" x="14" y="42" font-size="10" opacity="0.8">do</text>
+    </g>
+  </g>
+
+  <!-- Child block: Setter (dark green) with value connector inside event block -->
+  <g transform="translate(40, 38)">
+    <g class="asm-b2">
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 28 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 28 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 120 M 0.5,20 V 8"/>
+      <text class="bt" x="10" y="18">set Label1 .Text  to</text>
+    </g>
+  </g>
+
+  <!-- Child block: Method (purple) inside, below setter. y=38+28=66 -->
+  <g transform="translate(40, 66)">
+    <g class="asm-b3">
+      <path transform="translate(1,1)" fill="#63426a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 118 V 28 h -140 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#7c5385" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 118 V 28 h -140 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a387aa" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 145 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">call Notifier1 .ShowAlert</text>
+    </g>
+  </g>
+
+  <!-- Value block (pink) — slides in from right -->
+  <g transform="translate(152, 38)">
+    <g class="asm-val">
+      <path transform="translate(1,1)" fill="#8f244b"
+        d="m 8,0 h 48 V 28 h -48 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+      <path fill="#b32d5e" stroke="none"
+        d="m 8,0 h 48 V 28 h -48 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+      <path fill="none" stroke="#ca6c8e" stroke-width="1"
+        d="m 8.5,0.5 H 55"/>
+      <text class="bt" x="16" y="18" font-size="10">"Hello!"</text>
+    </g>
+  </g>
+</svg>

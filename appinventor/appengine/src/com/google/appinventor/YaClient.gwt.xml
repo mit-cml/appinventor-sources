@@ -42,6 +42,7 @@
   <servlet path="/projects" class="com.google.appinventor.server.ProjectServiceImpl" />
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
+  <servlet path="/aiagent" class="com.google.appinventor.server.aiagent.AIAgentServiceImpl" />
 
   <!-- srcs -->
   <source path="" includes="simple_components.json" />
@@ -73,6 +74,12 @@
   <source path="client/editor/simple/components"/>
   <source path="client/editor/simple/palette"/>
   <source path="client/editor/youngandroid/palette"/>
+  <source path="client/editor/youngandroid/aiagent"/>
+  <source path="client/editor/youngandroid/aiagent/chat"/>
+  <source path="client/editor/youngandroid/aiagent/companion"/>
+  <source path="client/editor/youngandroid/aiagent/dialog"/>
+  <source path="client/editor/youngandroid/aiagent/executor"/>
+  <source path="client/editor/youngandroid/aiagent/validator"/>
   <source path="client/editor/youngandroid/properties"/>
   <source path="client/editor/youngandroid/i18n"/>
   <source path="client/editor/youngandroid/i18n/msg"/>
@@ -90,6 +97,7 @@
   <source path="shared/rpc/project"/>
   <source path="shared/rpc/user"/>
   <source path="shared/rpc/project/youngandroid"/>
+  <source path="shared/rpc/aiagent"/>
 
   <!-- extra_module_contents -->
 

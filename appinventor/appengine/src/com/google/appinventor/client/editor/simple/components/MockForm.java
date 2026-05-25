@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static java.util.Arrays.asList;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.designer.DesignerChangeListener;
 import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -387,6 +388,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final String PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
   private static final String PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
   private static final String PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
+  private static final String PROPERTY_NAME_AI_AGENT_MODE = SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE;
 
   private static final Set<String> IOS_PERMISSION_PROPERTIES = new HashSet<>(
       asList(
@@ -825,7 +827,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       case PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION:
-      case PROPERTY_NAME_DEFAULTFILESCOPE: {
+      case PROPERTY_NAME_DEFAULTFILESCOPE:
+      case PROPERTY_NAME_AI_AGENT_MODE: {
         return false;
       }
 
@@ -1134,6 +1137,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       // These are project-level properties, not per form.
       return false;
     }
+    if (PROPERTY_NAME_AI_AGENT_MODE.equals(propertyName)) {
+      // Editor-only setting, not a runtime property.
+      return false;
+    }
     return super.isPropertyforYail(propertyName);
   }
 
@@ -1387,6 +1394,12 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
         editor.getProjectEditor().changeProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             propertyName, newValue);
+      }
+    } else if (propertyName.equals(PROPERTY_NAME_AI_AGENT_MODE)) {
+      if (editor.isScreen1()) {
+        editor.getProjectEditor().changeProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE, newValue);
       }
     }
   }

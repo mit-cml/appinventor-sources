@@ -45,6 +45,16 @@ public final class GeneralSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this, SettingsConstants.SHOW_UIPICKER,
         "True", EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.AI_AGENT_BYOK_PROVIDER, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.AI_AGENT_BYOK_MODEL, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.AI_AGENT_BYOK_API_KEY, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.AI_AGENT_BYOK_BASE_URL, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this, SettingsConstants.AI_AGENT_BYOK_REASONING, "",
+        EditableProperty.TYPE_INVISIBLE));
   }
 
   @Override

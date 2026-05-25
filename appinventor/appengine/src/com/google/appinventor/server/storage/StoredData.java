@@ -328,6 +328,76 @@ public class StoredData {
     String allowedExtensions;
   }
 
+  /**
+   * Allowed roles for AI conversation messages.
+   */
+  public enum MessageRole {
+    USER,
+    ASSISTANT,
+    TOOL_RESULT
+  }
+
+  // AI Agent conversation message, keyed by conversationId (UUID).
+  // All providers store messages here; stateless providers use them for LLM context,
+  // stateful providers use them for client-side conversation restore after page reload.
+  @Unindexed
+  public static final class ConversationMessageData implements Serializable {
+    @Id Long id;
+
+    // The conversation this message belongs to (plain UUID).
+    @Indexed public String conversationId;
+
+    // Server-side System.currentTimeMillis(); sort key when loading history.
+    public long timestamp;
+
+    // Ordering tiebreaker within the same millisecond. Guarantees user message
+    // always comes before assistant response even if both share the same timestamp.
+    public int sequence;
+
+    public String role;       // MessageRole.name().toLowerCase() string
+    public String text;      // Message content (natural language summary)
+
+    // Provider-agnostic JSON array of structured content parts (tool calls
+    // or tool results).  Null for plain-text-only messages and for messages
+    // stored before this field was introduced (backward compatible).
+    public String structuredContent;
+
+    // Whether this message should be shown in the client chat UI.
+    public boolean display;
+
+    // Legacy: originally timestamp + 24h for TTL-based cleanup. No longer used
+    // as a cleanup key under the multi-conversation model — new rows are
+    // retained until the user deletes the conversation. Kept on the entity
+    // for backward compatibility with existing rows.
+    @Indexed public long expiresAt;
+  }
+
+  // AI Agent conversation metadata, keyed by conversationId (UUID).
+  // One row per conversation; the messages themselves live in ConversationMessageData.
+  @Unindexed
+  public static final class ConversationData {
+    @Id Long id;
+
+    // The conversation UUID (stable identifier used everywhere else).
+    @Indexed public String conversationId;
+
+    // The project this conversation belongs to.
+    @Indexed public long projectId;
+
+    // The user who owns this conversation.
+    @Indexed public String userId;
+
+    // Optional user-supplied title. null/empty means the client renders
+    // a date-based fallback label.
+    public String title;
+
+    // Creation timestamp (System.currentTimeMillis()).
+    public long createdAt;
+
+    // Last-activity timestamp; sort key for conversation lists.
+    public long updatedAt;
+  }
+
   public static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);

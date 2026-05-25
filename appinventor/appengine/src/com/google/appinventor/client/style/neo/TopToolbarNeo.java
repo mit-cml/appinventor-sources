@@ -9,6 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -28,6 +29,7 @@ public class TopToolbarNeo extends TopToolbar {
   @UiField DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
   @UiField (provided = true) Boolean isAvailable;
+  @UiField (provided = true) Boolean aiAgentAvailable;
 
   @Override
   public void bindUI() {
@@ -39,6 +41,7 @@ public class TopToolbarNeo extends TopToolbar {
 
     boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
     isAvailable = !oneProjectMode && hasWriteAccess;
+    aiAgentAvailable = AppInventorFeatures.aiAgentAvailable();
 
     initWidget(uibinder.createAndBindUi(this));
     super.fileDropDown = fileDropDown;
@@ -47,6 +50,7 @@ public class TopToolbarNeo extends TopToolbar {
     super.settingsDropDown = settingsDropDown;
     super.adminDropDown = adminDropDown;
     super.isAvailable = isAvailable;
+    super.aiAgentAvailable = aiAgentAvailable;
   }
 
 }

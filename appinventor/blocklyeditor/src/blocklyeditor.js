@@ -31,6 +31,16 @@ goog.require('AI.Blockly.VariableDatabase');
 goog.require('AI.Blockly.WorkspaceSvg');
 goog.require('AI.Events');
 
+// YAIL-to-Blocks parser
+goog.require('AI.YailToBlocks');
+goog.require('AI.YailToBlocks.BlockHelpers');
+goog.require('AI.YailToBlocks.ControlFlow');
+goog.require('AI.YailToBlocks.Expressions');
+goog.require('AI.YailToBlocks.Positioning');
+goog.require('AI.YailToBlocks.Primitives');
+goog.require('AI.YailToBlocks.Validation');
+goog.require('AI.Yail.BlocksExport');
+
 // App Inventor Blocks
 goog.require('AI.Blocks.mutators');
 goog.require('AI.Blocks.color');
@@ -240,6 +250,237 @@ AI.Blockly.ContextMenuItems.RegisterClearDoItOption = function() {
   };
   Blockly.ContextMenuRegistry.registry.register(clearDoItItem);
 }
+
+/**
+ * Builds a display prompt and context hint for the "Explain Block" action.
+ * @param {Blockly.Block} block The block to explain.
+ * @return {{displayText: string, contextHint: string}}
+ */
+AI.Blockly.ContextMenuItems.buildExplainPrompt = function(block) {
+  var rootBlock = block.getRootBlock();
+  var isTopLevel = (block === rootBlock);
+
+  // -- Build display text --
+  var displayText;
+  if (isTopLevel) {
+    displayText = AI.Blockly.ContextMenuItems.describeBlockForExplain_(block, false);
+  } else {
+    var rootDesc = AI.Blockly.ContextMenuItems.describeBlockForExplain_(rootBlock, true);
+    displayText = rootDesc || 'Explain the selected block';
+  }
+
+  // -- Build context hint --
+  var parts = [];
+
+  // Block state
+  if (block.isBadBlock()) {
+    parts.push('This block has errors and cannot generate valid YAIL.');
+  } else {
+    if (block.disabled) {
+      parts.push('This block is disabled.');
+    }
+    var yail = AI.Yail.blockToYailIgnoringDisabled(block, isTopLevel);
+    if (yail) {
+      parts.push('YAIL of the selected block:\n' + yail);
+    } else {
+      parts.push('YAIL generation failed for this block.');
+    }
+  }
+
+  // Warnings/errors on this block and all descendants
+  var blocksToCheck = block.getDescendants(false);
+  for (var i = 0; i < blocksToCheck.length; i++) {
+    var b = blocksToCheck[i];
+    var label = (b === block) ? 'This block' : b.type;
+    var warningIcon = b.getIcon(Blockly.icons.WarningIcon.TYPE);
+    if (warningIcon) {
+      var warningText = warningIcon.getText();
+      if (warningText) {
+        parts.push(label + ' has warnings: ' + warningText);
+      }
+    }
+    if (b.replError) {
+      parts.push(label + ' has a runtime error: ' + b.replError);
+    }
+  }
+
+  return {
+    displayText: displayText,
+    contextHint: parts.join('\n')
+  };
+};
+
+/**
+ * Returns a human-readable description of a block for explain prompts.
+ * @param {Blockly.Block} block The block to describe.
+ * @param {boolean} isPartOf True if this is for a "part of" prompt (non-root).
+ * @return {string} The display text.
+ * @private
+ */
+AI.Blockly.ContextMenuItems.describeBlockForExplain_ = function(block, isPartOf) {
+  var prefix = isPartOf ? 'Explain the selected part of the ' : 'Explain the selected ';
+
+  if (block.type === 'component_event') {
+    var instance = block.instanceName || block.typeName;
+    return prefix + instance + '.' + block.eventName + ' event handler';
+  } else if (block.type === 'procedures_defnoreturn' ||
+             block.type === 'procedures_defreturn') {
+    var procName = block.getFieldValue('NAME');
+    return prefix + '"' + procName + '" procedure';
+  } else if (block.type === 'global_declaration') {
+    var varName = block.getFieldValue('NAME');
+    return prefix + '"' + varName + '" global variable';
+  }
+
+  if (isPartOf) {
+    return null; // Caller falls back to generic text
+  }
+  return 'Explain the selected block';
+};
+
+AI.Blockly.ContextMenuItems.registerExplainBlockOption = function() {
+  var explainItem = {
+    displayText: function(scope) {
+      try {
+        var mode = window.parent.BlocklyPanel_getAIAgentMode();
+        if (mode === 'Off') {
+          return Blockly.Msg['AI_EXPLAIN_BLOCK_DISABLED'];
+        }
+      } catch (e) {
+        // Bridge not available
+      }
+      return Blockly.Msg['AI_EXPLAIN_BLOCK'];
+    },
+    callback: function(scope) {
+      var prompt = AI.Blockly.ContextMenuItems.buildExplainPrompt(scope.block);
+      try {
+        window.parent.BlocklyPanel_explainBlock(prompt.displayText, prompt.contextHint);
+      } catch (e) {
+        // Bridge not available
+      }
+    },
+    preconditionFn: function(scope) {
+      if (scope.block.workspace.isFlyout) {
+        return 'hidden';
+      }
+      try {
+        if (!window.parent.BlocklyPanel_isAIAgentAvailable()) {
+          return 'hidden';
+        }
+        var mode = window.parent.BlocklyPanel_getAIAgentMode();
+        if (mode === 'Off') {
+          return 'disabled';
+        }
+      } catch (e) {
+        return 'hidden';
+      }
+      return 'enabled';
+    },
+    weight: 99,
+    id: 'appinventor_explain_block',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(explainItem);
+};
+
+/**
+ * Compact, user-facing description of the block whose replError this menu
+ * entry targets. Used to generate context-specific menu labels like
+ * "Ask AI about Button1.Click error" instead of the generic
+ * "Ask AI about this error". Returns null for unrecognized shapes so the
+ * caller can fall back to the generic string.
+ *
+ * @param {Blockly.Block} block
+ * @return {?string}
+ */
+AI.Blockly.ContextMenuItems.describeBlockForError_ = function(block) {
+  if (!block) return null;
+  if (block.type === 'component_event') {
+    var instance = block.instanceName || block.typeName;
+    return instance + '.' + block.eventName + ' error';
+  }
+  if (block.type === 'procedures_defnoreturn' ||
+      block.type === 'procedures_defreturn') {
+    return '"' + block.getFieldValue('NAME') + '" procedure error';
+  }
+  if (block.type === 'global_declaration') {
+    return '"' + block.getFieldValue('NAME') + '" global error';
+  }
+  return null;
+};
+
+AI.Blockly.ContextMenuItems.registerAskAIAboutErrorOption = function() {
+  var item = {
+    displayText: function(scope) {
+      var specific = AI.Blockly.ContextMenuItems.describeBlockForError_(scope.block);
+      if (!specific) {
+        return Blockly.Msg['AI_ASK_ABOUT_ERROR'];
+      }
+      var fmt = Blockly.Msg['AI_ASK_ABOUT_ERROR_FMT'];
+      return fmt ? fmt.replace('{0}', specific) : Blockly.Msg['AI_ASK_ABOUT_ERROR'];
+    },
+    callback: function(scope) {
+      var block = scope.block;
+      if (!block || !block.replError) {
+        return;
+      }
+      try {
+        // Build displayText + contextHint. Runtime snapshot enrichment is
+        // applied by BlocklyPanel.askAIAboutRuntimeError when share is on.
+        // Note: the chat bubble uses the first-person *_CHAT keys (the user
+        // is asking for help), distinct from the imperative menu labels.
+        var specific = AI.Blockly.ContextMenuItems.describeBlockForError_(block);
+        var chatFmt = Blockly.Msg['AI_ASK_ABOUT_ERROR_CHAT_FMT'];
+        var chatGeneric = Blockly.Msg['AI_ASK_ABOUT_ERROR_CHAT']
+            || Blockly.Msg['AI_ASK_ABOUT_ERROR'];
+        var displayText = specific && chatFmt
+            ? chatFmt.replace('{0}', specific)
+            : chatGeneric;
+        // Raw error payload only — response style is governed by
+        // companion_instructions.md in the system prompt (rendered by
+        // CompanionModule when share is on).
+        var contextParts = [];
+        contextParts.push('Runtime error: ' + block.replError);
+        contextParts.push('Block ID: ' + block.id);
+        contextParts.push('Block type: ' + block.type);
+        var descriptor = AI.Blockly.ContextMenuItems.describeBlockForExplain_
+            ? AI.Blockly.ContextMenuItems.describeBlockForExplain_(block, false)
+            : null;
+        if (descriptor) {
+          contextParts.push(descriptor);
+        }
+        var contextHint = contextParts.join('\n');
+        window.parent.BlocklyPanel_askAIAboutRuntimeError(displayText, contextHint);
+      } catch (e) {
+        // Bridge not available
+      }
+    },
+    preconditionFn: function(scope) {
+      if (!scope.block || scope.block.workspace.isFlyout) {
+        return 'hidden';
+      }
+      if (!scope.block.replError) {
+        return 'hidden';
+      }
+      try {
+        if (!window.parent.BlocklyPanel_isAIAgentAvailable()) {
+          return 'hidden';
+        }
+        var mode = window.parent.BlocklyPanel_getAIAgentMode();
+        if (mode === 'Off') {
+          return 'hidden';
+        }
+      } catch (e) {
+        return 'hidden';
+      }
+      return 'enabled';
+    },
+    weight: 100,  // slightly below explain-block (99)
+    id: 'appinventor_ask_ai_about_error',
+    scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+  };
+  Blockly.ContextMenuRegistry.registry.register(item);
+};
 
 AI.Blockly.ContextMenuItems.registerGenerateYailOption = function() {
   // TODO: eventually create a separate kind of bubble for the generated yail,
@@ -944,6 +1185,8 @@ AI.Blockly.ContextMenuItems.registerAll = function() {
   AI.Blockly.ContextMenuItems.registerExportBlockOption();
   AI.Blockly.ContextMenuItems.registerDoItOption();
   AI.Blockly.ContextMenuItems.RegisterClearDoItOption();
+  AI.Blockly.ContextMenuItems.registerExplainBlockOption();
+  AI.Blockly.ContextMenuItems.registerAskAIAboutErrorOption();
 
   Blockly.ContextMenuRegistry.registry.getItem('blockHelp').weight = 1000;
 }

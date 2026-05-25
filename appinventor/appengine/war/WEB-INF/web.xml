@@ -245,4 +245,18 @@
     <servlet-name>componentService</servlet-name>
   </filter-mapping>
 
+  <!-- AI agent -->
+  <servlet>
+    <servlet-name>aiAgentService</servlet-name>
+    <servlet-class>com.google.appinventor.server.aiagent.AIAgentServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>aiAgentService</servlet-name>
+    <url-pattern>/ode/aiagent</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>aiAgentService</servlet-name>
+  </filter-mapping>
+
 </web-app>

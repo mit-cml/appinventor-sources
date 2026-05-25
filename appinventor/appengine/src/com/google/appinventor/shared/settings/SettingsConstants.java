@@ -78,6 +78,24 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE = "NSCameraUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE = "NSSpeechRecognitionUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE = "NSLocationWhenInUseUsageDescription";
+  public static final String YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE = "AIAgentMode";
+
+  /**
+   * AI Agent BYOK (Bring Your Own Key) user settings.
+   * Stored under USER_GENERAL_SETTINGS. All five fields are stored as plain
+   * strings. Empty provider means "use server default".
+   */
+  public static final String AI_AGENT_BYOK_PROVIDER  = "AIAgentBYOKProvider";
+  public static final String AI_AGENT_BYOK_MODEL     = "AIAgentBYOKModel";
+  public static final String AI_AGENT_BYOK_API_KEY   = "AIAgentBYOKApiKey";
+  public static final String AI_AGENT_BYOK_BASE_URL  = "AIAgentBYOKBaseUrl";
+  public static final String AI_AGENT_BYOK_REASONING = "AIAgentBYOKReasoning";
+
+  // AIAgentMode values
+  public static final String AI_AGENT_MODE_OFF = "Off";
+  public static final String AI_AGENT_MODE_ADVISOR = "Advisor";
+  public static final String AI_AGENT_MODE_SCREEN_EDITOR = "ScreenEditor";
+  public static final String AI_AGENT_MODE_PROJECT_EDITOR = "ProjectEditor";
 
   /**
    * Settings for the Blocks editor.

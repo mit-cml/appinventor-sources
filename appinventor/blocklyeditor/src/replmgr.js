@@ -38,6 +38,28 @@ goog.require('AI.Yail.variables');
 if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {};
 Blockly.ReplMgr.yail = null;
 
+// Bounded ring buffers populated by processRetvals — read by AIContextCollector.
+Blockly.ReplMgr.aiLogBuffer = [];       // entries: {level, text, timestamp}
+Blockly.ReplMgr.aiErrorBuffer = [];     // entries: {message, blockId, componentName, timestamp}
+Blockly.ReplMgr.aiActiveScreen = null;  // last known device-side screen
+Blockly.ReplMgr.AI_LOG_CAP = 10;
+Blockly.ReplMgr.AI_ERROR_CAP = 3;
+
+// Has the fallback share-toggle dialog been shown in the current session?
+// Reset on disconnect so a fresh session gets a fresh prompt.
+Blockly.ReplMgr.aiShareToggleShown = false;
+
+/**
+ * Reset the AI ring buffers. Called on Companion disconnect so stale state
+ * doesn't leak into the next session.
+ */
+Blockly.ReplMgr.resetAIBuffers = function() {
+  Blockly.ReplMgr.aiLogBuffer = [];
+  Blockly.ReplMgr.aiErrorBuffer = [];
+  Blockly.ReplMgr.aiActiveScreen = null;
+  Blockly.ReplMgr.aiShareToggleShown = false;
+};
+
 top.usewebrtc = false;           // True if we are going to use webRTC instead
                                  // of our builtin webserver. This is now set when
                                  // we hear from the Rendezvous server that we are playing the webrtc game!
@@ -842,6 +864,11 @@ Blockly.ReplMgr.putYail = (function() {
             rs.connection = null;
             rs.extensionurl = undefined;
             context.resetYail(false);
+            Blockly.ReplMgr.resetAIBuffers();
+            if (top.BlocklyPanel_setCompanionShareEnabled) {
+              top.BlocklyPanel_setCompanionShareEnabled(false);
+            }
+            Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionDisconnect());
 //   hardreset is now done in the handler for the network error dialog OK
 //   button.
 //          context.hardreset(context.formName); // kill adb and emulator
@@ -939,6 +966,11 @@ Blockly.ReplMgr.triggerUpdate = function() {
         rs.isUSB = false;
         rs.hasfetchassets = false;
         context.resetYail(false);
+        Blockly.ReplMgr.resetAIBuffers();
+        if (top.BlocklyPanel_setCompanionShareEnabled) {
+          top.BlocklyPanel_setCompanionShareEnabled(false);
+        }
+        Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionDisconnect());
         top.BlocklyPanel_indicateDisconnect();
         // End reset companion state
     };
@@ -1038,10 +1070,59 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             context.runtimeError.hide();
             context.runtimeError = null;
         }
-        context.runtimeError = new Blockly.Util.Dialog(Blockly.Msg.REPL_RUNTIME_ERROR, message, Blockly.Msg.REPL_DISMISS, false, null, 1, function() {
-            context.runtimeError.hide();
-            context.runtimeError = null;
-        });
+        var aiAvailable = (typeof top.BlocklyPanel_getAIAgentMode === 'function'
+                           && top.BlocklyPanel_getAIAgentMode() !== 'Off'
+                           && typeof window.parent.BlocklyPanel_askAIAboutRuntimeError === 'function');
+        if (aiAvailable) {
+            var askAiLabel = Blockly.Msg.AI_ASK_ABOUT_RUNTIME_ERROR_BTN;
+            context.runtimeError = new Blockly.Util.Dialog(
+                Blockly.Msg.REPL_RUNTIME_ERROR,
+                message,
+                askAiLabel,                                  // primary: Ask AI
+                false,
+                Blockly.Msg.REPL_DISMISS,                    // secondary: Dismiss
+                1,
+                // Dialog.createDialog fires this callback for BOTH buttons,
+                // passing the clicked button's label as the argument. Only
+                // trigger the AI handoff when the primary (Ask AI) button
+                // was clicked — otherwise Dismiss would silently send the
+                // error to the chat.
+                function(clickedButton) {
+                    context.runtimeError.hide();
+                    context.runtimeError = null;
+                    if (clickedButton !== askAiLabel) {
+                        return;  // user chose Dismiss
+                    }
+                    // Raw error payload only — response style is governed
+                    // by companion_instructions.md in the system prompt
+                    // (rendered by CompanionModule when share is on).
+                    // BlocklyPanel.askAIAboutRuntimeError adds a runtime
+                    // snapshot when the share toggle is on.
+                    var contextHint =
+                        'Runtime error from Companion (not tied to a '
+                      + 'specific block): ' + message;
+                    // User-visible chat bubble is first-person — the user
+                    // is the one asking for help, not the dialog button.
+                    var displayText = Blockly.Msg.AI_ASK_ABOUT_ERROR_CHAT
+                                   || Blockly.Msg.AI_ASK_ABOUT_ERROR;
+                    window.parent.BlocklyPanel_askAIAboutRuntimeError(displayText, contextHint);
+                }
+            );
+        } else {
+            // AI off — preserve existing single-button behavior.
+            context.runtimeError = new Blockly.Util.Dialog(
+                Blockly.Msg.REPL_RUNTIME_ERROR,
+                message,
+                Blockly.Msg.REPL_DISMISS,
+                false,
+                null,
+                1,
+                function() {
+                    context.runtimeError.hide();
+                    context.runtimeError = null;
+                }
+            );
+        }
     };
     // From http://forums.asp.net/t/1151879.aspx?HttpUtility+HtmlEncode+in+javaScript+
     var escapeHTML = function (str) {
@@ -1056,6 +1137,13 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         console.log("processRetVals: " + JSON.stringify(r));
         switch(r.type) {
         case "return":
+            // AI Agent runtime reads: route synthetic ai-read-<uuid> blockids to the bridge.
+            if (r.blockid && typeof r.blockid === 'string' && r.blockid.indexOf('ai-read-') === 0) {
+              if (top.BlocklyPanel_resolveCompanionRead) {
+                top.BlocklyPanel_resolveCompanionRead(r.blockid, r.status, r.value);
+              }
+              break;
+            }
             if (r.status == "OK" && top.loadAllErrorCount > 0) {
                 console.log("Error Countdown: " + top.loadAllErrorCount);
                 top.loadAllErrorCount -= 1;
@@ -1091,6 +1179,23 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                     } else {
                         block.replError = "Error from Companion";
                     }
+                    var componentName = null;
+                    try {
+                        if (block && typeof block.getFieldValue === 'function') {
+                            componentName = block.getFieldValue('COMPONENT_SELECTOR') || null;
+                        }
+                    } catch (e) {
+                        componentName = null;
+                    }
+                    Blockly.ReplMgr.aiErrorBuffer.push({
+                        message: r.value || block.replError || 'Companion error',
+                        blockId: r.blockid,
+                        componentName: componentName,
+                        timestamp: Date.now()
+                    });
+                    while (Blockly.ReplMgr.aiErrorBuffer.length > Blockly.ReplMgr.AI_ERROR_CAP) {
+                        Blockly.ReplMgr.aiErrorBuffer.shift();
+                    }
                 }
             } else if (r.status != "OK") {
                 runtimeerr(Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " + r.value);
@@ -1101,6 +1206,8 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             if (!success) {
                 console.log("processRetVals: Invalid Screen: " + r.screen);
                 runtimeerr("Invalid Screen: " + r.screen);
+            } else {
+                Blockly.ReplMgr.aiActiveScreen = r.screen;
             }
             break;
         case "popScreen":
@@ -1112,6 +1219,7 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "extensionsLoaded":
             rs.state = Blockly.ReplMgr.rsState.CONNECTED;
             Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
+            Blockly.ReplMgr.maybeShowShareToggle();
             break;
         case "startCache":
             top.BlocklyPanel_startCache().then((success) => {
@@ -1125,11 +1233,28 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "error":
             console.log("processRetVals: Error value = " + r.value);
             runtimeerr(escapeHTML(r.value) + Blockly.Msg.REPL_NO_ERROR_FIVE_SECONDS);
+            Blockly.ReplMgr.aiErrorBuffer.push({
+              message: r.value,
+              blockId: null,
+              componentName: null,
+              timestamp: Date.now()
+            });
+            while (Blockly.ReplMgr.aiErrorBuffer.length > Blockly.ReplMgr.AI_ERROR_CAP) {
+              Blockly.ReplMgr.aiErrorBuffer.shift();
+            }
             break;
         case "log":
             top.ConsolePanel_addLog(r.level, r.item);
             console.log("processRetVals: Log level = " + r.level);
             console.log("processRetVals: Log content = " + r.item);
+            Blockly.ReplMgr.aiLogBuffer.push({
+              level: r.level,
+              text: r.item,
+              timestamp: Date.now()
+            });
+            while (Blockly.ReplMgr.aiLogBuffer.length > Blockly.ReplMgr.AI_LOG_CAP) {
+              Blockly.ReplMgr.aiLogBuffer.shift();
+            }
         }
     }
     var handler = Blockly.common.getMainWorkspace().getWarningHandler();
@@ -1210,6 +1335,11 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb, loopback) {
                 top.ReplState.connection = null;
                 top.BlocklyPanel_indicateDisconnect();
                 context.resetYail(false);
+                Blockly.ReplMgr.resetAIBuffers();
+                if (top.BlocklyPanel_setCompanionShareEnabled) {
+                  top.BlocklyPanel_setCompanionShareEnabled(false);
+                }
+                Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionDisconnect());
                 context.hardreset(context.formName);
             } else {
                 ubercounter = 0;
@@ -1446,6 +1576,11 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopbac
             console.log("webrtcdata: Error: " + err);
         }
         this.resetYail(false);
+        Blockly.ReplMgr.resetAIBuffers();
+        if (top.BlocklyPanel_setCompanionShareEnabled) {
+          top.BlocklyPanel_setCompanionShareEnabled(false);
+        }
+        Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionDisconnect());
         this.putYail.reset();
         top.ReplState.state = this.rsState.IDLE;
         this.hardreset(this.formName);       // Tell aiStarter to kill off adb
@@ -1660,6 +1795,7 @@ Blockly.ReplMgr.rendezvousDone = function() {
                     // are completely loaded
                     rs.state = Blockly.ReplMgr.rsState.CONNECTED;
                     Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
+                    Blockly.ReplMgr.maybeShowShareToggle();
                 } else if (json.status == 'hello') {
                     rs.proxy_origin = event.origin;
                     rs.proxy_ready = true;
@@ -1689,6 +1825,11 @@ Blockly.ReplMgr.rendezvousDone = function() {
             rs.isUSB = false;
             rs.hasfetchassets = false;
             me.resetYail(false);
+            Blockly.ReplMgr.resetAIBuffers();
+            if (top.BlocklyPanel_setCompanionShareEnabled) {
+              top.BlocklyPanel_setCompanionShareEnabled(false);
+            }
+            Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionDisconnect());
             top.BlocklyPanel_indicateDisconnect();
             top.ConnectProgressBar_hide();
             // Show dialog
@@ -1767,6 +1908,7 @@ Blockly.ReplMgr.loadExtensions = function() {
             if (xmlhttp.readyState === 4 && (this.status === 200 || this.status === 404 || !this.status)) {
                 rs.state = Blockly.ReplMgr.rsState.CONNECTED;
                 Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
+                Blockly.ReplMgr.maybeShowShareToggle();
             } else if (xmlhttp.readyState === 4) {
                 rs.state = Blockly.ReplMgr.rsState.IDLE;
                 top.BlocklyPanel_indicateDisconnect();
@@ -1776,6 +1918,7 @@ Blockly.ReplMgr.loadExtensions = function() {
     } else {
         rs.state = Blockly.ReplMgr.rsState.CONNECTED;
         Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
+        Blockly.ReplMgr.maybeShowShareToggle();
     }
 };
 
@@ -1827,7 +1970,56 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
           '</a>.</td></tr>';
     }
     retval += '</table>';
+    // Only render the AI share toggle when AI is enabled.
+    if (typeof top.BlocklyPanel_getAIAgentMode === 'function'
+        && top.BlocklyPanel_getAIAgentMode() !== 'Off') {
+      retval += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;">' +
+        '<label style="cursor:pointer;">' +
+        '<input type="checkbox" id="ai-share-runtime-toggle" ' +
+        'onchange="top.BlocklyPanel_setCompanionShareEnabled(this.checked);" /> ' +
+        Blockly.Msg.REPL_AI_SHARE_RUNTIME +
+        '</label></div>';
+    }
     return retval;
+};
+
+/**
+ * Shown once per Companion session to Emulator/USB/Chromebook users
+ * (and anyone else who didn't enable sharing via the QR-code pairing dialog).
+ * Gated by AI mode and an in-session flag.
+ */
+Blockly.ReplMgr.maybeShowShareToggle = function() {
+  if (Blockly.ReplMgr.aiShareToggleShown) return;
+  if (typeof top.BlocklyPanel_getAIAgentMode !== 'function') return;
+  if (top.BlocklyPanel_getAIAgentMode() === 'Off') return;
+  if (typeof top.BlocklyPanel_isCompanionShareEnabled === 'function'
+      && top.BlocklyPanel_isCompanionShareEnabled()) {
+    // Already enabled via the QR dialog — nothing to ask.
+    Blockly.ReplMgr.aiShareToggleShown = true;
+    return;
+  }
+  Blockly.ReplMgr.aiShareToggleShown = true;
+  var dialog;
+  // Blockly.Util.Dialog signature: (title, content, buttonName, destructive, cancelButtonName, size, callback)
+  // IMPORTANT: createDialog invokes the callback for BOTH primary and cancel
+  // buttons, passing the clicked button's label as the argument. Branch on
+  // that argument so clicking "Keep off" doesn't accidentally enable sharing.
+  var enableLabel = Blockly.Msg.REPL_AI_SHARE_ENABLE;
+  dialog = new Blockly.Util.Dialog(
+    Blockly.Msg.REPL_CONNECT_TO_COMPANION,
+    Blockly.Msg.REPL_AI_SHARE_RUNTIME,
+    enableLabel,
+    false,
+    Blockly.Msg.REPL_AI_SHARE_KEEP_OFF,
+    0,
+    function(clickedButton) {
+      dialog.hide();
+      if (clickedButton === enableLabel
+          && top.BlocklyPanel_setCompanionShareEnabled) {
+        top.BlocklyPanel_setCompanionShareEnabled(true);
+      }
+    }
+  );
 };
 
 Blockly.ReplMgr.hmac = function(input) {

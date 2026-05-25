@@ -13,11 +13,16 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState;
+import com.google.appinventor.client.editor.youngandroid.aiagent.companion.BlockYailSymbolScanner;
+import com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Promise.WrappedException;
 import com.google.appinventor.components.common.YaVersion;
@@ -33,6 +38,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -42,6 +48,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -312,6 +319,157 @@ public class BlocklyPanel extends HTMLPanel {
   public static boolean checkIsAdmin() {
     return Ode.getInstance().getUser().getIsAdmin();
   }
+
+  /**
+   * Returns true if the AI agent feature is available on this server.
+   * Called from Blockly JS via the exported bridge function.
+   */
+  public static boolean isAIAgentAvailable() {
+    return AppInventorFeatures.aiAgentAvailable();
+  }
+
+  /**
+   * Returns the current AI agent mode for the active project.
+   * Returns "Off" if no project is open or no mode is configured.
+   * Called from Blockly JS via the exported bridge function.
+   */
+  public static String getAIAgentMode() {
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId == 0) {
+      return SettingsConstants.AI_AGENT_MODE_OFF;
+    }
+    com.google.appinventor.client.editor.ProjectEditor projectEditor =
+        Ode.getInstance().getEditorManager().getOpenProjectEditor(projectId);
+    if (projectEditor == null) {
+      return SettingsConstants.AI_AGENT_MODE_OFF;
+    }
+    String mode = projectEditor.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE);
+    return (mode == null || mode.isEmpty()) ? SettingsConstants.AI_AGENT_MODE_OFF : mode;
+  }
+
+  /**
+   * Opens the AI chat and sends an explain-block message.
+   * Called from Blockly JS via the exported bridge function.
+   */
+  public static void explainBlock(String displayText, String contextHint) {
+    Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+  }
+
+  /**
+   * Opens the AI chat and sends a runtime-error explanation request.
+   * Called from Blockly JS via the exported bridge function.
+   *
+   * <p>If the share toggle is on and the Companion is connected, the method
+   * asynchronously enriches {@code contextHint} with a runtime snapshot:
+   * it scans the current-screen YAIL for referenced component properties and
+   * global variables, dispatches bounded reads via {@link CompanionBridge},
+   * waits up to 2 seconds for replies, then sends the enriched hint. If
+   * all reads resolve early the message is sent immediately without waiting
+   * for the full 2 s.</p>
+   *
+   * <p>A {@code fired[0]} flag ensures the message is never sent twice even
+   * if all reads settle exactly when the timer fires.</p>
+   */
+  public static void askAIAboutRuntimeError(final String displayText, final String contextHint) {
+    // If share is off OR companion is not connected, fire immediately with the basic hint.
+    if (!AIEditorState.isCompanionShareEnabled() || !isCompanionConnected()) {
+      Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+      return;
+    }
+
+    // Scan the current-screen YAIL for referenced symbols.
+    String yail = null;
+    YaBlocksEditor blocksEditor = AIEditorState.getCurrentBlocksEditor();
+    if (blocksEditor != null) {
+      yail = blocksEditor.getBlocksYail();
+    }
+    if (yail == null || yail.isEmpty()) {
+      Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+      return;
+    }
+
+    final List<BlockYailSymbolScanner.Symbol> symbols = BlockYailSymbolScanner.scan(yail, 10);
+    if (symbols.isEmpty()) {
+      Ode.getInstance().sendExplainToAIChat(displayText, contextHint);
+      return;
+    }
+
+    // Async enrichment: dispatch bounded reads, wait up to 2s, then send.
+    final Map<BlockYailSymbolScanner.Symbol, String> resolved =
+        new LinkedHashMap<BlockYailSymbolScanner.Symbol, String>();
+    final Map<BlockYailSymbolScanner.Symbol, String> errors =
+        new LinkedHashMap<BlockYailSymbolScanner.Symbol, String>();
+    final boolean[] fired = new boolean[]{false};
+
+    final Runnable sendWithEnrichment = new Runnable() {
+      @Override public void run() {
+        if (fired[0]) return;
+        fired[0] = true;
+        String enrichedHint = contextHint;
+        if (!resolved.isEmpty() || !errors.isEmpty()) {
+          StringBuilder sb = new StringBuilder(contextHint);
+          sb.append("\n\nRuntime snapshot at error time:\n");
+          for (Map.Entry<BlockYailSymbolScanner.Symbol, String> e : resolved.entrySet()) {
+            sb.append("- ").append(formatSymbol(e.getKey())).append(" = ").append(e.getValue()).append('\n');
+          }
+          for (Map.Entry<BlockYailSymbolScanner.Symbol, String> e : errors.entrySet()) {
+            sb.append("- ").append(formatSymbol(e.getKey())).append(" [read failed: ").append(e.getValue()).append("]\n");
+          }
+          enrichedHint = sb.toString();
+        }
+        Ode.getInstance().sendExplainToAIChat(displayText, enrichedHint);
+      }
+    };
+
+    // 2-second wall-clock fan-out gate. When it fires, send whatever resolved.
+    Timer gate = new Timer() {
+      @Override public void run() {
+        sendWithEnrichment.run();
+      }
+    };
+    gate.schedule(2000);
+
+    // Counter tracks remaining in-flight reads; if all resolve before gate, send early.
+    final int[] remaining = new int[]{symbols.size()};
+
+    CompanionBridge bridge = CompanionBridge.getInstance();
+    for (final BlockYailSymbolScanner.Symbol sym : symbols) {
+      CompanionBridge.Callback cb = new CompanionBridge.Callback() {
+        @Override public void onSuccess(String value) {
+          resolved.put(sym, value);
+          remaining[0]--;
+          if (remaining[0] == 0) {
+            sendWithEnrichment.run();
+          }
+        }
+        @Override public void onFailure(String error) {
+          errors.put(sym, error);
+          remaining[0]--;
+          if (remaining[0] == 0) {
+            sendWithEnrichment.run();
+          }
+        }
+      };
+      if (sym.kind == BlockYailSymbolScanner.Kind.PROPERTY) {
+        bridge.readComponentProperty(sym.componentOrVar, sym.propertyName, cb);
+      } else {
+        bridge.readVariable(sym.componentOrVar, cb);
+      }
+    }
+  }
+
+  private static String formatSymbol(BlockYailSymbolScanner.Symbol sym) {
+    return sym.kind == BlockYailSymbolScanner.Kind.PROPERTY
+        ? sym.componentOrVar + "." + sym.propertyName
+        : "global " + sym.componentOrVar;
+  }
+
+  private static native boolean isCompanionConnected() /*-{
+    var ReplMgr = $wnd.top.Blockly && $wnd.top.Blockly.ReplMgr;
+    return !!(ReplMgr && typeof ReplMgr.isConnected === 'function' && ReplMgr.isConnected());
+  }-*/;
 
   // Set currentScreen
   // We use this to determine if we should send Yail to a
@@ -720,7 +878,35 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getDefaultCloudDBServer());
     $wnd.BlocklyPanel_getComponentContainerUuid =
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentContainerUuid(*));
+    $wnd.BlocklyPanel_isAIAgentAvailable =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::isAIAgentAvailable());
+    $wnd.BlocklyPanel_getAIAgentMode =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getAIAgentMode());
+    $wnd.BlocklyPanel_explainBlock =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::explainBlock(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_askAIAboutRuntimeError =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::askAIAboutRuntimeError(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_isCompanionShareEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState::isCompanionShareEnabled());
+    $wnd.BlocklyPanel_setCompanionShareEnabled =
+      $entry(@com.google.appinventor.client.editor.youngandroid.aiagent.AIEditorState::setCompanionShareEnabled(Z));
+    $wnd.BlocklyPanel_resolveCompanionRead =
+      $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::resolveCompanionRead(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
   }-*/;
+
+  /**
+   * Static entry point called from the {@code top.BlocklyPanel_resolveCompanionRead} JSNI export.
+   * Routes the Companion return-value reply to {@link
+   * com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge}.
+   *
+   * @param blockId the {@code ai-read-<hex>} synthetic blockid
+   * @param status  {@code "OK"} on success, otherwise an error key
+   * @param value   the return-value string or error message from the Companion
+   */
+  public static void resolveCompanionRead(String blockId, String status, String value) {
+    com.google.appinventor.client.editor.youngandroid.aiagent.companion.CompanionBridge
+        .resolvePendingGlobal(blockId, status, value);
+  }
 
   private native void initWorkspace(String projectId, boolean readOnly, boolean rtl, String targetLang)/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
@@ -1016,8 +1202,25 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public native void doCheckWarnings() /*-{
-    this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
-      .checkAllBlocksForWarningsAndErrors();
+    // Two-phase refresh (mirrors the workspace change listener in onLoad_
+    // and makeActive):
+    //   1) determineDuplicateComponentEventHandlers() — sweeps top blocks
+    //      and sets each component_event block's IAmADuplicate flag.
+    //   2) checkAllBlocksForWarningsAndErrors() — reads the flag via
+    //      checkIfIAmADuplicateEventHandler and paints warning icons.
+    // Running only step 2 would paint stale flags, leaving survivors
+    // marked as duplicates after the AI deletes their counterpart.
+    //
+    // checkAllBlocksForWarningsAndErrors itself early-returns when the
+    // workspace is not rendered, so this is safe for background editors
+    // during Plan & Execute orchestration — they will refresh naturally
+    // when the user opens them and Blockly re-renders.
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var handler = workspace.getWarningHandler && workspace.getWarningHandler();
+    if (handler) {
+      handler.determineDuplicateComponentEventHandlers();
+      handler.checkAllBlocksForWarningsAndErrors();
+    }
   }-*/;
 
   static native void setLanguageVersion(int yaVersion, int blocksVersion)/*-{
@@ -1071,6 +1274,336 @@ public class BlocklyPanel extends HTMLPanel {
   public native void doVerifyAllBlocks() /*-{
     this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
       .verifyAllBlocks();
+  }-*/;
+
+  /**
+   * Append blocks to the existing workspace from an XML string.
+   * Saves and restores the main workspace for multi-workspace safety.
+   * Calls block.verify() on new blocks after injection.
+   *
+   * @param xmlString Blockly XML containing blocks to inject
+   */
+  public native void injectBlocksXml(String xmlString) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var previousMainWorkspace = $wnd.Blockly.common.getMainWorkspace();
+    try {
+      $wnd.Blockly.common.setMainWorkspace(workspace);
+      var parser = new DOMParser();
+      var dom = parser.parseFromString(xmlString, 'text/xml');
+      var xmlNode = dom.documentElement;
+      var newBlockIds = $wnd.Blockly.Xml.domToWorkspace(xmlNode, workspace);
+      // Verify new blocks
+      for (var i = 0; i < newBlockIds.length; i++) {
+        var block = workspace.getBlockById(newBlockIds[i]);
+        if (block && block.verify) {
+          block.verify();
+        }
+      }
+    } finally {
+      $wnd.Blockly.common.setMainWorkspace(previousMainWorkspace);
+    }
+  }-*/;
+
+  /**
+   * Delete a top-level block by type and identifying information.
+   * For component_event: matches mutation instance_name + event_name.
+   * For global_declaration: matches NAME field value.
+   * For procedures_defnoreturn/defreturn: matches NAME field value.
+   *
+   * @param blockType the Blockly block type
+   * @param instanceName the component instance name (for component_event), or null
+   * @param identifier the event/variable/procedure name
+   * @return true if a matching block was found and deleted
+   */
+  public native boolean deleteBlockByTypeAndId(String blockType, String instanceName,
+      String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var topBlocks = workspace.getTopBlocks(false);
+    for (var i = 0; i < topBlocks.length; i++) {
+      var block = topBlocks[i];
+      if (block.type === blockType) {
+        if (blockType === 'component_event') {
+          var mutation = block.mutationToDom && block.mutationToDom();
+          if (mutation
+              && mutation.getAttribute('instance_name') === instanceName
+              && mutation.getAttribute('event_name') === identifier) {
+            block.dispose(true);
+            return true;
+          }
+        } else if (blockType === 'global_declaration') {
+          var nameField = block.getField('NAME');
+          if (nameField && nameField.getValue() === identifier) {
+            block.dispose(true);
+            return true;
+          }
+        } else if (blockType === 'procedures_defnoreturn'
+            || blockType === 'procedures_defreturn') {
+          var nameField = block.getField('NAME');
+          if (nameField && nameField.getValue() === identifier) {
+            block.dispose(true);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }-*/;
+
+  /**
+   * Replace a block by deleting the existing one (if any) and injecting new XML.
+   * Combines deleteBlockByTypeAndId + injectBlocksXml for create-or-replace semantics.
+   *
+   * @param blockType the Blockly block type
+   * @param instanceName the component instance name (for component_event), or null
+   * @param identifier the event/variable/procedure name
+   * @param newBlockXml Blockly XML for the replacement block
+   */
+  public void replaceBlock(String blockType, String instanceName, String identifier,
+      String newBlockXml) {
+    deleteBlockByTypeAndId(blockType, instanceName, identifier);
+    injectBlocksXml(newBlockXml);
+  }
+
+  /**
+   * Generate YAIL for just the blocks in the workspace (no form scaffolding).
+   * Used by the AI agent to get a code representation of current blocks.
+   *
+   * @return YAIL string containing event handlers, global variables, and procedures
+   */
+  public native String getBlocksYail() /*-{
+    return this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace
+      .getBlocksYail();
+  }-*/;
+
+  /**
+   * Collect warnings and errors from the Blockly WarningHandler.
+   * Walks up to the top-level block for each warning/error to provide
+   * a meaningful identity string the LLM can correlate with YAIL blocks.
+   *
+   * @return JSON string with errors, warnings, errorCount, warningCount
+   */
+  public native String getBlocksWarningsAndErrors() /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var handler = workspace.getWarningHandler();
+    var result = { errors: [], warnings: [], errorCount: 0, warningCount: 0 };
+    if (!handler) return JSON.stringify(result);
+
+    // Helper: walk up to the top-level block
+    function getTopBlock(block) {
+      while (block.getParent()) {
+        block = block.getParent();
+      }
+      return block;
+    }
+
+    // Helper: get component name from a block — handles both instance
+    // (COMPONENT_SELECTOR field) and generic (component_type mutation) variants
+    function getComponentName(blk) {
+      var selector = blk.getField('COMPONENT_SELECTOR');
+      if (selector) return selector.getValue();
+      // Generic blocks store the type in the mutation
+      var mutation = blk.mutationToDom && blk.mutationToDom();
+      if (mutation) {
+        var ct = mutation.getAttribute('component_type');
+        if (ct) return 'any ' + ct;
+      }
+      return '?';
+    }
+
+    // Helper: describe a top-level block for the LLM
+    function describeBlock(block) {
+      var top = getTopBlock(block);
+      if (top.type === 'component_event') {
+        var comp = getComponentName(top);
+        var eventField = top.getField('EVENT_NAME');
+        var evt = eventField ? eventField.getValue() : '?';
+        return comp + '.' + evt + ' event handler';
+      } else if (top.type === 'global_declaration') {
+        var name = top.getField('NAME');
+        return 'global variable ' + (name ? name.getValue() : '?');
+      } else if (top.type === 'procedures_defnoreturn' || top.type === 'procedures_defreturn') {
+        var name = top.getField('NAME');
+        return 'procedure ' + (name ? name.getValue() : '?');
+      } else if (top.type === 'component_method') {
+        var comp = getComponentName(top);
+        var method = top.getField('METHOD_NAME');
+        return comp + '.' + (method ? method.getValue() : '?') + ' method call';
+      } else if (top.type === 'component_set_get') {
+        var comp = getComponentName(top);
+        var prop = top.getField('PROP');
+        var mutation = top.mutationToDom && top.mutationToDom();
+        var setOrGet = mutation ? mutation.getAttribute('set_or_get') : 'get';
+        return comp + '.' + (prop ? prop.getValue() : '?')
+            + (setOrGet === 'set' ? ' property setter' : ' property getter');
+      } else if (top.type === 'component_component_block') {
+        var comp = getComponentName(top);
+        return comp + ' component reference';
+      } else if (top.type === 'component_all_component_block') {
+        var typeSelector = top.getField('COMPONENT_TYPE_SELECTOR');
+        return 'all ' + (typeSelector ? typeSelector.getValue() : '?') + ' components';
+      }
+      // Fallback: use the block type, replacing underscores for readability
+      return top.type.replace(/_/g, ' ');
+    }
+
+    // Collect errors
+    var errorHash = handler.errorIdHash;
+    if (errorHash) {
+      var errorIds = Object.keys(errorHash);
+      for (var i = 0; i < errorIds.length; i++) {
+        var block = workspace.getBlockById(errorIds[i]);
+        if (block && block.error) {
+          var text = block.error.getText ? block.error.getText() : '';
+          if (text) {
+            result.errors.push({ block: describeBlock(block), message: text });
+          }
+        }
+      }
+    }
+
+    // Collect warnings
+    var warningHash = handler.warningIdHash;
+    if (warningHash) {
+      var warningIds = Object.keys(warningHash);
+      for (var i = 0; i < warningIds.length; i++) {
+        var block = workspace.getBlockById(warningIds[i]);
+        if (block && block.warning) {
+          var text = block.warning.getText ? block.warning.getText() : '';
+          if (text) {
+            result.warnings.push({ block: describeBlock(block), message: text });
+          }
+        }
+      }
+    }
+
+    result.errorCount = result.errors.length;
+    result.warningCount = result.warnings.length;
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
+   * Convert a YAIL string into Blockly blocks and add them to the workspace.
+   * Uses the AI.YailToBlocks module to parse YAIL and create blocks with
+   * upsert semantics (replaces existing block with same identity).
+   *
+   * @param yail the YAIL S-expression string
+   * @return JSON string with {success: boolean, error: ?string, blockId: ?string}
+   */
+  public native String doWriteBlock(String yail) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var result = $wnd.AI.YailToBlocks.convert(workspace, yail);
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
+   * Delete a block identified by its YAIL head tokens.
+   * For example: "define-event Button1 Click", "def g$score", "def p$factorial".
+   *
+   * @param identifier the block identifier string
+   * @return JSON string with {success: boolean, error: ?string}
+   */
+  public native String doDeleteBlock(String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var result = $wnd.AI.YailToBlocks.deleteBlock(workspace, identifier);
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
+   * Notify the positioning algorithm that certain blocks will be deleted
+   * later in the current execution batch, so new blocks should not try
+   * to avoid them.
+   *
+   * @param identifiersJson JSON array of YAIL identifier strings
+   */
+  public native void doSetPendingDeletions(String identifiersJson) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var identifiers = JSON.parse(identifiersJson);
+    $wnd.AI.YailToBlocks.setPendingDeletions(workspace, identifiers);
+  }-*/;
+
+  /**
+   * Clear the pending deletion set after the deletion phase completes.
+   */
+  public native void doClearPendingDeletions() /*-{
+    $wnd.AI.YailToBlocks.clearPendingDeletions();
+  }-*/;
+
+  /**
+   * Force the workspace to flush any queued renders and recompute its
+   * layout metrics.  The AI operation pipeline calls
+   * {@code Blockly.Events.disable()} around write/delete mutations so
+   * normal change listeners never fire; after a batch of dozens of
+   * mutations the viewport, scrollbars, and block SVGs can lag behind
+   * the model until the user forces a refresh.  Invoking this once at
+   * the end of the batch forces the visual state to catch up.
+   *
+   * <p>Both {@code Blockly.renderManagement.triggerQueuedRenders} and
+   * {@code workspace.resizeContents} are guarded because background
+   * editors (Plan &amp; Execute child screens) are not rendered — the
+   * no-op is fine there, they refresh naturally when the user opens
+   * them.
+   */
+  public native void doRefreshWorkspace() /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    if (!workspace) {
+      return;
+    }
+    // Flush any renders queued during event-disabled mutations.
+    var renderMgr = $wnd.Blockly && $wnd.Blockly.renderManagement;
+    if (renderMgr && renderMgr.triggerQueuedRenders) {
+      renderMgr.triggerQueuedRenders();
+    }
+    // Recompute the workspace content bounding box, which also resizes
+    // scrollbars via workspace.scrollbar.resize() internally.
+    if (workspace.resizeContents) {
+      workspace.resizeContents();
+    }
+  }-*/;
+
+  /**
+   * Mark existing blocks that will be replaced by WRITE_BLOCK upserts,
+   * adding them to the pending deletion set for positioning.
+   *
+   * @param yailJsonArray JSON array of YAIL S-expression strings
+   */
+  public native void doAddPendingUpserts(String yailJsonArray) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    var yailStrings = JSON.parse(yailJsonArray);
+    $wnd.AI.YailToBlocks.addPendingUpserts(workspace, yailStrings);
+  }-*/;
+
+  /**
+   * Check whether a block with the given YAIL identifier exists.
+   *
+   * @param identifier YAIL identifier (e.g. "define-event Button1 Click")
+   * @return true if the block exists on the workspace
+   */
+  public native boolean doBlockExists(String identifier) /*-{
+    var workspace = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
+    return $wnd.AI.YailToBlocks.blockExists(workspace, identifier);
+  }-*/;
+
+  /**
+   * Validate a YAIL string without creating any blocks (dry-run).
+   * Parses the S-expression and checks structural validity.
+   *
+   * @param yail the YAIL S-expression string to validate
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public native String doValidateYail(String yail) /*-{
+    var result = $wnd.AI.YailToBlocks.validate(yail);
+    return JSON.stringify(result);
+  }-*/;
+
+  /**
+   * Validate a DELETE_BLOCK identifier string without touching the workspace.
+   *
+   * @param identifier the block identifier (e.g., "define-event Button1 Click")
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public native String doValidateDeleteId(String identifier) /*-{
+    var result = $wnd.AI.YailToBlocks.validateDeleteId(identifier);
+    return JSON.stringify(result);
   }-*/;
 
   public native void doFetchBlocksImage(Callback<String,String> callback) /*-{

@@ -155,6 +155,7 @@ public class DesignToolbar extends Toolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem toggleAIChatItem;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -177,6 +178,8 @@ public class DesignToolbar extends Toolbar {
     // Is the Gallery Enabled (new gallery)?
     setVisibleItem(sendToGalleryItem, Ode.getSystemConfig().getGalleryEnabled()
         && !Ode.getInstance().getGalleryReadOnly());
+    // Is the AI Agent available?
+    setVisibleItem(toggleAIChatItem, AppInventorFeatures.aiAgentAvailable());
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);

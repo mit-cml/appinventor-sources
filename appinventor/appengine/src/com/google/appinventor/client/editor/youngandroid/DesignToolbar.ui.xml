@@ -40,6 +40,10 @@
        ui:field="sendToGalleryItem" align="center">
       <actions:SendToGalleryAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="AIChatToggle" caption="{messages.toggleAIChatButton}"
+                    ui:field="toggleAIChatItem" align="right">
+      <ya:ToggleAIChatAction />
+    </ai:ToolbarItem>
     <ai:ToolbarItem name ="Console Toggle" caption="{messages.toggleConsoleButton}" ui:field="toggleConsoleItem" align="right">
       <ya:ToggleConsoleAction />
     </ai:ToolbarItem>

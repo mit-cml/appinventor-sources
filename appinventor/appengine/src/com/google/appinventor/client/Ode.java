@@ -24,6 +24,7 @@ import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
+import com.google.appinventor.client.editor.youngandroid.AIChatDialog;
 import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
@@ -263,6 +264,9 @@ public class Ode implements EntryPoint {
 
   private boolean consoleVisible = false;
 
+  // Floating AI assistant chat dialog (lazy-initialized)
+  private AIChatDialog aiChatDialog;
+
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -431,6 +435,7 @@ public class Ode implements EntryPoint {
     // screenShotMaybe() so build the runnable now
     hideChaff();
     hideTutorials();
+    hideAIChatDialog();
     Runnable next = new Runnable() {
         @Override
         public void run() {
@@ -676,6 +681,11 @@ public class Ode implements EntryPoint {
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
     getTopToolbar().updateFileMenuButtons(1);
+    // Notify the AI chat dialog that the active project changed so it can
+    // refresh its conversation or close if the project context is gone.
+    if (aiChatDialog != null) {
+      aiChatDialog.onProjectChanged();
+    }
   }
 
   /**
@@ -2541,6 +2551,46 @@ public class Ode implements EntryPoint {
 
   public boolean isConsoleVisible() {
     return consoleVisible;
+  }
+
+  /**
+   * Toggles the AI assistant chat dialog. On the first call the dialog is
+   * lazy-initialized. Subsequent calls show or hide it.
+   */
+  public void toggleAIChatDialog() {
+    if (aiChatDialog == null) {
+      aiChatDialog = new AIChatDialog();
+    }
+    if (aiChatDialog.isShowing()) {
+      aiChatDialog.hideDialog();
+    } else {
+      aiChatDialog.show();
+    }
+  }
+
+  /**
+   * Opens the AI chat dialog and sends an explain-block message.
+   * If the dialog hasn't been created yet, it is lazy-initialized.
+   *
+   * @param displayText the text shown in the user's chat bubble
+   * @param contextHint hidden context (YAIL, warnings) sent to the LLM
+   */
+  public void sendExplainToAIChat(String displayText, String contextHint) {
+    if (aiChatDialog == null) {
+      aiChatDialog = new AIChatDialog();
+    }
+    aiChatDialog.sendExplainMessage(displayText, contextHint);
+  }
+
+  /**
+   * Hides the AI chat dialog if it is currently showing.
+   * Called when leaving the project design area (e.g. switching to the
+   * projects list) because the chat is scoped to the active project.
+   */
+  public void hideAIChatDialog() {
+    if (aiChatDialog != null && aiChatDialog.isShowing()) {
+      aiChatDialog.hideDialog();
+    }
   }
 
   public void setTutorialURL(String newURL) {

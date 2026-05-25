@@ -7,6 +7,7 @@
 package com.google.appinventor.client.settings.project;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
+import static com.google.appinventor.shared.settings.SettingsConstants.AI_AGENT_MODE_OFF;
 
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.Settings;
@@ -112,6 +113,9 @@ public final class YoungAndroidSettings extends Settings {
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_AI_AGENT_MODE, AI_AGENT_MODE_OFF,
         EditableProperty.TYPE_INVISIBLE));
   }
 }

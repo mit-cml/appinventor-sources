@@ -1,0 +1,284 @@
+{
+  "lookup_component": {
+    "description": "Look up full metadata for a component type from the component database. Returns all properties, events, methods, and their types.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "component_type": {
+          "type": "string",
+          "description": "The component type name, e.g. Button, Label"
+        }
+      },
+      "required": ["component_type"]
+    }
+  },
+  "lookup_screen": {
+    "description": "Look up the saved state of a screen including its component tree. Note: this reads from the server's last-saved data, which may not reflect unsaved changes. For the current screen, the component tree in the context messages above is the authoritative source. Use this tool only for non-current screens.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "screen_name": {
+          "type": "string",
+          "description": "The screen name, e.g. Screen1"
+        }
+      },
+      "required": ["screen_name"]
+    }
+  },
+  "add_component": {
+    "description": "Add a new component to the current screen. Some components MUST be nested inside a specific parent: Ball/ImageSprite require a Canvas, ChartData2D/Trendline require a Chart, and Marker/LineString/Polygon/Rectangle/Circle/FeatureCollection require a Map. For these, you MUST set the parent_name parameter to the parent component's instance name.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "component_type": {
+          "type": "string",
+          "description": "Component type, e.g. Button"
+        },
+        "component_name": {
+          "type": "string",
+          "description": "Instance name — must start with a letter and contain only letters, digits, and underscores (no spaces, hyphens, or special characters). Must not be a Java/YAIL reserved word. Use descriptive PascalCase (e.g. SubmitButton, ScoreLabel), not incremental names like Button1"
+        },
+        "parent_name": {
+          "type": "string",
+          "description": "Parent container instance name. Required for components with mandatory nesting (e.g. ChartData2D must specify its Chart parent). Defaults to screen root if omitted."
+        },
+        "properties": {
+          "type": "object",
+          "description": "Initial property values"
+        }
+      },
+      "required": ["component_type", "component_name"]
+    }
+  },
+  "delete_component": {
+    "description": "Delete a component from the current screen.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "component_name": {
+          "type": "string",
+          "description": "Component instance name"
+        }
+      },
+      "required": ["component_name"]
+    }
+  },
+  "set_property": {
+    "description": "Set a property value on a component. Color values must be in &HAARRGGBB form (e.g. &HFF0000FF for blue) — never &AARRGGBB, #AARRGGBB, 0x..., or signed decimals.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "component_name": {
+          "type": "string",
+          "description": "Component instance name"
+        },
+        "property_name": {
+          "type": "string",
+          "description": "Property name"
+        },
+        "value": {
+          "description": "Property value (type depends on property). Colors: &HAARRGGBB. Booleans: \"True\"/\"False\". Numbers: string-encoded."
+        }
+      },
+      "required": ["component_name", "property_name", "value"]
+    }
+  },
+  "rename_component": {
+    "description": "Rename a component instance.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "old_name": {
+          "type": "string",
+          "description": "Current component name"
+        },
+        "new_name": {
+          "type": "string",
+          "description": "New component name — must start with a letter and contain only letters, digits, and underscores. Must not be a Java/YAIL reserved word"
+        }
+      },
+      "required": ["old_name", "new_name"]
+    }
+  },
+  "write_block": {
+    "description": "Create or replace a top-level block (event handler, global variable, or procedure) using YAIL code. The YAIL form head identifies the block type and target. If a block with the same identity already exists, it is replaced (upsert semantics) — do NOT pair this with a delete_block for the same identity. Each block identity may be mutated at most once per batch; the server rejects conflicting write_block/delete_block calls that target the same identity.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "yail": {
+          "type": "string",
+          "description": "Complete YAIL S-expression for the top-level block. Must be one of: (define-event ComponentName EventName ...), (define-generic-event ComponentType EventName ...), (def g$varName initialValue), (def (p$procName $param1 ...) body) for procedures without return, or (def-return (p$procName $param1 ...) body) for procedures with return"
+        }
+      },
+      "required": ["yail"]
+    }
+  },
+  "delete_block": {
+    "description": "Delete a top-level block (event handler, global variable, or procedure). The identifier format matches the YAIL form head tokens. Each block identity may be mutated at most once per batch; the server rejects a delete_block whose identity is already targeted by another delete_block or a write_block in the same response.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "block": {
+          "type": "string",
+          "description": "Block identifier using YAIL head tokens, e.g. 'define-event Button1 Click', 'define-generic-event Button Click', 'def g$score', 'def p$factorial', 'def-return p$myFunc'"
+        }
+      },
+      "required": ["block"]
+    }
+  },
+  "toggle_editor": {
+    "description": "Switch the editor view between Designer and Blocks. This tool MUST be called ALONE — do not combine it with any other tools in the same response. After the toggle is confirmed, continue with the operations that require the new view.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "string",
+          "enum": ["Designer", "Blocks"],
+          "description": "The editor view to switch to"
+        }
+      },
+      "required": ["view"]
+    }
+  },
+  "switch_screen": {
+    "description": "Switch the active screen context. This tool MUST be called ALONE — do not combine it with any other tools in the same response. After the switch is confirmed, continue with the operations that require the new screen.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "screen_name": {
+          "type": "string",
+          "description": "Screen name to switch to"
+        }
+      },
+      "required": ["screen_name"]
+    }
+  },
+  "create_screen": {
+    "description": "Create a new screen in the project. The screen name must start with a letter and contain only letters, digits, and underscores (no spaces, hyphens, or special characters). Must not be a Java/YAIL reserved word. Use descriptive PascalCase (e.g. LoginScreen, Settings), not incremental names like Screen2.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "screen_name": {
+          "type": "string",
+          "description": "New screen name"
+        }
+      },
+      "required": ["screen_name"]
+    }
+  },
+  "delete_screen": {
+    "description": "Delete a screen from the project.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "screen_name": {
+          "type": "string",
+          "description": "Screen name to delete"
+        }
+      },
+      "required": ["screen_name"]
+    }
+  },
+  "set_project_property": {
+    "description": "Set a project-level property (theme, colors, sizing, etc.). Color values must be in &HAARRGGBB form (e.g. &HFF0000FF for blue) — never &AARRGGBB, #AARRGGBB, 0x..., or signed decimals.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "property": {
+          "type": "string",
+          "description": "Property name"
+        },
+        "value": {
+          "type": "string",
+          "description": "Property value. Colors: &HAARRGGBB."
+        }
+      },
+      "required": ["property", "value"]
+    }
+  },
+  "read_component_property": {
+    "description": "Read the current runtime value of a component property from the connected Companion. Use this when you need to confirm what the live app actually has (e.g. what the user typed in a TextBox). Only available when a Companion is paired and the user has enabled runtime sharing.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "component_name": {
+          "type": "string",
+          "description": "The component's identifier in the current screen, e.g. Button1."
+        },
+        "property_name": {
+          "type": "string",
+          "description": "The property name, e.g. Text."
+        }
+      },
+      "required": ["component_name", "property_name"]
+    }
+  },
+  "read_variable": {
+    "description": "Read the current runtime value of a global variable from the connected Companion. Only available when a Companion is paired and the user has enabled runtime sharing.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "variable_name": {
+          "type": "string",
+          "description": "The global variable name without the 'global' prefix."
+        }
+      },
+      "required": ["variable_name"]
+    }
+  },
+  "read_recent_logs": {
+    "description": "Read the last N log entries from the connected Companion. Useful for diagnosing behavior over time. Only available when a Companion is paired and the user has enabled runtime sharing.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      }
+    }
+  },
+  "propose_plan": {
+    "description": "Propose an execution plan for the user to review before making changes. Each step targets a specific screen and describes what will be done. Steps targeting different screens can execute in parallel. Use lookup_component and lookup_screen first to research the project, then propose a complete plan.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "Brief overall description of what the plan accomplishes"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique step identifier (e.g. s1, s2)"
+              },
+              "screen": {
+                "type": "string",
+                "description": "Target screen name. Use __project__ for project-level operations (create screen, project properties)"
+              },
+              "description": {
+                "type": "string",
+                "description": "What this step will do"
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Step IDs that must complete before this step starts"
+              }
+            },
+            "required": ["id", "screen", "description"]
+          }
+        }
+      },
+      "required": ["summary", "steps"]
+    }
+  }
+}

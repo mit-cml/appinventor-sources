@@ -67,6 +67,13 @@ public class ServerLayout {
 
   /**
    * Relative path of the
+   * {@link com.google.appinventor.shared.rpc.aiagent.AIAgentService} within the
+   * ODE GWT module.
+   */
+  public static final String AI_AGENT_SERVICE = "aiagent";
+
+  /**
+   * Relative path of the
    * {@link com.google.appinventor.server.TosServlet}
    * within the ODE GWT module.
    */

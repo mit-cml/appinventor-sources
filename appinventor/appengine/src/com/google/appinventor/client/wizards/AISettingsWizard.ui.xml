@@ -1,0 +1,71 @@
+<!-- Copyright 2026 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+  <wiz:Dialog ui:field="uiDialog" role="dialog" ariaModal="true"
+              ariaLabel="AI Settings"
+              caption="{messages.aiSettingsTitle}"
+              styleName="ode-DialogBox ode-UserSettingsDialog">
+    <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap" tabIndex="-1"/>
+
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsIntro}" styleName="ExtendedText"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsProviderLabel}"/>
+        <g:ListBox multipleSelect="false" ui:field="providerSelector"
+                   title="{messages.aiSettingsProviderLabel}"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel ui:field="modelDropdownRow" styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsModelLabel}"/>
+        <g:ListBox multipleSelect="false" ui:field="modelSelector"
+                   title="{messages.aiSettingsModelLabel}"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel ui:field="modelTextRow" styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsModelLabel}"/>
+        <g:TextBox ui:field="modelInput"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsApiKeyLabel}"/>
+        <g:PasswordTextBox ui:field="apiKeyInput"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel ui:field="baseUrlRow" styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsBaseUrlLabel}"/>
+        <g:TextBox ui:field="baseUrlInput"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel ui:field="reasoningRow" styleName="ode-DialogRow">
+        <g:Label text="{messages.aiSettingsReasoningLabel}"/>
+        <g:ListBox multipleSelect="false" ui:field="reasoningSelector"
+                   title="{messages.aiSettingsReasoningLabel}"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName="ode-DialogRow">
+        <g:Label ui:field="errorLabel" visible="false"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field="cancelButton" text="{messages.cancelButton}"
+                  styleName="ode-ProjectListButton"/>
+        <g:Button ui:field="clearButton" text="{messages.aiSettingsClear}"
+                  styleName="ode-ProjectListButton"/>
+        <g:Button ui:field="applyButton" text="{messages.aiSettingsApply}"
+                  styleName="ode-ProjectListButton"/>
+      </g:FlowPanel>
+
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" tabIndex="-1"/>
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

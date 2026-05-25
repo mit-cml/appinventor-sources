@@ -3654,3 +3654,79 @@ div.dropdiv p {
   color: red;
   font-weight: bolder;
 }
+
+/*
+ * AI Chat streaming typing indicator
+ */
+
+@keyframes ai-typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.ai-typing-indicator {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  width: 100%;
+}
+
+.ai-typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #999;
+  display: inline-block;
+  animation: ai-typing-bounce 1.4s ease-in-out infinite;
+}
+
+.ai-typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/*
+ * AI Chat thinking/reasoning panel
+ */
+
+.ai-thinking-panel {
+  margin-bottom: 6px;
+}
+
+.ai-thinking-details {
+  background-color: #f5f5f0;
+  border: 1px solid #e0ddd5;
+  border-radius: 6px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ai-thinking-details summary {
+  cursor: pointer;
+  padding: 4px 8px;
+  color: #888;
+  font-style: italic;
+  user-select: none;
+}
+
+.ai-thinking-details summary:hover {
+  color: #555;
+}
+
+.ai-thinking-text {
+  padding: 4px 8px 8px;
+  color: #666;
+  max-height: 200px;
+  overflow-y: auto;
+  border-top: 1px solid #e0ddd5;
+}
+
+.ai-thinking-text p {
+  margin: 4px 0;
+}

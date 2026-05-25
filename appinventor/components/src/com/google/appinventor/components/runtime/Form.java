@@ -1419,6 +1419,18 @@ public class Form extends AppInventorCompatActivity
   }
 
   /**
+   * Sets the AI agent mode for this project.
+   * Controls what the AI assistant is allowed to do: Off, Advisor (read-only),
+   * ScreenEditor (current screen), or ProjectEditor (full project).
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AI_AGENT_MODE,
+      defaultValue = "Off")
+  @SimpleProperty(userVisible = false, category = PropertyCategory.AI)
+  public void AIAgentMode(String mode) {
+    // Designer-only property; no runtime effect.
+  }
+
+  /**
    * Title property getter method.
    *
    * @return  form caption

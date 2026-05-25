@@ -169,4 +169,76 @@ public final class AppInventorFeatures {
   public static boolean allowAppStoreBuilds() {
     return false;
   }
+
+  /**
+   * Master switch for the AI agent feature. When false, the Form
+   * AIAgentMode property is hidden, the chat dialog toolbar entry does
+   * not appear, and Blockly's AI assistance integration is disabled.
+   */
+  public static boolean aiAgentAvailable() {
+    return true;
+  }
+
+  /**
+   * If set to true, AI agent debug logging is captured per request.
+   * Dev mode writes to {@code build/logs/aiagent/<conversationId>/<timestamp>.txt};
+   * production routes to the {@code aiagent.debug} logger for external
+   * ingestion. Nothing goes to the console in either mode.
+   */
+  public static boolean aiAgentDebugEnabled() {
+    return true;
+  }
+
+  /**
+   * If set to true, Plan & Execute mode (multi-agent orchestration) is
+   * available in Project Editor mode. When false, the orchestration
+   * system is hidden everywhere.
+   */
+  public static boolean aiAgentOrchestrationEnabled() {
+    return true;
+  }
+
+  /**
+   * If set to true, the "Edit & Approve" button is shown on Plan & Execute
+   * plan cards. When false, only Approve and Reject are shown.
+   */
+  public static boolean aiAgentPlanEditEnabled() {
+    return false;
+  }
+
+  /**
+   * If set to true, tutorial content is included in the LLM context when
+   * a project has a TutorialURL set.
+   */
+  public static boolean aiAgentTutorialContextEnabled() {
+    return true;
+  }
+
+  /**
+   * If set to true, Companion runtime state is rendered into the LLM
+   * context and the Companion read tools are exposed when the client
+   * attaches a snapshot.
+   */
+  public static boolean aiAgentCompanionContextEnabled() {
+    return true;
+  }
+
+  /**
+   * If set to true, the agent retries with a nudge when the LLM responds
+   * with text only (no tool calls) in editing modes. When false,
+   * narration-only responses are returned as-is.
+   */
+  public static boolean aiAgentRetryNarrationEnabled() {
+    return false;
+  }
+
+  /**
+   * If set to true, ScreenEditor and ProjectEditor AI agent modes are
+   * available alongside Advisor. When false, only Advisor is offered and
+   * any pre-existing editor-mode setting is coerced to Advisor at read
+   * time.
+   */
+  public static boolean aiAgentEditingModesEnabled() {
+    return false;
+  }
 }

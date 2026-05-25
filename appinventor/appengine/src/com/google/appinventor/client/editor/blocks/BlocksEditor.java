@@ -681,6 +681,158 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     }
   }
 
+  /**
+   * Append blocks to the workspace from an XML string.
+   * Used by AIOperationExecutor to inject AI-generated blocks.
+   */
+  public void injectBlocksXml(String xmlString) {
+    blocksArea.injectBlocksXml(xmlString);
+  }
+
+  /**
+   * Delete a block by type and identifying information.
+   * Used by AIOperationExecutor to remove blocks before replacement.
+   */
+  public boolean deleteBlock(String blockType, String instanceName, String identifier) {
+    return blocksArea.deleteBlockByTypeAndId(blockType, instanceName, identifier);
+  }
+
+  /**
+   * Generate YAIL for just the blocks in the workspace (no form scaffolding).
+   * Used by the AI agent to send a code representation of the current blocks.
+   *
+   * @return YAIL string containing event handlers, global variables, and procedures
+   */
+  public String getBlocksYail() {
+    return blocksArea.getBlocksYail();
+  }
+
+  /**
+   * Collect warnings and errors from the Blockly WarningHandler.
+   * Used by the AI agent to provide block validation context to the LLM.
+   *
+   * @return JSON string with errors, warnings, errorCount, warningCount
+   */
+  public String getBlocksWarningsAndErrors() {
+    return blocksArea.getBlocksWarningsAndErrors();
+  }
+
+  /**
+   * Replace a block: delete existing (if any) then inject new XML.
+   * Used by AIOperationExecutor for create-or-replace semantics on
+   * event handlers, variables, and procedures.
+   */
+  public void replaceBlock(String blockType, String instanceName, String identifier,
+      String newBlockXml) {
+    blocksArea.replaceBlock(blockType, instanceName, identifier, newBlockXml);
+  }
+
+  /**
+   * Convert YAIL to Blockly blocks with upsert semantics.
+   * Used by AIOperationExecutor for the WRITE_BLOCK operation.
+   *
+   * @param yail the YAIL S-expression string
+   * @return JSON string with {success, error, blockId}
+   */
+  public String writeBlock(String yail) {
+    return blocksArea.doWriteBlock(yail);
+  }
+
+  /**
+   * Delete a block identified by its YAIL head tokens.
+   * Used by AIOperationExecutor for the DELETE_BLOCK operation.
+   *
+   * @param identifier e.g. "define-event Button1 Click", "def g$score"
+   * @return JSON string with {success, error}
+   */
+  public String deleteBlockByYailId(String identifier) {
+    return blocksArea.doDeleteBlock(identifier);
+  }
+
+  /**
+   * Re-run the Blockly warning/error check across all blocks in the
+   * workspace.
+   *
+   * <p>The AI write/delete paths disable Blockly events while mutating
+   * the workspace (to avoid mid-mutation crashes), so the warning handler
+   * never observes the changes and stale warnings linger on blocks whose
+   * duplicates or references the AI just removed. Callers that bypass the
+   * normal event pipeline must invoke this explicitly after their batch
+   * completes to force warnings to refresh.</p>
+   */
+  public void checkWarnings() {
+    blocksArea.doCheckWarnings();
+  }
+
+  /**
+   * Force the Blockly workspace to flush queued renders and recompute
+   * its layout.  The AI operation pipeline mutates the workspace with
+   * Blockly events disabled, so the viewport and scrollbars can lag
+   * behind the model after large batches (symptom: user has to refresh
+   * the page to see the applied changes).  Callers should invoke this
+   * explicitly after a batch completes.
+   */
+  public void refreshWorkspace() {
+    blocksArea.doRefreshWorkspace();
+  }
+
+  /**
+   * Mark blocks for pending deletion so the placement algorithm ignores
+   * them when positioning new blocks.
+   *
+   * @param identifiersJson JSON array of YAIL identifier strings
+   */
+  public void setPendingDeletions(String identifiersJson) {
+    blocksArea.doSetPendingDeletions(identifiersJson);
+  }
+
+  /**
+   * Clear the pending deletion markers.
+   */
+  public void clearPendingDeletions() {
+    blocksArea.doClearPendingDeletions();
+  }
+
+  /**
+   * Mark existing blocks that will be replaced by WRITE_BLOCK upserts,
+   * adding them to the pending deletion set for positioning.
+   *
+   * @param yailJsonArray JSON array of YAIL S-expression strings
+   */
+  public void addPendingUpserts(String yailJsonArray) {
+    blocksArea.doAddPendingUpserts(yailJsonArray);
+  }
+
+  /**
+   * Check whether a block with the given YAIL identifier exists.
+   *
+   * @param identifier YAIL identifier (e.g. "define-event Button1 Click")
+   * @return true if the block exists on the workspace
+   */
+  public boolean blockExists(String identifier) {
+    return blocksArea.doBlockExists(identifier);
+  }
+
+  /**
+   * Validate a YAIL string without creating blocks (dry-run).
+   *
+   * @param yail the YAIL S-expression string to validate
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public String validateYail(String yail) {
+    return blocksArea.doValidateYail(yail);
+  }
+
+  /**
+   * Validate a DELETE_BLOCK identifier without touching the workspace.
+   *
+   * @param identifier block identifier (e.g., "define-event Button1 Click")
+   * @return JSON string with {valid: boolean, error: ?string}
+   */
+  public String validateDeleteId(String identifier) {
+    return blocksArea.doValidateDeleteId(identifier);
+  }
+
   private void updateBlocksTree(DesignerRootComponent root,
                                 SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];

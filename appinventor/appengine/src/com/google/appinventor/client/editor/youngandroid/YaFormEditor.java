@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.ComponentNotFoundException;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
+import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
@@ -194,8 +195,37 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     return root;
   }
 
+  /**
+   * Returns the live component tree as a JSON string (the inner Properties
+   * object from the SCM format). Used by the AI chat dialog to send the
+   * current designer state to the server without requiring a save.
+   */
+  public String getPropertiesJson() {
+    StringBuilder sb = new StringBuilder();
+    encodeComponentProperties(root, sb, false);
+    return sb.toString();
+  }
+
   public String getComponentInstanceTypeName(String instanceName) {
     return getComponents().get(instanceName).getType();
+  }
+
+  /**
+   * Creates a new mock component from a JSON properties object and adds it
+   * to the given parent container. This is a public wrapper around
+   * {@link com.google.appinventor.client.editor.designer.DesignerEditor#createMockComponent}
+   * for use by {@link AIOperationExecutor}.
+   *
+   * @param propertiesObject JSON object describing the component (must include
+   *     $Type and $Version; $Name is optional — if omitted, an auto-generated
+   *     name is assigned and the caller should rename afterward)
+   * @param parent the container to add the component to
+   * @return the newly created MockComponent
+   */
+  public MockComponent addMockComponent(
+      com.google.appinventor.shared.properties.json.JSONObject propertiesObject,
+      MockContainer parent) {
+    return createMockComponent(propertiesObject, parent, MockForm.TYPE);
   }
 
   // private methods

@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 155" width="210" height="155">
+  <defs>
+    <style>
+      .snap-b1 { animation: snapIn1 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      .snap-b2 { animation: snapIn2 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      .snap-b3 { animation: snapIn3 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      .snap-b4 { animation: snapIn4 4.5s cubic-bezier(.4,0,.2,1) infinite; }
+      @keyframes snapIn1 {
+        0%   { transform: translate(-200px, -30px); opacity: 0; }
+        8%   { opacity: 1; }
+        18%  { transform: translate(3px, 1px); }
+        22%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(200px, -30px); opacity: 0; }
+      }
+      @keyframes snapIn2 {
+        0%, 6% { transform: translate(200px, 10px); opacity: 0; }
+        14%  { opacity: 1; }
+        24%  { transform: translate(-3px, -1px); }
+        28%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(-200px, 10px); opacity: 0; }
+      }
+      @keyframes snapIn3 {
+        0%, 12% { transform: translate(-200px, 20px); opacity: 0; }
+        20%  { opacity: 1; }
+        30%  { transform: translate(3px, -1px); }
+        34%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(200px, 20px); opacity: 0; }
+      }
+      @keyframes snapIn4 {
+        0%, 18% { transform: translate(200px, 30px); opacity: 0; }
+        26%  { opacity: 1; }
+        36%  { transform: translate(-3px, 1px); }
+        40%, 68% { transform: translate(0, 0); opacity: 1; }
+        78%  { opacity: 1; }
+        88%, 100% { transform: translate(-200px, 30px); opacity: 0; }
+      }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
+    </style>
+  </defs>
+
+  <!-- W=155 H=28 R=8. Spacing=28. Left corners only rounded, right square. -->
+  <!-- 3-path system: dark(translate 1,1) → main(fill) → light(stroke) -->
+
+  <!-- Block 1: Event (gold) — no notch top, tab bottom -->
+  <g transform="translate(25, 12)">
+    <g class="snap-b1">
+      <path transform="translate(1,1)" fill="#8e722a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#b18e35" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 147 V 28 h -125 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#c8b072" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 155 M 0.5,20 V 8"/>
+      <text class="bt" x="14" y="18">when Button1 .Click</text>
+    </g>
+  </g>
+
+  <!-- Block 2: Setter (dark green) with value — notch top, tab bottom. y=12+28=40 -->
+  <g transform="translate(25, 40)">
+    <g class="snap-b2">
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 28 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 28 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 120 M 0.5,20 V 8"/>
+      <text class="bt" x="10" y="18">set Button1 .Text  to</text>
+      <g transform="translate(112, 0)">
+        <path transform="translate(1,1)" fill="#8f244b"
+          d="m 8,0 h 32 V 28 h -32 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="#b32d5e" stroke="none"
+          d="m 8,0 h 32 V 28 h -32 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="none" stroke="#ca6c8e" stroke-width="1"
+          d="m 8.5,0.5 H 39"/>
+        <text class="bt" x="14" y="18" font-size="10">"OK"</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Block 3: Setter (dark green) with value — notch, tab. y=40+28=68 -->
+  <g transform="translate(25, 68)">
+    <g class="snap-b3">
+      <path transform="translate(1,1)" fill="#1e5236"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 28 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#266643" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 28 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#6d9980" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 120 M 0.5,20 V 8"/>
+      <text class="bt" x="10" y="18">set Label1 .Text  to</text>
+      <g transform="translate(112, 0)">
+        <path transform="translate(1,1)" fill="#8f244b"
+          d="m 8,0 h 27 V 28 h -27 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="#b32d5e" stroke="none"
+          d="m 8,0 h 27 V 28 h -27 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+        <path fill="none" stroke="#ca6c8e" stroke-width="1"
+          d="m 8.5,0.5 H 34"/>
+        <text class="bt" x="14" y="18" font-size="10">"Hi"</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Block 4: Procedure (purple) — notch, NO tab. y=68+28=96 -->
+  <g transform="translate(25, 96)">
+    <g class="snap-b4">
+      <path transform="translate(1,1)" fill="#63426a"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -147 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#7c5385" stroke="none"
+        d="m 0,0 m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 125 V 28 h -147 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#a387aa" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 155 M 0.5,20 V 8"/>
+      <text class="bt" x="38" y="18">call Notifier1 .ShowAlert</text>
+    </g>
+  </g>
+</svg>

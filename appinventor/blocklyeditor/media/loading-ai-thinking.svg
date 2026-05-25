@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 180" width="260" height="180">
+  <defs>
+    <style>
+      .ai-stack { animation: aiFloat 3s ease-in-out infinite; }
+      @keyframes aiFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-5px); }
+      }
+      .sparkle { animation: sparklePop 2s ease-in-out infinite; }
+      .sp-d1 { animation-delay: 0s; }
+      .sp-d2 { animation-delay: 0.5s; }
+      .sp-d3 { animation-delay: 1s; }
+      .sp-d4 { animation-delay: 1.5s; }
+      .sp-d5 { animation-delay: 0.3s; }
+      .sp-d6 { animation-delay: 0.8s; }
+      @keyframes sparklePop {
+        0%, 100% { opacity: 0; transform: scale(0.3); }
+        50%      { opacity: 1; transform: scale(1); }
+      }
+      .gear-wrap { transform-origin: 210px 25px; animation: spin 4s linear infinite; }
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .dot { animation: dotPulse 1.5s ease-in-out infinite; }
+      .dot-d1 { animation-delay: 0s; }
+      .dot-d2 { animation-delay: 0.3s; }
+      .dot-d3 { animation-delay: 0.6s; }
+      @keyframes dotPulse {
+        0%, 100% { opacity: 0.2; }
+        50%      { opacity: 1; }
+      }
+      .bt { font-family: sans-serif; font-size: 11px; font-weight: bold; fill: #fff; }
+      .label-text { font-family: sans-serif; font-size: 13px; fill: #666; font-weight: 600; }
+    </style>
+  </defs>
+
+  <!-- Rotating gear -->
+  <g class="gear-wrap">
+    <path d="M 209,40 L 212,40 L 213,36 L 216,35 L 219,38 L 222,36 L 221,32 L 223,30 L 227,31 L 228,28 L 224,26 L 224,23 L 228,21 L 227,18 L 223,19 L 221,17 L 222,13 L 219,11 L 216,14 L 213,13 L 212,9 L 209,9 L 208,13 L 205,14 L 202,11 L 199,13 L 200,17 L 198,19 L 194,18 L 193,21 L 197,23 L 197,26 L 193,28 L 194,31 L 198,30 L 200,32 L 199,36 L 202,38 L 205,35 L 208,36 Z"
+      fill="none" stroke="#aaa" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="210.5" cy="24.5" r="5" fill="none" stroke="#aaa" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Block stack — event block with C-shape + call block + setter with string value, floats as unit -->
+  <!-- Event: W=190, header=26, inner=52 (2 blocks of 26), bottom=8, indent=30, total=86 -->
+  <g transform="translate(8, 10)">
+    <g class="ai-stack">
+      <!-- Event block (gold) C-shape, indent=30 for wider "do" area -->
+      <path transform="translate(1,1)" fill="#8e722a"
+        d="m 0,8 a 8 8 0 0,1 8,-8 h 182 V 26 H 60 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 36 a 8 8 0 0,0 8,8 H 190 V 86 h -182 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="#b18e35" stroke="none"
+        d="m 0,8 a 8 8 0 0,1 8,-8 h 182 V 26 H 60 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,0 -8,8 v 36 a 8 8 0 0,0 8,8 H 190 V 86 h -182 a 8 8 0 0,1 -8,-8 z"/>
+      <path fill="none" stroke="#c8b072" stroke-width="1"
+        d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 190 M 38,78 a 8.5 8.5 0 0,0 6,2.5 H 190 M 0.5,78 V 8"/>
+      <text class="bt" x="10" y="18">when Screen1 .Initialize</text>
+      <text class="bt" x="10" y="44" font-size="10" opacity="0.8">do</text>
+
+      <!-- Child block 1: call Load AI Agent (purple) -->
+      <g transform="translate(30, 26)">
+        <path transform="translate(1,1)" fill="#63426a"
+          d="m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 95 V 26 h -95 l -6,4 -3,0 -6,-4 H 0 z"/>
+        <path fill="#7c5385" stroke="none"
+          d="m 0,8 a 8 8 0 0,1 8,-8 h 7 l 6,4 3,0 6,-4 h 95 V 26 h -95 l -6,4 -3,0 -6,-4 H 0 z"/>
+        <path fill="none" stroke="#a387aa" stroke-width="1"
+          d="m 0.5,7.5 a 7.5 7.5 0 0,1 7.5,-7 H 15 l 6,4 3,0 6,-4 H 125 M 0.5,24.5 V 8"/>
+        <text class="bt" x="10" y="17">call Load AI Agent</text>
+      </g>
+
+      <!-- Child block 2: set Label1 .Text to (green, W=120) + string value (pink, W=120) -->
+      <g transform="translate(30, 52)">
+        <!-- Green setter block with value connector -->
+        <path transform="translate(1,1)" fill="#1e5236"
+          d="m 0,0 h 15 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+        <path fill="#266643" stroke="none"
+          d="m 0,0 h 15 l 6,4 3,0 6,-4 h 90 v 5 c 0,10 -8,-8 -8,7.5 s 8,-2.5 8,7.5 v 1 V 26 h -90 l -6,4 -3,0 -6,-4 h -7 a 8 8 0 0,1 -8,-8 z"/>
+        <path fill="none" stroke="#67947b" stroke-width="1"
+          d="m 0.5,0.5 H 15 l 6,4 3,0 6,-4 H 120 M 120,5 m -5,14.3 l 3.68,-2.1 M 0.5,18 V 0.5"/>
+        <text class="bt" x="10" y="17">set Label1 .Text  to</text>
+
+        <!-- Pink string value block: "AI is thinking..." -->
+        <g transform="translate(112, 0)">
+          <path transform="translate(1,1)" fill="#8f244b"
+            d="m 8,0 h 112 V 26 h -112 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+          <path fill="#b32d5e" stroke="none"
+            d="m 8,0 h 112 V 26 h -112 H 8 V 20 c 0,-10 -8,8 -8,-7.5 s 8,2.5 8,-7.5 z"/>
+          <path fill="none" stroke="#ca6c8e" stroke-width="1"
+            d="m 8.5,0.5 H 119 M 8.5,24.5 V 20 v -1.5 m -7.36,-0.5 q -1.52,-5.5 0,-11 m 7.36,1 V 0.5"/>
+          <text class="bt" x="16" y="17">"AI is thinking..."</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Sparkle particles -->
+  <g transform="translate(8, 10)">
+    <circle class="sparkle sp-d1" cx="195" cy="3" r="2.5" fill="#F5A623"/>
+    <circle class="sparkle sp-d2" cx="-10" cy="48" r="2" fill="#77AB41"/>
+    <circle class="sparkle sp-d3" cx="240" cy="58" r="3" fill="#3F71B5"/>
+    <circle class="sparkle sp-d4" cx="-7" cy="88" r="2" fill="#B32D5E"/>
+    <circle class="sparkle sp-d5" cx="232" cy="82" r="2.5" fill="#7C5385"/>
+    <circle class="sparkle sp-d6" cx="95" cy="-10" r="2" fill="#D05F2D"/>
+  </g>
+  <g class="sparkle sp-d2" transform="translate(218, 46)">
+    <path d="M 0,-5 L 1.5,-1.5 L 5,0 L 1.5,1.5 L 0,5 L -1.5,1.5 L -5,0 L -1.5,-1.5 Z" fill="#F5A623" opacity="0.8"/>
+  </g>
+  <g class="sparkle sp-d4" transform="translate(3, 56)">
+    <path d="M 0,-4 L 1.2,-1.2 L 4,0 L 1.2,1.2 L 0,4 L -1.2,1.2 L -4,0 L -1.2,-1.2 Z" fill="#49A6D4" opacity="0.8"/>
+  </g>
+  <g class="sparkle sp-d6" transform="translate(195, 18)">
+    <path d="M 0,-3.5 L 1,-1 L 3.5,0 L 1,1 L 0,3.5 L -1,1 L -3.5,0 L -1,-1 Z" fill="#77AB41" opacity="0.8"/>
+  </g>
+
+  <!-- "AI is thinking" label with animated dots -->
+  <text class="label-text" x="40" y="145">AI is thinking</text>
+  <circle class="dot dot-d1" cx="150" cy="141" r="3.5" fill="#888"/>
+  <circle class="dot dot-d2" cx="160" cy="141" r="3.5" fill="#888"/>
+  <circle class="dot dot-d3" cx="170" cy="141" r="3.5" fill="#888"/>
+</svg>

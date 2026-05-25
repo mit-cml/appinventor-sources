@@ -1905,6 +1905,10 @@ input[type="checkbox"]:focus {
   margin: unset;
 }
 
+.ya-Toolbar .right-spacer {
+  margin-right: 10px;
+}
+
 .download-barcode:before {
   background-color: gray-550;
 }

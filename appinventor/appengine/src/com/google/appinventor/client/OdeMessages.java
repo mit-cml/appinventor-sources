@@ -844,6 +844,70 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Open wizard for user interface settings")
   String uiSettings();
 
+  @DefaultMessage("AI Settings")
+  @Description("Caption for the AI Settings menu item in the Settings dropdown.")
+  String aiSettings();
+
+  @DefaultMessage("AI Agent — Bring Your Own Key")
+  @Description("Title of the AI Settings dialog.")
+  String aiSettingsTitle();
+
+  @DefaultMessage("Configure your own AI provider, model, and API key. Leave the provider blank to use the server default.")
+  @Description("Intro paragraph in the AI Settings dialog.")
+  String aiSettingsIntro();
+
+  @DefaultMessage("Provider")
+  @Description("Label for the provider selector in AI Settings.")
+  String aiSettingsProviderLabel();
+
+  @DefaultMessage("Use server default")
+  @Description("Provider-selector item meaning fall back to the server-configured provider.")
+  String aiSettingsProviderDefaultOption();
+
+  @DefaultMessage("Model")
+  @Description("Label for the model selector in AI Settings.")
+  String aiSettingsModelLabel();
+
+  @DefaultMessage("API Key")
+  @Description("Label for the API key field in AI Settings.")
+  String aiSettingsApiKeyLabel();
+
+  @DefaultMessage("Base URL")
+  @Description("Label for the base URL field in AI Settings (compatible providers).")
+  String aiSettingsBaseUrlLabel();
+
+  @DefaultMessage("Reasoning Effort")
+  @Description("Label for the reasoning effort selector in AI Settings.")
+  String aiSettingsReasoningLabel();
+
+  @DefaultMessage("None")
+  @Description("Reasoning-effort option: do not request reasoning.")
+  String aiSettingsReasoningNone();
+
+  @DefaultMessage("Low")
+  @Description("Reasoning-effort option: low.")
+  String aiSettingsReasoningLow();
+
+  @DefaultMessage("Medium")
+  @Description("Reasoning-effort option: medium.")
+  String aiSettingsReasoningMedium();
+
+  @DefaultMessage("High")
+  @Description("Reasoning-effort option: high.")
+  String aiSettingsReasoningHigh();
+
+  @DefaultMessage("Apply")
+  @Description("Apply button in the AI Settings dialog.")
+  String aiSettingsApply();
+
+  @DefaultMessage("Clear BYOK")
+  @Description("Button to wipe BYOK settings and revert to server defaults.")
+  String aiSettingsClear();
+
+  @DefaultMessage("Provider, model, and API key are required when a provider is selected.")
+  @Description("Validation error shown when AI Settings fields are incomplete.")
+  String aiSettingsValidationIncomplete();
+
   @DefaultMessage("App Store Settings")
   @Description("Title for the App Store Settings menu item")
   String appStoreSettingsMenuTitle();
@@ -5802,6 +5866,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text to display for the iOS settings category in the Project Property Dialog")
   String projectPropertyIosSettingsCategoryTitle();
 
+  @DefaultMessage("AI")
+  @Description("Text to display for the AI category in the Project Property Dialog")
+  String projectPropertyAiCategoryTitle();
+
+  @DefaultMessage("AI Assistant")
+  @Description("Label of the toolbar button for toggling the AI chat dialog")
+  String toggleAIChatButton();
+
   // Best Fit Model names
 
   @DefaultMessage("Linear")
@@ -5894,4 +5966,296 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   @DefaultMessage("10 minutes")
   String timeInterval10Minutes();
+
+  // AI Agent mode choices
+
+  @DefaultMessage("Off")
+  @Description("AI Agent mode: disabled")
+  String aiAgentModeOff();
+
+  @DefaultMessage("Advisor")
+  @Description("AI Agent mode: read-only advice")
+  String aiAgentModeAdvisor();
+
+  @DefaultMessage("Screen Editor")
+  @Description("AI Agent mode: edit current screen")
+  String aiAgentModeScreenEditor();
+
+  @DefaultMessage("Project Editor")
+  @Description("AI Agent mode: full project access")
+  String aiAgentModeProjectEditor();
+
+  // AI Chat Dialog
+
+  @DefaultMessage("AI Assistant")
+  @Description("Title of the AI chat dialog")
+  String aiChatDialogTitle();
+
+  @DefaultMessage("Send")
+  @Description("Label for the send button in AI chat dialog")
+  String aiChatSendButton();
+
+  @DefaultMessage("Apply")
+  @Description("Label for the apply operations button in AI chat dialog")
+  String aiChatApplyButton();
+
+  @DefaultMessage("Apply And Accept All")
+  @Description("Label for the apply-and-accept-all button in AI chat dialog")
+  String aiChatApplyAndAcceptAllButton();
+
+  @DefaultMessage("Reject")
+  @Description("Label for the reject operations button in AI chat dialog")
+  String aiChatRejectButton();
+
+  @DefaultMessage("Type your message...")
+  @Description("Placeholder text for the AI chat input area")
+  String aiChatInputPlaceholder();
+
+  @DefaultMessage("Thinking...")
+  @Description("Status shown while the AI is processing a request")
+  String aiChatThinking();
+
+  @DefaultMessage("Proposed Changes:")
+  @Description("Header for the operation preview section in AI chat dialog")
+  String aiChatProposedChanges();
+
+  @DefaultMessage("Operations applied successfully.")
+  @Description("Message shown after AI operations are applied")
+  String aiChatOperationsApplied();
+
+  @DefaultMessage("Operations rejected.")
+  @Description("Message shown after AI operations are rejected")
+  String aiChatOperationsRejected();
+
+  @DefaultMessage("Failed to send message to AI assistant.")
+  @Description("Error message when the AI agent RPC call fails")
+  String aiChatSendError();
+
+  @DefaultMessage("Failed to load conversation history.")
+  @Description("Error message when loading conversation history fails")
+  String aiChatLoadHistoryError();
+
+  @DefaultMessage("No project is currently open.")
+  @Description("Error message when AI chat is opened without an active project")
+  String aiChatNoProject();
+
+  @DefaultMessage("You")
+  @Description("Label for user messages in the AI chat dialog")
+  String aiChatUserLabel();
+
+  @DefaultMessage("AI")
+  @Description("Label for AI messages in the AI chat dialog")
+  String aiChatAiLabel();
+
+  @DefaultMessage("Failed to apply operations.")
+  @Description("Error message when applying AI operations fails")
+  String aiChatApplyError();
+
+  @DefaultMessage("Close")
+  @Description("Label for the close button in AI chat dialog")
+  String aiChatCloseButton();
+
+  // AI mode selection dialog (shown when user clicks AI Assistant with mode Off)
+
+  @DefaultMessage("Choose an AI Agent permission level for this project:")
+  @Description("Header for the AI mode selection dialog")
+  String aiModeSelectionHeader();
+
+  @DefaultMessage("AI can read and explain your project but cannot make changes.")
+  @Description("Description for Advisor AI mode")
+  String aiAgentModeAdvisorDescription();
+
+  @DefaultMessage("AI can modify the current screen (components & blocks).")
+  @Description("Description for Screen Editor AI mode")
+  String aiAgentModeScreenEditorDescription();
+
+  @DefaultMessage("AI can modify all screens and project settings.")
+  @Description("Description for Project Editor AI mode")
+  String aiAgentModeProjectEditorDescription();
+
+  @DefaultMessage("Changes made by AI may be destructive. Ensure you have a backup.")
+  @Description("Warning text shown in the AI mode selection dialog")
+  String aiModeWarning();
+
+  @DefaultMessage("AI is in Screen Editor mode and can modify components and blocks "
+      + "on the current screen. Consider saving a checkpoint (Project \u2192 Save "
+      + "project as) before proceeding.")
+  @Description("Warning shown in the chat dialog when AI is in Screen Editor mode")
+  String aiChatScreenEditorWarning();
+
+  @DefaultMessage("AI is in Project Editor mode and can modify all screens, components, "
+      + "blocks, and project settings. Consider saving a checkpoint (Project \u2192 Save "
+      + "project as) before proceeding.")
+  @Description("Warning shown in the chat dialog when AI is in Project Editor mode")
+  String aiChatProjectEditorWarning();
+
+  @DefaultMessage("Auto-accept all is enabled.")
+  @Description("Notice shown below the input area when auto-accept-all mode is active")
+  String aiChatAutoAcceptEnabled();
+
+  @DefaultMessage("Click here to disable it.")
+  @Description("Clickable text to disable auto-accept mode")
+  String aiChatAutoAcceptDisable();
+
+  @DefaultMessage("Debug mode is active. Your conversations are being logged to improve "
+      + "the AI assistant. Please use the ''Share Feedback'' link on AI responses to "
+      + "report inaccurate or incorrect messages.")
+  @Description("Warning banner shown in the AI chat when debug mode is enabled")
+  String aiChatDebugWarning();
+
+  @DefaultMessage("Share Feedback")
+  @Description("Link text for sharing feedback about an AI response")
+  String aiChatShareFeedback();
+
+  @DefaultMessage("Stop")
+  @Description("Text on the stop button in the AI chat dialog, shown while a request is in flight")
+  String aiChatStopButton();
+
+  @DefaultMessage("Request cancelled.")
+  @Description("System message shown when the user cancels an in-flight AI request")
+  String aiChatRequestCancelled();
+
+  @DefaultMessage("Direct Mode")
+  @Description("Label for the mode toggle button when in direct (non-planning) mode")
+  String aiChatPlanExecuteOff();
+
+  @DefaultMessage("Plan Mode")
+  @Description("Label for the mode toggle button when planning mode is active")
+  String aiChatPlanExecuteOn();
+
+  @DefaultMessage("Execution Mode")
+  @Description("Label for the mode toggle button when a plan is being executed")
+  String aiChatPlanExecuteExecuting();
+
+  @DefaultMessage("This project uses a tutorial. Plan & Execute may skip pedagogical steps. Continue?")
+  @Description("Confirmation shown when enabling Plan & Execute mode on a tutorial project")
+  String aiChatPlanExecuteTutorialConfirm();
+
+  @DefaultMessage("Execution Plan")
+  @Description("Header for the plan card shown in the AI chat when the agent proposes a plan")
+  String aiChatPlanCardHeader();
+
+  @DefaultMessage("Approve")
+  @Description("Label for the approve button on a plan card")
+  String aiChatPlanApproveButton();
+
+  @DefaultMessage("Edit & Approve")
+  @Description("Label for the edit-and-approve button on a plan card")
+  String aiChatPlanEditApproveButton();
+
+  @DefaultMessage("Reject")
+  @Description("Label for the reject button on a plan card")
+  String aiChatPlanRejectButton();
+
+  @DefaultMessage("Save")
+  @Description("Label for the save button when editing a plan before approval")
+  String aiChatPlanSaveButton();
+
+  @DefaultMessage("Cancel")
+  @Description("Label for the cancel button when editing a plan")
+  String aiChatPlanCancelButton();
+
+  @DefaultMessage("Plan rejected.")
+  @Description("Status label shown on the plan card after the user rejects the plan")
+  String aiChatPlanRejected();
+
+  @DefaultMessage("Plan approved.")
+  @Description("Status label shown on the plan card after the user approves the plan")
+  String aiChatPlanApproved();
+
+  @DefaultMessage("Plan dismissed.")
+  @Description("Status label shown on the plan card when dismissed without explicit approval or rejection")
+  String aiChatPlanDismissed();
+
+  @DefaultMessage("Select & Open")
+  @Description("Button to confirm AI mode selection and open the chat dialog")
+  String aiModeSelectAndOpen();
+
+  @DefaultMessage("Conversations")
+  @Description("Header title for the AI chat conversation list view.")
+  String aiChatConversationsTitle();
+
+  @DefaultMessage("New conversation")
+  @Description("Button label to start a new AI chat conversation.")
+  String aiChatNewConversation();
+
+  @DefaultMessage("Rename conversation")
+  @Description("Placeholder text for the inline rename input.")
+  String aiChatRenameConversationPlaceholder();
+
+  @DefaultMessage("Delete conversation?")
+  @Description("Confirmation prompt shown when the user deletes a conversation.")
+  String aiChatDeleteConversationConfirm();
+
+  @DefaultMessage("Could not load conversations.")
+  @Description("Error message shown when the conversation list fails to load.")
+  String aiChatLoadConversationsError();
+
+  @DefaultMessage("Could not rename conversation.")
+  @Description("Error message shown when renaming a conversation fails.")
+  String aiChatRenameConversationError();
+
+  @DefaultMessage("Could not delete conversation.")
+  @Description("Error message shown when deleting a conversation fails.")
+  String aiChatDeleteConversationError();
+
+  @DefaultMessage("Today")
+  @Description("Date separator label for messages sent on the current local day.")
+  String aiChatDateSeparatorToday();
+
+  @DefaultMessage("Yesterday")
+  @Description("Date separator label for messages sent on the previous local day.")
+  String aiChatDateSeparatorYesterday();
+
+  @DefaultMessage("Back to conversations")
+  @Description("Tooltip for the button that returns from chat view to the conversation list.")
+  String aiChatBackToConversations();
+
+  @DefaultMessage("Today at {0}")
+  @Description("Fallback label for untitled conversations updated today; {0} is HH:mm.")
+  String aiChatConversationDateToday(String time);
+
+  @DefaultMessage("Yesterday at {0}")
+  @Description("Fallback label for untitled conversations updated yesterday; {0} is HH:mm.")
+  String aiChatConversationDateYesterday(String time);
+
+  @DefaultMessage("Unnamed Conversation")
+  @Description("Placeholder title shown for AI chat conversations that have no user-set title.")
+  String aiChatUnnamedConversation();
+
+  @DefaultMessage("Created {0}")
+  @Description("Subtitle line showing when a conversation was created; {0} is a formatted date.")
+  String aiChatConversationCreatedAt(String dateStr);
+
+  @DefaultMessage("Last message {0}")
+  @Description("Subtitle line showing when the most recent message was sent; {0} is a formatted date.")
+  String aiChatConversationLastMessageAt(String dateStr);
+
+  @DefaultMessage("Are you sure you want to delete this conversation? This cannot be undone.")
+  @Description("Body text for the delete conversation confirmation dialog.")
+  String aiChatDeleteConversationConfirmBody();
+
+  @DefaultMessage("Delete")
+  @Description("Label for the delete button in the delete conversation confirmation dialog.")
+  String aiChatDeleteButton();
+
+  @DefaultMessage("Cancel")
+  @Description("Label for the cancel button in the delete conversation confirmation dialog.")
+  String aiChatCancelButton();
+
+  @DefaultMessage("View Conversations")
+  @Description("Bottom-bar button that switches the AI chat dialog from the chat view to the conversation list view.")
+  String aiChatViewConversationsButton();
+
+  @DefaultMessage("Rename")
+  @Description("Top-bar button label that starts inline rename of the current conversation's title.")
+  String aiChatRenameConversationButton();
+
+  @DefaultMessage("Save")
+  @Description("Top-bar button label while an inline conversation rename is active; clicking it commits the new title.")
+  String aiChatSaveConversationButton();
+
+  @DefaultMessage("Conversation Name")
+  @Description("Placeholder shown in the inline rename text field before the user types a title.")
+  String aiChatConversationNamePlaceholder();
 }
