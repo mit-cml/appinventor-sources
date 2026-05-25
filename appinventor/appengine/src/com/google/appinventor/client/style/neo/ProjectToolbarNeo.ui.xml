@@ -35,8 +35,12 @@
                     styleName="ode-ProjectListButton inline bleft" tooltip="{messages.moveProjectMenuItem}">
       <actions:MoveProjectsAction/>
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="Share" caption="{messages.shareProjectButton}" icon='group' align="center"
+                    styleName="ode-ProjectListButton inline bcenter" tooltip="{messages.shareProjectMenuItem}">
+      <actions:ShareProjectsAction/>
+    </ai:ToolbarItem>
     <ai:DropDownButton name="Export" caption="{messages.exportButton}" icon="file_download" align="center"
-                       styleName="ode-ProjectListButton inline bcenter">
+                       styleName="ode-ProjectListButton inline bright">
       <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
         <actions:ExportProjectAction/>
       </ai:DropDownItem>
