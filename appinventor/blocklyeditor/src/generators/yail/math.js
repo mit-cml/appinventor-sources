@@ -33,10 +33,10 @@ AI.Yail.forBlock['math_compare'] = function(block, generator) {
   var order = prim[2];
   var arg0 = generator.valueToCode(block, 'A', order) || 0;
   var arg1 = generator.valueToCode(block, 'B', order) || 0;
-  var tol = block.itemCount_ === 1 
-      ? generator.valueToCode(block, 'TOL0', order) || 0.0000001
+  var tol = block.toleranceVisible_ === true
+      ? generator.valueToCode(block, 'TOL', order) || 0.0000001
       : 0.0000001; // Default tolerance.
-  function generateCode(arg) {
+  function generateCode(operator1, arg) {
     var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
         + AI.Yail.YAIL_SPACER;
     code = code + AI.Yail.YAIL_OPEN_COMBINATION
@@ -44,36 +44,44 @@ AI.Yail.forBlock['math_compare'] = function(block, generator) {
         + arg + AI.Yail.YAIL_CLOSE_COMBINATION;
     code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
         + AI.Yail.YAIL_OPEN_COMBINATION
-        + (mode == "EQ" || mode == "NEQ" ? "any any" : "number number")
+        + (mode === 'EQ' || mode === 'NEQ' ? 'any any' : 'number number')
         + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
     code = code + AI.Yail.YAIL_DOUBLE_QUOTE + operator2
         + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
     return code
-  }
+  };
   var code;
   switch(mode) {
     case 'EQ':
     case 'NEQ':
       // (abs (- arg0 arg1)) tol
-      code = generateCode('(abs (- ' + arg0 + ' ' + arg1 + ')) ' + tol);
-      break;
+      var numericCode = generateCode(
+          mode === 'EQ' ? '<=' : '>',
+          '(abs (- ' + arg0 + ' ' + arg1 + ')) ' + tol);
+      // arg0 arg1
+      var fallbackCode = generateCode(operator1, arg0 + ' ' + arg1);
+      // If both arg0 and arg1 are numbers, use numericCode else fallbackCode.
+      code = '(if (and (number? ' + arg0 + ') (number? ' + arg1 + ')) '
+          + numericCode + ' '
+          + fallbackCode + ')';
+      break
     case 'LT':
     case 'GTE':
       // arg0 (- arg1 tol)
-      code = generateCode(arg0 + ' (- ' + arg1 + ' ' + tol + ')');
+      code = generateCode(operator1, arg0 + ' (- ' + arg1 + ' ' + tol + ')');
       break;
     case 'LTE':
     case 'GT':
       // arg0 (+ arg1 tol)
-      code = generateCode(arg0 + ' (+ ' + arg1 + ' ' + tol + ')');
+      code = generateCode(operator1, arg0 + ' (+ ' + arg1 + ' ' + tol + ')');
       break;
   }
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
 AI.Yail.forBlock['math_compare'].OPERATORS = {
-  EQ: ['<=', '=', AI.Yail.ORDER_NONE],
-  NEQ: ['>', 'not =', AI.Yail.ORDER_NONE],
+  EQ: ['yail-equal?', '=', AI.Yail.ORDER_NONE],
+  NEQ: ['yail-not-equal?', 'not =', AI.Yail.ORDER_NONE],
   LT: ['<', '<', AI.Yail.ORDER_NONE],
   LTE: ['<=', '<=', AI.Yail.ORDER_NONE],
   GT: ['>', '>', AI.Yail.ORDER_NONE],
