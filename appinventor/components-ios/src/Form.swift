@@ -503,9 +503,16 @@ let kMinimumToastWait = 10.0
       if path == _backgroundImage {
         // Already using this image
         return
-      } else if path != "", let image = AssetManager.shared.imageFromPath(path: path) {
+      } else if path != "", let image = AssetManager.shared.imageFromPath(path: path), !SvgUtil.isSvg(path) {
         _linearView.image = image
         _backgroundImage = path
+      } else if path != "", SvgUtil.isSvg(path) {
+        AssetManager.shared.imageFromPathAsync(path: path) { image in
+          if let image = image {
+            self._linearView.image = image
+            self._backgroundImage = path
+          }
+        }
       } else {
         _backgroundImage = ""
         _linearView.image = nil

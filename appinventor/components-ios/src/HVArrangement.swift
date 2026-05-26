@@ -165,9 +165,17 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
         // Already using this image
         return
       } else if path != "" {
-        if let image = AssetManager.shared.imageFromPath(path: path) {
+        if let image = AssetManager.shared.imageFromPath(path: path), !SvgUtil.isSvg(path) {
           _view.image = image
           _imagePath = path
+          return
+        } else if SvgUtil.isSvg(path) {
+          AssetManager.shared.imageFromPathAsync(path: path) { image in
+            if let image = image {
+              self._view.image = image
+              self._imagePath = path
+            }
+          }
           return
         }
       }

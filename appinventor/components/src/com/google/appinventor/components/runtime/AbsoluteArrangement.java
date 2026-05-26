@@ -20,6 +20,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -43,6 +44,7 @@ import java.util.List;
     iconName = "images/absoluteArrangement.png",
     category = ComponentCategory.LAYOUT)
 @SimpleObject
+@UsesLibraries(libraries = "androidsvg.jar")
 public class AbsoluteArrangement extends AndroidViewComponent
     implements Component, ComponentContainer {
   private final Activity context;

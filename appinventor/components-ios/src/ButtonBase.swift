@@ -376,15 +376,22 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
       if (path == nil || path == "") {
         _backgroundImage = nil
       } else {
-        var image = UIImage(named: path!);
-        if (image == nil) {
-          image = UIImage(contentsOfFile: AssetManager.shared.pathForExistingFileAsset(path!))
-        }
-        if (image != nil) {
+        let image = SvgUtil.isSvg(path!) ? nil : AssetManager.shared.imageFromPath(path: path!)
+        if image != nil {
           _imagePath = path
           _backgroundImage = image
           _view.frame.size = (image?.size)!
           _view.invalidateIntrinsicContentSize()
+        } else if SvgUtil.isSvg(path!) {
+          AssetManager.shared.imageFromPathAsync(path: path!) { image in
+            if image != nil {
+              self._imagePath = path
+              self._backgroundImage = image
+              self._view.frame.size = (image?.size)!
+              self._view.invalidateIntrinsicContentSize()
+              self.setNeedsStyleApplied()
+            }
+          }
         }
       }
       setNeedsStyleApplied()

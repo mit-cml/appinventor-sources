@@ -149,6 +149,52 @@ open class AssetManager: NSObject {
     }
   }
 
+  private func pathForResourceInBundle(_ filename: String) -> String {
+    let resourceName = filename.components(separatedBy: "?").first ?? filename
+    let url = URL(fileURLWithPath: resourceName)
+    let name = url.deletingPathExtension().lastPathComponent
+    let ext = url.pathExtension
+    let directory = url.deletingLastPathComponent().relativePath
+    let path = Bundle.main.path(forResource: name, ofType: ext.isEmpty ? nil : ext,
+                                inDirectory: directory == "." ? nil : directory)
+    return path ?? ""
+  }
+
+  private func filesystemPathsForSvg(_ path: String) -> [String] {
+    var paths = [String]()
+    let resolvedPath = pathForExistingFileAsset(path)
+    if !resolvedPath.isEmpty {
+      paths.append(resolvedPath)
+    }
+    let bundlePath = pathForResourceInBundle(path)
+    if !bundlePath.isEmpty {
+      paths.append(bundlePath)
+    }
+    if path.starts(with: "file://"),
+       let filePath = path.chopPrefix(count: 7).removingPercentEncoding {
+      paths.append(filePath)
+    }
+    paths.append(path)
+    return Array(Set(paths)).filter { !$0.isEmpty }
+  }
+
+  public func imageFromPathAsync(path: String, completion: @escaping (UIImage?) -> Void) {
+    if path.isEmpty {
+      completion(nil)
+    } else if SvgUtil.isSvg(path) {
+      let fileManager = FileManager.default
+      for filePath in filesystemPathsForSvg(path) {
+        if fileManager.fileExists(atPath: filePath) {
+          SvgUtil.imageFromSvgFileAsync(filePath, completion: completion)
+          return
+        }
+      }
+      completion(nil)
+    } else {
+      completion(imageFromPath(path: path))
+    }
+  }
+
   @objc public func imageFromPath(path: String) -> UIImage? {
     if path.isEmpty {
       return nil
@@ -165,13 +211,10 @@ open class AssetManager: NSObject {
     // SVG files cannot be decoded by UIImage directly. Resolve the path and
     // rasterize via SvgUtil (which uses the SwiftSVG CocoaPod).
     if SvgUtil.isSvg(path) {
-      let resolvedPath = pathForExistingFileAsset(path)
-      if !resolvedPath.isEmpty, let image = SvgUtil.imageFromSvgFile(resolvedPath) {
-        return image
-      }
-      // Also try the path as-is (e.g., an absolute path already passed in).
-      if let image = SvgUtil.imageFromSvgFile(path) {
-        return image
+      for filePath in filesystemPathsForSvg(path) {
+        if let image = SvgUtil.imageFromSvgFile(filePath) {
+          return image
+        }
       }
     }
 

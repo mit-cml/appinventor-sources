@@ -213,9 +213,17 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
       if path == _imagePath {
         return
       } else if !path.isEmpty {
-        if let image = AssetManager.shared.imageFromPath(path: path) {
+        if let image = AssetManager.shared.imageFromPath(path: path), !SvgUtil.isSvg(path) {
           _view.backgroundColor = UIColor(patternImage: image)
           _imagePath = path
+          return
+        } else if SvgUtil.isSvg(path) {
+          AssetManager.shared.imageFromPathAsync(path: path) { image in
+            if let image = image {
+              self._view.backgroundColor = UIColor(patternImage: image)
+              self._imagePath = path
+            }
+          }
           return
         }
       }

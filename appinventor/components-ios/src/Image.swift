@@ -114,7 +114,7 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
     }
     set(path) {
       _picturePath = path
-      if let image = AssetManager.shared.imageFromPath(path: path) {
+      if let image = AssetManager.shared.imageFromPath(path: path), !SvgUtil.isSvg(path) {
         updateImage(image)
       } else if (path.starts(with: "http://") || path.starts(with: "https://")), let url = URL(string: path) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
@@ -123,12 +123,24 @@ open class Image: ViewComponent, AbstractMethodsForViewComponent {
               self.updateImage(nil)
               return
             }
-            self.updateImage(UIImage(data: data))
-            self._container?.form?.view.setNeedsLayout()
+            if SvgUtil.isSvg(path) {
+              SvgUtil.imageFromSvgDataAsync(data) { image in
+                self.updateImage(image)
+                self._container?.form?.view.setNeedsLayout()
+              }
+            } else {
+              self.updateImage(UIImage(data: data))
+              self._container?.form?.view.setNeedsLayout()
+            }
           }
         }
         task.priority = 1.0
         task.resume()
+      } else if SvgUtil.isSvg(path) {
+        AssetManager.shared.imageFromPathAsync(path: path) { image in
+          self.updateImage(image)
+          self._container?.form?.view.setNeedsLayout()
+        }
       } else {
         updateImage(nil)
       }

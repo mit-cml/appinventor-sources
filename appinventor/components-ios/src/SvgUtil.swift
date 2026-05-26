@@ -60,6 +60,25 @@ enum SvgUtil {
     return imageFromSvgData(data, desiredWidth: desiredWidth, desiredHeight: desiredHeight)
   }
 
+  static func imageFromSvgFileAsync(
+    _ filePath: String,
+    desiredWidth: CGFloat = 0,
+    desiredHeight: CGFloat = 0,
+    completion: @escaping (UIImage?) -> Void
+  ) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      guard let data = try? Data(contentsOf: URL(fileURLWithPath: filePath)) else {
+        NSLog("SvgUtil: cannot read SVG file at \(filePath)")
+        DispatchQueue.main.async {
+          completion(nil)
+        }
+        return
+      }
+      imageFromSvgDataAsync(data, desiredWidth: desiredWidth, desiredHeight: desiredHeight,
+                            completion: completion)
+    }
+  }
+
   /**
    * Synchronously rasterizes SVG `Data` into a `UIImage`.
    *
@@ -92,6 +111,28 @@ enum SvgUtil {
       return nil
     }
 
+    return rasterize(svgLayer, desiredWidth: desiredWidth, desiredHeight: desiredHeight)
+  }
+
+  static func imageFromSvgDataAsync(
+    _ data: Data,
+    desiredWidth: CGFloat = 0,
+    desiredHeight: CGFloat = 0,
+    completion: @escaping (UIImage?) -> Void
+  ) {
+    DispatchQueue.global(qos: .userInitiated).async {
+      let parser = NSXMLSVGParser(SVGData: data) { layer in
+        completion(rasterize(layer, desiredWidth: desiredWidth, desiredHeight: desiredHeight))
+      }
+      parser.startParsing()
+    }
+  }
+
+  private static func rasterize(
+    _ svgLayer: SVGLayer,
+    desiredWidth: CGFloat,
+    desiredHeight: CGFloat
+  ) -> UIImage? {
     // Determine raster size: prefer explicit desired size, then SVG bounding box, then default.
     let intrinsicW = svgLayer.boundingBox.width > 0 ? svgLayer.boundingBox.width : defaultSize
     let intrinsicH = svgLayer.boundingBox.height > 0 ? svgLayer.boundingBox.height : defaultSize
