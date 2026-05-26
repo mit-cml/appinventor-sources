@@ -261,10 +261,22 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       // There are two possibilities when the backgroud image is changed:
       // 1) the provided path is valid, so the background image is updated or
       // 2) the provided path is invalid, so the background color is shown
-      if let image = AssetManager.shared.imageFromPath(path: path) {
+      if let image = AssetManager.shared.imageFromPath(path: path), !SvgUtil.isSvg(path) {
         _backgroundImage = path
         _imageSize = image.size
         _backgroundImageView.image = image
+      } else if SvgUtil.isSvg(path) {
+        AssetManager.shared.imageFromPathAsync(path: path) { image in
+          if let image = image {
+            self._backgroundImage = path
+            self._imageSize = image.size
+            self._backgroundImageView.image = image
+          } else {
+            self._imageSize = nil
+            self._backgroundImage = ""
+            self._backgroundImageView.image = nil
+          }
+        }
       } else {
         _imageSize = nil
         _backgroundImage = ""

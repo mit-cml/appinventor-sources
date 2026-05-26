@@ -19,6 +19,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -29,6 +30,7 @@ import java.io.IOException;
  * Underlying base class for click-based components, not directly accessible to Simple programmers.
  */
 @SimpleObject
+@UsesLibraries(libraries = "androidsvg.jar")
 public abstract class TouchComponent<T extends View> extends AndroidViewComponent
     implements View.OnTouchListener {
 

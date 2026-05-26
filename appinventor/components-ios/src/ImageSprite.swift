@@ -25,7 +25,7 @@ open class ImageSprite: Sprite {
       return _picturePath
     }
     set(path) {
-      if let image = AssetManager.shared.imageFromPath(path: path) {
+      if let image = AssetManager.shared.imageFromPath(path: path), !SvgUtil.isSvg(path) {
         _image = image
         _picturePath = path
         self.DisplayLayer.contents = image.cgImage
@@ -36,6 +36,21 @@ open class ImageSprite: Sprite {
           updateWidth()
         }
         registerChanges()
+      } else if SvgUtil.isSvg(path) {
+        AssetManager.shared.imageFromPathAsync(path: path) { image in
+          if let image = image {
+            self._image = image
+            self._picturePath = path
+            self.DisplayLayer.contents = image.cgImage
+            if self._lastSetHeight == kLengthPreferred {
+              self.updateHeight()
+            }
+            if self._lastSetWidth == kLengthPreferred {
+              self.updateWidth()
+            }
+            self.registerChanges()
+          }
+        }
       }
     }
   }

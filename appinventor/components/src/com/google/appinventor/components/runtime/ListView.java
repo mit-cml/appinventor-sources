@@ -74,7 +74,8 @@ import android.graphics.Rect;
     nonVisible = false,
     iconName = "images/listView.png")
 @SimpleObject
-@UsesLibraries({"recyclerview.jar", "recyclerview.aar", "cardview.jar", "cardview.aar", "dynamicanimation.jar"})
+@UsesLibraries({"recyclerview.jar", "recyclerview.aar", "cardview.jar", "cardview.aar",
+    "dynamicanimation.jar", "androidsvg.jar"})
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
         "android.permission.READ_EXTERNAL_STORAGE")
 public final class ListView extends AndroidViewComponent {

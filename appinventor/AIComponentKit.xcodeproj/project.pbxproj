@@ -210,6 +210,7 @@
 		06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747B1DC06F6B003888CB /* GCDWebServer.framework */; };
 		06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747D1DC06F6B003888CB /* SchemeKit.framework */; };
 		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
+		AAAA00011DC02B190092C9DD /* SvgUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA00001DC02B190092C9DD /* SvgUtil.swift */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
 		06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BA52A2203E845A00879F00 /* CsvUtilTests.swift */; };
 		06C43B352D44699100BEF000 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B342D44699100BEF000 /* FileType.swift */; };
@@ -628,6 +629,7 @@
 		06B3747C1DC06F6B003888CB /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_AIComponentKit.framework; path = "Pods/../build/Release-iphoneos/Pods_AIComponentKit.framework"; sourceTree = "<group>"; };
 		06B3747D1DC06F6B003888CB /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "build/Release-iphoneos/SchemeKit.framework"; sourceTree = "<group>"; };
 		06B3747E1DC06F6B003888CB /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "Pods/../build/Release-iphoneos/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
+		AAAA00001DC02B190092C9DD /* SvgUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SvgUtil.swift; sourceTree = "<group>"; };
 		06B5872B1DC02B190092C9DD /* AssetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetManager.swift; sourceTree = "<group>"; };
 		06BA52A2203E845A00879F00 /* CsvUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtilTests.swift; sourceTree = "<group>"; };
 		06C43B332D44699100BEF000 /* FileAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAction.swift; sourceTree = "<group>"; };
@@ -1247,6 +1249,7 @@
 				06D1519D1DC4F49C00FC981E /* AppManager.swift */,
 				068AA8181DE61D8E0011CC74 /* Application.swift */,
 				068AA81A1DE61FE20011CC74 /* ApplicationFactory.swift */,
+				AAAA00001DC02B190092C9DD /* SvgUtil.swift */,
 				06B5872B1DC02B190092C9DD /* AssetManager.swift */,
 				06F91463252CE50B00AF8F88 /* BundledApp.swift */,
 				06D81F472BA352CA0058E94F /* ChartDataSourceUtil.swift */,
@@ -1965,6 +1968,7 @@
 				C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */,
 				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
 				0641605E2EA7557500FF5BD7 /* GyroSensorMode.swift in Sources */,
+				AAAA00011DC02B190092C9DD /* SvgUtil.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,

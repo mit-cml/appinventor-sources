@@ -27,6 +27,9 @@ import java.util.logging.Logger;
 abstract class MockImageBase extends MockVisibleComponent {
   private static final Logger LOG = Logger.getLogger(MockImageBase.class.getName());
 
+  // Default size (px) used in the designer when an SVG has no explicit width/height.
+  private static final int DEFAULT_SVG_SIZE = 100;
+
   // Property names
   private static final String PROPERTY_NAME_PICTURE = "Picture";
   private static final String PROPERTY_SCALE_PICTURE_TO_FIT = "ScalePictureToFit";
@@ -66,6 +69,19 @@ abstract class MockImageBase extends MockVisibleComponent {
   }
 
   /*
+   * Returns true if the given URL refers to an SVG file.
+   */
+  private static boolean isSvg(String url) {
+    if (url == null) {
+      return false;
+    }
+    // Strip query string before checking extension
+    int q = url.indexOf('?');
+    String path = (q >= 0) ? url.substring(0, q) : url;
+    return path.toLowerCase().endsWith(".svg");
+  }
+
+  /*
    * Sets the image's url to a new value.
    */
   private void setPictureProperty(String text) {
@@ -97,6 +113,10 @@ abstract class MockImageBase extends MockVisibleComponent {
     String[] style = MockComponentsUtil.clearSizeStyle(image);
     int width = image.getWidth();
     MockComponentsUtil.restoreSizeStyle(image, style);
+    // SVGs without explicit width/height may report 0; use a sensible default.
+    if (width == 0 && isSvg(image.getUrl())) {
+      width = DEFAULT_SVG_SIZE;
+    }
     return width;
   }
 
@@ -107,6 +127,10 @@ abstract class MockImageBase extends MockVisibleComponent {
     String[] style = MockComponentsUtil.clearSizeStyle(image);
     int height = image.getHeight();
     MockComponentsUtil.restoreSizeStyle(image, style);
+    // SVGs without explicit width/height may report 0; use a sensible default.
+    if (height == 0 && isSvg(image.getUrl())) {
+      height = DEFAULT_SVG_SIZE;
+    }
     return height;
   }
 
@@ -135,11 +159,21 @@ abstract class MockImageBase extends MockVisibleComponent {
     int frameWidth = Ints.tryParse(width.substring(0, width.indexOf("px")));
     int frameHeight = Ints.tryParse(height.substring(0, height.indexOf("px")));
 
+    int prefW = getPreferredWidth();
+    int prefH = getPreferredHeight();
+
+    // Guard against divide-by-zero (can happen for SVGs without explicit dimensions
+    // or before the image has fully loaded).
+    if (prefW <= 0 || prefH <= 0) {
+      image.setSize(frameWidth + "px", frameHeight + "px");
+      return;
+    }
+
     if (scalingMode.equals("0")) {
-      float ratio = Math.min(frameWidth / (float) getPreferredWidth(),
-          frameHeight / (float) getPreferredHeight());
-      int scaledWidth = Double.valueOf(getPreferredWidth() * ratio).intValue();
-      int scaledHeight = Double.valueOf(getPreferredHeight() * ratio).intValue();
+      float ratio = Math.min(frameWidth / (float) prefW,
+          frameHeight / (float) prefH);
+      int scaledWidth = Double.valueOf(prefW * ratio).intValue();
+      int scaledHeight = Double.valueOf(prefH * ratio).intValue();
       image.setSize(scaledWidth + "px", scaledHeight + "px");
 
     } else if (scalingMode.equals("1")) {

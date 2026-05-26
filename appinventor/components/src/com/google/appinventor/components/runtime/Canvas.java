@@ -45,6 +45,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 
 import com.google.appinventor.components.common.ComponentCategory;
@@ -136,6 +137,7 @@ import java.util.Set;
     iconName = "images/canvas.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesLibraries(libraries = "androidsvg.jar")
 public final class Canvas extends AndroidViewComponent implements ComponentContainer {
   private static final String LOG_TAG = "Canvas";
 

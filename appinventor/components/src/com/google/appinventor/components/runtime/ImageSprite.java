@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.Asset;
@@ -16,6 +17,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 
 import com.google.appinventor.components.common.ComponentCategory;
@@ -68,9 +70,11 @@ import java.util.ArrayList;
     iconName = "images/imageSprite.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesLibraries(libraries = "androidsvg.jar")
 public class ImageSprite extends Sprite {
   private final Form form;
-  private BitmapDrawable drawable;
+  // Drawable instead of BitmapDrawable so that SVG-rasterized drawables are accepted too.
+  private Drawable drawable;
   private int widthHint = LENGTH_PREFERRED;
   private int heightHint = LENGTH_PREFERRED;
   private String picturePath = "";  // Picture property
@@ -258,8 +262,13 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(description = "The height of the ImageSprite in pixels.")
   public int Height() {
     if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
-      // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / form.deviceDensity());
+      // Use getIntrinsicHeight() so this works for both BitmapDrawable (raster) and
+      // any other Drawable type returned for SVG assets.
+      if (drawable == null) {
+        return 0;
+      }
+      int h = drawable.getIntrinsicHeight();
+      return h > 0 ? (int)(h / form.deviceDensity()) : 0;
     }
     return heightHint;
   }
@@ -285,8 +294,13 @@ public class ImageSprite extends Sprite {
   @SimpleProperty(description = "The width of the ImageSprite in pixels.")
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
-      // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
-      return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / form.deviceDensity());
+      // Use getIntrinsicWidth() so this works for both BitmapDrawable (raster) and
+      // any other Drawable type returned for SVG assets.
+      if (drawable == null) {
+        return 0;
+      }
+      int w = drawable.getIntrinsicWidth();
+      return w > 0 ? (int)(w / form.deviceDensity()) : 0;
     }
     return widthHint;
   }

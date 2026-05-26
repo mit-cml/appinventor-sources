@@ -27,6 +27,7 @@ import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.HorizontalAlignment;
@@ -52,6 +53,7 @@ import java.util.List;
 
 @SuppressWarnings("AbbreviationAsWordInName")
 @SimpleObject
+@UsesLibraries(libraries = "androidsvg.jar")
 public class HVArrangement extends AndroidViewComponent implements Component, ComponentContainer {
   private final Activity context;
 
