@@ -281,19 +281,6 @@ Blockly.Blocks.math_compare.HELPURLS = function () {
   }
 };
 
-Blockly.Blocks['math_tolerance_mutator_item'] = {
-  // Add items.
-  init: function () {
-    this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.appendDummyInput()
-        .appendField("number");
-    this.setPreviousStatement(true);
-    this.setNextStatement(false);
-    this.setTooltip(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TOOLTIP);
-    this.contextMenu = false;
-  }
-};
-
 Blockly.Blocks['math_add'] = {
   // Basic arithmetic operator.
   category: 'Math',
