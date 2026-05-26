@@ -10,15 +10,24 @@ fileprivate let kListViewDefaultSelectionColor = Color.lightGray
 fileprivate let kListViewDefaultTextColor = Color.white
 fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
+fileprivate let kDefaultTableCellVerticalPadding = CGFloat(30.0)
 
 let VERTICAL_LAYOUT = 0
 let HORIZONTAL_LAYOUT = 1
+
+fileprivate final class ListViewRootView: UIView {
+  var preferredSizeProvider: (() -> CGSize)?
+
+  override var intrinsicContentSize: CGSize {
+    return preferredSizeProvider?() ?? super.intrinsicContentSize
+  }
+}
 
   open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
   fileprivate final var _view: UITableView
-  fileprivate let _rootView = UIView()
+  fileprivate let _rootView = ListViewRootView()
   fileprivate var _collectionView: UICollectionView
   fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
     
@@ -33,7 +42,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _fontSize = Int32(22)
-  fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
+  fileprivate var _automaticHeightConstraint: NSLayoutConstraint?
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
   //ListData
@@ -76,8 +85,11 @@ let HORIZONTAL_LAYOUT = 1
 
     // Auto height for the table (existing)
     _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
-    _automaticHeightConstraint.priority = UILayoutPriority(1.0)
-    _automaticHeightConstraint.isActive = true
+    _automaticHeightConstraint?.priority = UILayoutPriority(1.0)
+    _automaticHeightConstraint?.isActive = true
+    _rootView.preferredSizeProvider = { [weak self] in
+      return self?.preferredListViewSize ?? CGSize(width: 320, height: kDefaultTableCellHeight)
+    }
 
     // Create horizontal collection view
     let layout = UICollectionViewFlowLayout()
@@ -125,6 +137,15 @@ let HORIZONTAL_LAYOUT = 1
  
   open override var view: UIView { _rootView }
 
+  @objc open override var Width: Int32 {
+    get {
+      return super.Width
+    }
+    set(width) {
+      super.Width = width == kLengthPreferred ? kLengthFillParent : width
+    }
+  }
+
   // MARK: Properties
   @objc open var BackgroundColor: Int32 {
     get {
@@ -161,7 +182,7 @@ let HORIZONTAL_LAYOUT = 1
       _items = []
       _elements = []
       guard !elements.isEmpty else {
-        _view.reloadData()
+        elementsCount()
         return
       }
       addElements(elements)
@@ -227,8 +248,8 @@ let HORIZONTAL_LAYOUT = 1
     }
   func elementsCount() {
     //let rows = max(_items.count, _items.count)
-    let rows = max(_elements.count, _items.count)
-    _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
+    let rows = listItemCount
+    _automaticHeightConstraint?.constant = rows == 0 ? kDefaultTableCellHeight : preferredRowHeight * CGFloat(rows)
     if let searchBar = _view.tableHeaderView as? UISearchBar {
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
     } else {
@@ -236,6 +257,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     _collectionView.reloadData()
     _collectionView.collectionViewLayout.invalidateLayout()
+    invalidateListViewSize()
   }
 
   @objc open var FontTypeface: String {
@@ -244,17 +266,17 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(fontTypeface) {
       _fontTypeface = fontTypeface
-      _view.reloadData()
+      elementsCount()
     }
   }
 
   @objc open var FontTypefaceDetail: String {
     get {
-      return _fontTypeface
+      return _fontTypefaceDetail
     }
     set(FontTypefaceDetail) {
       _fontTypefaceDetail = FontTypefaceDetail
-      _view.reloadData()
+      elementsCount()
     }
   }
 
@@ -383,7 +405,7 @@ let HORIZONTAL_LAYOUT = 1
 
             return nil
           }
-          _view.reloadData()
+          elementsCount()
         }
       } catch {
         print("Error parsing JSON: \(error)")
@@ -399,6 +421,7 @@ let HORIZONTAL_LAYOUT = 1
     set(listViewLayoutMode) {
       _listViewLayoutMode = listViewLayoutMode
       _view.reloadData()
+      invalidateListViewSize()
     }
   }
 
@@ -440,6 +463,7 @@ let HORIZONTAL_LAYOUT = 1
       _automaticHeightConstraint?.isActive = true
       _view.reloadData()
     }
+    invalidateListViewSize()
 
   }
 
@@ -530,6 +554,7 @@ let HORIZONTAL_LAYOUT = 1
       } else if !_showFilter && _view.tableHeaderView != nil {
         _view.tableHeaderView = nil
       }
+      invalidateListViewSize()
     }
   }
 
@@ -569,7 +594,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(fontSize) {
       _fontSize = fontSize < 0 ? Int32(7) : fontSize
-      _view.reloadData()
+      elementsCount()
     }
   }
 
@@ -580,7 +605,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(fontSizeDetail) {
       _fontSizeDetail = fontSizeDetail < 0 ? Int32(7) : fontSizeDetail
-      _view.reloadData()
+      elementsCount()
     }
   }
 
@@ -658,6 +683,9 @@ let HORIZONTAL_LAYOUT = 1
 
   @objc open func Refresh() {
     _view.reloadData()
+    _collectionView.reloadData()
+    _collectionView.collectionViewLayout.invalidateLayout()
+    invalidateListViewSize()
   }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
@@ -697,19 +725,19 @@ let HORIZONTAL_LAYOUT = 1
           cell.detailTextLabel?.text = ""
           // Simple text-only layout
           tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
+          tableView.estimatedRowHeight = preferredRowHeight
         }
       } else {
         let item = _items[indexPath.row]
         if _listViewLayoutMode == 1 {
           
           tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
+          tableView.estimatedRowHeight = preferredRowHeight
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
         } else if _listViewLayoutMode == 3 {
           tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 60
+          tableView.estimatedRowHeight = preferredRowHeight
           cell.textLabel?.text = item["Text1"] as? String
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
@@ -842,7 +870,7 @@ let HORIZONTAL_LAYOUT = 1
         
       } else {
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 44
+        tableView.estimatedRowHeight = preferredRowHeight
         cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
       }
     }
@@ -936,10 +964,18 @@ let HORIZONTAL_LAYOUT = 1
 
   
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return _items.isEmpty ? _elements.count : _items.count
+      return listItemCount
     }
 
     // MARK: UITableViewDelegate
+
+    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+      return preferredRowHeight
+    }
+
+    open func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+      return preferredRowHeight
+    }
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
       if indexPath.row < _elements.count {
@@ -975,6 +1011,69 @@ let HORIZONTAL_LAYOUT = 1
   }
 
   // MARK: Private implementation
+
+  private var preferredListViewSize: CGSize {
+    let width = preferredListViewWidth()
+    if _orientation == HORIZONTAL_LAYOUT {
+      return CGSize(width: width, height: max(kDefaultItemSize.height, 60.0))
+    }
+
+    let rows = listItemCount
+    let rowHeight = rows == 0 ? kDefaultTableCellHeight : preferredRowHeight * CGFloat(rows)
+    let headerHeight = _view.tableHeaderView?.bounds.height ?? 0
+    return CGSize(width: width, height: max(kDefaultTableCellHeight, rowHeight + headerHeight))
+  }
+
+  private var preferredRowHeight: CGFloat {
+    let mainTextHeight = ceil(listFont(typeface: _fontTypeface, size: _fontSize).lineHeight)
+    let detailTextHeight = ceil(listFont(typeface: _fontTypefaceDetail, size: _fontSizeDetail).lineHeight)
+    let singleTextHeight = mainTextHeight + kDefaultTableCellVerticalPadding
+    let twoTextVerticalHeight = mainTextHeight + detailTextHeight + kDefaultTableCellVerticalPadding
+    let twoTextHorizontalHeight = max(mainTextHeight, detailTextHeight) + kDefaultTableCellVerticalPadding
+
+    switch _listViewLayoutMode {
+    case 1:
+      return max(kDefaultTableCellHeight, twoTextVerticalHeight)
+    case 2:
+      return max(kDefaultTableCellHeight, twoTextHorizontalHeight)
+    case 3:
+      return max(60.0, singleTextHeight)
+    case 4:
+      return max(60.0, twoTextVerticalHeight)
+    case 5:
+      return max(120.0, twoTextVerticalHeight)
+    default:
+      return max(kDefaultTableCellHeight, singleTextHeight)
+    }
+  }
+
+  private func listFont(typeface: String, size: Int32) -> UIFont {
+    let pointSize = CGFloat(size)
+    if typeface == "1" {
+      return UIFont(name: "Helvetica", size: pointSize) ?? UIFont.systemFont(ofSize: pointSize)
+    } else if typeface == "2" {
+      return UIFont(name: "Times New Roman", size: pointSize) ?? UIFont.systemFont(ofSize: pointSize)
+    } else if typeface == "3" {
+      return UIFont(name: "Courier", size: pointSize) ?? UIFont.systemFont(ofSize: pointSize)
+    }
+    return UIFont.systemFont(ofSize: pointSize)
+  }
+
+  private func preferredListViewWidth() -> CGFloat {
+    if let formWidth = form?.scaleFrameLayout.bounds.width, formWidth > 0 {
+      return formWidth
+    }
+    if let formWidth = form?.view.bounds.width, formWidth > 0 {
+      return formWidth
+    }
+    return 320
+  }
+
+  private func invalidateListViewSize() {
+    _rootView.invalidateIntrinsicContentSize()
+    _rootView.setNeedsLayout()
+    _rootView.superview?.setNeedsLayout()
+  }
 
   private final class HListCell: UICollectionViewCell {
   static let reuseId = "HListCell"
@@ -1030,10 +1129,14 @@ let HORIZONTAL_LAYOUT = 1
   var elements: [String] {
       return _results ?? _elements
     }
+
+  private var listItemCount: Int {
+    return max(_elements.count, _items.count)
+  }
     
   // UICollectionViewDataSource
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return _items.isEmpty ? _elements.count : _items.count
+    return listItemCount
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

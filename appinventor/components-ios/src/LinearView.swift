@@ -267,6 +267,32 @@ public class LinearView: UIView {
   }
 
   open func removeItem(_ view: UIView) {
+    if let length = widthConstraints.removeValue(forKey: view) {
+      length.constraint?.isActive = false
+      if length == .FillParent {
+        widthFillParent -= 1
+        if widthFillParent == 0 && orientation == .horizontal {
+          widthFillParentConstraint?.isActive = false
+          widthFillParentConstraint = nil
+          _innerEqualConstraint.isActive = true
+          _innerHeadZero.isActive = false
+          _innerTailZero.isActive = false
+        }
+      }
+    }
+    if let length = heightConstraints.removeValue(forKey: view) {
+      length.constraint?.isActive = false
+      if length == .FillParent {
+        heightFillParent -= 1
+        if heightFillParent == 0 && orientation == .vertical {
+          heightFillParentConstraint?.isActive = false
+          heightFillParentConstraint = nil
+          _innerEqualConstraint.isActive = true
+          _innerHeadZero.isActive = false
+          _innerTailZero.isActive = false
+        }
+      }
+    }
     _inner.removeArrangedSubview(view)
     view.removeFromSuperview()
     _items.removeAll { (item) -> Bool in
@@ -275,6 +301,13 @@ public class LinearView: UIView {
   }
 
   open func resetView() {
+    for length in widthConstraints.values {
+      length.constraint?.isActive = false
+    }
+    for length in heightConstraints.values {
+      length.constraint?.isActive = false
+    }
+
     /* Resets the all the width*/
     widthFillParent = 0
     widthFillParentConstraint?.isActive = false
@@ -297,9 +330,24 @@ public class LinearView: UIView {
 
   open func removeAllItems() {
     for item in _items {
+      if let length = widthConstraints.removeValue(forKey: item.view) {
+        length.constraint?.isActive = false
+      }
+      if let length = heightConstraints.removeValue(forKey: item.view) {
+        length.constraint?.isActive = false
+      }
       _inner.removeArrangedSubview(item.view)
       item.view.removeFromSuperview()
     }
+    widthFillParent = 0
+    heightFillParent = 0
+    widthFillParentConstraint?.isActive = false
+    widthFillParentConstraint = nil
+    heightFillParentConstraint?.isActive = false
+    heightFillParentConstraint = nil
+    _innerEqualConstraint.isActive = true
+    _innerHeadZero.isActive = false
+    _innerTailZero.isActive = false
     _items.removeAll()
   }
 
@@ -357,6 +405,7 @@ public class LinearView: UIView {
    * This method is not threadsafe. It should only be called from the UI thread.
    */
   open func setWidth(of view: UIView, to length: Length) {
+    let length = Length(length)
     // Remove old constraint
     if let oldLength = widthConstraints[view] {
       oldLength.constraint?.isActive = false
@@ -405,7 +454,7 @@ public class LinearView: UIView {
     } else {
       length.constraint = view.widthAnchor.constraint(equalToConstant: length.cgFloat)
     }
-    let shouldActivate = self.superview != nil
+    let shouldActivate = canActivateConstraint(for: view, relativeTo: length.view)
     length.constraint?.isActive = shouldActivate
     widthConstraints[view] = length
     invalidateIntrinsicContentSize()
@@ -417,6 +466,7 @@ public class LinearView: UIView {
    * This method is not threadsafe. It should only be called from the UI thread.
    */
   open func setHeight(of view: UIView, to length: Length) {
+    let length = Length(length)
     // Remove old constraint
     if let oldLength = heightConstraints[view] {
       oldLength.constraint?.isActive = false
@@ -463,7 +513,7 @@ public class LinearView: UIView {
     } else {
       length.constraint = view.heightAnchor.constraint(equalToConstant: length.cgFloat)
     }
-    let shouldActivate = self.superview != nil
+    let shouldActivate = canActivateConstraint(for: view, relativeTo: length.view)
     length.constraint?.isActive = shouldActivate
     heightConstraints[view] = length
     invalidateIntrinsicContentSize()
@@ -475,24 +525,29 @@ public class LinearView: UIView {
   }
 
   open override var intrinsicContentSize: CGSize {
-    if _items.count == 0 {
+    let visibleItems = _inner.arrangedSubviews.dropFirst().dropLast().filter {
+      !$0.isHidden && $0.superview != nil
+    }
+    if visibleItems.count == 0 {
       return CGSize(width: 100, height: 100)
     } else {
       var max = CGFloat(0.0), sum = CGFloat(0.0)
       if orientation == .horizontal {
-        _items.forEach { item in
-          if item.view.intrinsicContentSize.height > max {
-            max = item.view.intrinsicContentSize.height
+        visibleItems.forEach { view in
+          let size = preferredSize(of: view)
+          if size.height > max {
+            max = size.height
           }
-          sum += item.view.intrinsicContentSize.width
+          sum += size.width
         }
         return CGSize(width: sum, height: max)
       } else {
-        _items.forEach { item in
-          if item.view.intrinsicContentSize.width > max {
-            max = item.view.intrinsicContentSize.width
+        visibleItems.forEach { view in
+          let size = preferredSize(of: view)
+          if size.width > max {
+            max = size.width
           }
-          sum += item.view.intrinsicContentSize.height
+          sum += size.height
         }
         return CGSize(width: max, height: sum)
       }
@@ -500,6 +555,51 @@ public class LinearView: UIView {
   }
 
   // MARK: Private Implementation
+
+  private func canActivateConstraint(for view: UIView, relativeTo otherView: UIView?) -> Bool {
+    guard sharesViewHierarchy(view, _inner) else {
+      return false
+    }
+    guard let otherView = otherView else {
+      return true
+    }
+    return sharesViewHierarchy(view, otherView)
+  }
+
+  private func sharesViewHierarchy(_ first: UIView, _ second: UIView) -> Bool {
+    var ancestors = Set<ObjectIdentifier>()
+    var current: UIView? = first
+    while let view = current {
+      ancestors.insert(ObjectIdentifier(view))
+      current = view.superview
+    }
+    current = second
+    while let view = current {
+      if ancestors.contains(ObjectIdentifier(view)) {
+        return true
+      }
+      current = view.superview
+    }
+    return false
+  }
+
+  private func preferredSize(of view: UIView) -> CGSize {
+    let fitting = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+    let intrinsic = view.intrinsicContentSize
+    return CGSize(width: preferredDimension(fitting.width, intrinsic.width),
+                  height: preferredDimension(fitting.height, intrinsic.height))
+  }
+
+  private func preferredDimension(_ fitting: CGFloat, _ intrinsic: CGFloat) -> CGFloat {
+    return max(sanitizedDimension(fitting), sanitizedDimension(intrinsic))
+  }
+
+  private func sanitizedDimension(_ dimension: CGFloat) -> CGFloat {
+    if dimension.isFinite && dimension >= 0 && dimension < CGFloat.greatestFiniteMagnitude {
+      return dimension
+    }
+    return 0
+  }
 
   private func updateHorizontalAlignment() {
     if _orientation == .vertical {

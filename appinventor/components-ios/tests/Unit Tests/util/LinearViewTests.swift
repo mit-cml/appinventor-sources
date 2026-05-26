@@ -6,6 +6,24 @@
 import XCTest
 @testable import AIComponentKit
 
+private class IntrinsicTestView: UIView {
+  private let size: CGSize
+
+  init(width: CGFloat, height: CGFloat) {
+    size = CGSize(width: width, height: height)
+    super.init(frame: .zero)
+    translatesAutoresizingMaskIntoConstraints = false
+  }
+
+  required init?(coder: NSCoder) {
+    return nil
+  }
+
+  override var intrinsicContentSize: CGSize {
+    return size
+  }
+}
+
 class LinearViewTests: XCTestCase {
 
   var testForm = ReplForm()
@@ -58,6 +76,56 @@ class LinearViewTests: XCTestCase {
     XCTAssertEqual([Button1.view, Button3.view], testView.arrangedSubviews)
     testView.setVisibility(of: Button2.view, to: true)
     XCTAssertEqual([Button1.view, Button2.view, Button3.view], testView.arrangedSubviews)
+  }
+
+  func testAutomaticSizingIgnoresInvisibleItems() {
+    let view1 = IntrinsicTestView(width: 30, height: 20)
+    let view2 = IntrinsicTestView(width: 70, height: 40)
+    testView.addItem(LinearViewItem(view1))
+    testView.addItem(LinearViewItem(view2))
+
+    XCTAssertEqual(CGSize(width: 70, height: 60), testView.intrinsicContentSize)
+
+    testView.setVisibility(of: view1, to: false)
+    testView.setVisibility(of: view2, to: false)
+
+    XCTAssertEqual(CGSize(width: 100, height: 100), testView.intrinsicContentSize)
+  }
+
+  func testHiddenComponentCanReplayAutomaticSizing() {
+    testForm.clear()
+    let row = HorizontalArrangement(testForm)
+    let Button1 = Button(row)
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    Button1.Visible = false
+    Button1.Width = kLengthPreferred
+    Button1.Height = kLengthPreferred
+    Button1.Visible = true
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    XCTAssertGreaterThan(Button1.view.frame.width, 0)
+    XCTAssertGreaterThan(Button1.view.frame.height, 0)
+  }
+
+  func testAbsoluteArrangementAutomaticSizeUsesPositionedChildren() {
+    testForm.clear()
+    let arrangement = AbsoluteArrangement(testForm)
+    let Button1 = Button(arrangement)
+
+    Button1.Left = 10
+    Button1.Top = 20
+    Button1.Width = 50
+    Button1.Height = 30
+
+    RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    XCTAssertEqual(CGSize(width: 60, height: 50), arrangement.view.intrinsicContentSize)
   }
 
   func testInvisibleComponents() {

@@ -36,6 +36,50 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
     XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
   }
+
+  func testListViewInsideHorizontalArrangementHasSize() {
+    form.clear()
+    let row = HorizontalArrangement(form)
+    row.Width = kLengthFillParent
+    row.Height = kLengthPreferred
+    let listView = ListView(row)
+    listView.Height = kLengthPreferred
+    listView.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+    row.view.setNeedsLayout()
+    row.view.layoutIfNeeded()
+
+    XCTAssertGreaterThan(row.view.frame.height, 0)
+    XCTAssertGreaterThan(listView.view.frame.height, 0)
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView }) as? UITableView else {
+      XCTFail("Expected ListView to contain a table view")
+      return
+    }
+    XCTAssertEqual(3, listView.tableView(tableView, numberOfRowsInSection: 0))
+    XCTAssertGreaterThan(tableView.frame.height, 0)
+  }
+
+  func testAutomaticVerticalHeightUsesRows() {
+    form.clear()
+    let listView = ListView(form)
+    listView.FontSize = 22
+    listView.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    form.onAttach()
+
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+
+    let oldCutoff = 44.0 * 3.0
+    XCTAssertGreaterThan(listView.view.intrinsicContentSize.height, oldCutoff)
+    XCTAssertGreaterThan(listView.view.frame.height, oldCutoff)
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView }) as? UITableView else {
+      XCTFail("Expected ListView to contain a table view")
+      return
+    }
+    XCTAssertGreaterThan(listView.tableView(tableView, heightForRowAt: IndexPath(row: 0, section: 0)), 44.0)
+  }
   
   func testElementAsDictItems() {
     testList.Elements = [["Text1": "MainText","Text2": "DetailText", "Image": "Image"] as YailDictionary]
