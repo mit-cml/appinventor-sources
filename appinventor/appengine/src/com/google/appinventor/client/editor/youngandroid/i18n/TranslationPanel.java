@@ -93,7 +93,7 @@ public final class TranslationPanel extends Composite {
     root.add(description);
     root.add(table);
 
-    Label languageLabel = new Label("Language code:");
+    Label languageLabel = new Label("Language code, e.g. hi, es, pt-BR:");
     languageTextBox.setWidth("80px");
 
     Button addLanguageButton = new Button("Add Language");
@@ -379,7 +379,9 @@ public final class TranslationPanel extends Composite {
     }
 
     language = language.trim();
-    if (language.length() == 0) {
+
+    if (!isValidLanguageCode(language)) {
+      Window.alert("Use a language code such as hi, es, fr, or pt-BR.");
       return;
     }
 
@@ -390,6 +392,11 @@ public final class TranslationPanel extends Composite {
     if (selectLanguage) {
       selectedLanguage = language;
     }
+  }
+
+  private boolean isValidLanguageCode(String language) {
+    return language != null
+        && language.matches("[a-z]{2,3}(-[A-Z]{2})?");
   }
 
   private void ensureSelectedLanguage() {
