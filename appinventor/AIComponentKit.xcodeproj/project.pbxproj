@@ -210,7 +210,7 @@
 		06B3747F1DC06F6B003888CB /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747B1DC06F6B003888CB /* GCDWebServer.framework */; };
 		06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747D1DC06F6B003888CB /* SchemeKit.framework */; };
 		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
-		AAAA00001DC02B190092C9DD /* SvgUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA00001DC02B190092C9DD /* SvgUtil.swift */; };
+		AAAA00011DC02B190092C9DD /* SvgUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAAA00001DC02B190092C9DD /* SvgUtil.swift */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
 		06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BA52A2203E845A00879F00 /* CsvUtilTests.swift */; };
 		06C43B352D44699100BEF000 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B342D44699100BEF000 /* FileType.swift */; };
@@ -1968,7 +1968,7 @@
 				C4D38CC9230DCF9400D09FE3 /* HorizontalScrollArrangement.swift in Sources */,
 				06159D8C1DEFE20A00593D30 /* TextBoxBase.swift in Sources */,
 				0641605E2EA7557500FF5BD7 /* GyroSensorMode.swift in Sources */,
-				AAAA00001DC02B190092C9DD /* SvgUtil.swift in Sources */,
+				AAAA00011DC02B190092C9DD /* SvgUtil.swift in Sources */,
 				06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */,
 				DE1443D620C80BF900A250F1 /* OrientationSensor.swift in Sources */,
 				06C94A391D99D10400341AAE /* EventDispatcher.swift in Sources */,
