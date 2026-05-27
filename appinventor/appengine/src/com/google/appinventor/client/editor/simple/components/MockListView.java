@@ -470,7 +470,7 @@ public final class MockListView extends MockVisibleComponent {
     } else if (propertyName.equals(PROPERTY_NAME_LISTVIEW_ADD_DATA)) {
       displayOnDesigner(newValue);
       refreshElements();
-    } else if (propertyName.equals(PROPERTY_NAME_HINT)) {
+    } else if (propertyName.equals(PROPERTY_NAME_HINT_TEXT)) {
       textBoxWidget.setText(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_ELEMENTCOLOR)) {
