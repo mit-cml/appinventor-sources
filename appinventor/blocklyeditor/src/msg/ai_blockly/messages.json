@@ -255,6 +255,7 @@
 	"Blockly.Msg.LANG_MATH_COMPARE_LTE": "\u2264",
 	"Blockly.Msg.LANG_MATH_COMPARE_GT": ">",
 	"Blockly.Msg.LANG_MATH_COMPARE_GTE": "\u2265",
+	"Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TOOLTIP": "Add a tolerance to compare floating-point numbers.",
 	"Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE": "tolerance",
 	"Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_ADD": "Return the sum of the two numbers.",
 	"Blockly.Msg.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS": "Return the difference of the two numbers.",
