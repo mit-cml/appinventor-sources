@@ -133,67 +133,30 @@ Blockly.Blocks['math_compare'] = {
       var mode = thisBlock.getFieldValue('OP');
       return Blockly.Blocks.math_compare.TOOLTIPS()[mode];
     });
-    this.toleranceVisible_ = false;
+    this.setMutator(new Blockly.icons.MutatorIcon(['math_tolerance_mutator_item'], this));
+    this.repeatingInputName = 'TOL';
+    this.itemCount_ = 0;
   },
-  customContextMenu: function(options) {
-    var thisBlock = this;
-    options.splice(4, 0, {
-      text: this.toleranceVisible_ ? "Hide Tolerance" : "Show Tolerance",
-      enabled: true,
-      callback: function () {
-        var outerGroup = Blockly.Events.getGroup();
-        Blockly.Events.setGroup(true);
-        try {
-          var oldState = Blockly.Xml.domToText(thisBlock.mutationToDom());
-          var addingTolerance = !thisBlock.toleranceVisible_;
-          thisBlock.updateShape_(thisBlock.toleranceVisible_);
-          if (addingTolerance) {
-            var input = thisBlock.getInput('TOL');
-            var tolBlock = thisBlock.workspace.newBlock('math_number');
-            tolBlock.setFieldValue('0', 'NUM'); // Default tolerance.
-            tolBlock.initSvg();
-            input.connection.connect(tolBlock.outputConnection);
-          }
-          thisBlock.toleranceVisible_ = addingTolerance;
-          var newState = Blockly.Xml.domToText(thisBlock.mutationToDom());
-          Blockly.Events.fire(new Blockly.Events.BlockChange(
-              thisBlock,
-              'mutation',
-              null,
-              oldState,
-              newState
-          ));
-        } finally {
-          Blockly.Events.setGroup(outerGroup);
-        }
-      }
-    });
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: function(container) {
+    Blockly.domToMutation.call(this, container);
   },
-  updateShape_: function(removeInput) {
-    if (removeInput) {
-      var input = this.getInput('TOL');
-      if (input && input.connection && input.connection.targetBlock()) {
-        input.connection.targetBlock().dispose(false);
-      }
-      this.removeInput('TOL');
-    } else {
-      this.appendValueInput('TOL')
-          .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
-          .appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE);
-    }
+  decompose: function (workspace) {
+    return Blockly.decompose(workspace, 'math_tolerance_mutator_item', this);
   },
-  mutationToDom: function() {
-    var container = document.createElement('mutation');
-    container.setAttribute('tolerance', this.toleranceVisible_ ? 'true' : 'false');
-    return container;
+  compose: function(containerBlock) {
+    Blockly.compose.call(this, containerBlock);
   },
-  domToMutation: function (container) {
-    this.toleranceVisible_ = container.getAttribute('tolerance') === 'true';
-    if (this.toleranceVisible_ && !this.getInput('TOL')) {
-      this.updateShape_(false);
-    } else if (this.getInput('TOL')) {
-      this.updateShape_(true);
-    }
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function() {},
+  addInput: function (inputNum) {
+    var input = this.appendValueInput(this.repeatingInputName + inputNum)
+        .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT))
+        .appendField(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE);
+    return input;
+  },
+  updateContainerBlock: function (containerBlock) {
+    containerBlock.setFieldValue(Blockly.Msg.LANG_MATH_COMPARE_TOLERANCE_TITLE, "CONTAINER_TEXT");
   },
   // Potential clash with logic equal, using '=' for now
   typeblock: [{
