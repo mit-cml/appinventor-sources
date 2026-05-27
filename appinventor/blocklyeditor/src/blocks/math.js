@@ -150,7 +150,7 @@ Blockly.Blocks['math_compare'] = {
           if (addingTolerance) {
             var input = thisBlock.getInput('TOL');
             var tolBlock = thisBlock.workspace.newBlock('math_number');
-            tolBlock.setFieldValue('0.0000001', 'NUM'); // Default tolerance.
+            tolBlock.setFieldValue('0', 'NUM'); // Default tolerance.
             tolBlock.initSvg();
             input.connection.connect(tolBlock.outputConnection);
           }
