@@ -1572,6 +1572,11 @@ public final class YoungAndroidFormUpgrader {
       // Properties related to this component have now been upgraded to version 10.
       srcCompVersion = 10;
     }
+    if (srcCompVersion < 11) {
+      // Added TextAlignmentMain property (default: 0 = left).
+      // Added TextAlignmentDetail property (default: 0 = left).
+      srcCompVersion = 11;
+    }
     return srcCompVersion;
   }
 

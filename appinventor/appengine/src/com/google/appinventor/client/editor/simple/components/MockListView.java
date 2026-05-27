@@ -67,6 +67,8 @@ public final class MockListView extends MockVisibleComponent {
   private String detailTypeface;
   private String mainFontSize;
   private String detailFontSize;
+  private int mainTextAlignment = 0;
+  private int detailTextAlignment = 0;
   private int imageHeight;
   private int imageWidth;
   private int itemHeight;
@@ -200,12 +202,13 @@ public final class MockListView extends MockVisibleComponent {
   private void createSingleTextLayout(JSONObject object) {
     verticalItemPanel = new FlowPanel();
     String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
-    InlineLabel main = createInlineLabel(text1, textColor);
+    InlineLabel main = createInlineLabel(text1, textColor, mainTextAlignment);
     MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);
+    main.setWidth("100%");
     verticalItemPanel.add(main);
     setItemHeight(false, false);
-    decorateWidget(verticalItemPanel);    
+    decorateWidget(verticalItemPanel);
     listPanel.add(verticalItemPanel);
   }
 
@@ -214,18 +217,19 @@ public final class MockListView extends MockVisibleComponent {
     FlowPanel container = new FlowPanel();
     String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
     String text2 = object.containsKey("Text2") ? object.get("Text2").isString().stringValue() : "";
-    InlineLabel main = createInlineLabel(text1, textColor);
+    InlineLabel main = createInlineLabel(text1, textColor, mainTextAlignment);
     MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);
     main.setWidth("100%");
     main.getElement().getStyle().setDisplay(Display.BLOCK);
-    InlineLabel detail = createInlineLabel(text2, detailTextColor);
+    InlineLabel detail = createInlineLabel(text2, detailTextColor, detailTextAlignment);
     MockComponentsUtil.setWidgetFontSize(detail, detailFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, detail, detailTypeface);
     detail.setWidth("100%");
     detail.getElement().getStyle().setDisplay(Display.BLOCK);
     container.add(main);
     container.add(detail);
+    container.setWidth("100%");
     setItemHeight(true, false);
     decorateWidget(verticalItemPanel);
     container.getElement().getStyle().setProperty("flex-direction", "column");
@@ -237,17 +241,22 @@ public final class MockListView extends MockVisibleComponent {
     horizontalItemPanel = new FlowPanel();
     String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
     String text2 = object.containsKey("Text2") ? object.get("Text2").isString().stringValue() : "";
-    InlineLabel main = createInlineLabel(text1, textColor);
+    InlineLabel main = createInlineLabel(text1, textColor, mainTextAlignment);
     MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);
-    InlineLabel detail = createInlineLabel(text2, detailTextColor);
+    main.setWidth("50%");
+    InlineLabel detail = createInlineLabel(text2, detailTextColor, detailTextAlignment);
     MockComponentsUtil.setWidgetFontSize(detail, detailFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, detail, detailTypeface);
-    detail.getElement().getStyle().setMarginLeft(5, Unit.PX);
+    detail.setWidth("50%");
     horizontalItemPanel.add(main);
     horizontalItemPanel.add(detail);
-    horizontalItemPanel.getElement().getStyle().setVerticalAlign(VerticalAlign.BASELINE);  
-    //horizontalItemPanel.getElement().getStyle().setAlignItems(Style.AlignItems.BASELINE);
+    // The parent .listViewItemStyle is `display: flex; align-items: center`,
+    // which collapses mismatched-height labels to the vertical center.
+    // Override with baseline so the labels' first text lines align visually
+    // (top alignment makes the smaller detail font appear higher than the
+    // larger main font due to font-metric differences).
+    horizontalItemPanel.getElement().getStyle().setProperty("alignItems", "baseline");
     setItemHeight(false, false);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
@@ -258,13 +267,17 @@ public final class MockListView extends MockVisibleComponent {
     String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
     String image =
         object.containsKey("Image") ? object.get("Image").isString().stringValue() : "None";
-    InlineLabel main = createInlineLabel(text1, textColor);
+    InlineLabel main = createInlineLabel(text1, textColor, mainTextAlignment);
     main.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
-    main.getElement().getStyle().setDisplay(Display.INLINE);
+    main.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
+    main.setWidth("calc(100% - " + imageWidth + "px)");
     MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);    
     horizontalItemPanel.add(createImage(image, imageWidth + "px", imageHeight + "px"));
     horizontalItemPanel.add(main);
+    // Top-align image + text so the image stays at the top of the row when
+    // text wraps (parent .listViewItemStyle defaults to align-items: center).
+    horizontalItemPanel.getElement().getStyle().setProperty("alignItems", "flex-start");
     setItemHeight(false, true);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
@@ -277,12 +290,14 @@ public final class MockListView extends MockVisibleComponent {
     String text2 = object.containsKey("Text2") ? object.get("Text2").isString().stringValue() : "";
     String image =
         object.containsKey("Image") ? object.get("Image").isString().stringValue() : "None";
-    InlineLabel main = createInlineLabel(text1, textColor);
+    InlineLabel main = createInlineLabel(text1, textColor, mainTextAlignment);
     MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);
-    InlineLabel detail = createInlineLabel(text2, detailTextColor);
+    main.setWidth("100%");
+    InlineLabel detail = createInlineLabel(text2, detailTextColor, detailTextAlignment);
     MockComponentsUtil.setWidgetFontSize(detail, detailFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, detail, detailTypeface);
+    detail.setWidth("100%");
     verticalItemPanel.add(main);
     verticalItemPanel.add(detail);
     verticalItemPanel.getElement().getStyle().setDisplay(Display.INLINE_FLEX);
@@ -290,6 +305,9 @@ public final class MockListView extends MockVisibleComponent {
     verticalItemPanel.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);    
     horizontalItemPanel.add(createImage(image, imageWidth + "px", imageHeight + "px"));
     horizontalItemPanel.add(verticalItemPanel);
+    // Top-align image + label stack so the image stays at the top of the row
+    // when text wraps (parent .listViewItemStyle defaults to align-items: center).
+    horizontalItemPanel.getElement().getStyle().setProperty("alignItems", "flex-start");
     setItemHeight(true, true);
     decorateWidget(horizontalItemPanel);
     listPanel.add(horizontalItemPanel);
@@ -302,14 +320,14 @@ public final class MockListView extends MockVisibleComponent {
     String text1 = object.containsKey("Text1") ? object.get("Text1").isString().stringValue() : "";
     String text2 = object.containsKey("Text2") ? object.get("Text2").isString().stringValue() : "";
     String image = object.containsKey("Image") ? object.get("Image").isString().stringValue() : "None";
-    InlineLabel main = createInlineLabel(text1, textColor);
+    InlineLabel main = createInlineLabel(text1, textColor, mainTextAlignment);
     MockComponentsUtil.setWidgetFontSize(main, mainFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, main, mainTypeface);
-    main.getElement().getStyle().setTextAlign(TextAlign.CENTER);
-    InlineLabel detail = createInlineLabel(text2, detailTextColor);
+    main.setWidth("100%");
+    InlineLabel detail = createInlineLabel(text2, detailTextColor, detailTextAlignment);
     MockComponentsUtil.setWidgetFontSize(detail, detailFontSize);
     MockComponentsUtil.setWidgetFontTypeface(this.editor, detail, detailTypeface);
-    detail.getElement().getStyle().setTextAlign(TextAlign.CENTER);
+    detail.setWidth("100%");
     verticalItemPanel.add(main);
     verticalItemPanel.add(detail);
     verticalItemPanel.getElement().getStyle().setDisplay(Display.FLEX);
@@ -398,11 +416,19 @@ public final class MockListView extends MockVisibleComponent {
    * @param value text to be displayed
    * @param color color of the text
    */
-  private InlineLabel createInlineLabel(String value, String color) {
+  private TextAlign toTextAlign(int alignment) {
+    switch (alignment) {
+      case 1:  return TextAlign.CENTER;
+      case 2:  return TextAlign.RIGHT;
+      default: return TextAlign.LEFT;
+    }
+  }
+
+  private InlineLabel createInlineLabel(String value, String color, int alignment) {
     InlineLabel label = new InlineLabel(value.isEmpty() ? " ​" : value);
     MockComponentsUtil.setWidgetTextColor(label, color);
     label.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
-    label.getElement().getStyle().setTextAlign(TextAlign.LEFT);    
+    label.getElement().getStyle().setTextAlign(toTextAlign(alignment));
     return label;
   }
 
@@ -508,6 +534,12 @@ public final class MockListView extends MockVisibleComponent {
       refreshElements();
     } else if (propertyName.equals(PROPERTY_NAME_IMAGEWIDTH)) {
       imageWidth = Integer.valueOf(newValue) / 5;
+      refreshElements();
+    } else if (propertyName.equals(PROPERTY_NAME_TEXT_ALIGNMENT_MAIN)) {
+      mainTextAlignment = Integer.parseInt(newValue);
+      refreshElements();
+    } else if (propertyName.equals(PROPERTY_NAME_TEXT_ALIGNMENT_DETAIL)) {
+      detailTextAlignment = Integer.parseInt(newValue);
       refreshElements();
     }
   }
