@@ -16,6 +16,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
   fileprivate var _htmlFormat = false
   fileprivate var _fontSize = kFontSizeDefault
   fileprivate var _isBigText = false
+  fileprivate var _backgroundColor = Color.none.int32
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   public var HighContrast: Bool = false
   
@@ -27,7 +28,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     _view.lineBreakMode = .byWordWrapping
     _view.font = _view.font.withSize(14.0)
     _view.textColor = preferredTextColor(parent.form)
-    _view.backgroundColor = preferredBackgroundColor(parent.form)
+    _view.backgroundColor = Color.none.uiColor
     super.init(parent)
     super.setDelegate(self)
     parent.add(self)
@@ -91,13 +92,11 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
   
   @objc public var BackgroundColor: Int32 {
     get {
-      if let color = _view.backgroundColor {
-        return colorToArgb(color)
-      }
-      return Int32(bitPattern: Color.default.rawValue)
+      return _backgroundColor
     }
     set(argb) {
-      _view.backgroundColor = argbToColor(argb)
+      _backgroundColor = argb
+      _view.backgroundColor = argbToColor(argb == Color.default.int32 ? Color.none.int32 : argb)
     }
   }
   
@@ -207,10 +206,11 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
   
   @objc public var TextColor: Int32 {
     get {
-      return colorToArgb(_view.textColor)
+      return _textColor
     }
     set(argb) {
-      _view.textColor = argbToColor(argb)
+      _textColor = argb
+      _view.textColor = argb == Color.default.int32 ? preferredTextColor(form) : argbToColor(argb)
     }
   }
 

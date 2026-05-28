@@ -119,6 +119,8 @@ class ListViewTests: AppInventorTestCase {
 
 
   func testBackgroundColor() {
+    XCTAssertEqual(Color.black.int32, testList.BackgroundColor)
+
     testList.BackgroundColor = Color.blue.int32
     testList.ElementColor = Color.none.int32
     testList.Elements = ["Test"] as [AnyObject]
@@ -129,13 +131,13 @@ class ListViewTests: AppInventorTestCase {
       XCTAssertNotNil(cell)
       XCTAssertEqual(Color.blue.uiColor, cell.backgroundColor)
       
-      // Change back to the default (black)
+      // The ListView property treats Default as the literal ARGB color, like Android.
       testList.BackgroundColor = Color.default.int32
-      XCTAssertEqual(Color.black.int32, testList.BackgroundColor)
+      XCTAssertEqual(Color.default.int32, testList.BackgroundColor)
       
       let cell2 = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
       XCTAssertNotNil(cell2)
-      XCTAssertEqual(Color.black.uiColor, cell2.backgroundColor)
+      XCTAssertEqual(Color.default.uiColor, cell2.backgroundColor)
     } else {
       XCTFail("Expected UITableView to be visible")
     }
@@ -165,16 +167,8 @@ class ListViewTests: AppInventorTestCase {
       
       testList.ElementColor = Color.default.int32
       cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
-      let expectedColor = preferredTextColor(form)
       XCTAssertNotNil(cell)
-      // Compare resolved colors to handle dynamic colors
-
-      if #available(iOS 13.0, *) {
-        let cellColor = cell.backgroundColor?.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
-        XCTAssertNotEqual(Color.yellow.uiColor, cell.backgroundColor)
-      } else {
-        // Fallback on earlier versions
-      }
+      XCTAssertEqual(Color.default.uiColor, cell.backgroundColor)
     } else {
       XCTFail("Expected UITableView to be visible")
     }
@@ -204,10 +198,8 @@ class ListViewTests: AppInventorTestCase {
       
       testList.SelectionColor = Color.default.int32
       cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
-      let expectedColor = preferredTextColor(form)
       XCTAssertNotNil(cell)
-      // Compare resolved colors to handle dynamic colors
-
+      XCTAssertEqual(Color.default.uiColor, cell.selectedBackgroundView?.backgroundColor)
 
     } else {
       XCTFail("Expected UITableView to be visible")

@@ -25,8 +25,8 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
   
   private func setupProgressView() {
     _view.translatesAutoresizingMaskIntoConstraints = false
-    _view.progressTintColor = UIColor.blue
-    _view.trackTintColor = UIColor.lightGray
+    _view.progressTintColor = Color.blue.uiColor
+    _view.trackTintColor = Color.lightGray.uiColor
     _view.setProgress(0.0, animated: false)
     _isAnimating = false
   }

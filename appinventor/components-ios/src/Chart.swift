@@ -131,7 +131,10 @@ import DGCharts
       return colorToArgb(_backgroundColor)
     }
     set {
-      _backgroundColor = argbToColor(newValue)
+      let color = newValue == Color.default.int32
+        ? (darkMode ? Color.black.int32 : Color.white.int32)
+        : newValue
+      _backgroundColor = argbToColor(color)
       _chartView?.backgroundColor = _backgroundColor
     }
   }
@@ -143,8 +146,9 @@ import DGCharts
     set {
       if newValue == Color.default.int32 {
         _axesTextColor = darkMode ? UIColor.white : UIColor.black
+      } else {
+        _axesTextColor = argbToColor(newValue)
       }
-      _axesTextColor = argbToColor(newValue)
       if let chartView = _chartView?.chart as? BarLineChartViewBase {
         chartView.xAxisRenderer.axis.labelTextColor = _axesTextColor
         chartView.leftYAxisRenderer.axis.labelTextColor = _axesTextColor

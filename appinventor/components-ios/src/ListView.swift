@@ -5,9 +5,11 @@
 
 import Foundation
 
-fileprivate let kListViewDefaultBackgroundColor = Color.black
-fileprivate let kListViewDefaultSelectionColor = Color.lightGray
-fileprivate let kListViewDefaultTextColor = Color.white
+fileprivate let kListViewDefaultBackgroundColor = Color.black.int32
+fileprivate let kListViewDefaultElementColor = Color.none.int32
+fileprivate let kListViewDefaultSelectionColor = Color.lightGray.int32
+fileprivate let kListViewDefaultTextColor = Color.white.int32
+fileprivate let kListViewDefaultDividerColor = Color.white.int32
 fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 fileprivate let kDefaultTableCellVerticalPadding = CGFloat(30.0)
@@ -31,16 +33,16 @@ fileprivate final class ListViewRootView: UIView {
   fileprivate var _collectionView: UICollectionView
   fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
     
-  fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _backgroundColor = kListViewDefaultBackgroundColor
   fileprivate var _elements = [String]()
   fileprivate var _items: [[String: AnyObject]] = []
   fileprivate var _selection = ""
   fileprivate var _selectionDetailText = ""
-  fileprivate var _selectionColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _selectionColor = kListViewDefaultSelectionColor
   fileprivate var _selectionIndex = Int32(0)
   fileprivate var _showFilter = false
-  fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _textColor = kListViewDefaultTextColor
+  fileprivate var _textColorDetail = kListViewDefaultTextColor
   fileprivate var _fontSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint?
   fileprivate var _results: [String]? = nil
@@ -54,9 +56,9 @@ fileprivate final class ListViewRootView: UIView {
   fileprivate let _horizontalLayout = UICollectionViewFlowLayout()
   fileprivate let filter = UISearchBar()
   fileprivate var _hint = "Search list..."
-  fileprivate var _dividerColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _dividerColor = kListViewDefaultDividerColor
   fileprivate var _dividerThickness = Int32(0)
-  fileprivate var _elementColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _elementColor = kListViewDefaultElementColor
   fileprivate var _elementCornerRadius = Int32(0)
   fileprivate var _elementMarginsWidth = Int32(0)
   fileprivate var _imageHeight = Int32(200)
@@ -81,7 +83,7 @@ fileprivate final class ListViewRootView: UIView {
     Width = kLengthFillParent
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
-    _view.backgroundColor = preferredTextColor(parent.form)
+    _view.backgroundColor = argbToColor(_backgroundColor)
 
     // Auto height for the table (existing)
     _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
@@ -152,12 +154,9 @@ fileprivate final class ListViewRootView: UIView {
       return _backgroundColor
     }
     set(backgroundColor) {
-      if (backgroundColor == Int32(bitPattern: Color.default.rawValue)) {
-        _backgroundColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
-      } else {
-        _backgroundColor = backgroundColor
-      }
+      _backgroundColor = backgroundColor
       _view.backgroundColor = argbToColor(_backgroundColor)
+      _collectionView.backgroundColor = argbToColor(_backgroundColor)
     }
   }
 
@@ -295,11 +294,7 @@ fileprivate final class ListViewRootView: UIView {
       return _dividerColor
     }
     set(dividerColor) {
-      if (dividerColor == Int32(bitPattern: Color.default.rawValue)) {
-        _dividerColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
-      } else {
-        _dividerColor = dividerColor
-      }
+      _dividerColor = dividerColor
     }
   }
 
@@ -319,11 +314,7 @@ fileprivate final class ListViewRootView: UIView {
       return _elementColor
     }
     set(elementColor) {
-      if (elementColor == Int32(bitPattern: Color.default.rawValue)) {
-        _elementColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
-      } else {
-        _elementColor = elementColor
-      }
+      _elementColor = elementColor
     }
   }
 
@@ -451,9 +442,7 @@ fileprivate final class ListViewRootView: UIView {
       }
 
       _collectionView.backgroundColor =
-        (_backgroundColor == Int32(bitPattern: Color.default.rawValue))
-        ? preferredTextColor(_container?.form)
-        : argbToColor(_backgroundColor)
+        argbToColor(_backgroundColor)
 
       // ✅ Correct update order:
       _collectionView.reloadData()
@@ -894,43 +883,23 @@ fileprivate final class ListViewRootView: UIView {
     if _dividerThickness > 0 {
       tableView.separatorStyle = .singleLine
     }
-    if _dividerColor == Color.default.int32 {
-      tableView.separatorColor = preferredTextColor(form)
-    } else {
-      tableView.separatorColor =  argbToColor(_dividerColor)
-    }
+    tableView.separatorColor = argbToColor(_dividerColor)
     
     
-    if _backgroundColor == Color.default.int32 {
-      cell.backgroundColor = preferredTextColor(form)
-    } else {
-      cell.backgroundColor = argbToColor(_backgroundColor)
-    }
+    cell.backgroundColor = argbToColor(_backgroundColor)
     
     if _elementColor != Color.none.int32 {
       // if elementColor at the table cell level, laid over backgroundColor
-      if _elementColor == Color.default.int32 {
-        cell.backgroundColor = preferredTextColor(form)
-      } else {
-        cell.backgroundColor = argbToColor(_elementColor)
-      }
+      cell.backgroundColor = argbToColor(_elementColor)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
     
     //maintext
-    if _textColor == Color.default.int32 {
-      cell.textLabel?.textColor = preferredBackgroundColor(form)
-    } else {
-      cell.textLabel?.textColor = argbToColor(_textColor)
-    }
+    cell.textLabel?.textColor = argbToColor(_textColor)
 
     //detailtext
-    if _textColorDetail == Color.default.int32 {
-      cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
-    } else {
-      cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
-    }
+    cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
 
     if _fontTypeface == "1" {
       cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize))
@@ -953,11 +922,7 @@ fileprivate final class ListViewRootView: UIView {
     }
 
     let selectedBgView = UIView()
-    selectedBgView.backgroundColor =
-    (_selectionColor != Color.none.int32) ?
-      (_selectionColor == Color.default.int32 ? (argbToColor(kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor))
-      :argbToColor(_selectionColor)
+    selectedBgView.backgroundColor = argbToColor(_selectionColor)
     cell.selectedBackgroundView = selectedBgView
     return cell
   }
@@ -1169,18 +1134,14 @@ fileprivate final class ListViewRootView: UIView {
     
     (cell.backgroundView as? UIView)?.backgroundColor =
         (_elementColor != Color.none.int32)
-        ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
-        : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+        ? argbToColor(_elementColor)
+        : argbToColor(_backgroundColor)
 
     (cell.selectedBackgroundView as? UIView)?.backgroundColor =
-        (_selectionColor == Color.default.int32)
-        ? argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor)
+        argbToColor(_selectionColor)
     
     _collectionView.backgroundColor =
-        (_backgroundColor == Color.default.int32)
-    ? preferredTextColor(_container?.form)
-        : argbToColor(_backgroundColor)
+        argbToColor(_backgroundColor)
 
     cell.titleLabel.text = mainText
     cell.detailLabel.text = detailText
@@ -1197,8 +1158,8 @@ fileprivate final class ListViewRootView: UIView {
     else if _fontTypefaceDetail == "3" { cell.detailLabel.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
 
     // Text colors
-    cell.titleLabel.textColor = (_textColor == Color.default.int32) ? preferredBackgroundColor(_container?.form) : argbToColor(_textColor)
-    cell.detailLabel.textColor = (_textColorDetail == Color.default.int32) ? preferredBackgroundColor(_container?.form) : argbToColor(_textColorDetail)
+    cell.titleLabel.textColor = argbToColor(_textColor)
+    cell.detailLabel.textColor = argbToColor(_textColorDetail)
 
     // Image
     cell.imageView.image = image
@@ -1206,10 +1167,7 @@ fileprivate final class ListViewRootView: UIView {
 
     let selectedBgView = UIView()
     selectedBgView.backgroundColor =
-    (_selectionColor != Color.none.int32) ?
-      (_selectionColor == Color.default.int32 ? (argbToColor(kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor))
-      :argbToColor(_selectionColor)
+      argbToColor(_selectionColor)
     cell.selectedBackgroundView = selectedBgView
     return cell
   }

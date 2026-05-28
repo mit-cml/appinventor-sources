@@ -237,12 +237,13 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
       // Canvas is cleared whenever BackgroundColor is set.
       Clear()
       
-      // The color 'none' is rendered as white
+      // The color 'default' is rendered as white.
       let newColor = backgroundColor != Int32(bitPattern: Color.default.rawValue) ? backgroundColor : Int32(bitPattern: Color.white.rawValue)
       if newColor != _backgroundColor {
         _backgroundImageView.backgroundColor = argbToColor(newColor)
         _backgroundImageView.layer.zPosition = CGFloat(-Float.greatestFiniteMagnitude)
       }
+      _backgroundColor = backgroundColor
     }
   }
 

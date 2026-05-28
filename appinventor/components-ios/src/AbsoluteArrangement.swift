@@ -20,7 +20,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
   private var _components: [ViewComponent] = []
   private var _view: AbsoluteView
-  private var _backgroundColor = UIColor.white
+  private var _backgroundColor = Color.default.int32
   private var _imagePath = ""
 
   // Layout
@@ -80,6 +80,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     ])
     
     parent.add(self)
+    BackgroundColor = Color.default.int32
   }
   
 
@@ -223,12 +224,12 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   // MARK: - Properties
   @objc open var BackgroundColor: Int32 {
     get {
-      return colorToArgb(_backgroundColor)
+      return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argbToColor(argb)
+      _backgroundColor = argb
       if _imagePath.isEmpty {
-        _view.backgroundColor = _backgroundColor
+        _view.backgroundColor = defaultedBackgroundColor(argb)
       }
     }
   }
@@ -248,7 +249,14 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
         }
       }
       _imagePath = ""
-      _view.backgroundColor = _backgroundColor
+      _view.backgroundColor = defaultedBackgroundColor(_backgroundColor)
     }
+  }
+
+  private func defaultedBackgroundColor(_ argb: Int32) -> UIColor {
+    if argb == Color.default.int32 {
+      return form?.isDarkTheme == true ? Color.black.uiColor : Color.white.uiColor
+    }
+    return argbToColor(argb)
   }
 }
