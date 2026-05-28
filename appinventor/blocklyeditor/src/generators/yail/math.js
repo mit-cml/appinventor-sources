@@ -33,9 +33,9 @@ AI.Yail.forBlock['math_compare'] = function(block, generator) {
   var order = prim[2];
   var arg0 = generator.valueToCode(block, 'A', order) || 0;
   var arg1 = generator.valueToCode(block, 'B', order) || 0;
-  var tol = block.toleranceVisible_ === true
-      ? generator.valueToCode(block, 'TOL', order) || 0
-      : 0.0000001; // Default tolerance.
+  var tol = block.itemCount_ === 1
+      ? generator.valueToCode(block, 'TOL0', order) || 0
+      : 0.0000001;
   function generateCode(operator1, args) {
     var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
         + AI.Yail.YAIL_SPACER;
@@ -72,7 +72,7 @@ AI.Yail.forBlock['math_compare'] = function(block, generator) {
     return code;
   };
   var code;
-  if (block.toleranceVisible_ === true) {
+  if (block.itemCount_ === 1) {
     // User provided tolerance: use absolute error
     switch(mode) {
       case 'EQ':
