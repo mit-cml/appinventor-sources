@@ -421,6 +421,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.nsCameraUsage.equals(nsCameraUsage);
       result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
       result &= other.nsLocationUsage.equals(nsLocationUsage);
+      result &= other.i18nTranslations.equals(i18nTranslations);
       return result;
     }
     return false;

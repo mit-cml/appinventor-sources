@@ -23,7 +23,9 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -242,16 +244,32 @@ public final class TranslationPanel extends Composite {
   }
 
   private void saveJson() {
-    String json = exportJson();
+    final String json = exportJson();
+
+    String currentJson = projectEditor.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS);
 
     projectEditor.changeProjectSettingsProperty(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS,
         json);
 
-    showJsonDialog("Translations Saved",
-        "Saved translations to project settings.",
-        json);
+    if (json.equals(currentJson)) {
+      showJsonDialog("Translations Saved",
+          "No translation changes were pending.",
+          json);
+      return;
+    }
+
+    projectEditor.saveProjectSettings(new Command() {
+      @Override
+      public void execute() {
+        showJsonDialog("Translations Saved",
+            "Saved translations to project settings.",
+            json);
+      }
+    });
   }
 
   private void loadSavedTranslations() {
