@@ -321,6 +321,12 @@ public abstract class AndroidViewComponent extends VisibleComponent {
     container.setChildNeedsLayout(this);
   }
 
+  @Override
+  public void setComponentName(final String componentName) {
+    super.setComponentName(componentName);
+    container.$form().registerComponent(componentName, this);
+  }
+
   // Component implementation
 
   @Override

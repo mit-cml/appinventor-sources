@@ -38,5 +38,6 @@ public abstract class AndroidNonvisibleComponent implements Component {
   @Override
   public void setComponentName(final String componentName) {
     this.componentName = componentName;
+    form.registerComponent(componentName, this);
   }
 }
