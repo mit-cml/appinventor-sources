@@ -28,115 +28,38 @@ AI.Yail.forBlock['math_compare'] = function(block, generator) {
   // Basic compare operators
   var mode = block.getFieldValue('OP');
   var prim = AI.Yail.forBlock['math_compare'].OPERATORS[mode];
-  var operator1 = prim[0];
-  var operator2 = prim[1];
-  var order = prim[2];
-  var arg0 = generator.valueToCode(block, 'A', order) || 0;
-  var arg1 = generator.valueToCode(block, 'B', order) || 0;
+  var operator = prim[0];
+  var order = prim[1];
+  var argument0 = generator.valueToCode(block, 'A', order) || 0;
+  var argument1 = generator.valueToCode(block, 'B', order) || 0;
   var tol = block.itemCount_ === 1
       ? generator.valueToCode(block, 'TOL0', order) || 0
-      : 0.0000001;
-  function generateCode(operator1, args) {
-    var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
-        + AI.Yail.YAIL_SPACER;
-    code = code + AI.Yail.YAIL_OPEN_COMBINATION
-        + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
-        + args + AI.Yail.YAIL_CLOSE_COMBINATION;
-    code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE
-        + AI.Yail.YAIL_OPEN_COMBINATION
-        + (mode === 'EQ' || mode === 'NEQ' ? 'any any' : 'number number')
-        + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
-    code = code + AI.Yail.YAIL_DOUBLE_QUOTE + operator2
-        + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
-    return code
-  };
-  var nearlyEqual = function() {
-    var code;
-    var operator1 = '<';
-    var abs0 = '(abs ' + arg0 + ')';
-    var abs1 = '(abs ' + arg1 + ')';
-    var diff = '(abs (- ' + abs0 + ' ' + abs1 + '))';
-
-    // Min Threshold: tol * Number.MIN_VALUE
-    var minThreshold = '(* ' + tol + ' ' + Number.MIN_VALUE + ')';
-
-    // Relative case: diff / min(abs0+abs1, Number.MAX_VALUE)
-    var denom = '(min (+ ' + abs0 + ' ' + abs1 + ') ' + Number.MAX_VALUE + ')';
-    var ratio = '(/ ' + diff + ' ' + denom + ')';
-
-    // If either arg is zero or very small, compare diff directly to min threshold.
-    code = '(if (or (= ' + arg0 + ' 0) (= ' + arg1 + ' 0) (< (+ ' + abs0 + ' ' + abs1 + ') '
-        + Number.MIN_VALUE + ')) '
-        + generateCode(operator1, diff + ' ' + minThreshold) + ' '
-        + generateCode(operator1, ratio + ' ' + tol) + ')';
-    return code;
-  };
-  var code;
-  if (block.itemCount_ === 1) {
-    // User provided tolerance: use absolute error
-    switch(mode) {
-      case 'EQ':
-      case 'NEQ':
-        // (abs (- arg0 arg1)) tol
-        var numericCode = generateCode(
-            mode === 'EQ' ? '<=' : '>',
-            '(abs (- ' + arg0 + ' ' + arg1 + ')) ' + tol);
-
-        // arg0 arg1
-        var fallbackCode = generateCode(operator1, arg0 + ' ' + arg1);
-
-        // If both arg0 and arg1 are numbers, use tolerance comparison else simple comparison.
-        code = '(if (and (number? ' + arg0 + ') (number? ' + arg1 + ')) '
-            + numericCode + ' '
-            + fallbackCode + ')';
-        break;
-      case 'LT':
-      case 'GTE':
-        // arg0 (- arg1 tol)
-        code = generateCode(operator1, arg0 + ' (- ' + arg1 + ' ' + tol + ')');
-        break;
-      case 'LTE':
-      case 'GT':
-        // arg0 (+ arg1 tol)
-        code = generateCode(operator1, arg0 + ' (+ ' + arg1 + ' ' + tol + ')');
-        break;
-    }
-  } else {
-    // Default tolerance: use relative error
-    switch(mode) {
-      case 'EQ':
-      case 'NEQ':
-        var fallbackCode = generateCode(operator1, arg0 + ' ' + arg1);
-
-        // If both arg0 and arg1 are numbers, use tolerance comparison else simple comparison.
-        code = '(if (and (number? ' + arg0 + ') (number? ' + arg1 + ')) '
-            + (mode === 'NEQ' ? '(not ' + nearlyEqual() + ')' : nearlyEqual()) + ' '
-            + fallbackCode + ')';
-        break;
-      case 'LT':
-        code = '(and (< ' + arg0 + ' ' + arg1 + ') (not ' + nearlyEqual() + '))';
-        break;
-      case 'GTE':
-        code = '(or (>= ' + arg0 + ' ' + arg1 + ') ' + nearlyEqual() + ')';
-        break;
-      case 'LTE':
-        code = '(or (<= ' + arg0 + ' ' + arg1 + ') ' + nearlyEqual() + ')';
-        break;
-      case 'GT':
-        code = '(and (> ' + arg0 + ' ' + arg1 + ') (not ' + nearlyEqual() + '))';
-        break;
-    }
-  }
+      : 0.0000001; // Default tolerance to calculate diff in yail-compare.
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + 'yail-compare'
+      + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_OPEN_COMBINATION
+      + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER
+      + [argument0, argument1, tol,
+          AI.Yail.YAIL_DOUBLE_QUOTE + mode + AI.Yail.YAIL_DOUBLE_QUOTE,
+          block.itemCount_].join(AI.Yail.YAIL_SPACER)
+      + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
+  code = code + (mode === "EQ" || mode === "NEQ"
+      ? "any any number any any"
+      : "number number number any any");
+  code = code + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_DOUBLE_QUOTE + operator
+      + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
 AI.Yail.forBlock['math_compare'].OPERATORS = {
-  EQ: ['yail-equal?', '=', AI.Yail.ORDER_NONE],
-  NEQ: ['yail-not-equal?', 'not =', AI.Yail.ORDER_NONE],
-  LT: ['<', '<', AI.Yail.ORDER_NONE],
-  LTE: ['<=', '<=', AI.Yail.ORDER_NONE],
-  GT: ['>', '>', AI.Yail.ORDER_NONE],
-  GTE: ['>=', '>=', AI.Yail.ORDER_NONE]
+  EQ: ['=', AI.Yail.ORDER_NONE],
+  NEQ: ['not =', AI.Yail.ORDER_NONE],
+  LT: ['<', AI.Yail.ORDER_NONE],
+  LTE: ['<=', AI.Yail.ORDER_NONE],
+  GT: ['>', AI.Yail.ORDER_NONE],
+  GTE: ['>=', AI.Yail.ORDER_NONE]
 };
 
 AI.Yail.forBlock['math_arithmetic'] = function(mode,block, generator) {
