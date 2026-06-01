@@ -190,6 +190,7 @@ public class ProjectFolder extends Composite {
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
+    setSelected(false);
     childrenContainer.clear();
     List<ProjectFolder> sortedChildren = getChildFolders();
     if (needToSort) {
