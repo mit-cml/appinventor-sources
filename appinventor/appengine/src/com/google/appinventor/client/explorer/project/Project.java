@@ -257,6 +257,16 @@ public final class Project {
       }
     };
     Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);
+    // Remove the project from its home folder and clear the cache of the home folder and all of its parent folders.
+    if (homeFolder != null) {
+      homeFolder.removeProject(Project.this);
+      homeFolder.clearCache();
+      ProjectFolder parentFolder = homeFolder.getParentFolder();
+      while (parentFolder != null) {
+        parentFolder.clearCache();
+        parentFolder = parentFolder.getParentFolder();
+      }
+    }
   }
 
   public boolean isInTrash() {
