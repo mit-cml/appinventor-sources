@@ -292,6 +292,19 @@ public class ProjectFolder extends Composite {
     return list;
   }
 
+  public List<Project> getLiveProjects() {
+    List<Project> list = new ArrayList<>();
+    for (ProjectListItem item : projectListItems) {
+      list.add(item.getProject());
+    }
+    for (ProjectFolder f : folders.values()) {
+      if (!"*trash*".equals(f.getName())) {
+        list.addAll(f.getLiveProjects());
+      }
+    }
+    return list;
+  }
+
   public boolean containsAnyProjects() {
     if (!projectListItems.isEmpty()) {
       return true;

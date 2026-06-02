@@ -109,6 +109,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import org.json.*;
+
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
  * store.
@@ -2812,6 +2814,7 @@ public class ObjectifyStorageIo implements StorageIo {
   @Override
   public boolean deleteAccount(final String userId) {
     List<Long> projectIds = getProjects(userId);
+    List<Long> trashProjectIds = getTrashProjectIds(userId);
     // We iterate over the projects in two loops The first loop is
     // just to determine that all remaining projects are in the trash.
     // The second loop actually removes such projects.  We do it this
@@ -2819,11 +2822,11 @@ public class ObjectifyStorageIo implements StorageIo {
     // exist. Otherwise some trashed projects may get removed before
     // we discover a live project.
     for (long projectId : projectIds) {
-      ProjectData projectData = getProject(projectId);
-      if (!projectData.projectMovedToTrashFlag) {
-        return false;           // Have a live project
+      if (!(trashProjectIds).contains(projectId)) {
+        return false;       // Have a live project
       }
     }
+    
     // Got here, no live projects, remove the remainders
     for (long projectId : projectIds) {
       deleteProject(userId, projectId);
@@ -2884,6 +2887,49 @@ public class ObjectifyStorageIo implements StorageIo {
       return APK_BUCKET_NAME;
     } else {
       return GCS_BUCKET_NAME;
+    }
+  }
+
+  private final List<Long> getTrashProjectIds(String userId) {
+    String settings = loadSettings(userId);
+
+    JSONObject root = new JSONObject(settings);
+    String foldersStr = root.getJSONObject("GeneralSettings").getString("Folders");
+    JSONObject folders = new JSONObject(foldersStr);
+
+    List<Long> trashProjectIds = new ArrayList<>();
+    org.json.JSONArray foldersList = folders.getJSONArray("folders");
+
+    for (int i = 0; i < foldersList.length(); i++) {
+      JSONObject folder = foldersList.getJSONObject(i);
+
+      if (folder.getString("name").equals("*trash*")) {
+        org.json.JSONArray projects = folder.getJSONArray("projects");
+        for (int j = 0; j < projects.length(); j++) {
+          trashProjectIds.add(Long.parseLong(projects.getString(j)));
+        }
+
+        collectProjects(folder.getJSONArray("folders"), trashProjectIds);
+      };
+    };
+
+    return trashProjectIds;
+}
+
+  private final void collectProjects(org.json.JSONArray foldersList, List<Long> trashProjectIds) {
+    for (int i = 0; i < foldersList.length(); i++) {
+      JSONObject folder = foldersList.getJSONObject(i);
+
+      org.json.JSONArray projects = folder.getJSONArray("projects");
+      for (int j = 0; j < projects.length(); j++) {
+        trashProjectIds.add(Long.parseLong(projects.getString(j)));
+      }
+
+      // Recurse into nested folders.
+      org.json.JSONArray nestedFolders = folder.getJSONArray("folders");
+      if (nestedFolders.length() > 0) {
+        collectProjects(nestedFolders, trashProjectIds);
+      }
     }
   }
 
