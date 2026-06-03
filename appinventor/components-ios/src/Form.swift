@@ -1168,6 +1168,10 @@ let kMinimumToastWait = 10.0
   }
 
   @objc public func keyboardWillHide(_ notification: NSNotification) {
+    guard _keyboardVisible else {
+      return
+    }
+    
     _keyboardVisible = false
     if let userInfo = notification.userInfo,
         let frame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
