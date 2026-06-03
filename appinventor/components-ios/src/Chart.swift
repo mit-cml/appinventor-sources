@@ -63,6 +63,7 @@ import DGCharts
     darkMode = parent.form?.isDarkTheme ?? false
     _backgroundColor = darkMode ? UIColor.black : UIColor.white
     _axesTextColor = darkMode ? UIColor.white : UIColor.black
+    _view.translatesAutoresizingMaskIntoConstraints = false
     super.init(parent)
     setDelegate(self)
     parent.add(self)

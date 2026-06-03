@@ -205,6 +205,12 @@ public class LinearView: UIView {
           _scrollview.removeFromSuperview()
           _outer.removeFromSuperview()
           addSubview(_outer)
+          updatePositioningConstraints()
+          updatePriorities()
+          updateHorizontalAlignment()
+          updateVerticalAlignment()
+          setNeedsUpdateConstraints()
+          setNeedsLayout()
         }
       }
     }
@@ -264,6 +270,12 @@ public class LinearView: UIView {
     _inner.insertSubview(item.view, at: _inner.subviews.count - 1)
     _inner.insertArrangedSubview(item.view, at: _inner.arrangedSubviews.count - 1)
     _items.append(item)
+    updatePriorities()
+    updateHorizontalAlignment()
+    updateVerticalAlignment()
+    invalidateIntrinsicContentSize()
+    setNeedsUpdateConstraints()
+    setNeedsLayout()
   }
 
   open func removeItem(_ view: UIView) {
@@ -586,8 +598,21 @@ public class LinearView: UIView {
   private func preferredSize(of view: UIView) -> CGSize {
     let fitting = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
     let intrinsic = view.intrinsicContentSize
-    return CGSize(width: preferredDimension(fitting.width, intrinsic.width),
-                  height: preferredDimension(fitting.height, intrinsic.height))
+    return CGSize(width: preferredDimension(fitting.width, intrinsic.width,
+                                            constrainedBy: widthConstraints[view]),
+                  height: preferredDimension(fitting.height, intrinsic.height,
+                                             constrainedBy: heightConstraints[view]))
+  }
+
+  private func preferredDimension(_ fitting: CGFloat, _ intrinsic: CGFloat, constrainedBy length: Length?) -> CGFloat {
+    guard let length = length, length != .Automatic else {
+      return preferredDimension(fitting, intrinsic)
+    }
+    if length != .FillParent && !length.isPercent {
+      return max(0, length.cgFloat)
+    }
+    let constrained = sanitizedDimension(fitting)
+    return constrained > 0 ? constrained : preferredDimension(fitting, intrinsic)
   }
 
   private func preferredDimension(_ fitting: CGFloat, _ intrinsic: CGFloat) -> CGFloat {
@@ -655,6 +680,7 @@ public class LinearView: UIView {
     if _outerEqualConstraint != nil {
       removeConstraint(_outerEqualConstraint)
       _inner.removeConstraint(_innerEqualConstraint)
+      removeConstraint(_equalConstraint)
     }
     if _orientation == .horizontal {
       _outerEqualConstraint = _head.heightAnchor.constraint(equalTo: _tail.heightAnchor)

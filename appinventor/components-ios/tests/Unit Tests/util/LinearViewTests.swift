@@ -36,6 +36,19 @@ class LinearViewTests: XCTestCase {
     window.addSubview(testForm.view)
   }
 
+  private func rootLayoutConstraintCount(for form: Form) -> Int {
+    return form.view.constraints.filter { constraint in
+      return isRootLayoutItem(constraint.firstItem) || isRootLayoutItem(constraint.secondItem)
+    }.count
+  }
+
+  private func isRootLayoutItem(_ item: Any?) -> Bool {
+    if item is ScaleFrameLayout {
+      return true
+    }
+    return (item as? UIView)?.accessibilityIdentifier == "Form root view"
+  }
+
   func testAddItem() {
     let Button1 = Button(testForm)
     XCTAssertFalse(testView.contains(Button1.view))
@@ -90,6 +103,124 @@ class LinearViewTests: XCTestCase {
     testView.setVisibility(of: view2, to: false)
 
     XCTAssertEqual(CGSize(width: 100, height: 100), testView.intrinsicContentSize)
+  }
+
+  func testAutomaticSizingHonorsFixedChildSize() {
+    let imageSizedView = IntrinsicTestView(width: 1790, height: 1228)
+    testView.addItem(LinearViewItem(imageSizedView))
+    testView.setWidth(of: imageSizedView, to: Length(pixels: 200))
+    testView.setHeight(of: imageSizedView, to: Length(pixels: 200))
+
+    XCTAssertEqual(CGSize(width: 200, height: 200), testView.intrinsicContentSize)
+  }
+
+  func testAutomaticHorizontalArrangementIsCenteredAfterLabelTextChanges() {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+
+    let fillParentLine = HorizontalArrangement(testForm)
+    fillParentLine.Width = kLengthFillParent
+    fillParentLine.Height = 10
+
+    let dataCleaningChart = Chart(testForm)
+    dataCleaningChart.Width = kLengthFillParent
+    dataCleaningChart.Height = kLengthFillParent
+
+    let secondFillParentLine = HorizontalArrangement(testForm)
+    secondFillParentLine.Width = kLengthFillParent
+    secondFillParentLine.Height = 10
+
+    let cleanedDataChart = Chart(testForm)
+    cleanedDataChart.Width = kLengthFillParent
+    cleanedDataChart.Height = kLengthFillParent
+
+    let trendlineValuesRow = HorizontalArrangement(testForm)
+    let slopeLabel = Label(trendlineValuesRow)
+    slopeLabel.Text = "M ="
+    let slopeValueLabel = Label(trendlineValuesRow)
+    let yInterceptLabel = Label(trendlineValuesRow)
+    yInterceptLabel.Text = "    B ="
+    let yInterceptValueLabel = Label(trendlineValuesRow)
+    let correlationCoefficientLabel = Label(trendlineValuesRow)
+    correlationCoefficientLabel.Text = "    R ="
+    let correlationCoefficientValueLabel = Label(trendlineValuesRow)
+    let xInterceptLabel = Label(trendlineValuesRow)
+    xInterceptLabel.Text = "    X-Int ="
+    let xInterceptValueLabel = Label(trendlineValuesRow)
+
+    testForm.AlignHorizontal = HorizontalGravity.center.rawValue
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    let trendlineFrame = trendlineValuesRow.view.convert(trendlineValuesRow.view.bounds, to: testForm.view)
+    XCTAssertLessThan(trendlineValuesRow.view.frame.width, testForm.view.frame.width)
+    XCTAssertEqual(trendlineFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+
+    slopeValueLabel.Text = "-0.123456789012345"
+    yInterceptValueLabel.Text = "1234.56789012345"
+    correlationCoefficientValueLabel.Text = "-0.987654321"
+    xInterceptValueLabel.Text = "[-12345.6789012345]"
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    let updatedTrendlineFrame = trendlineValuesRow.view.convert(trendlineValuesRow.view.bounds, to: testForm.view)
+    XCTAssertEqual(updatedTrendlineFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+  }
+
+  func testScrollableFormDoesNotLeakIntoClearedCenteredForm() {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+    testForm.Scrollable = true
+    testForm.AlignHorizontal = HorizontalGravity.center.rawValue
+
+    let scrollableLabel = Label(testForm)
+    scrollableLabel.Width = kLengthFillParent
+    scrollableLabel.Text = "Scrollable screen"
+
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+    testForm.AlignHorizontal = HorizontalGravity.center.rawValue
+    testForm.AlignVertical = VerticalGravity.center.rawValue
+
+    let Button1 = Button(testForm)
+    Button1.Text = "Text for Button1"
+    let Label1 = Label(testForm)
+    Label1.Text = "Hi Pikachu!"
+
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    let buttonFrame = Button1.view.convert(Button1.view.bounds, to: testForm.view)
+    let labelFrame = Label1.view.convert(Label1.view.bounds, to: testForm.view)
+    XCTAssertEqual(buttonFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+    XCTAssertEqual(labelFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+    XCTAssertGreaterThan(buttonFrame.minY, testForm.view.frame.height / 3)
+  }
+
+  func testFormRecomputeDoesNotAccumulateRootConstraints() {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+    let initialConstraintCount = rootLayoutConstraintCount(for: testForm)
+
+    for _ in 0..<3 {
+      testForm.Scrollable = true
+      testForm.Scrollable = false
+      testForm.Sizing = "Fixed"
+      testForm.Sizing = "Responsive"
+    }
+
+    XCTAssertEqual(initialConstraintCount, rootLayoutConstraintCount(for: testForm))
   }
 
   func testHiddenComponentCanReplayAutomaticSizing() {

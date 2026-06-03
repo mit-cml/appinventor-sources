@@ -9,7 +9,7 @@ fileprivate let kListViewDefaultBackgroundColor = Color.black.int32
 fileprivate let kListViewDefaultElementColor = Color.none.int32
 fileprivate let kListViewDefaultSelectionColor = Color.lightGray.int32
 fileprivate let kListViewDefaultTextColor = Color.white.int32
-fileprivate let kListViewDefaultDividerColor = Color.white.int32
+fileprivate let kListViewDefaultDividerColor = Color.none.int32
 fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 fileprivate let kDefaultTableCellVerticalPadding = CGFloat(30.0)
@@ -195,55 +195,54 @@ fileprivate final class ListViewRootView: UIView {
       "Image": image as AnyObject
     ]
   }
+
+  private func listItem(at index: Int) -> [String: AnyObject]? {
+    if !_items.isEmpty {
+      guard index >= 0 && index < _items.count else {
+        return nil
+      }
+      return _items[index]
+    }
+    let source = _results ?? _elements
+    guard index >= 0 && index < source.count else {
+      return nil
+    }
+    return makeListItem(text1: source[index])
+  }
+
+  private func promoteElementsToItemsIfNeeded() {
+    if _items.isEmpty && !_elements.isEmpty {
+      _items = _elements.map { makeListItem(text1: $0) }
+      _elements.removeAll()
+    }
+  }
+
+  private func normalizedListItem(from item: AnyObject) -> [String: AnyObject] {
+    if let dictionary = item as? [String: AnyObject] {
+      return dictionary
+    }
+    if let dictionary = item as? NSDictionary {
+      return [
+        "Text1": (dictionary["Text1"] as? String ?? "") as AnyObject,
+        "Text2": (dictionary["Text2"] as? String ?? "") as AnyObject,
+        "Image": (dictionary["Image"] as? String ?? "") as AnyObject
+      ]
+    }
+    return makeListItem(text1: toString(item))
+  }
   
     private func addElements(_ elements: [AnyObject]) {
-      if !elements.isEmpty {
-        let testItemsForDict = _items.first(where: { $0 is NSDictionary })
-        let testElementsForDict = elements.first(where: { $0 is NSDictionary })
-        //let filteredListElements = elements.filter { $0 is YailList<AnyObject> }
-        
-        let otherElements = elements.filter { !($0 is NSDictionary) }
-        
-        let useDictFormat = testItemsForDict?["Text1"] != nil || testElementsForDict?["Text1"] != nil
-       
-        
-        if useDictFormat {
-          _items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
-          
-          for item in otherElements {
-            // Fall back to simple text item
-            if let str = item as? String {
-              _items.append(makeListItem(text1: str))
-            } else if let n = item as? NSNumber {
-              _items.append(makeListItem(text1: n.stringValue))
-              
-            }
-          }
-        }/*a else if filteredListElements.count > 0 {
-          var dict: [String: AnyObject] = [:]
-          print("item type is YailList \(dict)")
-          for kvPair in filteredListElements {
-            if let pair = kvPair as? YailList<AnyObject>, pair.count >= 3 {
-              if let key = pair[1] as? String {
-                dict[key] = pair[2] as AnyObject
-              }
-            }
-          }
-          _items.append(dict)
-        }*/
-        _elements.insert(contentsOf: otherElements.toStringArray(), at: 0)
-        /* don't add to items
-         for item in otherElements {
-            // Fall back to simple text item
-            if let str = item as? String {
-              _items.append(makeListItem(text1: str))
-            } else if let n = item as? NSNumber {
-              _items.append(makeListItem(text1: n.stringValue))
-
-            }
-        }*/
-        elementsCount()
+      guard !elements.isEmpty else {
+        return
       }
+      let useDictFormat = !_items.isEmpty || elements.contains { $0 is NSDictionary }
+      if useDictFormat {
+        promoteElementsToItemsIfNeeded()
+        _items.append(contentsOf: elements.map { normalizedListItem(from: $0) })
+      } else {
+        _elements.append(contentsOf: elements.toStringArray())
+      }
+      elementsCount()
     }
   func elementsCount() {
     //let rows = max(_items.count, _items.count)
@@ -374,6 +373,7 @@ fileprivate final class ListViewRootView: UIView {
     set(jsonString) {
       do {
         if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
+          _elements.removeAll()
           _items = dictionaries.compactMap { dictionary in
             var item: [String: String] = [:]
 
@@ -465,17 +465,20 @@ fileprivate final class ListViewRootView: UIView {
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _elements.firstIndex(of: selection) {
+      if let index = _items.firstIndex(where: { $0["Text1"] as? String == selection }) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
+        _selectionDetailText = _items[index]["Text2"] as? String ?? ""
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else if let index = _items.firstIndex(where: { $0["Text1"] as? String == selection }) {
+      } else if let index = _elements.firstIndex(of: selection) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
+        _selectionDetailText = ""
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
       } else {
         _selectionIndex = 0
         _selection = ""
+        _selectionDetailText = ""
       }
     }
   }
@@ -488,12 +491,14 @@ fileprivate final class ListViewRootView: UIView {
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText as? String }) {
+      if let index = _items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText }) {
         _selectionIndex = Int32(index) + 1
+        _selection = _items[index]["Text1"] as? String ?? ""
         _selectionDetailText = selectionDetailText
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
       } else {
         _selectionIndex = 0
+        _selection = ""
         _selectionDetailText = ""
       }
     }
@@ -514,10 +519,11 @@ fileprivate final class ListViewRootView: UIView {
       return _selectionIndex
     }
     set(selectionIndex) {
-      if selectionIndex > 0 && selectionIndex <= Int32(_elements.count) {
+      if selectionIndex > 0 && selectionIndex <= Int32(listItemCount),
+         let item = listItem(at: Int(selectionIndex) - 1) {
         _selectionIndex = selectionIndex
-        _selection = _elements[Int(selectionIndex) - 1] as? String ?? ""
-        _selectionDetailText = _elements[Int(selectionIndex) - 1] as? String ?? ""
+        _selection = item["Text1"] as? String ?? ""
+        _selectionDetailText = item["Text2"] as? String ?? ""
         _view.selectRow(at: IndexPath(row: Int(_selectionIndex) - 1, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       } else {
         _selectionIndex = 0
@@ -601,14 +607,20 @@ fileprivate final class ListViewRootView: UIView {
   // MARK: Methods
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
-    _items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
+    promoteElementsToItemsIfNeeded()
+    _items.append(makeListItem(text1: mainText, text2: detailText, image: imageName))
+    elementsCount()
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
-    guard addIndex > 0 && addIndex <= _items.count + 1 else {
+    guard addIndex > 0 && addIndex <= Int32(listItemCount + 1) else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "AddItemAtIndex",
+                                                   ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
-    _items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
+    promoteElementsToItemsIfNeeded()
+    _items.insert(makeListItem(text1: mainText, text2: detailText, image: imageName), at: Int(addIndex - 1))
+    elementsCount()
   }
 
   @objc open func AddItems(_ items: [AnyObject]) {
@@ -623,30 +635,17 @@ fileprivate final class ListViewRootView: UIView {
     if elements.isEmpty {
       return
     }
-    if addIndex < 1 || addIndex - 1 > max(_items.count, _items.count) {
+    if addIndex < 1 || addIndex > Int32(listItemCount + 1) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
                                                    ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
     
-    if !elements.isEmpty {
-      let index = Int(addIndex - 1)
-      var newItems: [[String: AnyObject]] = []
-      for item in elements {
-        if let rowDict = item as? NSDictionary,
-           let stoDict = rowDict as? [String: AnyObject] {
-          newItems.append(stoDict)
-        } else if let row = item as Optional {
-          newItems.append(["Text1": row as AnyObject])
-        } /*else {
-          _container?.form?.dispatchErrorOccurredEvent(self, "AddItemAtIndex",
-               ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM, index)
-          return
-        }*/
-        _items.insert(contentsOf: newItems, at: index)
-      }
-      elementsCount()
-    }
+    promoteElementsToItemsIfNeeded()
+    let index = Int(addIndex - 1)
+    let newItems = elements.map { normalizedListItem(from: $0) }
+    _items.insert(contentsOf: newItems, at: index)
+    elementsCount()
   }
 
 
@@ -678,18 +677,17 @@ fileprivate final class ListViewRootView: UIView {
   }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
-    if index < 1 || index > max(_items.count, _elements.count) {
+    if index < 1 || index > Int32(listItemCount) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
     }
-    if _items.count >= index {
+    if !_items.isEmpty {
       _items.remove(at: Int(index - 1))
-    }
-    if _elements.count >= index {
+    } else {
       _elements.remove(at: Int(index - 1))
     }
-    _view.reloadData()
+    elementsCount()
   }
 
   // MARK: Events
@@ -703,33 +701,26 @@ fileprivate final class ListViewRootView: UIView {
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
       let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
-      let hasElements = _elements.count > 0
+      let item = listItem(at: indexPath.row) ?? makeListItem()
+      cell.imageView?.image = nil
+      tableView.rowHeight = UITableView.automaticDimension
       
-      let listDataIndex = indexPath.row - _items.count
-      
-      if _listViewLayoutMode == 0 { // assume only strings (no dicts]
-        if hasElements {
-          let item = _elements[indexPath.row]
-          cell.textLabel?.text = item
-          cell.detailTextLabel?.text = ""
-          // Simple text-only layout
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = preferredRowHeight
-        }
+      if _listViewLayoutMode == 0 {
+        cell.textLabel?.text = item["Text1"] as? String ?? ""
+        cell.detailTextLabel?.text = ""
+        tableView.estimatedRowHeight = preferredRowHeight
       } else {
-        let item = _items[indexPath.row]
-        if _listViewLayoutMode == 1 {
+        if _listViewLayoutMode == 1 || _listViewLayoutMode == 2 {
           
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = preferredRowHeight
-          cell.textLabel?.text = item["Text1"] as? String
-          cell.detailTextLabel?.text = item["Text2"] as? String
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
         } else if _listViewLayoutMode == 3 {
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = preferredRowHeight
-          cell.textLabel?.text = item["Text1"] as? String
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
-             let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
             
@@ -764,12 +755,11 @@ fileprivate final class ListViewRootView: UIView {
             ])
           }
         } else if _listViewLayoutMode == 4 {
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 60
-          cell.textLabel?.text = item["Text1"] as? String
-          cell.detailTextLabel?.text = item["Text2"] as? String
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
-             let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
             
@@ -815,12 +805,11 @@ fileprivate final class ListViewRootView: UIView {
             ])
           }
         } else if _listViewLayoutMode == 5 {
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 120
-          cell.textLabel?.text = item["Text1"] as? String
-          cell.detailTextLabel?.text = item["Text2"] as? String
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
-             let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
             
@@ -855,14 +844,12 @@ fileprivate final class ListViewRootView: UIView {
               cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
             ])
           }
-        
-        
-      } else {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = preferredRowHeight
-        cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
+        } else {
+          tableView.estimatedRowHeight = preferredRowHeight
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = ""
+        }
       }
-    }
 
     cell.textLabel?.numberOfLines = 0
     cell.textLabel?.lineBreakMode = .byWordWrapping
@@ -943,15 +930,10 @@ fileprivate final class ListViewRootView: UIView {
     }
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      if indexPath.row < _elements.count {
+      if let item = listItem(at: indexPath.row) {
         _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _elements[indexPath.row]
-        _selectionDetailText = ""
-      } else if indexPath.row < _elements.count + _items.count {
-        let listDataIndex = indexPath.row - _elements.count
-        _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _items[listDataIndex]["Text1"] as! String
-        _selectionDetailText = _items[listDataIndex]["Text2"] as! String
+        _selection = item["Text1"] as? String ?? ""
+        _selectionDetailText = item["Text2"] as? String ?? ""
       }
       AfterPicking()
     }
@@ -1096,7 +1078,10 @@ fileprivate final class ListViewRootView: UIView {
     }
 
   private var listItemCount: Int {
-    return max(_elements.count, _items.count)
+    if !_items.isEmpty {
+      return _items.count
+    }
+    return elements.count
   }
     
   // UICollectionViewDataSource
@@ -1107,23 +1092,14 @@ fileprivate final class ListViewRootView: UIView {
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
 
-    let isData = !_items.isEmpty
-    let mainText: String
-    let detailText: String
+    let item = listItem(at: indexPath.item) ?? makeListItem()
+    let mainText = item["Text1"] as? String ?? ""
+    let detailText = item["Text2"] as? String ?? ""
     var image: UIImage? = nil
 
-    if isData {
-      let item = _items[indexPath.item]
-      mainText = item["Text1"] as? String ?? ""
-      detailText = item["Text2"] as? String ?? ""
-      if let path = item["Image"] as? String,
-         !path.isEmpty {
-        print("image path: \(path)")
-        image = AssetManager.shared.imageFromPath(path: path)
-      }
-    } else {
-      mainText = _elements[indexPath.item] //_items[indexPath.item] as? String ?? ""
-      detailText = ""
+    if let path = item["Image"] as? String,
+       !path.isEmpty {
+      image = AssetManager.shared.imageFromPath(path: path)
     }
 
     
@@ -1174,16 +1150,11 @@ fileprivate final class ListViewRootView: UIView {
 
   // UICollectionViewDelegate (selection → AfterPicking)
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if !_items.isEmpty {
-      let item = _items[indexPath.item]
+    if let item = listItem(at: indexPath.item) {
       _selectionIndex = Int32(indexPath.item) + 1
       _selection = item["Text1"] as? String ?? ""
       _selectionDetailText = item["Text2"] as? String ?? ""
-    } /*else {
-      _selectionIndex = Int32(indexPath.item) + 1
-      _selection = elements[indexPath.item] as? String ?? ""
-      _selectionDetailText = ""
-    } */
+    }
     AfterPicking()
   }
 

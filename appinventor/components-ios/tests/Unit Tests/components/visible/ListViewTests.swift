@@ -16,6 +16,23 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertTrue(addComponent(testList, named: "ListView1"))
   }
 
+  private func visibleTableView(for listView: ListView,
+                                file: StaticString = #filePath,
+                                line: UInt = #line) -> UITableView {
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView else {
+      XCTFail("Expected UITableView to be visible", file: file, line: line)
+      return UITableView()
+    }
+    return tableView
+  }
+
+  private func renderedMainTexts(for listView: ListView) -> [String] {
+    let tableView = visibleTableView(for: listView)
+    return (0..<listView.tableView(tableView, numberOfRowsInSection: 0)).map { row in
+      listView.tableView(tableView, cellForRowAt: IndexPath(row: row, section: 0)).textLabel?.text ?? ""
+    }
+  }
+
   func testSelectionIndex() {
     testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
     testList.Selection = "apple"
@@ -207,6 +224,7 @@ class ListViewTests: AppInventorTestCase {
   }
   
   func testDividerColor() {
+    XCTAssertEqual(Color.none.int32, testList.DividerColor)
     testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as [AnyObject]
     
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
@@ -260,6 +278,38 @@ class ListViewTests: AppInventorTestCase {
     testList.ListData = "[{\"Text1\": \"apple\", \"Text2\": \"2.99\", \"Image\": \"apple.jpg\"}]"
     XCTAssertEqual(1, testList.Elements.count)
     XCTAssertEqual([["Text1": "apple", "Text2": "2.99", "Image": "apple.jpg"]], testList.Elements as? [[String:String]])
+  }
+
+  func testListDataRendersDefaultLayout() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    XCTAssertEqual(["77", "hello"], renderedMainTexts(for: testList))
+  }
+
+  func testListDataMutationMethodsRefreshRows() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    testList.AddItemAtIndex(2, "I'm here", "", "")
+    testList.AddItem("typed", "", "")
+    testList.AddItems([
+      testList.CreateElement("1", "", ""),
+      testList.CreateElement("is this working?", "", ""),
+      57 as NSNumber
+    ] as [AnyObject])
+    testList.AddItemAtIndex(100, "out of bounds", "", "")
+
+    XCTAssertEqual(["77", "I'm here", "hello", "typed", "1", "is this working?", "57"],
+                   renderedMainTexts(for: testList))
+  }
+
+  func testSelectionIndexUsesListDataRowsWithoutDetailText() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    testList.SelectionIndex = 2
+
+    XCTAssertEqual(2, testList.SelectionIndex)
+    XCTAssertEqual("hello", testList.Selection)
+    XCTAssertEqual("", testList.SelectionDetailText)
   }
 
   func testBadListData() {
