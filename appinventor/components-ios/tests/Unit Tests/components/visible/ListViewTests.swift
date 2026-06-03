@@ -302,6 +302,39 @@ class ListViewTests: AppInventorTestCase {
                    renderedMainTexts(for: testList))
   }
 
+  func testAddItemsSkipsYailListHeader() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    testList.AddItems([
+      interpreter.makeSymbol("*list*"),
+      testList.CreateElement("1", "", ""),
+      testList.CreateElement("is this working?", "", ""),
+      57 as NSNumber
+    ] as [AnyObject])
+
+    XCTAssertEqual(["77", "hello", "1", "is this working?", "57"],
+                   renderedMainTexts(for: testList))
+  }
+
+  func testExplicitHeightListViewCanScrollOverflowRows() {
+    testList.Height = 88
+    testList.Elements = (1...20).map { "\($0)" } as [AnyObject]
+
+    XCTAssertEqual(44, testList.view.intrinsicContentSize.height)
+
+    form.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    form.onAttach()
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+
+    let tableView = visibleTableView(for: testList)
+    tableView.reloadData()
+    tableView.layoutIfNeeded()
+
+    XCTAssertTrue(tableView.isScrollEnabled)
+    XCTAssertGreaterThan(tableView.contentSize.height, tableView.bounds.height)
+  }
+
   func testSelectionIndexUsesListDataRowsWithoutDetailText() {
     testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
 

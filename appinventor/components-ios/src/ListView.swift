@@ -230,8 +230,16 @@ fileprivate final class ListViewRootView: UIView {
     }
     return makeListItem(text1: toString(item))
   }
+
+  private func normalizedElements(_ elements: [AnyObject]) -> [AnyObject] {
+    if elements.first is SCMSymbol {
+      return Array(elements.dropFirst())
+    }
+    return elements
+  }
   
     private func addElements(_ elements: [AnyObject]) {
+      let elements = normalizedElements(elements)
       guard !elements.isEmpty else {
         return
       }
@@ -245,9 +253,7 @@ fileprivate final class ListViewRootView: UIView {
       elementsCount()
     }
   func elementsCount() {
-    //let rows = max(_items.count, _items.count)
-    let rows = listItemCount
-    _automaticHeightConstraint?.constant = rows == 0 ? kDefaultTableCellHeight : preferredRowHeight * CGFloat(rows)
+    _automaticHeightConstraint?.constant = preferredTableHeight
     if let searchBar = _view.tableHeaderView as? UISearchBar {
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
     } else {
@@ -421,6 +427,17 @@ fileprivate final class ListViewRootView: UIView {
     set(orientation) {
       _orientation = orientation
       updateOrientationUI()
+    }
+  }
+
+  @objc open override var Height: Int32 {
+    get {
+      return super.Height
+    }
+    set(height) {
+      super.Height = height
+      _automaticHeightConstraint?.constant = preferredTableHeight
+      invalidateListViewSize()
     }
   }
     
@@ -632,6 +649,7 @@ fileprivate final class ListViewRootView: UIView {
 
   /* insert element to ListView as Dictionary or as String */
   @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
+    let elements = normalizedElements(elements)
     if elements.isEmpty {
       return
     }
@@ -965,10 +983,17 @@ fileprivate final class ListViewRootView: UIView {
       return CGSize(width: width, height: max(kDefaultItemSize.height, 60.0))
     }
 
+    return CGSize(width: width, height: preferredTableHeight)
+  }
+
+  private var preferredTableHeight: CGFloat {
+    if _lastSetHeight != kLengthPreferred {
+      return max(kDefaultTableCellHeight, _rootView.bounds.height)
+    }
     let rows = listItemCount
     let rowHeight = rows == 0 ? kDefaultTableCellHeight : preferredRowHeight * CGFloat(rows)
     let headerHeight = _view.tableHeaderView?.bounds.height ?? 0
-    return CGSize(width: width, height: max(kDefaultTableCellHeight, rowHeight + headerHeight))
+    return max(kDefaultTableCellHeight, rowHeight + headerHeight)
   }
 
   private var preferredRowHeight: CGFloat {
