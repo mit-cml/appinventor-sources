@@ -17,8 +17,15 @@ open class Sharing: NonvisibleComponent {
       view = vc.view
     }
     DispatchQueue.main.async {
-      activityVC.popoverPresentationController?.sourceView = view  // For iPad popover
-      self._form?.present(activityVC, animated: true, completion: nil)
+      if let popover = activityVC.popoverPresentationController {
+        popover.sourceView = view
+        popover.sourceRect = view.bounds
+      }
+      if let rootVC = UIApplication.shared.keyWindow?.rootViewController {
+        rootVC.present(activityVC, animated: true, completion: nil)
+      } else {
+        self._form?.present(activityVC, animated: true, completion: nil)
+      }
     }
   }
 
