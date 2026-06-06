@@ -16,12 +16,16 @@ public final class TranslationEditor extends FileEditor {
   public static final String EDITOR_TYPE = "TranslationEditor";
   public static final String ENTITY_NAME = "Translations";
 
-  private final TranslationPanel panel;
+  private final TranslationPanel translationPanel;
 
   public TranslationEditor(YaProjectEditor projectEditor, ProjectRootNode projectRootNode) {
     super(projectEditor, new TranslationFileNode(projectRootNode));
-    panel = new TranslationPanel(projectEditor);
-    initWidget(panel);
+    translationPanel = new TranslationPanel(projectEditor);
+    initWidget(translationPanel);
+  }
+
+  public TranslationPanel getTranslationPanel() {
+    return translationPanel;
   }
 
   @Override
@@ -49,7 +53,7 @@ public final class TranslationEditor extends FileEditor {
   @Override
   public void onShow() {
     super.onShow();
-    panel.refresh();
+    translationPanel.refresh();
   }
 
   @Override

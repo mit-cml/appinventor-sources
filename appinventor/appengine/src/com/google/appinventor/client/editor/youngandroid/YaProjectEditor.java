@@ -25,6 +25,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
 import com.google.appinventor.client.editor.youngandroid.i18n.TranslationEditor;
+import com.google.appinventor.client.editor.youngandroid.i18n.TranslationDesignerChangeListener;
 import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
@@ -130,6 +131,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    // variable which open the ProjectPropertyDialog(per project)
   private ProjectPropertiesDialogBox propertyDialogBox = null;
   private TranslationEditor translationEditor = null;
+  private final Map<String, TranslationDesignerChangeListener> translationChangeListeners =
+    new HashMap<String, TranslationDesignerChangeListener>();
 
   private String defaultCloudDBToken = null;
 
@@ -631,6 +634,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           pos = -pos - 1;
         }
         insertFileEditor(newDesigner, pos);
+        registerTranslationChangeListener(entityName);
         if (isLastOpened(entityName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
@@ -688,11 +692,43 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     addFileEditorByType(translationEditor);
     Ode.getInstance().getDesignToolbar().addTranslationEditor(projectRootNode.getProjectId(),
         translationEditor);
+
+    for (String formName : editorMap.keySet()) {
+      registerTranslationChangeListener(formName);
+    }
+  }
+
+  /**
+   * Registers a change listener for translation updates after the form editor has loaded.
+   */
+  private void registerTranslationChangeListener(String formName) {
+    if (translationEditor == null || translationChangeListeners.containsKey(formName)) {
+      return;
+    }
+
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null
+        || !fileIds.contains(editorSet.formEditor.getFileId())) {
+      return;
+    }
+
+    TranslationDesignerChangeListener listener = new TranslationDesignerChangeListener(
+        formName, translationEditor.getTranslationPanel());
+    editorSet.formEditor.getRoot().addDesignerChangeListener(listener);
+    translationChangeListeners.put(formName, listener);
+
+    LOG.info("Registered translation change listener for form " + formName);
   }
 
   private void removeFormEditor(String formName) {
     if (editorMap.containsKey(formName)) {
       EditorSet editors = editorMap.get(formName);
+
+      TranslationDesignerChangeListener listener = translationChangeListeners.remove(formName);
+      if (listener != null && editors.formEditor != null) {
+        editors.formEditor.getRoot().removeDesignerChangeListener(listener);
+      }
+
       if (editors.blocksEditor == null) {
         editorMap.remove(formName);
       } else {

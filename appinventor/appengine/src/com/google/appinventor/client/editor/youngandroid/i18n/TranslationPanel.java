@@ -1,4 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2026 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
 package com.google.appinventor.client.editor.youngandroid.i18n;
 
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
@@ -31,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public final class TranslationPanel extends Composite {
   private static final String DEFAULT_LANGUAGE = "hi";
@@ -43,8 +48,12 @@ public final class TranslationPanel extends Composite {
   private final TextBox languageTextBox;
   private final ListBox languageListBox;
   private String selectedLanguage;
+  private static final String LOCATOR_SEPARATOR = "\u0000";
+  private final Map<String, String> locatorToTranslationKey;
 
   private boolean savedTranslationsLoaded;
+
+  private static final Logger LOG = Logger.getLogger(TranslationPanel.class.getName());
 
   public TranslationPanel(YaProjectEditor projectEditor) {
     this.projectEditor = projectEditor;
@@ -57,6 +66,7 @@ public final class TranslationPanel extends Composite {
     this.selectedLanguage = DEFAULT_LANGUAGE;
     this.languageTextBox = new TextBox();
     this.languageListBox = new ListBox();
+    this.locatorToTranslationKey = new HashMap<String, String>();
 
     FlowPanel root = new FlowPanel();
     root.setStylePrimaryName("ode-i18n-panel");
@@ -141,6 +151,8 @@ public final class TranslationPanel extends Composite {
     initWidget(root);
   }
 
+
+
   public void refresh() {
     loadSavedTranslations();
     ensureSelectedLanguage();
@@ -179,9 +191,8 @@ public final class TranslationPanel extends Composite {
 
           String propertyValue = projectEditor.getComponentPropertyValue(formName,
               componentName, propertyName);
-          String generatedKey = TranslationKeyGenerator.generate(formName, componentName,
-              propertyName);
-
+          String generatedKey = getOrCreateTranslationKey(formName,
+              componentName, propertyName);
           translationEntries.put(generatedKey, new TranslationEntry(generatedKey, formName,
               componentName, componentType, propertyName, propertyValue));
 
@@ -243,6 +254,17 @@ public final class TranslationPanel extends Composite {
     dialog.center();
   }
 
+  private void saveJsonSilently() {
+    String json = exportJson();
+
+    projectEditor.changeProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS,
+        json);
+
+    projectEditor.saveProjectSettings(null);
+  }
+
   private void saveJson() {
     final String json = exportJson();
 
@@ -270,6 +292,14 @@ public final class TranslationPanel extends Composite {
             json);
       }
     });
+  }
+
+  private String getJsonString(JSONObject object, String name) {
+    if (object == null || object.get(name) == null || object.get(name).isString() == null) {
+      return "";
+    }
+
+    return object.get(name).isString().stringValue();
   }
 
   private void loadSavedTranslations() {
@@ -324,6 +354,25 @@ public final class TranslationPanel extends Composite {
         }
 
         JSONObject entry = entryValue.isObject();
+
+        JSONValue sourceValue = entry.get("source");
+        JSONObject source = null;
+        if (sourceValue != null && sourceValue.isObject() != null) {
+          source = sourceValue.isObject();
+        }
+
+        if (source != null) {
+          String screenName = getJsonString(source, "screen");
+          String componentName = getJsonString(source, "component");
+          String propertyName = getJsonString(source, "property");
+
+          if (screenName.length() > 0 && componentName.length() > 0
+              && propertyName.length() > 0) {
+            locatorToTranslationKey.put(makeLocator(screenName, componentName, propertyName),
+                key);
+          }
+        }
+
         JSONValue translationsValue = entry.get("translations");
         if (translationsValue == null || translationsValue.isObject() == null) {
           continue;
@@ -340,6 +389,83 @@ public final class TranslationPanel extends Composite {
       }
     } catch (RuntimeException e) {
       // Ignore invalid saved data for now. The table can still rebuild from the current project.
+    }
+  }
+
+  public void handleComponentRenamed(String screenName, String oldName, String newName) {
+    loadSavedTranslations();
+
+    if (oldName == null || oldName.length() == 0 || newName == null || newName.length() == 0
+        || oldName.equals(newName)) {
+      return;
+    }
+
+    boolean changed = false;
+    ArrayList<String> oldLocators = new ArrayList<String>(locatorToTranslationKey.keySet());
+
+    for (String oldLocator : oldLocators) {
+      String[] parts = splitLocator(oldLocator);
+      if (parts.length != 3) {
+        continue;
+      }
+
+      if (!screenName.equals(parts[0]) || !oldName.equals(parts[1])) {
+        continue;
+      }
+
+      String propertyName = parts[2];
+      String key = locatorToTranslationKey.remove(oldLocator);
+      String newLocator = makeLocator(screenName, newName, propertyName);
+
+      LOG.info("i18n preserving key on rename: key=" + key
+          + " oldLocator=" + oldLocator
+          + " newLocator=" + newLocator);
+
+      locatorToTranslationKey.put(newLocator, key);
+      changed = true;
+    }
+
+    refresh();
+
+    if (changed) {
+      saveJsonSilently();
+    }
+  }
+
+  public void handleComponentRemoved(String screenName, String componentName) {
+    loadSavedTranslations();
+
+    if (componentName == null || componentName.length() == 0) {
+      return;
+    }
+
+    boolean changed = false;
+    ArrayList<String> locatorsToRemove = new ArrayList<String>();
+
+    for (String locator : locatorToTranslationKey.keySet()) {
+      String[] parts = splitLocator(locator);
+      if (parts.length != 3) {
+        continue;
+      }
+
+      if (screenName.equals(parts[0]) && componentName.equals(parts[1])) {
+        locatorsToRemove.add(locator);
+      }
+    }
+
+    for (String locator : locatorsToRemove) {
+      String key = locatorToTranslationKey.remove(locator);
+      if (key != null) {
+        translationValues.remove(key);
+        translationEntries.remove(key);
+        changed = true;
+      }
+    }
+
+    refresh();
+
+    if (changed) {
+      saveJsonSilently();
     }
   }
 
@@ -533,4 +659,32 @@ public final class TranslationPanel extends Composite {
       table.removeRow(0);
     }
   }
+
+  private String makeLocator(String screenName, String componentName, String propertyName) {
+    return safe(screenName) + LOCATOR_SEPARATOR
+        + safe(componentName) + LOCATOR_SEPARATOR
+        + safe(propertyName);
+  }
+
+  private String[] splitLocator(String locator) {
+    return locator.split(LOCATOR_SEPARATOR, -1);
+  }
+
+  private String safe(String value) {
+    return value == null ? "" : value;
+  }
+
+  private String getOrCreateTranslationKey(String screenName, String componentName,
+      String propertyName) {
+    String locator = makeLocator(screenName, componentName, propertyName);
+    String existingKey = locatorToTranslationKey.get(locator);
+    if (existingKey != null && existingKey.length() > 0) {
+      return existingKey;
+    }
+
+    String generatedKey = TranslationKeyGenerator.generate(screenName, componentName, propertyName);
+    locatorToTranslationKey.put(locator, generatedKey);
+    return generatedKey;
+  }
+
 }
