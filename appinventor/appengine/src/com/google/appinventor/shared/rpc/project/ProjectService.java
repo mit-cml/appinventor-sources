@@ -78,18 +78,6 @@ public interface ProjectService extends RemoteService {
   void deleteProject(long projectId);
 
   /**
-   * Moves the project to trash.
-   * @param projectId  project ID
-   */
-  UserProject moveToTrash(long projectId);
-
-  /**
-   * Moves the project to trash.
-   * @param projectId  project ID
-   */
-  UserProject restoreProject(long projectId);
-
-  /**
    * Facilitate logging into the new gallery by
    * generating a token which is passed to the gallery
    * which contains the appropriate login authentication

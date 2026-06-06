@@ -30,11 +30,6 @@ public class UserProject implements IsSerializable {
   private String projectType;
 
   /**
-   * The moved to Trash flag.
-   */
-  private boolean projectMovedToTrashFlag;
-
-  /**
    * The date the project was created expressed in milliseconds since
    * January 1, 1970 UTC
    */
@@ -68,9 +63,8 @@ public class UserProject implements IsSerializable {
    * @param projectName the project name
    * @param projectType the project type
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, boolean projectMovedToTrashFlag) {
-    this(projectId, projectName, projectType, creationDate, creationDate, 0,
-        projectMovedToTrashFlag);
+  public UserProject(long projectId, String projectName, String projectType, long creationDate) {
+    this(projectId, projectName, projectType, creationDate, creationDate, 0);
   }
 
   /**
@@ -81,9 +75,8 @@ public class UserProject implements IsSerializable {
    * @param projectType the project type
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, boolean projectMovedToTrashFlag) {
-    this(projectId, projectName, projectType, creationDate, modificationDate, 0,
-        projectMovedToTrashFlag);
+      long modificationDate) {
+    this(projectId, projectName, projectType, creationDate, modificationDate, 0);
   }
 
   /**
@@ -94,13 +87,12 @@ public class UserProject implements IsSerializable {
    * @param projectType the project type
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, long buildDate, boolean projectMovedToTrashFlag) {
+      long modificationDate, long buildDate) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
-    this.projectMovedToTrashFlag = projectMovedToTrashFlag;
     this.buildDate = buildDate;
   }
 
@@ -153,18 +145,6 @@ public class UserProject implements IsSerializable {
     if (buildDate != 0) {
       this.buildDate = buildDate;
     }
-  }
-
-  public void moveToTrash() {
-    this.projectMovedToTrashFlag = true;
-  }
-
-  public void restoreFromTrash() {
-    this.projectMovedToTrashFlag = false;
-  }
-
-  public boolean isInTrash() {
-    return projectMovedToTrashFlag;
   }
 
   @Override
