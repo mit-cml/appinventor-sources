@@ -34,10 +34,10 @@ import DGCharts
   // checks whether an (x, y) entry exists in the Coordinate Data. Returns true if the Entry exists, and false otherwise.
   @objc func DoesEntryExist(_ x: String, _ y: String) -> Bool{
     /* Original:
-     DispatchQueue.main.sync {
-     var pair: YailList<AnyObject> = [x, y]
-     return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
-     }*/
+      DispatchQueue.main.sync {
+      var pair: YailList<AnyObject> = [x, y]
+      return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
+    }*/
 
     let group = DispatchGroup()
     group.enter()
