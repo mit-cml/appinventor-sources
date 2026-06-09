@@ -89,6 +89,7 @@ open class EventDispatcher: NSObject {
   }
   
   @objc open class func registerEventForDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
+    NSLog("EventDispatcher: registerEventForDelegation called for event '\(eventName)' delegate: \(dispatchDelegate) -- count before: \(mapDispatchDelegateToEventRegistry.count)")
     let er = getEventRegistry(dispatchDelegate)
     var eventClosures = er.eventClosuresMap[eventName]
     if eventClosures == nil {
@@ -98,6 +99,7 @@ open class EventDispatcher: NSObject {
     _ = eventClosures?.insert(EventClosure(componentId: componentName, eventName: eventName))
     // FIXME: For some reason it appears sets are copy-on-write so it isn't enough to insert the element into the existing set
     er.eventClosuresMap[eventName] = eventClosures
+    NSLog("EventDispatcher: registered event '\(eventName)' for delegate: \(dispatchDelegate) -- count after: \(mapDispatchDelegateToEventRegistry.count)")
   }
   
   @objc open class func unregisterEventForDelegation(_ dispatchDelegate: HandlesEventDispatching, _ componentName: String, _ eventName: String) {
@@ -126,10 +128,19 @@ open class EventDispatcher: NSObject {
     return mapDispatchDelegateToEventRegistry.count
   }
   
+  /// Diagnostic helper that logs and returns the current registry count.
+  @objc open class func debugRegistryCount() -> Int {
+    let c = mapDispatchDelegateToEventRegistry.count
+    NSLog("EventDispatcher: debugRegistryCount = %d", c)
+    return c
+  }
+  
   @objc open class func removeDispatchDelegate(_ dispatchDelegate: HandlesEventDispatching) {
+    NSLog("EventDispatcher: removeDispatchDelegate called for delegate: \(dispatchDelegate) -- count before: \(mapDispatchDelegateToEventRegistry.count)")
     let er = removeEventRegistry(dispatchDelegate)
     if er != nil {
       er?.eventClosuresMap.removeAll()
     }
+    NSLog("EventDispatcher: removeDispatchDelegate completed for delegate: \(dispatchDelegate) -- count after: \(mapDispatchDelegateToEventRegistry.count)")
   }
 }

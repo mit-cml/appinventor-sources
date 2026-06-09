@@ -80,6 +80,7 @@ class AppInventorTestCase: XCTestCase {
 
   open override func setUp() {
     do {
+      NSLog("EventDispatcher: registry count at start of setUp = \(EventDispatcher.debugRegistryCount())")
       interpreter = try getInterpreterForTesting()
       form = TestForm(interpreter)
       form.makeActive()
@@ -174,6 +175,7 @@ class AppInventorTestCase: XCTestCase {
     releaseTestResources(form: form, interpreter: interpreter)
     form = nil
     interpreter = nil
+    NSLog("EventDispatcher: registry count after tearDown = \(EventDispatcher.debugRegistryCount())")
     super.tearDown()
   }
 
