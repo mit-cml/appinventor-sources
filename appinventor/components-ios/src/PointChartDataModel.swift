@@ -53,9 +53,11 @@ open class PointChartDataModel: Chart2DDataModel {
     } else if let value = o as? String {
       let retVal = Double(value)
       if retVal == nil {
+        self.dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         self.dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = self.dateFormatter.date(from: value)
         if date == nil {
+          self.timeFormatter.locale = Locale(identifier: "en_US_POSIX")
           self.timeFormatter.dateFormat = "HH:mm:ss"
           return self.timeFormatter.date(from: value)?.timeIntervalSince1970
         }
