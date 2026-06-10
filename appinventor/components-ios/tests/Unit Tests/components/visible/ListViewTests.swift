@@ -220,6 +220,57 @@ class ListViewTests: AppInventorTestCase {
     }
   }
 
+  func testTextAlignmentMain() {
+    testList.Elements = ["Test"] as [AnyObject]
+
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      // Default should be normal (left in LTR)
+      var cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertEqual(Alignment.normal.rawValue, testList.TextAlignmentMain)
+      XCTAssertEqual(NSTextAlignment.left, cell.textLabel?.textAlignment)
+
+      // Center
+      testList.TextAlignmentMain = Alignment.center.rawValue
+      XCTAssertEqual(Alignment.center.rawValue, testList.TextAlignmentMain)
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertEqual(NSTextAlignment.center, cell.textLabel?.textAlignment)
+
+      // Opposite (right in LTR)
+      testList.TextAlignmentMain = Alignment.opposite.rawValue
+      XCTAssertEqual(Alignment.opposite.rawValue, testList.TextAlignmentMain)
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertEqual(NSTextAlignment.right, cell.textLabel?.textAlignment)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
+  }
+
+  func testTextAlignmentDetail() {
+    testList.ListViewLayout = 1
+    testList.ListData = "[{\"Text1\": \"apple\", \"Text2\": \"2.99\", \"Image\": \"\"}]"
+
+    if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
+      // Default should be normal (left in LTR)
+      var cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertEqual(Alignment.normal.rawValue, testList.TextAlignmentDetail)
+      XCTAssertEqual(NSTextAlignment.left, cell.detailTextLabel?.textAlignment)
+
+      // Center
+      testList.TextAlignmentDetail = Alignment.center.rawValue
+      XCTAssertEqual(Alignment.center.rawValue, testList.TextAlignmentDetail)
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertEqual(NSTextAlignment.center, cell.detailTextLabel?.textAlignment)
+
+      // Opposite (right in LTR)
+      testList.TextAlignmentDetail = Alignment.opposite.rawValue
+      XCTAssertEqual(Alignment.opposite.rawValue, testList.TextAlignmentDetail)
+      cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+      XCTAssertEqual(NSTextAlignment.right, cell.detailTextLabel?.textAlignment)
+    } else {
+      XCTFail("Expected UITableView to be visible")
+    }
+  }
+
   func testListData() {
     testList.ListData = "[{\"Text1\": \"apple\", \"Text2\": \"2.99\", \"Image\": \"apple.jpg\"}]"
     XCTAssertEqual(1, testList.Elements.count)

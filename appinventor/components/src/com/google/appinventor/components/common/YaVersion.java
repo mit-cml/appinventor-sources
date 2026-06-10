@@ -1216,7 +1216,10 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 10:
   // - Changed TextSize property to FontSize
   // - Add new layout
-  public static final int LISTVIEW_COMPONENT_VERSION = 10;
+  // For LISTVIEW_COMPONENT_VERSION 11:
+  // - Added TextAlignmentMain property
+  // - Added TextAlignmentDetail property
+  public static final int LISTVIEW_COMPONENT_VERSION = 11;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

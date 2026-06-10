@@ -2476,10 +2476,15 @@ Blockly.Versioning.AllUpgradeMaps =
     8: "noUpgrade",
     // AI2: Fixed a designer property issue with ElementColor
     9: "noUpgrade",
-    // AI2: 
+    // AI2:
     // - Changed TextSize property to FontSize
     // - Add new layout
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // AI2:
+    // - Added TextAlignmentMain property
+    // - Added TextAlignmentDetail property
+    11: "noUpgrade"
 
   }, // End ListView upgraders
 
