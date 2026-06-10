@@ -4,6 +4,9 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 #import "SCMProcedure.h"
+#import "picrin.h"
+#include "picrin/private/object.h"
+#include "picrin/private/vm.h"
 #import "SCMInterpreter-Private.h"
 
 @interface SCMProcedure () {
@@ -88,6 +91,22 @@
 
 - (id<SCMValue>)invokeWithArguments:(NSArray<id> *)arguments {
   return [interpreter_ apply:self.value to:arguments];
+}
+
+- (NSInteger)numberOfArguments {
+  if (pic_type(interpreter_.state, value_) == PIC_TYPE_IREP) {
+    struct proc *proc = pic_proc_ptr(interpreter_.state, value_);
+    return (NSInteger) proc->u.i.irep->argc - 1;
+  }
+  return 0;
+}
+
+- (BOOL)variadic {
+  if (pic_type(interpreter_.state, value_) == PIC_TYPE_IREP) {
+    struct proc *proc = pic_proc_ptr(interpreter_.state, value_);
+    return proc->u.i.irep->varg;
+  }
+  return NO;
 }
 
 @end

@@ -56,4 +56,12 @@ public interface UserInfoProvider {
 
   void setSessionId(String SessionId);
 
+  void setOneProjectId(long projectId);
+
+  long getOneProjectId();
+
+  void setFauxProjectName(String fauxProjectName);
+
+  String getFauxProjectName();
+
 }

@@ -916,8 +916,16 @@ let HORIZONTAL_LAYOUT = 1
             : cell.backgroundColor
 
     
-
-
+    if _elementColor != Color.none.int32 {
+      // if elementColor at the table cell level, laid over backgroundColor
+      if _elementColor == Color.default.int32 {
+        cell.backgroundColor = preferredTextColor(form)
+      } else {
+        cell.backgroundColor = argbToColor(_elementColor)
+      }
+    } else {
+      cell.backgroundColor = argbToColor(_backgroundColor)
+    }
     
     //maintext
     if _textColor == Color.default.int32 {

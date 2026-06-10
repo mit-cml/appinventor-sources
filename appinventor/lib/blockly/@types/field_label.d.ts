@@ -3,6 +3,12 @@
  * Copyright 2012 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+/**
+ * Non-editable, non-serializable text field.  Used for titles,
+ *    labels, etc.
+ *
+ * @class
+ */
 import { Field, FieldConfig } from './field.js';
 /**
  * Class for a non-editable, non-serializable text field.

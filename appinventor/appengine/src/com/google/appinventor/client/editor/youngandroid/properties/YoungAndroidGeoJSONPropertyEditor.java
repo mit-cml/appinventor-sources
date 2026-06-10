@@ -199,7 +199,7 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
     if (node instanceof YoungAndroidAssetNode) {
       String assetName = node.getName();
       if (!choices.containsValue(assetName)) {
-        choices.addItem(assetName);;
+        choices.addItem(assetName);
       }
       String currentValue = property.getValue();
       if (assetName.equals(currentValue)) {

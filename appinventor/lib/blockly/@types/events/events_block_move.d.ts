@@ -10,14 +10,15 @@
  */
 import type { Block } from '../block.js';
 import { Coordinate } from '../utils/coordinate.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
 import type { Workspace } from '../workspace.js';
+import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when a block is moved. This could be from one
  * connection to another, or from one location on the workspace to another.
  */
 export declare class BlockMove extends BlockBase {
-    type: string;
+    type: EventType;
     /** The ID of the old parent block. Undefined if it was a top-level block. */
     oldParentId?: string;
     /**
@@ -87,7 +88,7 @@ export declare class BlockMove extends BlockBase {
      *
      * @returns Collection of location info.
      */
-    private currentLocation_;
+    private currentLocation;
     /**
      * Does this event record any change of state?
      *

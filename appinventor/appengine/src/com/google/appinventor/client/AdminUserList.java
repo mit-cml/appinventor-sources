@@ -89,7 +89,7 @@ public class AdminUserList extends Composite {
     adminUsers = new ArrayList<AdminUser>();
 
     sortField = SortField.NAME;
-    sortOrder = SortOrder.ASCENDING;;
+    sortOrder = SortOrder.ASCENDING;
 
     // Initialize UI
     table = new Grid(1, 4); // The table initially contains just the header row.
@@ -132,7 +132,7 @@ public class AdminUserList extends Composite {
     dismissButton.addClickListener(new ClickListener() {
         @Override
         public void onClick(Widget sender) {
-          Ode.getInstance().switchToDesignView();
+          Ode.getInstance().switchToProjectEditor();
         }
       });
     panel.add(dismissButton);

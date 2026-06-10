@@ -93,4 +93,15 @@ public abstract class PropertyEditor extends Composite {
   public boolean isMultipleValues() {
     return multiple;
   }
+
+  /**
+   * Sets the aria-labelledby attribute on the form control element.
+   * Default implementation does nothing. Subclasses should override to set the attribute
+   * on their specific form control element (input, textarea, checkbox, etc.).
+   *
+   * @param labelId the ID of the label element that describes this form control
+   */
+  public void setAriaLabelledBy(String labelId) {
+    // Default implementation does nothing
+  }
 }

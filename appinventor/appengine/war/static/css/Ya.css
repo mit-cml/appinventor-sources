@@ -44,10 +44,10 @@ body, html {
   min-height: 100vh;
 }
 
-/* Standardization of icon sizes to 16px */	
-.gwt-Tree img, .ode-Icon img, .ode-Icon-selected img {	
-  width: 16px;	
-  height: 16px;	
+/* Standardization of icon sizes to 16px */
+.gwt-Tree img, .ode-Icon img, .ode-Icon-selected img {
+  width: 16px;
+  height: 16px;
 }
 
 /* Needed for Safari to position comments correctly */
@@ -1040,36 +1040,43 @@ div.StatusPanel {
 
 /* Palette */
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header td:has(img) {
-  display: none;
+/* Category panel container */
+.ode-PaletteCategory {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header td {
+/* Category header (acts as a button) */
+.ode-PaletteCategoryHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
   color: #555;
-  font-size: 13px;
-  vertical-align: top;
-  font-weight: bold;
-}
-
-.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+  font-size: 1.1em;
+  height: 14px;
+  background-color: white;
   border-top: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
-  background-color: #eef2e0;
-  cursor: pointer;
-  height: 14px;
   padding: 8px 16px;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .content {
-  padding: 8px 4px 8px 8px;
-  background-color: white;
-  border: 1px solid #bbbbbb;
-  border-bottom: 0px;
-  margin-left: 0px;
+.ode-PaletteCategoryContent {
+  max-height: 5000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+.ode-PaletteCategoryContent-closed {
+  max-height: 0;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel img {
-  margin-top: 0px;
+.ode-PaletteCategoryContentInner {
+  background-color: white;
+  border: 1px solid #bbbbbb;
+  padding: 8px 4px 8px 8px;
 }
 
 .gwt-StackPanelItem div {
@@ -1126,20 +1133,34 @@ div.StatusPanel {
 }
 
 .ode-SimplePaletteItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   background-color: white; /* needed on Firefox */
-  height: 15px;
   cursor: pointer;
   padding: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ode-SimplePaletteItem-icon {
   height: 16px;
   width: 16px;
+  flex-shrink: 0;
+  margin-right: 10px;
 }
 
 .ode-SimplePaletteItem-caption {
   font-size: 12px;
   color: #555;
+  flex: 1;
+}
+
+.ode-SimplePaletteItem-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
 }
 
 .ode-SimplePaletteItem-button {
@@ -1196,13 +1217,18 @@ div.StatusPanel {
   font-size: small;
 }
 
-.ode-PropertiesPanel {
-  background-color: #f7f9f2;
+.ode-PropertiesPanelOuter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.ode-PropertiesPanel td {
-  color: #555;
-  font-size: 12px;
+.ode-PropertiesPanel {
+  background-color: #f7f9f2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0;
 }
 
 .ode-PropertiesComponentName {
@@ -1213,10 +1239,98 @@ div.StatusPanel {
   padding: 9px 9px 8px 10px;
 }
 
+.ode-PropertyCategory {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ode-PropertyCategoryHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-height: 16px;
+  font-size: 14px;
+  padding: 8px 8px;
+  background-color: transparent;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+  border-top: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2;
+}
+
+.ode-PropertyCategoryIcon {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease-out;
+  transform: rotate(90deg);  /* Default: rotate right-pointing arrow to point down */
+}
+
+.ode-PropertyCategoryIcon-closed {
+  transform: rotate(0deg);  /* Closed: no rotation, shows right arrow */
+}
+
+.ode-PropertyCategoryText {
+  flex-grow: 1;
+  line-height: 16px;
+  font-size: 14px;
+}
+
+.ode-PropertyCategoryContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 5000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.ode-PropertyCategoryContent-closed {
+  max-height: 0;
+}
+
+.ode-PropertyCategoryContentInner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 4px 0px 4px 8px;
+}
+
+.ode-PropertyRow {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.ode-PropertyHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 2px 1px 2px;
+  width: 100%;
+}
+
 .ode-PropertyLabel {
-  padding-top: 10px;
-  padding-left: 2px;
-  padding-bottom: 1px;
+  color: #555;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.ode-PropertyHelpWidget {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ode-ComponentHelpPopup-Body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .ode-PropertyEditor {
@@ -1350,7 +1464,7 @@ select.ode-PropertyEditor[disabled] {
   background-repeat: no-repeat;
   background-position: right top;
   background-size: 100% 100%;
-  padding: 15px 56px 12px 64px;;
+  padding: 15px 56px 12px 64px;
 }
 .ode-SimpleMockFormPhonePortraitTablet {
   background: url(../images/phonePortraitTablet.png) no-repeat right top;
@@ -1564,15 +1678,15 @@ path.ode-SimpleMockMapFeature-selected {
   box-sizing: border-box;
 }
 
-.listViewHorizontalItemStyle {  
+.listViewHorizontalItemStyle {
   display: inline-flex;
   vertical-align: top;
 }
 
-.listViewImageStyle {  
+.listViewImageStyle {
   display: inline-block;
   padding-right: 5px;
-  vertical-align: middle; 
+  vertical-align: middle;
 }
 
 /* class for the Spinner Mock component */
@@ -1717,7 +1831,7 @@ path.ode-SimpleMockMapFeature-selected {
   position: absolute;
   left: -9999px;
   width: 1px;
-  height: 1px; 
+  height: 1px;
   opacity: 0;
   overflow: hidden;
   border: none;
@@ -1936,7 +2050,7 @@ path.ode-SimpleMockMapFeature-selected {
   margin-top: 18px;
 }
 
-.ode-projectPropertyCategoryTitlePanel option { 
+.ode-projectPropertyCategoryTitlePanel option {
   font-size: 14px;
   font-weight: 500;
   padding: 10px;
@@ -1944,7 +2058,7 @@ path.ode-SimpleMockMapFeature-selected {
   border-radius: 10px;
 }
 
-.ode-projectPropertyCategoryTitlePanel:focus  { 
+.ode-projectPropertyCategoryTitlePanel:focus  {
   outline: none;
 }
 
@@ -3286,31 +3400,31 @@ textarea::-webkit-input-placeholder {
   overflow: hidden;
 }
 
-.ac-renderer {
-  font: normal 13px Arial, sans-serif;
-  position: absolute;
+/* TypeBlocking plugin autocomplete styles */
+.fi-input {
+  font-family: monospace;
+  min-width: 200px;
+  padding: 2px 4px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+.fi-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
   background: #fff;
-  border: 1px solid #666;
-  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  width: 300px;
-  height: 294px;
-  overflow: auto;
+  min-width: 200px;
+  font-family: monospace;
 }
-.ac-row {
+.fi-list li {
+  padding: 2px 6px;
   cursor: pointer;
-  padding: .4em;
 }
-.ac-highlighted {
-  font-weight: bold;
-}
-.ac-active {
-  background-color: #b2b4bf;
-}
-
-.ai_type_block {
-  position: absolute;
-  z-index: 2000;
+.fi-hl {
+  background: #bde4ff;
 }
 
 .goog-hsva-palette, .goog-hsva-palette-sm {

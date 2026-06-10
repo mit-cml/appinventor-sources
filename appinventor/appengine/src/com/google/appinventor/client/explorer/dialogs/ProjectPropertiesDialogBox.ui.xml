@@ -12,9 +12,10 @@
 
   <ui:with type="com.google.appinventor.client.Images" field="res"/>
 
-  <wiz:Dialog ui:field="projectProperties" styleName="ode-DialogBox">
+  <wiz:Dialog ui:field="projectProperties" role="dialog" ariaModal="true" ariaLabel="Project Properties"
+              styleName="ode-DialogBox">
     <g:VerticalPanel>
-    <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+    <g:Button ui:field='topInvisible' styleName="FocusTrap" tabIndex="-1"/>
       <g:HorizontalPanel styleName='ode-propertyDialogContainer'>
         <g:ListBox ui:field="categoryList" styleName='ode-projectPropertyCategoryTitlePanel'></g:ListBox>
         <g:ScrollPanel styleName='ode-propertyDialogPropertiesScrollPanel'>
@@ -28,7 +29,7 @@
           >Close</ui:msg>
         </g:Button>
       </g:FlowPanel>
-    <g:Button ui:field='bottomInvisible' styleName="FocusTrap"/>
+    <g:Button ui:field='bottomInvisible' styleName="FocusTrap" tabIndex="-1"/>
     </g:VerticalPanel>
   </wiz:Dialog>
 </ui:UiBinder>

@@ -17,4 +17,24 @@ class FormTests: AppInventorTestCase {
     form.dispatchErrorOccurredEvent(form, "Test", Int32(ErrorMessage.ERROR_IOS_INSTALLING_URLS_NOT_SUPPORTED.rawValue))
     verify()
   }
+
+  func testDispatchErrorEvent() {
+    let ble = BluetoothLE(form)
+    expectToReceiveEvent(on: form, named: "ErrorOccurred") { arguments in
+      XCTAssertEqual(ble, arguments[0] as? BluetoothLE)
+      XCTAssertEqual("RegisterForValues", arguments[1] as! String)
+    }
+    form.dispatchErrorOccurredEvent(ble, "RegisterForValues", .ERROR_EXTENSION_ERROR, 9012, ble, "Test error")
+    verify()
+  }
+
+  func testDispatchMalformedErrorMessage() {
+    let ble = BluetoothLE(form)
+    expectToReceiveEvent(on: form, named: "ErrorOccurred") { arguments in
+      XCTAssertEqual(ble, arguments[0] as? BluetoothLE)
+      XCTAssertEqual("RegisterForValues", arguments[1] as! String)
+    }
+    form.dispatchErrorOccurredEvent(ble, "RegisterForValues", .ERROR_EXTENSION_ERROR, 9012, "Test error")
+    verify()
+  }
 }

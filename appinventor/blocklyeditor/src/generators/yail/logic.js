@@ -11,21 +11,21 @@
 
 goog.provide('AI.Yail.logic');
 
-AI.Yail['logic_boolean'] = function() {
+AI.Yail.forBlock['logic_boolean'] = function(block, generator) {
   // Boolean values true and false.
-  var code = (this.getFieldValue('BOOL') == 'TRUE') ? AI.Yail.YAIL_TRUE
+  var code = (block.getFieldValue('BOOL') == 'TRUE') ? AI.Yail.YAIL_TRUE
       : AI.Yail.YAIL_FALSE;
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-AI.Yail['logic_false'] = function() {
-  return AI.Yail.logic_boolean.call(this);
-}
+AI.Yail.forBlock['logic_false'] = function(block, generator) {
+  return AI.Yail.forBlock['logic_boolean'](block, generator);
+};
 
-AI.Yail['logic_negate'] = function() {
+AI.Yail.forBlock['logic_negate'] = function(block, generator) {
   // negate operation
-  var argument = AI.Yail
-      .valueToCode(this, 'BOOL', AI.Yail.ORDER_NONE)
+  var argument = generator
+      .valueToCode(block, 'BOOL', AI.Yail.ORDER_NONE)
       || AI.Yail.YAIL_FALSE;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-not"
       + AI.Yail.YAIL_SPACER;
@@ -40,41 +40,41 @@ AI.Yail['logic_negate'] = function() {
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-AI.Yail['logic_operation'] = function() {
+AI.Yail.forBlock['logic_operation'] = function(block, generator) {
   // The and, or logic operations
-  var mode = this.opField.getValue();
-  var tuple = AI.Yail.logic_operation.OPERATORS[mode];
+  var mode = block.opField.getValue();
+  var tuple = AI.Yail.LOGIC_OPERATION_OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
   var defaultValue = tuple[2];
-  var argument0 = AI.Yail.valueToCode(this, 'A', order) || defaultValue;
-  var argument1 = AI.Yail.valueToCode(this, 'B', order) || defaultValue;
+  var argument0 = generator.valueToCode(block, 'A', order) || defaultValue;
+  var argument1 = generator.valueToCode(block, 'B', order) || defaultValue;
   var code = AI.Yail.YAIL_OPEN_COMBINATION + operator
       + AI.Yail.YAIL_SPACER + argument0 + AI.Yail.YAIL_SPACER
       + argument1;
-  for (var i = 2; i < this.itemCount_; i++) {
-    var arg = AI.Yail.valueToCode(this, this.repeatingInputName + i, order) || AI.Yail.YAIL_FALSE;
+  for (var i = 2; i < block.itemCount_; i++) {
+    var arg = generator.valueToCode(block, block.repeatingInputName + i, order) || AI.Yail.YAIL_FALSE;
     code += AI.Yail.YAIL_SPACER + arg;
   }
   code += AI.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
-AI.Yail.logic_operation.OPERATORS = {
+AI.Yail.LOGIC_OPERATION_OPERATORS = {
   AND : [ 'and-delayed', AI.Yail.ORDER_NONE, AI.Yail.YAIL_TRUE ],
   OR : [ 'or-delayed', AI.Yail.ORDER_NONE, AI.Yail.YAIL_FALSE ]
 };
 
-AI.Yail['logic_or'] = function() {
-  return AI.Yail.logic_operation.call(this);
-}
+AI.Yail.forBlock['logic_or'] = function(block, generator) {
+  return AI.Yail.forBlock['logic_operation'](block, generator);
+};
 
-AI.Yail['logic_compare'] = function() {
+AI.Yail.forBlock['logic_compare'] = function(block, generator) {
   // Basic logic compare operators
   // // TODO: (Hal) handle any type?
-  var argument0 = AI.Yail.valueToCode(this, 'A', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
-  var argument1 = AI.Yail.valueToCode(this, 'B', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
-  var yailCommand = (this.getFieldValue('OP') == "NEQ" ? 'yail-not-equal?' : "yail-equal?" );
+  var argument0 = generator.valueToCode(block, 'A', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var argument1 = generator.valueToCode(block, 'B', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_FALSE;
+  var yailCommand = (block.getFieldValue('OP') == "NEQ" ? 'yail-not-equal?' : "yail-equal?" );
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + yailCommand
       + AI.Yail.YAIL_SPACER;
   code = code + AI.Yail.YAIL_OPEN_COMBINATION

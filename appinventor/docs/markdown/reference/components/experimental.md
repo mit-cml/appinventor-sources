@@ -38,6 +38,10 @@ The ChatBot component is a non-visible component for chatting with an AI
 {:id="ChatBot.Provider" .text} *Provider*
 : Set the name of the provider to use. See https://appinv.us/chatbot for the current list of supported providers.
 
+{:id="ChatBot.ServiceURL" .text} *ServiceURL*
+: Set the ChatBot service URL. A setting of "DEFAULT" means that the
+ MIT server will be used.
+
 {:id="ChatBot.System" .text} *System*
 : The "System" value given to ChatGPT. It is used to set the tone of a conversation. For example: "You are a funny person."
 

@@ -14,6 +14,7 @@ import type { BlockSvg } from '../block_svg.js';
 import type { Connection } from '../connection.js';
 import type { ConnectionType } from '../connection_type.js';
 import type { Field } from '../field.js';
+import { Align } from './align.js';
 import { inputTypes } from './input_types.js';
 /** Class for an input with optional fields. */
 export declare class Input {
@@ -21,7 +22,7 @@ export declare class Input {
     private sourceBlock;
     fieldRow: Field[];
     /** Alignment of input's fields (left, right or centre). */
-    align: Input.Align;
+    align: Align;
     /** Is the input visible? */
     private visible;
     readonly type: inputTypes;
@@ -122,6 +123,14 @@ export declare class Input {
     /** Initialize the fields on this input. */
     init(): void;
     /**
+     * Initializes the fields on this input for a headless block.
+     *
+     * @internal
+     */
+    initModel(): void;
+    /** Initializes the given field. */
+    private initField;
+    /**
      * Sever all links to this input.
      */
     dispose(): void;
@@ -135,22 +144,4 @@ export declare class Input {
      */
     protected makeConnection(type: ConnectionType): Connection;
 }
-export declare namespace Input {
-    /**
-     * Enum for alignment of inputs.
-     *
-     * @deprecated Use Blockly.inputs.Align. To be removed in v11.
-     */
-    enum Align {
-        LEFT = -1,
-        CENTRE = 0,
-        RIGHT = 1
-    }
-}
-/** @deprecated Use Blockly.inputs.Align. To be removed in v11. */
-/** @suppress {deprecated} */
-export type Align = Input.Align;
-/** @deprecated Use Blockly.inputs.Align. To be removed in v11. */
-/** @suppress {deprecated} */
-export declare const Align: typeof Input.Align;
 //# sourceMappingURL=input.d.ts.map

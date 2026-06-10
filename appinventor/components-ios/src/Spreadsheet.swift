@@ -1085,6 +1085,40 @@ import GoogleAPIClientForREST
       }
     }
   }
+
+  @objc func ListSheets() {
+    if SpreadsheetID.isEmpty {
+      ErrorOccurred("ListSheets: " + "SpreadsheetID is empty.")
+      return
+    }
+    // wrap the API call in an Async Utility
+    _workQueue.async {
+      let query = GTLRSheetsQuery_SpreadsheetsGet.query(withSpreadsheetId: self.SpreadsheetID)
+      self._service.executeQuery(query) { (ticket:GTLRServiceTicket, result:Any?, error:Error?) in
+        if let error = error {
+          self.ErrorOccurred("\(error)")
+        } else {
+          let spreadsheet = result as? GTLRSheets_Spreadsheet
+          let sheets = spreadsheet?.sheets as? [GTLRSheets_Sheet] ?? []
+          var sheetNames: Array<String> = []
+          for sheet in sheets {
+            guard let sheetName = sheet.properties?.title, let sheetId = sheet.properties?.sheetId else {
+              continue
+            }
+            sheetNames.append(sheet.properties?.title ?? "")
+            self._sheetIdDict[sheetName] = sheetId.intValue
+          }
+          self.GotSheetList(YailList(array: sheetNames))
+        }
+      }
+    }
+  }
+
+  @objc func GotSheetList(_ sheetList: YailList<AnyObject>) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "GotSheetList", arguments: sheetList as AnyObject)
+    }
+  }
   
   // Description = Reads the *entire* Google Sheet document and triggers the GotSheetData callback event.
   @objc func ReadSheet(_ sheetName: String) {

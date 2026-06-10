@@ -90,7 +90,7 @@ public abstract class CommonProjectService {
    * @param oldProjectId  old project ID
    * @param newName new project name
    */
-  public abstract long copyProject(String userId, long oldProjectId, String newName);
+  public abstract long copyProject(String userId, long oldProjectId, String newName, String newUserId);
 
   /**
    * Deletes a project.
@@ -341,19 +341,6 @@ public abstract class CommonProjectService {
       // should never happen because force is set to true
     }
     return RpcResult.createSuccessfulRpcResult("", "");
-  }
-
-  /**
-   * Sets the moved to trash flag for a project.
-   *
-   * @param userId the user id
-   * @param projectId  project ID
-   * @param movedToTrash true if the project is moved to trash, false otherwise
-   * @return the updated UserProject object
-   */
-  public UserProject setMovedToTrash(String userId, long projectId, boolean movedToTrash) {
-    storageIo.setMoveToTrashFlag(userId, projectId, movedToTrash);
-    return storageIo.getUserProject(userId, projectId);
   }
 
   /**

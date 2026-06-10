@@ -237,4 +237,11 @@ public class ChoicePropertyEditor extends PropertyEditor {
     dropDownButton.setVisible(visible);
   }
 
+  @Override
+  public void setAriaLabelledBy(String labelId) {
+    if (labelId != null && !labelId.isEmpty()) {
+      dropDownButton.getElement().setAttribute("aria-labelledby", labelId);
+    }
+  }
+
 }
