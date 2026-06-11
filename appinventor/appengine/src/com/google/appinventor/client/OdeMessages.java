@@ -1094,7 +1094,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label on built-in-Procedures-blocks branch of block selector tree")
   String builtinProceduresLabel();
 
-  @DefaultMessage("More")
+  @DefaultMessage("More...")
   @Description("Label on nested branch for additional built-in blocks")
   String builtinMoreLabel();
 
