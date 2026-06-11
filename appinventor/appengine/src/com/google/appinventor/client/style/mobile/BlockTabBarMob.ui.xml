@@ -10,17 +10,13 @@
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
 
-    <g:FlowPanel styleName="design-tab-bar">
-        <g:FocusPanel ui:field="BlockTab" styleName="design-tab-button">
-            <g:FlowPanel styleName="tab-content">
+    <g:FlowPanel >
+        <g:FocusPanel ui:field="BlockTab" styleName="ode-TextButton">
                 <g:Label styleName="tab-label" text="Blocks"/>
-            </g:FlowPanel>
         </g:FocusPanel>
 
-        <g:FocusPanel ui:field="mediaTab" styleName="design-tab-button">
-            <g:FlowPanel styleName="tab-content">
+        <g:FocusPanel ui:field="mediaTab" styleName="ode-TextButton">
                 <g:Label styleName="tab-label" text="Media"/>
-            </g:FlowPanel>
         </g:FocusPanel>
     </g:FlowPanel>
 </ui:UiBinder>

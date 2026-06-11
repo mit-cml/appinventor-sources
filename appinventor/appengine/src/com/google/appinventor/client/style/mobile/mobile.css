@@ -2694,9 +2694,8 @@ input[type="checkbox"]:focus {
     gap: 10px;
 }
 
-.ode-BottomNavBar > * > *  {
-    display: flex;
-    width: 65px;
+.ode-BottomNavBar .ode-TextButton  {
+    flex: 1 1 0;
     height: 60px;
     padding: 10px 0px;
     flex-direction: column;
@@ -2718,6 +2717,7 @@ input[type="checkbox"]:focus {
 .ode-BottomNavBar .center {
     display: flex;
     justify-content: space-around;
+    gap: 10px;
 }
 
 .ode-designer-action-button {
@@ -3278,6 +3278,9 @@ input[type="checkbox"]:focus {
 
 .align {
     display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 10px;
 }
 
 /*dragging issue palette side panel */
