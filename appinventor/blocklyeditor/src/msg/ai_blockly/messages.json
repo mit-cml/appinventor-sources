@@ -842,6 +842,7 @@
 	"Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX": "to ",
 	"Blockly.Msg.LANG_PROCEDURES_DEFNORETURN_TOOLTIP": "A procedure that does not return a value.",
 	"Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_HELPURL": "/reference/blocks/procedures.html#create-do",
+	"Blockly.Msg.LANG_PROCEDURES_DEFANONRETURN_HELPURL": "/reference/blocks/procedures.html#create-result",
 	"Blockly.Msg.LANG_PROCEDURES_DEFANONNORETURN_DEFINE": "create procedure",
 	"Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN": "result",
 	"Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_DO": "do",

@@ -5,8 +5,8 @@ layout: documentation
 
 A procedure is a sequence of blocks or code that is stored under a name, the name of your procedure block. Instead of having to keep putting together the same long sequence of blocks, you can create a procedure and just call the procedure block whenever you want your sequence of blocks to run. In computer science, a procedure also might be called a function or a method.
 
-App Inventor also supports **higher-order procedures**, meaning procedures can take other procedures as inputs and/or return them as values. Procedures can be created without naming them (anonymous procedures), assigned to variables, and called dynamically.
-
+* [Named procedures](#named-procedures)
+* [Unnamed procedures](#unnamed-procedures)
 * [procedure do](#do)
 * [procedure result](#return)
 * [create procedure do](#create-do)
@@ -16,6 +16,8 @@ App Inventor also supports **higher-order procedures**, meaning procedures can t
 * [number of inputs procedure](#number-of-inputs)
 * [get procedure (name)](#get-procedure-name)
 * [get procedure (dropdown)](#get-procedure-dropdown)
+
+## Named procedures   {#named-procedures}
 
 ### procedure do   {#do}
 
@@ -42,6 +44,10 @@ Same as a [procedure do](#do) block, but calling this procedure returns a result
 After creating this procedure, a call block that needs to be plugged in will be created. This is because the result from executing this procedure will be returned in that call block and the value will be passed on to whatever block is connected to the plug.
 
 ---
+
+## Unnamed procedures   {#unnamed-procedures}
+
+Higher-order procedures can take other procedures as inputs and/or return them as values. Procedures can be created without naming them (anonymous procedures), assigned to variables, and called dynamically.
 
 ### create procedure do   {#create-do}
 

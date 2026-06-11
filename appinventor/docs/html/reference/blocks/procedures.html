@@ -127,9 +127,9 @@
                 <article class="documentation">
 <p>A procedure is a sequence of blocks or code that is stored under a name, the name of your procedure block. Instead of having to keep putting together the same long sequence of blocks, you can create a procedure and just call the procedure block whenever you want your sequence of blocks to run. In computer science, a procedure also might be called a function or a method.</p>
 
-<p>App Inventor also supports <strong>higher-order procedures</strong>, meaning procedures can take other procedures as inputs and/or return them as values. Procedures can be created without naming them (anonymous procedures), assigned to variables, and called dynamically.</p>
-
 <ul>
+  <li><a href="#named-procedures">Named procedures</a></li>
+  <li><a href="#unnamed-procedures">Unnamed procedures</a></li>
   <li><a href="#do">procedure do</a></li>
   <li><a href="#return">procedure result</a></li>
   <li><a href="#create-do">create procedure do</a></li>
@@ -140,6 +140,8 @@
   <li><a href="#get-procedure-name">get procedure (name)</a></li>
   <li><a href="#get-procedure-dropdown">get procedure (dropdown)</a></li>
 </ul>
+
+<h2 id="named-procedures">Named procedures</h2>
 
 <h3 id="do">procedure do</h3>
 
@@ -166,6 +168,10 @@
 <p>After creating this procedure, a call block that needs to be plugged in will be created. This is because the result from executing this procedure will be returned in that call block and the value will be passed on to whatever block is connected to the plug.</p>
 
 <hr />
+
+<h2 id="unnamed-procedures">Unnamed procedures</h2>
+
+<p>Higher-order procedures can take other procedures as inputs and/or return them as values. Procedures can be created without naming them (anonymous procedures), assigned to variables, and called dynamically.</p>
 
 <h3 id="create-do">create procedure do</h3>
 
