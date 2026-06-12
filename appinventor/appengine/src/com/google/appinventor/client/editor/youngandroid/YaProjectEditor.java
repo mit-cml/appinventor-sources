@@ -130,8 +130,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   private String defaultCloudDBToken = null;
 
-  private final Set<String> loadedBlocksEditors = new HashSet<>();
-
   /**
    * Opens the project property dialog
    */
@@ -232,11 +230,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   }
 
   private void loadBlocksEditor(String formName) {
-    if (loadedBlocksEditors.contains(formName)) {
-      return;
-    }
-    loadedBlocksEditors.add(formName);
-
     final BlocksEditor<?, DesignerEditor<?, ?, ?, ?, ?>> newBlocksEditor =
         (BlocksEditor) editorMap.get(formName).blocksEditor;
     newBlocksEditor.loadFile(new Command() {
