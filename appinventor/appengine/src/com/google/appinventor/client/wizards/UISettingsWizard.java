@@ -34,7 +34,6 @@ public class UISettingsWizard {
   @UiField protected Dialog uiDialog;
   @UiField protected Button applyButton;
   @UiField protected Button cancelButton;
-  @UiField protected Label introText;
   @UiField protected Button topInvisible;
   @UiField protected Button bottomInvisible;
   @UiField protected InputElement classicRadioButton;
@@ -64,7 +63,6 @@ public class UISettingsWizard {
     themeSelector.addItem(MESSAGES.darkMode(), "dark");
     themeSelector.setSelectedIndex(Ode.getUserDarkThemeEnabled() ? 1 : 0);
     updateStyle();
-    introText.setVisible(intro);
     cancelButton.setVisible(!intro);
     show();
   }
