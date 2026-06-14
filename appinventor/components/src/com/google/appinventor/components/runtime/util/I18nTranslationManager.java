@@ -12,8 +12,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.WeakHashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +25,8 @@ import org.json.JSONObject;
 public final class I18nTranslationManager {
   private static final String LOG_TAG = "I18nTranslationManager";
   private static final String TRANSLATIONS_ASSET = "i18n/translations.json";
+  private static final Map<Form, JSONObject> TRANSLATIONS_BY_FORM =
+    new WeakHashMap<Form, JSONObject>();
 
   private I18nTranslationManager() {
   }
@@ -33,6 +37,7 @@ public final class I18nTranslationManager {
       inputStream = form.openAsset(TRANSLATIONS_ASSET);
       String json = readFully(inputStream);
       JSONObject root = new JSONObject(json);
+      TRANSLATIONS_BY_FORM.put(form, root);
 
       String language = selectLanguage(root);
       JSONObject entries = root.optJSONObject("entries");
@@ -55,6 +60,55 @@ public final class I18nTranslationManager {
         }
       }
     }
+  }
+
+  public static String lookupDynamic(Form form, String key, Map<String, String> values) {
+    if (form == null || key == null || key.length() == 0) {
+      return "";
+    }
+
+    JSONObject root = TRANSLATIONS_BY_FORM.get(form);
+    if (root == null) {
+      return "";
+    }
+
+    String language = selectLanguage(root);
+    JSONObject entries = root.optJSONObject("entries");
+    if (entries == null) {
+      return "";
+    }
+
+    JSONObject entry = entries.optJSONObject(key);
+    if (entry == null) {
+      return "";
+    }
+
+    JSONObject translations = entry.optJSONObject("translations");
+    String template = null;
+
+    if (translations != null) {
+      template = translations.optString(language, "");
+      if (template.length() == 0) {
+        template = translations.optString(getBaseLanguageCode(), "");
+      }
+    }
+
+    if (template == null || template.length() == 0) {
+      template = entry.optString("baseText", "");
+    }
+
+    if (template.length() == 0) {
+      JSONObject source = entry.optJSONObject("source");
+      if (source != null) {
+        template = source.optString("baseText", "");
+      }
+    }
+
+    return I18nFormatter.format(template, values);
+  }
+
+  static void putTranslationsForTesting(Form form, JSONObject root) {
+    TRANSLATIONS_BY_FORM.put(form, root);
   }
 
   private static int applyTranslations(Form form, JSONObject entries, String language)
