@@ -44,6 +44,7 @@ public final class TranslationPanel extends Composite {
   private final FlexTable table;
   private final Map<String, Map<String, String>> translationValues;
   private final Map<String, TranslationEntry> translationEntries;
+  private final Map<String, DynamicTranslationEntry> dynamicTranslationEntries;
   private final List<String> languages;
   private final TextBox languageTextBox;
   private final ListBox languageListBox;
@@ -60,6 +61,7 @@ public final class TranslationPanel extends Composite {
     this.table = new FlexTable();
     this.translationValues = new HashMap<String, Map<String, String>>();
     this.translationEntries = new HashMap<String, TranslationEntry>();
+    this.dynamicTranslationEntries = new HashMap<String, DynamicTranslationEntry>();
     this.savedTranslationsLoaded = false;
     this.languages = new ArrayList<String>();
     this.languages.add(DEFAULT_LANGUAGE);
@@ -302,6 +304,24 @@ public final class TranslationPanel extends Composite {
     return object.get(name).isString().stringValue();
   }
 
+  private List<String> getJsonStringArray(JSONObject object, String name) {
+    List<String> values = new ArrayList<String>();
+
+    if (object == null || object.get(name) == null || object.get(name).isArray() == null) {
+      return values;
+    }
+
+    JSONArray array = object.get(name).isArray();
+    for (int i = 0; i < array.size(); i++) {
+      JSONValue value = array.get(i);
+      if (value != null && value.isString() != null) {
+        values.add(value.isString().stringValue());
+      }
+    }
+
+    return values;
+  }
+
   private void loadSavedTranslations() {
     if (savedTranslationsLoaded) {
       return;
@@ -354,6 +374,15 @@ public final class TranslationPanel extends Composite {
         }
 
         JSONObject entry = entryValue.isObject();
+
+        String kind = getJsonString(entry, "kind");
+        if ("dynamic".equals(kind)) {
+          String baseText = getJsonString(entry, "baseText");
+          List<String> placeholders = getJsonStringArray(entry, "placeholders");
+
+          dynamicTranslationEntries.put(key,
+              new DynamicTranslationEntry(key, baseText, placeholders));
+        }
 
         JSONValue sourceValue = entry.get("source");
         JSONObject source = null;
@@ -491,6 +520,7 @@ public final class TranslationPanel extends Composite {
       }
 
       JSONObject entryObject = new JSONObject();
+      entryObject.put("kind", new JSONString("static"));
 
       JSONObject source = new JSONObject();
       source.put("screen", new JSONString(entry.getScreenName()));
@@ -499,6 +529,37 @@ public final class TranslationPanel extends Composite {
       source.put("property", new JSONString(entry.getPropertyName()));
       source.put("baseText", new JSONString(entry.getBaseText()));
       entryObject.put("source", source);
+
+      JSONObject translations = new JSONObject();
+      for (String language : languages) {
+        String translatedValue = getTranslationValue(key, language);
+        if (translatedValue.length() > 0) {
+          translations.put(language, new JSONString(translatedValue));
+        }
+      }
+      entryObject.put("translations", translations);
+
+      entries.put(key, entryObject);
+    }
+
+    ArrayList<String> dynamicKeys = new ArrayList<String>(dynamicTranslationEntries.keySet());
+    Collections.sort(dynamicKeys);
+
+    for (String key : dynamicKeys) {
+      DynamicTranslationEntry entry = dynamicTranslationEntries.get(key);
+      if (entry == null) {
+        continue;
+      }
+
+      JSONObject entryObject = new JSONObject();
+      entryObject.put("kind", new JSONString("dynamic"));
+      entryObject.put("baseText", new JSONString(entry.getBaseText()));
+
+      JSONArray placeholders = new JSONArray();
+      for (int i = 0; i < entry.getPlaceholders().size(); i++) {
+        placeholders.set(i, new JSONString(entry.getPlaceholders().get(i)));
+      }
+      entryObject.put("placeholders", placeholders);
 
       JSONObject translations = new JSONObject();
       for (String language : languages) {
