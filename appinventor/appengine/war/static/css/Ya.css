@@ -2172,6 +2172,12 @@ path.ode-SimpleMockMapFeature-selected {
   padding: 5px 10px;
 }
 
+.ode-DialogBox .uploadDialogContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .ode-DialogBox .buttonRow {
   display: inline-flex;
   justify-content: space-around ;

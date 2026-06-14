@@ -1164,6 +1164,12 @@ path.ode-SimpleMockMapFeature-selected {
     color: context-menu-color;
   }
   
+  .ode-DialogBox .uploadDialogContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
   .ode-DialogBox .gwt-FileUpload {
     padding: 2px 35px;
     font-size: 12px;

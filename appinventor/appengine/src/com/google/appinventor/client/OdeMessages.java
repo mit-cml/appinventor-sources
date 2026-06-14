@@ -119,7 +119,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 
-  @DefaultMessage("Upload File ...")
+  @DefaultMessage("Upload File...")
   @Description("Text on \"Add...\" button")
   String addButton();
 
@@ -2077,7 +2077,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   // Used in wizards/FileUploadWizard.java
 
-  @DefaultMessage("Upload File ...")
+  @DefaultMessage("Upload File...")
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
