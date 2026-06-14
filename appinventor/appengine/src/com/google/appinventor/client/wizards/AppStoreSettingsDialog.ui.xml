@@ -18,9 +18,12 @@
         Connect.<br />
         <a href="/reference/other/build-ios-apps.html" target="_blank">More information</a>
       </g:HTML>
-      <w:LabeledTextBox ui:field="appleIdTextbox" caption="Apple ID*: " />
-      <w:LabeledTextBox ui:field="passwordTextbox" caption="App Specific Password*:" />
-      <w:LabeledTextBox ui:field="shortNameTextbox" caption="ASC Short Name:" />
+      <w:LabeledTextBox ui:field="appleIdTextbox" caption="Apple ID*:"
+          styleName="settings-labeled-textbox" />
+      <w:LabeledTextBox ui:field="passwordTextbox" caption="App Specific Password*:"
+          styleName="settings-labeled-textbox" />
+      <w:LabeledTextBox ui:field="shortNameTextbox" caption="ASC Short Name:"
+          styleName="settings-labeled-textbox" />
       <g:FlowPanel styleName="buttonRow">
         <g:Button ui:field="cancelButton" text="{messages.cancelButton}" />
         <g:Button ui:field="okButton" text="{messages.okButton}" />
