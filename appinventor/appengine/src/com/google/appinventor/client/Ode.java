@@ -675,7 +675,7 @@ public class Ode implements EntryPoint {
       assetManager.loadAssets(project.getProjectId());
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
-    getTopToolbar().updateFileMenuButtons(1);
+    getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
   }
 
   /**
