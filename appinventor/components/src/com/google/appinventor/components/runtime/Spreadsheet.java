@@ -1240,19 +1240,16 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             .get(spreadsheetID, sheetName).execute();
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
-          // If the data we got is empty, then return so.
-          if (values == null || values.isEmpty()) {
-            ErrorOccurred("AddColumn: No data found");
-            return;
-          }
 
-          // nextCol gets mutated, keep addedColumn as a constant
+          // nextCol gets mutated, keep columnNumber as a constant
           int maxCol = 0;
-          for (List<Object> list : values) {
-            maxCol = Math.max(maxCol, list.size());
+          if (values != null) {
+            for (List<Object> list : values) {
+              maxCol = Math.max(maxCol, list.size());
+            }
           }
           int nextCol = maxCol + 1;
-          final int addedColumn = nextCol;
+          final int columnNumber = nextCol;
           // Converts the col number to the corresponding letter
           String[] alphabet = {
             "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
@@ -1268,7 +1265,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              FinishedAddColumn(addedColumn);
+              FinishedAddColumn(columnNumber);
             }
           });
         } catch (IOException e) {
