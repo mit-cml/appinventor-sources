@@ -429,6 +429,7 @@ public class Ode implements EntryPoint {
   public void switchToProjectsView() {
     // We may need to pass the code below as a runnable to
     // screenShotMaybe() so build the runnable now
+    getTopToolbar().updateMoveToTrash(true);
     hideChaff();
     hideTutorials();
     Runnable next = new Runnable() {
@@ -675,6 +676,7 @@ public class Ode implements EntryPoint {
       assetManager.loadAssets(project.getProjectId());
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
+    getTopToolbar().updateMoveToTrash(true);
     getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
   }
 
