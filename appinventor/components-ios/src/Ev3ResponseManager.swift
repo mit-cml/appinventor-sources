@@ -32,7 +32,7 @@ class Ev3ResponseManager {
     
     //let sequence: UInt16 = (ushort) (report[0] | (report[1] << 8));
     
-    //TODO seems not that the seqence number is stored le
+    //TODO seems not that the sequence number is stored le
     let sequence: UInt16 = UInt16(report[1]) << 8 | UInt16(report[0])
     
     if sequence < 1 {

@@ -25,7 +25,7 @@ A button that, when clicked on, displays a list of the contacts to choose among.
   - [`EmailAddress`](#ContactPicker.EmailAddress): the contact's primary email address
   - [`EmailAddressList`](#ContactPicker.EmailAddressList): a list of the contact's email addresses
   - [`ContactUri`](#ContactPicker.ContactUri): the contact's URI on the device
-  - [`PhoneNumber`](#ContactPicker.PhoneNumber): the contact's primary phone number (on Later Android Verisons)
+  - [`PhoneNumber`](#ContactPicker.PhoneNumber): the contact's primary phone number (on Later Android Versions)
   - [`PhoneNumberList`](#ContactPicker.PhoneNumberList): a list of the contact's phone numbers (on Later Android Versions)
   - [`Picture`](#ContactPicker.Picture): the name of the file containing the contact's image, which can be used as a Picture property value for the Image or ImageSprite component.
 
@@ -589,7 +589,7 @@ None
  provides the sending number and message.
 
  An app that includes this component will receive messages even when it is in the background
- (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long
+ (i.e. when it's not visible on the screen) and, more so, even if the app is not running, so long
  as it's installed on the phone. If the phone receives a text message when the app is not in the
  foreground, the phone will show a notification in the notification bar. Selecting the
  notification will bring up the app. As an app developer, you'll probably want to give your users

@@ -23,7 +23,7 @@ You can also use the Cut shortcut (Ctrl+X on Windows/Linux, ⌘X on macOS) to co
 
 Once you have copied components to the clipboard, you can press the paste shortcut key (Ctrl+V on Windows/Linux, ⌘V on macOS) to paste them. When copying and pasting components, the default behavior is to copy both the design as well as the behavior (i.e., the blocks). If you would prefer to only paste the component without copying its behavior, hold the shift key while pressing the paste key combination. App Inventor will skip pasting the blocks if the shift key is held.
 
-When pasting, App Inventor will rename the pasted components if there is a collision with existing components in the project. It does this by computing a fresh name for each colliding name. The renaming algorithm works by either adding a numeric suffix to the name, or by incrementing the numeric suffix of the name until the collision is resolved. For example, if you copy a component named `ResetButton`, the first copy will be called `ResetButton1`, the second will be called `ResetButton2`, and so forth. These new names are also subsituted into the copied blocks code, if any.
+When pasting, App Inventor will rename the pasted components if there is a collision with existing components in the project. It does this by computing a fresh name for each colliding name. The renaming algorithm works by either adding a numeric suffix to the name, or by incrementing the numeric suffix of the name until the collision is resolved. For example, if you copy a component named `ResetButton`, the first copy will be called `ResetButton1`, the second will be called `ResetButton2`, and so forth. These new names are also substituted into the copied blocks code, if any.
 
 ## Manipulating Blocks
 
@@ -35,7 +35,7 @@ To copy a block, first select the block. You can copy the block by either pressi
 
 ### Paste Blocks
 
-To paste a block, press the paste shortcut for your platofmr (Ctrl+V for Windows/Linux, ⌘V on macOS). The paste action is also available on the context menu by right clicking (Ctrl+clicking on macOS) the workspace.
+To paste a block, press the paste shortcut for your platform (Ctrl+V for Windows/Linux, ⌘V on macOS). The paste action is also available on the context menu by right clicking (Ctrl+clicking on macOS) the workspace.
 
 ## Copying Screens
 

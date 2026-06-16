@@ -227,7 +227,7 @@ None
 : Specifies whether to stop the drive motors before disconnecting.
 
 {:id="Ev3Motors.TachoCountChangedEventEnabled" .boolean} *TachoCountChangedEventEnabled*
-: Returns whether the TachoCountChanged event should fire when the motor angle is increaing.
+: Returns whether the TachoCountChanged event should fire when the motor angle is increasing.
 
 {:id="Ev3Motors.WheelDiameter" .number .do} *WheelDiameter*
 : Returns the diameter of the wheels attached on motors.

@@ -164,7 +164,7 @@ The Firebase component communicates with a Web service to store
 : Unauthenticate from Firebase.
 
    Firebase keeps track of credentials in a cache in shared_prefs
- It will re-use these credentials as long as they are valid. Given
+ It will reuse these credentials as long as they are valid. Given
  That we retrieve a FirebaseToken with a version long life, this will
  effectively be forever. Shared_prefs survive an application update
  and depending on how backup is configured on a device, it might survive

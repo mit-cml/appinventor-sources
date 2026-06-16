@@ -93,13 +93,13 @@ extension NSMutableData{
     self.append(&val, length: MemoryLayout.size(ofValue: val))
   }
   
-  /// Apppends Int16 in BE format
+  /// Appends Int16 in BE format
   func appendInt16(value: Int16){
     var val = value.bigEndian
     self.append(&val, length: MemoryLayout.size(ofValue: val))
   }
   
-  /// Apppends Int16 in LE format
+  /// Appends Int16 in LE format
   func appendInt16LE(value: Int16){
     var val = value.littleEndian
     self.append(&val, length: MemoryLayout.size(ofValue: val))

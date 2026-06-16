@@ -204,7 +204,7 @@ public final class BluetoothServer extends BluetoothConnectionBase {
    */
   @SimpleEvent(description = "Indicates that a bluetooth connection has been accepted.")
   public void ConnectionAccepted() {
-    Log.i(logTag, "Successfullly accepted bluetooth connection.");
+    Log.i(logTag, "Successfully accepted bluetooth connection.");
     EventDispatcher.dispatchEvent(this, "ConnectionAccepted");
   }
 }

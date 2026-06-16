@@ -5,7 +5,7 @@ layout: documentation
 
 App Inventor includes an emulator for the phone. The emulator lets you develop and test apps using a virtual phone instead of a real phone. Instead of connecting a phone to the USB port, just start the emulator program. When you click Connect to Phone in the Blocks Editor, your app will appear in the emulator.
 
-You can't do everything with the emulator that you can with a real phone — you can't shake it, for example, and the emulator can't make or recieve phone calls — but you can use the emulator to create apps and test them, and install them on a phone later if you like.
+You can't do everything with the emulator that you can with a real phone — you can't shake it, for example, and the emulator can't make or receive phone calls — but you can use the emulator to create apps and test them, and install them on a phone later if you like.
 
 ## Starting the Emulator
 

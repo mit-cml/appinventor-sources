@@ -164,12 +164,12 @@
     ((_ component-type)
      (filter-type-in-current-form-environment 'component-type))))
 
-;; We'd like to do something like the following which could re-use existing components
-;; and thereore avoid overriding property changes that the user might have made via
+;; We'd like to do something like the following which could reuse existing components
+;; and therefore avoid overriding property changes that the user might have made via
 ;; the REPL but it just didn't work.  Some components just wouldn't show up.  It seemed
 ;; to be somewhat related to the use of HVArrangements (and sub-forms) but I couldn't really
 ;; pin it down.  Note though, that even if the below did work we would have to deal with
-;; deleting and then potentially reusing component names.  Our working appoach of reconstructing
+;; deleting and then potentially reusing component names.  Our working approach of reconstructing
 ;; components every time nicely sidesteps that issue.
 ;;
 ;; (define (add-component-within-repl container-name component-type component-name init-thunk)
@@ -653,8 +653,8 @@
           (let ((components (reverse components-to-create)))
             ;; We need this binding because the block parser sends this symbol
             ;; to represent an uninitialized value
-            ;; We have to explicity write #!null here, rather than
-            ;; *the-null-value* because that external defintion hasn't happened yet
+            ;; We have to explicitly write #!null here, rather than
+            ;; *the-null-value* because that external definition hasn't happened yet
             (add-to-global-vars '*the-null-value* (lambda () #!null))
             ;; The Form has been created (we're in its code), so we should run
             ;; do-after-form-creation thunks now. This is important because we
@@ -786,7 +786,7 @@
 ;;; Note that we have to worry about the case where a procedure P
 ;;; initially defined from codeblocks get redefined from the
 ;;; repl.  If we have another procedure Q that calls P, we have
-;;; to make sure that Q will see the new binding for P. Currentl,
+;;; to make sure that Q will see the new binding for P. Currently,
 ;;; "call" is set up to always look up the procedure name in the form
 ;;; environment, EXCEPT for calling primitives, where it just looks up
 ;;; the name.
@@ -814,7 +814,7 @@
 
 
 ;;; Arrange for a sequence of expressions to be evaluated after the
-;;; form has been created.  Used for setting the inital form properties
+;;; form has been created.  Used for setting the initial form properties
 (define-syntax do-after-form-creation
   (syntax-rules ()
     ((_ expr ...)
@@ -945,7 +945,7 @@
 ;; the lambda expression is tail-recursive (like ours is). By binding
 ;; the lambda expression to a variable and then calling via the
 ;; variable, the optimizer is not invoked and the code produced, while
-;; not optmized, is correct.
+;; not optimized, is correct.
 
 (define-macro (while condition body . rest)
   `(let ((cont (lambda (*yail-break*)
@@ -1078,7 +1078,7 @@
 ;;; If you change this name, make sure also change it below, where the same
 ;;; name is bound in the initial form environment.
 
-;;; the null value represents the value of unitialized variables.  It is also
+;;; the null value represents the value of uninitialized variables.  It is also
 ;;; the value assigned to Java nulls coming back from components, even though
 ;;; there should not be any
 ;;; Warning: If you change this, you need to make a compatible change in the
@@ -1346,7 +1346,7 @@
 
 ;;; If we are handed a collection that contains a yail list as an item,
 ;;; then the result of converting it to a kawa list will be a kawa list that
-;;; contains a yail list as an item.  Consequently, when we transfom that kawa list
+;;; contains a yail list as an item.  Consequently, when we transform that kawa list
 ;;; to a yail list, we have to be careful leave invariant any of the Kawa list's
 ;;; elements that are already yail lists.
 ;;; More generally, we need to assume that any yail list operated on by runtime has
@@ -1663,7 +1663,7 @@
 
 ;;; This is very similar to coerce-to-string, but is intended for places where we
 ;;; want to make the structure more clear.  For example, the empty string should
-;;; be explicity shown in error messages.
+;;; be explicitly shown in error messages.
 ;;; This procedure is currently almost completely redundant with coerce-to-string
 ;;; but it give us flexibility to tailor display for other data types
 
@@ -1908,7 +1908,7 @@
    ((and (enum? x1) (not (enum? x2))) (equal? (x1:toUnderlyingValue) x2))
    ((and (not (enum? x1)) (enum? x2)) (equal? x1 (x2:toUnderlyingValue)))
 
-   ;; If the x1 and x2 are not equal?, try comparing coverting x1 and x2 to numbers
+   ;; If the x1 and x2 are not equal?, try comparing converting x1 and x2 to numbers
    ;; and comparing them numerically
    ;; Note that equal? is not sufficient for numbers
    ;; because in Scheme (= 1 1.0) is true while
@@ -2048,8 +2048,8 @@
                 n))
         ((= d 0)
          (begin
-           ;; If numerator is not zero, but we're deviding by 0, we show the warning, and
-           ;; Let Kawa do the dvision and return the result, which will be plus or minus infinity.
+           ;; If numerator is not zero, but we're dividing by 0, we show the warning, and
+           ;; Let Kawa do the division and return the result, which will be plus or minus infinity.
            ;; Note that division by zero does not produce a Kawa exception.
            ;; We also convert the result to inexact, to code around the complexity (or Kawa bug?) that
            ;; inexact infinity is different from exact infinity.  For example
@@ -2057,7 +2057,7 @@
            (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
            (exact->inexact (/ n d))))
         (else
-         ;; Otherise, return the result of the Kawa devision.
+         ;; Otherwise, return the result of the Kawa division.
          ;; We force inexactness so that integer division does not produce
          ;; rationals, which is simpler for App Inventor users.
          ;; In most cases, rationals are converted to decimals anyway at higher levels
@@ -2075,7 +2075,7 @@
   (/ (* degrees *pi*)
      180))
 
-;; Direct conversion from radians to degreees with no restrictions on range
+;; Direct conversion from radians to degrees with no restrictions on range
 (define (radians->degrees-internal radians)
   (/ (* radians 180)
      *pi*))
@@ -2184,7 +2184,7 @@
 
 
 
-;;; We can call the patterrn matcher here, becuase the blocks declare the arg type to
+;;; We can call the pattern matcher here, because the blocks declare the arg type to
 ;;; be text and therefore the arg will be a string when the procedure is called.
 
 (define (is-base10? arg)
@@ -2197,7 +2197,7 @@
   (and (Pattern:matches "[01]*" arg) (not (string-empty? arg))))
 
 ;;; Math-convert procedures do not need their arg explicitly sanitized because
-;;; the blocks delare the arg type as string
+;;; the blocks declare the arg type as string
 
 (define (math-convert-dec-hex x)
   (if (is-base10? x)
@@ -2807,7 +2807,7 @@ list, use the make-yail-list constructor with no arguments.
             (format #f
               "typeof called with unexpected value: ~A"
               (get-display-representation val))
-            "Bad arguement to yail-typeof"))))
+            "Bad argument to yail-typeof"))))
 
 (define (yail-indexof element lst)
   (yail-list-index element lst))
@@ -2933,7 +2933,7 @@ list, use the make-yail-list constructor with no arguments.
         (*:hashCode comp2)))))
 
 ;; take function returns a list containing the first 'n' number of elements from the list 'xs'
-;; Need to check if n is a proper list and xs is a postive integer
+;; Need to check if n is a proper list and xs is a positive integer
 (define (yail-take n xs)
   (let loop ((n n) (xs xs) (zs '()))
     (if (or (= n 0) (null? xs))
@@ -2942,7 +2942,7 @@ list, use the make-yail-list constructor with no arguments.
         (cons (car xs) zs)))))
 
 ;; drop function returns a list drops the first 'n' number of elements from the list 'xs'
-;; Need to check if n is a proper list and xs is a postive integer
+;; Need to check if n is a proper list and xs is a positive integer
 (define (yail-drop n xs)
   (if (or (= n 0) (null? xs))
     xs
@@ -3100,7 +3100,7 @@ list, use the make-yail-list constructor with no arguments.
              (and (> start end) (>= step 0))
              (and (not (= start end)) (= step 0)))
          ;; (Hal) I am removing the error here, on the theory that
-         ;; in thse cases the loop should simply not run
+         ;; in these cases the loop should simply not run
          ;; (signal-runtime-error
          ;;  (string-append
          ;;   "FOR RANGE was called with a start of "
@@ -3545,7 +3545,7 @@ Matrix implementation.
 ;;; putting it at the end makes it easy to make optional.
 
 (define (make-color color-components)
-  ;; The explict coercions to number are necessary because the ordinary
+  ;; The explicit coercions to number are necessary because the ordinary
   ;; method call coercion mechanism won't convert a list of string to a
   ;; list of numbers.   Also note that Kawa bitwise operations require exact integers.
   (let ((red (make-exact-yail-integer (yail-list-get-item color-components 1)))
@@ -3692,7 +3692,7 @@ Matrix implementation.
 ;;          (set! *num-connections* (+ *num-connections* 1))
 ;;          (android-log
 ;;                              (format #f "Connection #~A opened to telnet repl\n" this-connection-number))
-;;          ;; Tell kawa to use full interpretor mode since we can't load .class files on the phone.
+;;          ;; Tell kawa to use full interpreter mode since we can't load .class files on the phone.
 ;;          (gnu.expr.ModuleExp:mustNeverCompile)
 ;;          (kawa.TelnetRepl:serve (kawa.standard.Scheme:getInstance "scheme") accepted-socket)))
 ;;      (server-socket:close))))
@@ -3831,7 +3831,7 @@ Matrix implementation.
 
 
 ;; For Testing
-;; Rather than hacking tests into a Java tests we're puting low-cost tests of
+;; Rather than hacking tests into a Java tests we're putting low-cost tests of
 ;; scheme code in here
 ;; This is used in the YailEval tests
 ;; Should we move it to YailEvalTest ?

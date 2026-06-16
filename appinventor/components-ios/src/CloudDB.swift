@@ -537,7 +537,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   }
 
   fileprivate func jsonError(_ method: String, _ error: Error) {
-    print("a json error occured: \(error)")
+    print("a json error occurred: \(error)")
     _form?.dispatchErrorOccurredEvent(self, method,
         ErrorMessage.ERROR_CLOUDDB_JSON_MALFORMED.code,
         ErrorMessage.ERROR_CLOUDDB_JSON_MALFORMED.message, error.localizedDescription)

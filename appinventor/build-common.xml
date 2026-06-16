@@ -159,7 +159,7 @@
          aij-testingtarget: the name of the target that uses this
         macro.  It is assumed that there will be a path set with the
         name of libsFor${aij-testingtarget}.path which represents
-        which libaries are needed to compile the tests, and one called
+        which libraries are needed to compile the tests, and one called
         ${aij-testingtarget}.path as the libraries needed to run the
         tests.
    

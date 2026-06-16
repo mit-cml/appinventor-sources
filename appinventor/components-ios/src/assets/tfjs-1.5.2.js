@@ -3018,7 +3018,7 @@
     }, t.prototype.fixUnknownDimension = function (e, t) {
       for (var n = "Total size of new array must be unchanged.", r = t.slice(), i$$1 = 1, a = null, o$$1 = 0; o$$1 < r.length; ++o$$1) {
         var s = r[o$$1];if (this.isUnknown(s)) {
-          if (null !== a) throw new ValueError("Can only specifiy one unknown dimension.");a = o$$1;
+          if (null !== a) throw new ValueError("Can only specify one unknown dimension.");a = o$$1;
         } else i$$1 *= s;
       }var l$$1 = arrayProd(e);if (null !== a) {
         if (0 === i$$1 || l$$1 % i$$1 != 0) throw new ValueError(n);r[a] = l$$1 / i$$1;
@@ -3221,7 +3221,7 @@
         }n[r] += o$$1[r];
       }return n;
     }, t.prototype.computeMask = function (e, t) {
-      var n = this;if (null == t) return null;if (!Array.isArray(t)) throw new ValueError("`mask` should be an array for Concatenate");if (!Array.isArray(e)) throw new ValueError("`inputs` should be an array for Concatenate");if (t.length !== e.length) throw new ValueError("Mismatch in the length of mask (" + t.length + ") and the legnth of inputs (" + e.length + ")");return Qe(function () {
+      var n = this;if (null == t) return null;if (!Array.isArray(t)) throw new ValueError("`mask` should be an array for Concatenate");if (!Array.isArray(e)) throw new ValueError("`inputs` should be an array for Concatenate");if (t.length !== e.length) throw new ValueError("Mismatch in the length of mask (" + t.length + ") and the length of inputs (" + e.length + ")");return Qe(function () {
         var r = !0;if (t.forEach(function (e) {
           null == e || (r = !1);
         }), r) return null;for (var i$$1 = [], a = 0; a < e.length; ++a) null == t[a] ? i$$1.push(qn(e[a]).asType("bool")) : t[a].rank < e[a].rank ? i$$1.push(xr(t[a], -1)) : i$$1.push(t[a]);var o$$1 = jn(i$$1, n.axis);return xl(o$$1, -1, !1);
@@ -3869,7 +3869,7 @@
       var t = { units: this.units, activation: serializeActivation(this.activation), recurrentActivation: serializeActivation(this.recurrentActivation), useBias: this.useBias, kernelInitializer: serializeInitializer(this.kernelInitializer), recurrentInitializer: serializeInitializer(this.recurrentInitializer), biasInitializer: serializeInitializer(this.biasInitializer), kernelRegularizer: serializeRegularizer(this.kernelRegularizer), recurrentRegularizer: serializeRegularizer(this.recurrentRegularizer), biasRegularizer: serializeRegularizer(this.biasRegularizer), activityRegularizer: serializeRegularizer(this.activityRegularizer), kernelConstraint: serializeConstraint(this.kernelConstraint), recurrentConstraint: serializeConstraint(this.recurrentConstraint), biasConstraint: serializeConstraint(this.biasConstraint), dropout: this.dropout, recurrentDropout: this.recurrentDropout, implementation: this.implementation },
           n = e.prototype.getConfig.call(this);return delete n.cell, Object.assign(t, n), t;
     }, t.fromConfig = function (e, t) {
-      return 0 === t.implmentation && (t.implementation = 1), new e(t);
+      return 0 === t.implementation && (t.implementation = 1), new e(t);
     }, t.className = "GRU", t;
   }(RNN);ed.registerClass(GRU);var LSTMCell = function (e) {
     function t(t) {
@@ -3960,7 +3960,7 @@
       var t = { units: this.units, activation: serializeActivation(this.activation), recurrentActivation: serializeActivation(this.recurrentActivation), useBias: this.useBias, kernelInitializer: serializeInitializer(this.kernelInitializer), recurrentInitializer: serializeInitializer(this.recurrentInitializer), biasInitializer: serializeInitializer(this.biasInitializer), unitForgetBias: this.unitForgetBias, kernelRegularizer: serializeRegularizer(this.kernelRegularizer), recurrentRegularizer: serializeRegularizer(this.recurrentRegularizer), biasRegularizer: serializeRegularizer(this.biasRegularizer), activityRegularizer: serializeRegularizer(this.activityRegularizer), kernelConstraint: serializeConstraint(this.kernelConstraint), recurrentConstraint: serializeConstraint(this.recurrentConstraint), biasConstraint: serializeConstraint(this.biasConstraint), dropout: this.dropout, recurrentDropout: this.recurrentDropout, implementation: this.implementation },
           n = e.prototype.getConfig.call(this);return delete n.cell, Object.assign(t, n), t;
     }, t.fromConfig = function (e, t) {
-      return 0 === t.implmentation && (t.implementation = 1), new e(t);
+      return 0 === t.implementation && (t.implementation = 1), new e(t);
     }, t.className = "LSTM", t;
   }(RNN);ed.registerClass(LSTM);var StackedRNNCells = function (e) {
     function t(t) {

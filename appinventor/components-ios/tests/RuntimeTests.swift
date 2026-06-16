@@ -230,8 +230,8 @@ class RuntimeTests: XCTestCase {
     interpreter.setCurrentForm(form)
     XCTAssertEqual("[\"1\", \"0\", \"0\", \"1\", \"0\"]",
         interpreter.evalForm("(get-display-representation (string-split \"10010\" \"\"))"))
-    XCTAssertEqual("[\"apple\", \"banana\", \"cantalope\"]",
-        interpreter.evalForm("(get-display-representation (string-split \"apple,banana,cantalope\" \",\"))"))
+    XCTAssertEqual("[\"apple\", \"banana\", \"cantaloupe\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"apple,banana,cantaloupe\" \",\"))"))
     XCTAssertEqual("[\"\", \"test\"]",
         interpreter.evalForm("(get-display-representation (string-split \"strteststr\" \"str\"))"))
     XCTAssertEqual("[\"many\", \"commas\"]",

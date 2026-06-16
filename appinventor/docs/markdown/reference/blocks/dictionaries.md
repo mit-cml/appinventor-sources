@@ -42,7 +42,7 @@ Dictionaries, called in other languages terms such as maps, associative arrays o
 }
 ```
 
-The above example shows that in JSON the keys (quoted text before the `:`) can map to different types of values. The allowed types are number, text, other dictionaries, booleans, and lists. In the blocks language, you can bulid this dictionary as follows:
+The above example shows that in JSON the keys (quoted text before the `:`) can map to different types of values. The allowed types are number, text, other dictionaries, booleans, and lists. In the blocks language, you can build this dictionary as follows:
 
 ![A blocks representation of the dictionary shown above](images/dictionaries/example-dictionary-blocks.png)
 

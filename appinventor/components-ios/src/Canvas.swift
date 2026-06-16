@@ -188,7 +188,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
     _backgroundImageView.leftAnchor.constraint(equalTo: _view.leftAnchor).isActive = true
     _backgroundImageView.rightAnchor.constraint(equalTo: _view.rightAnchor).isActive = true
 
-    // Configure default dimension constraints. These are set to low priority so that they can be overriden
+    // Configure default dimension constraints. These are set to low priority so that they can be overridden
     // by the user configuration.
     let baseWidthConstraint = _view.widthAnchor.constraint(equalToConstant: CGFloat(kCanvasPreferredWidth))
     baseWidthConstraint.priority = .defaultLow
@@ -258,7 +258,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
         return
       }
 
-      // There are two possibilities when the backgroud image is changed:
+      // There are two possibilities when the background image is changed:
       // 1) the provided path is valid, so the background image is updated or
       // 2) the provided path is invalid, so the background color is shown
       if let image = AssetManager.shared.imageFromPath(path: path) {

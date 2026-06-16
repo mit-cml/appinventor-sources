@@ -6,7 +6,7 @@ layout: documentation
   * [1. Create a Google Developer Account](#1-create-a-google-developer-account)
   * [2. Create a Google Developer Project](#2-create-a-google-developer-project)
   * [3. Enable the Google Sheeets API](#3-enable-the-google-sheeets-api)
-  * [4. Creating a Service Acccount](#4-creating-a-service-acccount)
+  * [4. Creating a Service Account](#4-creating-a-service-account)
 - [Linking the Google Sheets Document](#linking-the-google-sheets-document)
   * [1. Create the Google Sheets Document](#1-create-the-google-sheets-document)
   * [2. Share the Google Sheets Document](#2-share-the-google-sheets-document)
@@ -82,7 +82,7 @@ appears. Then click the Enable button for the API Library.
 ![](images/googlesheets-setup-07.png)
 ![](images/googlesheets-setup-08.png)
 
-## 4. Creating a Service Acccount
+## 4. Creating a Service Account
 
 Now that we have enabled the Google Sheets API for this project, we want to
 create a service account. Simply put, this service account will look a lot like

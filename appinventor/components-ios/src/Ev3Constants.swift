@@ -337,7 +337,7 @@ public enum NxtLightMode : UInt8
   /// Amount of reflected light
   case reflect = 0
   
-  /// Amoutn of ambient light
+  /// Amount of ambient light
   case ambient = 1
 }
 
@@ -443,7 +443,7 @@ public enum GyroscopeMode : UInt8
   case rate = 1
   
   /// Unknown
-  case fas = 2    // TOOD: ??
+  case fas = 2    // TODO: ??
   /// Unknown
   case gandA = 3  // TODO: ??
   /// Calibrate

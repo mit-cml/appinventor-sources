@@ -293,8 +293,8 @@ A two-dimensional touch-sensitive rectangular panel on which drawing can
 {:id="Canvas.DrawArc" class="method"} <i/> DrawArc(*left*{:.number},*top*{:.number},*right*{:.number},*bottom*{:.number},*startAngle*{:.number},*sweepAngle*{:.number},*useCenter*{:.boolean},*fill*{:.boolean})
 : Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom).
  Start angle is 0 when heading to the right, and increase when rotate clockwise.
- When useCenter is true, a sector will be drawed instead of an arc.
- When fill is true, a filled arc (or sector) will be drawed instead of just an outline.
+ When useCenter is true, a sector will be drawn instead of an arc.
+ When fill is true, a filled arc (or sector) will be drawn instead of just an outline.
 
 {:id="Canvas.DrawCircle" class="method"} <i/> DrawCircle(*centerX*{:.number},*centerY*{:.number},*radius*{:.number},*fill*{:.boolean})
 : Draws a circle (filled in) with the given radius centered at the given coordinates on the

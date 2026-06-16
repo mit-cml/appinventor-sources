@@ -356,7 +356,7 @@ import Foundation
     case .FUSION_TABLES_QUERY_ERROR:
       return "Fusion tables returned an error. The query was: %s. The response was: %s"
     case .FUSION_TABLES_AUTH_ERROR:
-      return "An error occured when attempting to authenticate for Fusion Tables. The error was %s"
+      return "An error occurred when attempting to authenticate for Fusion Tables. The error was %s"
 
     // Form Errors
     case .ERROR_DIVISION_BY_ZERO:
@@ -413,7 +413,7 @@ import Foundation
     case .ERROR_IOS_SPEECH_RECOGNITION_UNAVAILABLE:
       return "Speech recognition encountered an error and is currently unavailable"
     case .ERROR_IOS_SPEECH_RECOGNITION_PROCESSING_ERROR:
-      return "An error occured when attempting to process audio"
+      return "An error occurred when attempting to process audio"
     case .ERROR_IOS_SPEECH_RECOGNITION_AUDIO_ERROR:
       return "An error occurred when setting up audio for speech recognition: %s"
 

@@ -17,7 +17,7 @@ class ListPickerTests: XCTestCase {
   }
 
   func testSelectionIndex() {
-    testListPicker.Elements = ["apple", "banana", "cantalope"] as [AnyObject]
+    testListPicker.Elements = ["apple", "banana", "cantaloupe"] as [AnyObject]
 
     // Setting the Selection to a valid item should yield the 1-based index of the selection
     testListPicker.Selection = "apple"
@@ -42,7 +42,7 @@ class ListPickerTests: XCTestCase {
     // Selecting an element in the list should update the Selection and SelectionIndex
     testListPicker.tableView(UITableView(), didSelectRowAt: IndexPath(row: 2, section: 0))
     XCTAssertEqual(3, testListPicker.SelectionIndex)
-    XCTAssertEqual("cantalope", testListPicker.Selection)
+    XCTAssertEqual("cantaloupe", testListPicker.Selection)
   }
 
 }

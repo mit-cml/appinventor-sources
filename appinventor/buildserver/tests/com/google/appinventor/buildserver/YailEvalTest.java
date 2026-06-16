@@ -771,7 +771,7 @@ public class YailEvalTest extends TestCase {
   // }
 
   public void testForRangeConversionErrorOnStartArg() throws Throwable {
-    /* test forrange signaling a converison error for the start argument */
+    /* test forrange signaling a conversion error for the start argument */
     String schemeInputString =
         "(begin (def x 0)" +
         "(forrange i " +
@@ -793,7 +793,7 @@ public class YailEvalTest extends TestCase {
   }
 
   public void testForRangeConversionErrorOnEndArg() throws Throwable {
-    /* test forrange signaling a converison error for the end argument */
+    /* test forrange signaling a conversion error for the end argument */
     String schemeInputString =
         "(begin (def x 0)" +
         "(forrange i " +
@@ -815,7 +815,7 @@ public class YailEvalTest extends TestCase {
   }
 
   public void testForRangeConversionErrorOnStepArg() throws Throwable {
-    /* test forrange signaling a converison error for the step argument */
+    /* test forrange signaling a conversion error for the step argument */
     String schemeInputString =
         "(begin (def x 0)" +
         "(forrange i " +

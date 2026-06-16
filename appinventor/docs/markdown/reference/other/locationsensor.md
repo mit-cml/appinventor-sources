@@ -7,14 +7,14 @@ layout: documentation
 
 The LocationSensor component can determine the phone's latitude and longitude as well as a street address. You can use it to share your location with others, record "breadcrumbs" on a journey or treasure hunt, or as a way to take roll in class (as long as the students have Android devices!)
 
-The sample apps below are simple but illustrate the basic way that location can be determined. Both apps report the current latitude, longitude, and addres on the phone's display and, just for fun, speak the address aloud. The first app reports the location as soon as the sensor gets the data and every time the phone's location is changed. The second app only invokes the location sensor in response to an event-- when the user clicks a button.
+The sample apps below are simple but illustrate the basic way that location can be determined. Both apps report the current latitude, longitude, and address on the phone's display and, just for fun, speak the address aloud. The first app reports the location as soon as the sensor gets the data and every time the phone's location is changed. The second app only invokes the location sensor in response to an event-- when the user clicks a button.
 
 For each sample app, the following is provided:
 
 * A barcode which can be scanned to **install** the app on your phone.
 * The source (blocks) for you to use/**customize**. Download the file to your computer then upload it into App Inventor.
 * A snapshot of the app in the Component **Designer**.
-* **Annotated blocks** to help you undertstand the app. The annotations are block comments that will appear in the app when you upload it as well.
+* **Annotated blocks** to help you understand the app. The annotations are block comments that will appear in the app when you upload it as well.
 
 ## Sample App 1: Location Reader
 

@@ -177,7 +177,7 @@ open class ChartDataModel: DataModel {
   func isEntryCriterionSatisfied(_ entry: DGCharts.ChartDataEntry, _ criterion: EntryCriterion, value: String) -> Bool {
     var criterionSatisfied: Bool = false
     switch criterion {
-    case .All: // criterion satisfied no matter the value, sicne all entries should be returned
+    case .All: // criterion satisfied no matter the value, since all entries should be returned
       criterionSatisfied = true
       break
 
@@ -231,7 +231,7 @@ open class ChartDataModel: DataModel {
     if _entries.count > maximumTimeEntries {
       _entries.remove(at: 0)
     }
-    // add entry from teh specified tuple
+    // add entry from the specified tuple
     addEntryFromTuple(tuple)
   }
 

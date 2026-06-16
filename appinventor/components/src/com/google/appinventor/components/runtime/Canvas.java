@@ -1075,7 +1075,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Specifies the backgound image in Base64 format
+   * Specifies the background image in Base64 format
    * imageUrl will be in format of: iVBORw0KG...s//f+4z/6Z
    * @suppressdoc
    * @param imageUrl the base64 format for an image
@@ -1510,8 +1510,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   /**
    * Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom).
    * Start angle is 0 when heading to the right, and increase when rotate clockwise.
-   * When useCenter is true, a sector will be drawed instead of an arc.
-   * When fill is true, a filled arc (or sector) will be drawed instead of just an outline.
+   * When useCenter is true, a sector will be drawn instead of an arc.
+   * When fill is true, a filled arc (or sector) will be drawn instead of just an outline.
    * 
    * @param left   the left end of the oval
    * @param top    the top of the oval
@@ -1525,8 +1525,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = 
       "Draw an arc on Canvas, by drawing an arc from a specified oval (specified by left, top, right & bottom). " +
       "Start angle is 0 when heading to the right, and increase when rotate clockwise. " +
-      "When useCenter is true, a sector will be drawed instead of an arc. " +
-      "When fill is true, a filled arc (or sector) will be drawed instead of just an outline.")
+      "When useCenter is true, a sector will be drawn instead of an arc. " +
+      "When fill is true, a filled arc (or sector) will be drawn instead of just an outline.")
   public void DrawArc(int left, int top, int right, int bottom, 
       float startAngle, float sweepAngle, boolean useCenter, boolean fill) {
     float scalingFactor = $form().deviceDensity();

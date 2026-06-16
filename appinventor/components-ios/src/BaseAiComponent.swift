@@ -109,8 +109,8 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
       return
     }
     if let view = _form?.view, !webview.isDescendant(of: view), let viewer = _webviewer {
-      // NB: For iOS, the WKWebView must be attached to the view hierarchy to run Javascript.
-      // To accomodate this, we set the width/height to be zero and then set the view to be visible
+      // NB: For iOS, the WKWebView must be attached to the view hierarchy to run JavaScript.
+      // To accommodate this, we set the width/height to be zero and then set the view to be visible
       viewer.Height = 0
       viewer.Width = 0
       viewer._container?.setVisible(component: viewer, to: true)
@@ -232,7 +232,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
     guard let dict = message.body as? [String: Any],
           let functionCall = dict["functionCall"] as? String,
           let args = dict["args"] else {
-      print("JSON Error message not recieved")
+      print("JSON Error message not received")
       return
     }
     debugPrint(message.body)
@@ -271,7 +271,7 @@ fileprivate let MODEL_PATH_SUFFIX = ".mdl"
   }
 
   /**
-   * `onError` is called when an error ocurrs. By default, it extracts the first argument, which
+   * `onError` is called when an error occurs. By default, it extracts the first argument, which
    * should be an error code and passes it to the `Error(_:)` event handler.
    */
   open func onError(_ args: String) {

@@ -41,7 +41,7 @@ Once you've submitted the form and your certificate has been approved, click "Al
 
 ## Create App Identifier
 
-Click on Identifiers to open the Identifers section.
+Click on Identifiers to open the Identifiers section.
 
 ![](images/identifiers-main.png){: style="zoom:0.5"}
 
@@ -89,7 +89,7 @@ On the next screen you will be asked to choose the App ID for this profile. Sele
 
 ![](images/profile-appid.png){: style="zoom:0.5"}
 
-On the next screen you will be asked to choose the certificate used for signing apps when this profile is used. Select your Certifcate created in the earlier step and click Continue.
+On the next screen you will be asked to choose the certificate used for signing apps when this profile is used. Select your Certificate created in the earlier step and click Continue.
 
 ![](images/profile-certificate.png){: style="zoom:0.5"}
 
