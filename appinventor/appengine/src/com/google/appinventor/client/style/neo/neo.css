@@ -1167,6 +1167,16 @@ path.ode-SimpleMockMapFeature-selected {
     padding: 2px 5px;
     color: context-menu-color;
   }
+
+  .ode-DialogBox .settings-labeled-textbox td:first-child {
+    width: 60%;
+  }
+  
+  .ode-DialogBox .uploadDialogContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   
   .ode-DialogBox .gwt-FileUpload {
     padding: 2px 35px;

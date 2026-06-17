@@ -2125,15 +2125,6 @@ path.ode-SimpleMockMapFeature-selected {
    text-shadow: none;
  }
 
- .ode-DialogBox .ExtendedText {
-   padding-left: 10px;
-   font-weight: normal;
-   font-size: 14px;
-   color: #555;
-   padding-bottom: 20px;
-   padding-top: 10px;
- }
-
 .ode-DialogRow .gwt-RadioButton input[type="radio"] {
   margin-right: 5px;
 }
@@ -2170,6 +2161,16 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
   padding: 5px 10px;
+}
+
+.ode-DialogBox .settings-labeled-textbox td:first-child {
+  width: 60%;
+}
+
+.ode-DialogBox .uploadDialogContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .ode-DialogBox .buttonRow {
