@@ -12,12 +12,12 @@
   <wiz:Dialog ui:field="settingsDialog" role="dialog" ariaModal="true" ariaLabel="App Store Settings"
               caption="{messages.settingsTabName}" styleName="ode-DialogBox" width="400px">
     <g:FlowPanel>
-      <g:HTML>
+      <g:HTMLPanel styleName="ode-DialogBox-message">
         Please provide your Apple ID and App Specific Password for MIT App Inventor below. These
         values will be encrypted on the server and only read when deploying your app to App Store
         Connect.<br />
-        <a href="/reference/other/build-ios-apps.html" target="_blank">More information</a>
-      </g:HTML>
+        <g:Anchor href="/reference/other/build-ios-apps.html" target="_blank">More information</g:Anchor>
+      </g:HTMLPanel>
       <w:LabeledTextBox ui:field="appleIdTextbox" caption="Apple ID*:"
           styleName="settings-labeled-textbox" />
       <w:LabeledTextBox ui:field="passwordTextbox" caption="App Specific Password*:"
