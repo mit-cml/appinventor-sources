@@ -1072,6 +1072,10 @@ select.ode-PropertyEditor[disabled] {
   overflow: auto;
 }
 
+.ode-DialogBox-message a {
+  color: selected-color;
+}
+
 .ode-DialogBox .dialogContent td a {
     color: selected-color;
 }

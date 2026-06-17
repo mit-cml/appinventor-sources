@@ -1094,6 +1094,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label on built-in-Procedures-blocks branch of block selector tree")
   String builtinProceduresLabel();
 
+  @DefaultMessage("More...")
+  @Description("Label on nested branch for additional built-in blocks")
+  String builtinMoreLabel();
+
   @DefaultMessage("Any component")
   @Description("Label on any-component branch of block selector tree")
   String anyComponentLabel();
@@ -1123,6 +1127,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Are you sure you want to exit without saving data?")
   @Description("Confirm cancel from ListData property editor without saving data.")
   String listDataConcelConfirm();
+
+  @DefaultMessage("Click to Add Row Data")
+  @Description("Button to add a new blank row in the ListData property editor")
+  String listDataAddRowButton();
 
 
   // Used in boxes/ViewerBox.java

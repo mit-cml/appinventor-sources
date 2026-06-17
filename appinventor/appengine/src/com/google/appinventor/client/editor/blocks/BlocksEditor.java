@@ -684,9 +684,10 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   private void updateBlocksTree(DesignerRootComponent root,
                                 SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
-    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(language, root);
+    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(language, root,
+        entityName);
     items[1] = root.buildComponentsTree();
-    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(root);
+    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(root, entityName);
     sourceStructureExplorer.updateTree(items, itemToSelect);
   }
 }
