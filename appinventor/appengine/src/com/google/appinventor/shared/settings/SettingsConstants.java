@@ -79,7 +79,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE = "NSSpeechRecognitionUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE = "NSLocationWhenInUseUsageDescription";
   
-  // temporary setting for testing the new i18n system
+  // TODO: Remove this temporary setting once the i18n storage format is finalized.
   public static final String YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS = "I18nTranslations";
   
   /**

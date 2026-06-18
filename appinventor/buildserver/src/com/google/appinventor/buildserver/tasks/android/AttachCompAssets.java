@@ -82,8 +82,9 @@ public class AttachCompAssets implements AndroidTask {
     return TaskResult.generateSuccess();
   }
 
+  // TODO: Generate per-locale values-*/strings.xml resources once the i18n packaging format is finalized.
   private void writeI18nTranslationsAsset(AndroidCompilerContext context, File mergedAssetDir)
-    throws IOException {
+      throws IOException {
     String translationsJson = context.getProject().getI18nTranslations();
 
     context.getReporter().info("i18n translations length = "

@@ -249,6 +249,7 @@ public class ReplForm extends Form {
   }
 
   public void setFormName(String formName) {
+    clearComponentsByName();
     this.formName = formName;
     Log.d(LOG_TAG, "formName is now " + formName);
   }

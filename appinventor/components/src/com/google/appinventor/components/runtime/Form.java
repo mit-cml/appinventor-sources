@@ -2685,7 +2685,8 @@ public class Form extends AppInventorCompatActivity
     onCreateOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
-    // Notifiy those who care
+    clearComponentsByName();
+    // Notify those who care
     for (OnClearListener onClearListener : onClearListeners) {
       onClearListener.onClear();
     }
@@ -3112,6 +3113,10 @@ public class Form extends AppInventorCompatActivity
     }
 
     return componentsByName.get(componentName);
+  }
+
+  protected void clearComponentsByName() {
+    componentsByName.clear();
   }
 
   public String getFormName() {
