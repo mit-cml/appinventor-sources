@@ -39,6 +39,19 @@ public interface FileExporter {
       @Nullable String extension) throws IOException;
 
   /**
+   * Exports the project source files as a zip, excluding the project history,
+   * keystore, Yail, and screenshots. This suits callers that only need the
+   * project's .aia archive.
+   *
+   * @param userId the userId
+   * @param projectId the project id belonging to the userId
+   * @return the source files as a zip
+   * @throws IllegalArgumentException if there are no source files
+   * @throws IOException if files cannot be written
+   */
+  ProjectSourceZip exportProjectSourceZip(String userId, long projectId) throws IOException;
+
+  /**
    * Exports the project source files as a zip.
    *
    * @param userId                 the userId
