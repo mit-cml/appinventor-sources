@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
+import com.google.appinventor.components.runtime.Form;
 import com.google.common.annotations.VisibleForTesting;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -143,6 +144,27 @@ public final class I18nTranslationManager {
   @VisibleForTesting
   void putTranslationsForTesting(JSONObject root) {
     translationsRoot = root;
+  }
+
+  public static void setPreviewLanguageForCompanion(
+      String language, String translationsJson) {
+    Form form = Form.getActiveForm();
+
+    if (form == null) {
+      return;
+    }
+
+    I18nTranslationManager manager =
+        form.getI18nTranslationManager();
+
+    manager.setPreviewLanguageOverride(language);
+
+    if (translationsJson != null
+        && translationsJson.trim().length() > 0) {
+      manager.loadFromJson(translationsJson, form);
+    } else {
+      manager.applyLoadedTranslations(form);
+    }
   }
 
   private int applyTranslations(TranslationProvider provider, JSONObject entries,

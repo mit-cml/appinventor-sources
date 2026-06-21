@@ -1229,6 +1229,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   // Used in editor/simple/components/MockComponent.java
 
+  @DefaultMessage("Preview language")
+  @Description("Tooltip for the i18n preview language selector in the Designer.")
+  String i18nPreviewLanguage();
+
+  @DefaultMessage("Device language")
+  @Description("Dropdown option that uses the connected device language for i18n preview.")
+  String i18nPreviewDeviceLanguage();
+
   @DefaultMessage("Rename Component")
   @Description("Title for the rename component dialog")
   String renameTitle();
