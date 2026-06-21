@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
-import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
@@ -157,7 +156,7 @@ public class ListViewImageTopTwoTextAdapter extends ListAdapterWithRecyclerView 
     imageTwoTextHolder.textViewFirst.setText(first);
     imageTwoTextHolder.textViewSecond.setText(second);
     try {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
+      Drawable drawable = getImageDrawable(imageName);
       ViewUtil.setImage(imageTwoTextHolder.imageView, drawable);
     } catch (IOException ioe) {
       Log.e(
