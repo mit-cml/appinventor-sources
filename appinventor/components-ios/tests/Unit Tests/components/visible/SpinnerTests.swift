@@ -16,6 +16,13 @@ class SpinnerTests: XCTestCase {
     spinner = Spinner(form)
   }
 
+  override func tearDown() {
+    releaseTestResources(form: form, interpreter: nil)
+    form = nil
+    spinner = nil
+    super.tearDown()
+  }
+
   func testNoElements() {
     XCTAssert(spinner.Elements.isEmpty)
     XCTAssertEqual(0, spinner.SelectionIndex)
@@ -74,6 +81,7 @@ class SpinnerTests: XCTestCase {
 
   func testSpinnerFromYail() {
     let interpreter = try! getInterpreterForTesting()
+    defer { releaseTestResources(form: form, interpreter: interpreter) }
     form.formName = "Screen1"
     interpreter.setCurrentForm(form!)
     interpreter.evalForm("(clear-current-form)")

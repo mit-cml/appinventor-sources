@@ -61,6 +61,8 @@ class EvConnection: NSObject, StreamDelegate {
   }
 
   func connect(_ accessory: EAAccessory) {
+    cleanupSession()  // Clean up previous session before establishing new connection
+    
     _currentSession = EASession(accessory: accessory, forProtocol: protocolString)
     if let session = _currentSession {
       // write data on output stream and then hardware device can send data on input stream
@@ -201,6 +203,35 @@ class EvConnection: NSObject, StreamDelegate {
     }
   }
   
+  /// Cleans up all ExternalAccessory resources: streams, session, and RunLoop registrations.
+  /// Called before creating a new session and on object deallocation to prevent resource leaks
+  /// and avoid dangling delegate references.
+  private func cleanupSession() {
+    // Close and remove streams from RunLoop to avoid callbacks after dealloc.
+    // Clearing delegates first prevents any stray callbacks.
+    if let outputStream = _currentSession?.outputStream {
+      outputStream.delegate = nil
+      outputStream.close()
+      outputStream.remove(from: RunLoop.main, forMode: .default)
+    }
+    
+    if let inputStream = _currentSession?.inputStream {
+      inputStream.delegate = nil
+      inputStream.close()
+      inputStream.remove(from: RunLoop.main, forMode: .default)
+    }
+    
+    // Release the session so it can be deallocated.
+    _currentSession = nil
+  }
+
+  /// Cleans up all resources on deallocation to prevent NotificationCenter observer crashes
+  /// and stream resource leaks when the object is deallocated.
+  deinit {
+    cleanupSession()
+    NotificationCenter.default.removeObserver(self)
+  }
+
   public func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
     switch eventCode {
       

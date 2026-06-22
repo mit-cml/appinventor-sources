@@ -80,6 +80,7 @@ class AppInventorTestCase: XCTestCase {
 
   open override func setUp() {
     do {
+      NSLog("EventDispatcher: registry count at start of setUp = \(EventDispatcher.debugRegistryCount())")
       interpreter = try getInterpreterForTesting()
       form = TestForm(interpreter)
       form.makeActive()
@@ -168,6 +169,24 @@ class AppInventorTestCase: XCTestCase {
   }
 
   open override func tearDown() {
-    EventDispatcher.unregisterAllEventsForDelegation()
+    expectations.removeAll()
+    form?.checkerMap.removeAll()
+    form?.testComponents.removeAll()
+    releaseTestResources(form: form, interpreter: interpreter)
+    form = nil
+    interpreter = nil
+    NSLog("EventDispatcher: registry count after tearDown = \(EventDispatcher.debugRegistryCount())")
+    super.tearDown()
+  }
+
+  /// Regression guard: dispatch delegates must not accumulate when tests finish.
+  func testDispatchDelegateReleasedAfterTearDown() {
+    let baseline = EventDispatcher.registeredDispatchDelegateCount
+    expectToReceiveEvent(on: form, named: "BackPressed")
+    XCTAssertGreaterThan(EventDispatcher.registeredDispatchDelegateCount, baseline)
+    form.checkerMap.removeAll()
+    expectations.removeAll()
+    releaseTestResources(form: form, interpreter: interpreter)
+    XCTAssertEqual(baseline, EventDispatcher.registeredDispatchDelegateCount)
   }
 }
