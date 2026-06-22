@@ -1983,6 +1983,50 @@
 (define (yail-round x)
   (inexact->exact (round x)))
 
+;;; Compare two numbers with tolerance.
+;;; Comparison type depends on tolerance source. For user provided
+;;; tolerance, absolute comparison is used, else relative comparison.
+;;; This can also compare two non-numerics inputs for EQ/NEQ mode.
+(define (yail-compare x1 x2 tol mode itemCount)
+  (define (nearly-equal?)
+    (let* ((abs1 (abs x1))
+           (abs2 (abs x2))
+           (diff (abs (- abs1 abs2)))
+           (sum  (+ abs1 abs2)))
+      (if (or (= x1 0)
+              (= x2 0)
+              (< sum java.lang.Float:MIN_NORMAL))
+          (< diff (* tol java.lang.Float:MIN_NORMAL))
+          (< (/ diff (min sum java.lang.Float:MAX_VALUE))
+             tol))))
+  (if (= itemCount 1)
+      ;;; User provided tolerance: absolute comparison.
+      (cond
+        ((equal? mode "EQ")
+         (if (and (number? x1) (number? x2))
+             (<= (abs (- x1 x2)) tol)
+             (yail-equal? x1 x2)))
+        ((equal? mode "NEQ")
+         (if (and (number? x1) (number? x2))
+             (> (abs (- x1 x2)) tol)
+             (yail-not-equal? x1 x2)))
+        ((equal? mode "LT")  (< x1 (- x2 tol)))
+        ((equal? mode "GTE") (>= x1 (- x2 tol)))
+        ((equal? mode "LTE") (<= x1 (+ x2 tol)))
+        ((equal? mode "GT")  (> x1 (+ x2 tol))))
+      ;;; Default tolerance: relative comparison.
+      (cond
+        ((equal? mode "EQ")  (if (and (number? x1) (number? x2))
+                              (nearly-equal?)
+                              (yail-equal? x1 x2)))
+        ((equal? mode "NEQ") (if (and (number? x1) (number? x2))
+                              (not (nearly-equal?))
+                              (yail-not-equal? x1 x2)))
+        ((equal? mode "LT")  (and (< x1 x2) (not (nearly-equal?))))
+        ((equal? mode "GTE") (or (>= x1 x2) (nearly-equal?)))
+        ((equal? mode "LTE") (or (<= x1 x2) (nearly-equal?)))
+        ((equal? mode "GT")  (and (> x1 x2) (not (nearly-equal?)))))))
+
 ;;; Java data structure used by random-fraction and random
 (define *random-number-generator* :: <java.util.Random>
   (make <java.util.Random>))

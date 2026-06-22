@@ -2411,7 +2411,10 @@ Blockly.Versioning.AllUpgradeMaps =
     37: "noUpgrade",
 
     // AI2: Added Anonymous procedure Blocks
-    38: "noUpgrade"
+    38: "noUpgrade",
+
+    // AI2: Add tolerance mutator for math_compare block.
+    39: "noUpgrade"
 
   }, // End Language upgraders
 
