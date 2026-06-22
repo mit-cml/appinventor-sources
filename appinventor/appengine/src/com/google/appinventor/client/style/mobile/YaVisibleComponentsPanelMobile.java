@@ -40,17 +40,9 @@ public class YaVisibleComponentsPanelMobile extends YaVisibleComponentsPanel {
       @Override
       protected void onLoad() {
         // onLoad is called immediately after a widget becomes attached to the browser's document.
-        String sizing = projectEditor.getProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-            SettingsConstants.YOUNG_ANDROID_SETTINGS_SIZING);
-        boolean fixed = (sizing.equals("Fixed"));
-        listboxPhoneTablet.setVisible(!fixed);
-        if (fixed) {
-          size_icon.setVisible(false);
-          changeFormPreviewSize(0, 320, 505);
-        } else {
-          size_icon.setVisible(true);
-          getUserSettingChangeSize();
-        }
+        listboxPhoneTablet.setVisible(false);
+        size_icon.setVisible(false);
+        getUserSettingChangeSize();
       }
     };
 

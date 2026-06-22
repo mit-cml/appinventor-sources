@@ -685,6 +685,7 @@ body, html {
 
 .ode-ProjectEditor {
     height: unset;
+    min-width: unset;
     overflow: hidden !important;
 }
 
@@ -1433,6 +1434,7 @@ path.ode-SimpleMockMapFeature-selected {
   box-shadow: 0 0 10px gray-500;
   background-color: v-white;
   z-index: 1001;
+  min-width: 100%;
 }
 
 .ode-noDialogDivHeader {

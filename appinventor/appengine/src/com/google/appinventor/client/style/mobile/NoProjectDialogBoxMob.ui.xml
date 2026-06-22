@@ -12,7 +12,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.explorer.dialogs.NoProjectDialogBoxMessages"/>
   <ui:with type="com.google.appinventor.client.Images" field="res"/>
 
-  <wiz:Dialog ui:field="addDialog" styleName="ode-DialogBox" width="450px" height="40px">
+  <wiz:Dialog ui:field="addDialog" styleName="ode-DialogBox">
 
     <g:FlowPanel>
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
