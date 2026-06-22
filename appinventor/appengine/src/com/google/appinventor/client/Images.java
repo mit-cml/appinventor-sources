@@ -397,6 +397,12 @@ public interface Images extends Resources {
   ImageResource emailpicker();
 
   /**
+   * Designer palette item: EmailSender component
+   */
+  @Source("com/google/appinventor/images/emailSender.png")
+  ImageResource emailSender();
+
+  /**
    * Designer palette item: Texting component
    */
   @Source("com/google/appinventor/images/texting.png")

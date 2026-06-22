@@ -285,6 +285,13 @@ public interface DarkModeImagesNeo extends ImagesNeo {
   ImageResource emailpicker();
 
   /**
+   * Designer palette item: EmailSender component
+   */
+  @Override
+  @Source("darkmode-images/emailSender.png")
+  ImageResource emailSender();
+
+  /**
    * Designer palette item: Texting component
    */
   @Override

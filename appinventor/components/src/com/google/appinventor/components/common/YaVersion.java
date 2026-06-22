@@ -610,7 +610,9 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 233:
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 233;
+  // For YOUNG_ANDROID_VERSION 234:
+  // - EMAIL_SENDER_COMPONENT_VERSION was introduced.
+  public static final int YOUNG_ANDROID_VERSION = 234;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -978,6 +980,10 @@ public class YaVersion {
   // - Bumped up to be strictly greater than Kodular's EmailPicker (6).
   // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
   public static final int EMAILPICKER_COMPONENT_VERSION = 7;
+
+  // For EMAIL_SENDER_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int EMAIL_SENDER_COMPONENT_VERSION = 1;
 
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
   // - Initial FeatureCollection implementation for Maps

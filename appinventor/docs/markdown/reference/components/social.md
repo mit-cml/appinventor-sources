@@ -10,6 +10,7 @@ Table of Contents:
 
 * [ContactPicker](#ContactPicker)
 * [EmailPicker](#EmailPicker)
+* [EmailSender](#EmailSender)
 * [PhoneCall](#PhoneCall)
 * [PhoneNumberPicker](#PhoneNumberPicker)
 * [Sharing](#Sharing)
@@ -300,6 +301,39 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 
 {:id="EmailPicker.RequestFocus" class="method"} <i/> RequestFocus()
 : Request focus to current `EmailPicker`.
+
+## EmailSender  {#EmailSender}
+
+EmailSender is a non-visible component that enables sending emails from
+ your app using an email app installed on the device. The component will display a list of
+ the installed email apps that can handle the request, and will allow the user to choose
+ one to send the email with.
+ 
+ The recipient is required, while the subject, body, cc, and bcc fields are optional.
+ 
+ Be aware that the email is not sent directly from your app. The selected email app will open 
+ with the fields pre-filled, and the user will need to press send.
+
+
+
+### Properties  {#EmailSender-Properties}
+
+{:.properties}
+None
+
+
+### Events  {#EmailSender-Events}
+
+{:.events}
+None
+
+
+### Methods  {#EmailSender-Methods}
+
+{:.methods}
+
+{:id="EmailSender.SendEmail" class="method"} <i/> SendEmail(*recipient*{:.list},*subject*{:.text},*body*{:.text},*cc*{:.list},*bcc*{:.list})
+: Opens a list of available email apps installed on the phone, allowing the user to choose one. The selected app will open with email data already filled in. Multiple recipients, CC, and BCC addresses can be provided as a list.
 
 ## PhoneCall  {#PhoneCall}
 

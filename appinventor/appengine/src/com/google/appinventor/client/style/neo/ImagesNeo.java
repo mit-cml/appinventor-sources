@@ -291,6 +291,13 @@ public interface ImagesNeo extends Images {
   ImageResource emailpicker();
 
   /**
+   * Designer palette item: EmailSender component
+   */
+  @Override
+  @Source("images/emailSender.png")
+  ImageResource emailSender();
+
+  /**
    * Designer palette item: Texting component
    */
   @Override

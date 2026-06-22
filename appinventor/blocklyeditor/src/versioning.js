@@ -2002,6 +2002,11 @@ Blockly.Versioning.AllUpgradeMaps =
 
   }, // End EmailPicker upgraders
 
+  "EmailSender" : {
+    // This is the initial version. Placeholder for future upgrades.
+    1: "noUpgrade"
+  }, // End EmailSender upgraders
+
   "FeatureCollection": {
 
     // AI2:

@@ -298,6 +298,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("EmailPicker")) {
         srcCompVersion = upgradeEmailPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("EmailSender")) {
+        srcCompVersion = upgradeEmailSenderProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("File")) {
         srcCompVersion = upgradeFileProperties(componentProperties, srcCompVersion);
 
@@ -1002,6 +1005,15 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
       srcCompVersion = 7;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeEmailSenderProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 1) {
+      // Initial version. Placeholder for future upgrades.
+      srcCompVersion = 1;
     }
     return srcCompVersion;
   }
