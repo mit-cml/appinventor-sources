@@ -2411,8 +2411,10 @@ Blockly.Versioning.AllUpgradeMaps =
     37: "noUpgrade",
 
     // AI2: Added Anonymous procedure Blocks
-    38: "noUpgrade"
+    38: "noUpgrade",
 
+    // AI2: Added Multiline Text block.
+    39: "noUpgrade"
   }, // End Language upgraders
 
 
