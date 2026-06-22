@@ -171,6 +171,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button for toggling the console panel")
   String toggleConsoleButton();
 
+  @DefaultMessage("Snap: ON")
+  @Description("Label of the button for toggling snap alignment in absolute layout mode")
+  String snapToggleButton();
+
+  @DefaultMessage("Snap/grid is only available in Absolute layout mode")
+  @Description("Tooltip shown on the snap toggle button when the current screen is not in Absolute layout mode")
+  String snapToggleDisabledTooltip();
+
   @DefaultMessage("Connect")
   @Description("Label of the button for selecting phone connection")
   String connectButton();

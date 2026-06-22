@@ -324,6 +324,11 @@ body {
   text-shadow: 0 0 1px gray-500;
 }
 
+/* Snap-toggle button: lock width to the longer "Snap: OFF" label */
+.ode-SnapToggle {
+  min-width: 90px;
+}
+
 .ode-TextButton,
 .gwt-Button {
   color: gray-800;

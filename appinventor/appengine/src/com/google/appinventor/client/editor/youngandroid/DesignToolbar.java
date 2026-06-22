@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.FileEditor;
@@ -115,6 +116,7 @@ public class DesignToolbar extends Toolbar {
 
   private static final String WIDGET_NAME_TUTORIAL_TOGGLE = "TutorialToggle";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
+  protected static final String WIDGET_NAME_SNAP_TOGGLE = "SnapToggle";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
@@ -182,11 +184,14 @@ public class DesignToolbar extends Toolbar {
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
     toggleView();
+    // Snap/grid only works in Absolute layout mode; disable until a form enables it
+    updateSnapButtonState(false);
   }
 
   public void bindUI() {
     DesignToolbarUiBinder uibinder = GWT.create(DesignToolbarUiBinder.class);
     populateToolbar(uibinder.createAndBindUi(this));
+    addButtonStyleName(WIDGET_NAME_SNAP_TOGGLE, "ode-SnapToggle");
   }
 
   private void doSwitchScreen(final long projectId, final String screenName, final View view) {
@@ -428,6 +433,22 @@ public class DesignToolbar extends Toolbar {
 
   public void setTutorialToggleVisible(boolean value) {
     setButtonVisible(WIDGET_NAME_TUTORIAL_TOGGLE, value);
+  }
+
+  public void updateSnapButton(boolean snapEnabled) {
+    setButtonText(WIDGET_NAME_SNAP_TOGGLE, snapEnabled ? "Snap: ON" : "Snap: OFF");
+    setButtonTooltip(WIDGET_NAME_SNAP_TOGGLE, snapEnabled ? "Snap: ON" : "Snap: OFF");
+  }
+
+  /**
+   * Enables or disables the snap toggle button based on whether the active screen
+   * uses Absolute layout. When disabled, shows an explanatory tooltip.
+   */
+  public void updateSnapButtonState(boolean absoluteMode) {
+    setButtonEnabled(WIDGET_NAME_SNAP_TOGGLE, absoluteMode);
+    if (!absoluteMode) {
+      setButtonTooltip(WIDGET_NAME_SNAP_TOGGLE, MESSAGES.snapToggleDisabledTooltip());
+    }
   }
 
 }

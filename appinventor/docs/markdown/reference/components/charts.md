@@ -67,8 +67,9 @@ The Chart component plots data originating from it's attached Data components. F
  for more details on how the Labels are applied to the Chart.
 
 {:id="Chart.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Chart.LegendEnabled" .boolean} *LegendEnabled*
 : Changes the visibility of the Chart's Legend.
@@ -78,8 +79,9 @@ The Chart component plots data originating from it's attached Data components. F
  not the Pie Chart, the value has no effect.
 
 {:id="Chart.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Chart.Type" .com.google.appinventor.components.common.ChartTypeEnum .ro} *Type*
 : Specifies the type of the Chart, which determines how to visualize the data.

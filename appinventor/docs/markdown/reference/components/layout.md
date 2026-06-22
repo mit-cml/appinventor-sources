@@ -42,12 +42,14 @@ Container for components that arranges them absolutely.
 : Specifies the path of the button's image.
 
 {:id="AbsoluteArrangement.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="AbsoluteArrangement.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="AbsoluteArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `AbsoluteArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -135,12 +137,14 @@ None
 : Specifies the path of the background image of the `HorizontalArrangement`.
 
 {:id="HorizontalArrangement.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="HorizontalArrangement.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="HorizontalArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `HorizontalArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -205,12 +209,14 @@ A formatting element in which to place components that should be displayed from 
 : Specifies the path of the background image of the `HorizontalScrollArrangement`.
 
 {:id="HorizontalScrollArrangement.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="HorizontalScrollArrangement.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="HorizontalScrollArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `HorizontalScrollArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -275,15 +281,17 @@ Use a table arrangement component to display a group of components in a tabular 
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="TableArrangement.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="TableArrangement.Rows" .number .do} *Rows*
 : Determines the number of rows in the table.
 
 {:id="TableArrangement.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="TableArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `TableArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -371,12 +379,14 @@ None
 : Specifies the path of the background image of the `VerticalArrangement`.
 
 {:id="VerticalArrangement.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="VerticalArrangement.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="VerticalArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `VerticalArrangement` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -441,12 +451,14 @@ A formatting element in which to place components that should be displayed one b
 : Specifies the path of the background image of the `VerticalScrollArrangement`.
 
 {:id="VerticalScrollArrangement.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="VerticalScrollArrangement.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="VerticalScrollArrangement.Visible" .boolean} *Visible*
 : Specifies whether the `VerticalScrollArrangement` should be visible on the screen.  Value is `true`{:.logic.block}

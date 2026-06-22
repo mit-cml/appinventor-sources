@@ -1258,6 +1258,11 @@ public final class YoungAndroidFormUpgrader {
       }
       srcCompVersion = 31;
     }
+    if (srcCompVersion < 32) {
+      // No properties need to be modified to upgrade to version 32.
+      // The ScreenLayout property was added.
+      srcCompVersion = 32;
+    }
 
     return srcCompVersion;
   }

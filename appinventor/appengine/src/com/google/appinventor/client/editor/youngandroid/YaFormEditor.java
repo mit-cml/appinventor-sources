@@ -134,6 +134,19 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     super.onShow();
     // Replace the old singleton call with the new panel method
     visibleComponentsPanel.show(root);
+    // Refresh snap button state for this screen's layout mode. This must happen
+    // here (not only in setScreenLayoutProperty) because switching screens does
+    // not re-fire property change events on the previously-loaded form.
+    if (root != null) {
+      boolean isAbsolute = "Absolute".equals(root.getPropertyValue("ScreenLayout"));
+      DesignToolbar toolbar = Ode.getInstance().getDesignToolbar();
+      toolbar.updateSnapButtonState(isAbsolute);
+      if (isAbsolute) {
+        toolbar.updateSnapButton(
+            com.google.appinventor.client.editor.simple.components.MockContainer
+                .absoluteLayoutSnapEnabled);
+      }
+    }
   }
 
   @Override

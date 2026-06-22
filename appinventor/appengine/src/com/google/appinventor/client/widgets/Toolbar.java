@@ -177,13 +177,65 @@ public class Toolbar extends FlowPanel {
   }
 
   /**
+   * Replaces the Material icon on a button's UP face.
+   * Has no effect on buttons that use plain-text labels instead of icons.
+   *
+   * @param widgetName name of button
+   * @param iconName   Material icon ligature (e.g. "grid_on", "grid_off")
+   */
+  public void setButtonIcon(String widgetName, String iconName) {
+    TextButton button = buttonMap.get(widgetName);
+    if (button != null) {
+      button.getUpFace().setHTML("<i class=\"material-icons\">" + iconName + "</i>");
+    }
+  }
+
+  /**
+   * Sets the tooltip (title attribute) for a button.
+   *
+   * @param widgetName name of button
+   * @param tooltip tooltip text
+   */
+  public void setButtonTooltip(String widgetName, String tooltip) {
+    TextButton button = buttonMap.get(widgetName);
+    if (button != null) {
+      button.setTitle(tooltip);
+    }
+  }
+
+  /**
    * Sets text for button
    *
    * @param widgetName name of button
    * @param text text of button
    */
   public void setButtonText(String widgetName, String text) {
-    buttonMap.get(widgetName).setText(text);
+    // Always update the UP face directly so the correct label is shown regardless of
+    // which face state the button is in when this method is called (e.g. UP_HOVERING
+    // after a click would otherwise leave the UP face showing stale text).
+    buttonMap.get(widgetName).getUpFace().setText(text);
+  }
+
+  /**
+   * Pins a CSS min-width on a button so it never shrinks below its current rendered width.
+   * Call this after the toolbar is attached to the DOM (e.g. from bindUI / onLoad) for
+   * buttons whose label text can shrink.
+   *
+   * @param widgetName name of button
+   */
+  /**
+   * Adds an extra CSS class to a button without replacing its existing styles.
+   * Use this to apply variant-specific styling (e.g. a fixed min-width class for
+   * toggle buttons whose label text can change length).
+   *
+   * @param widgetName name of button
+   * @param styleName  CSS class to add
+   */
+  protected void addButtonStyleName(String widgetName, String styleName) {
+    TextButton btn = buttonMap.get(widgetName);
+    if (btn != null) {
+      btn.addStyleName(styleName);
+    }
   }
 
   /**

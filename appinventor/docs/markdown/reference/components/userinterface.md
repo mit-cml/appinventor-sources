@@ -75,8 +75,9 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
  [`BackgroundColor`](#Button.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="Button.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Button.Shape" .number .do} *Shape*
 : Specifies the shape of the `Button`. The valid values for this property are `0` (default),
@@ -101,8 +102,9 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
  integer.
 
 {:id="Button.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Button.Visible" .boolean} *Visible*
 : Specifies whether the `Button` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -193,8 +195,9 @@ None
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="CheckBox.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="CheckBox.Text" .text} *Text*
 : Specifies the text displayed by the `CheckBox`.
@@ -204,8 +207,9 @@ None
  integer.
 
 {:id="CheckBox.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="CheckBox.Visible" .boolean} *Visible*
 : Specifies whether the `CheckBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -258,12 +262,14 @@ Component for CircularProgress
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="CircularProgress.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="CircularProgress.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="CircularProgress.Visible" .boolean} *Visible*
 : Specifies whether the `CircularProgress` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -343,8 +349,9 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 : Returns instant of the date that was last picked using the DatePicker.
 
 {:id="DatePicker.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="DatePicker.Month" .number .ro .bo} *Month*
 : Returns the number of the Month that was last picked using the DatePicker.
@@ -375,8 +382,9 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
  integer.
 
 {:id="DatePicker.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="DatePicker.Visible" .boolean} *Visible*
 : Specifies whether the `DatePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -460,8 +468,9 @@ Component for displaying images and basic animations.
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Image.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Image.Picture" .text} *Picture*
 : Specifies the path of the `Image`'s `Picture`.
@@ -476,8 +485,9 @@ Component for displaying images and basic animations.
 : This property determines how the picture scales according to the Height or Width of the Image. Scale proportionally (0) preserves the picture aspect ratio. Scale to fit (1) matches the Image area, even if the aspect ratio changes.
 
 {:id="Image.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Image.Visible" .boolean} *Visible*
 : Specifies whether the `Image` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -558,8 +568,9 @@ Labels are components used to show text.
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Label.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Label.Text" .text} *Text*
 : Specifies the text displayed by the label.
@@ -574,8 +585,9 @@ Labels are components used to show text.
  integer.
 
 {:id="Label.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Label.Visible" .boolean} *Visible*
 : Specifies whether the `Label` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -617,8 +629,9 @@ Component for LinearProgress
 : Change the indeterminate color of the progress bar.
 
 {:id="LinearProgress.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="LinearProgress.Maximum" .number} *Maximum*
 : Set the upper range of the progress bar max.
@@ -633,8 +646,9 @@ Component for LinearProgress
 : Change the progress color of the progress bar.
 
 {:id="LinearProgress.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="LinearProgress.Visible" .boolean} *Visible*
 : Specifies whether the `LinearProgress` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -728,8 +742,9 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 : The text color of the ListPicker items.
 
 {:id="ListPicker.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="ListPicker.Selection" .text} *Selection*
 : The selected item. When directly changed by the programmer, the [`SelectionIndex`](#ListPicker.SelectionIndex)
@@ -768,8 +783,9 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 : Optional title displayed at the top of the list of choices.
 
 {:id="ListPicker.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="ListPicker.Visible" .boolean} *Visible*
 : Specifies whether the `ListPicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -896,8 +912,9 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the image width of ListView layouts containing images
 
 {:id="ListView.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="ListView.ListData" .text .do} *ListData*
 : Specifies data to be displayed in the ListView elements. This property sets the
@@ -950,8 +967,9 @@ This is a visible component that displays a list of text and image elements in y
 : Specifies the color of the secondary text in a ListView layout
 
 {:id="ListView.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="ListView.Visible" .boolean} *Visible*
 : Specifies whether the `ListView` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1154,8 +1172,9 @@ Users enter passwords in a password text box component, which hides the text tha
 : Specifies the color of the hint of the PasswordTextBox.
 
 {:id="PasswordTextBox.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="PasswordTextBox.NumbersOnly" .boolean} *NumbersOnly*
 : If true, then this `PasswordTextBox`` accepts only numbers as keyboard input. Numbers can include a
@@ -1181,8 +1200,9 @@ Users enter passwords in a password text box component, which hides the text tha
  integer.
 
 {:id="PasswordTextBox.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="PasswordTextBox.Visible" .boolean} *Visible*
 : Specifies whether the `PasswordTextBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1336,6 +1356,11 @@ Top-level component containing all other components in the program.
 {:id="Screen.PrimaryColorDark" .color .do} *PrimaryColorDark*
 : This is the primary color used when the Theme property is specified to be Dark. It applies to
  a number of elements, including the `Screen`'s title bar.
+
+{:id="Screen.ScreenLayout" .text} *ScreenLayout*
+: Sets the layout mode for this screen. When set to "Absolute", components can be placed
+ at any (x, y) position using their Left and Top properties. When set to "Linear"
+ (the default), components stack vertically as normal.
 
 {:id="Screen.ScreenOrientation" .text} *ScreenOrientation*
 : Declares the requested screen orientation, specified as a text value. Commonly used values are
@@ -1491,8 +1516,9 @@ This class is used to display a `Slider`.
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Slider.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Slider.MaxValue" .number} *MaxValue*
 : Sets the maximum value of slider. If the new maximum is less than the
@@ -1521,8 +1547,9 @@ This class is used to display a `Slider`.
  [`MinValue`](#Slider.MinValue), then it will be set to same value as [`MinValue`](#Slider.MinValue).
 
 {:id="Slider.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Slider.Visible" .boolean} *Visible*
 : Specifies whether the `Slider` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1611,8 +1638,9 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  [`BackgroundColor`](#Spinner.BackgroundColor) specified, only the `Image` will be visible.
 
 {:id="Spinner.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Spinner.Prompt" .text} *Prompt*
 : Specifies the text used for the title of the Spinner window.
@@ -1640,8 +1668,9 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  integer.
 
 {:id="Spinner.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Spinner.Visible" .boolean} *Visible*
 : Specifies whether the `Spinner` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1718,8 +1747,9 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
  of the [`Screen`'s `Height`](userinterface.html#Screen.Height).
 
 {:id="Switch.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Switch.On" .boolean} *On*
 : True if the switch is in the On state, false otherwise.
@@ -1738,8 +1768,9 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 : Specifies the `Switch`'s thumb color when switch is in the Off state.
 
 {:id="Switch.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="Switch.TrackColorActive" .color} *TrackColorActive*
 : Specifies the `Switch`'s track color when in the On state.
@@ -1845,8 +1876,9 @@ Users enter text in a text box component.
 : Specifies the color of the hint of the TextBox.
 
 {:id="TextBox.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="TextBox.MultiLine" .boolean} *MultiLine*
 : If true, then this `TextBox` accepts multiple lines of input, which are entered using the
@@ -1878,8 +1910,9 @@ Users enter text in a text box component.
  integer.
 
 {:id="TextBox.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="TextBox.Visible" .boolean} *Visible*
 : Specifies whether the `TextBox` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -1982,8 +2015,9 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 : Returns the instant in time that was last picked using the `TimePicker`.
 
 {:id="TimePicker.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="TimePicker.Minute" .number .ro .bo} *Minute*
 : Returns the hour of the time that was last picked using the `TimePicker`.
@@ -2012,8 +2046,9 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
  integer.
 
 {:id="TimePicker.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="TimePicker.Visible" .boolean} *Visible*
 : Specifies whether the `TimePicker` should be visible on the screen.  Value is `true`{:.logic.block}
@@ -2140,8 +2175,9 @@ Component for viewing Web pages.
  Use this to accept self signed certificates from websites.
 
 {:id="WebViewer.Left" .number} *Left*
-: Specifies the position of the Left edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Left edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="WebViewer.PromptforPermission" .boolean} *PromptforPermission*
 : Determine if the user should be prompted for permission to use the geolocation API while in
@@ -2150,8 +2186,9 @@ Component for viewing Web pages.
  granted.
 
 {:id="WebViewer.Top" .number} *Top*
-: Specifies the position of the Top edge of the component relative to an
- AbsoluteArrangement.
+: Specifies the position of the Top edge of the component relative to its container. Used
+ when the component is placed inside an AbsoluteArrangement, or when the Screen's
+ ScreenLayout property is set to Absolute.
 
 {:id="WebViewer.UsesCamera" .boolean .wo .do} *UsesCamera*
 : Specifies whether this `WebViewer` can access the camera.

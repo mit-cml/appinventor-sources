@@ -19,14 +19,14 @@ public class MockFormHelper {
   // but who knows what we might do in the future.
 
 
-  private static MockFormLayout saveLayout;
+  private static MockSwitchableFormLayout saveLayout;
 
-  public static synchronized MockFormLayout makeLayout() {
-    saveLayout = new MockFormLayout();
+  public static synchronized MockSwitchableFormLayout makeLayout() {
+    saveLayout = new MockSwitchableFormLayout(new MockFormLayout());
     return saveLayout;
   }
 
-  public static synchronized MockFormLayout getLayout() {
+  public static synchronized MockSwitchableFormLayout getLayout() {
     return saveLayout;
   }
 

@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckPanel;
@@ -281,6 +282,17 @@ abstract class MockButtonBase extends MockVisibleComponent implements DesignerCh
   private final void updatePreferredSizeOfButton() {
     preferredSizeOfButton = MockComponentsUtil.getPreferredSizeOfDetachedWidget(
         createClonedButton());
+  }
+
+  @Override
+  public void setPixelSize(int width, int height) {
+    super.setPixelSize(width, height);
+    // Stretch the inner button widget to fill the DeckPanel so that its visual
+    // center aligns with the geometric center used by snap calculations. Without
+    // this, the +6px from getPreferredSizeOfDetachedWidget creates empty space
+    // that shifts sibCY away from the button's text center.
+    buttonWidget.getElement().getStyle().setHeight(height, Style.Unit.PX);
+    buttonWidget.getElement().getStyle().setProperty("boxSizing", "border-box");
   }
 
   @Override

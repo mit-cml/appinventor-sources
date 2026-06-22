@@ -44,12 +44,18 @@
       <ya:ProjectPropertiesAction />
     </ai:ToolbarItem>
 
+    <ai:ToolbarItem name="SnapToggle" icon="grid_on"
+                    tooltip="{messages.snapToggleDisabledTooltip}" enabled="false"
+                    align="center" styleName="ode-ProjectListButton inline">
+      <ya:ToggleSnapAction/>
+    </ai:ToolbarItem>
+
     <ai:ToolbarItem name="Gallery" icon="public" tooltip="{messages.publishToGalleryButton}"
                     ui:field="sendToGalleryItem" align="center"  styleName="ode-ProjectListButton inline">
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
-    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar" 
+    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar"
                     ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
       <ya:ToggleConsoleAction/>
     </ai:ToolbarItem>

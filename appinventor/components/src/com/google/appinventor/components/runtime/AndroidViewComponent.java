@@ -254,8 +254,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the position of the Left edge of the component relative to an
-   * AbsoluteArrangement.
+   * Specifies the position of the Left edge of the component relative to its container. Used
+   * when the component is placed inside an AbsoluteArrangement, or when the Screen's
+   * ScreenLayout property is set to Absolute.
    *
    * @return the left edge of the view, in pixels
    */
@@ -266,8 +267,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the position of the Left edge of the component relative to an
-   * AbsoluteArrangement.
+   * Specifies the position of the Left edge of the component relative to its container. Used
+   * when the component is placed inside an AbsoluteArrangement, or when the Screen's
+   * ScreenLayout property is set to Absolute.
    *
    * @param x x property used by the absolute arrangement
    */
@@ -298,8 +300,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the position of the Top edge of the component relative to an
-   * AbsoluteArrangement.
+   * Specifies the position of the Top edge of the component relative to its container. Used
+   * when the component is placed inside an AbsoluteArrangement, or when the Screen's
+   * ScreenLayout property is set to Absolute.
    *
    * @return the top edge of the view, in pixels
    */
@@ -310,8 +313,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   /**
-   * Specifies the position of the Top edge of the component relative to an
-   * AbsoluteArrangement.
+   * Specifies the position of the Top edge of the component relative to its container. Used
+   * when the component is placed inside an AbsoluteArrangement, or when the Screen's
+   * ScreenLayout property is set to Absolute.
    *
    * @param y y property used by the absolute arrangement
    */
