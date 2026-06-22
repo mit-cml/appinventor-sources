@@ -41,7 +41,6 @@ public class DeleteAction implements Command {
             if (deleteConfirmation(true, projectsToDelete, foldersToDelete)) {
               Ode.getInstance().getFolderManager().moveItemsToFolder(selectedProjects, selectedFolders,
                   Ode.getInstance().getFolderManager().getTrashFolder());
-              Ode.getInstance().getFolderManager().saveAllFolders();
               Ode.getInstance().switchToProjectsView();
             }
           } else {
