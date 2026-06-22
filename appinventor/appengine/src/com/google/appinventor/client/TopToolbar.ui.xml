@@ -103,6 +103,10 @@
       <ai:DropDownItem name="SaveProjectToCompanion" caption="{messages.saveProjectToCompanionMenuItem}">
         <yaactions:SaveProjectToCompanionAction/>
       </ai:DropDownItem>
+      <hr/>
+      <ai:DropDownItem name="ConnectGoogleClassroom" caption="{messages.connectGoogleClassroomMenuItem}">
+        <actions:ConnectGoogleClassroomAction/>
+      </ai:DropDownItem>
     </ai:DropDownButton>
 
     <!-- Build Menu -->

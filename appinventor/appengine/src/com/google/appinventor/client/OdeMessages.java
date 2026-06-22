@@ -654,6 +654,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
 
+  @DefaultMessage("Connect Google Classroom")
+  @Description("Menu item for connecting the user's account to Google Classroom.")
+  String connectGoogleClassroomMenuItem();
+
   @DefaultMessage("Chromebook")
   @Description("Menu item for initiating a connection to the companion running on a Chromebook.")
   String chromebookMenuItem();

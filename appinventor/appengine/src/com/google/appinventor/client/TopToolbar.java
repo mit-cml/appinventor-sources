@@ -130,6 +130,13 @@ public class TopToolbar extends Composite {
       settingsDropDown.removeItem(WIDGET_NAME_APP_STORE_SETTINGS);
     }
 
+    // Show the Google Classroom item only when the server has the LMS OAuth client
+    // configured. removeUnneededSeparators then drops the hidden item plus, in the
+    // classic menu, the separator that would otherwise dangle at the menu's end.
+    connectDropDown.setItemVisible(MESSAGES.connectGoogleClassroomMenuItem(),
+        Ode.getSystemConfig().getLmsEnabled());
+    connectDropDown.removeUnneededSeparators();
+
     fileDropDown.removeUnneededSeparators();
 
     // Second Buildserver Menu Items
