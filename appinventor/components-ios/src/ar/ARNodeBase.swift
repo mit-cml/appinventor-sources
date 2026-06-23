@@ -95,7 +95,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var _queuedMarkerOffset: SIMD3<Float>? = nil
   
   // MARK: - Initialization
-  
+
   init(container: ARNodeContainer, mesh: MeshResource? = nil) {
     _container = container
     _modelEntity = ModelEntity()
@@ -1671,6 +1671,31 @@ extension ARNodeBase {
     if #available(iOS 18.0, *) {
       _modelEntity.components.set(GroundingShadowComponent(castsShadow: false))
     }
+  }
+  
+  
+  public func LookAtNode(_ node: ARNode){
+    let targetPosition = node.getPosition()
+    
+    // Determine the calling entity's position in world space
+    let currentPosition = self.getPosition()
+    
+    // Orient the entity to look at the target node, keeping the Y-axis up
+    self._modelEntity.look(at: targetPosition, from: currentPosition, upVector: [0, 1, 0], relativeTo: nil as AnyObject? as? Entity)
+
+    
+  }
+  public func LookAtDetectedPlane(_ detectedPlane: ARDetectedPlane){
+    
+  }
+  public func LookAtSpotlight(_ light: ARSpotlight){
+  
+  }
+  public func LookAtPointLight(_ light: ARPointLight){
+    
+  }
+  public func LookAtPosition(_ x: Float, _ y: Float, _ z: Float) {
+  
   }
 
 }

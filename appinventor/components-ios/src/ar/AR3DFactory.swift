@@ -10,7 +10,7 @@ import UIKit
 // MARK: - Core Protocols
 
 @available(iOS 14.0, *)
-@objc public protocol ARNode: FollowsMarker, Component {
+@objc public protocol ARNode: FollowsMarker, CanLook, Component {
   var Name: String { get set }
   var NodeType: String { get }
   var Model: String { get set }
