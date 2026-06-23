@@ -140,7 +140,9 @@ import Foundation
   case ERROR_IMAGEMARKER_MISSING_NAME = 3716
   case ERROR_AR_CANNOT_DETECT_SURFACE_AT_POINT = 3718
   case ERROR_MODELNODE_WRONG_FORMAT  = 3719
-
+  case ERROR_GEOANCHOR_DATA_NOT_LOADED = 3720
+  case ERROR_GEOANCHOR_DEVICE_POINTED_TOO_LOW = 3721
+  case ERROR_GEOANCHOR_VISUAL_LOCALIZATION_FAILED = 3722
   // Navigation Errors
   case ERROR_INVALID_API_KEY = 4001
   case ERROR_UNABLE_TO_REQUEST_DIRECTIONS = 4002
@@ -425,6 +427,13 @@ import Foundation
       return "ARKit could not detect a surface at the tapped location. Try tapping a different location or moving closer to the point."
     case .ERROR_MODELNODE_WRONG_FORMAT:
       return "ARKit can only load USDZ and OBJ at this time."
+    case .ERROR_GEOANCHOR_DATA_NOT_LOADED:
+      return "GeoAnchor data not loaded yet."
+    case .ERROR_GEOANCHOR_VISUAL_LOCALIZATION_FAILED:
+      return "ARKit could not localize the geo anchor to a surface. You need to be outside at street level. Try moving the device around."
+    case .ERROR_GEOANCHOR_DEVICE_POINTED_TOO_LOW:
+      return "The device is pointed too low to place the geo anchor."
+      
     // Navigation Errors
     case .ERROR_INVALID_API_KEY:
       return "No api key provided"
