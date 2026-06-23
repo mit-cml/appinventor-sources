@@ -43,6 +43,11 @@ public interface FileExporter {
    * keystore, Yail, and screenshots. This suits callers that only need the
    * project's .aia archive.
    *
+   * <p>This method applies no access control. Like the other export methods it
+   * returns the project that belongs to {@code userId}, so any caller that
+   * exposes it to a request must first confirm that the requesting user owns
+   * the project or is an administrator.
+   *
    * @param userId the userId
    * @param projectId the project id belonging to the userId
    * @return the source files as a zip
