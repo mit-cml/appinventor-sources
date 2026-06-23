@@ -143,6 +143,16 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     assertFalse(content.containsKey(FileExporter.REMIX_INFORMATION_FILE_PATH));
   }
 
+  public void testExportProjectSourceZipWithDefaultsNonExistingProject() throws IOException {
+    try {
+      exporter.exportProjectSourceZip(USER_ID, projectId + 1);
+      fail();
+    } catch (Exception e) {
+      assertTrue(e instanceof IllegalArgumentException ||
+                 e.getCause() instanceof IllegalArgumentException);
+    }
+  }
+
   public void testExportProjectOutputFileWithTarget() throws IOException {
     RawFile file = exporter.exportProjectOutputFile(USER_ID, projectId, "target1");
     assertEquals(TARGET1_NAME, file.getFileName());
