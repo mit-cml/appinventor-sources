@@ -18,11 +18,6 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
-import com.google.gwt.cell.client.ButtonCell;
-import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.cell.client.SelectionCell;
-import com.google.gwt.cell.client.TextInputCell;
-
 import com.google.gwt.core.client.GWT;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,9 +32,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 
-import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.Column;
-
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -49,20 +41,21 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.google.gwt.view.client.ListDataProvider;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The "Click to Add/Delete Data" dialog for the ListView ListData property.
  *
- * <p>This is the UiBinder migration of the former {@code ClickHandle} inner class. The dialog
- * chrome (title, button bar and the container that holds the data rows) is now declared in
- * {@code ListViewAddDataDialog.ui.xml} and wrapped in the accessible {@link Dialog} widget, which
- * provides the ARIA role, modal semantics, Escape-to-close and focus management. The data grid
- * itself is still the original {@link CellTable}; replacing it with real-widget rows is the next
- * step (PR 1.2).
+ * <p>The dialog chrome (title, button bar and the container that holds the data rows) is declared
+ * in {@code ListViewAddDataDialog.ui.xml} and wrapped in the accessible {@link Dialog} widget, which
+ * provides the ARIA role, modal semantics, Escape-to-close and focus management.
+ *
+ * <p>The data grid is built from real, focusable widgets: each row is a {@link ListViewDataRow}
+ * added to {@code rowsContainer}. The rows are the source of truth, so there is no separate working
+ * copy. Which fields a row exposes ({@code Text1}, {@code Text2}, {@code Image}) is derived from the
+ * current ListView layout and applied by showing/hiding the row's widgets. The saved JSON is
+ * unchanged from the previous {@code CellTable}-based implementation.
  */
 public class ListViewAddDataDialog {
 
@@ -72,7 +65,8 @@ public class ListViewAddDataDialog {
       GWT.create(ListViewAddDataDialogUiBinder.class);
 
   @UiField Dialog dialogBox;
-  @UiField FlowPanel tableContainer;
+  @UiField HorizontalPanel headerRow;
+  @UiField FlowPanel rowsContainer;
   @UiField Button addRow;
   @UiField Button save;
   @UiField Button cancel;
@@ -82,15 +76,19 @@ public class ListViewAddDataDialog {
   private final YoungAndroidListViewAddDataPropertyEditor owner;
   private final int layout;
 
-  /* Working copy of the rows; only written back to the property on SAVE. */
-  private final List<JSONObject> itemsCopy = new ArrayList<JSONObject>();
-  private final CellTable<JSONObject> table = new CellTable<JSONObject>();
-  private final ListDataProvider<JSONObject> model = new ListDataProvider<JSONObject>(itemsCopy);
-  private final JSONArray rows = new JSONArray();
+  /* Which fields apply to the current layout, derived once from the layout mode. */
+  private final boolean showDetail;
+  private final boolean showImage;
+
+  /* Asset names (incl. "None") used to populate each row's image picker. */
+  private final List<String> imageChoices;
 
   ListViewAddDataDialog(YoungAndroidListViewAddDataPropertyEditor owner, int layout) {
     this.owner = owner;
     this.layout = layout;
+    this.showDetail = layoutHasDetail(layout);
+    this.showImage = layoutHasImage(layout);
+    this.imageChoices = buildImageChoices();
     UI_BINDER.createAndBindUi(this);
 
     dialogBox.setCaption(MESSAGES.listDataAddDataTitle());
@@ -99,16 +97,11 @@ public class ListViewAddDataDialog {
     save.setText(MESSAGES.saveButton());
     cancel.setText(MESSAGES.cancelButton());
 
+    buildHeader();
+
     for (JSONObject item : owner.getItems()) {
-      itemsCopy.add(item);
+      rowsContainer.add(new ListViewDataRow(item, showDetail, showImage, imageChoices));
     }
-
-    table.setRowData(itemsCopy);
-    table.setEmptyTableWidget(new Label("No row data available yet!"));
-    model.addDataDisplay(table);
-
-    buildColumns();
-    tableContainer.add(table);
   }
 
   /** Centers and shows the dialog. */
@@ -116,125 +109,60 @@ public class ListViewAddDataDialog {
     dialogBox.center();
   }
 
-  /**
-   * Creates the table columns for the current ListView layout. The set of columns determines which
-   * fields ({@code Text1}, {@code Text2}, {@code Image}) a row exposes for editing.
-   */
-  private void buildColumns() {
-    if (layout == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-      table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
-          layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
-      table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
-      table.addColumn(createTextBoxes("Text2"), MESSAGES.listDataDetailTextHeader());
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
-      table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT ||
-        layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
-      table.addColumn(createTextBoxes("Text1"), MESSAGES.listDataMainTextHeader());
-      table.addColumn(createTextBoxes("Text2"), MESSAGES.listDataDetailTextHeader());
-      table.addColumn(createImageSelectionDropDown("Image"), MESSAGES.listDataImageHeader());
-    }
-
-    table.addColumn(createDeleteButton());
+  /** Whether the given layout shows a detail (second) text field. */
+  private static boolean layoutHasDetail(int layout) {
+    return layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT
+        || layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR
+        || layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT
+        || layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT;
   }
 
-  private Column<JSONObject, String> createDeleteButton() {
-    Column<JSONObject, String> column = new Column<JSONObject, String>(new ButtonCell()) {
-      @Override
-      public String getValue(JSONObject jsonObject) {
-        return "DELETE";
-      }
-    };
-    column.setFieldUpdater(new FieldUpdater<JSONObject, String>() {
-      @Override
-      public void update(int i, JSONObject jsonObject, String s) {
-        itemsCopy.remove(i);
-        model.refresh();
-        table.setRowCount(0);
-        table.setRowData(0, itemsCopy);
-      }
-    });
-    return column;
+  /** Whether the given layout shows an image picker. */
+  private static boolean layoutHasImage(int layout) {
+    return layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT
+        || layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT
+        || layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT;
   }
 
-  private Column<JSONObject, String> createTextBoxes(final String columnKey) {
-    Column<JSONObject, String> column = new Column<JSONObject, String>(new TextInputCell()) {
-      @Override
-      public String getValue(JSONObject jsonObject) {
-        if (jsonObject.containsKey(columnKey)) {
-          JSONString stringVal = (JSONString) jsonObject.get(columnKey);
-          return (stringVal.stringValue());
-        } else {
-          jsonObject.put(columnKey, new JSONString(""));
-          return "";
-        }
-      }
-    };
-    column.setFieldUpdater(new FieldUpdater<JSONObject, String>() {
-      @Override
-      public void update(int i, JSONObject jsonObject, String s) {
-        jsonObject.put(columnKey, new JSONString(s));
-      }
-    });
-    return column;
-  }
-
-  private Column<JSONObject, String> createImageSelectionDropDown(final String columnKey) {
+  /** Builds the list of selectable image assets ("None" plus every project asset). */
+  private List<String> buildImageChoices() {
     Project project = Ode.getInstance().getProjectManager()
         .getProject(owner.getSimpleEditor().getProjectId());
     YoungAndroidAssetsFolder assetsFolder =
         ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
     List<String> choices = new ArrayList<String>();
-    choices.add(0, "None");
+    choices.add("None");
     if (assetsFolder != null) {
       for (ProjectNode node : assetsFolder.getChildren()) {
         choices.add(node.getName());
       }
     }
-    Column<JSONObject, String> column = new Column<JSONObject, String>(new SelectionCell(choices)) {
-      @Override
-      public String getValue(JSONObject jsonObject) {
-        if (jsonObject.containsKey(columnKey)) {
-          JSONString stringVal = (JSONString) jsonObject.get(columnKey);
-          return (stringVal.stringValue());
-        } else {
-          jsonObject.put(columnKey, new JSONString(""));
-          return "";
-        }
-      }
-    };
-    column.setFieldUpdater(new FieldUpdater<JSONObject, String>() {
-      @Override
-      public void update(int i, JSONObject jsonObject, String s) {
-        jsonObject.put(columnKey, new JSONString(s));
-      }
-    });
-    return column;
+    return choices;
+  }
+
+  /** Adds the column headers that match the visible fields for the current layout. */
+  private void buildHeader() {
+    headerRow.add(new Label(MESSAGES.listDataMainTextHeader()));
+    if (showDetail) {
+      headerRow.add(new Label(MESSAGES.listDataDetailTextHeader()));
+    }
+    if (showImage) {
+      headerRow.add(new Label(MESSAGES.listDataImageHeader()));
+    }
   }
 
   @UiHandler("addRow")
   void onAddRow(ClickEvent event) {
     // creates a row with default data for the corresponding layout type
     JSONObject data = new JSONObject();
-    if (layout == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-      data.put("Text1", new JSONString(""));
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
-          layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) {
-      data.put("Text1", new JSONString(""));
+    data.put("Text1", new JSONString(""));
+    if (showDetail) {
       data.put("Text2", new JSONString(""));
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) {
-      data.put("Text1", new JSONString(""));
-      data.put("Image", new JSONString("None"));
-    } else if (layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TWO_TEXT ||
-        layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT) {
-      data.put("Text1", new JSONString(""));
-      data.put("Text2", new JSONString(""));
+    }
+    if (showImage) {
       data.put("Image", new JSONString("None"));
     }
-    itemsCopy.add(data);
-    table.setRowData(itemsCopy);
+    rowsContainer.add(new ListViewDataRow(data, showDetail, showImage, imageChoices));
   }
 
   @UiHandler("save")
@@ -242,14 +170,15 @@ public class ListViewAddDataDialog {
     // save the data for the corresponding layout type
     List<JSONObject> items = owner.getItems();
     items.clear();
-    for (int i = 0; i < itemsCopy.size(); ++i) {
-      JSONObject obj = itemsCopy.get(i);
-      if ((layout == ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT ||
-          layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT) && obj.containsKey("Text2")) {
+    JSONArray rows = new JSONArray();
+    for (int i = 0; i < rowsContainer.getWidgetCount(); ++i) {
+      ListViewDataRow row = (ListViewDataRow) rowsContainer.getWidget(i);
+      JSONObject obj = row.toJsonObject();
+      // null fields that don't belong to the current layout so the saved JSON is unchanged
+      if (!showDetail && obj.containsKey("Text2")) {
         obj.put("Text2", null);
       }
-      if ((layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT ||
-          layout == ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT_LINEAR) && obj.containsKey("Image")) {
+      if (!showImage && obj.containsKey("Image")) {
         obj.put("Image", null);
       }
       rows.set(i, obj);
@@ -269,7 +198,6 @@ public class ListViewAddDataDialog {
     confirm.yes.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        itemsCopy.clear();
         confirm.hide();
         dialogBox.hide();
       }
