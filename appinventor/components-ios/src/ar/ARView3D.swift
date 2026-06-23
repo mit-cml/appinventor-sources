@@ -110,6 +110,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _observersInstalled = false
   private var restartPending = false
   
+  private var _lastGeoTrackingState: ARGeoTrackingStatus.State = .notAvailable
+  private var _lastGeoTrackingReason: ARGeoTrackingStatus.StateReason = .none
+  private var _didReportVisualLocalizationFailed = false
+
+  
   private var _currentImageSnapshot = ""
   
   enum State {
@@ -721,7 +726,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       if node.IsGeoAnchored {
         if let geoAnchor = node.getGeoAnchor() {
-          self._arView.session.add(anchor: geoAnchor)
+          _nodeToAnchorDict[node] = _pendingAnchor
+          addGeoAnchoredNode(node)
         }
       } else {
         if !node.IsFollowingImageMarker {
@@ -828,6 +834,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       self._arView.session.delegate = self
       self._arView.automaticallyConfigureSession = false
+      self._didReportVisualLocalizationFailed = false
+      self._lastGeoTrackingState = .notAvailable
+      self._lastGeoTrackingReason = .none
       
       let config = self.setupConfiguration()
       
@@ -1333,39 +1342,40 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       print("No geo anchor found on node")
       return
     }
-    
     _containsModelNodes = node is ModelNode ? true : _containsModelNodes
-    
     if _sessionRunning {
       // Add geo anchor to session first
       _arView.session.add(anchor: geoAnchor)
-      
-      // Store node with placeholder - actual AnchorEntity created in delegate
-      _nodeToAnchorDict[node] = nil
-      
+      _nodeToAnchorDict[node] = _pendingAnchor
       print("Added geo anchor to session: \(geoAnchor.coordinate)")
     } else {
-      // Store for later when session starts
-      _nodeToAnchorDict[node] = nil
+      // set in calling method
+      _nodeToAnchorDict[node] = _pendingAnchor
       _requiresAddNodes = true
     }
   }
+  
+  private let _pendingAnchor = AnchorEntity()  // sentinel for unresolved geo anchors
+
   
   // called after LoadScene and during node init
   @objc open func addNode(_ node: ARNodeBase) {
     
     ensureFloorExists()
+   
+    
     if node.IsGeoAnchored {
       addGeoAnchoredNode(node)
     } else {
+      
+      
       var anchorEntity = node.Anchor
       if (anchorEntity == nil){
         anchorEntity = node.createAnchor()
       }
-      let nodeId = ObjectIdentifier(node)
+
       _nodeToAnchorDict[node] = anchorEntity
       _containsModelNodes = node is ModelNode ? true : _containsModelNodes
-      
       if _sessionRunning {
         _arView.scene.addAnchor(anchorEntity!)
         
@@ -1567,6 +1577,58 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     marker._anchorEntity = nil
   }
   
+  @objc open func GeoTrackingLocalized() {
+      EventDispatcher.dispatchEvent(of: self, called: "GeoTrackingLocalized")
+  }
+  
+  public func session(_ session: ARSession, didChange geoTrackingStatus: ARGeoTrackingStatus) {
+      let state = geoTrackingStatus.state
+      let reason = geoTrackingStatus.stateReason
+      
+      guard state != _lastGeoTrackingState || reason != _lastGeoTrackingReason else { return }
+      guard _didReportVisualLocalizationFailed == false else { return }
+      _lastGeoTrackingState = state
+      _lastGeoTrackingReason = reason
+      
+      print("🌍 Geo: state=\(state), reason=\(reason)")
+      
+      if state == .localized {
+          _didReportVisualLocalizationFailed = false  // ✅ reset if we eventually localize
+          DispatchQueue.main.async {
+              self.GeoTrackingLocalized()
+          }
+          return
+      }
+      
+      switch reason {
+      case .notAvailableAtLocation:
+          _container?.form?.dispatchErrorOccurredEvent(
+              self, "GeoTracking",
+              ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED
+          )
+      case .geoDataNotLoaded:
+          _container?.form?.dispatchErrorOccurredEvent(
+              self, "GeoTracking",
+              ErrorMessage.ERROR_GEOANCHOR_DATA_NOT_LOADED
+          )
+      case .devicePointedTooLow:
+          _container?.form?.dispatchErrorOccurredEvent(
+              self, "GeoTracking",
+              ErrorMessage.ERROR_GEOANCHOR_DEVICE_POINTED_TOO_LOW
+          )
+      case .visualLocalizationFailed:
+          // ✅ Only report once — ARKit keeps retrying, no need to keep telling the user
+          guard !_didReportVisualLocalizationFailed else { break }
+          _didReportVisualLocalizationFailed = true
+          _container?.form?.dispatchErrorOccurredEvent(
+              self, "GeoTracking",
+              ErrorMessage.ERROR_GEOANCHOR_VISUAL_LOCALIZATION_FAILED
+          )
+      default:
+          break
+      }
+  }
+  
   // MARK: ARSession Delegate Methods
   public func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
     let newMeshes = anchors.compactMap { $0 as? ARMeshAnchor }.count
@@ -1620,7 +1682,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         
         // Create anchor entity if needed
         if marker.Anchor == nil {
-          let imA = AnchorEntity(anchor: imageAnchor)
+          let imA = AnchorEntity(.anchor(identifier: imageAnchor.identifier))
           _arView.scene.addAnchor(imA)
           marker.Anchor = imA
           marker._anchorEntity = imA
@@ -1660,6 +1722,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         marker.FirstDetected(imageAnchor)
             
       } else if let geoAnchor = anchor as? ARGeoAnchor {
+          print("   call handleGeoAnchorAdded")
           handleGeoAnchorAdded(geoAnchor)
       }
     }
@@ -1701,7 +1764,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       if !sameId {
         // Old/stale AE → remove & replace
         ae.removeFromParent()
-        let imA = AnchorEntity(anchor: imageAnchor)
+        let imA = AnchorEntity(.anchor(identifier: imageAnchor.identifier))
         _arView.scene.addAnchor(imA)
         marker._anchorEntity = imA
         marker._lastARAnchorId = imageAnchor.identifier
@@ -1718,7 +1781,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
 
     // No AnchorEntity yet → create and add, imageAnchor transform
-    let imA = AnchorEntity(anchor: imageAnchor)
+    let imA = AnchorEntity(.anchor(identifier: imageAnchor.identifier))
     _arView.scene.addAnchor(imA)
     marker.Anchor = imA
     marker._anchorEntity = imA
@@ -1739,11 +1802,23 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       case let imageAnchor as ARImageAnchor:
           handleImageAnchorUpdate(imageAnchor)
       case let geoAnchor as ARGeoAnchor:
-          handleGeoAnchorAdded(geoAnchor)
+        handleGeoAnchorUpdated(geoAnchor)
       default:
           break
       }
     }
+  }
+  
+  private func handleGeoAnchorUpdated(_ geoAnchor: ARGeoAnchor) {
+      // AnchorEntity(anchor:) tracks updates automatically — nothing to do here
+      // unless you need to fire events when geo accuracy changes
+      for (node, anchorEntity) in _nodeToAnchorDict {
+          guard let nodeGeoAnchor = node.getGeoAnchor(),
+                nodeGeoAnchor.identifier == geoAnchor.identifier,
+                anchorEntity != nil else { continue }
+          print("📍 Geo anchor updated: \(geoAnchor.coordinate), tracked by RealityKit automatically")
+          break
+      }
   }
 
   // MARK: - Plane Handling
@@ -1886,51 +1961,48 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
-    // Calculate distance from session start
-    if let sessionStart = sessionStartLocation {
-      let distance = CLLocation(latitude: geoAnchor.coordinate.latitude, longitude: geoAnchor.coordinate.longitude)
-        .distance(from: sessionStart)
-      print("📏 Distance from session start: \(distance) meters")
-    }
-    
-    // Find the node that corresponds to this geo anchor
-    for (node, _) in _nodeToAnchorDict {
-      if let nodeGeoAnchor = node.getGeoAnchor(),
-         nodeGeoAnchor.identifier == geoAnchor.identifier {
+      for (node, existingAnchor) in _nodeToAnchorDict {
+        guard let nodeGeoAnchor = node.getGeoAnchor() else { continue }
         
-        print("✅ Found matching node: \(node.Name)")
+        print("  checking node \(node.Name): geoAnchor.id=\(nodeGeoAnchor.identifier) vs \(geoAnchor.identifier), isPending=\(existingAnchor === _pendingAnchor)")
         
-        let anchorEntity = AnchorEntity(world: geoAnchor.transform)
+        guard nodeGeoAnchor.identifier == geoAnchor.identifier else { continue }
+        
+        if existingAnchor !== _pendingAnchor {
+            print("⚠️ Already resolved, skipping")
+            break
+        }
+
+        let anchorEntity: AnchorEntity
+        if _configuration is ARGeoTrackingConfiguration
+            && ARGeoTrackingConfiguration.isSupported {
+            anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
+            print("🌍 Geo tracking: ARKit resolves \(geoAnchor.coordinate)")
+        } else {
+            anchorEntity = AnchorEntity(world: geoAnchor.transform)
+            print("⬇️ Geo config inactive — SLAM fallback: \(geoAnchor.coordinate)")
+        }
+      
+        if let staleAnchor = node._modelEntity.parent as? AnchorEntity {
+            node._modelEntity.removeFromParent()
+            _arView.scene.removeAnchor(staleAnchor)
+            print("🔀 Removed from stale SLAM anchor")
+        }
+
+
+        print("📦 Adding child \(node.Name) to anchor, modelEntity parent before: \(String(describing: node._modelEntity.parent))")
         anchorEntity.addChild(node._modelEntity)
-        _arView.scene.addAnchor(anchorEntity)
+        print("📦 modelEntity parent after: \(String(describing: node._modelEntity.parent))")
         
-        // Update our tracking
+        _arView.scene.addAnchor(anchorEntity)
+        print("✅ Anchor added to scene: \(anchorEntity.anchoring)")
+        
         _nodeToAnchorDict[node] = anchorEntity
         node._anchorEntity = anchorEntity
         
-        if let currentSessionStart = sessionStartLocation,
-           let creatorSessionStart = node._creatorSessionStart,
-           let worldOffset = node._worldOffset {
-          
-          // Check if current user is close to where anchor was created
-          let creatorLocation = CLLocation(latitude: creatorSessionStart.coordinate.latitude, longitude: creatorSessionStart.coordinate.longitude)
-          let currentDistance = currentSessionStart.distance(from: currentSessionStart)
-          
-          if !canUseGeo() || currentDistance < 5.0 {
-            // User is very close to original creation location - use precise world coordinates
-            if let creatorStartWorldPos = self.gpsToWorld(creatorSessionStart.coordinate, creatorSessionStart.altitude) {
-              let precisePosition = creatorStartWorldPos + worldOffset
-              node.setPosition(x: precisePosition.x, y: precisePosition.y, z: precisePosition.z)
-              return
-            }
-          }
-          
-          print("🎯 Geo anchor now tracked and displayed at \(geoAnchor.coordinate)")
-          print("📍 AnchorEntity position: \(anchorEntity.position)")
-          break
-        }
+        print("👁️ Node visible: \(node.Visible), modelEntity enabled: \(node._modelEntity.isEnabled)")
+        break
       }
-    }
   }
   
   
@@ -1949,7 +2021,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                                   _ lat: Double, _ lng: Double, _ alt: Double,
                                   _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) {
   
-      
+      print("tapped at location \(x), \(y), \(z)")
       if hasGeoCoordinates {
         // Dispatch with both world and geo coordinates
         EventDispatcher.dispatchEvent(of: self, called: "TapAtLocation",
@@ -2051,49 +2123,22 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
-      print("SETUP LOCATION")
-      // Create geo anchor if we can
       if hasGeoCoordinates {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         if CLLocationCoordinate2DIsValid(coordinate) {
           let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
           node.setGeoAnchor(geoAnchor)
-          print("setup node's geoanchor \(String(describing: geoAnchor))")
-          
-          // Check distance from session start
-          if let sessionStart = sessionStartLocation {
-            let anchorLocation = CLLocation(latitude: latitude, longitude: longitude)
-            let distance = sessionStart.distance(from: anchorLocation)
-            
-            if distance < 10.0 {
-              // Close anchor: Use the EXACT tap position - let physics drop it
-
-              let groundLevel = GROUND_LEVEL
-              let bounds = node._modelEntity.visualBounds(relativeTo: nil as Entity?)
-              
-              let scale = node.Scale
-              let scaledHeight = (bounds.max.y - bounds.min.y) * scale
-              let halfHeight = scaledHeight / 2
-              let safeY = min(y + halfHeight + ARView3D.VERTICAL_OFFSET ,
-                              max(groundLevel + ARView3D.VERTICAL_OFFSET,
-                                  y  + ARView3D.VERTICAL_OFFSET)
-              )
-              
-              //node.setPosition(x: xMeters, y: safeY, z: zMeters)
-              node._modelEntity.setPosition(SIMD3<Float>(x, safeY, z), relativeTo: nil)
-              print("create node at x \(x) y  \(y) z \(z) and safe is \(safeY)")
-              node._worldOffset = SIMD3<Float>(x: x, y: y, z: z)
-              node._creatorSessionStart = anchorLocation
-              print("saved world coords for offset \(String(describing: node._worldOffset))")
-            }
-            return
-          }
+          print("1️⃣ After setgeoAnchor, parent: \(String(describing: node._modelEntity.parent))")
+          addGeoAnchoredNode(node)
+          print("1️⃣ After addGeoAnchorNode, parent: \(String(describing: node._modelEntity.parent))")
+          print("📍 Geo anchor set: \(coordinate), altitude: \(altitude)")
         } else {
-          print("setting up location error: Invalid Coordinates", ErrorMessage.ERROR_INVALID_COORDINATES.code)
+          print("⚠️ Invalid coordinates — falling back to x,y,z placement")
+          setupNonGeo(x: x, y: y, z: z, node: node)
         }
+      } else {
+        setupNonGeo(x: x, y: y, z: z, node: node)
       }
-      
-      setupNonGeo(x: x, y: y, z: z, node: node)
     }
     
     @objc open func CreateBoxNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ lat: Double, _ lng: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> BoxNode? {
@@ -2214,7 +2259,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node = SphereNode(self)
       node.Name = "GeoSphereNode"
       node.Initialize()
-      
+      print("1️⃣ After init, parent: \(String(describing: node._modelEntity.parent))")
+
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
       
       return node
