@@ -1681,7 +1681,7 @@ extension ARNodeBase {
     let currentPosition = self.getPosition()
     
     // Orient the entity to look at the target node, keeping the Y-axis up
-    self._modelEntity.look(at: targetPosition, from: currentPosition, upVector: [0, 1, 0], relativeTo: nil as AnyObject? as? Entity)
+    self._modelEntity.look(at: targetPosition, from: currentPosition, upVector: [0, 1, 0], relativeTo: nil)
 
     
   }
