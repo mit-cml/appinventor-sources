@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../block_svg.js';
+import type { IBubble } from '../interfaces/i_bubble.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Size } from '../utils.js';
 import { Coordinate } from '../utils/coordinate.js';
@@ -60,6 +61,8 @@ export declare class WarningIcon extends Icon implements IHasBubble {
     isClickableInFlyout(): boolean;
     bubbleIsVisible(): boolean;
     setBubbleVisible(visible: boolean): Promise<void>;
+    /** See IHasBubble.getBubble. */
+    getBubble(): IBubble | null;
     /**
      * @returns the location the bubble should be anchored to.
      *     I.E. the middle of this icon.

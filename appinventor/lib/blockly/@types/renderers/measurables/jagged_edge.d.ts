@@ -10,6 +10,7 @@ import { Measurable } from './base.js';
  * collapsed block takes up during rendering.
  */
 export declare class JaggedEdge extends Measurable {
+    private jaggedEdge;
     /**
      * @param constants The rendering constants provider.
      */

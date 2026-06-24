@@ -27,6 +27,13 @@ export declare class Rect {
      */
     constructor(top: number, bottom: number, left: number, right: number);
     /**
+     * Converts a DOM or SVG Rect to a Blockly Rect.
+     *
+     * @param rect The rectangle to convert.
+     * @returns A representation of the same rectangle as a Blockly Rect.
+     */
+    static from(rect: DOMRect | SVGRect): Rect;
+    /**
      * Creates a new copy of this rectangle.
      *
      * @returns A copy of this Rect.
@@ -36,6 +43,8 @@ export declare class Rect {
     getHeight(): number;
     /** Returns the width of this rectangle. */
     getWidth(): number;
+    /** Returns the top left coordinate of this rectangle. */
+    getOrigin(): Coordinate;
     /**
      * Tests whether this rectangle contains a x/y coordinate.
      *

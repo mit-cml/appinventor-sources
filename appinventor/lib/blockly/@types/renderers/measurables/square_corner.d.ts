@@ -10,6 +10,7 @@ import { Measurable } from './base.js';
  * during rendering.
  */
 export declare class SquareCorner extends Measurable {
+    private squareCorner;
     /**
      * @param constants The rendering constants provider.
      * @param opt_position The position of this corner.
