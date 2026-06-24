@@ -3,7 +3,8 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { MenuItem } from './menuitem.js';
+import type { MenuSeparator } from './menu_separator.js';
+import { MenuItem } from './menuitem.js';
 import * as aria from './utils/aria.js';
 import { Coordinate } from './utils/coordinate.js';
 import type { Size } from './utils/size.js';
@@ -12,9 +13,7 @@ import type { Size } from './utils/size.js';
  */
 export declare class Menu {
     /**
-     * Array of menu items.
-     * (Nulls are never in the array, but typing the array as nullable prevents
-     * the compiler from objecting to .indexOf(null))
+     * Array of menu items and separators.
      */
     private readonly menuItems;
     /**
@@ -47,10 +46,10 @@ export declare class Menu {
     /**
      * Add a new menu item to the bottom of this menu.
      *
-     * @param menuItem Menu item to append.
+     * @param menuItem Menu item or separator to append.
      * @internal
      */
-    addChild(menuItem: MenuItem): void;
+    addChild(menuItem: MenuItem | MenuSeparator): void;
     /**
      * Creates the menu DOM.
      *
@@ -149,9 +148,7 @@ export declare class Menu {
      */
     private handlePointerLeave;
     /**
-     * Attempts to handle a keyboard event, if the menu item is enabled, by
-     * calling
-     * {@link Menu#handleKeyEventInternal_}.
+     * Attempts to handle a keyboard event.
      *
      * @param e Key event to handle.
      */
@@ -163,5 +160,11 @@ export declare class Menu {
      * @internal
      */
     getSize(): Size;
+    /**
+     * Returns the action menu items (omitting separators) in this menu.
+     *
+     * @returns The MenuItem objects displayed in this menu.
+     */
+    private getMenuItems;
 }
 //# sourceMappingURL=menu.d.ts.map

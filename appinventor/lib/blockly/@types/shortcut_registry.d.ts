@@ -9,6 +9,7 @@
  *
  * @class
  */
+import { Scope } from './contextmenu_registry.js';
 import { KeyCodes } from './utils/keycodes.js';
 import { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -183,12 +184,14 @@ export declare namespace ShortcutRegistry {
          * @param e The event that caused the shortcut to be activated.
          * @param shortcut The `KeyboardShortcut` that was activated
          *     (i.e., the one this callback is attached to).
+         * @param scope Information about the focused item when the
+         * shortcut was invoked.
          * @returns Returning true ends processing of the invoked keycode.
          *     Returning false causes processing to continue with the
          *     next-most-recently registered shortcut for the invoked
          *     keycode.
          */
-        callback?: (workspace: WorkspaceSvg, e: Event, shortcut: KeyboardShortcut) => boolean;
+        callback?: (workspace: WorkspaceSvg, e: Event, shortcut: KeyboardShortcut, scope: Scope) => boolean;
         /** The name of the shortcut.  Should be unique. */
         name: string;
         /**
@@ -198,9 +201,11 @@ export declare namespace ShortcutRegistry {
          *
          * @param workspace The `WorkspaceSvg` where the shortcut was
          *     invoked.
+         * @param scope Information about the focused item when the
+         * shortcut would be invoked.
          * @returns True iff `callback` function should be called.
          */
-        preconditionFn?: (workspace: WorkspaceSvg) => boolean;
+        preconditionFn?: (workspace: WorkspaceSvg, scope: Scope) => boolean;
         /** Optional arbitray extra data attached to the shortcut. */
         metadata?: object;
         /**

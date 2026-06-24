@@ -11,12 +11,15 @@ import type { IConnectionPreviewer } from './interfaces/i_connection_previewer.j
 import type { ICopyable } from './interfaces/i_copyable.js';
 import type { IDragger } from './interfaces/i_dragger.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
+import type { IFlyoutInflater } from './interfaces/i_flyout_inflater.js';
 import type { IIcon } from './interfaces/i_icon.js';
 import type { IMetricsManager } from './interfaces/i_metrics_manager.js';
 import type { IPaster } from './interfaces/i_paster.js';
 import type { ISerializer } from './interfaces/i_serializer.js';
 import type { IToolbox } from './interfaces/i_toolbox.js';
-import type { Cursor } from './keyboard_nav/cursor.js';
+import type { IVariableMap } from './interfaces/i_variable_map.js';
+import type { IVariableModel, IVariableModelStatic, IVariableState } from './interfaces/i_variable_model.js';
+import type { LineCursor } from './keyboard_nav/line_cursor.js';
 import type { Options } from './options.js';
 import type { Renderer } from './renderers/common/renderer.js';
 import type { Theme } from './theme.js';
@@ -47,7 +50,7 @@ export declare class Type<_T> {
     toString(): string;
     static CONNECTION_CHECKER: Type<IConnectionChecker>;
     static CONNECTION_PREVIEWER: Type<IConnectionPreviewer>;
-    static CURSOR: Type<Cursor>;
+    static CURSOR: Type<LineCursor>;
     static EVENT: Type<Abstract>;
     static FIELD: Type<Field<any>>;
     static INPUT: Type<Input>;
@@ -57,6 +60,7 @@ export declare class Type<_T> {
     static TOOLBOX_ITEM: Type<ToolboxItem>;
     static FLYOUTS_VERTICAL_TOOLBOX: Type<IFlyout>;
     static FLYOUTS_HORIZONTAL_TOOLBOX: Type<IFlyout>;
+    static FLYOUT_INFLATER: Type<IFlyoutInflater>;
     static METRICS_MANAGER: Type<IMetricsManager>;
     /**
      * Type for an IDragger. Formerly behavior was mostly covered by
@@ -69,6 +73,8 @@ export declare class Type<_T> {
     static ICON: Type<IIcon>;
     /** @internal */
     static PASTER: Type<IPaster<ICopyable.ICopyData, ICopyable<ICopyable.ICopyData>>>;
+    static VARIABLE_MODEL: Type<IVariableModelStatic<IVariableState> & IVariableModel<IVariableState>>;
+    static VARIABLE_MAP: Type<IVariableMap<IVariableModel<IVariableState>>>;
 }
 /**
  * Registers a class based on a type and name.

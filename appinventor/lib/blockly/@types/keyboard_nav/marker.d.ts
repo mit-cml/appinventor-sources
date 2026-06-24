@@ -9,8 +9,8 @@
  *
  * @class
  */
-import type { MarkerSvg } from '../renderers/common/marker_svg.js';
-import type { ASTNode } from './ast_node.js';
+import { BlockSvg } from '../block_svg.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
 /**
  * Class for a marker.
  * This is used in keyboard navigation to save a location in the Blockly AST.
@@ -19,51 +19,35 @@ export declare class Marker {
     /** The colour of the marker. */
     colour: string | null;
     /** The current location of the marker. */
-    private curNode;
-    /**
-     * The object in charge of drawing the visual representation of the current
-     * node.
-     */
-    private drawer;
+    protected curNode: IFocusableNode | null;
     /** The type of the marker. */
     type: string;
-    /** Constructs a new Marker instance. */
-    constructor();
-    /**
-     * Sets the object in charge of drawing the marker.
-     *
-     * @param drawer The object in charge of drawing the marker.
-     */
-    setDrawer(drawer: MarkerSvg): void;
-    /**
-     * Get the current drawer for the marker.
-     *
-     * @returns The object in charge of drawing the marker.
-     */
-    getDrawer(): MarkerSvg;
     /**
      * Gets the current location of the marker.
      *
      * @returns The current field, connection, or block the marker is on.
      */
-    getCurNode(): ASTNode;
+    getCurNode(): IFocusableNode | null;
     /**
      * Set the location of the marker and call the update method.
-     * Setting isStack to true will only work if the newLocation is the top most
-     * output or previous connection on a stack.
      *
-     * @param newNode The new location of the marker.
+     * @param newNode The new location of the marker, or null to remove it.
      */
-    setCurNode(newNode: ASTNode): void;
-    /**
-     * Redraw the current marker.
-     *
-     * @internal
-     */
-    draw(): void;
-    /** Hide the marker SVG. */
-    hide(): void;
+    setCurNode(newNode: IFocusableNode | null): void;
     /** Dispose of this marker. */
     dispose(): void;
+    /**
+     * Returns the block that the given node is a child of.
+     *
+     * @returns The parent block of the node if any, otherwise null.
+     */
+    getSourceBlockFromNode(node: IFocusableNode | null): BlockSvg | null;
+    /**
+     * Returns the block that this marker's current node is a child of.
+     *
+     * @returns The parent block of the marker's current node if any, otherwise
+     *     null.
+     */
+    getSourceBlock(): BlockSvg | null;
 }
 //# sourceMappingURL=marker.d.ts.map

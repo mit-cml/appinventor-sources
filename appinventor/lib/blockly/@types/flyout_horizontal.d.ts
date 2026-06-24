@@ -3,7 +3,8 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Flyout, FlyoutItem } from './flyout_base.js';
+import { Flyout } from './flyout_base.js';
+import type { FlyoutItem } from './flyout_item.js';
 import type { Options } from './options.js';
 import type { Coordinate } from './utils/coordinate.js';
 import { Rect } from './utils/rect.js';
@@ -56,10 +57,9 @@ export declare class HorizontalFlyout extends Flyout {
     /**
      * Lay out the blocks in the flyout.
      *
-     * @param contents The blocks and buttons to lay out.
-     * @param gaps The visible gaps between blocks.
+     * @param contents The flyout items to lay out.
      */
-    protected layout_(contents: FlyoutItem[], gaps: number[]): void;
+    protected layout_(contents: FlyoutItem[]): void;
     /**
      * Determine if a drag delta is toward the workspace, based on the position
      * and orientation of the flyout. This is used in determineDragIntention_ to

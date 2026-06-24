@@ -18,18 +18,17 @@ import type { Field } from './field.js';
 import { IconType } from './icons/icon_types.js';
 import type { MutatorIcon } from './icons/mutator_icon.js';
 import { Input } from './inputs/input.js';
-import type { IASTNodeLocation } from './interfaces/i_ast_node_location.js';
 import { type IIcon } from './interfaces/i_icon.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import * as Tooltip from './tooltip.js';
 import { Coordinate } from './utils/coordinate.js';
 import { Size } from './utils/size.js';
-import type { VariableModel } from './variable_model.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for one block.
  * Not normally called directly, workspace.newBlock() is preferred.
  */
-export declare class Block implements IASTNodeLocation {
+export declare class Block {
     /**
      * An optional callback method to use whenever the block's parent workspace
      * changes. This is usually only called from the constructor, the block type
@@ -541,6 +540,12 @@ export declare class Block implements IASTNodeLocation {
      */
     getField(name: string): Field | null;
     /**
+     * Returns a generator that provides every field on the block.
+     *
+     * @returns A generator that can be used to iterate the fields on the block.
+     */
+    getFields(): Generator<Field, undefined, void>;
+    /**
      * Return all variables referenced by this block.
      *
      * @returns List of variable ids.
@@ -552,7 +557,7 @@ export declare class Block implements IASTNodeLocation {
      * @returns List of variable models.
      * @internal
      */
-    getVarModels(): VariableModel[];
+    getVarModels(): IVariableModel<IVariableState>[];
     /**
      * Notification that a variable is renaming but keeping the same ID.  If the
      * variable is in use on this block, rerender to show the new name.
@@ -560,7 +565,7 @@ export declare class Block implements IASTNodeLocation {
      * @param variable The variable being renamed.
      * @internal
      */
-    updateVarName(variable: VariableModel): void;
+    updateVarName(variable: IVariableModel<IVariableState>): void;
     /**
      * Notification that a variable is renaming.
      * If the ID matches one of this block's variables, rename it.
@@ -641,21 +646,6 @@ export declare class Block implements IASTNodeLocation {
      * @returns True if enabled.
      */
     isEnabled(): boolean;
-    /** @deprecated v11 - Get whether the block is manually disabled. */
-    private get disabled();
-    /** @deprecated v11 - Set whether the block is manually disabled. */
-    private set disabled(value);
-    /**
-     * @deprecated v11 - Set whether the block is manually enabled or disabled.
-     * The user can toggle whether a block is disabled from a context menu
-     * option. A block may still be disabled for other reasons even if the user
-     * attempts to manually enable it, such as when the block is in an invalid
-     * location. This method is deprecated and setDisabledReason should be used
-     * instead.
-     *
-     * @param enabled True if enabled.
-     */
-    setEnabled(enabled: boolean): void;
     /**
      * Add or remove a reason why the block might be disabled. If a block has
      * any reasons to be disabled, then the block itself will be considered
@@ -999,7 +989,7 @@ export declare class Block implements IASTNodeLocation {
      *
      * Intended to on be used in console logs and errors. If you need a string
      * that uses the user's native language (including block text, field values,
-     * and child blocks), use [toString()]{@link Block#toString}.
+     * and child blocks), use {@link (Block:class).toString | toString()}.
      *
      * @returns The description.
      */
