@@ -1364,7 +1364,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     ensureFloorExists()
    
     
-    if node.IsGeoAnchored {
+    if shouldUseGeoCoordinates(node.IsGeoAnchored) {
       addGeoAnchoredNode(node)
     } else {
       
@@ -1960,6 +1960,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return status.state == .localized && status.accuracy == .high
   }
   
+  private func shouldUseGeoCoordinates(_ hasGeoCoordinates: Bool) -> Bool{
+    if hasGeoCoordinates &&
+        _configuration is ARGeoTrackingConfiguration &&
+        ARGeoTrackingConfiguration.isSupported {
+      return true
+    }
+    return false
+  }
+  
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
       for (node, existingAnchor) in _nodeToAnchorDict {
         guard let nodeGeoAnchor = node.getGeoAnchor() else { continue }
@@ -1974,8 +1983,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         }
 
         let anchorEntity: AnchorEntity
-        if _configuration is ARGeoTrackingConfiguration
-            && ARGeoTrackingConfiguration.isSupported {
+        if shouldUseGeoCoordinates(true) {
             anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
             print("🌍 Geo tracking: ARKit resolves \(geoAnchor.coordinate)")
         } else {
@@ -2123,7 +2131,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
-      if hasGeoCoordinates {
+      if shouldUseGeoCoordinates(hasGeoCoordinates) {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         if CLLocationCoordinate2DIsValid(coordinate) {
           let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
@@ -2509,10 +2517,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
     
     @objc open func CreateWebViewNodeAtLocation(_ x: Float, _ y: Float, _ z: Float, _ latitude: Double, _ longitude: Double, _ altitude: Double,  _ hasGeoCoordinates: Bool, _ isANodeAtPoint: Bool) -> WebViewNode? {
-      guard ARGeoTrackingConfiguration.isSupported else {
-        _container?.form?.dispatchErrorOccurredEvent(self, "CreateWebViewNodeAtGeoAnchor", ErrorMessage.ERROR_GEOANCHOR_NOT_SUPPORTED.code)
-        return nil
-      }
       
       let node = WebViewNode(self)
       node.Name = "GeoWebViewNode"
