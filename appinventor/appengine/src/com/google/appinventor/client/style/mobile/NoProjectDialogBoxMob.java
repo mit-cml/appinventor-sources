@@ -27,23 +27,9 @@ import com.google.gwt.user.client.ui.Widget;
  * project from scratch. Should appear when the user currently has no projects
  * in their projects list.
  */
-public class NoProjectDialogBoxMob extends DialogBox {
-
-  private static NoProjectDialogBoxUiBinderMob uiBinder =
-      GWT.create(NoProjectDialogBoxUiBinderMob.class);
-  private static NoProjectDialogBoxMob lastDialog = null;
+public class NoProjectDialogBoxMob extends NoProjectDialogBox {
 
   interface NoProjectDialogBoxUiBinderMob extends UiBinder<Widget, NoProjectDialogBoxMob> {
-  }
-
-  /**
-   * Class to open a new project with the tutorial's contents when the user
-   * clicks on the "Go to Tutorial" button.
-   */
-  private class NewTutorialProject implements NewProjectCommand {
-    public void execute(Project project) {
-      Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-    }
   }
 
   @UiField
@@ -61,60 +47,41 @@ public class NoProjectDialogBoxMob extends DialogBox {
   @UiField
   Button bottomInvisible;
 
-  /**
-   * Creates a new dialog box when the user has no current projects in their
-   * projects list. This will give them an option to open a tutorial project or
-   * create their own project.
-   */
-  public NoProjectDialogBoxMob() {
-    this.setStylePrimaryName("ode-noDialogDiv");
+  public void bindUI(){
+    NoProjectDialogBoxUiBinderMob uiBinder = GWT.create(NoProjectDialogBoxUiBinderMob.class);
     add(uiBinder.createAndBindUi(this));
-    this.center();
-    this.setAnimationEnabled(true);
-    this.setAutoHideEnabled(true);
-    this.setModal(false);
-    noDialogNewProject.setFocus(true);
-    lastDialog = this;
+    super.closeDialogBox = this.closeDialogBox;
+    super.goToPurr = this.goToPurr;
+    super.goToChat = this.goToChat;
+    super.goToYR = this.goToYR;
+    super.noDialogNewProject = this.noDialogNewProject;
+    super.topInvisible = this.topInvisible;
+    super.bottomInvisible = this.bottomInvisible;
   }
 
   @UiHandler("closeDialogBox")
-  void handleClose(ClickEvent e) {
-    this.hide();
+  protected void handleClose(ClickEvent e) {
+    super.handleClose(e);
   }
 
   @UiHandler("goToPurr")
-  void handleGoToPurr(ClickEvent e) {
-    this.hide();
-    new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject(),
-            "HelloPurr");
+  protected void handleGoToPurr(ClickEvent e) {
+    super.handleGoToPurr(e);
   }
 
   @UiHandler("goToChat")
-  void handleGoToChat(ClickEvent e) {
-    this.hide();
-    new TemplateUploadWizard().createProjectFromExistingZip("SimpleChatbot", new NewTutorialProject(),
-        "SimpleChatbot");
+  protected void handleGoToChat(ClickEvent e) {
+    super.handleGoToChat(e);
   }
 
   @UiHandler("goToYR")
-  void handleGoToYR(ClickEvent e) {
-    this.hide();
-    TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
-        + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc",
-        new NewTutorialProject());
+  protected void handleGoToYR(ClickEvent e) {
+    super.handleGoToYR(e);
   }
 
   @UiHandler("noDialogNewProject")
-  void handleNewProject(ClickEvent e) {
-    this.hide();
-    new NewYoungAndroidProjectWizard().show();
-  }
-
-  public static void closeIfOpen() {
-    if (lastDialog != null) {
-      lastDialog.removeFromParent();
-      lastDialog = null;
-    }
+  protected void handleNewProject(ClickEvent e) {
+    super.handleNewProject(e);
   }
 
   @UiHandler("topInvisible")

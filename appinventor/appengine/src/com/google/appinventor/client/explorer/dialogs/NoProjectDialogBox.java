@@ -28,8 +28,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class NoProjectDialogBox extends DialogBox {
 
-  private static NoProjectDialogBoxUiBinder uiBinder =
-      GWT.create(NoProjectDialogBoxUiBinder.class);
   private static NoProjectDialogBox lastDialog = null;
 
   interface NoProjectDialogBoxUiBinder extends UiBinder<Widget, NoProjectDialogBox> {
@@ -45,20 +43,13 @@ public class NoProjectDialogBox extends DialogBox {
     }
   }
 
-  @UiField
-  Button closeDialogBox;
-  @UiField
-  Button goToPurr;
-  @UiField
-  Button goToChat;
-  @UiField
-  Button goToYR;
-  @UiField
-  Button noDialogNewProject;
-  @UiField
-  Button topInvisible;
-  @UiField
-  Button bottomInvisible;
+  @UiField protected Button closeDialogBox;
+  @UiField protected Button goToPurr;
+  @UiField protected Button goToChat;
+  @UiField protected Button goToYR;
+  @UiField protected Button noDialogNewProject;
+  @UiField protected Button topInvisible;
+  @UiField protected Button bottomInvisible;
 
   /**
    * Creates a new dialog box when the user has no current projects in their
@@ -67,7 +58,7 @@ public class NoProjectDialogBox extends DialogBox {
    */
   public NoProjectDialogBox() {
     this.setStylePrimaryName("ode-noDialogDiv");
-    add(uiBinder.createAndBindUi(this));
+    bindUI();
     this.center();
     this.setAnimationEnabled(true);
     this.setAutoHideEnabled(true);
@@ -76,27 +67,32 @@ public class NoProjectDialogBox extends DialogBox {
     lastDialog = this;
   }
 
+  public void bindUI(){
+    NoProjectDialogBoxUiBinder uiBinder = GWT.create(NoProjectDialogBoxUiBinder.class);
+    add(uiBinder.createAndBindUi(this));
+  }
+
   @UiHandler("closeDialogBox")
-  void handleClose(ClickEvent e) {
+  protected void handleClose(ClickEvent e) {
     this.hide();
   }
 
   @UiHandler("goToPurr")
-  void handleGoToPurr(ClickEvent e) {
+  protected void handleGoToPurr(ClickEvent e) {
     this.hide();
     new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject(),
             "HelloPurr");
   }
 
   @UiHandler("goToChat")
-  void handleGoToChat(ClickEvent e) {
+  protected void handleGoToChat(ClickEvent e) {
     this.hide();
     new TemplateUploadWizard().createProjectFromExistingZip("SimpleChatbot", new NewTutorialProject(),
         "SimpleChatbot");
   }
 
   @UiHandler("goToYR")
-  void handleGoToYR(ClickEvent e) {
+  protected void handleGoToYR(ClickEvent e) {
     this.hide();
     TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
         + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc",
@@ -104,14 +100,14 @@ public class NoProjectDialogBox extends DialogBox {
   }
 
   @UiHandler("noDialogNewProject")
-  void handleNewProject(ClickEvent e) {
+  protected void handleNewProject(ClickEvent e) {
     this.hide();
     new NewYoungAndroidProjectWizard().show();
   }
 
   public static void closeIfOpen() {
     if (lastDialog != null) {
-      lastDialog.removeFromParent();;
+      lastDialog.removeFromParent();
       lastDialog = null;
     }
   }
