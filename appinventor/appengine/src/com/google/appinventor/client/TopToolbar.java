@@ -10,6 +10,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.actions.EnableAutoloadAction;
 import com.google.appinventor.client.actions.SetFontDyslexicAction;
+import com.google.appinventor.client.actions.SetNoProjectComparison;
+import com.google.appinventor.client.actions.SetProjectComparison;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignProject;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
@@ -164,6 +166,10 @@ public class TopToolbar extends Composite {
     if (!Ode.getUserDyslexicFont()) {
       settingsDropDown.setItemHtmlById("DyslexicFont", MESSAGES.enableOpenDyslexic());
       settingsDropDown.setCommandById("DyslexicFont", new SetFontDyslexicAction());
+    }
+    if (!Ode.getInstance().isDiffingAvailable()) {
+      settingsDropDown.setItemHtmlById("CompareProjects", "Enable Project Comparison");
+      settingsDropDown.setCommandById("CompareProjects", new SetProjectComparison());
     }
     if (!Ode.getInstance().getUser().getIsAdmin()) {
       adminDropDown.removeFromParent();

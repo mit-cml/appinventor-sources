@@ -96,6 +96,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.UrlBuilder;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -1491,6 +1492,30 @@ public class Ode implements EntryPoint {
           Window.Location.reload();
         }
       });
+  }
+
+  /**
+   * Set project comparison enabled setting.
+   *
+   * @param dyslexicFont new value for the user default font
+   */
+  public static void setProjectComparison(boolean enable) {
+    UrlBuilder urlBuilder = Window.Location.createUrlBuilder();
+    if (!enable) {
+      urlBuilder.removeParameter("diff");
+    } else {
+      urlBuilder.setParameter("diff",  "true");
+    }
+    String newUrl = urlBuilder.buildString();
+    Window.Location.assign(newUrl);
+    
+    // TODO: do not know whether this is needed
+    // Reload for the new font to take effect. We
+    // do this here because we need to make sure that
+    // the user settings were saved before we terminate
+    // this browsing session. This is particularly important
+    // for Firefox
+    // Window.Location.reload();
   }
 
   /**

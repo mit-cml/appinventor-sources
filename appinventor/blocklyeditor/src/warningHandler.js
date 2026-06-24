@@ -719,7 +719,7 @@ Blockly.WarningHandler.prototype.countChildBlocks = function(block) {
  * @param {Blockly.Block} block The block being disposed.
  */
 Blockly.WarningHandler.prototype.checkDisposedBlock = function(block) {
-  console.log(`Checking disposed block: ${block.type} (ID: ${block.id})`);
+  // console.log(`Checking disposed block: ${block.type} (ID: ${block.id})`);
 
   // Handle warnings for the current block
   if (block.hasWarning) {

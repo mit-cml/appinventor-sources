@@ -133,6 +133,10 @@
       <ai:DropDownItem name="AppStoreSettings" caption="{messages.appStoreSettingsMenuTitle}">
         <actions:ShowAppStoreSettingsDialog />
       </ai:DropDownItem>
+      <ai:DropDownItem name="CompareProjects" caption="Disable Project Comparison"
+          visible="{hasWriteAccess}">
+        <actions:SetNoProjectComparison/>
+      </ai:DropDownItem>
       <hr/>
       <ai:DropDownItem name="DownloadCSR" caption="{messages.downloadCertificateRequestItem}">
         <actions:DownloadCsrAction />
