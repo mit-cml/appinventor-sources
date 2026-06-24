@@ -14,7 +14,7 @@
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
 
   <ai:Toolbar styleName="ode-TopToolbar">
-    <ai:DropDownButton name="Settings" styleName="ode-TopPanelButton"
+    <ai:DropDownButton name="Settings" styleName="ode-ProjectListButton inline"
         ui:field="settingsDropDown" align="right" icon="menu">
     </ai:DropDownButton>
 
