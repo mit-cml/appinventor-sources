@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from './block.js';
-import { ISelectable } from './blockly.js';
 import { BlockDefinition } from './blocks.js';
 import type { Connection } from './connection.js';
+import { ISelectable } from './interfaces/i_selectable.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -49,18 +49,30 @@ export declare function getMainWorkspace(): Workspace;
  */
 export declare function setMainWorkspace(workspace: Workspace): void;
 /**
- * Returns the currently selected copyable object.
+ * Returns the current selection.
  */
 export declare function getSelected(): ISelectable | null;
 /**
- * Sets the currently selected block. This function does not visually mark the
- * block as selected or fire the required events. If you wish to
- * programmatically select a block, use `BlockSvg#select`.
+ * Sets the current selection.
  *
- * @param newSelection The newly selected block.
+ * To clear the current selection, select another ISelectable or focus a
+ * non-selectable (like the workspace root node).
+ *
+ * @param newSelection The new selection to make.
  * @internal
  */
-export declare function setSelected(newSelection: ISelectable | null): void;
+export declare function setSelected(newSelection: ISelectable): void;
+/**
+ * Fires a selection change event based on the new selection.
+ *
+ * This is only expected to be called by ISelectable implementations and should
+ * always be called before updating the current selection state. It does not
+ * change focus or selection state.
+ *
+ * @param newSelection The new selection.
+ * @internal
+ */
+export declare function fireSelectedEvent(newSelection: ISelectable | null): void;
 /**
  * Get the container element in which to render the WidgetDiv, DropDownDiv and
  * Tooltip.
@@ -136,6 +148,14 @@ export declare function createBlockDefinitionsFromJsonArray(jsonArray: any[]): {
 export declare function defineBlocks(blocks: {
     [key: string]: BlockDefinition;
 }): void;
+/**
+ * Handle a key-down on SVG drawing surface. Does nothing if the main workspace
+ * is not visible.
+ *
+ * @internal
+ * @param e Key down event.
+ */
+export declare function globalShortcutHandler(e: KeyboardEvent): void;
 export declare const TEST_ONLY: {
     defineBlocksWithJsonArrayInternal: typeof defineBlocksWithJsonArrayInternal;
 };

@@ -11,23 +11,29 @@
 import './events/events_var_delete.js';
 import './events/events_var_rename.js';
 import type { Block } from './block.js';
-import { VariableModel } from './variable_model.js';
+import type { IVariableMap } from './interfaces/i_variable_map.js';
+import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for a variable map.  This contains a dictionary data structure with
  * variable types as keys and lists of variables as values.  The list of
  * variables are the type indicated by the key.
  */
-export declare class VariableMap {
+export declare class VariableMap implements IVariableMap<IVariableModel<IVariableState>> {
     workspace: Workspace;
+    potentialMap: boolean;
     /**
-     * A map from variable type to list of variable names.  The lists contain
+     * A map from variable type to map of IDs to variables. The maps contain
      * all of the named variables in the workspace, including variables that are
      * not currently in use.
      */
     private variableMap;
-    /** @param workspace The workspace this map belongs to. */
-    constructor(workspace: Workspace);
+    /**
+     * @param workspace The workspace this map belongs to.
+     * @param potentialMap True if this holds variables that don't exist in the
+     *  workspace yet.
+     */
+    constructor(workspace: Workspace, potentialMap?: boolean);
     /** Clear the variable map.  Fires events for every deletion. */
     clear(): void;
     /**
@@ -35,13 +41,15 @@ export declare class VariableMap {
      *
      * @param variable Variable to rename.
      * @param newName New variable name.
-     * @internal
+     * @returns The newly renamed variable.
      */
-    renameVariable(variable: VariableModel, newName: string): void;
+    renameVariable(variable: IVariableModel<IVariableState>, newName: string): IVariableModel<IVariableState>;
+    changeVariableType(variable: IVariableModel<IVariableState>, newType: string): IVariableModel<IVariableState>;
     /**
      * Rename a variable by updating its name in the variable map. Identify the
      * variable to rename with the given ID.
      *
+     * @deprecated v12: use VariableMap.renameVariable.
      * @param id ID of the variable to rename.
      * @param newName New variable name.
      */
@@ -78,29 +86,27 @@ export declare class VariableMap {
      * @param opt_id The unique ID of the variable. This will default to a UUID.
      * @returns The newly created variable.
      */
-    createVariable(name: string, opt_type?: string | null, opt_id?: string | null): VariableModel;
+    createVariable(name: string, opt_type?: string, opt_id?: string): IVariableModel<IVariableState>;
     /**
-     * Delete a variable.
+     * Adds the given variable to this variable map.
+     *
+     * @param variable The variable to add.
+     */
+    addVariable(variable: IVariableModel<IVariableState>): void;
+    /**
+     * Delete a variable and all of its uses without confirmation.
      *
      * @param variable Variable to delete.
      */
-    deleteVariable(variable: VariableModel): void;
+    deleteVariable(variable: IVariableModel<IVariableState>): void;
     /**
      * Delete a variables by the passed in ID and all of its uses from this
      * workspace. May prompt the user for confirmation.
      *
+     * @deprecated v12: use Blockly.Variables.deleteVariable.
      * @param id ID of variable to delete.
      */
     deleteVariableById(id: string): void;
-    /**
-     * Deletes a variable and all of its uses from this workspace without asking
-     * the user for confirmation.
-     *
-     * @param variable Variable to delete.
-     * @param uses An array of uses of the variable.
-     * @internal
-     */
-    deleteVariableInternal(variable: VariableModel, uses: Block[]): void;
     /**
      * Find the variable by the given name and type and return it.  Return null if
      *     it is not found.
@@ -110,14 +116,14 @@ export declare class VariableMap {
      *     the empty string, which is a specific type.
      * @returns The variable with the given name, or null if it was not found.
      */
-    getVariable(name: string, opt_type?: string | null): VariableModel | null;
+    getVariable(name: string, opt_type?: string): IVariableModel<IVariableState> | null;
     /**
      * Find the variable by the given ID and return it.  Return null if not found.
      *
      * @param id The ID to check for.
      * @returns The variable with the given ID.
      */
-    getVariableById(id: string): VariableModel | null;
+    getVariableById(id: string): IVariableModel<IVariableState> | null;
     /**
      * Get a list containing all of the variables of a specified type. If type is
      *     null, return list of variables with empty string type.
@@ -126,33 +132,30 @@ export declare class VariableMap {
      * @returns The sought after variables of the passed in type. An empty array
      *     if none are found.
      */
-    getVariablesOfType(type: string | null): VariableModel[];
+    getVariablesOfType(type: string | null): IVariableModel<IVariableState>[];
     /**
-     * Return all variable and potential variable types.  This list always
-     * contains the empty string.
+     * Returns a list of unique types of variables in this variable map.
      *
-     * @param ws The workspace used to look for potential variables. This can be
-     *     different than the workspace stored on this object if the passed in ws
-     *     is a flyout workspace.
-     * @returns List of variable types.
-     * @internal
+     * @returns A list of unique types of variables in this variable map.
      */
-    getVariableTypes(ws: Workspace | null): string[];
+    getTypes(): string[];
     /**
      * Return all variables of all types.
      *
      * @returns List of variable models.
      */
-    getAllVariables(): VariableModel[];
+    getAllVariables(): IVariableModel<IVariableState>[];
     /**
      * Returns all of the variable names of all types.
      *
+     * @deprecated v12: use Blockly.Variables.getAllVariables.
      * @returns All of the variable names of all types.
      */
     getAllVariableNames(): string[];
     /**
      * Find all the uses of a named variable.
      *
+     * @deprecated v12: use Blockly.Variables.getVariableUsesById.
      * @param id ID of the variable to find.
      * @returns Array of block usages.
      */

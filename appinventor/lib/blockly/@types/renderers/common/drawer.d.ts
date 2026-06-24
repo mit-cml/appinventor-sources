@@ -141,7 +141,7 @@ export declare class Drawer {
      */
     protected updateConnectionHighlights(): void;
     /** Returns a path to highlight the given connection. */
-    drawConnectionHighlightPath(measurable: Connection): void;
+    drawConnectionHighlightPath(measurable: Connection): SVGElement | undefined;
     /**
      * Returns a path to highlight the given conneciton, assuming it is an
      * input or output connection.

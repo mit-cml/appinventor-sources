@@ -8,14 +8,16 @@
  *
  * @class
  */
-import type { Block } from './block.js';
 import type { BlockSvg } from './block_svg.js';
 import { Connection } from './connection.js';
+import { IContextMenu } from './interfaces/i_contextmenu.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import { Coordinate } from './utils/coordinate.js';
 /**
  * Class for a connection between blocks that may be rendered on screen.
  */
-export declare class RenderedConnection extends Connection {
+export declare class RenderedConnection extends Connection implements IContextMenu, IFocusableNode {
     sourceBlock_: BlockSvg;
     private readonly db;
     private readonly dbOpposite;
@@ -161,7 +163,7 @@ export declare class RenderedConnection extends Connection {
      *
      * @returns List of blocks to render.
      */
-    startTrackingAll(): Block[];
+    startTrackingAll(): BlockSvg[];
     /**
      * Behaviour after a connection attempt fails.
      * Bumps this connection away from the other connection. Called when an
@@ -216,6 +218,26 @@ export declare class RenderedConnection extends Connection {
      * @returns The connection being modified (to allow chaining).
      */
     setCheck(check: string | string[] | null): RenderedConnection;
+    /**
+     * Handles showing the context menu when it is opened on a connection.
+     * Note that typically the context menu can't be opened with the mouse
+     * on a connection, because you can't select a connection. But keyboard
+     * users may open the context menu with a keyboard shortcut.
+     *
+     * @param e Event that triggered the opening of the context menu.
+     */
+    showContextMenu(e: Event): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    private findHighlightSvg;
 }
 export declare namespace RenderedConnection {
     /**

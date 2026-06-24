@@ -10,8 +10,6 @@ export declare class CommentDragStrategy implements IDragStrategy {
     private comment;
     private startLoc;
     private workspace;
-    /** Was there already an event group in progress when the drag started? */
-    private inGroup;
     constructor(comment: RenderedWorkspaceComment);
     isMovable(): boolean;
     startDrag(): void;

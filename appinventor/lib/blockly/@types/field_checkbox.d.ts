@@ -25,10 +25,6 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      */
     SERIALIZABLE: boolean;
     /**
-     * Mouse cursor style when over the hotspot that initiates editability.
-     */
-    CURSOR: string;
-    /**
      * NOTE: The default value is set in `Field`, so maintain that value instead
      * of overwriting it here or in the constructor.
      */

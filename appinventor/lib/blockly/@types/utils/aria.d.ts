@@ -19,7 +19,9 @@ export declare enum Role {
     PRESENTATION = "presentation",
     ROW = "row",
     TREE = "tree",
-    TREEITEM = "treeitem"
+    TREEITEM = "treeitem",
+    SEPARATOR = "separator",
+    STATUS = "status"
 }
 /**
  * ARIA states and properties.
@@ -40,7 +42,9 @@ export declare enum State {
     SELECTED = "selected",
     SETSIZE = "setsize",
     VALUEMAX = "valuemax",
-    VALUEMIN = "valuemin"
+    VALUEMIN = "valuemin",
+    LIVE = "live",
+    HIDDEN = "hidden"
 }
 /**
  * Sets the role of an element.
