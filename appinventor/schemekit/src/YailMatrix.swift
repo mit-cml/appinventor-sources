@@ -310,6 +310,41 @@
     builder += "]"
     return builder
   }
+
+  public func toDataArray() -> NSArray {
+    return data.map { row in row.map { NSNumber(value: $0) } as NSArray } as NSArray
+  }
+
+  @objc public static func fromJsonArray(_ arr: NSArray) throws -> YailMatrix {
+    guard arr.count > 0 else { return try YailMatrix(rows: 0, cols: 0, data: []) }
+    guard let firstRow = arr[0] as? NSArray else {
+      throw MatrixError.dimensionMismatch("Expected array of arrays")
+    }
+    let rows = arr.count, cols = firstRow.count
+    var matrixData: [[Double]] = []
+    for i in 0..<rows {
+      guard let row = arr[i] as? NSArray, row.count == cols else {
+        throw MatrixError.dimensionMismatch("Inconsistent row lengths")
+      }
+      matrixData.append(try row.map {
+        guard let n = $0 as? NSNumber else {
+          throw MatrixError.dimensionMismatch("Expected number in matrix data")
+        }
+        return n.doubleValue
+      })
+    }
+    return try YailMatrix(rows: rows, cols: cols, data: matrixData)
+  }
+
+  @objc public static func matrixToAlist(_ matrix: YailMatrix) -> YailList<AnyObject> {
+    let outer = YailList<AnyObject>()
+    for row in matrix.data {
+      let inner = YailList<AnyObject>()
+      for val in row { inner.add(NSNumber(value: val)) }
+      outer.add(inner)
+    }
+    return outer
+  }
 }
 
 

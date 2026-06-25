@@ -610,7 +610,9 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 233:
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 233;
+  // For YOUNG_ANDROID_VERSION 234:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 39.
+  public static final int YOUNG_ANDROID_VERSION = 234;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -710,7 +712,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 38
   // - Control: run-in-background & run-after-period were added.
   // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
-  public static final int BLOCKS_LANGUAGE_VERSION = 38;
+  // For BLOCKS_LANGUAGE_VERSION 39
+  // - The Multiline Text block was added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 39;
 
   // ................................. Target SDK Version Number ..................................
 
