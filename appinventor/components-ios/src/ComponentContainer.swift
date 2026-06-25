@@ -42,6 +42,7 @@ import Foundation
    */
   func setChildHeight(of component: ViewComponent, to height: Int32)
   
+  
   /**
    * Returns whether `component` is marked as visible or not. Even if this is `true`, it is not
    * guaranteed that the view is attached to the view hierarchy.

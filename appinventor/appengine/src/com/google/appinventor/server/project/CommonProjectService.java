@@ -193,7 +193,8 @@ public abstract class CommonProjectService {
         storageIo.removeSourceFilesFromProject(userId, projectId, false, fileId);
       }
     }
-    return storageIo.getProjectDateCreated(userId, projectId);
+    // return storageIo.getProjectDateCreated(userId, projectId);
+    return 0;
   }
 
   /**

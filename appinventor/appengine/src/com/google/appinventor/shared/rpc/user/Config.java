@@ -16,8 +16,8 @@ import java.util.List;
 public class Config implements IsSerializable, Serializable {
   // Unique identifier for the user
   private User user;
-
   private String rendezvousServer = null;
+  private String sysUID;        // Unique ID of this sytem (computed)
 
   private SplashConfig splashConfig;
 
@@ -66,6 +66,14 @@ public class Config implements IsSerializable, Serializable {
 
   public void setRendezvousServer(String value) {
     this.rendezvousServer = value;
+  }
+
+  public String getSysUID () {
+    return this.sysUID;
+  }
+
+  public void setSysUID(String value) {
+    this.sysUID = value;
   }
 
   public SplashConfig getSplashConfig() {

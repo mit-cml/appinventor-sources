@@ -50,6 +50,7 @@ public enum ComponentCategory {
   USERINTERFACE("User Interface"),
   LAYOUT("Layout"),
   MEDIA("Media"),
+  AR("Augmented Reality"),
   ANIMATION("Drawing and Animation"),
   MAPS("Maps"),
   CHARTS("Charts"),
@@ -74,6 +75,7 @@ public enum ComponentCategory {
     DOC_MAP.put("User Interface", "userinterface");
     DOC_MAP.put("Layout", "layout");
     DOC_MAP.put("Media", "media");
+    DOC_MAP.put("Augmented Reality", "augmentedreality");
     DOC_MAP.put("Drawing and Animation", "animation");
     DOC_MAP.put("Maps", "maps");
     DOC_MAP.put("Charts", "charts");

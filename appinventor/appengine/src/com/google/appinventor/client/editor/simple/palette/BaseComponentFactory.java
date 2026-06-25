@@ -8,6 +8,20 @@ package com.google.appinventor.client.editor.simple.palette;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
+import com.google.appinventor.client.editor.simple.components.MockAmbientLight;
+import com.google.appinventor.client.editor.simple.components.MockARView3D;
+import com.google.appinventor.client.editor.simple.components.MockBoxNode;
+import com.google.appinventor.client.editor.simple.components.MockCapsuleNode;
+import com.google.appinventor.client.editor.simple.components.MockDirectionalLight;
+import com.google.appinventor.client.editor.simple.components.MockImageMarker;
+import com.google.appinventor.client.editor.simple.components.MockModelNode;
+import com.google.appinventor.client.editor.simple.components.MockPlaneNode;
+import com.google.appinventor.client.editor.simple.components.MockPointLight;
+import com.google.appinventor.client.editor.simple.components.MockSpotlight;
+import com.google.appinventor.client.editor.simple.components.MockSphereNode;
+import com.google.appinventor.client.editor.simple.components.MockVideoNode;
+import com.google.appinventor.client.editor.simple.components.MockWebViewNode;
+import com.google.appinventor.client.editor.simple.components.MockTextNode;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;
 import com.google.appinventor.client.editor.simple.components.MockCanvas;
@@ -216,6 +230,34 @@ public class BaseComponentFactory implements ComponentFactory {
       return new MockLinearProgress(editor);
     } else if (name.equals(MockTrendline.TYPE)) {
       return new MockTrendline(editor);
+    } else if (name.equals(MockARView3D.TYPE)) {
+      return new MockARView3D(editor);
+    } else if (name.equals(MockAmbientLight.TYPE)) {
+      return new MockAmbientLight(editor);
+    } else if (name.equals(MockBoxNode.TYPE)) {
+      return new MockBoxNode(editor);
+    } else if (name.equals(MockCapsuleNode.TYPE)) {
+      return new MockCapsuleNode(editor);
+    } else if (name.equals(MockDirectionalLight.TYPE)) {
+      return new MockDirectionalLight(editor);
+    } else if (name.equals(MockImageMarker.TYPE)) {
+      return new MockImageMarker(editor);
+    } else if (name.equals(MockModelNode.TYPE)) {
+      return new MockModelNode(editor);
+    } else if (name.equals(MockPointLight.TYPE)) {
+      return new MockPointLight(editor);
+    } else if (name.equals(MockSpotlight.TYPE)) {
+      return new MockSpotlight(editor);
+    } else if (name.equals(MockSphereNode.TYPE)) {
+      return new MockSphereNode(editor);
+    } else if (name.equals(MockTextNode.TYPE)) {
+      return new MockTextNode(editor);
+    } else if (name.equals(MockPlaneNode.TYPE)) {
+      return new MockPlaneNode(editor);
+    } else if (name.equals(MockVideoNode.TYPE)) {
+      return new MockVideoNode(editor);
+    } else if (name.equals(MockWebViewNode.TYPE)) {
+      return new MockWebViewNode(editor);
     } else {
       // TODO(user): add 3rd party mock component proxy here
       throw new UnsupportedOperationException("unknown component: " + name);

@@ -1,0 +1,137 @@
+material {
+    name : LitDebugOcclusion,
+    
+    parameters : [
+        { type : float4, name : baseColor },
+        { type : float4, name : uvTransformRow0 },
+        { type : float4, name : uvTransformRow1 },
+        { type : float4, name : uvTransformRow2 },
+        { type : float4, name : uvTransformRow3 },
+        { type : float, name : roughness },
+        { type : float, name : metallic },
+        { type : sampler2d, name : depthTexture },
+       // {
+       //     type : sampler2d,
+       //     name : virtualDepthTexture
+       // },
+        {
+            type : sampler2d,
+            name : colorTexture
+        },
+        { type : float, name : nearPlane },
+        { type : float, name : farPlane },
+        { type : float, name : occlusionBias },
+        { type : int, name : debugMode }
+    ],
+    
+    vertexDomain : object,
+    depthWrite : true,
+    shadingModel : lit,
+    blending : opaque,
+    culling : none
+}
+
+fragment {
+float linearizeDepth(float ndcDepth, float nearPlane, float farPlane) {
+    return (2.0 * nearPlane) / (farPlane + nearPlane - ndcDepth * (farPlane - nearPlane));
+}
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        
+        vec2 screenUV = gl_FragCoord.xy / getResolution().xy;
+        vec2 rotatedUV = vec2(screenUV.y, 1.0 - screenUV.x);
+
+
+        // ✅ Get linear view-space depth directly
+        vec3 worldPos = getWorldPosition();
+        vec3 cameraPos = getWorldCameraPosition();
+        float virtualDepthMeters = distance(worldPos, cameraPos);
+
+
+        // Transform for ARCore depth
+        mat4 depthUvTransform = mat4(
+            materialParams.uvTransformRow0,
+            materialParams.uvTransformRow1,
+            materialParams.uvTransformRow2,
+            materialParams.uvTransformRow3
+        );
+        
+        vec4 depthUV4 = depthUvTransform * vec4(rotatedUV, 0.0, 1.0);
+        vec2 depthUV = clamp(depthUV4.xy / depthUV4.w, 0.0, 1.0);
+
+
+        vec4 ardepthSample = texture(materialParams_depthTexture, depthUV);
+        
+
+
+        // Read virtual color
+        vec4 virtualColor = texture(materialParams_colorTexture, screenUV);
+
+
+        // Decode ARCore depth
+        float arCoreDepthMm = ardepthSample.r * 255.0 + ardepthSample.g * 255.0 * 256.0;
+        float arCoreDepthMeters = arCoreDepthMm * 0.001;
+
+       if (materialParams.debugMode == 11) {
+   
+            if (arCoreDepthMeters > 0.01) {
+                if (arCoreDepthMeters < (virtualDepthMeters - materialParams.occlusionBias)) {
+                    material.baseColor.rgb = vec3(1.0, 0.0, 0.0); // Red = should be occluded
+                } else {
+                    material.baseColor.rgb = vec3(0.0, 1.0, 0.0); // Green = should be visible
+                }
+            } else {
+                material.baseColor.rgb = vec3(0.0, 0.0, 1.0); // Blue = no ARCore depth
+            }
+            return;
+        } else if (materialParams.debugMode == 12) {
+            // Show UV coordinates
+            material.baseColor.rgb = vec3(depthUV.x, depthUV.y, 0.0);
+            return;
+        } else if (materialParams.debugMode == 13) {
+            // Simplified occlusion test
+            if (arCoreDepthMeters > 0.01 && arCoreDepthMeters < virtualDepthMeters) {
+                material.baseColor.rgb = vec3(1.0, 0.0, 0.0); // Should be occluded
+            } else {
+                material.baseColor.rgb = vec3(0.0, 1.0, 0.0); // Should be visible
+            }
+            return;
+        
+}else if (materialParams.debugMode == 26) {
+    vec3 worldPos = getWorldPosition();
+    vec3 cameraPos = getWorldCameraPosition();
+    float virtualDepthMeters = distance(worldPos, cameraPos);
+    
+    vec4 ardepthSample = texture(materialParams_depthTexture, depthUV);
+    float arCoreDepthMm = ardepthSample.r * 255.0 + ardepthSample.g * 255.0 * 256.0;
+    float arCoreDepthMeters = arCoreDepthMm * 0.001;
+    
+    // Show if virtual model is "behind ceiling"
+    if (virtualDepthMeters > 3.0) {
+        material.baseColor.rgb = vec3(1.0, 0.0, 1.0); // Magenta = very far (behind ceiling)
+    } else if (virtualDepthMeters > 2.5) {
+        material.baseColor.rgb = vec3(1.0, 1.0, 0.0); // Yellow = at ceiling level
+    } else {
+        material.baseColor.rgb = vec3(0.0, 1.0, 0.0); // Green = in front of ceiling
+    }
+    return;
+
+}
+        // Use virtual color as base
+        material.baseColor.rgb = virtualColor.rgb;
+        material.roughness = materialParams.roughness;
+        material.metallic = materialParams.metallic;
+
+        // Simple occlusion test
+        if (arCoreDepthMeters > 0.01 && 
+            arCoreDepthMeters < (virtualDepthMeters - materialParams.occlusionBias)) {
+            discard;
+        }
+        
+        // Set material properties
+        material.baseColor.rgb = texture(materialParams_colorTexture, screenUV).rgb;
+        material.roughness = materialParams.roughness;
+        material.metallic = materialParams.metallic;
+    }
+}
+

@@ -19,13 +19,13 @@
       response.setHeader("Strict-Transport-Security", "max-age=3600");
   }
   if (OdeAuthFilter.getUserInfo(request) == null) {
+      final String loginUrl = Flag.createFlag("login.url", "/login").get();
       String qs = request.getQueryString();
       if (qs != null) {
-         String redirect = "/login?" + qs;
+         String redirect = loginUrl + "?" + qs;
          response.sendRedirect(redirect);
       } else {
-         String redirect = "/login";
-         response.sendRedirect(redirect);
+         response.sendRedirect(loginUrl);
       }
       return;
   }

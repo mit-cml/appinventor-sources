@@ -1,0 +1,90 @@
+material {
+    name : LitDebugOcclusion,
+    
+    parameters : [
+        { type : float4, name : baseColor },
+        { type : float4, name : uvTransformRow0 },
+        { type : float4, name : uvTransformRow1 },
+        { type : float4, name : uvTransformRow2 },
+        { type : float4, name : uvTransformRow3 },
+        { type : float, name : roughness },
+        { type : float, name : metallic },
+        { type : sampler2d, name : depthTexture },
+       // {
+       //     type : sampler2d,
+       //     name : virtualDepthTexture
+       // },
+        {
+            type : sampler2d,
+            name : colorTexture
+        },
+        { type : float, name : nearPlane },
+        { type : float, name : farPlane },
+        { type : float, name : occlusionBias },
+        { type : int, name : debugMode }
+    ],
+    
+    vertexDomain : object,
+    depthWrite : true,
+    shadingModel : lit,
+    blending : opaque,
+    culling : none
+}
+
+fragment {
+float linearizeDepth(float ndcDepth, float nearPlane, float farPlane) {
+    return (2.0 * nearPlane) / (farPlane + nearPlane - ndcDepth * (farPlane - nearPlane));
+}
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        
+        vec2 screenUV = gl_FragCoord.xy / getResolution().xy;
+	 screenUV.y = 1.0 - screenUV.y;  // Flip Y coordinate
+        vec2 rotatedUV = vec2(screenUV.y, 1.0 - screenUV.x);
+
+
+        // ✅ Get linear view-space depth directly
+        vec3 worldPos = getWorldPosition();
+        vec3 cameraPos = getWorldCameraPosition();
+        float virtualDepthMeters = distance(worldPos, cameraPos);
+
+
+        // Transform for ARCore depth
+        mat4 depthUvTransform = mat4(
+            materialParams.uvTransformRow0,
+            materialParams.uvTransformRow1,
+            materialParams.uvTransformRow2,
+            materialParams.uvTransformRow3
+        );
+        
+        vec4 depthUV4 = depthUvTransform * vec4(rotatedUV, 0.0, 1.0);
+        vec2 depthUV = clamp(depthUV4.xy / depthUV4.w, 0.0, 1.0);
+
+
+        vec4 ardepthSample = texture(materialParams_depthTexture, depthUV);
+        
+
+        // Read virtual color
+        vec4 virtualColor = texture(materialParams_colorTexture, screenUV);
+
+
+        // Decode ARCore depth
+        float arCoreDepthMm = ardepthSample.r * 255.0 + ardepthSample.g * 255.0 * 256.0;
+        float arCoreDepthMeters = arCoreDepthMm * 0.001;
+
+
+       // we already write the txture in the first pass
+       // material.baseColor.rgb = virtualColor.rgb;
+       // material.roughness = materialParams.roughness;
+       // material.metallic = materialParams.metallic;
+
+       // Simple occlusion test
+       if (arCoreDepthMeters > 0.01 && 
+            arCoreDepthMeters < (virtualDepthMeters - materialParams.occlusionBias)) {
+            discard;
+       }
+        
+
+    }
+}
+

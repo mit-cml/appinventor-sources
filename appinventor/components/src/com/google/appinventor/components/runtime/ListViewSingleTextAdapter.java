@@ -22,16 +22,18 @@ public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
   private int textMainColor;
   private float textMainSize;
   private String textMainFont;
+  private int textMainAlignment;
 
   public ListViewSingleTextAdapter(ComponentContainer container, List<Object> data,
       int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
       float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight) {
+      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
     super(container, data, backgroundColor, selectionColor, radius);
     this.container = container;
     this.textMainColor = textMainColor;
     this.textMainSize = textMainSize;
     this.textMainFont = textMainFont;
+    this.textMainAlignment = textMainAlignment;
   }
   
 
@@ -44,11 +46,12 @@ public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
     TextView textViewFirst = new TextView(container.$context());
     final int idFirst = ViewCompat.generateViewId();
     textViewFirst.setId(idFirst);
-    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
     TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
+    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     linearLayout1.setLayoutParams(layoutParamslinear1);

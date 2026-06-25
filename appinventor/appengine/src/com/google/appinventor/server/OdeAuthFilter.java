@@ -7,7 +7,6 @@
 package com.google.appinventor.server;
 
 import com.google.appinventor.server.cookieauth.CookieAuth;
-import java.io.Serializable;
 
 import com.google.appinventor.server.flags.Flag;
 
@@ -21,9 +20,10 @@ import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,7 +39,6 @@ import org.keyczar.Crypter;
 import org.keyczar.exceptions.KeyczarException;
 
 import org.keyczar.util.Base64Coder;
-
 
 /**
  * An authentication filter that uses Google Accounts for logged-in users.
