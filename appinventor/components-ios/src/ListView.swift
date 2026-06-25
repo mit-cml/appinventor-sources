@@ -638,15 +638,17 @@ let HORIZONTAL_LAYOUT = 1
 
   // MARK: Methods
 
-  @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
-    _items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
-  }
+    @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
+      _items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
+        elementsCount()
+    }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
     guard addIndex > 0 && addIndex <= _items.count + 1 else {
       return
     }
     _items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
+    elementsCount()
   }
 
   @objc open func AddItems(_ items: [AnyObject]) {
