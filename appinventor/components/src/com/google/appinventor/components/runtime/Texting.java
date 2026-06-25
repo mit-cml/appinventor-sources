@@ -1179,12 +1179,8 @@ public class Texting extends AndroidNonvisibleComponent
       }
     };
     // This may result in an error -- a "sent" or "error" message will be displayed
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
-          Context.RECEIVER_EXPORTED);
-    } else {
-      ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT), 0);
-    }
+    ContextCompat.registerReceiver(activity, sendReceiver, new IntentFilter(SENT),
+        Context.RECEIVER_EXPORTED);
     smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 

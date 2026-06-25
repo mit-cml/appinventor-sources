@@ -41,19 +41,15 @@ public class MockChartLayout extends MockLayout {
 
   @Override
   boolean onDrop(MockComponent source, int x, int y, int offsetX, int offsetY) {
-    if (source instanceof MockChartData) {
-      // When dropping MockChartData onto a MockChart, the
-      // ChartData should be attached to this Mock Chart container.
+    if (source instanceof MockChart.MockChartClient) {
+      // ChartData and Trendline components are attached to the Chart
+      // via onChildAdded() when added as children.
       container.addComponent(source);
-      ((MockChartData) source).addToChart((MockChart) container);
       return true;
     } else if (source instanceof MockDataFile) {
       // When dropping a MockDataFile onto a MockChart, the
       // DataFile should be attached to this Mock Chart container.
       ((MockChart) container).addDataFile((MockDataFile) source);
-      return true;
-    } else if (source instanceof MockTrendline) {
-      container.addComponent(source);
       return true;
     }
 

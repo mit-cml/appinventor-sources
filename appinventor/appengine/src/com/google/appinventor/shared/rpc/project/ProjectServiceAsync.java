@@ -45,16 +45,6 @@ public interface ProjectServiceAsync {
   void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback);
 
   /**
-   * @see ProjectService#moveToTrash(long)
-   */
-  void moveToTrash(long projectId, AsyncCallback<UserProject> callback);
-
-  /**
-   * @see ProjectService#restoreProject(long)
-   */
-  void restoreProject(long projectId, AsyncCallback<UserProject> callback);
-
-  /**
    * @see ProjectService@loginToGallery()
    */
 

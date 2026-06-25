@@ -345,19 +345,6 @@ public abstract class CommonProjectService {
   }
 
   /**
-   * Sets the moved to trash flag for a project.
-   *
-   * @param userId the user id
-   * @param projectId  project ID
-   * @param movedToTrash true if the project is moved to trash, false otherwise
-   * @return the updated UserProject object
-   */
-  public UserProject setMovedToTrash(String userId, long projectId, boolean movedToTrash) {
-    storageIo.setMoveToTrashFlag(userId, projectId, movedToTrash);
-    return storageIo.getUserProject(userId, projectId);
-  }
-
-  /**
    * Loads the file information associated with a node in the project tree. After
    * loading the file, the contents of it are parsed.
    *

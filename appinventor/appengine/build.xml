@@ -155,6 +155,8 @@
         <exclude name="media/*.css"/>
         <exclude name="demo/**"/>
       </fileset>
+    </copy>
+    <copy todir="${build.static.dir}/media" flatten="true" overwrite="true">
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*"/>
         <exclude name="media/*.css"/>

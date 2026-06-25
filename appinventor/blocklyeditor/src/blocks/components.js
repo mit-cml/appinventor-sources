@@ -266,8 +266,6 @@ Blockly.Blocks.component_event = {
     // used here due to a previous call to mutationToDom. Reusing the dropdown is not
     // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    var oldRendered = this.rendered;
-    this.rendered = false;
     var oldDo = null;
     for (var i = 0, input; input = this.inputList[i]; i++) {
       if (input.connection) {
@@ -347,16 +345,10 @@ Blockly.Blocks.component_event = {
       this.getInput('DO').connection.connect(oldDo.previousConnection);
     }
 
-    for (var i = 0, input; input = this.inputList[i]; i++) {
-      input.init();
-    }
-
     // Set as badBlock if it doesn't exist.
     this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, eventType);
-
-    this.rendered = oldRendered;
   },
 
   getTypeName: function() {
@@ -722,8 +714,6 @@ Blockly.Blocks.component_method = {
     // used here due to a previous call to mutationToDom. Reusing the dropdown is not
     // allowed by Blockly, i.e. its sourceBlock is not allowed to be changed.
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
-    var oldRendered = this.rendered;
-    this.rendered = false;
     var oldInputValues = [];
     for (var i = 0, input; input = this.inputList[i]; i++) {
       if (input.connection) {
@@ -843,10 +833,6 @@ Blockly.Blocks.component_method = {
       }
     }
 
-    for (var i = 0, input; input = this.inputList[i]; i++) {
-      input.init();
-    }
-
     if (!methodTypeObject) {
       if (this.shape === 'statement') {
         this.setPreviousStatement(true);
@@ -877,8 +863,6 @@ Blockly.Blocks.component_method = {
     this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.getMethodTypeObject());
-
-    this.rendered = oldRendered;
   },
 
   getTypeName: function() {
@@ -1135,8 +1119,6 @@ Blockly.Blocks.component_set_get = {
   },
 
   domToMutation : function(xmlElement) {
-    var oldRendered = this.rendered;
-    this.rendered = false;
     var oldInput = this.setOrGet == "set" && this.getInputTargetBlock('VALUE');
     for (var i = 0, input; input = this.inputList[i]; i++) {
       if (input.connection) {
@@ -1255,7 +1237,6 @@ Blockly.Blocks.component_set_get = {
     }
 
     if (oldInput) {
-      this.getInput('VALUE').init();
       oldInput.outputConnection.reconnect(this, 'VALUE');
     }
 
@@ -1279,12 +1260,6 @@ Blockly.Blocks.component_set_get = {
     this.verify();
     // Disable it if it does exist and is deprecated.
     Blockly.ComponentBlock.checkDeprecated(this, this.propertyObject);
-
-    for (var i = 0, input; input = this.inputList[i]; i++) {
-      input.init();
-    }
-
-    this.rendered = oldRendered;
   },
 
   getTypeName: function() {

@@ -119,7 +119,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 
-  @DefaultMessage("Upload File ...")
+  @DefaultMessage("Upload File...")
   @Description("Text on \"Add...\" button")
   String addButton();
 
@@ -970,6 +970,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("ARIA label for palette search box.")
   String paletteSearchAriaLabel();
 
+  @DefaultMessage("Search results")
+  @Description("ARIA label for palette search results list.")
+  String paletteSearchResultsAriaLabel();
+
   // Used in boxes/ProjectListBox.java
 
   @DefaultMessage("Projects")
@@ -1090,6 +1094,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label on built-in-Procedures-blocks branch of block selector tree")
   String builtinProceduresLabel();
 
+  @DefaultMessage("More...")
+  @Description("Label on nested branch for additional built-in blocks")
+  String builtinMoreLabel();
+
   @DefaultMessage("Any component")
   @Description("Label on any-component branch of block selector tree")
   String anyComponentLabel();
@@ -1119,6 +1127,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Are you sure you want to exit without saving data?")
   @Description("Confirm cancel from ListData property editor without saving data.")
   String listDataConcelConfirm();
+
+  @DefaultMessage("Click to Add Row Data")
+  @Description("Button to add a new blank row in the ListData property editor")
+  String listDataAddRowButton();
 
 
   // Used in boxes/ViewerBox.java
@@ -2069,7 +2081,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   // Used in wizards/FileUploadWizard.java
 
-  @DefaultMessage("Upload File ...")
+  @DefaultMessage("Upload File...")
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
@@ -5851,10 +5863,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Set an image before attempting to Mark its Origin")
   @Description("Message to display when Mark Origin is attempted before an image is set")
   String provideImageFirst();
-
-  @DefaultMessage("You can always change your user interface under the Settings menu.")
-  @Description("Dialog to introduce users to new UI. Shown once to each user.")
-  String selectUIStyle();
 
   @DefaultMessage("Integer")
   @Description("Set x-axis label values as Integers")
