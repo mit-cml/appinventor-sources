@@ -68,20 +68,23 @@ AI.Blockly.Mixins.DynamicConnections = {
     if (!this.tempinput) {
       return;  // No pending connection.
     }
-    if (this.tempinput.connection.targetConnection) {
-      var repeatingInputName = this.repeatingInputName;
-      this.inputList.forEach(function (input, i) {
-        input.name = repeatingInputName + i;
-      });
-    } else if (this.tempinput) {
-      this.removeInput('TEMPINSERT');
-    }
-    this.tempinput = undefined;
+    // 1. Remove inputs with no targetConnection.
     for (var i = this.inputList.length - 1; i >= 0; i--) {
-      if (!this.inputList[i].connection.targetConnection) {
-        this.inputList.splice(i, 1);
+      var input = this.inputList[i];
+      if (!input.connection.targetConnection) {
+        // If 1st input is removed, call appendField to restore block TITLE.
+        var blockTitle;
+        if (i === 0) blockTitle = input.fieldRow[0].getValue();
+        this.removeInput(input.name);
+        if (i === 0) this.inputList[0].appendField(blockTitle);
       }
     }
+    // 2. Rename inputs name.
+    var repeatingInputName = this.repeatingInputName;
+    this.inputList.forEach(function (input, i) {
+      input.name = repeatingInputName + i;
+    });
+    this.tempinput = undefined;
     this.itemCount_ = this.inputList.length;
   }
 }
