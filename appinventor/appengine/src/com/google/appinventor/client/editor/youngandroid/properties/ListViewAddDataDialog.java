@@ -20,6 +20,8 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 
 import com.google.gwt.core.client.GWT;
 
+import com.google.gwt.dom.client.Style;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -142,13 +144,27 @@ public class ListViewAddDataDialog {
 
   /** Adds the column headers that match the visible fields for the current layout. */
   private void buildHeader() {
-    headerRow.add(new Label(MESSAGES.listDataMainTextHeader()));
+    headerRow.add(makeHeaderLabel(MESSAGES.listDataMainTextHeader(), ListViewDataRow.COLUMN_TEXT_WIDTH));
     if (showDetail) {
-      headerRow.add(new Label(MESSAGES.listDataDetailTextHeader()));
+      headerRow.add(
+          makeHeaderLabel(MESSAGES.listDataDetailTextHeader(), ListViewDataRow.COLUMN_TEXT_WIDTH));
     }
     if (showImage) {
-      headerRow.add(new Label(MESSAGES.listDataImageHeader()));
+      headerRow.add(makeHeaderLabel(MESSAGES.listDataImageHeader(), ListViewDataRow.COLUMN_IMAGE_WIDTH));
     }
+  }
+
+  /** Creates a header label whose width matches the row field below it so the columns line up. */
+  private static Label makeHeaderLabel(String text, String width) {
+    Label label = new Label(text);
+    label.setWidth(width);
+    // Match the row field's box model so the header lines up: border-box width, no extra left
+    // padding from the dialog stylesheet, and the same right margin the fields use as the gap.
+    Style style = label.getElement().getStyle();
+    style.setProperty("boxSizing", "border-box");
+    style.setPaddingLeft(0, Style.Unit.PX);
+    style.setMarginRight(8, Style.Unit.PX);
+    return label;
   }
 
   @UiHandler("addRow")

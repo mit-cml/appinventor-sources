@@ -9,6 +9,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.gwt.core.client.GWT;
 
+import com.google.gwt.dom.client.Style.Unit;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 
 import com.google.gwt.json.client.JSONObject;
@@ -47,6 +49,12 @@ public class ListViewDataRow extends Composite {
   private static final ListViewDataRowUiBinder UI_BINDER =
       GWT.create(ListViewDataRowUiBinder.class);
 
+  // Column widths, shared with the dialog header (ListViewAddDataDialog) so the header labels line
+  // up with the fields below them. Combined with box-sizing: border-box on the fields, the rendered
+  // widths match these values exactly.
+  static final String COLUMN_TEXT_WIDTH = "150px";
+  static final String COLUMN_IMAGE_WIDTH = "130px";
+
   @UiField TextBox mainText;
   @UiField TextBox detailText;
   @UiField ListBox imagePicker;
@@ -69,7 +77,14 @@ public class ListViewDataRow extends Composite {
     this.showImage = showImage;
     initWidget(UI_BINDER.createAndBindUi(this));
 
+    mainText.setWidth(COLUMN_TEXT_WIDTH);
+    detailText.setWidth(COLUMN_TEXT_WIDTH);
+    imagePicker.setWidth(COLUMN_IMAGE_WIDTH);
+
     delete.setText(MESSAGES.deleteButton());
+    // The dialog stylesheet puts a 10px margin on every button; remove it for the in-row delete
+    // button so the rows stay compact.
+    delete.getElement().getStyle().setMargin(0, Unit.PX);
 
     mainText.setText(getString("Text1"));
 

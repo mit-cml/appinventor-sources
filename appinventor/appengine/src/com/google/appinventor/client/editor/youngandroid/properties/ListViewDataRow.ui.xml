@@ -9,22 +9,19 @@
     .row {
       padding: 2px 0;
     }
+    /* border-box so a field's rendered width equals the width set in Java, which is the same value
+       the dialog uses for the matching header label, keeping the header and columns aligned. */
     .field {
+      box-sizing: border-box;
       margin-right: 8px;
-    }
-    .text {
-      width: 150px;
-    }
-    .image {
-      width: 130px;
     }
   </ui:style>
 
   <g:HorizontalPanel ui:field="container" styleName="{style.row}"
       verticalAlignment="ALIGN_MIDDLE">
-    <g:TextBox ui:field="mainText" addStyleNames="{style.text} {style.field}"/>
-    <g:TextBox ui:field="detailText" addStyleNames="{style.text} {style.field}"/>
-    <g:ListBox ui:field="imagePicker" addStyleNames="{style.image} {style.field}"/>
+    <g:TextBox ui:field="mainText" addStyleNames="{style.field}"/>
+    <g:TextBox ui:field="detailText" addStyleNames="{style.field}"/>
+    <g:ListBox ui:field="imagePicker" addStyleNames="{style.field}"/>
     <g:Button ui:field="delete"/>
   </g:HorizontalPanel>
 </ui:UiBinder>
