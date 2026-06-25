@@ -11,7 +11,8 @@
     <g:VerticalPanel>
       <g:Button ui:field="topInvisible" styleName="FocusTrap" tabIndex="-1"/>
 
-      <g:FlowPanel ui:field="tableContainer"/>
+      <g:HorizontalPanel ui:field="headerRow"/>
+      <g:FlowPanel ui:field="rowsContainer"/>
       <g:Button ui:field="addRow"/>
 
       <g:HorizontalPanel horizontalAlignment="ALIGN_CENTER">

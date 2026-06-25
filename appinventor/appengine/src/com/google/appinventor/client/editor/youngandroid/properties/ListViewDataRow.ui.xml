@@ -1,0 +1,27 @@
+<!-- Copyright 2025 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+  <ui:style>
+    .row {
+      padding: 2px 0;
+    }
+    /* border-box so a field's rendered width equals the width set in Java, which is the same value
+       the dialog uses for the matching header label, keeping the header and columns aligned. */
+    .field {
+      box-sizing: border-box;
+      margin-right: 8px;
+    }
+  </ui:style>
+
+  <g:HorizontalPanel ui:field="container" styleName="{style.row}"
+      verticalAlignment="ALIGN_MIDDLE">
+    <g:TextBox ui:field="mainText" addStyleNames="{style.field}"/>
+    <g:TextBox ui:field="detailText" addStyleNames="{style.field}"/>
+    <g:ListBox ui:field="imagePicker" addStyleNames="{style.field}"/>
+    <g:Button ui:field="delete"/>
+  </g:HorizontalPanel>
+</ui:UiBinder>
