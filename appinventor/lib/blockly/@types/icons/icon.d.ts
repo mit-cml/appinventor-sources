@@ -5,10 +5,10 @@
  */
 import type { Block } from '../block.js';
 import type { IIcon } from '../interfaces/i_icon.js';
+import * as tooltip from '../tooltip.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Size } from '../utils/size.js';
 import type { IconType } from './icon_types.js';
-import * as tooltip from '../tooltip.js';
 /**
  * The abstract icon class. Icons are visual elements that live in the top-start
  * corner of the block. Usually they provide more "meta" information about a
@@ -59,11 +59,5 @@ export declare abstract class Icon implements IIcon {
      * @returns Whether the icon should be clickable while the block is in a flyout.
      */
     isClickableInFlyout(autoClosingFlyout: boolean): boolean;
-    /**
-     * Sets the visibility of the icon's bubble if one exists.
-     *
-     * @deprecated Use `setBubbleVisible` instead. To be removed in v11.
-     */
-    setVisible(visibility: boolean): void;
 }
 //# sourceMappingURL=icon.d.ts.map

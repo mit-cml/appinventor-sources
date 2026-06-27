@@ -12,7 +12,6 @@
 'use strict';
 
 goog.provide('AI.Blockly.ProcedureDatabase');
-goog.require('goog.object');
 
 /**
  * ProcedureDatabase provides a per-workspace data store for manipulating procedure definitions in
@@ -100,19 +99,19 @@ Blockly.ProcedureDatabase.prototype.getMenuItems = function(returnValue) {
  * @returns {!Blockly.Block[]}
  */
 Blockly.ProcedureDatabase.prototype.getDeclarationBlocks = function(returnValue) {
-  return goog.object.getValues(returnValue ? this.returnProcedures_: this.voidProcedures_);
+  return Object.values(returnValue ? this.returnProcedures_: this.voidProcedures_);
 };
 
 Blockly.ProcedureDatabase.prototype.getDeclarationsBlocksExcept = function(block) {
   var blockArray = [];
-  goog.object.forEach(this.procedures_, function(b) {
+  Object.values(this.procedures_).forEach(function(b) {
     if (b !== block) blockArray.push(b);
   });
   return blockArray;
 };
 
 Blockly.ProcedureDatabase.prototype.getAllDeclarationNames = function() {
-  return goog.object.getValues(this.procedures_)
+  return Object.values(this.procedures_)
     .map(function(block) { return block.getFieldValue('NAME'); });
 };
 

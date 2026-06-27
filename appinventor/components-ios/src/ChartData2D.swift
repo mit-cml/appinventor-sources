@@ -20,7 +20,7 @@ import DGCharts
     let pair: YailList<AnyObject> = [x, y]
     chartDataModel?.addEntryFromTuple(pair)
     // refresh chart with new data
-    refreshChart()
+    onDataChange()
   }
 
   @objc func RemoveEntry(_ x: String, _ y: String){
@@ -28,13 +28,13 @@ import DGCharts
     let pair: YailList<AnyObject> = [x, y]
     chartDataModel?.removeEntryFromTuple(pair)
     // refresh chart with new data
-    refreshChart()
+    onDataChange()
   }
 
   // checks whether an (x, y) entry exists in the Coordinate Data. Returns true if the Entry exists, and false otherwise.
   @objc func DoesEntryExist(_ x: String, _ y: String) -> Bool{
     /* Original:
-     DispatchQueue.main.sync {
+      DispatchQueue.main.sync {
       var pair: YailList<AnyObject> = [x, y]
       return self._chartDataModel!.doesEntryExist(pair) // TODO: is the ! okay?
     }*/
@@ -54,55 +54,61 @@ import DGCharts
 
   // Highlights data points of choice on the Chart in the color of choice. This block expects a list of data points, each data pointis an index, value pair
   @objc func HighlightDataPoints(_ dataPoints: YailList<AnyObject>, _ color: Int32) {
-    let points = dataPoints as Array<AnyObject>
+    if chartDataModel?.highlightPoints(dataPoints as [AnyObject], color) == true {
+      onDataChange()
+    }
+  }
 
-    guard !points.isEmpty, let entries = chartDataModel?.entries, let lineDataSet = chartDataModel?.dataset as? LineChartDataSet else {
+  // MARK: - DataFile Integration
+
+  @objc open func ImportFromDataFile(_ dataFile: DataFile, _ xValueColumn: String, _ yValueColumn: String) {
+    NSLog("ChartData2D: Attempting to import X: '\(xValueColumn)', Y: '\(yValueColumn)'")
+
+    let xColumn = dataFile.getColumn(xValueColumn)
+    let yColumn = dataFile.getColumn(yValueColumn)
+
+    var xSwiftArray: [AnyObject] = []
+    for item in xColumn { xSwiftArray.append(item as AnyObject) }
+
+    var ySwiftArray: [AnyObject] = []
+    for item in yColumn { ySwiftArray.append(item as AnyObject) }
+
+    let count = min(xSwiftArray.count, ySwiftArray.count)
+    if count <= 1 {
+      NSLog("ChartData2D ERROR: Not enough data rows to plot.")
       return
     }
 
-    var anomalyMap: [Double:AnomalyManager] = [:]
-    for (i, entry) in entries.enumerated() {
-      guard let entry = entry as? DGCharts.ChartDataEntry else {
-        continue
-      }
-      let y = entry.y
-      var manager: AnomalyManager! = anomalyMap[y]
-      if manager == nil {
-        manager = AnomalyManager()
-        anomalyMap[y] = manager
-      }
-      manager.xValues.insert(entry.x)
-      manager.indexes.insert(i)
-    }
-
-    var highlights = [Int32](repeating: _color, count: entries.count)
-    for point in points {
-      guard let point = point as? Array<AnyObject>,
-            point.count >= 3 else {
-        continue
-      }
-      guard let y = point[2] as? Double else {
-        continue
-      }
-      guard let anomalyManager = anomalyMap[y] else {
-        continue
-      }
-      guard let x = point[1] as? Double else {
-        continue
-      }
-      if anomalyManager.xValues.contains(x) || anomalyManager.indexes.contains(Int(x) - 1) {
-        for index in anomalyManager.indexes {
-          highlights[index] = color
+    func attemptPlotting(retriesLeft: Int) {
+      if self.chartDataModel == nil {
+        if retriesLeft > 0 {
+          NSLog("ChartData2D: Chart canvas not ready yet. Waiting 0.1s... (\(retriesLeft) tries left)")
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            attemptPlotting(retriesLeft: retriesLeft - 1)
+          }
+          return
+        } else {
+          NSLog("ChartData2D FATAL ERROR: Chart failed to initialize after 1 second.")
+          return
         }
       }
+
+      for i in 1..<count {
+        let cleanX = "\(xSwiftArray[i])".trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanY = "\(ySwiftArray[i])".trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if cleanX.isEmpty && cleanY.isEmpty { continue }
+
+        let pair: YailList<AnyObject> = [cleanX as AnyObject, cleanY as AnyObject]
+        self.chartDataModel?.addEntryFromTuple(pair)
+      }
+
+      NSLog("ChartData2D: Import complete. Triggering chart redraw.")
+      self.onDataChange()
     }
 
-    lineDataSet.circleColors = highlights.map(argbToColor(_:))
-    onDataChange()
-  }
-
-  private class AnomalyManager {
-    var indexes = Set<Int>()
-    var xValues = Set<Double>()
+    DispatchQueue.main.async {
+      attemptPlotting(retriesLeft: 10)
+    }
   }
 }

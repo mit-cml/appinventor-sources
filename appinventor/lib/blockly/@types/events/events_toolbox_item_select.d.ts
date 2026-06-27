@@ -3,9 +3,10 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { Workspace } from '../workspace.js';
 import { AbstractEventJson } from './events_abstract.js';
 import { UiBase } from './events_ui_base.js';
-import type { Workspace } from '../workspace.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners that a toolbox item has been selected.
  */
@@ -14,7 +15,7 @@ export declare class ToolboxItemSelect extends UiBase {
     oldItem?: string;
     /** The newly selected toolbox item. */
     newItem?: string;
-    type: string;
+    type: EventType;
     /**
      * @param opt_oldItem The previously selected toolbox item.
      *     Undefined for a blank event.

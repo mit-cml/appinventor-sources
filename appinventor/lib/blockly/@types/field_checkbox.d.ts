@@ -117,7 +117,7 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      * @param value The value to convert.
      * @returns The converted value.
      */
-    private convertValueToBool_;
+    private convertValueToBool;
     /**
      * Construct a FieldCheckbox from a JSON arg object.
      *

@@ -143,7 +143,7 @@ export declare class ToolboxCategory extends ToolboxItem implements ISelectableT
      * @param styleName Name of the style.
      * @returns The hex colour for the category.
      */
-    private getColourfromStyle_;
+    private getColourfromStyle;
     /**
      * Gets the HTML element that is clickable.
      * The parent toolbox element receives clicks. The parent toolbox will add an
@@ -160,7 +160,7 @@ export declare class ToolboxCategory extends ToolboxItem implements ISelectableT
      *     reference string pointing to one of those two values.
      * @returns The hex colour for the category.
      */
-    private parseColour_;
+    private parseColour;
     /**
      * Adds appropriate classes to display an open icon.
      *

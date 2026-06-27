@@ -5,6 +5,7 @@
  */
 import type { Workspace } from '../workspace.js';
 import { Abstract as AbstractEvent } from './events_abstract.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners when the workspace has finished deserializing from
  * JSON/XML.
@@ -12,7 +13,7 @@ import { Abstract as AbstractEvent } from './events_abstract.js';
 export declare class FinishedLoading extends AbstractEvent {
     isBlank: boolean;
     recordUndo: boolean;
-    type: string;
+    type: EventType;
     /**
      * @param opt_workspace The workspace that has finished loading.  Undefined
      *     for a blank event.

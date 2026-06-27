@@ -378,8 +378,8 @@ Multimedia component that plays audio and controls phone vibration. The name of 
  affect the current playing.
 
 {:id="Player.PlayOnlyInForeground" .boolean} *PlayOnlyInForeground*
-: If true, the `Player` will pause playing when leaving the current screen; if false
- (default option), the `Player` continues playing whenever the current screen is displaying or
+: If true (the default option), the `Player` will pause playing when leaving the current screen;
+ if false, the `Player` continues playing whenever the current screen is displaying or
  not.
 
 {:id="Player.Source" .text} *Source*

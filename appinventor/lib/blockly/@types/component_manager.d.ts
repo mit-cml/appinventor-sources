@@ -18,7 +18,7 @@ declare class Capability<_T> {
     static DRAG_TARGET: Capability<IDragTarget>;
     static DELETE_AREA: Capability<IDeleteArea>;
     static AUTOHIDEABLE: Capability<IAutoHideable>;
-    private readonly name_;
+    private readonly name;
     /** @param name The name of the component capability. */
     constructor(name: string);
     /**
@@ -92,6 +92,12 @@ export declare class ComponentManager {
     getComponents<T extends IComponent>(capability: string | Capability<T>, sorted: boolean): T[];
 }
 export declare namespace ComponentManager {
+    enum ComponentWeight {
+        TOOLBOX_WEIGHT = 0,
+        FLYOUT_WEIGHT = 1,
+        TRASHCAN_WEIGHT = 2,
+        ZOOM_CONTROLS_WEIGHT = 3
+    }
     /** An object storing component information. */
     interface ComponentDatum {
         component: IComponent;
@@ -99,6 +105,8 @@ export declare namespace ComponentManager {
         weight: number;
     }
 }
+export type ComponentWeight = ComponentManager.ComponentWeight;
+export declare const ComponentWeight: typeof ComponentManager.ComponentWeight;
 export type ComponentDatum = ComponentManager.ComponentDatum;
 export {};
 //# sourceMappingURL=component_manager.d.ts.map

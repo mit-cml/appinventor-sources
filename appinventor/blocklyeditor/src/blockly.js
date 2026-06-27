@@ -14,7 +14,6 @@
 goog.provide('AI.Blockly');
 
 // App Inventor extensions to Blockly
-goog.require('AI.Blockly.TypeBlock');
 goog.require('AI.Blockly.WorkspaceSvg');
 
 /**

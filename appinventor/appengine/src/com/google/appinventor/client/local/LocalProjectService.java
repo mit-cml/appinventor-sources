@@ -87,7 +87,7 @@ public class LocalProjectService implements ProjectServiceAsync {
       AsyncCallback<UserProject> callback) {
     long hash = projectName.hashCode();
     UserProject project = new UserProject(hash, projectName, projectType,
-        System.currentTimeMillis(), System.currentTimeMillis(), false);
+        System.currentTimeMillis(), System.currentTimeMillis());
     projects.put(projectName, project);
     YoungAndroidProjectNode root = new YoungAndroidProjectNode(projectName, hash);
     ProjectNode assetsNode = new YoungAndroidAssetsFolder("assets");
@@ -182,7 +182,7 @@ public class LocalProjectService implements ProjectServiceAsync {
   @Override
   public void newProjectFromExternalTemplate(String projectName, String zipData,
       AsyncCallback<UserProject> callback) {
-    UserProject project = new UserProject(projectName.hashCode(), projectName, "YoungAndroid", System.currentTimeMillis(), System.currentTimeMillis(), false);
+    UserProject project = new UserProject(projectName.hashCode(), projectName, "YoungAndroid", System.currentTimeMillis(), System.currentTimeMillis());
     projects.put(projectName, project);
     long hash = projectName.hashCode();
     YoungAndroidProjectNode root = new YoungAndroidProjectNode(projectName, hash);
@@ -256,16 +256,6 @@ public class LocalProjectService implements ProjectServiceAsync {
 
   @Override
   public void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback) {
-
-  }
-
-  @Override
-  public void moveToTrash(long projectId, AsyncCallback<UserProject> callback) {
-
-  }
-
-  @Override
-  public void restoreProject(long projectId, AsyncCallback<UserProject> callback) {
 
   }
 

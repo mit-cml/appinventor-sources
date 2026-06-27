@@ -9,18 +9,21 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="settingsDialog" caption="{messages.settingsTabName}"
-              styleName="ode-DialogBox" width="400px">
+  <wiz:Dialog ui:field="settingsDialog" role="dialog" ariaModal="true" ariaLabel="App Store Settings"
+              caption="{messages.settingsTabName}" styleName="ode-DialogBox" width="400px">
     <g:FlowPanel>
-      <g:HTML>
+      <g:HTMLPanel styleName="ode-DialogBox-message">
         Please provide your Apple ID and App Specific Password for MIT App Inventor below. These
         values will be encrypted on the server and only read when deploying your app to App Store
         Connect.<br />
-        <a href="/reference/other/build-ios-apps.html" target="_blank">More information</a>
-      </g:HTML>
-      <w:LabeledTextBox ui:field="appleIdTextbox" caption="Apple ID*: " />
-      <w:LabeledTextBox ui:field="passwordTextbox" caption="App Specific Password*:" />
-      <w:LabeledTextBox ui:field="shortNameTextbox" caption="ASC Short Name:" />
+        <g:Anchor href="/reference/other/build-ios-apps.html" target="_blank">More information</g:Anchor>
+      </g:HTMLPanel>
+      <w:LabeledTextBox ui:field="appleIdTextbox" caption="Apple ID*:"
+          styleName="settings-labeled-textbox" />
+      <w:LabeledTextBox ui:field="passwordTextbox" caption="App Specific Password*:"
+          styleName="settings-labeled-textbox" />
+      <w:LabeledTextBox ui:field="shortNameTextbox" caption="ASC Short Name:"
+          styleName="settings-labeled-textbox" />
       <g:FlowPanel styleName="buttonRow">
         <g:Button ui:field="cancelButton" text="{messages.cancelButton}" />
         <g:Button ui:field="okButton" text="{messages.okButton}" />

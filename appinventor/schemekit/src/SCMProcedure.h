@@ -14,6 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCMProcedure : NSObject<SCMObject>
 
 - (instancetype)initWithProcedure:(pic_value)procedure interpreter:(SCMInterpreter *)interpreter;
+- (nullable id<SCMValue>)invoke;
+- (nullable id<SCMValue>)invokeWithArguments:(NSArray<id> * _Nonnull)arguments;
+- (NSInteger)numberOfArguments;
+- (BOOL)variadic;
+
+@property(readonly) NSInteger numberOfArguments;
+@property(readonly) BOOL variadic;
 
 @end
 

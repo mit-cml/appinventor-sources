@@ -37,11 +37,13 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
       let langWithCountry = voice.language
       let parts = langWithCountry.split("-")
       // insertion sort, but we'll only do this once per companion session.
-      if (!LANGUAGES.contains(parts[0])) {
-        LANGUAGES.append(parts[0])
+      let language = String(parts[0])
+      let country = String(parts[1])
+      if (!LANGUAGES.contains(language)) {
+        LANGUAGES.append(language)
       }
-      if (!COUNTRIES.contains(parts[1])) {
-        COUNTRIES.append(parts[1])
+      if (!COUNTRIES.contains(country)) {
+        COUNTRIES.append(country)
       }
     }
     LANGUAGES.sort()
@@ -69,8 +71,8 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     TextToSpeech.getLanguageCodes()
     _voice = AVSpeechSynthesisVoice(language: _language)
     let parts = _language.split("-")
-    _language = parts[0]
-    _countryCode2 = parts[1]
+    _language = String(parts[0])
+    _countryCode2 = String(parts[1])
     _countryCode = TextToSpeech.ISO_COUNTRY_2_TO_3[_countryCode2] ?? "USA"
     super.init(parent)
     _tts.delegate = self
@@ -124,8 +126,7 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
       return _language
     }
     set(language) {
-      let language = language.lowercased()
-      if (TextToSpeech.LANGUAGES.contains(language)) {
+      if let language = TextToSpeech.languageToISO2(language) {
         _language = language
         updateLanguage()
       }
@@ -137,13 +138,10 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
       return _countryCode
     }
     set(country) {
-      let countryUpper = country.uppercased()
-      if let country = TextToSpeech.ISO_COUNTRY_3_TO_2[countryUpper] {
-        if TextToSpeech.COUNTRIES.contains(country) {
-          _countryCode2 = country
-          _countryCode = countryUpper
-          updateLanguage()
-        }
+      if let country = TextToSpeech.countryCodes(country) {
+        _countryCode2 = country.iso2
+        _countryCode = country.iso3
+        updateLanguage()
       }
     }
   }
@@ -156,7 +154,9 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
 
   @objc open var AvailableCountries: [String] {
     get {
-      return TextToSpeech.COUNTRIES
+      return TextToSpeech.COUNTRIES.compactMap {
+        TextToSpeech.ISO_COUNTRY_2_TO_3[$0]
+      }.sorted()
     }
   }
 
@@ -214,6 +214,28 @@ open class TextToSpeech: NonvisibleComponent, AVSpeechSynthesizerDelegate {
     if let voice = AVSpeechSynthesisVoice(language: language) {
       _voice = voice
     }
+  }
+
+  fileprivate class func languageToISO2(_ language: String) -> String? {
+    let language = language.lowercased()
+    if LANGUAGES.contains(language) {
+      return language
+    }
+    if let language = ISO_LANG_3_TO_2[language], LANGUAGES.contains(language) {
+      return language
+    }
+    return nil
+  }
+
+  fileprivate class func countryCodes(_ country: String) -> (iso2: String, iso3: String)? {
+    let country = country.uppercased()
+    if let country2 = ISO_COUNTRY_3_TO_2[country] {
+      return (iso2: country2, iso3: country)
+    }
+    if let country3 = ISO_COUNTRY_2_TO_3[country] {
+      return (iso2: country, iso3: country3)
+    }
+    return nil
   }
 }
 

@@ -120,7 +120,7 @@
   margin: 0;
   padding: 0;
 }
-.blocklyCommentTextarea {
+.blocklyTextInputBubble .blocklyTextarea {
   margin: 0;
   padding: 2px;
   border: 0;

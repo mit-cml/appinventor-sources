@@ -13,6 +13,7 @@ import com.google.appinventor.client.actions.SelectLanguage;
 
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
+import com.google.appinventor.client.widgets.TextButton;
 
 import com.google.appinventor.shared.rpc.user.Config;
 
@@ -63,6 +64,8 @@ public class TopPanel extends Composite {
   @UiField protected DropDownButton accountButton;
   @UiField protected DropDownItem deleteAccountItem;
   @UiField protected FlowPanel links;
+  @UiField protected TextButton myProjects;
+  @UiField protected TextButton viewTrash;
 
   final Ode ode = Ode.getInstance();
 
@@ -107,6 +110,7 @@ public class TopPanel extends Composite {
       try {
         Image wpr = Image.wrap(logo);
         wpr.addClickHandler(new WindowOpenClickHandler(logoUrl));
+        logo.setAttribute("alt", "MIT App Inventor");
       } catch (AssertionError e) {
         LOG.warning("assertion error in getting Image from logo url");
       }
@@ -116,6 +120,11 @@ public class TopPanel extends Composite {
       accountButton.setItemVisible(WIDGET_NAME_DELETE_ACCOUNT, false);
     } else {
       readOnly.removeFromParent();
+    }
+
+    if (Ode.getInstance().getOneProjectMode()) {
+      myProjects.removeFromParent();
+      viewTrash.removeFromParent();
     }
 
     // Language

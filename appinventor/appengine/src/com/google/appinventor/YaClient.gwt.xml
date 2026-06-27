@@ -19,11 +19,8 @@
   <inherits name="com.google.gwt.i18n.I18N"/>
   <!--inherits name="com.google.gwt.i18n.CldrLocales"/-->
   <inherits name="com.google.gwt.json.JSON" />
-  <inherits name="com.google.gwt.libideas.ImmutableResources" />
   <inherits name="com.google.gwt.logging.Logging"/>
   <inherits name="com.google.gwt.resources.Resources" />
-  <inherits name="com.google.gwt.widgetideas.WidgetIdeas" />
-  <inherits name="com.google.gwt.widgetideas.GWTCanvas" />
   <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd" />
   <inherits name="com.google.common.base.Base" />
   <inherits name="com.google.common.collect.Collect" />

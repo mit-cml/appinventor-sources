@@ -3,21 +3,37 @@
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+/**
+ * Class for comment move event.
+ *
+ * @class
+ */
+import type { WorkspaceComment } from '../comments/workspace_comment.js';
 import { Coordinate } from '../utils/coordinate.js';
-import type { WorkspaceComment } from '../workspace_comment.js';
-import { CommentBase, CommentBaseJson } from './events_comment_base.js';
 import type { Workspace } from '../workspace.js';
+import { CommentBase, CommentBaseJson } from './events_comment_base.js';
+import { EventType } from './type.js';
 /**
  * Notifies listeners that a workspace comment has moved.
  */
 export declare class CommentMove extends CommentBase {
-    type: string;
+    type: EventType;
     /** The comment that is being moved. */
     comment_?: WorkspaceComment;
     /** The location of the comment before the move, in workspace coordinates. */
     oldCoordinate_?: Coordinate;
     /** The location of the comment after the move, in workspace coordinates. */
     newCoordinate_?: Coordinate;
+    /**
+     * An explanation of what this move is for.  Known values include:
+     *  'drag' -- A drag operation completed.
+     *  'snap' -- Comment got shifted to line up with the grid.
+     *  'inbounds' -- Block got pushed back into a non-scrolling workspace.
+     *  'create' -- Block created via deserialization.
+     *  'cleanup' -- Workspace aligned top-level blocks.
+     * Event merging may create multiple reasons: ['drag', 'inbounds', 'snap'].
+     */
+    reason?: string[];
     /**
      * @param opt_comment The comment that is being moved.  Undefined for a blank
      *     event.
@@ -28,6 +44,12 @@ export declare class CommentMove extends CommentBase {
      * called once.
      */
     recordNew(): void;
+    /**
+     * Sets the reason for a move event.
+     *
+     * @param reason Why is this move happening?  'drag', 'bump', 'snap', ...
+     */
+    setReason(reason: string[]): void;
     /**
      * Override the location before the move.  Use this if you don't create the
      * event until the end of the move, but you know the original location.

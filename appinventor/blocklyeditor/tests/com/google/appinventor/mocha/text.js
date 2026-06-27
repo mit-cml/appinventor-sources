@@ -41,9 +41,9 @@ suite('Text Blocks', function() {
     function mockConnection(value, check) {
       return {
         value: value,
-        check_: check || AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT),
-        setCheck: function(check) { this.check_ = check; },
-        getCheck: function() { return this.check_; }
+        check: check || AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT),
+        setCheck: function(check) { this.check = check; },
+        getCheck: function() { return this.check; }
       };
     }
 

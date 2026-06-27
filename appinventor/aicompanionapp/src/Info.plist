@@ -47,6 +47,25 @@
 	<string>App Inventor accesses your photo library when you include an ImagePicker component in your app.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>App Inventor uses speech recognition when you include a SpeechRecognizer component in your app</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+					<key>UISceneDelegateClassName</key>
+					<string>AIComponentKit.SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

@@ -22,11 +22,29 @@ class TextToSpeechTests: AppInventorTestCase {
     XCTAssertEqual("es", language)
   }
 
+  func testISO3Language() {
+    TextToSpeech1.Language = "spa"
+    XCTAssertEqual("es", TextToSpeech1.Language)
+  }
+
   func testCountry() {
     TextToSpeech1.Country = "IRL"
     let country = TextToSpeech1.voice.language.split("-").last
     XCTAssertEqual("IRL", TextToSpeech1.Country)
     XCTAssertEqual("IE", country)
+  }
+
+  func testISO2Country() {
+    TextToSpeech1.Country = "MX"
+    XCTAssertEqual("MEX", TextToSpeech1.Country)
+  }
+
+  func testMexicanSpanishCountry() {
+    TextToSpeech1.Language = "es"
+    TextToSpeech1.Country = "MEX"
+    let country = TextToSpeech1.voice.language.split("-").last
+    XCTAssertEqual("MEX", TextToSpeech1.Country)
+    XCTAssertEqual("MX", country)
   }
 
   func testPitchBounds() {
@@ -53,6 +71,8 @@ class TextToSpeechTests: AppInventorTestCase {
 
   func testAvailableCountries() {
     XCTAssertGreaterThan(TextToSpeech1.AvailableCountries.count, 0)
+    XCTAssertTrue(TextToSpeech1.AvailableCountries.contains("USA"))
+    XCTAssertFalse(TextToSpeech1.AvailableCountries.contains("US"))
   }
 
   func testAvailableLanguages() {

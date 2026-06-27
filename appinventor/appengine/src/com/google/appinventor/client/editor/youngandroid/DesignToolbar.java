@@ -44,6 +44,7 @@ import java.util.logging.Logger;
  */
 public class DesignToolbar extends Toolbar {
   private static final Logger LOG = Logger.getLogger(DesignToolbar.class.getName());
+  protected ToolbarItem backArrow;
 
   /*
    * A EditorPair groups together the designer and blocks editor for an
@@ -128,6 +129,7 @@ public class DesignToolbar extends Toolbar {
   public View currentView = View.DESIGNER;
 
   @UiField public Label projectNameLabel;
+  @UiField (provided = true) protected Boolean isAvailable;
 
   // Project currently displayed in designer
   private DesignProject currentProject;
@@ -159,7 +161,14 @@ public class DesignToolbar extends Toolbar {
    */
   public DesignToolbar() {
     super();
+    isAvailable = !Ode.getInstance().getOneProjectMode();
     bindUI();
+
+    if (Ode.getInstance().getOneProjectMode()) {
+      if (backArrow != null) {
+        setVisibleItem(backArrow, false);
+      }
+    }
 
     if (Ode.getInstance().isReadOnly() || !AppInventorFeatures.allowMultiScreenApplications()) {
       setVisibleItem(addFormItem, false);
@@ -171,7 +180,7 @@ public class DesignToolbar extends Toolbar {
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
-    Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     toggleView();
   }
 
@@ -234,7 +243,7 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
     }
-    Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
     screen.blocksEditor.makeActiveWorkspace();
@@ -274,7 +283,12 @@ public class DesignToolbar extends Toolbar {
             screen.screenName, new SwitchScreenAction(projectId, screen.screenName),
             new Image(Ode.getImageBundle().form())));
       }
-      projectNameLabel.setText(projectName);
+      String fauxProjectName = Ode.getInstance().getFauxProjectName();
+      if (fauxProjectName != null && !fauxProjectName.isEmpty()) {
+        projectNameLabel.setText(fauxProjectName);
+      } else {
+        projectNameLabel.setText(projectName);
+      }
       YaBlocksEditor.resendAssetsAndExtensions();  // Send assets for active project
     } else {
       ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName +

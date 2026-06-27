@@ -241,6 +241,10 @@ public class AARLibrary {
       Enumeration<? extends ZipEntry> i = zip.entries();
       while (i.hasMoreElements()) {
         ZipEntry entry = i.nextElement();
+        if (entry.getName().startsWith(ASSET_DIR) || entry.getName().startsWith(JNI_DIR)) {
+          // These are not needed here as we're already merging jni & assets (AttachAarLibs.java:104:122).
+          continue;
+        }
         File target = new File(basedir, entry.getName());
         if (entry.isDirectory() && !target.exists() && !target.mkdirs()) {
           throw new IOException("Unable to create directory " + path.getAbsolutePath());

@@ -182,6 +182,15 @@ public class Ode implements EntryPoint {
 
   private boolean isReadOnly;
 
+  // oneProjectMode == true if we have been logged in with a token that
+  // includes a projectId. In this case we just open the one specified
+  // project.
+
+  private boolean oneProjectMode;
+  private long oneProjectId;    // The ID of the one project we open
+
+  private String fauxProjectName; // Fake Project Name provided by login token
+
   private String sessionId = generateUuid(); // Create new session id
 
   private Random random = new Random(); // For generating random nonce
@@ -199,6 +208,11 @@ public class Ode implements EntryPoint {
   private FileEditor currentFileEditor;
 
   private AssetManager assetManager = AssetManager.getInstance();
+  private boolean isAnon = false;
+  private boolean displayedCodes = false; // True means we have displayed the dialog box
+                                          // with the four word codes for an anonymous account
+                                          // to revisit us. Only used if we are an anonymous
+                                          // account. I.e. isAnon is true
 
   private DropTargetProvider dragDropTargets;
 
@@ -229,7 +243,7 @@ public class Ode implements EntryPoint {
   @UiField protected TutorialPanel tutorialPanel;
   @UiField protected ConsolePanel consolePanel;
   private int projectsTabIndex;
-  private int designTabIndex;
+  private int projectEditorTabIndex;
   private int debuggingTabIndex;
   private int userAdminTabIndex;
   @UiField protected TopPanel topPanel;
@@ -423,6 +437,7 @@ public class Ode implements EntryPoint {
   public void switchToProjectsView() {
     // We may need to pass the code below as a runnable to
     // screenShotMaybe() so build the runnable now
+    getTopToolbar().updateMoveToTrash(true);
     hideChaff();
     hideTutorials();
     Runnable next = new Runnable() {
@@ -507,17 +522,17 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
+   * Switch to the project editor tab. Shows an error message if there is no currentFileEditor.
    */
-  public void switchToDesignView() {
+  public void switchToProjectEditor() {
     hideChaff();
-    // Only show designer if there is a current editor.
-    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
+    // Only show project editor if there is a current editor.
+    // ***** THE PROJECT EDITOR TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     showTutorials();
     currentView = DESIGNER;
     getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
-      deckPanel.showWidget(designTabIndex);
+      deckPanel.showWidget(projectEditorTabIndex);
     } else if (!editorManager.hasOpenEditor()) {  // is there a project editor pending visibility?
       LOG.warning("No current file editor to show in designer");
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
@@ -591,6 +606,11 @@ public class Ode implements EntryPoint {
       LOG.warning("Ignoring openPreviousProject() since userSettings is null");
       return;
     }
+    if (oneProjectMode) {
+      openProject("" + oneProjectId);
+      return;
+    }
+
     final String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
     if (value.isEmpty()) {
@@ -653,7 +673,7 @@ public class Ode implements EntryPoint {
       // asynchronously, and loaded into file editors.
 
       viewerBox.show(projectRootNode);
-      // Note: we can't call switchToDesignView until the Screen1 file editor
+      // Note: we can't call switchToProjectEditor until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
@@ -664,7 +684,8 @@ public class Ode implements EntryPoint {
       assetManager.loadAssets(project.getProjectId());
       assetListBox.getAssetList().refreshAssetList(project.getProjectId());
     }
-    getTopToolbar().updateFileMenuButtons(1);
+    getTopToolbar().updateMoveToTrash(true);
+    getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
   }
 
   private String currentLayout;
@@ -767,6 +788,14 @@ public class Ode implements EntryPoint {
           }
           user = result.getUser();
           isReadOnly = user.isReadOnly();
+          oneProjectId = user.getOneProjectId();
+          fauxProjectName = user.getFauxProjectName();
+          if (oneProjectId != 0) {
+            oneProjectMode = true;
+          }
+          if (user.getUserId().startsWith("anon-")) { // We are a anonymous user
+            isAnon = true;
+          }
           registerIosExtensions(config.getIosExtensions());
           return resolve(null);
         })
@@ -853,7 +882,7 @@ public class Ode implements EntryPoint {
 
   private Promise<Object> checkTos() {
     // If user hasn't accepted terms of service, ask them to.
-    if (!user.getUserTosAccepted() && !isReadOnly) {
+    if (!user.getUserTosAccepted() && !isReadOnly && !oneProjectMode) {
       // We expect that the redirect to the TOS page should be handled
       // by the onFailure method below. The server should return a
       // "forbidden" error if the TOS wasn't accepted.
@@ -1073,8 +1102,8 @@ public class Ode implements EntryPoint {
     // Projects tab
     projectsTabIndex = 0;
 
-    // Design tab
-    designTabIndex = 1;
+    // Project editor tab
+    projectEditorTabIndex = 1;
 
     // User Admin Panel
     userAdminTabIndex = 2;
@@ -1272,8 +1301,8 @@ public class Ode implements EntryPoint {
     LOG.info("Ode: Setting current file editor to " + currentFileEditor.getFileId());
     if (currentFileEditor instanceof YaFormEditor) {
       sourceStructureBox.show(((YaFormEditor) currentFileEditor).getForm());
-      switchToDesignView();
     }
+    switchToProjectEditor();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
       changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
@@ -1414,6 +1443,12 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use a dark theme, false otherwise
    */
   public static boolean getUserDarkThemeEnabled() {
+    String override = Window.Location.getParameter("ui");
+    if (override != null && override.contains("light")) {
+      return false;
+    } else if (override != null && override.contains("dark")) {
+      return true;
+    }
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.DARK_THEME_ENABLED);
     if (value == null) {
@@ -1450,10 +1485,18 @@ public class Ode implements EntryPoint {
    * @return true if the user has opted to use the new UI, false otherwise
    */
   public static boolean getUserNewLayout() {
+    String override = Window.Location.getParameter("ui");
+    if (override != null && override.contains("classic")) {
+      return false;
+    } else if (override != null && override.contains("neo")) {
+      return true;
+    }
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
             .getPropertyValue(SettingsConstants.USER_NEW_LAYOUT);
+    if (value == null) {        // Default to NEO
+      return true;
+    }
     return Boolean.parseBoolean(value);
-    // return true;
   }
 
   /**
@@ -1506,9 +1549,13 @@ public class Ode implements EntryPoint {
             "" + value);
   }
 
-  public static boolean getShowUIPicker() {
-    return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
-            .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+  private boolean getShowUIPicker() {
+    if (oneProjectMode) {
+      return false;
+    } else {
+      return userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS)
+        .getPropertyValue(SettingsConstants.SHOW_UIPICKER).equalsIgnoreCase("True");
+    }
   }
 
   public static void saveUserDesignSettings() {
@@ -1656,39 +1703,25 @@ public class Ode implements EntryPoint {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
-    Grid mainGrid = new Grid(2, 2);
-    mainGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(0,
-            1,
-            HasHorizontalAlignment.ALIGN_CENTER,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    mainGrid.getCellFormatter().setAlignment(1,
-            1,
-            HasHorizontalAlignment.ALIGN_RIGHT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
+    HorizontalPanel mainPanel = new HorizontalPanel();
+    mainPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    mainPanel.setSpacing(10);
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
-    Grid messageGrid = new Grid(2, 1);
-    messageGrid.getCellFormatter().setAlignment(0,
-            0,
-            HasHorizontalAlignment.ALIGN_JUSTIFY,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-    messageGrid.getCellFormatter().setAlignment(1,
-            0,
-            HasHorizontalAlignment.ALIGN_LEFT,
-            HasVerticalAlignment.ALIGN_MIDDLE);
-
+    VerticalPanel messagePanel = new VerticalPanel();
+    messagePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 
     Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
-    messageGrid.setWidget(1, 0, messageChunk2);
-    mainGrid.setWidget(0, 0, dialogImage);
-    mainGrid.setWidget(0, 1, messageGrid);
+    messagePanel.add(messageChunk2);
 
-    dialogBox.setWidget(mainGrid);
+    mainPanel.add(dialogImage);
+    mainPanel.add(messagePanel);
+
+    mainPanel.setCellHorizontalAlignment(dialogImage, HasHorizontalAlignment.ALIGN_CENTER);
+    mainPanel.setCellVerticalAlignment(dialogImage, HasVerticalAlignment.ALIGN_MIDDLE);
+
+    dialogBox.setWidget(mainPanel);
     dialogBox.center();
 
     if (showDialog) {
@@ -1792,7 +1825,7 @@ public class Ode implements EntryPoint {
       }
       return null;
     });
-    if (getShowUIPicker()) {
+    if (getShowUIPicker() && Ode.getUserNewLayout()) {
       TutorialPopup popup = new TutorialPopup(MESSAGES.neoWelcomeMessage(), () -> {
         setUserNewLayout(false);
         saveUserDesignSettings();
@@ -2418,6 +2451,14 @@ public class Ode implements EntryPoint {
     isReadOnly = true;
   }
 
+  public boolean getOneProjectMode() {
+    return oneProjectMode;
+  }
+
+  public String getFauxProjectName() {
+    return fauxProjectName;
+  }
+
   // Code to lock out certain screen and project switching code
   // These are locked out while files are being saved
   // lockScreens(true) is called from EditorManager when it
@@ -2527,7 +2568,7 @@ public class Ode implements EntryPoint {
     }
   }
 
-  public void setTutorialVisible(boolean visible) {
+  public void setTutorialVisible(boolean visible, boolean isOnUnload) {
     tutorialVisible = visible;
     if (visible) {
       tutorialPanel.setVisible(true);
@@ -2535,7 +2576,7 @@ public class Ode implements EntryPoint {
     } else {
       tutorialPanel.setVisible(false);
     }
-    if (currentFileEditor != null) {
+    if (!isOnUnload && currentFileEditor != null) {
       currentFileEditor.resize();
     }
   }
@@ -2574,7 +2615,7 @@ public class Ode implements EntryPoint {
   public void setTutorialURL(String newURL) {
     if (newURL.isEmpty()) {
       designToolbar.setTutorialToggleVisible(false);
-      setTutorialVisible(false);
+      setTutorialVisible(false, false);
       return;
     }
 
@@ -2588,7 +2629,7 @@ public class Ode implements EntryPoint {
 
     if (!isUrlAllowed) {
       designToolbar.setTutorialToggleVisible(false);
-      setTutorialVisible(false);
+      setTutorialVisible(false, false);
     } else {
       String locale = Window.Location.getParameter("locale");
       if (locale != null) {
@@ -2599,7 +2640,7 @@ public class Ode implements EntryPoint {
       String effectiveUrl = (isHttps ? "https://" : "http://") + urlSplits[1];
       tutorialPanel.setUrl(effectiveUrl);
       designToolbar.setTutorialToggleVisible(true);
-      setTutorialVisible(true);
+      setTutorialVisible(true, false);
     }
   }
 
@@ -2756,7 +2797,7 @@ public class Ode implements EntryPoint {
   public interface Resources extends ClientBundle {
 
     public static final Resources INSTANCE =  GWT.create(Resources.class);
-    
+
     @Source({
       "com/google/appinventor/client/style/classic/light.css",
       "com/google/appinventor/client/style/classic/variableColors.css"

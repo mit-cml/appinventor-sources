@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2024 MIT, All rights reserved
+// Copyright 2011-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -89,6 +89,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     appendComponentInfo(json, ComponentDescriptorConstants.CONTENT_PROVIDERS_TARGET,
         component.contentProviders);
     appendComponentInfo(json, ComponentDescriptorConstants.XMLS_TARGET, component.xmls);
+    appendComponentInfo(json, ComponentDescriptorConstants.FEATURES_TARGET, component.features);
     appendConditionalComponentInfo(component, json);
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should

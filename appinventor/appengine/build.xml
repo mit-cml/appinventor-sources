@@ -155,6 +155,8 @@
         <exclude name="media/*.css"/>
         <exclude name="demo/**"/>
       </fileset>
+    </copy>
+    <copy todir="${build.static.dir}/media" flatten="true" overwrite="true">
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*"/>
         <exclude name="media/*.css"/>
@@ -167,10 +169,7 @@
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${lib.dir}">
-        <include name="closure-library/closure/goog/base.js"/>
-        <include name="closure-library/closure/goog/css/dialog.css"/>
-        <include name="closure-library/closure/goog/css/hsvapalette.css"/>
-        <include name="closure-library/closure/goog/deps.js"/>
+        <include name="closure-compiler/base.js"/>
       </fileset>
       <fileset dir="${docs.dir}/html/static">
         <include name="js/*"/>
@@ -591,7 +590,6 @@
         <pathelement location="${lib.dir}/guava/j2objc-annotations-1.1.jar" />
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
-        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="${lib.dir}/gwt_query/gwtquery-1.5-beta1.jar" />
         <pathelement location="${lib.dir}/gwt_svg/lib-gwt-svg-0.5.15.jar" />
         <!-- gwt libs -->

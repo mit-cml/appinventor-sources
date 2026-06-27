@@ -41,7 +41,7 @@ import Foundation
    * - Parameter width: The desired height of `component`
    */
   func setChildHeight(of component: ViewComponent, to height: Int32)
-
+  
   /**
    * Returns whether `component` is marked as visible or not. Even if this is `true`, it is not
    * guaranteed that the view is attached to the view hierarchy.
@@ -74,4 +74,11 @@ import Foundation
    * - Returns:
    */
   func getChildren() -> [Component]
+  
+  /**
+   * Calls the `RelativeLayout.updateComponentPosition` on `component`
+   *
+   * - Parameter component:The component needs to update its layout
+   */
+  @objc optional func setChildNeedsLayout(component: ViewComponent)
 }

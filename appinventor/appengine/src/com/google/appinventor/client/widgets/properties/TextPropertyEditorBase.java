@@ -122,6 +122,13 @@ public class TextPropertyEditorBase extends PropertyEditor {
     textEdit.setText(property.getValue());
   }
 
+  @Override
+  public void setAriaLabelledBy(String labelId) {
+    if (labelId != null && !labelId.isEmpty()) {
+      textEdit.getElement().setAttribute("aria-labelledby", labelId);
+    }
+  }
+
   private void handleKeyPress(char keyCode) {
     if (keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_TAB) {
       // Pressing <tab>, <enter> or <return> will surrender focus.
