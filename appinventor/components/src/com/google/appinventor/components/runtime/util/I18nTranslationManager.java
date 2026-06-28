@@ -6,16 +6,16 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
+import com.google.appinventor.components.runtime.AppInventorCompatActivity;
 import com.google.appinventor.components.runtime.Component;
 import com.google.appinventor.components.runtime.Form;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.WeakHashMap;
+import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,22 +25,43 @@ import org.json.JSONObject;
 public final class I18nTranslationManager {
   private static final String LOG_TAG = "I18nTranslationManager";
   private static final String TRANSLATIONS_ASSET = "i18n/translations.json";
-  private static final Map<Form, JSONObject> TRANSLATIONS_BY_FORM =
-    new WeakHashMap<Form, JSONObject>();
 
-  private I18nTranslationManager() {
+  private final AppInventorCompatActivity activity;
+  private JSONObject translationsRoot;
+  private String previewLanguageOverride = "";
+
+  public I18nTranslationManager(AppInventorCompatActivity activity) {
+    this.activity = activity;
   }
 
   public static void load(Form form) {
+    if (form != null) {
+      form.getI18nTranslationManager().load();
+    }
+  }
+
+  public static String lookupDynamic(Form form, String key, Map<String, String> values) {
+    if (form == null) {
+      return "";
+    }
+
+    return form.getI18nTranslationManager().lookupDynamic(key, values);
+  }
+
+  public void load() {
+    Form form = getForm();
+    if (form == null) {
+      return;
+    }
+
     InputStream inputStream = null;
     try {
       inputStream = form.openAsset(TRANSLATIONS_ASSET);
       String json = readFully(inputStream);
-      JSONObject root = new JSONObject(json);
-      TRANSLATIONS_BY_FORM.put(form, root);
+      translationsRoot = new JSONObject(json);
 
-      String language = selectLanguage(root);
-      JSONObject entries = root.optJSONObject("entries");
+      String language = selectLanguage();
+      JSONObject entries = translationsRoot.optJSONObject("entries");
       int appliedCount = applyTranslations(form, entries, language);
 
       int entryCount = entries == null ? 0 : entries.length();
@@ -62,18 +83,46 @@ public final class I18nTranslationManager {
     }
   }
 
-  public static String lookupDynamic(Form form, String key, Map<String, String> values) {
-    if (form == null || key == null || key.length() == 0) {
+  public void loadFromJson(String json) {
+    if (json == null || json.trim().length() == 0) {
+      clear();
+      return;
+    }
+
+    try {
+      translationsRoot = new JSONObject(json);
+      applyLoadedTranslations();
+    } catch (JSONException e) {
+      Log.w(LOG_TAG, "Invalid i18n translations JSON.", e);
+    }
+  }
+
+  public void applyLoadedTranslations() {
+    Form form = getForm();
+    if (form == null || translationsRoot == null) {
+      return;
+    }
+
+    try {
+      String language = selectLanguage();
+      JSONObject entries = translationsRoot.optJSONObject("entries");
+      int appliedCount = applyTranslations(form, entries, language);
+
+      int entryCount = entries == null ? 0 : entries.length();
+      Log.d(LOG_TAG, "Applied loaded i18n translations using language " + language
+          + " with " + entryCount + " entries and " + appliedCount + " applied values.");
+    } catch (JSONException e) {
+      Log.w(LOG_TAG, "Unable to apply loaded i18n translations.", e);
+    }
+  }
+
+  public String lookupDynamic(String key, Map<String, String> values) {
+    if (key == null || key.length() == 0 || translationsRoot == null) {
       return "";
     }
 
-    JSONObject root = TRANSLATIONS_BY_FORM.get(form);
-    if (root == null) {
-      return "";
-    }
-
-    String language = selectLanguage(root);
-    JSONObject entries = root.optJSONObject("entries");
+    String language = selectLanguage();
+    JSONObject entries = translationsRoot.optJSONObject("entries");
     if (entries == null) {
       return "";
     }
@@ -107,11 +156,30 @@ public final class I18nTranslationManager {
     return I18nFormatter.format(template, values);
   }
 
-  static void putTranslationsForTesting(Form form, JSONObject root) {
-    TRANSLATIONS_BY_FORM.put(form, root);
+  public void setPreviewLanguageOverride(String language) {
+    previewLanguageOverride = language == null ? "" : language.trim();
   }
 
-  private static int applyTranslations(Form form, JSONObject entries, String language)
+  public void clearPreviewLanguageOverride() {
+    previewLanguageOverride = "";
+  }
+
+  public void clear() {
+    translationsRoot = null;
+    previewLanguageOverride = "";
+  }
+
+  static void putTranslationsForTesting(Form form, JSONObject root) {
+    if (form != null) {
+      form.getI18nTranslationManager().putTranslationsForTesting(root);
+    }
+  }
+
+  void putTranslationsForTesting(JSONObject root) {
+    translationsRoot = root;
+  }
+
+  private int applyTranslations(Form form, JSONObject entries, String language)
       throws JSONException {
     if (entries == null || language == null || language.length() == 0) {
       return 0;
@@ -161,7 +229,7 @@ public final class I18nTranslationManager {
     return appliedCount;
   }
 
-  private static boolean applyStringProperty(Component component, String propertyName,
+  private boolean applyStringProperty(Component component, String propertyName,
       String translatedValue) {
     if (propertyName == null || propertyName.length() == 0) {
       return false;
@@ -178,11 +246,19 @@ public final class I18nTranslationManager {
     }
   }
 
-  private static String selectLanguage(JSONObject root) {
+  private String selectLanguage() {
+    if (previewLanguageOverride.length() > 0) {
+      return previewLanguageOverride;
+    }
+
     String deviceLanguage = getDeviceLanguageCode();
     String baseLanguage = getBaseLanguageCode();
 
-    JSONObject entries = root.optJSONObject("entries");
+    if (translationsRoot == null) {
+      return deviceLanguage;
+    }
+
+    JSONObject entries = translationsRoot.optJSONObject("entries");
     if (entries == null) {
       return deviceLanguage;
     }
@@ -211,6 +287,10 @@ public final class I18nTranslationManager {
     return deviceLanguage;
   }
 
+  private Form getForm() {
+    return activity instanceof Form ? (Form) activity : null;
+  }
+
   private static String getDeviceLanguageCode() {
     Locale locale = Locale.getDefault();
     String language = locale.getLanguage();
@@ -231,7 +311,6 @@ public final class I18nTranslationManager {
   private static String readFully(InputStream inputStream) throws IOException {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     byte[] buffer = new byte[4096];
-
     int count;
     while ((count = inputStream.read(buffer)) != -1) {
       outputStream.write(buffer, 0, count);

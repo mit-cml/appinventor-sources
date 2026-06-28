@@ -435,7 +435,7 @@ public class Form extends AppInventorCompatActivity
     $define();
 
     // Load bundled translation data before the user Initialize event runs.
-    I18nTranslationManager.load(this);
+    getI18nTranslationManager().load();
 
     // Special case for Event.Initialize(): all other initialize events are triggered after
     // completing the constructor. This doesn't work for Android apps though because this method
@@ -2687,6 +2687,7 @@ public class Form extends AppInventorCompatActivity
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
     clearComponentsByName();
+    clearI18nTranslationManager();
     // Notify those who care
     for (OnClearListener onClearListener : onClearListeners) {
       onClearListener.onClear();
@@ -2841,7 +2842,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SimpleFunction(description = "Looks up a dynamic translation by key.")
   public String Translate(String key) {
-    return I18nTranslationManager.lookupDynamic(this, key, null);
+    return getI18nTranslationManager().lookupDynamic(key, null);
   }
 
   /**
@@ -2853,7 +2854,7 @@ public class Form extends AppInventorCompatActivity
    */
   @SimpleFunction(description = "Looks up a dynamic translation by key and replaces placeholders using a dictionary.")
   public String TranslateWithValues(String key, YailDictionary values) {
-    return I18nTranslationManager.lookupDynamic(this, key, toStringMap(values));
+    return getI18nTranslationManager().lookupDynamic(key, toStringMap(values));
   }
 
   private Map<String, String> toStringMap(YailDictionary values) {
