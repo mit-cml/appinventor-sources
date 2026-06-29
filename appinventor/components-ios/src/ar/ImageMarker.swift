@@ -95,10 +95,10 @@ open class ImageMarker: NSObject, ARImageMarker {
         _referenceImage?.name = name
         _name = name
         
-      } else if _referenceImage?.name != name, let oldName = _referenceImage?.name {
-        guard _container?.updateMarker(self, for: oldName, with: name) ?? false else {
-          return
-        }
+      } else {
+        let oldName = _name           // use _name directly, not _referenceImage?.name
+        guard oldName != name else { return }
+        guard _container?.updateMarker(self, for: oldName, with: name) ?? false else { return }
         _referenceImage?.name = name
         _name = name
       }
