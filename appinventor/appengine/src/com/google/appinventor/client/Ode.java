@@ -13,6 +13,7 @@ import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 import static com.google.appinventor.client.wizards.TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY;
 
+import com.google.appinventor.client.boxes.AdminUserListBox;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -40,8 +41,6 @@ import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.local.LocalProjectService;
-import com.google.appinventor.client.local.LocalTokenAuthService;
-import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
@@ -51,6 +50,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.ShortcutRegistry;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
@@ -93,6 +93,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -116,7 +118,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -423,6 +424,18 @@ public class Ode implements EntryPoint {
    */
   public int getCurrentViewId() {
     return currentView;
+  }
+
+  public Widget getCurrentView() {
+    switch (currentView) {
+      case DESIGNER:
+        return currentFileEditor;
+      case PROJECTS:
+        return projectListbox.getProjectList();
+      case USERADMIN:
+        return AdminUserListBox.getAdminUserListBox().getAdminUserList();
+    }
+    throw new IllegalStateException("Unknown view: " + currentView);
   }
 
   public DeckPanel getDeckPanel() {
@@ -1032,6 +1045,12 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent keyDownEvent) {
+        ShortcutRegistry.getInstance().onKeyDown(getCurrentView(), keyDownEvent);
+      }
+    }, KeyDownEvent.getType());
     EDITORS.register(YoungAndroidProjectNode.class, node -> new YaProjectEditor(node, uiFactory));
     sourceStructureBox = SourceStructureBox.getSourceStructureBox();
     folderManager = new FolderManager(uiFactory);

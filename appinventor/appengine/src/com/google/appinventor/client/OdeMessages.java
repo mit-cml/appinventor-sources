@@ -6187,4 +6187,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("A tag with this name already exists. Saving will overwrite its current value.")
   @Description("Inline warning shown in add-entry dialog when the typed tag name matches an existing CloudDB entry.")
   String clouddbVizTagExistsWarning();
+
+  @DefaultMessage("Select All Projects")
+  String selectAllProjects();
 }

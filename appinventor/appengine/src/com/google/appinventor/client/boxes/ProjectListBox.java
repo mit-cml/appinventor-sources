@@ -8,9 +8,14 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.UiStyleFactory;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
+import com.google.appinventor.client.utils.ShortcutRegistry;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.ui.Widget;
+import java.util.function.Consumer;
 
 /**
  * Box implementation for project list.
@@ -22,6 +27,21 @@ public final class ProjectListBox extends Box {
 
   // Project list for young android
   private final ProjectList plist;
+
+  static {
+    ShortcutRegistry.getInstance().registerViewShortcut(ProjectList.class, "select_all_projects",
+        MESSAGES.selectAllProjects(), KeyCodes.KEY_A, new int[] { ShortcutRegistry.getCtrlCmd() }, new Consumer<Widget>() {
+          @Override
+          public void accept(Widget widget) {
+            Ode.CLog("Selecting all");
+            ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
+            if (projectList == null) {
+              return;  // Nothing to do yet
+            }
+            projectList.selectAll();
+          }
+        });
+  }
 
   /**
    * Creates a new ProjectListBox if one doesn't exist using the provided
