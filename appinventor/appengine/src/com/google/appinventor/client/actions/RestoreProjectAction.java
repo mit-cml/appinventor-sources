@@ -21,7 +21,7 @@ public class RestoreProjectAction implements Command {
   @Override
   public void execute() {
     Ode odeInstance = Ode.getInstance();
-    if (odeInstance.getCurrentView() == Ode.TRASHCAN) {
+    if (odeInstance.getCurrentViewId() == Ode.TRASHCAN) {
       List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
           .getSelectedProjects();
       List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList()

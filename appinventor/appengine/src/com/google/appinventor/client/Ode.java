@@ -421,7 +421,7 @@ public class Ode implements EntryPoint {
   /**
    * Get the current view
    */
-  public int getCurrentView() {
+  public int getCurrentViewId() {
     return currentView;
   }
 

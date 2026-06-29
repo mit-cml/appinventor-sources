@@ -139,7 +139,7 @@ public abstract class FileEditor extends Composite {
    */
   @SuppressWarnings("unused")  // called from JSNI
   public boolean isActiveEditor() {
-    return Ode.getInstance().getCurrentView() == 0 &&
+    return Ode.getInstance().getCurrentViewId() == Ode.DESIGNER &&
         Ode.getInstance().getCurrentFileEditor() == this;
   }
 

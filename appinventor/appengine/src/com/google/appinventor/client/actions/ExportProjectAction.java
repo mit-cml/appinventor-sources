@@ -23,7 +23,7 @@ public class ExportProjectAction implements Command {
   private static final Logger LOG = Logger.getLogger(ExportProjectAction.class.getName());
   @Override
   public void execute() {
-    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+    if (Ode.getInstance().getCurrentViewId() == Ode.PROJECTS) {
       //If we are in the projects view
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();

@@ -25,7 +25,7 @@ public class DeleteForeverProjectAction implements Command {
     Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
-        if (Ode.getInstance().getCurrentView() == Ode.TRASHCAN) {
+        if (Ode.getInstance().getCurrentViewId() == Ode.TRASHCAN) {
           List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
               .getSelectedProjects();
           List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList()
