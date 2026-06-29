@@ -3034,16 +3034,18 @@ extension ARView3D: UIGestureRecognizerDelegate {
 extension ARView3D: ARImageMarkerContainer {
   @objc public var ImageMarkers: [ARImageMarker] {
     get {
-      return _imageMarkers.values.map { $0 } //CSB this doesn't appear to be working?
+      return _imageMarkers.values.map { $0 } /* CSB this doesn't appear to be working? reason: because the name of the
+                                                image marker is <unknown> until changed and there is no scheme translation to do this yet. Need to use own construction of image marker objects */
     }
   }
 
   public func addMarker(_ marker: ImageMarker) {
-    guard !_imageMarkers.keys.contains(marker.Name) else {
+    /*  handle asyncronous imageMarker creation and setName when initializing image markers */
+    guard !_imageMarkers.keys.contains(marker.Name) || marker.Name == "<unknown>" else {
       _container?.form?.dispatchErrorOccurredEvent(self, "addMarker", ErrorMessage.ERROR_IMAGEMARKER_ALREADY_EXISTS_WITH_NAME.code, marker.Name)
       return
     }
-    
+      
     guard marker._referenceImage?.name != nil else {
       _container?.form?.dispatchErrorOccurredEvent(self, "addMarker",
          ErrorMessage.ERROR_IMAGEMARKER_MISSING_NAME.code)
