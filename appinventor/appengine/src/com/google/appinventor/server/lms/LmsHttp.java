@@ -5,11 +5,16 @@
 
 package com.google.appinventor.server.lms;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -42,6 +47,34 @@ final class LmsHttp {
   static void applyTimeouts(HttpURLConnection conn) {
     conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
     conn.setReadTimeout(READ_TIMEOUT_MILLIS);
+  }
+
+  /**
+   * Opens a connection to {@code urlString} through the optional outbound proxy
+   * named by the {@code lms.proxy.host}, {@code lms.proxy.port}, and
+   * {@code lms.proxy.type} system properties. Production on App Engine reaches
+   * Google directly, so these are unset there and the connection is direct. They
+   * exist for restricted networks and local development behind a proxy, and they
+   * bypass any host-level proxy the platform might otherwise impose.
+   *
+   * @param urlString the absolute URL to open
+   * @return an unconnected {@link HttpURLConnection} using the configured proxy
+   * @throws IOException if the URL is malformed or the connection cannot open
+   */
+  static HttpURLConnection open(String urlString) throws IOException {
+    return (HttpURLConnection) new URL(urlString).openConnection(proxy());
+  }
+
+  @VisibleForTesting
+  static Proxy proxy() {
+    String host = System.getProperty("lms.proxy.host", "");
+    if (host.isEmpty()) {
+      return Proxy.NO_PROXY;
+    }
+    int port = Integer.parseInt(System.getProperty("lms.proxy.port", "0"));
+    Proxy.Type type = "socks".equalsIgnoreCase(System.getProperty("lms.proxy.type", "http"))
+        ? Proxy.Type.SOCKS : Proxy.Type.HTTP;
+    return new Proxy(type, new InetSocketAddress(host, port));
   }
 
   /**
@@ -87,6 +120,33 @@ final class LmsHttp {
     } finally {
       conn.disconnect();
     }
+  }
+
+  /**
+   * Reads a failed connection's error stream as UTF-8 for diagnostics, returning
+   * an empty string when there is none. Used to surface a Google API error body
+   * (for example a disabled-API or insufficient-scope message) in the thrown
+   * exception so the cause is visible in the logs.
+   *
+   * @param conn an already-sent connection whose status is 4xx or 5xx
+   * @return the error body, or an empty string
+   */
+  static String errorBody(HttpURLConnection conn) {
+    InputStream stream = conn.getErrorStream();
+    if (stream == null) {
+      return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+      }
+    } catch (IOException e) {
+      // Best effort: return whatever was read before the failure.
+    }
+    return sb.toString();
   }
 
   /**

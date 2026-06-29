@@ -35,15 +35,20 @@ public class LmsAuthCallbackServlet extends HttpServlet {
   private static final Logger LOG =
       Logger.getLogger(LmsAuthCallbackServlet.class.getName());
 
-  /** Where to send the browser after the flow completes. */
-  private static final String RETURN_URL = "/";
+  /** Where to send the browser after a successful connection (the IDE shows a banner). */
+  private static final String CONNECTED_URL = "/?lmsConnect=success";
+
+  /** Where to send the browser after a failed connection (the IDE shows a banner). */
+  private static final String ERROR_URL = "/?lmsConnect=error";
 
   private final LmsCredentialStore credentialStore = new LmsCredentialStore();
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     if (req.getParameter("error") != null) {
-      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Google sign in did not complete.");
+      // The user declined consent or Google reported an error: send them back to
+      // the IDE with a failure banner rather than a dead-end error page.
+      resp.sendRedirect(ERROR_URL);
       return;
     }
     String code = req.getParameter("code");
@@ -70,12 +75,11 @@ public class LmsAuthCallbackServlet extends HttpServlet {
     } catch (IOException e) {
       // A redeemed or expired authorization code (for example when the user hits
       // Back or refreshes the callback) or a transient failure reaching Google: the
-      // user should retry, so this is a bad request, not a server crash. The request
-      // is not handed to the logger because its query string carries the single-use
-      // code and state.
+      // user should retry, so send them back to the IDE with a failure banner. The
+      // request is not handed to the logger because its query string carries the
+      // single-use code and state.
       LOG.log(Level.WARNING, "Google token exchange failed for user " + userId, e);
-      resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-          "Google sign in could not be completed. Please try again.");
+      resp.sendRedirect(ERROR_URL);
       return;
     } catch (EncryptionException e) {
       // Encrypting the refresh token failed: a genuine server-side fault.
@@ -86,11 +90,9 @@ public class LmsAuthCallbackServlet extends HttpServlet {
     // connection did not complete, so do not report success.
     if (!credentialStore.hasGoogleCredential(userId)) {
       LOG.warning("No Google refresh token stored for user " + userId);
-      resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-          "Google did not return a long-term credential. If this account is already "
-          + "connected, remove App Inventor's access in your Google Account and try again.");
+      resp.sendRedirect(ERROR_URL);
       return;
     }
-    resp.sendRedirect(RETURN_URL);
+    resp.sendRedirect(CONNECTED_URL);
   }
 }

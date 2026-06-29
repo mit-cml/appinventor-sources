@@ -804,6 +804,7 @@ public class Ode implements EntryPoint {
         })
         .then0(this::retrieveTemplateData)
         .then0(this::maybeOpenLastProject)
+        .then0(this::maybeShowLmsConnectStatus)
         .error(caught -> {
           if (caught == null) {
             // previous step rejected without an actual error
@@ -841,6 +842,25 @@ public class Ode implements EntryPoint {
     // The following line causes problems with GWT debugging, and commenting
     // it out doesn't seem to break things.
     //History.fireCurrentHistoryState();
+  }
+
+  /**
+   * Shows a banner when the Google Classroom connect flow redirects back to the
+   * IDE with an {@code lmsConnect} status parameter. Fully guarded so a status
+   * banner can never affect startup.
+   */
+  private Promise<Object> maybeShowLmsConnectStatus() {
+    try {
+      String status = Window.Location.getParameter("lmsConnect");
+      if ("success".equals(status)) {
+        ErrorReporter.reportInfo(MESSAGES.classroomConnectSuccess());
+      } else if ("error".equals(status)) {
+        ErrorReporter.reportError(MESSAGES.classroomConnectError());
+      }
+    } catch (Exception e) {
+      // A status banner must never affect startup.
+    }
+    return resolve(null);
   }
 
   private Promise<Object> handleGalleryId() {

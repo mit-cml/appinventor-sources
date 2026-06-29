@@ -6,12 +6,15 @@
 package com.google.appinventor.server.lms;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 import junit.framework.TestCase;
 
 /**
- * Tests for {@link LmsHttp}. Only the pure {@code jsonField} parser is unit
- * tested here; the networked methods are exercised by the live handshake.
+ * Tests for {@link LmsHttp}. The pure {@code jsonField} parser and the
+ * {@code proxy()} selection are unit tested here; the networked methods are
+ * exercised by the live handshake.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -38,5 +41,42 @@ public class LmsHttpTest extends TestCase {
     } catch (IOException e) {
       // expected
     }
+  }
+
+  public void testProxyDefaultsToNoProxyWhenHostUnset() {
+    System.clearProperty("lms.proxy.host");
+    assertEquals(Proxy.NO_PROXY, LmsHttp.proxy());
+  }
+
+  public void testProxyUsesSocksWhenConfigured() {
+    System.setProperty("lms.proxy.host", "127.0.0.1");
+    System.setProperty("lms.proxy.port", "33211");
+    System.setProperty("lms.proxy.type", "socks");
+    try {
+      Proxy p = LmsHttp.proxy();
+      assertEquals(Proxy.Type.SOCKS, p.type());
+      InetSocketAddress address = (InetSocketAddress) p.address();
+      assertEquals("127.0.0.1", address.getHostString());
+      assertEquals(33211, address.getPort());
+    } finally {
+      clearProxyProps();
+    }
+  }
+
+  public void testProxyDefaultsToHttpTypeWhenTypeUnset() {
+    System.setProperty("lms.proxy.host", "127.0.0.1");
+    System.setProperty("lms.proxy.port", "8080");
+    System.clearProperty("lms.proxy.type");
+    try {
+      assertEquals(Proxy.Type.HTTP, LmsHttp.proxy().type());
+    } finally {
+      clearProxyProps();
+    }
+  }
+
+  private static void clearProxyProps() {
+    System.clearProperty("lms.proxy.host");
+    System.clearProperty("lms.proxy.port");
+    System.clearProperty("lms.proxy.type");
   }
 }

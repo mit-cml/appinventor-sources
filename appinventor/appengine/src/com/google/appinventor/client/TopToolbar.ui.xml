@@ -52,6 +52,9 @@
       <ai:DropDownItem name="ExportProject" caption="{messages.exportProjectMenuItem}">
         <actions:ExportProjectAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="SubmitToGoogleClassroom" caption="{messages.submitToGoogleClassroomMenuItem}">
+        <actions:SubmitToGoogleClassroomAction/>
+      </ai:DropDownItem>
       <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}">
         <actions:ExportAllProjectsAction/>
       </ai:DropDownItem>

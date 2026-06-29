@@ -8,7 +8,6 @@ package com.google.appinventor.server.lms;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -52,16 +51,44 @@ public final class GoogleOAuthClient {
     return postForm(body, "code exchange");
   }
 
+  /**
+   * Exchanges a stored refresh token for a fresh token response JSON, which
+   * includes a short-lived access token. Used when a Google API call needs an
+   * access token but only the long-lived refresh token is stored.
+   *
+   * @param clientId the OAuth client id
+   * @param clientSecret the OAuth client secret
+   * @param refreshToken the stored Google OAuth refresh token
+   * @return the raw token response JSON, including the {@code access_token} field
+   * @throws IOException if the request fails, including an {@code invalid_grant}
+   *     error when the refresh token has been revoked or has expired
+   */
+  public static String refreshAccessToken(
+      String clientId, String clientSecret, String refreshToken) throws IOException {
+    String body = "grant_type=refresh_token"
+        + "&client_id=" + LmsHttp.urlEncode(clientId)
+        + "&client_secret=" + LmsHttp.urlEncode(clientSecret)
+        + "&refresh_token=" + LmsHttp.urlEncode(refreshToken);
+    return postForm(body, "token refresh");
+  }
+
   private static String postForm(String body, String label) throws IOException {
-    HttpURLConnection conn = (HttpURLConnection) new URL(TOKEN_ENDPOINT).openConnection();
-    LmsHttp.applyTimeouts(conn);
-    conn.setRequestMethod("POST");
-    conn.setDoOutput(true);
-    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-    conn.setRequestProperty("Accept", "application/json");
-    try (OutputStream os = conn.getOutputStream()) {
-      os.write(body.getBytes(StandardCharsets.UTF_8));
+    HttpURLConnection conn = LmsHttp.open(TOKEN_ENDPOINT);
+    try {
+      LmsHttp.applyTimeouts(conn);
+      conn.setRequestMethod("POST");
+      conn.setDoOutput(true);
+      conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+      conn.setRequestProperty("Accept", "application/json");
+      // Do not reuse a pooled keep-alive connection, which can surface as an
+      // "Unexpected end of file from server" once the socket has gone stale.
+      conn.setRequestProperty("Connection", "close");
+      try (OutputStream os = conn.getOutputStream()) {
+        os.write(body.getBytes(StandardCharsets.UTF_8));
+      }
+      return LmsHttp.readBody(conn, label);
+    } finally {
+      conn.disconnect();
     }
-    return LmsHttp.readBody(conn, label);
   }
 }

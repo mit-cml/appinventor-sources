@@ -64,6 +64,12 @@ public interface ProjectServiceAsync {
    * @see ProjectService#sendToGallery(long)
    */
   void sendToGallery(long projectId, AsyncCallback<RpcResult> callback);
+
+  /**
+   * @see ProjectService#exportProjectToDrive(long)
+   */
+  void exportProjectToDrive(long projectId, AsyncCallback<RpcResult> callback);
+
   /**
    * @see ProjectService#loadFromGallery(String)
    */

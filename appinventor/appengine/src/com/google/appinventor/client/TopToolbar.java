@@ -137,6 +137,11 @@ public class TopToolbar extends Composite {
         Ode.getSystemConfig().getLmsEnabled());
     connectDropDown.removeUnneededSeparators();
 
+    // Show the Submit to Google Classroom item only when the LMS integration is
+    // configured, the same gate as the connect item.
+    fileDropDown.setItemVisible(MESSAGES.submitToGoogleClassroomMenuItem(),
+        Ode.getSystemConfig().getLmsEnabled());
+
     fileDropDown.removeUnneededSeparators();
 
     // Second Buildserver Menu Items

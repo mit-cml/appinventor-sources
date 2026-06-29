@@ -28,11 +28,11 @@ public class LmsOAuthConfigTest extends TestCase {
     assertTrue(url.contains("state=STATE-123"));
   }
 
-  public void testBuildAuthorizationUrlRequestsOnlyClassroomScope() {
+  public void testBuildAuthorizationUrlRequestsClassroomAndDriveScopes() {
     String url = LmsOAuthConfig.buildAuthorizationUrl("cid", "http://localhost/cb", "s", "ch");
     assertTrue(url.contains("classroom.courses.readonly"));
-    // The Drive scope is deferred to the Drive-upload PR, so the sign-in PR stays least privilege.
-    assertFalse(url.contains("drive.file"));
+    // The Drive upload needs the per-file drive.file scope, requested at sign-in.
+    assertTrue(url.contains("drive.file"));
   }
 
   public void testIsConfiguredFalseWhenSecretsUnset() {

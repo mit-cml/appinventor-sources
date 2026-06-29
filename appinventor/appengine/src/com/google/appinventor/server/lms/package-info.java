@@ -33,8 +33,20 @@
  *       and JSON helpers shared by the Google API clients.</li>
  * </ul>
  *
- * <p>Planned additions: the teacher and student designer UI, and the assignment
- * lifecycle (list courses, distribute a template project, collect submissions,
- * set a grade), including uploading an exported project to the student's Drive.
+ * <p>It also provides the building blocks for exporting a project to the user's
+ * own Drive, ahead of the endpoint that will call them:
+ * <ul>
+ *   <li>{@link com.google.appinventor.server.lms.GoogleDriveUploader} uploads file
+ *       bytes to the user's Drive under the {@code drive.file} scope, and
+ *       {@link com.google.appinventor.server.lms.GoogleOAuthClient} refreshes the
+ *       stored credential into the access token that upload needs.</li>
+ *   <li>{@link com.google.appinventor.server.lms.GoogleDriveProjectExporter} ties
+ *       the export helper, the credential store, the refresh, and the upload into
+ *       a single building block.</li>
+ * </ul>
+ *
+ * <p>Planned additions: the teacher and student designer UI, and the rest of the
+ * assignment lifecycle (list courses, distribute a template project, collect
+ * submissions, set a grade).
  */
 package com.google.appinventor.server.lms;

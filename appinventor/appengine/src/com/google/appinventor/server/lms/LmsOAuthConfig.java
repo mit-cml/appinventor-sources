@@ -32,13 +32,15 @@ public final class LmsOAuthConfig {
       "https://accounts.google.com/o/oauth2/v2/auth";
 
   /**
-   * OAuth scope requested at sign-in: read-only access to the user's Classroom
-   * courses. The {@code drive.file} scope for exporting a project to the user's
-   * Drive is added by the later Drive-upload work, so this sign-in PR requests
-   * only the Classroom scope and keeps the stored token least privilege.
+   * OAuth scopes requested at sign-in: read-only access to the user's Classroom
+   * courses, and the per-file {@code drive.file} scope so the integration can
+   * upload an exported project to the user's own Drive. {@code drive.file} grants
+   * access only to files this app creates, so the stored token stays least
+   * privilege. Scopes are space-separated per the OAuth 2.0 spec.
    */
   private static final String SCOPE =
-      "https://www.googleapis.com/auth/classroom.courses.readonly";
+      "https://www.googleapis.com/auth/classroom.courses.readonly"
+          + " https://www.googleapis.com/auth/drive.file";
 
   private LmsOAuthConfig() {}
 

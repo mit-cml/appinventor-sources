@@ -107,6 +107,16 @@ public interface ProjectService extends RemoteService {
   public RpcResult sendToGallery(long projectId);
 
   /**
+   * Exports the given project to the signed-in user's Google Drive for the
+   * Google Classroom integration.
+   *
+   * @param projectId the project to export
+   * @return an {@link RpcResult} whose output, on success, is a link to the new
+   *     Drive file; on failure the error describes what went wrong
+   */
+  public RpcResult exportProjectToDrive(long projectId);
+
+  /**
    * Load a project from the new Gallery
    * @param galleryId  The gallery's unique ID for this project
    * @return UserProject information object for newly loaded project
