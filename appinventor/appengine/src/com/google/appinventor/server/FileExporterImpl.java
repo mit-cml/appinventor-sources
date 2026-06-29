@@ -66,6 +66,13 @@ public final class FileExporterImpl implements FileExporter {
   }
 
   @Override
+  public ProjectSourceZip exportProjectSourceZip(String userId, long projectId)
+      throws IOException {
+    return exportProjectSourceZip(userId, projectId, false, false, null, false, false, false,
+        false, false, false);
+  }
+
+  @Override
   public ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
       boolean includeProjectHistory,
       boolean includeAndroidKeystore,
