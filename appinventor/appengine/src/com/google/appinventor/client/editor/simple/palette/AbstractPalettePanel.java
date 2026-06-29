@@ -180,7 +180,7 @@ public abstract class AbstractPalettePanel<
       public void onKeyDown(KeyDownEvent event) {
         DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
         if (designToolbar.currentView == DesignToolbar.View.DESIGNER && event.getNativeKeyCode() == 191
-                && !isTextboxFocused() && !event.isAltKeyDown()) {
+                && !shouldSuppressShortcuts() && !event.isAltKeyDown()) {
           {
             event.preventDefault();
             searchText.setFocus(true);
@@ -537,6 +537,14 @@ public abstract class AbstractPalettePanel<
     var element = $doc.activeElement;
     return element.tagName === 'INPUT' && element.type === 'text' || element.tagName === 'TEXTAREA';
   }-*/;
+
+  public native boolean isMenuOpen()/*-{
+    return $doc.querySelector('[aria-haspopup="menu"][aria-expanded="true"]') !== null;
+  }-*/;
+
+  public boolean shouldSuppressShortcuts() {
+    return isTextboxFocused() || isMenuOpen();
+  }
 
   private void requestRebuildList() {
     if (rebuild != null) {
