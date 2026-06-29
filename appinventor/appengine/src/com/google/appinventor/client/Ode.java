@@ -1166,7 +1166,7 @@ public class Ode implements EntryPoint {
     // TODO(ewpatton): This is for testing only and should be removed once we add a dialog
     List<ShortcutRegistry.KeyboardShortcut> shortcuts = ShortcutRegistry.getInstance().getKeyboardShortcuts();
     for (ShortcutRegistry.KeyboardShortcut shortcut : shortcuts) {
-      CLog("Shortcut: " + shortcut.getKeyCodes() + " -> " + shortcut.getDisplayText());
+      CLog("Shortcut: " + ShortcutRegistry.getShortcutKeys(shortcut.getKeyCodes().getString(0)) + " -> " + shortcut.getDisplayText());
     }
 
 
