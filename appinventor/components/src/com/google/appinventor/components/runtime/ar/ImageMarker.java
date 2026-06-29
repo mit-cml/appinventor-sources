@@ -251,6 +251,14 @@ public final class ImageMarker implements ARImageMarker {
     this.name = componentName;
   }
 
+  /* csb temp hack */
+  @SimpleProperty(
+      description = "The name of this ImageMarker component.",
+      category = PropertyCategory.APPEARANCE)
+  public void Name(String componentName) {
+    this.name = componentName;
+  }
+
   // -------------------------------------------------------------------------
   // Image property
   // -------------------------------------------------------------------------
