@@ -742,7 +742,7 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
       SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
     } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
-      PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
+      designProperties.focusFirstCategory();
     } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused()) {
       AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
     }
