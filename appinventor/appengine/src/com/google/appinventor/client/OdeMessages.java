@@ -1128,9 +1128,13 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Confirm cancel from ListData property editor without saving data.")
   String listDataConcelConfirm();
 
-  @DefaultMessage("Click to Add Row Data")
+  @DefaultMessage("Add an item")
   @Description("Button to add a new blank row in the ListData property editor")
   String listDataAddRowButton();
+
+  @DefaultMessage("{0} items")
+  @Description("Count of rows shown in the header of the ListData property editor")
+  String listDataItemCount(int count);
 
 
   // Used in boxes/ViewerBox.java
