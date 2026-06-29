@@ -130,6 +130,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.crypto.bouncycastle.digests.MD5Digest;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1161,6 +1162,13 @@ public class Ode implements EntryPoint {
         onClosing();
       }
     });
+
+    // TODO(ewpatton): This is for testing only and should be removed once we add a dialog
+    List<ShortcutRegistry.KeyboardShortcut> shortcuts = ShortcutRegistry.getInstance().getKeyboardShortcuts();
+    for (ShortcutRegistry.KeyboardShortcut shortcut : shortcuts) {
+      CLog("Shortcut: " + shortcut.getKeyCodes() + " -> " + shortcut.getDisplayText());
+    }
+
 
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());
