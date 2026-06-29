@@ -948,6 +948,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _arView.scene.removeAnchor(entity)
       }
       
+      self._imageMarkers.removeAll()
+      
 
     }
     
