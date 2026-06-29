@@ -244,9 +244,6 @@ public final class ImageMarker implements ARImageMarker {
   }
 
   @Override
-  @SimpleProperty(
-      description = "The name of this ImageMarker component.",
-      category = PropertyCategory.APPEARANCE)
   public void setComponentName(String componentName) {
     this.name = componentName;
   }
