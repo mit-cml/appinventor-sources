@@ -761,6 +761,20 @@ let HORIZONTAL_LAYOUT = 1
             cell.textLabel?.text = item["Text1"] as? String
             cell.detailTextLabel?.text = item["Text2"] as? String
             
+            // Both labels wrap inside their 50% half (matches the Designer mock).
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.lineBreakMode = .byWordWrapping
+            
+            cell.layoutMargins = UIEdgeInsets.zero
+            cell.separatorInset = UIEdgeInsets.zero
+            cell.preservesSuperviewLayoutMargins = true
+            
+            NSLayoutConstraint.activate([
+
+              cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+            ])
+            
           } else if _listViewLayoutMode == 2 {
             tableView.rowHeight = UITableView.automaticDimension
             tableView.estimatedRowHeight = 60
