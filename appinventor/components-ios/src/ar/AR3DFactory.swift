@@ -71,6 +71,12 @@ import UIKit
   func DistanceToPointLight(_ light: ARPointLight) -> Float
   func DistanceToDetectedPlane(_ detectedPlane: ARDetectedPlane) -> Float
 }
+
+@available(iOS 14.0, *)
+@objc public protocol BillboardCapable {
+  var IsBillboarding: Bool { get set }
+}
+
 @available(iOS 14.0, *)
 @objc public protocol FollowsMarker {
   var _followingMarker: ARImageMarker? { get }
@@ -168,6 +174,7 @@ public protocol HasCornerRadius {
   var HeightInCentimeters: Float { get set }
 }
 
+
 @available(iOS 14.0, *)
 public protocol ARBox: ARNode, HasCornerRadius, HasWidthInCentimeters, HasHeightInCentimeters {
   var LengthInCentimeters: Float { get set }
@@ -179,7 +186,7 @@ public protocol ARSphere: ARNode {
 }
 
 @available(iOS 14.0, *)
-public protocol ARPlane: ARNode, HasCornerRadius, HasWidthInCentimeters, HasHeightInCentimeters {}
+public protocol ARPlane: ARNode, HasCornerRadius, HasWidthInCentimeters, HasHeightInCentimeters, BillboardCapable {}
 
 @available(iOS 14.0, *)
 public protocol ARCylinder: ARNode, HasHeightInCentimeters {
@@ -222,7 +229,7 @@ public protocol ARText: ARNode {
 }
 
 @available(iOS 14.0, *)
-public protocol ARVideo: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
+public protocol ARVideo: ARNode, HasWidthInCentimeters, HasHeightInCentimeters, BillboardCapable {
   var Source: String { get set }
   var IsPlaying: Bool { get }
   var Volume: Int32 { get set }
@@ -235,7 +242,7 @@ public protocol ARVideo: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
 }
 
 @available(iOS 14.0, *)
-public protocol ARWebView: ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
+public protocol ARWebView: ARNode, HasWidthInCentimeters, HasHeightInCentimeters, BillboardCapable {
   var HomeUrl: String { get set }
   var isUserInteractionEnabled: Bool { get set }
 
@@ -294,6 +301,8 @@ public protocol ARModel: ARNode {
   var _referenceImage: ARReferenceImage? { get }
   var _isTracking: Bool { get set }
   
+  var Billboard: Bool { get set }
+  
   var anchorMatrix: simd_float4x4 { get set }   // Obj-C compatible
   @objc func attachNode(_ node: ARNodeBase)
   @objc func detachNode(_ node: ARNodeBase)
@@ -310,6 +319,8 @@ public protocol ARModel: ARNode {
   func NoLongerInView()
   func AppearedInView()
   func Reset()
+  
+  
 }
 
 // MARK: - Container Protocols

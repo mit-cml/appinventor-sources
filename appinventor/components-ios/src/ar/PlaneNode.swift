@@ -10,6 +10,8 @@ open class PlaneNode: ARNodeBase, ARPlane {
   private var _height: Float = 0.02 // stored in meters
   private var _cornerRadius: Float = 0.0 // stored in meters
   
+  private var _isBillboarding = false
+  
   @objc init(_ container: ARNodeContainer) {
     // Create initial plane mesh
     let mesh = MeshResource.generatePlane(width: _width, depth: _height)
@@ -51,6 +53,7 @@ open class PlaneNode: ARNodeBase, ARPlane {
     print("🔷 PlaneNode updatePlaneMesh ")
     print("   Current orientation: \(_modelEntity.orientation)")
   }
+
   
   override open func defaultCameraFacingOrientation() -> simd_quatf {
       return simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // Pitch -90°
@@ -83,6 +86,15 @@ open class PlaneNode: ARNodeBase, ARPlane {
     set(radius) {
       _cornerRadius = UnitHelper.centimetersToMeters(max(0, radius))
       updatePlaneMesh()
+    }
+  }
+  
+  @objc open var IsBillboarding: Bool {
+    get {
+      return _isBillboarding
+    }
+    set(BillboardMode) {
+      _isBillboarding = BillboardMode
     }
   }
 }

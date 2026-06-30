@@ -14,6 +14,7 @@ open class WebViewNode: ARNodeBase, ARWebView {
   private var _url: String = ""
   private var _width: Float = 0.5
   private var _height: Float = 0.25
+  private var _isBillboarding: Bool = false
   
   @objc init(_ container: ARNodeContainer) {
     // Create a plane mesh for the web view
@@ -191,6 +192,15 @@ open class WebViewNode: ARNodeBase, ARWebView {
           self.updateWebViewTexture()
         }
       }
+    }
+  }
+  
+  @objc open var IsBillboarding: Bool {
+    get {
+      return _isBillboarding
+    }
+    set(BillboardMode) {
+      _isBillboarding = BillboardMode
     }
   }
 }

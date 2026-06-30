@@ -53,6 +53,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     return []
   }
   
+  
+  
   // Updated data structures for RealityKit
   fileprivate var _nodeToAnchorDict: [ARNodeBase : AnchorEntity] = [:]
   fileprivate var _detectedPlanesDict: [ARAnchor: DetectedPlane] = [:]
@@ -268,6 +270,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     _showWireframes = false
     _showWorldOrigin = false
     _showFeaturePoints = false
+    
+    guard let device = MTLCreateSystemDefaultDevice() else {
+      print("❌ MTLCreateSystemDefaultDevice() returned nil")
+      return
+    }
+    guard let library = try? device.makeDefaultLibrary(bundle: Bundle(for: VideoNode.self)) else {
+      print("❌ makeDefaultLibrary(bundle:) returned nil")
+      return
+    }
+    print("✅ Metal device and library both loaded successfully")
 
     print("🏁 ARView3D init complete")
   }
@@ -1561,13 +1573,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if node is TextNode || node is VideoNode {
             node._modelEntity.orientation = simd_quatf(angle: -90, axis: [1,0,0])
           }
-          // CSB for now, we are billboarding during attachment
-          if marker._billboardNodes { // this doesn't do anything
+          
+        if marker._billboard, let value = node as? BillboardCapable {
              print("   💾 Restored local orientation for \(node.Name): \(localOffset.rotation)")
              
              // ✅ THEN apply camera-facing orientation (which will preserve the restored orientation)
              if let cameraTransform = _arView.cameraTransform as Optional {
-             //node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+             node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
              }
           }
    

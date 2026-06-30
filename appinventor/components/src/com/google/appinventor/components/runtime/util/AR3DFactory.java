@@ -13,6 +13,7 @@ import android.graphics.PointF;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.appinventor.components.runtime.ar.ImageMarker;
 import com.google.appinventor.components.runtime.ar.NearestPlaneFinder;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Plane;
@@ -252,7 +253,7 @@ public final class AR3DFactory {
     *
     * @author niclarke@mit.edu (Nichole I. Clarke)
     */
-   public interface ARPlane extends ARNode, HasWidthInCentimeters, HasHeightInCentimeters, HasCornerRadius {}
+   public interface ARPlane extends ARNode, HasWidthInCentimeters, HasHeightInCentimeters, HasCornerRadius, ImageMarker.BillboardCapable {}
 
    public interface ARCylinder  extends ARNode, HasHeightInCentimeters {
      float RadiusInCentimeters();
@@ -314,7 +315,7 @@ public final class AR3DFactory {
      void DepthInCentimeters(float depthInCentimeters);
    }
 
-   public interface ARVideo  extends ARNode, HasWidthInCentimeters, HasHeightInCentimeters {
+   public interface ARVideo  extends ARNode, HasWidthInCentimeters, HasHeightInCentimeters, ImageMarker.BillboardCapable {
      void Source(String source);
 
      boolean IsPlaying();

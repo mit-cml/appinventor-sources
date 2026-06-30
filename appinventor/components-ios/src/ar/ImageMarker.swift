@@ -9,6 +9,7 @@ import Combine
 
 @available(iOS 14.0, *)
 open class ImageMarker: NSObject, ARImageMarker {
+  
   public func pushUpdate(_ position: SIMD3<Float>, _ angles: SIMD3<Float>) {
     // nothing
   }
@@ -33,8 +34,12 @@ open class ImageMarker: NSObject, ARImageMarker {
   var _imageSet: Bool = false
   
   var _lastARAnchorId: UUID?
-  var _billboardNodes = false
+  var _billboard = false
   
+  open var Billboard:  Bool  {
+    get { _billboard }
+    set (newValue) { _billboard = newValue }
+  }
   
   // Override the protocol extension to provide actual storage
   open var Anchor: AnchorEntity? {
@@ -55,10 +60,7 @@ open class ImageMarker: NSObject, ARImageMarker {
     set { _anchorEntity!.transform.matrix = newValue }
   }
   
-  @objc open var billboardNodes: Bool {
-    get { _billboardNodes }
-    set (newValue) { _billboardNodes = newValue }
-  }
+
   
   @objc init(_ container: ARImageMarkerContainer) {
     _container = container

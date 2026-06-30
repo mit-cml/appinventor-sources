@@ -1135,6 +1135,8 @@ open class ARNodeBase: NSObject, ARNode {
   }
 
   /* csb will use at some point */
+  
+  
   func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
       let modelPosition = _modelEntity.position(relativeTo: nil)
       
