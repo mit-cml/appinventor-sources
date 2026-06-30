@@ -342,7 +342,7 @@ public final class ImageMarker implements ARImageMarker {
     // Propagate to any already-attached nodes that respect billboard mode.
     for (ARNode node : arNodes) {
       if (node instanceof BillboardCapable) {
-        ((BillboardCapable) node).setBillboard(bd);
+        ((BillboardCapable) node).Billboard(bd);
       }
     }
   }
@@ -487,6 +487,6 @@ public final class ImageMarker implements ARImageMarker {
    * {@link #Billboard(boolean)} can propagate the setting to already-attached nodes.
    */
   public interface BillboardCapable {
-    void setBillboard(boolean billboard);
+    void Billboard(boolean billboard);
   }
 }

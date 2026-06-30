@@ -264,4 +264,9 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
   public void HeightInCentimeters(float height) {
     heightInCentimeters=height;
   }
+
+  @Override
+  public void Billboard(boolean billboard) {
+
+  }
 }

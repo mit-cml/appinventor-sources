@@ -85,4 +85,9 @@ import com.google.ar.core.Trackable;
   @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void CornerRadius(float cornerRadius) {}
 
+
+  @Override
+  public void Billboard(boolean billboard) {
+
+  }
 }
