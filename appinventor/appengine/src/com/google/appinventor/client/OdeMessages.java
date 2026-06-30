@@ -756,6 +756,94 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Display the Shortcuts dialog")
   String showShortcuts();
 
+  @DefaultMessage("Keyboard Shortcuts")
+  @Description("Title of the keyboard shortcuts dialog")
+  String shortcutsDialogTitle();
+
+  @DefaultMessage("Reset All to Defaults")
+  @Description("Button that resets all keyboard shortcuts to their default bindings")
+  String shortcutsResetAllButton();
+
+  @DefaultMessage("Edit Shortcuts")
+  @Description("Button that enters keyboard shortcut editing mode")
+  String shortcutsEditButton();
+
+  @DefaultMessage("Done Editing")
+  @Description("Button label when keyboard shortcut editing mode is active")
+  String shortcutsEditDoneButton();
+
+  @DefaultMessage("Action")
+  @Description("Column header for the action name column in the keyboard shortcuts table")
+  String shortcutsColumnAction();
+
+  @DefaultMessage("Keys")
+  @Description("Column header for the key binding column in the keyboard shortcuts table")
+  String shortcutsColumnKeys();
+
+  @DefaultMessage("Press a key…")
+  @Description("Placeholder shown in the key column while waiting for the user to press a key")
+  String shortcutsPressKey();
+
+  @DefaultMessage("Focus Component search box")
+  @Description("Keyboard shortcut action: move focus to the component search box")
+  String shortcutFocusSearch();
+
+  @DefaultMessage("Focus Components tree")
+  @Description("Keyboard shortcut action: move focus to the components tree panel")
+  String shortcutFocusTree();
+
+  @DefaultMessage("Focus Viewer")
+  @Description("Keyboard shortcut action: move focus to the designer viewer")
+  String shortcutFocusViewer();
+
+  @DefaultMessage("Focus Properties Panel")
+  @Description("Keyboard shortcut action: move focus to the properties panel")
+  String shortcutFocusProperties();
+
+  @DefaultMessage("Focus Media Panel")
+  @Description("Keyboard shortcut action: move focus to the media panel")
+  String shortcutFocusMedia();
+
+  @DefaultMessage("Switch Designer / Blocks")
+  @Description("Keyboard shortcut action: toggle between the Designer and Blocks views")
+  String shortcutToggleView();
+
+  @DefaultMessage("Rename Component")
+  @Description("Keyboard shortcut action: rename the selected component")
+  String shortcutRenameComponent();
+
+  @DefaultMessage("Delete Component")
+  @Description("Keyboard shortcut action: delete the selected component")
+  String shortcutDeleteComponent();
+
+  @DefaultMessage("Reset Connection")
+  @Description("Keyboard shortcut action: reset the companion connection")
+  String shortcutResetConnection();
+
+  @DefaultMessage("Refresh Companion")
+  @Description("Keyboard shortcut action: refresh the companion app")
+  String shortcutRefreshCompanion();
+
+  @DefaultMessage("Navigate Components")
+  @Description("Keyboard shortcut action: navigate between components with arrow keys")
+  String shortcutNavigateComponents();
+
+  @DefaultMessage("Add a row in the ListView data editor")
+  @Description("Keyboard shortcut action: add a row in the ListView data editor")
+  String shortcutListViewAddRow();
+
+  @DefaultMessage("Navigate rows in the ListView data editor")
+  @Description("Keyboard shortcut action: navigate rows in the ListView data editor")
+  String shortcutListViewNavigateRows();
+
+  @DefaultMessage("Move to the next / previous field in the ListView data editor")
+  @Description("Keyboard shortcut action: move between fields in the ListView data editor")
+  String shortcutListViewNavigateFields();
+
+  @DefaultMessage("Open this dialog")
+  @Description("Keyboard shortcut action: open the keyboard shortcuts dialog")
+  String shortcutOpenDialog();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();

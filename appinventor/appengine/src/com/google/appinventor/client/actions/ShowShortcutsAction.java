@@ -9,17 +9,18 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.utils.ShortcutRegistry;
+import com.google.appinventor.client.widgets.TextButton;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Button;
 import com.google.appinventor.client.widgets.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,21 +47,21 @@ public class ShowShortcutsAction implements Command {
   static final List<ShortcutDef> SHORTCUTS = new ArrayList<>();
 
   static {
-    SHORTCUTS.add(new ShortcutDef("focus_search",        "Focus Component search box",      "191",              true));
-    SHORTCUTS.add(new ShortcutDef("focus_tree",          "Focus Components tree",           "84",               true));
-    SHORTCUTS.add(new ShortcutDef("focus_viewer",        "Focus Viewer",                    "86",               true));
-    SHORTCUTS.add(new ShortcutDef("focus_properties",    "Focus Properties Panel",          "80",               true));
-    SHORTCUTS.add(new ShortcutDef("focus_media",         "Focus Media Panel",               "77",               true));
-    SHORTCUTS.add(new ShortcutDef("toggle_view",         "Switch Designer / Blocks",        "Control+Alt",      false));
-    SHORTCUTS.add(new ShortcutDef("rename_component",    "Rename Component",                "Alt+78",           true));
-    SHORTCUTS.add(new ShortcutDef("delete_component",    "Delete Component",                "Delete/Backspace", false));
-    SHORTCUTS.add(new ShortcutDef("reset_connection",    "Reset Connection",                "Alt+Shift+82",     true));
-    SHORTCUTS.add(new ShortcutDef("refresh_companion",   "Refresh Companion",               "Alt+82",           true));
-    SHORTCUTS.add(new ShortcutDef("navigate_components", "Navigate Components",             "↑/↓",              false));
-    SHORTCUTS.add(new ShortcutDef("listview_add_row", "Add a row in the ListView data editor", "13", false));
-    SHORTCUTS.add(new ShortcutDef("listview_navigate_rows", "Navigate rows in the ListView data editor", "↑/↓", false));
-    SHORTCUTS.add(new ShortcutDef("listview_navigate_fields", "Move to the next / previous field in the ListView data editor", "Tab / Shift+Tab", false));
-    SHORTCUTS.add(new ShortcutDef("show_shortcuts",      "Open this dialog",               "Alt+191",          false));
+    SHORTCUTS.add(new ShortcutDef("focus_search",        MESSAGES.shortcutFocusSearch(),        "191",              true));
+    SHORTCUTS.add(new ShortcutDef("focus_tree",          MESSAGES.shortcutFocusTree(),           "84",               true));
+    SHORTCUTS.add(new ShortcutDef("focus_viewer",        MESSAGES.shortcutFocusViewer(),         "86",               true));
+    SHORTCUTS.add(new ShortcutDef("focus_properties",    MESSAGES.shortcutFocusProperties(),     "80",               true));
+    SHORTCUTS.add(new ShortcutDef("focus_media",         MESSAGES.shortcutFocusMedia(),          "77",               true));
+    SHORTCUTS.add(new ShortcutDef("toggle_view",         MESSAGES.shortcutToggleView(),          "Control+Alt",      false));
+    SHORTCUTS.add(new ShortcutDef("rename_component",    MESSAGES.shortcutRenameComponent(),     "Alt+78",           true));
+    SHORTCUTS.add(new ShortcutDef("delete_component",    MESSAGES.shortcutDeleteComponent(),     "Delete/Backspace", false));
+    SHORTCUTS.add(new ShortcutDef("reset_connection",    MESSAGES.shortcutResetConnection(),     "Alt+Shift+82",     true));
+    SHORTCUTS.add(new ShortcutDef("refresh_companion",   MESSAGES.shortcutRefreshCompanion(),    "Alt+82",           true));
+    SHORTCUTS.add(new ShortcutDef("navigate_components", MESSAGES.shortcutNavigateComponents(),  "↑/↓",              false));
+    SHORTCUTS.add(new ShortcutDef("listview_add_row", MESSAGES.shortcutListViewAddRow(), "13", false));
+    SHORTCUTS.add(new ShortcutDef("listview_navigate_rows", MESSAGES.shortcutListViewNavigateRows(), "↑/↓", false));
+    SHORTCUTS.add(new ShortcutDef("listview_navigate_fields", MESSAGES.shortcutListViewNavigateFields(), "Tab / Shift+Tab", false));
+    SHORTCUTS.add(new ShortcutDef("show_shortcuts",      MESSAGES.shortcutOpenDialog(),          "Alt+191",          false));
   }
 
   // Guard: Alt+/ handler is global; only the first instance should register it.
@@ -69,19 +70,26 @@ public class ShowShortcutsAction implements Command {
   private final DialogBox db;
   private FlexTable table;
   private Label[] keyLabels;   // one per SHORTCUTS row; updated in place, never replaced
-  private Button editButton;
-  private Button resetButton;
+  private TextButton editButton;
+  private TextButton resetButton;
   private boolean editMode = false;
   private ShortcutDef activeCapture = null;
   private HandlerRegistration captureHandler;
 
   public ShowShortcutsAction() {
     db = new DialogBox(true, false);
-    db.setText("Keyboard Shortcuts");
+    db.setText(MESSAGES.shortcutsDialogTitle());
     db.setStyleName("ode-DialogBox");
     db.setWidth("520px");
     db.setGlassEnabled(true);
     db.setAnimationEnabled(true);
+
+    // ARIA: outer element is the dialog landmark
+    db.getElement().setAttribute("role", "dialog");
+    db.getElement().setAttribute("aria-modal", "true");
+    db.getElement().setAttribute("aria-label", MESSAGES.shortcutsDialogTitle());
+    // GWT's DecoratedPopupPanel renders a 3x3 <table> for decoration; hide it from AT
+    db.getElement().getFirstChildElement().setAttribute("role", "presentation");
 
     if (!handlerRegistered) {
       handlerRegistered = true;
@@ -97,7 +105,7 @@ public class ShowShortcutsAction implements Command {
 
     table = buildTable();
 
-    editButton = new Button("Edit Shortcuts");
+    editButton = new TextButton(MESSAGES.shortcutsEditButton());
     editButton.addClickHandler(event -> {
       if (editMode) {
         exitEditMode();
@@ -106,7 +114,7 @@ public class ShowShortcutsAction implements Command {
       }
     });
 
-    resetButton = new Button("Reset All to Defaults");
+    resetButton = new TextButton(MESSAGES.shortcutsResetAllButton());
     resetButton.setEnabled(hasOverrides());
     resetButton.addClickHandler(event -> {
       cancelCapture();
@@ -118,21 +126,20 @@ public class ShowShortcutsAction implements Command {
       updateAllKeyCells();
     });
 
-    Button ok = new Button(MESSAGES.okButton());
+    TextButton ok = new TextButton(MESSAGES.okButton());
     ok.addClickHandler(event -> {
       cancelCapture();
       exitEditMode();
       db.hide();
     });
 
-    HorizontalPanel buttons = new HorizontalPanel();
-    buttons.setSpacing(4);
+    FlowPanel buttons = new FlowPanel();
+    buttons.addStyleName("ode-shortcut-buttons");
     buttons.add(resetButton);
     buttons.add(editButton);
     buttons.add(ok);
 
-    VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");
+    FlowPanel panel = new FlowPanel();
     panel.add(table);
     panel.add(buttons);
 
@@ -149,11 +156,12 @@ public class ShowShortcutsAction implements Command {
     t.setWidth("100%");
     t.getElement().getStyle().setProperty("tableLayout", "fixed");
 
-    t.setText(0, 0, "Action");
-    t.setText(0, 1, "Keys");
-    t.getCellFormatter().setWidth(0, 0, "70%");
-    t.getCellFormatter().setWidth(0, 1, "30%");
+    t.setText(0, 0, "");
+    t.setText(0, 1, "");
     t.getRowFormatter().addStyleName(0, "ode-table-header");
+    // FlexTable always creates <td>; replace with <th scope="col"> for accessibility
+    promoteToColumnHeader(t, 0, MESSAGES.shortcutsColumnAction(), "70%");
+    promoteToColumnHeader(t, 1, MESSAGES.shortcutsColumnKeys(),   "30%");
 
     keyLabels = new Label[SHORTCUTS.size()];
     for (int i = 0; i < SHORTCUTS.size(); i++) {
@@ -177,7 +185,7 @@ public class ShowShortcutsAction implements Command {
 
   private void enterEditMode() {
     editMode = true;
-    editButton.setText("Done Editing");
+    editButton.setText(MESSAGES.shortcutsEditDoneButton());
     updateAllKeyCells();
   }
 
@@ -186,7 +194,7 @@ public class ShowShortcutsAction implements Command {
     activeCapture = null;
     editMode = false;
     if (editButton != null) {
-      editButton.setText("Edit Shortcuts");
+      editButton.setText(MESSAGES.shortcutsEditButton());
     }
     updateAllKeyCells();
   }
@@ -203,12 +211,19 @@ public class ShowShortcutsAction implements Command {
   // Updates the label text and style for one row — never replaces the widget.
   private void updateKeyCell(ShortcutDef s, int row) {
     Label label = keyLabels[row - 1];
+    label.removeStyleName("ode-shortcut-capturing");
+    label.removeStyleName("ode-shortcut-editable");
+    label.removeStyleName("ode-shortcut-locked");
     if (s == activeCapture) {
-      label.setText("Press a key…");
-      label.setStyleName("ode-shortcut-capturing");
+      label.setText(MESSAGES.shortcutsPressKey());
+      label.addStyleName("ode-shortcut-capturing");
     } else {
       label.setText(toDisplayString(s.currentKey));
-      label.setStyleName(editMode && s.remappable ? "ode-shortcut-editable" : "");
+      if (editMode && s.remappable) {
+        label.addStyleName("ode-shortcut-editable");
+      } else if (editMode && !s.remappable) {
+        label.addStyleName("ode-shortcut-locked");
+      }
     }
   }
 
@@ -251,6 +266,16 @@ public class ShowShortcutsAction implements Command {
       captureHandler.removeHandler();
       captureHandler = null;
     }
+  }
+
+  // Replaces a FlexTable <td> in row 0 with a <th scope="col"> for accessibility.
+  private static void promoteToColumnHeader(FlexTable t, int col, String text, String width) {
+    Element th = Document.get().createElement("th");
+    th.setAttribute("scope", "col");
+    th.getStyle().setProperty("width", width);
+    th.setInnerText(text);
+    Element td = t.getCellFormatter().getElement(0, col);
+    td.getParentElement().replaceChild(th, td);
   }
 
   private static boolean hasOverrides() {
