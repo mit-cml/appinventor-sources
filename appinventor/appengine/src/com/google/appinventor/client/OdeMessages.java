@@ -5278,35 +5278,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String MaximumRangeMethods();
 
-  @DefaultMessage(
-    "<table border='1' cellpadding='8' cellspacing='0'>" +
-    "<thead>" +
-    "<tr>" +
-    "<th>Action</th>" +
-    "<th>Key Combination</th>" +
-    "</tr>" +
-    "</thead>" +
-    "<tbody>" +
-    "<tr><td>Focus Component search box</td><td>/</td></tr>" +
-    "<tr><td>Focus Components tree</td><td>T</td></tr>" +
-    "<tr><td>Focus Viewer</td><td>V</td></tr>" +
-    "<tr><td>Focus Properties Panel</td><td>P</td></tr>" +
-    "<tr><td>Focus Media Panel</td><td>M</td></tr>" +
-    "<tr><td>Switch between Designer and Block editor</td><td>Ctrl + Alt</td></tr>" +
-    "<tr><td>Rename Component</td><td>Alt + N</td></tr>" +
-    "<tr><td>Delete Component</td><td>Delete/Backspace</td></tr>" +
-    "<tr><td>Reset Connection</td><td>Alt + Shift + R</td></tr>" +
-    "<tr><td>Refresh Companion Screen</td><td>Alt + R</td></tr>" +
-    "<tr><td>Navigate Components in components tree</td><td>↑/↓</td></tr>" +
-    "<tr><td>Add a row in the ListView data editor</td><td>Enter</td></tr>" +
-    "<tr><td>Navigate rows in the ListView data editor</td><td>↑/↓</td></tr>" +
-    "<tr><td>Move to the next / previous field in the ListView data editor</td><td>Tab / Shift+Tab</td></tr>" +
-    "<tr><td>Open this dialog</td><td>Alt + ?</td></tr>" +
-    "</tbody>" +
-    "</table>")
-  @Description("")
-  String KeyBoardShortcuts();
-
   // =========== ListPicker
   @DefaultMessage("ItemTextColor")
   @Description("")
