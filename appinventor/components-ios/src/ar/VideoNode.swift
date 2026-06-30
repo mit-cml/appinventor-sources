@@ -38,6 +38,9 @@ open class VideoNode: ARNodeBase, ARVideo {
   private var _displayLink: CADisplayLink?
   private var _textureCache: CVMetalTextureCache?
   private var _metalDevice: MTLDevice?
+  
+  private var _sourceRetryCount = 0
+  private let _maxSourceRetries = 20  // 10 seconds total
 
   // Boxed so these can also stay outside the class's iOS 14 stored-property minimum.
   private var _drawableQueueBox: Any? = nil
@@ -104,6 +107,27 @@ open class VideoNode: ARNodeBase, ARVideo {
       updateVideoPlaneSize()
     }
   }
+  
+
+
+  private func retryLoadingSource(path: String, delay: TimeInterval = 0.5) {
+      guard _sourceRetryCount < _maxSourceRetries else {
+          print("❌ Gave up waiting for file: \(path)")
+          _sourceRetryCount = 0
+          _container?.form?.dispatchErrorOccurredEvent(
+              self,
+              "Source",
+              ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
+              ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message
+          )
+          return
+      }
+      _sourceRetryCount += 1
+      print("⏳ Retry \(_sourceRetryCount)/\(_maxSourceRetries) for: \(path)")
+      DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+          self?.loadVideoSource(path: path)
+      }
+  }
 
   private func updateVideoPlaneSize() {
     let mesh = MeshResource.generatePlane(width: _videoWidth, height: _videoHeight)
@@ -116,6 +140,8 @@ open class VideoNode: ARNodeBase, ARVideo {
       return ""
     }
     set(path) {
+      print("🎬 Source set called with path: \(path)")
+      _sourceRetryCount = 0
       loadVideoSource(path: path)
     }
   }
@@ -132,6 +158,8 @@ open class VideoNode: ARNodeBase, ARVideo {
   }
 
   private func loadVideoSource(path: String) {
+    
+    print("🔍 loadVideoSource — isHTTP: \(path.hasPrefix("http")), path: \(path)")
     if _isObservingStatus, let oldItem = _videoItem {
       oldItem.removeObserver(self, forKeyPath: "status")
       _isObservingStatus = false
@@ -174,13 +202,8 @@ open class VideoNode: ARNodeBase, ARVideo {
           return
         }
       } catch {
-        print("❌ Error checking video file: \(error)")
-        _container?.form?.dispatchErrorOccurredEvent(
-          self,
-          "Source",
-          ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.code,
-          ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA.message
-        )
+        print("⏳ Video file not ready yet, will retry: \(path)")
+        retryLoadingSource(path: path)
         return
       }
     }
@@ -241,6 +264,8 @@ open class VideoNode: ARNodeBase, ARVideo {
 
   @available(iOS 15.0, *)
   private func setupDrawableQueue(width: Int, height: Int) {
+    print("🎬 setupDrawableQueue called — _customMaterial is \(_customMaterialBox == nil ? "NIL ❌" : "set ✅")")
+        
     let descriptor = TextureResource.DrawableQueue.Descriptor(
       pixelFormat: .bgra8Unorm,
       width: width,
@@ -268,7 +293,8 @@ open class VideoNode: ARNodeBase, ARVideo {
           _modelEntity.model?.materials = [mat]
         }
       } else {
-        // Fallback on earlier versions
+        print("❌ Isn't ios18, fallback")
+        
       }
      
     } catch {
