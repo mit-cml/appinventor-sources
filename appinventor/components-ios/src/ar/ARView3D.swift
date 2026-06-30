@@ -1569,10 +1569,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           node._modelEntity.setParent(markerAnchor, preservingWorldTransform: false)
           //node._modelEntity.setOrientation(worldOrientation, relativeTo: nil)
           node._modelEntity.position = localOffset.translation
-          node._modelEntity.orientation = localOffset.rotation
-          if node is TextNode || node is VideoNode {
-            node._modelEntity.orientation = simd_quatf(angle: -90, axis: [1,0,0])
-          }
+          node._modelEntity.orientation = node.orientationForMarkerAttachment()
           
         if marker._billboard, let value = node as? BillboardCapable {
              print("   💾 Restored local orientation for \(node.Name): \(localOffset.rotation)")
@@ -1580,6 +1577,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
              // ✅ THEN apply camera-facing orientation (which will preserve the restored orientation)
              if let cameraTransform = _arView.cameraTransform as Optional {
              node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+               print("🎯 \(node.Name) orientationForMarkerAttachment: \(node.orientationForMarkerAttachment())")
+               print("🎯 \(node.Name) resulting world orientation: \(node._modelEntity.orientation(relativeTo: nil))")
              }
           }
    
@@ -2015,6 +2014,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         print("📦 Adding child \(node.Name) to anchor, modelEntity parent before: \(String(describing: node._modelEntity.parent))")
         anchorEntity.addChild(node._modelEntity)
         print("📦 modelEntity parent after: \(String(describing: node._modelEntity.parent))")
+        
+        if node.needsCameraFacingOrientationOnPlacement,
+           let cameraTransform = _arView.cameraTransform as Optional {
+            print("📐 Applying camera facing to \(node.Name)")
+            node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+        }
         
         _arView.scene.addAnchor(anchorEntity)
         print("✅ Anchor added to scene: \(anchorEntity.anchoring)")

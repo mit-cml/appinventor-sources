@@ -83,9 +83,18 @@ open class VideoNode: ARNodeBase, ARVideo {
     let mesh = MeshResource.generatePlane(width: _videoWidth, height: _videoHeight)
     _modelEntity.model = ModelComponent(mesh: mesh, materials: [])
 
-    // Rotate 180 degrees around Y axis to face the correct direction
-    _modelEntity.transform.rotation = simd_quatf(angle: .pi, axis: [0, 1, 0])
   }
+  
+  override open func orientationForMarkerAttachment() -> simd_quatf {
+      // ARKit image anchors have Y pointing out of the image surface toward the camera,
+      // so +90° X rotation stands the video upright from the marker plane.
+      // The additional 180° Y rotation cancels the pre-baked flip in setupVideoNode.
+      let standUpright = simd_quatf(angle: +.pi/2, axis: [1, 0, 0])
+      let cancelYFlip = simd_quatf(angle: .pi, axis: [0, 1, 0])
+      return standUpright * cancelYFlip
+  }
+  
+  override open var needsCameraFacingOrientationOnPlacement: Bool { return true }
 
   // MARK: Properties
   @objc open var WidthInCentimeters: Float {

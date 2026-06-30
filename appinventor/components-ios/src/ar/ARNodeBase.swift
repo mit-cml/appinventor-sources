@@ -1138,6 +1138,7 @@ open class ARNodeBase: NSObject, ARNode {
   
   
   func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
+
       let modelPosition = _modelEntity.position(relativeTo: nil)
       
       let dx = cameraPosition.x - modelPosition.x
@@ -1145,42 +1146,32 @@ open class ARNodeBase: NSObject, ARNode {
       let distance = sqrt(dx * dx + dz * dz)
       
       guard distance > 0.001 else { return }
-      
 
-    // ✅ Build right-handed orthonormal basis
-    let forward = normalize(SIMD3<Float>(dx, 0, dz))  // Towards camera (horizontal)
-    let worldUp = SIMD3<Float>(0, 1, 0)
-    let right = normalize(cross(forward, worldUp))    // ✅ Fixed order for right-handed system
-    let up = cross(right, forward)
-    
+      let forward = normalize(SIMD3<Float>(dx, 0, dz))
+      let worldUp = SIMD3<Float>(0, 1, 0)
+      let right = normalize(cross(forward, worldUp))
+      let up = cross(right, forward)
+
       let desiredWorldOrientation: simd_quatf
       if self is TextNode {
-
-          // Build rotation matrix from basis vectors
-        let matrix = simd_float3x3(
-                    right,    // Text X-axis
-                    forward,  // Text Y-axis (top points at camera)
-                    -up        // Text Z-axis (out of text points up)
-                )
+          let matrix = simd_float3x3(right, forward, -up)
           desiredWorldOrientation = simd_quatf(matrix)
       } else {
-          // Just face camera horizontally
-          let matrix = simd_float3x3(right, up, forward)
+          let matrix = simd_float3x3(right, up, -forward)
           desiredWorldOrientation = simd_quatf(matrix)
       }
       
-      // Convert to local space relative to marker anchor
       if let parent = _modelEntity.parent {
           let parentWorldQuat = parent.orientation(relativeTo: nil)
           let localOrientation = parentWorldQuat.inverse * desiredWorldOrientation
           _modelEntity.orientation = localOrientation
-          
-          print("📍 \(Name) - built from vectors (no tilt)")
-          print("📍 \(Name) - forward: \(forward), right: \(right), up: \(up)")
       } else {
           _modelEntity.setOrientation(desiredWorldOrientation, relativeTo: nil)
       }
+    print("📐applyCameraFacingOrientation forward: \(forward), right: \(right), up: \(up), parent: \(String(describing: _modelEntity.parent))")
+      print("🎯 applyCameraFacing result world orientation: \(desiredWorldOrientation)")
   }
+  
   
   @objc open func StopFollowingImageMarker() {
     _followingMarker?.removeNode(self)
@@ -1203,6 +1194,12 @@ open class ARNodeBase: NSObject, ARNode {
   @objc open func StoppedFollowingMarker() {
     EventDispatcher.dispatchEvent(of: self, called: "StoppedFollowingMarker")
   }
+  
+  open func orientationForMarkerAttachment() -> simd_quatf {
+      return simd_quatf(angle: .pi/2, axis: [1, 0, 0])  // default: stand upright from marker
+  }
+  
+  open var needsCameraFacingOrientationOnPlacement: Bool { return false }
 
   // MARK: - Lifecycle Methods
   

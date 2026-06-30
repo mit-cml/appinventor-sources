@@ -52,9 +52,19 @@ open class TextNode: ARNodeBase, ARText {
      
   }
   
+  /* csb maybe we do this similar to video node
+   override open func orientationForMarkerAttachment() -> simd_quatf {
+   // ARKit image anchor: Y points out of image toward camera
+   // We need to rotate so video faces camera and is right-side up
+   // -90° X to stand upright from marker, then 180° Y to flip from setupVideoNode
+   return simd_quatf(angle: .pi/2, axis: [1, 0, 0])
+}*/
+  
   override open func defaultCameraFacingOrientation() -> simd_quatf {
       return simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // Pitch -90°
   }
+  
+  override open var needsCameraFacingOrientationOnPlacement: Bool { return true }
   
   public func calculateTextBoundsNoScale() -> (width: Float, height: Float) {
     let font = UIFont.systemFont(ofSize: CGFloat(_fontSize))
