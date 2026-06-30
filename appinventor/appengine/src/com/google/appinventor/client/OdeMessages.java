@@ -844,6 +844,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Keyboard shortcut action: open the keyboard shortcuts dialog")
   String shortcutOpenDialog();
 
+  @DefaultMessage("Move Component Up")
+  @Description("Keyboard shortcut action: move the selected component up in the tree")
+  String shortcutMoveComponentUp();
+
+  @DefaultMessage("Move Component Down")
+  @Description("Keyboard shortcut action: move the selected component down in the tree")
+  String shortcutMoveComponentDown();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();

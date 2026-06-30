@@ -82,7 +82,7 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     U extends SimplePalettePanel, V extends ComponentDatabaseInterface,
     W extends SimpleVisibleComponentsPanel<T>>
     extends SimpleEditor implements DesignerChangeListener, ComponentDatabaseChangeListener,
-        PropertyChangeListener, KeyDownHandler {
+        PropertyChangeListener {
 
   protected static class FileContentHolder {
     private String content;
@@ -103,6 +103,8 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   public static final String EDITOR_TYPE = DesignerEditor.class.getSimpleName();
 
   private static final Logger LOG = Logger.getLogger(DesignerEditor.class.getName());
+
+  private static final int KEY_SLASH = 191;
 
   protected final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners
       = new ArrayList<>();
@@ -151,12 +153,87 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   protected final SimpleNonVisibleComponentsPanel<T> nonVisibleComponentsPanel;
 
   static {
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_search", MESSAGES.shortcutFocusSearch(), KEY_SLASH, null, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      // TODO
+      editor.palettePanel.focusSearchBox();
+      return true;
+    });
     ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_tree", MESSAGES.shortcutFocusTree(), KeyCodes.KEY_T, null, (editor) -> {
       if (editor.palettePanel.shouldSuppressShortcuts()) {
         return false;
       }
       SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
       return true;
+    });
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_viewer", MESSAGES.shortcutFocusViewer(), KeyCodes.KEY_V, null, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      editor.getVisibleComponentsPanel().focusCheckbox();
+      return true;
+    });
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_properties", MESSAGES.shortcutFocusProperties(), KeyCodes.KEY_P, null, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      editor.designProperties.focusFirstCategory();
+      return true;
+    });
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_media", MESSAGES.shortcutFocusMedia(), KeyCodes.KEY_M, null, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
+      return true;
+    });
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "move_component_up", MESSAGES.shortcutMoveComponentUp(), KeyCodes.KEY_UP, new int[] { KeyCodes.KEY_ALT }, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      MockComponent selectedComponent = editor.root.getLastSelectedComponent();
+      if (selectedComponent != null) {
+        MockContainer parent = selectedComponent.getContainer();
+        if (parent != null) {
+          // Snapshot sibling list before any mutation so indices are stable.
+          List<MockComponent> siblings = new ArrayList<>(parent.getChildren());
+          int posInParent = siblings.indexOf(selectedComponent);
+          SourceStructureExplorerItem source = selectedComponent.getSourceStructureExplorerItem();
+          if (posInParent > 0) {
+            MockComponent prev = siblings.get(posInParent - 1);
+            source.moveTo(prev.getSourceStructureExplorerItem(), -1);
+          } else if (!parent.isRoot()) {
+            source.moveTo(parent.getSourceStructureExplorerItem(), -1);
+          }
+          return true;
+        }
+      }
+      return false;
+    });
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "move_component_down", MESSAGES.shortcutMoveComponentDown(), KeyCodes.KEY_DOWN, new int[] { KeyCodes.KEY_ALT }, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      MockComponent selectedComponent = editor.root.getLastSelectedComponent();
+      if (selectedComponent != null) {
+        MockContainer parent = selectedComponent.getContainer();
+        if (parent != null) {
+          // Snapshot sibling list before any mutation so indices are stable.
+          List<MockComponent> siblings = new ArrayList<>(parent.getChildren());
+          int posInParent = siblings.indexOf(selectedComponent);
+          SourceStructureExplorerItem source = selectedComponent.getSourceStructureExplorerItem();
+          if (posInParent < siblings.size() - 1) {
+            MockComponent next = siblings.get(posInParent + 1);
+            source.moveTo(next.getSourceStructureExplorerItem(), 1);
+          } else if (!parent.isRoot()) {
+            source.moveTo(parent.getSourceStructureExplorerItem(), 1);
+          }
+          return true;
+        }
+      }
+      return false;
     });
   }
 
@@ -192,7 +269,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     initWidget(componentsPanel);
     setSize("100%", "100%");
     registerNativeListeners();
-    RootPanel.get().addDomHandler(this, KeyDownEvent.getType());
   }
 
   @Override
@@ -714,49 +790,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     }
 
     return mockComponent;
-  }
-
-  @Override
-  public void onKeyDown(KeyDownEvent event) {
-    if (!isActiveEditor()) {
-      return;  // Not the active editor
-    }
-    if (event.isAltKeyDown()) {
-      MockComponent selectedComponent = root.getLastSelectedComponent();
-      if (selectedComponent != null) {
-        MockContainer parent = selectedComponent.getContainer();
-        if (parent != null) {
-          // Snapshot sibling list before any mutation so indices are stable.
-          List<MockComponent> siblings = new ArrayList<>(parent.getChildren());
-          int posInParent = siblings.indexOf(selectedComponent);
-          SourceStructureExplorerItem source = selectedComponent.getSourceStructureExplorerItem();
-          switch (event.getNativeKeyCode()) {
-            case KeyCodes.KEY_DOWN:
-              if (posInParent < siblings.size() - 1) {
-                MockComponent next = siblings.get(posInParent + 1);
-                source.moveTo(next.getSourceStructureExplorerItem(), 1);
-              } else if (!parent.isRoot()) {
-                source.moveTo(parent.getSourceStructureExplorerItem(), 1);
-              }
-              break;
-            case KeyCodes.KEY_UP:
-              if (posInParent > 0) {
-                MockComponent prev = siblings.get(posInParent - 1);
-                source.moveTo(prev.getSourceStructureExplorerItem(), -1);
-              } else if (!parent.isRoot()) {
-                source.moveTo(parent.getSourceStructureExplorerItem(), -1);
-              }
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.shouldSuppressShortcuts()) {
-      designProperties.focusFirstCategory();
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.shouldSuppressShortcuts()) {
-      AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
-    }
   }
 
   /*
