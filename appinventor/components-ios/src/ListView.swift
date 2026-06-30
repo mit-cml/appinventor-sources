@@ -640,6 +640,7 @@ let HORIZONTAL_LAYOUT = 1
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
     _items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
+    elementsCount()
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
@@ -647,6 +648,7 @@ let HORIZONTAL_LAYOUT = 1
       return
     }
     _items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
+    elementsCount()
   }
 
   @objc open func AddItems(_ items: [AnyObject]) {
@@ -736,22 +738,25 @@ let HORIZONTAL_LAYOUT = 1
   // MARK: UITableViewDataSource
 
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-      let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
-      UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
+      let layoutReuseIdentifier = "\(kDefaultTableCell)\(_listViewLayoutMode)"
+      let cell = tableView.dequeueReusableCell(withIdentifier: layoutReuseIdentifier) ??
+        UITableViewCell(style: .subtitle, reuseIdentifier: layoutReuseIdentifier)
       let hasElements = _elements.count > 0
-      
-      let listDataIndex = indexPath.row - _items.count
       if _listViewLayoutMode == 0 { // assume only strings (no dicts]
         if hasElements {
           let item = _elements[indexPath.row]
-          cell.textLabel?.text = item as? String
-        } else{
+          cell.textLabel?.text = item
+          cell.detailTextLabel?.text = ""
+          // Simple text-only layout
+          tableView.rowHeight = UITableView.automaticDimension
+          tableView.estimatedRowHeight = 44
+        } else {
           let item = _items[indexPath.row]
           cell.textLabel?.text = item["Text1"] as? String
         }
-        
       } else {
         let item = _items[indexPath.row]
+        let listDataIndex = indexPath.row - _items.count
         if _listViewLayoutMode == 1 {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
@@ -770,14 +775,14 @@ let HORIZONTAL_LAYOUT = 1
           stackView.alignment = .fill
           stackView.distribution = .fill
           stackView.spacing = 8.0
-          
+
           // Add the labels to the stack view
           stackView.addArrangedSubview(cell.textLabel!)
           stackView.addArrangedSubview(cell.detailTextLabel!)
-          
+
           // Add the stack view to the cell's content view
           cell.contentView.addSubview(stackView)
-          
+
           // Set up constraints
           stackView.translatesAutoresizingMaskIntoConstraints = false
           NSLayoutConstraint.activate([
@@ -792,6 +797,11 @@ let HORIZONTAL_LAYOUT = 1
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
 
+          // Configure the layout
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
           // Create a stack view to hold the labels horizontally. Align by
           // first baseline so the labels' first text lines line up visually
           // regardless of font-size differences (top alignment makes the
@@ -802,7 +812,7 @@ let HORIZONTAL_LAYOUT = 1
           stackView.alignment = .firstBaseline
           stackView.distribution = .fillEqually
           stackView.spacing = 8.0
-          
+
           // Add the labels to the stack view
           stackView.addArrangedSubview(cell.textLabel!)
           stackView.addArrangedSubview(cell.detailTextLabel!)
@@ -823,32 +833,33 @@ let HORIZONTAL_LAYOUT = 1
           tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
-             let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
-            
+
             // Configure the layout
             cell.layoutMargins = UIEdgeInsets.zero
             cell.separatorInset = UIEdgeInsets.zero
             cell.preservesSuperviewLayoutMargins = true
-            
+
             // Create a stack view to hold the labels horizontally
             let stackView = UIStackView()
             stackView.axis = .horizontal
             stackView.alignment = .leading
             stackView.distribution = .fill
             stackView.spacing = 8.0
-            
+
             // Add the labels to the stack view
             stackView.addArrangedSubview(cell.imageView!)
             stackView.addArrangedSubview(cell.textLabel!)
-            
+
             // Add the stack view to the cell's content view
             cell.contentView.addSubview(stackView)
-            
+
             // Set up constraints
             stackView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
+
               stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
               stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
               stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
@@ -863,15 +874,15 @@ let HORIZONTAL_LAYOUT = 1
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
-             let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
-            
+
             // Configure the layout
             cell.layoutMargins = UIEdgeInsets.zero
             cell.separatorInset = UIEdgeInsets.zero
             cell.preservesSuperviewLayoutMargins = true
-            
+
             // Create a horizontal stack view to hold the imageView and a nested vertical stack view
             let horizontalStackView = UIStackView()
             horizontalStackView.axis = .horizontal
@@ -887,18 +898,18 @@ let HORIZONTAL_LAYOUT = 1
             verticalStackView.alignment = .fill
             verticalStackView.distribution = .fill
             verticalStackView.spacing = 8.0
-            
+
             // Add the imageView and nested vertical stack view to the horizontal stack view
             horizontalStackView.addArrangedSubview(cell.imageView!)
             horizontalStackView.addArrangedSubview(verticalStackView)
-            
+
             // Add the textLabel and detailTextLabel to the vertical stack view
             verticalStackView.addArrangedSubview(cell.textLabel!)
             verticalStackView.addArrangedSubview(cell.detailTextLabel!)
-            
+
             // Add the horizontal stack view to the cell's content view
             cell.contentView.addSubview(horizontalStackView)
-            
+
             // Set up constraints
             horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
@@ -916,15 +927,15 @@ let HORIZONTAL_LAYOUT = 1
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
-             let image = AssetManager.shared.imageFromPath(path: imagePath as! String) {
+             let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
-            
+
             // Configure the layout
             cell.layoutMargins = UIEdgeInsets.zero
             cell.separatorInset = UIEdgeInsets.zero
             cell.preservesSuperviewLayoutMargins = true
-            
+
             // Inner stack: labels with .fill so they span the full label-stack
             // width, making textAlignment visible regardless of text length.
             let labelsStackView = UIStackView()
@@ -943,10 +954,10 @@ let HORIZONTAL_LAYOUT = 1
             verticalStackView.spacing = 8.0
             verticalStackView.addArrangedSubview(cell.imageView!)
             verticalStackView.addArrangedSubview(labelsStackView)
-            
+
             // Add the outer stack to the cell's content view
             cell.contentView.addSubview(verticalStackView)
-            
+
             // Set up constraints. The labelsStackView width is pinned to the
             // outer stack so labels span full row width while the image stays
             // centered at its intrinsic / explicit size.
@@ -957,8 +968,7 @@ let HORIZONTAL_LAYOUT = 1
               verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
               cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
-              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4)),
-              labelsStackView.widthAnchor.constraint(equalTo: verticalStackView.widthAnchor)
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
             ])
           }
         } else {
@@ -1002,16 +1012,19 @@ let HORIZONTAL_LAYOUT = 1
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
 
-    (cell.backgroundView as? UIView)?.backgroundColor =
-          (_elementColor != Color.none.int32)
-          ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
-          : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
-
-    cell.backgroundColor =
-            ((_elementColor != Color.none.int32) && (_elementColor != Color.default.int32))
-            ? argbToColor(_elementColor)
-            : cell.backgroundColor
-
+    if _elementColor != Color.none.int32 {
+      // if elementColor at the table cell level, laid over backgroundColor
+      if _elementColor == Color.default.int32 {
+        cell.backgroundColor = preferredTextColor(form)
+        cell.backgroundView?.backgroundColor = preferredBackgroundColor(form)
+      } else {
+        cell.backgroundColor = argbToColor(_elementColor)
+        cell.backgroundView?.backgroundColor = argbToColor(_elementColor)
+      }
+    } else {
+      cell.backgroundColor = argbToColor(_backgroundColor)
+      cell.backgroundView?.backgroundColor = argbToColor(_backgroundColor)
+    }
     
     //maintext
     if _textColor == Color.default.int32 {
@@ -1041,10 +1054,6 @@ let HORIZONTAL_LAYOUT = 1
       cell.detailTextLabel?.font = UIFont(name: "Times New Roman", size: CGFloat(_fontSizeDetail))
     } else if _fontTypefaceDetail == "3" {
       cell.detailTextLabel?.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail))
-    }
-
-    if cell.selectedBackgroundView == nil {
-      cell.selectedBackgroundView = UIView()
     }
 
     let selectedBgView = UIView()
