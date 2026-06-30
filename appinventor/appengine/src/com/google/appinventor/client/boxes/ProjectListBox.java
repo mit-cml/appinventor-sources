@@ -30,16 +30,12 @@ public final class ProjectListBox extends Box {
 
   static {
     ShortcutRegistry.getInstance().registerViewShortcut(ProjectList.class, "select_all_projects",
-        MESSAGES.selectAllProjects(), KeyCodes.KEY_A, new int[] { ShortcutRegistry.getCtrlCmd() }, new Consumer<Widget>() {
-          @Override
-          public void accept(Widget widget) {
-            Ode.CLog("Selecting all");
-            ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
-            if (projectList == null) {
-              return;  // Nothing to do yet
-            }
-            projectList.selectAll();
+        MESSAGES.selectAllProjects(), KeyCodes.KEY_A, new int[] { ShortcutRegistry.getCtrlCmd() }, (projectList) -> {
+          if (projectList == null) {
+            return false;  // Nothing to do yet
           }
+          projectList.selectAll();
+          return true;
         });
   }
 

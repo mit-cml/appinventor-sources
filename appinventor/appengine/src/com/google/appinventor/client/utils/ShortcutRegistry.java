@@ -7,7 +7,6 @@ package com.google.appinventor.client.utils;
 
 import com.google.appinventor.client.Ode;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.dom.client.NativeEvent;
@@ -18,10 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import jsinterop.annotations.JsFunction;
-import jsinterop.annotations.JsIgnore;
-import jsinterop.annotations.JsOverlay;
-import jsinterop.annotations.JsType;
 
 public class ShortcutRegistry {
 
@@ -78,24 +75,26 @@ public class ShortcutRegistry {
   }
 
   private static final ShortcutRegistry instance = new ShortcutRegistry();
-  private final Map<Class<?>, Map<String, Consumer<Widget>>> registry =  new HashMap<Class<?>, Map<String, Consumer<Widget>>>();
+  private final Map<Class<?>, Map<String, Function<?, Boolean>>> registry =  new HashMap<Class<?>, Map<String, Function<?, Boolean>>>();
 
   public static ShortcutRegistry getInstance() {
     return instance;
   }
 
-  public void registerViewShortcut(Class<?> viewClass, String name, String displayName, int keyCode, int[] modifiers, Consumer<Widget> callback) {
-    Map<String, Consumer<Widget>> viewShortcuts = registry.get(viewClass);
+  public <T extends Widget> void registerViewShortcut(Class<T> viewClass, String name, String displayName, int keyCode,
+      int[] modifiers, Function<T, Boolean> callback) {
+    Map<String, Function<?, Boolean>> viewShortcuts = registry.get(viewClass);
     if (viewShortcuts == null) {
-      viewShortcuts = new HashMap<String, Consumer<Widget>>();
+      viewShortcuts = new HashMap<String, Function<?, Boolean>>();
       registry.put(viewClass, viewShortcuts);
     }
     viewShortcuts.put(createSerializedKey(keyCode, modifiers), callback);
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public void onKeyDown(Widget view, KeyDownEvent event) {
     Class<?> viewClass = view.getClass();
-    Map<String, Consumer<Widget>> viewShortcuts = null;
+    Map<String, Function<?, Boolean>> viewShortcuts = null;
     while (viewShortcuts == null && viewClass != Widget.class) {
       viewShortcuts = registry.get(viewClass);
       viewClass = viewClass.getSuperclass();
@@ -103,10 +102,12 @@ public class ShortcutRegistry {
     if (viewShortcuts != null) {
       String serializedKey = serializeKeyEvent(event.getNativeEvent());
       Ode.CLog("ShortcutRegistry onKeyDown: serializedKey = " + serializedKey);
-      Consumer<Widget> callback = viewShortcuts.get(serializedKey);
+      Function callback = viewShortcuts.get(serializedKey);
       if (callback != null) {
-        callback.accept(view);
-        event.preventDefault();
+        Boolean result = (Boolean) callback.apply(view);
+        if (result != null && result) {
+          event.preventDefault();
+        }
       }
     }
   }

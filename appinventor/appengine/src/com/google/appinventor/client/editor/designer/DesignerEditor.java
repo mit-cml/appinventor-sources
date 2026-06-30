@@ -35,6 +35,7 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.ShortcutRegistry;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.EditableProperty;
@@ -148,6 +149,16 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   // UI elements
   protected final W visibleComponentsPanel;
   protected final SimpleNonVisibleComponentsPanel<T> nonVisibleComponentsPanel;
+
+  static {
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_tree", MESSAGES.shortcutFocusTree(), KeyCodes.KEY_T, null, (editor) -> {
+      if (editor.palettePanel.shouldSuppressShortcuts()) {
+        return false;
+      }
+      SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
+      return true;
+    });
+  }
 
   public DesignerEditor(ProjectEditor projectEditor, S sourceNode,
                         V componentDatabase,
@@ -741,8 +752,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
           }
         }
       }
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.shouldSuppressShortcuts()) {
-      SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
     } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.shouldSuppressShortcuts()) {
       designProperties.focusFirstCategory();
     } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.shouldSuppressShortcuts()) {
