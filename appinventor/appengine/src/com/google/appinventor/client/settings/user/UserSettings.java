@@ -40,6 +40,7 @@ public final class UserSettings extends CommonSettings
     addSettings(SettingsConstants.USER_YOUNG_ANDROID_SETTINGS, new YoungAndroidSettings(user));
     addSettings(SettingsConstants.SPLASH_SETTINGS, new SplashSettings(user));
     addSettings(SettingsConstants.BLOCKS_SETTINGS, new BlocksSettings(user));
+    addSettings(SettingsConstants.SHORTCUTS_SETTINGS, new ShortcutSettings(user));
   }
 
   // SettingsAccessProvider implementation

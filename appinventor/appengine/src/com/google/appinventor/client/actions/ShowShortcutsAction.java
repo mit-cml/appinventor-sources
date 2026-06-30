@@ -23,7 +23,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ShowShortcutsAction implements Command {
 
@@ -61,11 +63,14 @@ public class ShowShortcutsAction implements Command {
     SHORTCUTS.add(new ShortcutDef("listview_add_row", MESSAGES.shortcutListViewAddRow(), "13", false));
     SHORTCUTS.add(new ShortcutDef("listview_navigate_rows", MESSAGES.shortcutListViewNavigateRows(), "↑/↓", false));
     SHORTCUTS.add(new ShortcutDef("listview_navigate_fields", MESSAGES.shortcutListViewNavigateFields(), "Tab / Shift+Tab", false));
-    SHORTCUTS.add(new ShortcutDef("show_shortcuts",      MESSAGES.shortcutOpenDialog(),          "Alt+191",          false));
+    SHORTCUTS.add(new ShortcutDef("show_shortcuts",      MESSAGES.shortcutOpenDialog(),          "Alt+Shift+191",    false));
   }
 
-  // Guard: Alt+/ handler is global; only the first instance should register it.
+  // Guard: Alt+shift+/ handler is global; only the first instance should register it.
   private static boolean handlerRegistered = false;
+
+  // Guard: only seed SHORTCUTS with persisted overrides once per page load.
+  private static boolean overridesSeeded = false;
 
   private final DialogBox db;
   private FlexTable table;
@@ -91,9 +96,27 @@ public class ShowShortcutsAction implements Command {
     // GWT's DecoratedPopupPanel renders a 3x3 <table> for decoration; hide it from AT
     db.getElement().getFirstChildElement().setAttribute("role", "presentation");
 
+    if (!overridesSeeded) {
+      overridesSeeded = true;
+      seedOverrides();
+    }
+
     if (!handlerRegistered) {
       handlerRegistered = true;
       registerGlobalHandler();
+    }
+  }
+
+  // Applies any previously persisted key overrides onto SHORTCUTS' currentKey
+  // fields. Read-only seeding for display/diffing purposes; does not wire the
+  // restored keys into actual shortcut dispatch.
+  private static void seedOverrides() {
+    Map<String, String> overrides = ShortcutRegistry.getInstance().loadKeyOverrides();
+    for (ShortcutDef s : SHORTCUTS) {
+      String override = overrides.get(s.actionId);
+      if (override != null) {
+        s.currentKey = override;
+      }
     }
   }
 
@@ -130,6 +153,7 @@ public class ShowShortcutsAction implements Command {
     ok.addClickHandler(event -> {
       cancelCapture();
       exitEditMode();
+      saveOverrides();
       db.hide();
     });
 
@@ -285,6 +309,17 @@ public class ShowShortcutsAction implements Command {
       }
     }
     return false;
+  }
+
+  // Persists every shortcut whose currentKey differs from its defaultKey.
+  private static void saveOverrides() {
+    Map<String, String> overrides = new HashMap<>();
+    for (ShortcutDef s : SHORTCUTS) {
+      if (!s.currentKey.equals(s.defaultKey)) {
+        overrides.put(s.actionId, s.currentKey);
+      }
+    }
+    ShortcutRegistry.getInstance().saveKeyOverrides(overrides);
   }
 
   // Converts a Blockly-style serialized key string to a human-readable label.

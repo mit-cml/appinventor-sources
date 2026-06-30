@@ -88,4 +88,10 @@ public class SettingsConstants {
   public static final String BLOCKS_SETTINGS = "BlocksSettings";
   public static final String GRID_ENABLED = "Grid";
   public static final String SNAP_ENABLED = "Snap";
+
+  /**
+   * Keyboard shortcut settings.
+   */
+  public static final String SHORTCUTS_SETTINGS = "ShortcutsSettings";
+  public static final String SHORTCUTS_KEY_MAP = "ShortcutKeyMap";
 }

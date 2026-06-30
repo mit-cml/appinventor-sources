@@ -6,17 +6,20 @@
 package com.google.appinventor.client.utils;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import jsinterop.annotations.JsFunction;
 
@@ -110,6 +113,44 @@ public class ShortcutRegistry {
         }
       }
     }
+  }
+
+  /**
+   * Loads the user's persisted keyboard shortcut overrides.
+   *
+   * @return a map of actionId to serialized key string for every shortcut the
+   *     user has remapped from its default. Empty if the user has no overrides.
+   */
+  public Map<String, String> loadKeyOverrides() {
+    Map<String, String> overrides = new HashMap<String, String>();
+    String json = Ode.getUserSettings()
+        .getSettings(SettingsConstants.SHORTCUTS_SETTINGS)
+        .getPropertyValue(SettingsConstants.SHORTCUTS_KEY_MAP);
+    if (json == null || json.isEmpty()) {
+      return overrides;
+    }
+    JSONObject obj = JSONParser.parse(json).isObject();
+    for (String actionId : obj.keySet()) {
+      overrides.put(actionId, obj.get(actionId).isString().stringValue());
+    }
+    return overrides;
+  }
+
+  /**
+   * Persists the user's keyboard shortcut overrides.
+   *
+   * @param overrides a map of actionId to serialized key string for every
+   *     shortcut the user has remapped from its default
+   */
+  public void saveKeyOverrides(Map<String, String> overrides) {
+    JSONObject obj = new JSONObject();
+    for (Map.Entry<String, String> entry : overrides.entrySet()) {
+      obj.put(entry.getKey(), new JSONString(entry.getValue()));
+    }
+    Ode.getUserSettings()
+        .getSettings(SettingsConstants.SHORTCUTS_SETTINGS)
+        .changePropertyValue(SettingsConstants.SHORTCUTS_KEY_MAP, obj.toString());
+    Ode.getUserSettings().saveSettings(null);
   }
 
   public static native int getCtrlCmd()/*-{
