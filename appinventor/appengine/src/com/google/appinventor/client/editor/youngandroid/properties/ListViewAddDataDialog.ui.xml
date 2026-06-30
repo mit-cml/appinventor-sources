@@ -6,21 +6,24 @@
     xmlns:g="urn:import:com.google.gwt.user.client.ui"
     xmlns:wiz="urn:import:com.google.appinventor.client.wizards">
 
+  <!-- The standard (draggable) caption bar is kept as the header; "lie-dialog" only lets Ya.css
+       right-align the item count inside it. -->
   <wiz:Dialog ui:field="dialogBox" role="dialog" ariaModal="true"
-              styleName="ode-DialogBox">
-    <g:VerticalPanel>
+              styleName="ode-DialogBox" addStyleNames="lie-dialog">
+    <g:FlowPanel>
       <g:Button ui:field="topInvisible" styleName="FocusTrap" tabIndex="-1"/>
 
-      <g:HorizontalPanel ui:field="headerRow"/>
-      <g:FlowPanel ui:field="rowsContainer"/>
-      <g:Button ui:field="addRow"/>
+      <g:FlowPanel styleName="lie-body">
+        <g:FlowPanel ui:field="rowsContainer"/>
+        <g:Button ui:field="addRow" styleName="lie-add"/>
+      </g:FlowPanel>
 
-      <g:HorizontalPanel horizontalAlignment="ALIGN_CENTER">
-        <g:Button ui:field="save"/>
-        <g:Button ui:field="cancel"/>
-      </g:HorizontalPanel>
+      <g:FlowPanel styleName="lie-foot">
+        <g:Button ui:field="cancel" styleName="lie-btn" addStyleNames="lie-btn-ghost"/>
+        <g:Button ui:field="save" styleName="lie-btn" addStyleNames="lie-btn-primary"/>
+      </g:FlowPanel>
 
       <g:Button ui:field="bottomInvisible" styleName="FocusTrap" tabIndex="-1"/>
-    </g:VerticalPanel>
+    </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>

@@ -18,9 +18,9 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 
-import com.google.gwt.core.client.GWT;
+import com.google.appinventor.shared.storage.StorageUtil;
 
-import com.google.gwt.dom.client.Style;
+import com.google.gwt.core.client.GWT;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -29,6 +29,8 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -44,7 +46,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The "Click to Add/Delete Data" dialog for the ListView ListData property.
@@ -67,7 +71,6 @@ public class ListViewAddDataDialog {
       GWT.create(ListViewAddDataDialogUiBinder.class);
 
   @UiField Dialog dialogBox;
-  @UiField HorizontalPanel headerRow;
   @UiField FlowPanel rowsContainer;
   @UiField Button addRow;
   @UiField Button save;
@@ -82,28 +85,51 @@ public class ListViewAddDataDialog {
   private final boolean showDetail;
   private final boolean showImage;
 
-  /* Asset names (incl. "None") used to populate each row's image picker. */
+  /* Asset names (incl. "None") offered by each row's image picker. */
   private final List<String> imageChoices;
+
+  /* Map from asset name to a previewable URL (no entry for "None"). */
+  private final Map<String, String> imageUrls;
 
   ListViewAddDataDialog(YoungAndroidListViewAddDataPropertyEditor owner, int layout) {
     this.owner = owner;
     this.layout = layout;
     this.showDetail = layoutHasDetail(layout);
     this.showImage = layoutHasImage(layout);
-    this.imageChoices = buildImageChoices();
+    this.imageUrls = new HashMap<String, String>();
+    this.imageChoices = buildImageChoices(imageUrls);
     UI_BINDER.createAndBindUi(this);
 
-    dialogBox.setCaption(MESSAGES.listDataAddDataTitle());
     dialogBox.setAriaLabel(MESSAGES.listDataAddDataTitle());
     addRow.setText(MESSAGES.listDataAddRowButton());
     save.setText(MESSAGES.saveButton());
     cancel.setText(MESSAGES.cancelButton());
 
-    buildHeader();
-
     for (JSONObject item : owner.getItems()) {
-      rowsContainer.add(new ListViewDataRow(item, showDetail, showImage, imageChoices));
+      rowsContainer.add(newRow(item));
     }
+    updateCount();
+  }
+
+  /** Creates a data row wired to refresh the item count when it deletes itself. */
+  private ListViewDataRow newRow(JSONObject item) {
+    return new ListViewDataRow(item, showDetail, showImage, imageChoices, imageUrls,
+        new Runnable() {
+          @Override
+          public void run() {
+            updateCount();
+          }
+        });
+  }
+
+  /** Renders the title plus the live item count into the draggable caption bar. */
+  private void updateCount() {
+    String html = "<span class=\"lie-cap-title\">"
+        + SafeHtmlUtils.htmlEscape(MESSAGES.listDataAddDataTitle())
+        + "</span><span class=\"lie-cap-count\">"
+        + SafeHtmlUtils.htmlEscape(MESSAGES.listDataItemCount(rowsContainer.getWidgetCount()))
+        + "</span>";
+    dialogBox.getCaption().setHTML(SafeHtmlUtils.fromTrustedString(html));
   }
 
   /** Centers and shows the dialog. */
@@ -126,8 +152,11 @@ public class ListViewAddDataDialog {
         || layout == ComponentConstants.LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT;
   }
 
-  /** Builds the list of selectable image assets ("None" plus every project asset). */
-  private List<String> buildImageChoices() {
+  /**
+   * Builds the list of selectable image assets ("None" plus every project asset) and fills
+   * {@code urls} with a previewable URL per asset name.
+   */
+  private List<String> buildImageChoices(Map<String, String> urls) {
     Project project = Ode.getInstance().getProjectManager()
         .getProject(owner.getSimpleEditor().getProjectId());
     YoungAndroidAssetsFolder assetsFolder =
@@ -137,34 +166,10 @@ public class ListViewAddDataDialog {
     if (assetsFolder != null) {
       for (ProjectNode node : assetsFolder.getChildren()) {
         choices.add(node.getName());
+        urls.put(node.getName(), StorageUtil.getFileUrl(node.getProjectId(), node.getFileId()));
       }
     }
     return choices;
-  }
-
-  /** Adds the column headers that match the visible fields for the current layout. */
-  private void buildHeader() {
-    headerRow.add(makeHeaderLabel(MESSAGES.listDataMainTextHeader(), ListViewDataRow.COLUMN_TEXT_WIDTH));
-    if (showDetail) {
-      headerRow.add(
-          makeHeaderLabel(MESSAGES.listDataDetailTextHeader(), ListViewDataRow.COLUMN_TEXT_WIDTH));
-    }
-    if (showImage) {
-      headerRow.add(makeHeaderLabel(MESSAGES.listDataImageHeader(), ListViewDataRow.COLUMN_IMAGE_WIDTH));
-    }
-  }
-
-  /** Creates a header label whose width matches the row field below it so the columns line up. */
-  private static Label makeHeaderLabel(String text, String width) {
-    Label label = new Label(text);
-    label.setWidth(width);
-    // Match the row field's box model so the header lines up: border-box width, no extra left
-    // padding from the dialog stylesheet, and the same right margin the fields use as the gap.
-    Style style = label.getElement().getStyle();
-    style.setProperty("boxSizing", "border-box");
-    style.setPaddingLeft(0, Style.Unit.PX);
-    style.setMarginRight(8, Style.Unit.PX);
-    return label;
   }
 
   @UiHandler("addRow")
@@ -178,7 +183,8 @@ public class ListViewAddDataDialog {
     if (showImage) {
       data.put("Image", new JSONString("None"));
     }
-    rowsContainer.add(new ListViewDataRow(data, showDetail, showImage, imageChoices));
+    rowsContainer.add(newRow(data));
+    updateCount();
   }
 
   @UiHandler("save")
@@ -232,7 +238,7 @@ public class ListViewAddDataDialog {
    */
   @UiHandler("topInvisible")
   void focusLast(FocusEvent event) {
-    cancel.setFocus(true);
+    save.setFocus(true);
   }
 
   @UiHandler("bottomInvisible")
