@@ -128,7 +128,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String GallerySendingError();
 
   @DefaultMessage("This project contains extensions and cannot be published to gallery.")
-  @Description("Error Message for displaying error when user tries to publish the project" + 
+  @Description("Error Message for displaying error when user tries to publish the project" +
     "containing extensions")
   String ProjectContainsExtensions();
 
@@ -148,7 +148,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 
-  @DefaultMessage("Upload File ...")
+  @DefaultMessage("Upload File...")
   @Description("Text on \"Add...\" button")
   String addButton();
 
@@ -707,6 +707,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Refresh the companion screen.")
   String refreshCompanionMenuItem();
 
+  @DefaultMessage("Save Project to Companion")
+  @Description("Save the current project to the connected Companion")
+  String saveProjectToCompanionMenuItem();
+
   //Build
   @DefaultMessage("Build")
   @Description("Label of the button leading to build related cascade items")
@@ -965,6 +969,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for asset list box.")
   String assetListBoxCaption();
 
+  @DefaultMessage("Media")
+  @Description("ARIA label for media/asset list region landmark.")
+  String assetListAriaLabel();
+
   // Used in boxes/MessagesOutputBox.java
 
   @DefaultMessage("Messages")
@@ -983,11 +991,39 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for palette box.")
   String paletteBoxCaption();
 
+  @DefaultMessage("Component Palette")
+  @Description("ARIA label for palette region landmark.")
+  String paletteAriaLabel();
+
+  @DefaultMessage("Search components")
+  @Description("ARIA label for palette search box.")
+  String paletteSearchAriaLabel();
+
+  @DefaultMessage("Search results")
+  @Description("ARIA label for palette search results list.")
+  String paletteSearchResultsAriaLabel();
+
   // Used in boxes/ProjectListBox.java
 
   @DefaultMessage("Projects")
   @Description("Caption for project list box.")
   String projectListBoxCaption();
+
+  @DefaultMessage("Project List")
+  @Description("ARIA label for project list region landmark.")
+  String projectListAriaLabel();
+
+  @DefaultMessage("Sort by project name")
+  @Description("ARIA label for project name column header.")
+  String projectNameColumnAriaLabel();
+
+  @DefaultMessage("Sort by date created")
+  @Description("ARIA label for date created column header.")
+  String projectDateCreatedColumnAriaLabel();
+
+  @DefaultMessage("Sort by date modified")
+  @Description("ARIA label for date modified column header.")
+  String projectDateModifiedColumnAriaLabel();
 
   // Used in boxes/TrashProjectListBox.java
 
@@ -1000,6 +1036,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Properties")
   @Description("Caption for properties box.")
   String propertiesBoxCaption();
+
+  @DefaultMessage("Properties Panel")
+  @Description("ARIA label for properties region landmark.")
+  String propertiesAriaLabel();
 
   // Used in boxes/SourceStructureBox.java
 
@@ -1019,6 +1059,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for source structure box.")
   String sourceStructureBoxCaptionNonVisible();
 
+  @DefaultMessage("Source Tree")
+  @Description("ARIA label for source structure/component tree region landmark.")
+  String sourceStructureAriaLabel();
+
   @DefaultMessage("{0} components selected")
   @Description("Component multi-select caption.")
   String componentsSelected(int componentCount);
@@ -1035,6 +1079,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Caption for block selector box.")
   String blockSelectorBoxCaption();
 
+  @DefaultMessage("Blocks")
+  @Description("ARIA label for blocks selector region landmark.")
+  String blockSelectorAriaLabel();
+
   @DefaultMessage("Built-in")
   @Description("Label on built-in-blocks branch of block selector tree")
   String builtinBlocksLabel();
@@ -1046,6 +1094,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Logic")
   @Description("Label on built-in-Logic-blocks branch of block selector tree")
   String builtinLogicLabel();
+
+  @DefaultMessage("Matrices")
+  @Description("Label on built-in-Matrices-blocks branch of block selector tree")
+  String builtinMatricesLabel();
 
   @DefaultMessage("Text")
   @Description("Label on built-in-Text-blocks branch of block selector tree")
@@ -1070,6 +1122,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Procedures")
   @Description("Label on built-in-Procedures-blocks branch of block selector tree")
   String builtinProceduresLabel();
+
+  @DefaultMessage("More...")
+  @Description("Label on nested branch for additional built-in blocks")
+  String builtinMoreLabel();
 
   @DefaultMessage("Any component")
   @Description("Label on any-component branch of block selector tree")
@@ -1101,12 +1157,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Confirm cancel from ListData property editor without saving data.")
   String listDataConcelConfirm();
 
+  @DefaultMessage("Click to Add Row Data")
+  @Description("Button to add a new blank row in the ListData property editor")
+  String listDataAddRowButton();
+
 
   // Used in boxes/ViewerBox.java
 
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
+
+  @DefaultMessage("Designer Viewer")
+  @Description("ARIA label for viewer/design canvas region landmark.")
+  String viewerAriaLabel();
 
   // Used in SaveAllEditorsCommand.java
 
@@ -2046,7 +2110,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   // Used in wizards/FileUploadWizard.java
 
-  @DefaultMessage("Upload File ...")
+  @DefaultMessage("Upload File...")
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
@@ -5820,7 +5884,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Mark Origin")
   @Description("")
   String markOriginButton();
-  
+
   @DefaultMessage("Place the Marker on the Origin")
   @Description("Caption for Mark Origin Wizard")
   String markOriginWizardCaption();
@@ -5828,10 +5892,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Set an image before attempting to Mark its Origin")
   @Description("Message to display when Mark Origin is attempted before an image is set")
   String provideImageFirst();
-
-  @DefaultMessage("You can always change your user interface under the Settings menu.")
-  @Description("Dialog to introduce users to new UI. Shown once to each user.")
-  String selectUIStyle();
 
   @DefaultMessage("Integer")
   @Description("Set x-axis label values as Integers")
@@ -5852,4 +5912,19 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("Welcome to App Inventor Neo! If you are looking for the classic App Inventor look, you can switch in the User Interface Settings, or <a href=\"\">click here</a>.")
   @Description("Message shown in the info popup when the user first opens the Neo UI.")
   String neoWelcomeMessage();
+
+  @DefaultMessage("On change (0 ms)")
+  String timeIntervalOnChange();
+
+  @DefaultMessage("30 seconds")
+  String timeInterval30Seconds();
+
+  @DefaultMessage("1 minute")
+  String timeInterval1Minute();
+
+  @DefaultMessage("5 minutes")
+  String timeInterval5Minutes();
+
+  @DefaultMessage("10 minutes")
+  String timeInterval10Minutes();
 }

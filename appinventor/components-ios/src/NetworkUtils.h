@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NetworkUtils : NSObject
+@interface MAINetworkUtils : NSObject
 
 + (NSString * _Nonnull) getIPAddress;
 

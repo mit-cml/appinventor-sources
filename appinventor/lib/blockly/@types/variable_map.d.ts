@@ -54,7 +54,7 @@ export declare class VariableMap {
      * @param newName New variable name.
      * @param blocks The list of all blocks in the workspace.
      */
-    private renameVariableAndUses_;
+    private renameVariableAndUses;
     /**
      * Update the name of the given variable to the same name as an existing
      * variable.  The two variables are coalesced into a single variable with the
@@ -66,7 +66,7 @@ export declare class VariableMap {
      * @param conflictVar The variable that was already using newName.
      * @param blocks The list of all blocks in the workspace.
      */
-    private renameVariableWithConflict_;
+    private renameVariableWithConflict;
     /**
      * Create a variable with a given name, optional type, and optional ID.
      *

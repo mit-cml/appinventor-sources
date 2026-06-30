@@ -13,6 +13,7 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData.PWData;
+import com.google.appinventor.server.storage.StoredData.ProjectNotFoundException;
 
 import com.google.appinventor.server.tokens.Token;
 import com.google.appinventor.server.tokens.TokenException;
@@ -44,6 +45,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -124,6 +126,7 @@ public class LoginServlet extends HttpServlet {
     String redirect = params.get("redirect");
     String autoload = params.get("autoload");
     String newGalleryId = params.get("ng");
+    String uiPreference = params.get("ui");
 
     if (DEBUG) {
       LOG.info("locale = " + locale + " bundle: " + new Locale(locale));
@@ -178,6 +181,7 @@ public class LoginServlet extends HttpServlet {
         .add("repo", repo)
         .add("autoload", autoload)
         .add("ng", newGalleryId)
+        .add("ui", uiPreference)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);
       return;
@@ -190,6 +194,7 @@ public class LoginServlet extends HttpServlet {
           .add("ng", newGalleryId)
           .add("galleryId", galleryId)
           .add("autoload", autoload)
+          .add("ui", uiPreference)
           .add("redirect", redirect).build();
         resp.sendRedirect(uri);
         return;
@@ -210,6 +215,7 @@ public class LoginServlet extends HttpServlet {
               .add("ng", newGalleryId)
               .add("galleryId", galleryId)
               .add("autoload", autoload)
+              .add("ui", uiPreference)
               .add("redirect", redirect).build();
             resp.sendRedirect(uri);
             return;
@@ -269,7 +275,7 @@ public class LoginServlet extends HttpServlet {
       out.println("<input type=submit value=\"" + bundle.getString("sendlink") + "\" style=\"font-size: 300%;\">\n");
       out.println("</form>\n");
       return;
-    } else if (page.equals("token")) {
+    } else if (page.equals("token") || page.equals("stoken")) {
       String encodedToken = params.get("token");
       if (encodedToken == null) {
         fail(req, resp, "No Authentication Token Provided", locale);
@@ -277,7 +283,11 @@ public class LoginServlet extends HttpServlet {
       }
       TokenProto.token token = null;
       try {
-        token = Token.verifyToken(encodedToken);
+        if (page.equals("token")) {
+          token = Token.verifyToken(encodedToken);
+        } else {
+          token = Token.verifySToken(encodedToken);
+        }
       } catch (TokenException e) {
         fail(req, resp, e.getMessage(), locale);
         return;
@@ -301,7 +311,6 @@ public class LoginServlet extends HttpServlet {
 
       userInfo = new OdeAuthFilter.UserInfo();
       if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN) {
-        userInfo.setReadOnly(token.getReadOnly());
         userInfo.setUserId(token.getUuid());
       } else if (token.getCommand() == TokenProto.token.CommandType.SSOLOGIN2) { // SSOLOGIN2
         String email = token.getName();
@@ -325,6 +334,26 @@ public class LoginServlet extends HttpServlet {
         }
       }
 
+      userInfo.setReadOnly(token.getReadOnly());
+
+      // Check to see if this is a one project token
+      long oneProjectId = token.getOneProjectId();
+      LOG.log(Level.INFO, "oneProjectId = " + oneProjectId);
+      if (oneProjectId != 0) {  // It is...
+        try {
+          userInfo.setUserId(storageIo.getProjectUserId(oneProjectId));
+          userInfo.setOneProjectId(oneProjectId);
+        } catch (ProjectNotFoundException e) {
+          fail(req, resp, e.getMessage(), locale);
+        }
+      }
+
+      userInfo.setFauxProjectName(token.getDisplayprojectname());
+
+      String fauxUserName = token.getDisplayaccountname();
+
+      userInfo.setFauxAccountName(fauxUserName);
+
       String newCookie = userInfo.buildCookie(false);
       if (newCookie != null) {
         Cookie cook = new Cookie("AppInventor", newCookie);
@@ -338,6 +367,7 @@ public class LoginServlet extends HttpServlet {
         .add("ng", newGalleryId)
         .add("galleryId", galleryId)
         .add("autoload", autoload)
+        .add("ui", uiPreference)
         .add("redirect", redirect).build();
       resp.sendRedirect(uri);   // This should bring up App Inventor
       return;
@@ -365,6 +395,7 @@ public class LoginServlet extends HttpServlet {
     req.setAttribute("repo", repo);
     req.setAttribute("locale", locale);
     req.setAttribute("ng", newGalleryId);
+    req.setAttribute("ui", uiPreference);
     req.setAttribute("galleryId", galleryId);
     try {
       req.getRequestDispatcher("/login.jsp").forward(req, resp);
@@ -399,6 +430,7 @@ public class LoginServlet extends HttpServlet {
     String newGalleryId = params.get("ng");
     String redirect = params.get("redirect");
     String autoload = params.get("autoload");
+    String uiPreference = params.get("ui");
 
     if (locale == null) {
       locale = "en";
@@ -454,6 +486,7 @@ public class LoginServlet extends HttpServlet {
         .add("repo", repo)
         .add("autoload", autoload)
         .add("ng", newGalleryId)
+        .add("ui", uiPreference)
         .add("galleryId", galleryId).build();
       resp.sendRedirect(uri);   // Logged in, go to service
       return;
@@ -505,6 +538,7 @@ public class LoginServlet extends HttpServlet {
       .add("autoload", autoload)
       .add("repo", repo)
       .add("ng", newGalleryId)
+      .add("ui", uiPreference)
       .add("galleryId", galleryId).build();
     resp.sendRedirect(uri);
   }

@@ -993,7 +993,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
       // Success! Nothing to do
       return
     }
-    _form?.dispatchErrorOccurredEvent(self, "RegisterForValues", .ERROR_EXTENSION_ERROR, ERROR_OPERATION_NOT_SUPPORTED, error.localizedDescription)
+    _form?.dispatchErrorOccurredEvent(self, "RegisterForValues", .ERROR_EXTENSION_ERROR, ERROR_OPERATION_NOT_SUPPORTED, self, error.localizedDescription)
   }
 
   public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {

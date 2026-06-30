@@ -677,7 +677,12 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-ComponentHelpPopup-Link a {
   color: clr-primary-600;
 }
-  
+
+.ode-DialogBox .dialogContent td .ode-ComponentHelpPopup-Link a {
+  color: clr-primary-600;
+  text-decoration: underline;
+}
+
 .compiler-ErrorMarker {
   color:  v-red;
 }
@@ -784,10 +789,6 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .gwt-Label {
   color: gray-800;
-}
-
-.ode-DialogBox .ExtendedText {
-  color: top-panel-color;
 }
 
 .ode-DialogBox .gwt-Tree {
@@ -1196,23 +1197,6 @@ textarea::-webkit-input-placeholder {
   border: 1px solid gray-300;
 }
 
-
-.ac-renderer {
-    font: normal 13px Arial, sans-serif;
-    background: v-white;
-    border: 1px solid gray-700;
-    color: v-black;
-}
-
-.ac-row {
-    cursor: pointer;
-    padding: .4em;
-    background: v-white;
-}
-
-.ac-active {
-    background-color: gray-200;
-}
 
 .blocklySvg text {
     fill: gray-450;

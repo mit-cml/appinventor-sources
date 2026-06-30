@@ -6,6 +6,8 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.folder.FolderManagerEventListener;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
@@ -99,6 +101,23 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+
+    // Add ARIA landmark attributes for screen reader accessibility
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.projectListAriaLabel());
+
+    // Add ARIA labels to sortable column headers
+    nameFocusPanel.getElement().setAttribute("role", "button");
+    nameFocusPanel.getElement().setAttribute("aria-label", MESSAGES.projectNameColumnAriaLabel());
+
+    createdateFocusPanel.getElement().setAttribute("role", "button");
+    createdateFocusPanel.getElement().setAttribute("aria-label", MESSAGES.projectDateCreatedColumnAriaLabel());
+
+    modDateFocusPanel.getElement().setAttribute("role", "button");
+    modDateFocusPanel.getElement().setAttribute("aria-label", MESSAGES.projectDateModifiedColumnAriaLabel());
+
+    // Set initial sort state
+    updateSortAriaAttributes();
   }
 
   @SuppressWarnings("unused")
@@ -181,6 +200,36 @@ public class ProjectList extends Composite implements FolderManagerEventListener
         break;
     }
     refresh(true);
+    updateSortAriaAttributes();
+  }
+
+  /**
+   * Updates aria-sort attributes on column headers to reflect current sort state.
+   */
+  private void updateSortAriaAttributes() {
+    // Reset all to none
+    nameFocusPanel.getElement().setAttribute("aria-sort", "none");
+    createdateFocusPanel.getElement().setAttribute("aria-sort", "none");
+    modDateFocusPanel.getElement().setAttribute("aria-sort", "none");
+
+    // Set current sort field
+    FocusPanel currentPanel = null;
+    switch (sortField) {
+      case NAME:
+        currentPanel = nameFocusPanel;
+        break;
+      case DATE_CREATED:
+        currentPanel = createdateFocusPanel;
+        break;
+      case DATE_MODIFIED:
+        currentPanel = modDateFocusPanel;
+        break;
+    }
+
+    if (currentPanel != null) {
+      String sortValue = sortOrder == SortOrder.ASCENDING ? "ascending" : "descending";
+      currentPanel.getElement().setAttribute("aria-sort", sortValue);
+    }
   }
 
   private void refreshSortIndicators() {

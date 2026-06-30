@@ -96,8 +96,8 @@ open class FusiontablesControl: NonvisibleComponent {
         ]
         _expirationDate = Date()
         let tempQuery = _query
-        Alamofire.request("https://www.googleapis.com/oauth2/v4/token", method: .post, parameters: parameters).responseJSON { response in
-          if let code = response.response?.statusCode, let result = response.result.value as? NSDictionary {
+        AF.request("https://www.googleapis.com/oauth2/v4/token", method: .post, parameters: parameters).responseJSON { response in
+          if let code = response.response?.statusCode, let result = try? response.result.get() as? NSDictionary {
             switch code {
             case 200..<300:
               self._authToken = result["access_token"] as? String ?? ""
@@ -158,8 +158,8 @@ open class FusiontablesControl: NonvisibleComponent {
     if _query.lowercased().contains("create table") {
       processCreateTableSQL(query)
     } else {
-      Alamofire.request(tablesURL, method: .post, parameters: parameters,encoding: URLEncoding.queryString, headers: headers).responseString { response in
-        if let value = response.result.value {
+      AF.request(tablesURL, method: .post, parameters: parameters,encoding: URLEncoding.queryString, headers: headers).responseString { response in
+        if let value = try? response.result.get() {
           if let resp = response.response, 200..<300 ~= resp.statusCode {
             self.GotResult(self.toCSV(value))
           } else {
@@ -209,10 +209,10 @@ open class FusiontablesControl: NonvisibleComponent {
       ]
       do {
         request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
-        request.allHTTPHeaderFields = header
+        request.allHTTPHeaderFields = header.dictionary
 
-        Alamofire.request(request).responseJSON { response in
-          if let value = response.result.value, let json = value as? NSDictionary {
+        AF.request(request).responseJSON { response in
+          if let value = try? response.result.get(), let json = value as? NSDictionary {
             if let resp = response.response, 200..<300 ~= resp.statusCode {
               self.GotResult("\"tableId\",\"\(json["tableId"] ?? "")\"")
             } else {

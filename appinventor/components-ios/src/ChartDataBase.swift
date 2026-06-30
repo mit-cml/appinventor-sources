@@ -46,7 +46,7 @@ import DGCharts
     set {
       _color = newValue
       chartDataModel?.setColor(argbToColor(newValue))
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -84,7 +84,7 @@ import DGCharts
       }
       _colors = resultColors
       chartDataModel?.dataset?.colors = _colors
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -95,7 +95,7 @@ import DGCharts
     set {
       _label = newValue
       chartDataModel?.setLabel(newValue)
-     onDataChange()
+      onDataChange()
     }
   }
   
@@ -106,7 +106,7 @@ import DGCharts
     set {
       _dataLabelColor = newValue
       chartDataModel?.dataset?.valueTextColor = argbToColor(newValue)
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -132,7 +132,7 @@ import DGCharts
       if let chartDataModel = chartDataModel as? LineChartDataModel {
         chartDataModel.setLineType(_lineType)
       }
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -147,7 +147,7 @@ import DGCharts
       if let chartDataModel = chartDataModel as? ScatterChartDataModel {
         chartDataModel.setPointShape(_pointshape)
       }
-      refreshChart()
+      onDataChange()
     }
   }
 
@@ -307,7 +307,7 @@ import DGCharts
 
   @objc func ImportFromList(_ list: [AnyObject]) {
     chartDataModel?.importFromList(list)
-    refreshChart()
+    onDataChange()
   }
 
   @objc func ImportFromSpreadsheet(_ spreadsheet: Spreadsheet, _ xColumn: String, _ yColumn: String, _ useHeaders: Bool) {
@@ -316,13 +316,13 @@ import DGCharts
       updateCurrentDataSourceValue(spreadsheet, nil, nil)
     }
     chartDataModel?.importFromColumns(dataColumns as NSArray, useHeaders)
-    refreshChart()
+    onDataChange()
   }
 
   @objc func ImportFromTinyDB(_ tinyDB: TinyDB, _ tag: String) {
     let list = tinyDB.getDataValue(tag as NSString)
     updateCurrentDataSourceValue(tinyDB, tag, list as NSArray)
-    refreshChart()
+    onDataChange()
   }
 
   // MARK: Events

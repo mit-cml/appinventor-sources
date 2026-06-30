@@ -51,6 +51,15 @@ public class BooleanPropertyEditor extends PropertyEditor implements ValueChange
     }
   }
 
+  @Override
+  public void setAriaLabelledBy(String labelId) {
+    if (labelId != null && !labelId.isEmpty()) {
+      // GWT CheckBox renders as <input type="checkbox"> inside the wrapper
+      // We need to set aria-labelledby on the input element
+      checkbox.getElement().getFirstChildElement().setAttribute("aria-labelledby", labelId);
+    }
+  }
+
   // ValueChangeHandler implementation
 
   @Override

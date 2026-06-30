@@ -56,6 +56,7 @@ let kMinimumToastWait = 10.0
   private var _bigDefaultText = false
   private var _highContrast = false
   private var _backGesture: UIGestureRecognizer? = nil
+  private var _tapGesture: UITapGestureRecognizer? = nil
 
   /**
    * Returns whether the current theme selected by the user is Dark or not.
@@ -184,6 +185,9 @@ let kMinimumToastWait = 10.0
   open override func viewDidLoad() {
     super.viewDidLoad()
     view.accessibilityIdentifier = String(describing: type(of: self))
+    _tapGesture = UITapGestureRecognizer(target: self, action: #selector(HideKeyboard))
+    _tapGesture?.cancelsTouchesInView = false
+    view.addGestureRecognizer(_tapGesture!)
   }
 
   open func add(_ component: NonvisibleComponent) {
@@ -204,6 +208,17 @@ let kMinimumToastWait = 10.0
   }
 
   private var _dimensions = [Int:NSLayoutConstraint]()
+
+  open func onAttach() {
+    for child in _components {
+      guard let child = child as? ViewComponent else {
+        continue
+      }
+      if child.Visible {
+        child.onAttach()
+      }
+    }
+  }
 
   open func setChildWidth(of component: ViewComponent, to width: Int32) {
     if width <= kLengthPercentTag {
@@ -259,14 +274,12 @@ let kMinimumToastWait = 10.0
 
   open func setVisible(component: ViewComponent, to visibility: Bool) {
     let visible = isVisible(component: component)
-    if visible == visibility {
+    if visibility == visible {
       return
     }
     if visibility {
       _linearView.setVisibility(of: component.view, to: true)
-      // Replay width/height properties
-      setChildHeight(of: component, to: component._lastSetHeight)
-      setChildWidth(of: component, to: component._lastSetWidth)
+      component.onAttach()
     } else {
       _linearView.setVisibility(of: component.view, to: false)
     }
@@ -283,6 +296,7 @@ let kMinimumToastWait = 10.0
     }
     _linearView.resetView()
     _linearView.removeAllItems()
+    initThunks.removeAllObjects()
     clearComponents()
     defaultPropertyValues()
   }
@@ -379,6 +393,7 @@ let kMinimumToastWait = 10.0
         obj.perform(#selector(Initialize))
       }
     }
+    onAttach()
   }
 
   func defaultPropertyValues() {

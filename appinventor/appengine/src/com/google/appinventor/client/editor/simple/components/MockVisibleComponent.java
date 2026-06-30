@@ -59,7 +59,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_IMAGEWIDTH = "ImageWidth";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
-  protected static final String PROPERTY_NAME_HINT = "HintText";
+  protected static final String PROPERTY_NAME_HINT = "Hint";
+  protected static final String PROPERTY_NAME_HINT_TEXT = "HintText";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
   protected static final String PROPERTY_NAME_WIDTH = "Width";
@@ -175,13 +176,12 @@ public abstract class MockVisibleComponent extends MockComponent {
   }
 
   private void setVisibleProperty(String text) {
-    boolean visible = Boolean.parseBoolean(text);
-    if (!visible && !editor.isLoadComplete()) {
-      // As we are loading the scm file and encounter a visble property being set to false, set the
-      // expanded field to false. This will make that branch of the components tree initially
-      // collapsed.
-      expanded = false;
-    }
+  }
+
+  @Override
+  protected boolean isInitiallyExpanded() {
+    EditableProperty visible = properties.getProperty(PROPERTY_NAME_VISIBLE);
+    return visible == null || !"false".equalsIgnoreCase(visible.getValue());
   }
 
   // PropertyChangeListener implementation
@@ -223,9 +223,16 @@ public abstract class MockVisibleComponent extends MockComponent {
     }
 
     this.coordPropertiesVisible = value;
-    int type = value ? EditableProperty.TYPE_NORMAL : EditableProperty.TYPE_INVISIBLE;
-    x.setType(type);
-    y.setType(type);
+    // Toggle only the TYPE_INVISIBLE bit, preserving other bits (e.g. TYPE_DOYAIL).
+    // Replacing the whole type would strip TYPE_DOYAIL, causing Left/Top to be omitted
+    // from the YAIL sent to the companion after a drag-drop.
+    if (value) {
+      x.setType(x.getType() & ~EditableProperty.TYPE_INVISIBLE);
+      y.setType(y.getType() & ~EditableProperty.TYPE_INVISIBLE);
+    } else {
+      x.setType(x.getType() | EditableProperty.TYPE_INVISIBLE);
+      y.setType(y.getType() | EditableProperty.TYPE_INVISIBLE);
+    }
   }
 
   /**

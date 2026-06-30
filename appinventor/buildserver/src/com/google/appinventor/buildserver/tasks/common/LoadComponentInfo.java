@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2024 MIT, All rights reserved
+// Copyright 2021-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -70,7 +70,8 @@ public class LoadComponentInfo implements CommonTask {
         || !this.generatePermissions()
         || !this.generateQueries()
         || !this.generateServices()
-        || !this.generateXmls()) {
+        || !this.generateXmls()
+        || !this.generateFeatures()) {
       return TaskResult.generateError("Could not extract info from the app");
     }
 
@@ -273,6 +274,28 @@ public class LoadComponentInfo implements CommonTask {
     }
 
     context.getReporter().log("Component xmls needed, n = " + n);
+    return true;
+  }
+
+  /**
+   * Generate a set of conditionally included uses-features needed by this project.
+   */
+  private boolean generateFeatures() {
+    try {
+      loadJsonInfo(context.getComponentInfo().getFeaturesNeeded(),
+              ComponentDescriptorConstants.FEATURES_TARGET);
+    } catch (IOException | JSONException e) {
+      // This is fatal.
+      context.getReporter().error("There was an error in the Features stage", true);
+      return false;
+    }
+
+    int n = 0;
+    for (String type : context.getComponentInfo().getFeaturesNeeded().keySet()) {
+      n += context.getComponentInfo().getFeaturesNeeded().get(type).size();
+    }
+
+    context.getReporter().log("Component features needed, n = " + n);
     return true;
   }
 
