@@ -49,11 +49,11 @@ public class ShowShortcutsAction implements Command {
   static final List<ShortcutDef> SHORTCUTS = new ArrayList<>();
 
   static {
-    SHORTCUTS.add(new ShortcutDef("focus_search",        MESSAGES.shortcutFocusSearch(),        "191",              true));
-    SHORTCUTS.add(new ShortcutDef("focus_tree",          MESSAGES.shortcutFocusTree(),           "84",               true));
-    SHORTCUTS.add(new ShortcutDef("focus_viewer",        MESSAGES.shortcutFocusViewer(),         "86",               true));
-    SHORTCUTS.add(new ShortcutDef("focus_properties",    MESSAGES.shortcutFocusProperties(),     "80",               true));
-    SHORTCUTS.add(new ShortcutDef("focus_media",         MESSAGES.shortcutFocusMedia(),          "77",               true));
+    SHORTCUTS.add(new ShortcutDef("focus_search",        MESSAGES.shortcutFocusSearch(),         "191",              true));
+    SHORTCUTS.add(new ShortcutDef("focus_tree",          MESSAGES.shortcutFocusTree(),           "Alt+84",           true));
+    SHORTCUTS.add(new ShortcutDef("focus_viewer",        MESSAGES.shortcutFocusViewer(),         "Alt+86",           true));
+    SHORTCUTS.add(new ShortcutDef("focus_properties",    MESSAGES.shortcutFocusProperties(),     "Alt+80",           true));
+    SHORTCUTS.add(new ShortcutDef("focus_media",         MESSAGES.shortcutFocusMedia(),          "Alt+77",           true));
     SHORTCUTS.add(new ShortcutDef("toggle_view",         MESSAGES.shortcutToggleView(),          "Control+Alt",      false));
     SHORTCUTS.add(new ShortcutDef("rename_component",    MESSAGES.shortcutRenameComponent(),     "Alt+78",           true));
     SHORTCUTS.add(new ShortcutDef("delete_component",    MESSAGES.shortcutDeleteComponent(),     "Delete/Backspace", false));

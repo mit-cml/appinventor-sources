@@ -161,28 +161,28 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       editor.palettePanel.focusSearchBox();
       return true;
     });
-    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_tree", MESSAGES.shortcutFocusTree(), KeyCodes.KEY_T, null, (editor) -> {
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_tree", MESSAGES.shortcutFocusTree(), KeyCodes.KEY_T, new int[] { KeyCodes.KEY_ALT }, (editor) -> {
       if (editor.palettePanel.shouldSuppressShortcuts()) {
         return false;
       }
       SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
       return true;
     });
-    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_viewer", MESSAGES.shortcutFocusViewer(), KeyCodes.KEY_V, null, (editor) -> {
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_viewer", MESSAGES.shortcutFocusViewer(), KeyCodes.KEY_V, new int[] { KeyCodes.KEY_ALT }, (editor) -> {
       if (editor.palettePanel.shouldSuppressShortcuts()) {
         return false;
       }
       editor.getVisibleComponentsPanel().focusCheckbox();
       return true;
     });
-    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_properties", MESSAGES.shortcutFocusProperties(), KeyCodes.KEY_P, null, (editor) -> {
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_properties", MESSAGES.shortcutFocusProperties(), KeyCodes.KEY_P, new int[] { KeyCodes.KEY_ALT }, (editor) -> {
       if (editor.palettePanel.shouldSuppressShortcuts()) {
         return false;
       }
       editor.designProperties.focusFirstCategory();
       return true;
     });
-    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_media", MESSAGES.shortcutFocusMedia(), KeyCodes.KEY_M, null, (editor) -> {
+    ShortcutRegistry.getInstance().registerViewShortcut(DesignerEditor.class, "focus_media", MESSAGES.shortcutFocusMedia(), KeyCodes.KEY_M, new int[] { KeyCodes.KEY_ALT }, (editor) -> {
       if (editor.palettePanel.shouldSuppressShortcuts()) {
         return false;
       }
