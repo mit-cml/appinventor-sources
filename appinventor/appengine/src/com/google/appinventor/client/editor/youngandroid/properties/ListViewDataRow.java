@@ -59,6 +59,23 @@ public class ListViewDataRow extends Composite {
   /** Sentinel value used by the ListData JSON for "no image". */
   private static final String NO_IMAGE = "None";
 
+  /** Column identifiers used for column-preserving Up/Down navigation between rows. */
+  static final int COL_THUMB = 0;
+  static final int COL_MAIN = 1;
+  static final int COL_DETAIL = 2;
+
+  /** Lets the dialog react to per-row keyboard actions (delete, Enter-to-add, Up/Down navigation). */
+  interface Callbacks {
+    /** The row deleted itself; the dialog should refresh its item count. */
+    void onRowDeleted();
+
+    /** Enter was pressed in a text field: append a new row and focus its first field. */
+    void onEnterAddRow();
+
+    /** Up/Down was pressed: move focus {@code deltaRows} away from {@code from}, same {@code column}. */
+    void onMoveFocus(ListViewDataRow from, int deltaRows, int column);
+  }
+
   @UiField FlowPanel container;
   @UiField FlowPanel thumbColumn;
   @UiField FocusPanel thumbTile;
@@ -72,7 +89,7 @@ public class ListViewDataRow extends Composite {
   private final boolean showImage;
   private final List<String> imageChoices;
   private final Map<String, String> imageUrls;
-  private final Runnable onDelete;
+  private final Callbacks callbacks;
 
   /** The currently selected image asset name (or {@link #NO_IMAGE}). */
   private String selectedImage = NO_IMAGE;
@@ -83,16 +100,16 @@ public class ListViewDataRow extends Composite {
    * @param showImage whether the image picker applies to the current layout
    * @param imageChoices the asset names (including "None") offered by the picker
    * @param imageUrls map from asset name to a previewable URL (no entry for "None")
-   * @param onDelete callback invoked after this row removes itself (lets the dialog update its count)
+   * @param callbacks hooks the dialog uses to react to this row's keyboard actions
    */
   ListViewDataRow(JSONObject item, boolean showDetail, boolean showImage,
-      List<String> imageChoices, Map<String, String> imageUrls, Runnable onDelete) {
+      List<String> imageChoices, Map<String, String> imageUrls, Callbacks callbacks) {
     this.item = item;
     this.showDetail = showDetail;
     this.showImage = showImage;
     this.imageChoices = imageChoices;
     this.imageUrls = imageUrls;
-    this.onDelete = onDelete;
+    this.callbacks = callbacks;
     initWidget(UI_BINDER.createAndBindUi(this));
 
     delete.setText("×");  // multiplication sign, used as a compact close/delete glyph
@@ -101,9 +118,11 @@ public class ListViewDataRow extends Composite {
     delete.setTitle(MESSAGES.deleteButton());
 
     mainText.setText(getString("Text1"));
+    addKeyNav(mainText, COL_MAIN);
 
     if (showDetail) {
       detailText.setText(getString("Text2"));
+      addKeyNav(detailText, COL_DETAIL);
     } else {
       detailText.setVisible(false);
     }
@@ -126,6 +145,12 @@ public class ListViewDataRow extends Composite {
           if (key == KeyCodes.KEY_ENTER || key == KeyCodes.KEY_SPACE) {
             event.preventDefault();
             openImagePicker();
+          } else if (key == KeyCodes.KEY_UP) {
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, -1, COL_THUMB);
+          } else if (key == KeyCodes.KEY_DOWN) {
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, 1, COL_THUMB);
           }
         }
       });
@@ -196,8 +221,47 @@ public class ListViewDataRow extends Composite {
   @UiHandler("delete")
   void onDeleteClicked(ClickEvent event) {
     removeFromParent();
-    if (onDelete != null) {
-      onDelete.run();
+    if (callbacks != null) {
+      callbacks.onRowDeleted();
+    }
+  }
+
+  /**
+   * Wires Enter (append a new row) and Up/Down (column-preserving row navigation) on {@code box}, so
+   * data can be entered without the mouse. Tab/Shift-Tab still move between fields natively.
+   */
+  private void addKeyNav(TextBox box, final int column) {
+    box.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        switch (event.getNativeKeyCode()) {
+          case KeyCodes.KEY_ENTER:
+            event.preventDefault();
+            callbacks.onEnterAddRow();
+            break;
+          case KeyCodes.KEY_UP:
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, -1, column);
+            break;
+          case KeyCodes.KEY_DOWN:
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, 1, column);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }
+
+  /** Moves keyboard focus to the given column of this row, falling back to the main text field. */
+  void focusColumn(int column) {
+    if (column == COL_THUMB && showImage) {
+      thumbTile.setFocus(true);
+    } else if (column == COL_DETAIL && showDetail) {
+      detailText.setFocus(true);
+    } else {
+      mainText.setFocus(true);
     }
   }
 
