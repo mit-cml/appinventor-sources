@@ -348,6 +348,7 @@
 		5132E481C0B949ECDE06AE78 /* Pods_AIComponentKit_AIComponentKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FD2633D7266389EB43FF45F /* Pods_AIComponentKit_AIComponentKitTests.framework */; };
 		5DCF6AE22D6905EE00410BBF /* AbsoluteArrangement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCF6AE12D6903D900410BBF /* AbsoluteArrangement.swift */; };
 		5DCF6AE42D690E2F00410BBF /* RelativeLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCF6AE32D690E2600410BBF /* RelativeLayout.swift */; };
+		5DFEEFC22FF3EE6900327B14 /* ChromaKey.metal in Sources */ = {isa = PBXBuildFile; fileRef = 5DFEEFC12FF3EE6100327B14 /* ChromaKey.metal */; };
 		5F7ED1062C35C950004418C5 /* tf-converter-1.7.4.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */; };
 		5F7ED1072C35C950004418C5 /* facemesh.js in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1012C35C94D004418C5 /* facemesh.js */; };
 		5F7ED1082C35C950004418C5 /* facemesh.html in Resources */ = {isa = PBXBuildFile; fileRef = 5F7ED1022C35C94E004418C5 /* facemesh.html */; };
@@ -787,6 +788,7 @@
 		58E89B4AF39EEFF895CBBDD1 /* Pods-AIComponentKit-AIComponentKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		5DCF6AE12D6903D900410BBF /* AbsoluteArrangement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteArrangement.swift; sourceTree = "<group>"; };
 		5DCF6AE32D690E2600410BBF /* RelativeLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeLayout.swift; sourceTree = "<group>"; };
+		5DFEEFC12FF3EE6100327B14 /* ChromaKey.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ChromaKey.metal; sourceTree = "<group>"; };
 		5F7ED1002C35C94C004418C5 /* tf-converter-1.7.4.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "tf-converter-1.7.4.min.js"; sourceTree = "<group>"; };
 		5F7ED1012C35C94D004418C5 /* facemesh.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = facemesh.js; sourceTree = "<group>"; };
 		5F7ED1022C35C94E004418C5 /* facemesh.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = facemesh.html; sourceTree = "<group>"; };
@@ -1073,6 +1075,7 @@
 				067F447C2D5560D800ABB1F7 /* TubeNode.swift */,
 				067F447D2D5560D800ABB1F7 /* VideoNode.swift */,
 				067F447E2D5560D800ABB1F7 /* WebViewNode.swift */,
+				5DFEEFC12FF3EE6100327B14 /* ChromaKey.metal */,
 			);
 			path = ar;
 			sourceTree = "<group>";
@@ -2286,6 +2289,7 @@
 				0641606D2EA75CC600FF5BD7 /* ListOrientation.swift in Sources */,
 				086DC63221014C5900FDA182 /* Ev3Motors.swift in Sources */,
 				DE0FFBDB20C5C1610049A748 /* PickerBase.swift in Sources */,
+				5DFEEFC22FF3EE6900327B14 /* ChromaKey.metal in Sources */,
 				069D1CE72C9DA49A00C0CA96 /* BaseClassifier.swift in Sources */,
 				06EAAC791DCE291500889C6D /* AccelerometerSensor.swift in Sources */,
 				8B77A2E92AE1EFD9009F09B2 /* PosenetExtension.swift in Sources */,
@@ -2372,6 +2376,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_LANGUAGE_REVISION = Metal23;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -2459,6 +2464,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_LANGUAGE_REVISION = Metal23;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
