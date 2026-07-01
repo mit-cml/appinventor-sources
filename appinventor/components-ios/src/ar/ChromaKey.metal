@@ -14,6 +14,7 @@ void chromaKeyModifier(realitykit::surface_parameters params) {
     auto tex = params.textures();
 
     float2 uv = geometry.uv0();
+    uv.y = 1.0 - uv.y;  // flip vertically
     half4 color = half4(tex.custom().sample(videoSampler, uv));
 
     half3 targetGreen = half3(0.0, 1.0, 0.0);

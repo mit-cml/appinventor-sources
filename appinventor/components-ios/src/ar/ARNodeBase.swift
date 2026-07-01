@@ -1137,6 +1137,38 @@ open class ARNodeBase: NSObject, ARNode {
   /* csb will use at some point */
   
   
+  func faceCamera() {
+      guard let container = _container as? ARView3D,
+            let cameraTransform = container._arView.cameraTransform as Optional else { return }
+      
+      let cameraPosition = cameraTransform.translation
+      let modelPosition = _modelEntity.position(relativeTo: nil)
+      
+      let dx = cameraPosition.x - modelPosition.x
+      let dz = cameraPosition.z - modelPosition.z
+      guard sqrt(dx*dx + dz*dz) > 0.001 else { return }
+      
+      print("📐 camera position: \(cameraPosition)")
+      print("📐 model position: \(modelPosition)")
+      print("📐 dx: \(dx), dz: \(dz)")
+      
+      let angle = atan2(dx, dz)
+      print("📐 yaw angle (degrees): \(angle * 180 / .pi)")
+      
+      // Apply just the yaw first and print
+      let yaw = simd_quatf(angle: angle, axis: [0, 1, 0])
+      print("📐 yaw quaternion: \(yaw)")
+      _modelEntity.setOrientation(yaw, relativeTo: nil)
+      print("📐 orientation after yaw only: \(_modelEntity.orientation(relativeTo: nil))")
+      
+      // Print the world up vector to see which way +Y is pointing on the plane
+      let worldUp = _modelEntity.convert(direction: SIMD3<Float>(0, 1, 0), to: nil)
+      let worldRight = _modelEntity.convert(direction: SIMD3<Float>(1, 0, 0), to: nil)
+      let worldForward = _modelEntity.convert(direction: SIMD3<Float>(0, 0, 1), to: nil)
+      print("📐 plane's +Y points toward world: \(worldUp)")
+      print("📐 plane's +X points toward world: \(worldRight)")
+      print("📐 plane's +Z points toward world: \(worldForward)")
+  }
   func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
 
       let modelPosition = _modelEntity.position(relativeTo: nil)

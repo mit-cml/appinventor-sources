@@ -2146,6 +2146,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       node.setPosition(x: x, y: safeY, z: z)
       print("set up anchor and setting position \(x) \(y) \(z)")
+      if let videoNode = node as? VideoNode {
+              node.faceCamera()
+          }
       
     }
     
