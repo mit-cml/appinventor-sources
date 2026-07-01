@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -213,9 +215,11 @@ public class ListViewDataRow extends Composite {
           public void onImageSelected(String name) {
             selectedImage = name;
             updateThumbnail();
+            thumbTile.setFocus(true);  // return focus to the tile after choosing
           }
         });
     picker.showRelativeTo(thumbTile);
+    picker.focusSelected();
   }
 
   @UiHandler("delete")
@@ -276,6 +280,12 @@ public class ListViewDataRow extends Composite {
       void onImageSelected(String name);
     }
 
+    /** The focusable choice tiles, in display order, for arrow-key navigation. */
+    private final List<FocusPanel> items = new ArrayList<FocusPanel>();
+
+    /** Index of the tile to focus when the picker opens (the current selection, else the first). */
+    private int selectedIndex = 0;
+
     AssetImagePicker(List<String> choices, Map<String, String> urls, String current,
         final Callback callback) {
       super(true, false);  // autoHide, non-modal
@@ -285,10 +295,11 @@ public class ListViewDataRow extends Composite {
       list.setStyleName("lie-picker");
 
       for (final String name : choices) {
-        FocusPanel item = new FocusPanel();
+        final FocusPanel item = new FocusPanel();
         item.setStyleName("lie-picker-item");
         if (name.equals(current)) {
           item.addStyleName("lie-picker-selected");
+          selectedIndex = items.size();
         }
         item.getElement().setTabIndex(0);
 
@@ -318,18 +329,54 @@ public class ListViewDataRow extends Composite {
         item.addKeyDownHandler(new KeyDownHandler() {
           @Override
           public void onKeyDown(KeyDownEvent event) {
-            int key = event.getNativeKeyCode();
-            if (key == KeyCodes.KEY_ENTER || key == KeyCodes.KEY_SPACE) {
-              event.preventDefault();
-              callback.onImageSelected(name);
-              hide();
+            switch (event.getNativeKeyCode()) {
+              case KeyCodes.KEY_ENTER:
+              case KeyCodes.KEY_SPACE:
+                event.preventDefault();
+                callback.onImageSelected(name);
+                hide();
+                break;
+              case KeyCodes.KEY_UP:
+                event.preventDefault();
+                focusItem(items.indexOf(item) - 1);
+                break;
+              case KeyCodes.KEY_DOWN:
+                event.preventDefault();
+                focusItem(items.indexOf(item) + 1);
+                break;
+              case KeyCodes.KEY_ESCAPE:
+                event.preventDefault();
+                hide();
+                break;
+              default:
+                break;
             }
           }
         });
+        items.add(item);
         list.add(item);
       }
 
       setWidget(list);
+    }
+
+    /** Focuses the choice tile at {@code index}, clamped to the valid range. */
+    private void focusItem(int index) {
+      if (items.isEmpty()) {
+        return;
+      }
+      int clamped = Math.max(0, Math.min(index, items.size() - 1));
+      items.get(clamped).setFocus(true);
+    }
+
+    /** Moves keyboard focus into the picker (the current selection). Call after showing. */
+    void focusSelected() {
+      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+          focusItem(selectedIndex);
+        }
+      });
     }
   }
 }
