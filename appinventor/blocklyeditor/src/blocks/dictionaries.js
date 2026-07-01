@@ -438,6 +438,36 @@ Blockly.Blocks['dictionaries_dict_to_alist'] = {
   typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TITLE }]
 };
 
+Blockly.Blocks['dictionaries_from_json'] = {
+  // Parses JSON text into a dictionary.
+  category : 'Dictionaries',
+  helpUrl : Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_HELPURL,
+  init : function() {
+    this.setColour(Blockly.DICTIONARY_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("dictionary",AI.BlockUtils.OUTPUT));
+    this.appendValueInput('JSON')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("text",AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_TITLE);
+    this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_TITLE }]
+};
+
+Blockly.Blocks['dictionaries_to_json'] = {
+  // Encodes a dictionary as JSON text.
+  category : 'Dictionaries',
+  helpUrl : Blockly.Msg.LANG_DICTIONARIES_TO_JSON_HELPURL,
+  init : function() {
+    this.setColour(Blockly.DICTIONARY_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text",AI.BlockUtils.OUTPUT));
+    this.appendValueInput('DICT')
+      .setCheck(AI.BlockUtils.YailTypeToBlocklyType("dictionary",AI.BlockUtils.INPUT))
+      .appendField(Blockly.Msg.LANG_DICTIONARIES_TO_JSON_TITLE);
+    this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_TO_JSON_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_TO_JSON_TITLE }]
+};
+
 Blockly.Blocks['dictionaries_copy'] = {
    // Gets all the values in a dictionary
   category : 'Dictionaries',

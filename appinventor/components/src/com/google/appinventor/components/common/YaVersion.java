@@ -710,7 +710,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 38
   // - Control: run-in-background & run-after-period were added.
   // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
-  public static final int BLOCKS_LANGUAGE_VERSION = 38;
+  // For BLOCKS_LANGUAGE_VERSION 39
+  // - Dictionaries: "get dictionary from JSON text" and "get JSON text from dictionary" blocks were added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 39;
 
   // ................................. Target SDK Version Number ..................................
 

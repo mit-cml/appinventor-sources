@@ -1635,6 +1635,8 @@ Dictionary implementation.
 - combine two dicts         (yail-dictionary-combine-dicts first-dictionary second-dictionary)
 - turn alist to dict        (yail-dictionary-alist-to-dict alist)
 - turn dict to alist        (yail-dictionary-dict-to-alist dict)
+- json text to dict         (yail-dictionary-from-json-text json-text)
+- dict to json text         (yail-dictionary-to-json-text dict)
 
 - is YailDictionary?        (yail-dictionary? x)
 
@@ -1699,6 +1701,17 @@ Dictionary implementation.
 
 (define (yail-dictionary-dict-to-alist dict)
   (invoke dict 'dictToAlist))
+
+(define (yail-dictionary-from-json-text json-text)
+  (let ((result (invoke AIComponentKit.Web 'decodeJson: json-text)))
+    (if (yail-dictionary? result)
+        result
+        (signal-runtime-error
+         "Get dictionary from JSON text: the given JSON does not represent a dictionary. To decode JSON whose top-level value is not an object, use the Web component's JsonTextDecodeWithDictionaries method instead."
+         "Not a JSON Object"))))
+
+(define (yail-dictionary-to-json-text yail-dictionary)
+  (invoke AIComponentKit.Web 'encodeJson: yail-dictionary))
 
 (define (yail-dictionary-copy yail-dictionary)
   (invoke yail-dictionary 'mutableCopy))
