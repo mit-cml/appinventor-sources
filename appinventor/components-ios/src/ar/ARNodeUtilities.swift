@@ -36,6 +36,7 @@ class ARNodeUtilities {
     
     if let n = node as? TextNode {
       n.Text = text
+      n.Font = font
       let normalizedText = n.Text
         .precomposedStringWithCanonicalMapping  // Normalize Unicode
         .replacingOccurrences(of: "'", with: "'")  // Smart apostrophe to straight

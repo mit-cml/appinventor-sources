@@ -356,6 +356,13 @@ open class ARNodeBase: NSObject, ARNode {
     get { return _color }
     set(color) {
       _color = color
+      
+      let currentType = self.NodeType.lowercased()
+      
+      if self.hasTexture || !_texture.isEmpty || currentType.contains("video") {
+          print("⚠️ FillColor: Bypassed color painting to preserve active node texture: \(_texture)")
+          return
+      }
       updateMaterial()
     }
   }
@@ -883,22 +890,37 @@ open class ARNodeBase: NSObject, ARNode {
     _modelEntity.model?.materials = [material]
   }
   
+
   @available(iOS 15.0, *)
   private func updateTextureFromImage(_ image: UIImage) {
-    guard _modelEntity.model != nil else { return }
-    
-    var material = SimpleMaterial()
-    
-    do {
-      let texture = try TextureResource.generate(from: image.cgImage!, options: .init(semantic: .color))
-      material.baseColor = MaterialColorParameter.texture(texture)
-    } catch {
-      print("Failed to create texture: \(error)")
-      return
-    }
-    
-    _modelEntity.model?.materials = [material]
+      // 1. Extract the current model component as a mutable variable struct copy
+      guard var modelComponent = _modelEntity.model else {
+          print("⚠️ updateTextureFromImage skipped because model component is nil.")
+          return
+      }
+      
+      var material = SimpleMaterial()
+      
+      do {
+          // 2. Generate your RealityKit texture map layer
+          let texture = try TextureResource.generate(from: image.cgImage!, options: .init(semantic: .color))
+          material.baseColor = MaterialColorParameter.texture(texture)
+          material.roughness = 0.6  // Balances reflection mapping under AR ambient conditions
+          material.metallic = 0.0
+          
+          // 3. Update the material array slice on the mutable struct copy
+          modelComponent.materials = [material]
+          
+
+          _modelEntity.components[ModelComponent.self] = modelComponent
+          
+          print("✅ updateTextureFromImage: ModelComponent structural state fully updated and refreshed.")
+          
+      } catch {
+          print("❌ updateTextureFromImage: Failed to generate RealityKit texture layer: \(error)")
+      }
   }
+
   
   // MARK: - Anchor Management
   
