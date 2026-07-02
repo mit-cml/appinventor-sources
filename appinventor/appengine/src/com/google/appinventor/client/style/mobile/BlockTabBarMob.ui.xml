@@ -5,6 +5,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
@@ -12,11 +13,17 @@
 
     <g:FlowPanel >
         <g:FocusPanel ui:field="BlockTab" styleName="ode-TextButton">
+            <g:FlowPanel styleName="tab-content">
+                <ai:Icon icon="extension" styleName="tab-icon"/>
                 <g:Label styleName="tab-label" text="Blocks"/>
+            </g:FlowPanel>
         </g:FocusPanel>
 
         <g:FocusPanel ui:field="mediaTab" styleName="ode-TextButton">
+            <g:FlowPanel styleName="tab-content">
+                <ai:Icon icon="image" styleName="tab-icon"/>
                 <g:Label styleName="tab-label" text="Media"/>
+            </g:FlowPanel>
         </g:FocusPanel>
     </g:FlowPanel>
 </ui:UiBinder>
