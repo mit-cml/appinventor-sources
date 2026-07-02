@@ -35,6 +35,7 @@ class ARNodeUtilities {
     node.FillColor = Int32(color)
     
     if let n = node as? TextNode {
+      n.Text = text
       let normalizedText = n.Text
         .precomposedStringWithCanonicalMapping  // Normalize Unicode
         .replacingOccurrences(of: "'", with: "'")  // Smart apostrophe to straight
