@@ -1157,9 +1157,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   func performHitTest(at screenPoint: CGPoint) -> HitTestResult {
       // Check for node first
       if let node = findClosestNode(tapLocation: screenPoint) {
-          let worldPos = node._modelEntity.convert(position: .zero, to: nil)
-          let upNormal = SIMD3<Float>(0, 1, 0)
-          return .node(node, worldPos, upNormal)
+        if let draggedObject = _currentDraggedObject, node == draggedObject {
+            // 🛑 This is the active item! Skip returning .node so the raycast
+            // drops through to find your clean tracker surfaces instead.
+            print("🔍 Hit test passing through active drag target: \(node.Name)")
+        } else {
+            let worldPos = node._modelEntity.convert(position: .zero, to: nil)
+            let upNormal = SIMD3<Float>(0, 1, 0)
+            return .node(node, worldPos, upNormal)
+        }
       }
       
       let raycastResults = _arView.raycast(
