@@ -12,7 +12,7 @@ import com.google.appinventor.server.flags.Flag;
  * Management System (for example Moodle) launch a student into App Inventor and
  * receive a grade back. This is an exploration spike, not production code.
  *
- * <p>The platform endpoints default to a local Moodle on port 8081. The client
+ * <p>The platform endpoints default to a local Moodle on port 8080. The client
  * id and deployment id are assigned by the platform when an administrator
  * registers this tool, so they are read from flags and left empty by default.
  * The tool key pair is generated once and stored under WEB-INF.
@@ -21,15 +21,15 @@ import com.google.appinventor.server.flags.Flag;
  */
 public final class LtiConfig {
 
-  // The platform (Moodle) side. Default to a local Moodle on 8081.
+  // The platform (Moodle) side. Default to a local Moodle on 8080.
   private static final Flag<String> ISSUER =
-      Flag.createFlag("lti.platform.issuer", "http://localhost:8081");
+      Flag.createFlag("lti.platform.issuer", "http://localhost:8080");
   private static final Flag<String> AUTH_ENDPOINT =
-      Flag.createFlag("lti.platform.auth", "http://localhost:8081/mod/lti/auth.php");
+      Flag.createFlag("lti.platform.auth", "http://localhost:8080/mod/lti/auth.php");
   private static final Flag<String> TOKEN_ENDPOINT =
-      Flag.createFlag("lti.platform.token", "http://localhost:8081/mod/lti/token.php");
+      Flag.createFlag("lti.platform.token", "http://localhost:8080/mod/lti/token.php");
   private static final Flag<String> JWKS_ENDPOINT =
-      Flag.createFlag("lti.platform.jwks", "http://localhost:8081/mod/lti/certs.php");
+      Flag.createFlag("lti.platform.jwks", "http://localhost:8080/mod/lti/certs.php");
 
   // The tool registration values, assigned by the platform on registration.
   private static final Flag<String> CLIENT_ID =

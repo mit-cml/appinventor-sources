@@ -12,6 +12,8 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,13 +30,15 @@ import org.json.JSONObject;
 
 /**
  * Receives the signed LTI 1.3 launch at /lti/launch. Validates the platform
- * id_token (signature against the platform JWKS, issuer, audience, nonce, and
- * expiry), then establishes an App Inventor session for the launched user by
- * reusing the existing encrypted AppInventor cookie, and redirects into the IDE.
- * The grade service line item is remembered for a later passback.
+ * id_token (signature against the platform JWKS, issuer, audience, nonce,
+ * expiry, and, when configured, the deployment id), then establishes an App
+ * Inventor session for the launched user by reusing the existing encrypted
+ * AppInventor cookie, gives a learner their own project for the assignment, and
+ * redirects into the IDE opened on that project. The grade service line item is
+ * remembered for a later passback.
  *
- * <p>This is an exploration spike. It is lenient about role and deployment id
- * checks, and auto accepts the terms of service for the provisioned user.
+ * <p>This is an exploration spike. It is lenient about role checks, and auto
+ * accepts the terms of service for the provisioned user.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -93,6 +97,11 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Token expired");
         return;
       }
+      if (!LtiConfig.deploymentId().isEmpty()
+          && !LtiConfig.deploymentId().equals(claims.optString(LTI + "deployment_id"))) {
+        fail(resp, "Unknown deployment id");
+        return;
+      }
 
       String messageType = claims.optString(LTI + "message_type");
       if ("LtiDeepLinkingRequest".equals(messageType)) {
@@ -101,16 +110,8 @@ public class LtiLaunchServlet extends HttpServlet {
         return;
       }
 
-      String email = claims.optString("email", "");
       String sub = claims.optString("sub", "");
-      if (email.isEmpty()) {
-        // Moodle may withhold the email for privacy. Fall back to a stable
-        // pseudo address derived from the subject so the user is consistent.
-        email = (sub.isEmpty() ? "unknown" : sub) + "@lti.moodle.local";
-      }
-
-      User user = storageIo.getUserFromEmail(email);
-      storageIo.setTosAccepted(user.getUserId());
+      User user = userForLaunch(claims);
       OdeAuthFilter.UserInfo userInfo = new OdeAuthFilter.UserInfo();
       userInfo.setUserId(user.getUserId());
       String cookie = userInfo.buildCookie(false);
@@ -125,14 +126,35 @@ public class LtiLaunchServlet extends HttpServlet {
         LtiGradeContext.put(user.getUserId(), ags.optString("lineitem", ""), sub);
       }
 
-      maybeForkStarterProject(user, claims);
+      long projectId = maybeForkStarterProject(user, claims);
+      if (projectId > 0) {
+        pointIdeAtProject(user.getUserId(), projectId);
+      }
 
-      LOG.info("LTI launch established a session for " + email + ", redirecting to the IDE");
+      LOG.info("LTI launch established a session for " + user.getUserEmail()
+          + ", redirecting to the IDE");
       resp.sendRedirect("/");
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI launch failed", e);
       fail(resp, "Launch failed: " + e.getMessage());
     }
+  }
+
+  /**
+   * Provisions or looks up the App Inventor user for the launch claims. When the
+   * platform withholds the email for privacy, a stable pseudo address derived
+   * from the subject claim keeps the same person on the same account across
+   * launches.
+   */
+  private User userForLaunch(JSONObject claims) {
+    String email = claims.optString("email", "");
+    if (email.isEmpty()) {
+      String sub = claims.optString("sub", "");
+      email = (sub.isEmpty() ? "unknown" : sub) + "@lti.invalid";
+    }
+    User user = storageIo.getUserFromEmail(email);
+    storageIo.setTosAccepted(user.getUserId());
+    return user;
   }
 
   private static boolean audienceContains(Object aud, String clientId) {
@@ -163,27 +185,31 @@ public class LtiLaunchServlet extends HttpServlet {
   /**
    * Gives a learner their own App Inventor project to work in (the student
    * "fork"), once per resource link, mirroring the server side create path used
-   * by RestServlet. Any failure here is logged and never blocks the launch.
+   * by RestServlet. Returns the project id for this assignment (newly created or
+   * already existing), or -1 when no project applies (instructor, or failure).
+   * Any failure here is logged and never blocks the launch.
    */
-  private void maybeForkStarterProject(User user, JSONObject claims) {
+  private long maybeForkStarterProject(User user, JSONObject claims) {
     try {
       if (isInstructor(claims)) {
         LOG.info("LTI fork: launcher is an instructor, no student project created");
-        return;
+        return -1;
       }
       String projectName = forkProjectName(claims);
-      if (storageIo.getProjectNames(user.getUserId()).contains(projectName)) {
+      long existing = findProjectByName(user.getUserId(), projectName);
+      if (existing > 0) {
         LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + projectName);
-        return;
+        return existing;
       }
       long templateId = templateProjectId(claims);
       if (templateId > 0) {
         try {
           String ownerId = storageIo.getProjectUserId(templateId);
-          long copied = projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
+          long copied =
+              projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
           LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
               + projectName + ") for " + user.getUserEmail());
-          return;
+          return copied;
         } catch (Exception te) {
           LOG.log(Level.WARNING, "LTI fork: template " + templateId
               + " copy failed, falling back to a blank project", te);
@@ -194,11 +220,52 @@ public class LtiLaunchServlet extends HttpServlet {
       long projectId = projectService.newProject(user.getUserId(), projectName, params);
       LOG.info("LTI fork: created blank project " + projectId + " (" + projectName + ") for "
           + user.getUserEmail());
+      return projectId;
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI fork: could not create the student project (continuing)", e);
+      return -1;
     }
   }
 
+  /** Returns the id of the user's project with the given name, or -1. */
+  private long findProjectByName(String userId, String projectName) {
+    for (long pid : storageIo.getProjects(userId)) {
+      if (projectName.equals(storageIo.getProjectName(userId, pid))) {
+        return pid;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Points the IDE at the given project by storing it as the user's current
+   * project, so that after the launch redirect the IDE opens the project that
+   * belongs to this assignment instead of whatever the user had open last.
+   * Reuses the same user setting that the IDE itself maintains.
+   */
+  private void pointIdeAtProject(String userId, long projectId) {
+    try {
+      String raw = storageIo.loadSettings(userId);
+      JSONObject settings =
+          (raw == null || raw.trim().isEmpty()) ? new JSONObject() : new JSONObject(raw);
+      JSONObject general = settings.optJSONObject(SettingsConstants.USER_GENERAL_SETTINGS);
+      if (general == null) {
+        general = new JSONObject();
+        settings.put(SettingsConstants.USER_GENERAL_SETTINGS, general);
+      }
+      general.put(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID, String.valueOf(projectId));
+      general.put(SettingsConstants.USER_AUTOLOAD_PROJECT, "true");
+      storageIo.storeSettings(userId, settings.toString());
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "LTI launch: could not point the IDE at project " + projectId, e);
+    }
+  }
+
+  /**
+   * Whether the launch carries a teaching role. Matches the fragment of the IMS
+   * role vocabulary URIs, so a course or an institution level Instructor or
+   * Administrator counts, and plain Learner launches do not.
+   */
   private static boolean isInstructor(JSONObject claims) {
     JSONArray roles = claims.optJSONArray(LTI + "roles");
     if (roles == null) {
@@ -206,17 +273,36 @@ public class LtiLaunchServlet extends HttpServlet {
     }
     for (int i = 0; i < roles.length(); i++) {
       String role = roles.optString(i);
-      if (role.contains("Instructor") || role.contains("Administrator")
-          || role.contains("TeachingAssistant")) {
+      if (role.contains("#Instructor") || role.contains("#Administrator")
+          || role.contains("#TeachingAssistant")) {
         return true;
       }
     }
     return false;
   }
 
-  /** A valid, stable project name per resource link, so re-launch is idempotent. */
-  private static String forkProjectName(JSONObject claims) {
+  /**
+   * A valid, stable project name for this resource link, so a re-launch is
+   * idempotent. Prefers the activity title from the launch (for example
+   * "Exercise 2" becomes Exercise_2) so students can tell which project belongs
+   * to which assignment, and falls back to the opaque resource link id. If a
+   * teacher renames the activity later, the next launch forks a fresh project
+   * under the new name, which is an accepted spike simplification.
+   */
+  @VisibleForTesting
+  static String forkProjectName(JSONObject claims) {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
+    String title = (resourceLink == null) ? "" : resourceLink.optString("title", "");
+    String name = title.replaceAll("[^A-Za-z0-9]+", "_").replaceAll("^_+|_+$", "");
+    if (name.length() > 40) {
+      name = name.substring(0, 40).replaceAll("_+$", "");
+    }
+    if (!name.isEmpty() && !Character.isLetter(name.charAt(0))) {
+      name = "Project_" + name;
+    }
+    if (!name.isEmpty()) {
+      return name;
+    }
     String id = (resourceLink == null) ? "" : resourceLink.optString("id", "");
     String suffix = id.replaceAll("[^A-Za-z0-9]", "");
     return suffix.isEmpty() ? "AppInventorAssignment" : "Assignment_" + suffix;
@@ -238,24 +324,14 @@ public class LtiLaunchServlet extends HttpServlet {
 
   /**
    * Deep Linking: shows the teacher a picker of their own App Inventor projects so
-   * they can choose one as the assignment template. The choice is posted to
+   * they can choose one as the assignment template. The platform return context is
+   * held server side under a one time token, and the choice is posted to
    * /lti/deeplink/select, which returns the signed Deep Linking response to the LMS.
    */
-  private void renderTemplatePicker(HttpServletResponse resp, JSONObject claims) throws IOException {
-    String email = claims.optString("email", "");
-    String sub = claims.optString("sub", "");
-    if (email.isEmpty()) {
-      email = (sub.isEmpty() ? "unknown" : sub) + "@lti.moodle.local";
-    }
-    User teacher = storageIo.getUserFromEmail(email);
-    storageIo.setTosAccepted(teacher.getUserId());
-
-    JSONObject dls = claims.optJSONObject(LTI_DL + "deep_linking_settings");
-    String returnUrl = (dls == null) ? "" : dls.optString("deep_link_return_url", "");
-    String data = (dls == null) ? "" : dls.optString("data", "");
-    String deploymentId = claims.optString(LTI + "deployment_id", "");
-
+  private void renderTemplatePicker(HttpServletResponse resp, JSONObject claims)
+      throws IOException {
     resp.setContentType("text/html; charset=utf-8");
+    User teacher = userForLaunch(claims);
     StringBuilder html = new StringBuilder();
     html.append("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Choose a template</title>"
         + "<style>body{font-family:sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem}"
@@ -270,10 +346,13 @@ public class LtiLaunchServlet extends HttpServlet {
       resp.getWriter().write(html.toString());
       return;
     }
+    JSONObject dls = claims.optJSONObject(LTI_DL + "deep_linking_settings");
+    String dlToken = LtiState.createDeepLink(
+        (dls == null) ? "" : dls.optString("deep_link_return_url", ""),
+        (dls == null) ? "" : dls.optString("data", ""),
+        claims.optString(LTI + "deployment_id", ""));
     html.append("<form method='post' action='/lti/deeplink/select'>");
-    html.append("<input type='hidden' name='return_url' value='").append(escape(returnUrl)).append("'>");
-    html.append("<input type='hidden' name='data' value='").append(escape(data)).append("'>");
-    html.append("<input type='hidden' name='deployment_id' value='").append(escape(deploymentId)).append("'>");
+    html.append("<input type='hidden' name='dl' value='").append(escape(dlToken)).append("'>");
     html.append("<ul>");
     boolean first = true;
     for (long pid : projects) {
