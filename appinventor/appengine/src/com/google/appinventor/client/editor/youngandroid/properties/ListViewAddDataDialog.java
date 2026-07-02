@@ -122,7 +122,7 @@ public class ListViewAddDataDialog {
 
           @Override
           public void onEnterAddRow() {
-            addBlankRow().focusColumn(ListViewDataRow.COL_MAIN);
+            addBlankRow().focusFirstCell();
           }
 
           @Override
@@ -187,7 +187,7 @@ public class ListViewAddDataDialog {
 
   @UiHandler("addRow")
   void onAddRow(ClickEvent event) {
-    addBlankRow().focusColumn(ListViewDataRow.COL_MAIN);
+    addBlankRow().focusFirstCell();
   }
 
   /** Appends a blank row for the current layout, refreshes the count, and returns it. */

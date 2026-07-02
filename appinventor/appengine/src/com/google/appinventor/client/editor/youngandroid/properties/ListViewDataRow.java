@@ -269,6 +269,11 @@ public class ListViewDataRow extends Composite {
     }
   }
 
+  /** Focuses the first cell of the row: the image tile if the layout has one, else the main text. */
+  void focusFirstCell() {
+    focusColumn(COL_THUMB);  // COL_THUMB falls back to the main text field when there is no image
+  }
+
   /**
    * A small popup that lists "None" plus every project image asset (with a preview swatch) and
    * reports the chosen asset name back through {@link Callback}. This realizes Susan's preferred
