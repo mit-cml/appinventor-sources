@@ -11,6 +11,7 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+    <ui:with field="isAvailable" type="java.lang.Boolean"/>
     <ai:Toolbar styleName="Ode-designerToolbar">
         <!-- Left button items -->
         <ai:ToolbarItem name="myProjects" icon="arrow_back" align="left" styleName="ode-ProjectListButton DesignerBackButton" tooltip="{messages.myProjectsButton}" >

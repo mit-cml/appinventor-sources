@@ -12,6 +12,7 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
+  <ui:with field="isAvailable" type="java.lang.Boolean"/>
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <ai:DropDownButton name="Settings" styleName="ode-ProjectListButton inline"

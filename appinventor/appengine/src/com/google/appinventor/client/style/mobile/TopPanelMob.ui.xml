@@ -75,6 +75,10 @@
                     </ai:DropDownButton>
                 </g:FlowPanel>
             </g:FlowPanel>
+            <g:FlowPanel visible="false">
+                <ai:TextButton ui:field="myProjects"/>
+                <ai:TextButton ui:field="viewTrash"/>
+            </g:FlowPanel>
         </g:FlowPanel>
     </g:FlowPanel>
 </ui:UiBinder>
