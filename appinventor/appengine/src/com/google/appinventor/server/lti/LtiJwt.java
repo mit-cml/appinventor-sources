@@ -86,7 +86,6 @@ final class LtiJwt {
       throw new IOException("Malformed JWT");
     }
     JSONObject header = new JSONObject(new String(unb64u(parts[0]), StandardCharsets.UTF_8));
-    JSONObject claims = new JSONObject(new String(unb64u(parts[1]), StandardCharsets.UTF_8));
     if (!"RS256".equals(header.optString("alg"))) {
       throw new IOException("Unexpected JWT alg: " + header.optString("alg"));
     }
@@ -100,7 +99,8 @@ final class LtiJwt {
     if (!sig.verify(unb64u(parts[2]))) {
       throw new IOException("JWT signature invalid");
     }
-    return claims;
+    // Parse the claims only after the signature has been proven good.
+    return new JSONObject(new String(unb64u(parts[1]), StandardCharsets.UTF_8));
   }
 
   /** Reads the claims of a JWT without verifying, for tests and diagnostics. */

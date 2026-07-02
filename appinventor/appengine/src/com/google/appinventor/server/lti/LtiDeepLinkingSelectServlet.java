@@ -28,8 +28,9 @@ import org.json.JSONObject;
  * when a student later launches the assignment the launch delivers that id and
  * the student is given a copy of the teacher's template.
  *
- * <p>Exploration spike: the return url and data ride in hidden form fields rather
- * than a server side store, so they are not tamper protected.
+ * <p>The platform return url and opaque data are held server side under a one
+ * time token minted when the picker was rendered, so the form itself carries
+ * nothing that could be tampered with.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -45,11 +46,12 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     try {
       String templateId = req.getParameter("template_project_id");
-      String returnUrl = req.getParameter("return_url");
-      String data = req.getParameter("data");
-      String deploymentId = req.getParameter("deployment_id");
-      if (templateId == null || templateId.isEmpty() || returnUrl == null || returnUrl.isEmpty()) {
-        resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing template or return url");
+      LtiState.DeepLink dl = LtiState.consumeDeepLink(req.getParameter("dl"));
+      if (templateId == null || templateId.isEmpty() || dl == null || dl.returnUrl.isEmpty()) {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        resp.setContentType("text/plain; charset=utf-8");
+        resp.getWriter().println("This selection has expired. Close this window, then use "
+            + "Select content again from your course.");
         return;
       }
 
@@ -78,12 +80,12 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
           .put("iat", now)
           .put("exp", now + 300)
           .put("nonce", LtiState.random())
-          .put(LTI + "deployment_id", deploymentId)
+          .put(LTI + "deployment_id", dl.deploymentId)
           .put(LTI + "message_type", "LtiDeepLinkingResponse")
           .put(LTI + "version", "1.3.0")
           .put(LTI_DL + "content_items", contentItems);
-      if (data != null && !data.isEmpty()) {
-        payload.put(LTI_DL + "data", data);
+      if (!dl.data.isEmpty()) {
+        payload.put(LTI_DL + "data", dl.data);
       }
 
       PrivateKey key = LtiJwt.loadPrivateKey(LtiConfig.privateKeyFile());
@@ -91,12 +93,12 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
 
       // Auto POST the signed response back to the platform return url.
       resp.setContentType("text/html; charset=utf-8");
-      StringBuilder html = new StringBuilder();
-      html.append("<!DOCTYPE html><html><body onload='document.forms[0].submit()'>");
-      html.append("<form method='post' action='").append(escapeAttr(returnUrl)).append("'>");
-      html.append("<input type='hidden' name='JWT' value='").append(escapeAttr(jwt)).append("'>");
-      html.append("<noscript><button type='submit'>Continue</button></noscript>");
-      html.append("</form></body></html>");
+      StringBuilder html = new StringBuilder()
+          .append("<!DOCTYPE html><html><body onload='document.forms[0].submit()'>")
+          .append("<form method='post' action='").append(escapeAttr(dl.returnUrl)).append("'>")
+          .append("<input type='hidden' name='JWT' value='").append(escapeAttr(jwt)).append("'>")
+          .append("<noscript><button type='submit'>Continue</button></noscript>")
+          .append("</form></body></html>");
       resp.getWriter().write(html.toString());
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI deep linking selection failed", e);

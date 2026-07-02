@@ -34,6 +34,11 @@ public class LtiLoginServlet extends HttpServlet {
   }
 
   private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    String iss = req.getParameter("iss");
+    if (iss != null && !iss.isEmpty() && !iss.equals(LtiConfig.issuer())) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown platform issuer");
+      return;
+    }
     String loginHint = req.getParameter("login_hint");
     String messageHint = req.getParameter("lti_message_hint");
     String clientId = req.getParameter("client_id");

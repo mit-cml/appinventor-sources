@@ -32,9 +32,11 @@ public class SubmitToLmsAction implements Command {
     }
     submitting = true;
     ErrorReporter.reportInfo("Submitting to your LMS...");
-    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "/lti/submit");
+    // POST, because this changes state in the LMS. A GET on the same endpoint
+    // only shows a confirmation page.
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, "/lti/submit");
     try {
-      builder.sendRequest(null, new RequestCallback() {
+      builder.sendRequest("", new RequestCallback() {
         @Override
         public void onResponseReceived(Request request, Response response) {
           submitting = false;

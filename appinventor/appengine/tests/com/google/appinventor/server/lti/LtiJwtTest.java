@@ -35,6 +35,7 @@ public class LtiJwtTest extends TestCase {
     jwks = LtiJwt.publicJwks((RSAPublicKey) keyPair.getPublic(), "test-kid");
   }
 
+  /** The published JWK set carries the RSA modulus, exponent, and key id. */
   public void testJwksHasModulusAndExponent() {
     JSONObject set = new JSONObject(jwks);
     JSONObject key = set.getJSONArray("keys").getJSONObject(0);
@@ -44,8 +45,10 @@ public class LtiJwtTest extends TestCase {
     assertFalse(key.getString("e").isEmpty());
   }
 
+  /** A token the tool signs verifies against the matching JWKS and keeps its claims. */
   public void testSignThenVerifyRoundTrip() throws Exception {
-    JSONObject header = new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", "test-kid");
+    JSONObject header =
+        new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", "test-kid");
     JSONObject payload = new JSONObject()
         .put("iss", "http://localhost:8081")
         .put("aud", "client-123")
@@ -60,6 +63,7 @@ public class LtiJwtTest extends TestCase {
     assertEquals("student@example.com", claims.getString("email"));
   }
 
+  /** A token whose signature bytes were altered is rejected. */
   public void testTamperedTokenIsRejected() throws Exception {
     JSONObject header = new JSONObject().put("alg", "RS256").put("kid", "test-kid");
     JSONObject payload = new JSONObject().put("sub", "student-1");
@@ -74,6 +78,7 @@ public class LtiJwtTest extends TestCase {
     }
   }
 
+  /** A token signed by a key that is not in the JWKS is rejected. */
   public void testTokenSignedByDifferentKeyIsRejected() throws Exception {
     KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
     gen.initialize(2048);
