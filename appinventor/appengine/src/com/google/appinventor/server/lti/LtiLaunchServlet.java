@@ -17,7 +17,9 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +55,7 @@ public class LtiLaunchServlet extends HttpServlet {
   private static final int MAX_PROJECT_NAME_LENGTH = 40;
 
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
-  private final transient YoungAndroidProjectService projectService =
+  private final YoungAndroidProjectService projectService =
       new YoungAndroidProjectService(storageIo);
 
   // Only POST is served. LTI delivers the launch with response_mode=form_post,
@@ -79,15 +81,35 @@ public class LtiLaunchServlet extends HttpServlet {
         return;
       }
 
-      String jwks = LtiHttp.get(platform.jwksEndpoint);
-      JSONObject claims = LtiJwt.verify(idToken, jwks);
+      String jwks;
+      try {
+        jwks = LtiHttp.get(platform.jwksEndpoint);
+      } catch (IOException e) {
+        LOG.log(Level.WARNING, "LTI launch: could not reach the platform key set", e);
+        failServer(resp, HttpServletResponse.SC_BAD_GATEWAY);
+        return;
+      }
+      JSONObject claims;
+      try {
+        claims = LtiJwt.verify(idToken, jwks);
+      } catch (Exception e) {
+        fail(resp, "Token verification failed");
+        return;
+      }
 
       if (!platform.issuer.equals(claims.optString("iss"))) {
         fail(resp, "Issuer mismatch");
         return;
       }
-      if (!audienceContains(claims.opt("aud"), platform.clientId)) {
+      Object aud = claims.opt("aud");
+      if (!audienceContains(aud, platform.clientId)) {
         fail(resp, "Audience mismatch");
+        return;
+      }
+      if (aud instanceof JSONArray && ((JSONArray) aud).length() > 1
+          && !platform.clientId.equals(claims.optString("azp"))) {
+        // With more than one audience the authorized party must name this tool.
+        fail(resp, "Authorized party mismatch");
         return;
       }
       String nonce = claims.optString("nonce");
@@ -100,8 +122,16 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Token expired");
         return;
       }
-      if (!platform.deploymentId.isEmpty()
-          && !platform.deploymentId.equals(claims.optString(LTI + "deployment_id"))) {
+      if (!"1.3.0".equals(claims.optString(LTI + "version"))) {
+        fail(resp, "Unsupported LTI version");
+        return;
+      }
+      String deploymentId = claims.optString(LTI + "deployment_id");
+      if (deploymentId.isEmpty()) {
+        fail(resp, "Missing deployment id");
+        return;
+      }
+      if (!platform.deploymentId.isEmpty() && !platform.deploymentId.equals(deploymentId)) {
         fail(resp, "Unknown deployment id");
         return;
       }
@@ -117,6 +147,7 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Replayed launch");
         return;
       }
+      storageIo.cleanupLtiNonces();
 
       String messageType = claims.optString(LTI + "message_type");
       if ("LtiDeepLinkingRequest".equals(messageType)) {
@@ -128,6 +159,10 @@ public class LtiLaunchServlet extends HttpServlet {
           return;
         }
         renderTemplatePicker(resp, claims);
+        return;
+      }
+      if (!"LtiResourceLinkRequest".equals(messageType)) {
+        fail(resp, "Unsupported message type");
         return;
       }
 
@@ -157,7 +192,7 @@ public class LtiLaunchServlet extends HttpServlet {
       resp.sendRedirect("/");
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI launch failed", e);
-      fail(resp, "Launch failed");
+      failServer(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -231,6 +266,15 @@ public class LtiLaunchServlet extends HttpServlet {
         + LtiHtml.pageFoot());
   }
 
+  private void failServer(HttpServletResponse resp, int status) throws IOException {
+    resp.setStatus(status);
+    resp.setContentType("text/html; charset=utf-8");
+    resp.getWriter().write(LtiHtml.pageHead("Launch problem")
+        + "<h1>This assignment could not open</h1><p>Something went wrong while opening the "
+        + "activity. Please try again in a moment, or ask your teacher for help.</p>"
+        + LtiHtml.pageFoot());
+  }
+
   /**
    * Gives a learner their own App Inventor project to work in (the student
    * "fork"), once per assignment, mirroring the server side create path used by
@@ -258,6 +302,9 @@ public class LtiLaunchServlet extends HttpServlet {
           return linked;
         }
       }
+      // Not transactional across the read and the create, so two launches of a
+      // new assignment fired at once can each fork once. A spike accepts the rare
+      // duplicate rather than reserve the link under a transaction first.
       long projectId = forkNewProject(user, claims, forkProjectName(claims));
       if (projectId > 0 && !resourceLinkId.isEmpty()) {
         LtiResourceLinks.put(userId, issuer, deploymentId, resourceLinkId, projectId);
@@ -299,32 +346,31 @@ public class LtiLaunchServlet extends HttpServlet {
     return (resourceLink == null) ? "" : resourceLink.optString("id", "");
   }
 
-  private long findProjectByName(String userId, String projectName) {
-    for (long pid : storageIo.getProjects(userId)) {
-      if (projectName.equals(storageIo.getProjectName(userId, pid))) {
-        return pid;
-      }
-    }
-    return -1;
-  }
-
   /**
-   * The base name, or the base with a numeric suffix, chosen so the student does
-   * not already own a project with it. Two assignments whose titles happen to
-   * match fork into separate projects, each with its own grade line item, rather
-   * than colliding on one.
+   * The base name, or the base with a suffix, chosen so the student does not
+   * already own a project with it and so the result stays within the project
+   * name length limit. Two assignments whose titles happen to match fork into
+   * separate projects, each with its own grade line item, rather than colliding
+   * on one.
    */
   private String uniqueProjectName(String userId, String base) {
-    if (findProjectByName(userId, base) < 0) {
-      return base;
+    Set<String> taken = new HashSet<>();
+    for (long pid : storageIo.getProjects(userId)) {
+      taken.add(storageIo.getProjectName(userId, pid));
     }
-    for (int suffix = 2; suffix <= 99; suffix++) {
-      String candidate = base + "_" + suffix;
-      if (findProjectByName(userId, candidate) < 0) {
+    for (int suffix = 1; suffix <= 99; suffix++) {
+      String candidate = (suffix == 1) ? base : cappedName(base, "_" + suffix);
+      if (!taken.contains(candidate)) {
         return candidate;
       }
     }
-    return base;
+    return cappedName(base, "_" + System.currentTimeMillis());
+  }
+
+  /** The base with the tag appended, trimmed so the whole fits the name limit. */
+  private static String cappedName(String base, String tag) {
+    int room = MAX_PROJECT_NAME_LENGTH - tag.length();
+    return (base.length() > room ? base.substring(0, room) : base) + tag;
   }
 
   /**
