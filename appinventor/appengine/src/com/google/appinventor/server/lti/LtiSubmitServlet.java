@@ -62,6 +62,10 @@ public class LtiSubmitServlet extends HttpServlet {
     }
     LtiGradeContext.Context ctx = LtiGradeContext.get(userInfo.getUserId());
     if (ctx == null) {
+      // Not in a gradable LTI session (for example a plain sign in, or an
+      // activity without grade sync). A non 2xx status is important, because the
+      // client shows success only on 2xx.
+      resp.setStatus(HttpServletResponse.SC_CONFLICT);
       resp.getWriter().println(
           "No grade line item for this session. Launch the activity from the LMS, "
           + "and make sure grading is enabled on it.");

@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.interfaces.RSAPublicKey;
@@ -41,6 +42,11 @@ final class LtiJwt {
 
   static byte[] unb64u(String s) {
     return Base64.getUrlDecoder().decode(s);
+  }
+
+  /** SHA-256 digest of a string, for deriving a stable opaque key. */
+  static byte[] sha256(String s) throws Exception {
+    return MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8));
   }
 
   static PrivateKey loadPrivateKey(String file) throws Exception {
