@@ -39,8 +39,18 @@ The tool reads its configuration from these flags (Java system properties on the
 | lti.tool.baseurl | This server's own base URL |
 | lti.tool.privatekey, lti.tool.publickey | The tool RSA key pair (PKCS8 and X.509 DER) under WEB-INF |
 
-Generate the key pair once, for example with openssl, and place the two DER files under WEB-INF. The public key is served at /lti/jwks for the platform to verify the tool's messages.
+Generate the key pair once, for example with openssl, and place the two DER files under WEB-INF. The public key is served at /lti/jwks for the platform to verify the tool's messages. The platform flags describe one platform and seed the platform registry in the datastore on the first login, so an existing flag setup keeps working, and further platforms can be added to the registry directly.
 
 ## How the pieces work
 
-The LTI code lives in the server package com.google.appinventor.server.lti and changes nothing in the existing sign in or storage code. The launch validates the platform id_token (signature against the platform keyset, issuer, audience, one time nonce, expiry, and deployment id when configured), signs the user in through the same session cookie the normal sign in uses, gives a learner their own project for the assignment, and opens the IDE on it. The assignment to project link and the grade passback target are stored per user, so relaunches find the same project after an activity rename or a server restart. Grade passback uses the Assignment and Grade Services score endpoint with the state Submitted and PendingManual, so grading itself stays in the LMS where teachers expect it.
+The LTI code lives in the server package com.google.appinventor.server.lti. It reuses the existing sign in session cookie unchanged, and it adds a small LTI section to the storage layer following the existing datastore patterns. The launch validates the platform id_token (signature against the platform keyset, issuer, audience, one time nonce, expiry, and deployment id when configured), signs the user in through the same session cookie the normal sign in uses, gives a learner their own project for the assignment, and opens the IDE on it. A platform registry, the account link, the assignment to project link, and the grade passback target are stored in the datastore, so several platforms can share one server and a relaunch finds the same project after an activity rename, a server restart, or on another server instance. Grade passback uses the Assignment and Grade Services score endpoint with the state Submitted and PendingManual, so grading itself stays in the LMS where teachers expect it.
+
+## Running a local Moodle for development
+
+To exercise the full loop locally, run Moodle in Docker and register App Inventor as a tool in it.
+
+1. Start a Moodle container (for example the Bitnami Moodle image) alongside the App Inventor dev server, and set the platform flags above to the local Moodle, for example lti.platform.issuer to http://localhost:8080.
+2. In Moodle, register the tool under Site administration, Plugins, External tool, Manage tools, using the login, launch, and keyset URLs from the dev server. Set the launch container to New window and turn on Assignment and Grade Services.
+3. Point the tool keyset URL at an address the Moodle container can reach the dev server on. Inside the container localhost is the container itself, so use the host address (for example host.docker.internal) for the server side keyset fetch, while the browser facing login and launch URLs stay localhost.
+4. Moodle blocks server side requests to loopback and private addresses by default (curlsecurityblockedhosts) and allows only ports 80 and 443 (curlsecurityallowedport). Clear both for a local development platform, otherwise the keyset fetch and the grade passback fail.
+5. As a teacher, add the activity and pick a template through Select content. As a student, open the activity, work, and use Submit to LMS. As a teacher, grade it, then as the student confirm the grade appears.
