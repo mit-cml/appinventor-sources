@@ -155,18 +155,20 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * A stable, collision free account key for a launch, formed from the platform
-   * issuer and subject and placed in the reserved .lti.invalid space so it can
-   * never equal a real login email.
+   * A stable account key for a launch, derived from the full platform issuer and
+   * subject so two distinct launchers never share an account, and placed in the
+   * reserved .lti.invalid space so it can never equal a real login email. The
+   * digest avoids the collisions a lossy character replacement would cause on
+   * platforms whose subjects contain punctuation.
    */
   @VisibleForTesting
   static String ltiAccountKey(String issuer, String sub) {
-    return sanitize(sub.isEmpty() ? "unknown" : sub) + "." + sanitize(issuer) + "@lti.invalid";
-  }
-
-  private static String sanitize(String s) {
-    String out = s.replaceAll("[^A-Za-z0-9]", "-");
-    return out.length() > 64 ? out.substring(0, 64) : out;
+    try {
+      return "lti-" + LtiJwt.b64u(LtiJwt.sha256(issuer + "\n" + sub)).substring(0, 24)
+          + "@lti.invalid";
+    } catch (Exception e) {
+      throw new IllegalStateException("SHA-256 is unavailable", e);
+    }
   }
 
   private static boolean audienceContains(Object aud, String clientId) {

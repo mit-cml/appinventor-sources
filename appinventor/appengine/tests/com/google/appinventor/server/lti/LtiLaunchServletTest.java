@@ -73,7 +73,7 @@ public class LtiLaunchServletTest extends TestCase {
   /** An LTI account lands in the reserved space and never looks like a real email. */
   public void testAccountKeyIsNamespaced() {
     String key = LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42");
-    assertTrue("was: " + key, key.startsWith("42."));
+    assertTrue("was: " + key, key.startsWith("lti-"));
     assertTrue("was: " + key, key.endsWith("@lti.invalid"));
   }
 
@@ -83,10 +83,16 @@ public class LtiLaunchServletTest extends TestCase {
         .equals(LtiLaunchServlet.ltiAccountKey("http://b.example.org", "1")));
   }
 
+  /** Subjects that differ only in punctuation get different accounts. */
+  public void testAccountKeyDistinguishesPunctuation() {
+    assertFalse(LtiLaunchServlet.ltiAccountKey("http://x.org", "a-b")
+        .equals(LtiLaunchServlet.ltiAccountKey("http://x.org", "a.b")));
+  }
+
   /** A missing subject still produces a stable, valid key. */
   public void testAccountKeyHandlesMissingSubject() {
     String key = LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "");
-    assertTrue("was: " + key, key.startsWith("unknown."));
+    assertTrue("was: " + key, key.startsWith("lti-"));
     assertTrue("was: " + key, key.endsWith("@lti.invalid"));
   }
 }
