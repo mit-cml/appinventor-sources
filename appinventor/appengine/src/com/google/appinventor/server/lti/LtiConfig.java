@@ -45,6 +45,12 @@ public final class LtiConfig {
   private static final Flag<String> TOOL_BASE_URL =
       Flag.createFlag("lti.tool.baseurl", "http://localhost:8888");
 
+  // Whether the dynamic registration endpoint (/lti/register) is open. Off by
+  // default, an administrator turns it on to register a platform, then off, so
+  // an untrusted party can not register itself as a platform.
+  private static final Flag<String> REGISTRATION_ENABLED =
+      Flag.createFlag("lti.registration.enabled", "false");
+
   private LtiConfig() {}
 
   public static String issuer() {
@@ -79,5 +85,20 @@ public final class LtiConfig {
   /** The tool launch (redirect) URL registered with the platform. */
   public static String launchUrl() {
     return toolBaseUrl() + "/lti/launch";
+  }
+
+  /** The tool OIDC login initiation URL registered with the platform. */
+  public static String loginUrl() {
+    return toolBaseUrl() + "/lti/login";
+  }
+
+  /** The tool JWK set URL registered with the platform. */
+  public static String jwksUrl() {
+    return toolBaseUrl() + "/lti/jwks";
+  }
+
+  /** Whether the dynamic registration endpoint is currently open. */
+  public static boolean registrationEnabled() {
+    return "true".equalsIgnoreCase(REGISTRATION_ENABLED.get());
   }
 }
