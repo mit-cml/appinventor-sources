@@ -9,14 +9,15 @@ import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 
 /**
- * Tests that the grade passback context survives in storage, since a student
- * may submit long after the launch, possibly after a server restart or on
- * another server instance.
+ * Tests that the grade passback context survives in storage keyed by project, so
+ * a student may submit long after the launch and each assignment posts to its
+ * own line item.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
 public class LtiGradeContextTest extends LocalDatastoreTestCase {
 
+  private static final long PROJECT_ID = 5066549580791808L;
   private static final String USER_ID = "1";
   private static final String ISSUER = "http://localhost:8080";
   private static final String LINE_ITEM =
@@ -30,34 +31,33 @@ public class LtiGradeContextTest extends LocalDatastoreTestCase {
 
   /** Without a stored context there is nothing to submit to. */
   public void testEmptyInitially() {
-    assertNull(LtiGradeContext.get(USER_ID));
+    assertNull(LtiGradeContext.get(PROJECT_ID));
   }
 
-  /** A stored context comes back with the same issuer, line item, and platform user. */
+  /** A stored context comes back with its owner, issuer, line item, and platform user. */
   public void testPutThenGetRoundTrip() {
-    LtiGradeContext.put(USER_ID, ISSUER, LINE_ITEM, "platform-sub-9");
-    LtiGradeContext.Context ctx = LtiGradeContext.get(USER_ID);
+    LtiGradeContext.put(PROJECT_ID, USER_ID, ISSUER, LINE_ITEM, "platform-sub-9");
+    LtiGradeContext.Context ctx = LtiGradeContext.get(PROJECT_ID);
     assertNotNull(ctx);
+    assertEquals(USER_ID, ctx.userId);
     assertEquals(ISSUER, ctx.issuer);
     assertEquals(LINE_ITEM, ctx.lineItemUrl);
     assertEquals("platform-sub-9", ctx.ltiUserSub);
   }
 
-  /** A later launch replaces the earlier passback target. */
-  public void testPutReplacesEarlierContext() {
-    LtiGradeContext.put(USER_ID, ISSUER, LINE_ITEM, "sub-1");
-    LtiGradeContext.put(USER_ID, ISSUER, LINE_ITEM + "?type=2", "sub-2");
-    LtiGradeContext.Context ctx = LtiGradeContext.get(USER_ID);
-    assertEquals(LINE_ITEM + "?type=2", ctx.lineItemUrl);
-    assertEquals("sub-2", ctx.ltiUserSub);
+  /** Two assignments keep separate contexts, so a submission targets the right one. */
+  public void testProjectsAreSeparate() {
+    LtiGradeContext.put(PROJECT_ID, USER_ID, ISSUER, LINE_ITEM + "/a", "sub-a");
+    LtiGradeContext.put(PROJECT_ID + 1, USER_ID, ISSUER, LINE_ITEM + "/b", "sub-b");
+    assertEquals(LINE_ITEM + "/a", LtiGradeContext.get(PROJECT_ID).lineItemUrl);
+    assertEquals(LINE_ITEM + "/b", LtiGradeContext.get(PROJECT_ID + 1).lineItemUrl);
   }
 
   /** A launch without a grade service must not clobber an earlier target. */
   public void testEmptyLineItemIsIgnored() {
-    LtiGradeContext.put(USER_ID, ISSUER, LINE_ITEM, "sub-1");
-    LtiGradeContext.put(USER_ID, ISSUER, "", "sub-2");
-    LtiGradeContext.put(USER_ID, ISSUER, null, "sub-3");
-    LtiGradeContext.Context ctx = LtiGradeContext.get(USER_ID);
-    assertEquals(LINE_ITEM, ctx.lineItemUrl);
+    LtiGradeContext.put(PROJECT_ID, USER_ID, ISSUER, LINE_ITEM, "sub-1");
+    LtiGradeContext.put(PROJECT_ID, USER_ID, ISSUER, "", "sub-2");
+    LtiGradeContext.put(PROJECT_ID, USER_ID, ISSUER, null, "sub-3");
+    assertEquals(LINE_ITEM, LtiGradeContext.get(PROJECT_ID).lineItemUrl);
   }
 }

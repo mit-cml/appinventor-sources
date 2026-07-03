@@ -60,14 +60,22 @@ public class LtiSubmitServlet extends HttpServlet {
       resp.getWriter().println("Not signed in. Launch the activity from the LMS first.");
       return;
     }
-    LtiGradeContext.Context ctx = LtiGradeContext.get(userInfo.getUserId());
-    if (ctx == null) {
-      // Not in a gradable LTI session (for example a plain sign in, or an
-      // activity without grade sync). A non 2xx status is important, because the
-      // client shows success only on 2xx.
+    long projectId;
+    try {
+      projectId = Long.parseLong(req.getParameter("projectId"));
+    } catch (NumberFormatException e) {
+      resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      resp.getWriter().println("No project to submit.");
+      return;
+    }
+    LtiGradeContext.Context ctx = LtiGradeContext.get(projectId);
+    if (ctx == null || !userInfo.getUserId().equals(ctx.userId)) {
+      // Not a gradable LTI project for this user, a plain project or one owned by
+      // someone else. A non 2xx status is important, because the client shows
+      // success only on 2xx.
       resp.setStatus(HttpServletResponse.SC_CONFLICT);
       resp.getWriter().println(
-          "No grade line item for this session. Launch the activity from the LMS, "
+          "No grade line item for this project. Launch the activity from the LMS, "
           + "and make sure grading is enabled on it.");
       return;
     }

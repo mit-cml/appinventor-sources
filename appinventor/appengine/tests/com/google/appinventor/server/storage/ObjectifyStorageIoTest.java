@@ -623,18 +623,22 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   }
 
   public void testLtiGradeContext() {
+    final long projectId = 5066549580791808L;
     final String userId = "user-300";
     final String issuer = "https://moodle.example.org";
-    assertNull(storage.getLtiGradeContext(userId));
-    storage.storeLtiGradeContext(userId, issuer, issuer + "/lineitem/9", "sub-9");
-    StoredData.LtiGradeContextData ctx = storage.getLtiGradeContext(userId);
+    assertNull(storage.getLtiGradeContext(projectId));
+    storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/9", "sub-9");
+    StoredData.LtiGradeContextData ctx = storage.getLtiGradeContext(projectId);
     assertNotNull(ctx);
+    assertEquals(userId, ctx.userId);
     assertEquals(issuer, ctx.issuer);
     assertEquals(issuer + "/lineitem/9", ctx.lineItemUrl);
     assertEquals("sub-9", ctx.ltiUserSub);
-    // The latest launch overwrites the grade context for that user.
-    storage.storeLtiGradeContext(userId, issuer, issuer + "/lineitem/10", "sub-10");
-    assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(userId).lineItemUrl);
+    // A relaunch of the assignment replaces its own context, and a different
+    // project keeps a separate one.
+    storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/10", "sub-10");
+    assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(projectId).lineItemUrl);
+    assertNull(storage.getLtiGradeContext(projectId + 1));
   }
 
   public void testLtiKeys() {

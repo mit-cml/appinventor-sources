@@ -628,9 +628,10 @@ public interface StorageIo {
   void storeLtiForkProject(String userId, String issuer, String deploymentId,
       String resourceLinkId, long projectId);
 
-  StoredData.LtiGradeContextData getLtiGradeContext(String userId);
+  StoredData.LtiGradeContextData getLtiGradeContext(long projectId);
 
-  void storeLtiGradeContext(String userId, String issuer, String lineItemUrl, String ltiUserSub);
+  void storeLtiGradeContext(long projectId, String userId, String issuer, String lineItemUrl,
+      String ltiUserSub);
 
   List<StoredData.LtiKeyData> getLtiKeys();
 
