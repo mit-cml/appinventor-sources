@@ -105,7 +105,13 @@ public class LtiLaunchServlet extends HttpServlet {
 
       String messageType = claims.optString(LTI + "message_type");
       if ("LtiDeepLinkingRequest".equals(messageType)) {
-        // The teacher is adding the assignment and picking a template.
+        // The teacher is adding the assignment and picking a template. Only an
+        // instructor may do this, in addition to the per project ownership check
+        // in the selection step.
+        if (!isInstructor(claims)) {
+          fail(resp, "Only an instructor can add an App Inventor assignment");
+          return;
+        }
         renderTemplatePicker(resp, claims);
         return;
       }
