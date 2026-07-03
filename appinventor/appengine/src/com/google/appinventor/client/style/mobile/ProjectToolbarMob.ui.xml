@@ -17,29 +17,29 @@
         <g:Label text="{messages.trashButton}" styleName="ya-ProjectName ode-NavLabel" visible="false"
                  ui:field="trashLabel"/>
 
-        <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" align="center">
+        <ai:ToolbarItem name="Projects" caption="{messages.myProjectsButton}" icon="inventory" align="center">
             <actions:SwitchToProjectAction/>
         </ai:ToolbarItem>
         <ai:ToolbarItem name="New" caption="{messages.newProjectButton}" align="center">
             <actions:NewProjectAction/>
         </ai:ToolbarItem>
-        <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}" align="center">
+        <ai:ToolbarItem name="Folder" caption="{messages.newProjectFolderMenuItem}" icon="create_new_folder" align="center">
             <actions:NewFolderAction/>
         </ai:ToolbarItem>
-        <ai:ToolbarItem name="Move" caption="{messages.moveProjectButton}" align="center">
+        <ai:ToolbarItem name="Move" caption="{messages.moveProjectButton}" icon="drive_file_move" align="center">
             <actions:MoveProjectsAction/>
         </ai:ToolbarItem>
-        <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" align="center">
+        <ai:ToolbarItem name="Trash" caption="{messages.viewTrashButton}" icon="folder_delete" align="center">
             <actions:TrashAction/>
         </ai:ToolbarItem>
 
-        <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}" visible="false" align="center">
+        <ai:ToolbarItem name="Delete" caption="{messages.deleteProjectButton}" icon="delete" align="center">
             <actions:DeleteAction/>
         </ai:ToolbarItem>
-        <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}" visible="false" align="center">
+        <ai:ToolbarItem name="Restore" caption="{messages.restoreProjectButton}" visible="false" icon="restore" align="center">
             <actions:RestoreProjectAction/>
         </ai:ToolbarItem>
-        <ai:ToolbarItem name="Delete From Trash" caption="{messages.deleteFromTrashButton}" visible="false" align="center">
+        <ai:ToolbarItem name="Delete From Trash" caption="{messages.deleteFromTrashButton}" visible="false" icon="delete_forever" align="center">
             <actions:DeleteForeverProjectAction/>
         </ai:ToolbarItem>
         <ai:ToolbarItem name="Login to Gallery" caption="{messages.loginToGallery}" visible="false">

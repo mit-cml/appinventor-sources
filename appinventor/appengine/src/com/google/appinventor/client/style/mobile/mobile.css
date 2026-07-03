@@ -3254,7 +3254,7 @@ input[type="checkbox"]:focus {
 }
 
 .tab-icon {
-    font-size: 18px;
+    font-size: 24px;
     line-height: 1;
 }
 
@@ -3344,4 +3344,17 @@ input[type="checkbox"]:focus {
 
 .mobile-sort-dropdown-popup{
     margin-left: -50px !important;
+}
+
+/* Override center layout so Project Explorer buttons distribute evenly on mobile */
+.ode-BottomNavBar.ya-Toolbar .center {
+    display: flex !important;
+    justify-content: space-around !important;
+    width: 100% !important;
+}
+
+/* Icon style for generated TextButtons in Project Explorer */
+.ode-BottomNavBar .ode-TextButton .material-icons {
+    font-size: 24px !important;
+    margin-bottom: 4px;
 }
