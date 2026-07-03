@@ -5,21 +5,20 @@
 
 package com.google.appinventor.server.lti;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Minimal direct HTTP helper for the LTI tool. Unlike the Google LMS client,
- * this opens connections directly with no proxy, because the LTI platform
- * (Moodle) is reached on localhost while the dev server may be launched with a
- * SOCKS proxy for the Google calls.
+ * Minimal direct HTTP helper for the LTI tool. Opens connections with no proxy,
+ * because the LTI platform (Moodle) is reached on localhost while the dev server
+ * may be launched with a SOCKS proxy meant only for the Google calls.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -32,14 +31,8 @@ final class LtiHttp {
 
   /** GETs a URL and returns the body, throwing on a 4xx or 5xx response. */
   static String get(String urlString) throws IOException {
-    // Force a direct connection. Moodle is on localhost, and the dev server may
-    // be launched with a system or SOCKS proxy meant only for the Google calls.
-    HttpURLConnection conn =
-        (HttpURLConnection) new URL(urlString).openConnection(Proxy.NO_PROXY);
+    HttpURLConnection conn = open(urlString, "GET");
     try {
-      conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
-      conn.setReadTimeout(READ_TIMEOUT_MILLIS);
-      conn.setRequestMethod("GET");
       conn.setRequestProperty("Accept", "application/json");
       return readBody(conn);
     } finally {
@@ -52,18 +45,29 @@ final class LtiHttp {
    * throwing on a 4xx or 5xx response.
    */
   static String postForm(String urlString, String body) throws IOException {
-    // Force a direct connection. Moodle is on localhost, and the dev server may
-    // be launched with a system or SOCKS proxy meant only for the Google calls.
-    HttpURLConnection conn =
-        (HttpURLConnection) new URL(urlString).openConnection(Proxy.NO_PROXY);
+    return post(urlString, body, "application/x-www-form-urlencoded", null);
+  }
+
+  /**
+   * POSTs a JSON body with a bearer token and returns the response, throwing on
+   * a 4xx or 5xx response.
+   */
+  static String postJsonWithBearer(String urlString, String json, String bearer,
+      String contentType) throws IOException {
+    return post(urlString, json, contentType, bearer);
+  }
+
+  private static String post(String urlString, String body, String contentType, String bearer)
+      throws IOException {
+    HttpURLConnection conn = open(urlString, "POST");
     try {
-      conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
-      conn.setReadTimeout(READ_TIMEOUT_MILLIS);
-      conn.setRequestMethod("POST");
       conn.setDoOutput(true);
-      conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+      conn.setRequestProperty("Content-Type", contentType);
       conn.setRequestProperty("Accept", "application/json");
       conn.setRequestProperty("Connection", "close");
+      if (bearer != null) {
+        conn.setRequestProperty("Authorization", "Bearer " + bearer);
+      }
       try (OutputStream os = conn.getOutputStream()) {
         os.write(body.getBytes(StandardCharsets.UTF_8));
       }
@@ -74,30 +78,17 @@ final class LtiHttp {
   }
 
   /**
-   * POSTs a JSON body with a bearer token and returns the response, throwing on
-   * a 4xx or 5xx response.
+   * Opens a connection to the URL with the given method. Forces a direct
+   * connection, because Moodle is on localhost and the dev server may carry a
+   * proxy meant only for the Google calls.
    */
-  static String postJsonWithBearer(String urlString, String json, String bearer,
-      String contentType) throws IOException {
-    // Force a direct connection. Moodle is on localhost, and the dev server may
-    // be launched with a system or SOCKS proxy meant only for the Google calls.
+  private static HttpURLConnection open(String urlString, String method) throws IOException {
     HttpURLConnection conn =
         (HttpURLConnection) new URL(urlString).openConnection(Proxy.NO_PROXY);
-    try {
-      conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
-      conn.setReadTimeout(READ_TIMEOUT_MILLIS);
-      conn.setRequestMethod("POST");
-      conn.setDoOutput(true);
-      conn.setRequestProperty("Content-Type", contentType);
-      conn.setRequestProperty("Authorization", "Bearer " + bearer);
-      conn.setRequestProperty("Connection", "close");
-      try (OutputStream os = conn.getOutputStream()) {
-        os.write(json.getBytes(StandardCharsets.UTF_8));
-      }
-      return readBody(conn);
-    } finally {
-      conn.disconnect();
-    }
+    conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
+    conn.setReadTimeout(READ_TIMEOUT_MILLIS);
+    conn.setRequestMethod(method);
+    return conn;
   }
 
   private static String readBody(HttpURLConnection conn) throws IOException {
@@ -106,11 +97,11 @@ final class LtiHttp {
         (status >= 200 && status < 400) ? conn.getInputStream() : conn.getErrorStream();
     StringBuilder sb = new StringBuilder();
     if (stream != null) {
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          sb.append(line);
+      try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+        char[] buffer = new char[4096];
+        int n;
+        while ((n = reader.read(buffer)) != -1) {
+          sb.append(buffer, 0, n);
         }
       }
     }

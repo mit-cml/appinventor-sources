@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 final class LtiState {
 
   private static final SecureRandom RANDOM = new SecureRandom();
+  private static final int TOKEN_BYTES = 24;
   private static final long TTL_MILLIS = 10 * 60 * 1000L;
   private static final long DEEP_LINK_TTL_MILLIS = 30 * 60 * 1000L;
   private static final Map<String, Entry> STORE = new ConcurrentHashMap<>();
@@ -47,12 +48,14 @@ final class LtiState {
     final String returnUrl;
     final String data;
     final String deploymentId;
+    final String teacherUserId;
     private final long ts;
 
-    DeepLink(String returnUrl, String data, String deploymentId) {
+    DeepLink(String returnUrl, String data, String deploymentId, String teacherUserId) {
       this.returnUrl = returnUrl;
       this.data = data;
       this.deploymentId = deploymentId;
+      this.teacherUserId = teacherUserId;
       this.ts = System.currentTimeMillis();
     }
   }
@@ -60,7 +63,7 @@ final class LtiState {
   private LtiState() {}
 
   static String random() {
-    byte[] b = new byte[24];
+    byte[] b = new byte[TOKEN_BYTES];
     RANDOM.nextBytes(b);
     return Base64.getUrlEncoder().withoutPadding().encodeToString(b);
   }
@@ -90,9 +93,10 @@ final class LtiState {
   }
 
   /** Saves a Deep Linking selection context and returns its one time token. */
-  static String createDeepLink(String returnUrl, String data, String deploymentId) {
+  static String createDeepLink(String returnUrl, String data, String deploymentId,
+      String teacherUserId) {
     String token = random();
-    DEEP_LINKS.put(token, new DeepLink(returnUrl, data, deploymentId));
+    DEEP_LINKS.put(token, new DeepLink(returnUrl, data, deploymentId, teacherUserId));
     sweep();
     return token;
   }

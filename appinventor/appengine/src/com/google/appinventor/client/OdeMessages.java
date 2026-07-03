@@ -547,6 +547,18 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Menu item for submitting the current work to the LMS that launched App Inventor over LTI.")
   String submitToLmsMenuItem();
 
+  @DefaultMessage("Submitting to your LMS...")
+  @Description("Shown while a submission to the LMS over LTI is in progress.")
+  String submittingToLms();
+
+  @DefaultMessage("Submitted to your LMS. Your teacher will grade it there.")
+  @Description("Shown after the current work is submitted to the LMS over LTI.")
+  String submitToLmsSuccess();
+
+  @DefaultMessage("Could not submit to your LMS. Open the assignment from your LMS and try again.")
+  @Description("Shown when a submission to the LMS over LTI does not succeed.")
+  String submitToLmsFailed();
+
   @DefaultMessage("Export")
   @Description("Export button title")
   String exportButton();

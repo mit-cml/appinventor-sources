@@ -86,18 +86,8 @@ public final class LtiConfig {
     return TOOL_BASE_URL.get();
   }
 
-  /** The tool login initiation URL registered with the platform. */
-  public static String loginUrl() {
-    return toolBaseUrl() + "/lti/login";
-  }
-
   /** The tool launch (redirect) URL registered with the platform. */
   public static String launchUrl() {
     return toolBaseUrl() + "/lti/launch";
-  }
-
-  /** Whether the tool registration values are present. */
-  public static boolean isConfigured() {
-    return !clientId().isEmpty();
   }
 }
