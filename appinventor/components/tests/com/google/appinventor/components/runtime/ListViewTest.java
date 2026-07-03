@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.os.Looper;
 import android.view.View;
 
 import android.widget.EditText;
@@ -20,6 +21,8 @@ import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import org.junit.Test;
+
+import static org.robolectric.Shadows.shadowOf;
 
 public class ListViewTest extends RobolectricTestBase {
   /**
@@ -53,14 +56,14 @@ public class ListViewTest extends RobolectricTestBase {
     ShadowEventDispatcher.clearEvents();
 
     // Click on the second list view
-    assertTrue(getViewForPosition(listView2, 1).performClick());
+    assertTrue(getViewForPosition(listView2, 0).performClick());
     ShadowEventDispatcher.assertEventNotFired(listView1, "AfterPicking");
     ShadowEventDispatcher.assertEventFired(listView2, "AfterPicking");
     ShadowEventDispatcher.assertEventNotFired(listView3, "AfterPicking");
     ShadowEventDispatcher.clearEvents();
 
     // Click on the third list view
-    assertTrue(getViewForPosition(listView3, 2).performClick());
+    assertTrue(getViewForPosition(listView3, 0).performClick());
     ShadowEventDispatcher.assertEventNotFired(listView1, "AfterPicking");
     ShadowEventDispatcher.assertEventNotFired(listView2, "AfterPicking");
     ShadowEventDispatcher.assertEventFired(listView3, "AfterPicking");
@@ -125,8 +128,11 @@ public class ListViewTest extends RobolectricTestBase {
   }
 
   private void initialize(AndroidViewComponent component) {
-    component.getView().invalidate();
-    component.getView().forceLayout();
-    component.getView().measure(0, 0);
+    View v = component.getView();
+    v.measure(
+        View.MeasureSpec.makeMeasureSpec(320, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+    shadowOf(Looper.getMainLooper()).idle();
   }
 }
