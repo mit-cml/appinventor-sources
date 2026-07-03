@@ -64,6 +64,14 @@ public class LtiLaunchServletTest extends TestCase {
     assertEquals("Assignment_7", LtiLaunchServlet.forkProjectName(claimsWith("!!!", "7")));
   }
 
+  /** A long resource link id in the fallback is still capped to a valid length. */
+  public void testLongResourceLinkIdFallbackIsCapped() {
+    String name = LtiLaunchServlet.forkProjectName(
+        claimsWith("", "0123456789012345678901234567890123456789"));
+    assertTrue("was: " + name, name.startsWith("Assignment_"));
+    assertTrue("was: " + name, name.length() <= 40);
+  }
+
   /** Without any resource link claim a fixed default is used. */
   public void testMissingResourceLinkUsesDefault() {
     assertEquals("AppInventorAssignment",
