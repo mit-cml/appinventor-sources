@@ -8,6 +8,7 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -39,8 +40,10 @@ public class SubmitToLmsAction implements Command {
     // A custom header the server requires. A cross site page can not set it, so
     // only a submission started from within App Inventor is accepted.
     builder.setHeader("X-AppInventor-LTI", "1");
+    builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     try {
-      builder.sendRequest("", new RequestCallback() {
+      builder.sendRequest("projectId=" + projectId, new RequestCallback() {
         @Override
         public void onResponseReceived(Request request, Response response) {
           submitting = false;

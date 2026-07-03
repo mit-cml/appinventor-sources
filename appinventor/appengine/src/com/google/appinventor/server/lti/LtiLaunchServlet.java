@@ -142,14 +142,14 @@ public class LtiLaunchServlet extends HttpServlet {
         resp.addCookie(cook);
       }
 
-      JSONObject ags = claims.optJSONObject(AGS);
-      if (ags != null) {
-        LtiGradeContext.put(user.getUserId(), platform.issuer, ags.optString("lineitem", ""), sub);
-      }
-
       long projectId = maybeForkStarterProject(user, claims);
       if (projectId > 0) {
         pointIdeAtProject(user.getUserId(), projectId);
+        JSONObject ags = claims.optJSONObject(AGS);
+        if (ags != null) {
+          LtiGradeContext.put(projectId, user.getUserId(), platform.issuer,
+              ags.optString("lineitem", ""), sub);
+        }
       }
 
       LOG.info("LTI launch established a session for " + user.getUserEmail()

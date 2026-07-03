@@ -2503,13 +2503,13 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public LtiGradeContextData getLtiGradeContext(final String userId) {
+  public LtiGradeContextData getLtiGradeContext(final long projectId) {
     final Result<LtiGradeContextData> result = new Result<LtiGradeContextData>();
     try {
       runJobWithRetries(new JobRetryHelper() {
           @Override
           public void run(Objectify datastore) {
-            LtiGradeContextData data = datastore.find(ltiGradeContextKey(userId));
+            LtiGradeContextData data = datastore.find(ltiGradeContextKey(projectId));
             if (data != null) {
               result.t = data;
             }
@@ -2522,14 +2522,15 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public void storeLtiGradeContext(final String userId, final String issuer,
+  public void storeLtiGradeContext(final long projectId, final String userId, final String issuer,
       final String lineItemUrl, final String ltiUserSub) {
     try {
       runJobWithRetries(new JobRetryHelper() {
           @Override
           public void run(Objectify datastore) {
             LtiGradeContextData data = new LtiGradeContextData();
-            data.id = userId;
+            data.id = Long.toString(projectId);
+            data.userId = userId;
             data.issuer = issuer;
             data.lineItemUrl = lineItemUrl;
             data.ltiUserSub = ltiUserSub;
@@ -2589,8 +2590,9 @@ public class ObjectifyStorageIo implements StorageIo {
         ltiResourceLinkId(userId, issuer, deploymentId, resourceLinkId));
   }
 
-  private Key<StoredData.LtiGradeContextData> ltiGradeContextKey(String userId) {
-    return new Key<StoredData.LtiGradeContextData>(LtiGradeContextData.class, userId);
+  private Key<StoredData.LtiGradeContextData> ltiGradeContextKey(long projectId) {
+    return new Key<StoredData.LtiGradeContextData>(
+        LtiGradeContextData.class, Long.toString(projectId));
   }
 
   // Create a name for a blob from a project id and file name. This is mostly
