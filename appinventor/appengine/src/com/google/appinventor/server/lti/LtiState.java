@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Server side store for the short lived context of an in-flight LTI exchange.
+ * Server side store for the short lived context of an in flight LTI exchange.
  * Holds the OIDC state and nonce of a launch, and the return context of a Deep
  * Linking selection, both consumed exactly once. Kept in memory rather than in
  * a cookie because these flows arrive as cross site form posts, where a

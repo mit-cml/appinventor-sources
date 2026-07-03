@@ -6,10 +6,10 @@
 package com.google.appinventor.server.lti;
 
 /**
- * Small HTML escaping helper shared by the LTI servlets that build markup by
- * hand (the template picker and the auto submitting Deep Linking response).
- * Escapes the five characters that matter in element text and in single or
- * double quoted attribute values.
+ * Shared markup helpers for the LTI servlets that build pages by hand. Escapes
+ * the five characters that matter in element text and in single or double quoted
+ * attribute values, and builds the common page chrome so every served page looks
+ * the same.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -35,7 +35,8 @@ final class LtiHtml {
       + ".brand{margin:0 0 1rem;font-size:.75rem;font-weight:600;letter-spacing:.08em;"
       + "text-transform:uppercase;color:#1a73e8}"
       + "h1{margin:0 0 .75rem;font-size:1.375rem;font-weight:500;line-height:1.3;color:#0d47a1}"
-      + "p{margin:.75rem 0;color:#3c4043}ul{list-style:none;margin:1.25rem 0;padding:0}"
+      + "p{margin:.75rem 0;color:#3c4043}"
+      + "ul{list-style:none;margin:1.25rem 0;padding:0;max-height:50vh;overflow:auto}"
       + "label.opt{display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;"
       + "margin:.5rem 0;border:1px solid #dadce0;border-radius:8px;cursor:pointer}"
       + "label.opt:hover{border-color:#1a73e8;background:#f8fbff}"
@@ -67,9 +68,6 @@ final class LtiHtml {
         + "<p class='brand'>App Inventor</p>";
   }
 
-  /**
-   * Closes a page opened by {@link #pageHead}.
-   */
   static String pageFoot() {
     return "</main></body></html>";
   }
