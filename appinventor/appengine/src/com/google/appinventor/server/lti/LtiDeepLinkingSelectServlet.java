@@ -7,6 +7,7 @@ package com.google.appinventor.server.lti;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData;
 
 import java.io.IOException;
 import java.security.PrivateKey;
@@ -55,6 +56,11 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
         invalidSelection(resp);
         return;
       }
+      StoredData.LtiPlatformData platform = LtiConfig.platform(dl.issuer);
+      if (platform == null) {
+        invalidSelection(resp);
+        return;
+      }
 
       // The chosen project must belong to the teacher who opened the picker. The
       // picker only lists that teacher's own projects, but the posted id is
@@ -95,8 +101,8 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       JSONObject header = new JSONObject()
           .put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID);
       JSONObject payload = new JSONObject()
-          .put("iss", LtiConfig.clientId())
-          .put("aud", LtiConfig.issuer())
+          .put("iss", platform.clientId)
+          .put("aud", platform.issuer)
           .put("iat", now)
           .put("exp", now + RESPONSE_TTL_SECONDS)
           .put("nonce", LtiState.random())

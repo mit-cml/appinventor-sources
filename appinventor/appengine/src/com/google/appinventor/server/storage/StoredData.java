@@ -374,12 +374,14 @@ public class StoredData {
     public long projectId;
   }
 
-  // The grade line item and platform subject for a user's current LTI session,
-  // written on launch and read by the Submit to LMS action. The id is the
-  // App Inventor user id.
+  // The platform issuer, grade line item, and platform subject for a user's
+  // current LTI session, written on launch and read by the Submit to LMS action.
+  // The issuer lets the submit resolve the platform for the grade passback. The
+  // id is the App Inventor user id.
   @Unindexed
   public static final class LtiGradeContextData {
     @Id public String id;
+    public String issuer;
     public String lineItemUrl;
     public String ltiUserSub;
   }

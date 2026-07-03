@@ -2536,14 +2536,15 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
-  public void storeLtiGradeContext(final String userId, final String lineItemUrl,
-      final String ltiUserSub) {
+  public void storeLtiGradeContext(final String userId, final String issuer,
+      final String lineItemUrl, final String ltiUserSub) {
     try {
       runJobWithRetries(new JobRetryHelper() {
           @Override
           public void run(Objectify datastore) {
             LtiGradeContextData data = new LtiGradeContextData();
             data.id = userId;
+            data.issuer = issuer;
             data.lineItemUrl = lineItemUrl;
             data.ltiUserSub = ltiUserSub;
             datastore.put(data);

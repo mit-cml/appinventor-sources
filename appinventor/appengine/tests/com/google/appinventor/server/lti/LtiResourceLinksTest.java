@@ -9,18 +9,18 @@ import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 
 /**
- * Tests the durable assignment to project links that make relaunches
- * idempotent across activity renames and server restarts.
+ * Tests the durable assignment to project links that make relaunches idempotent
+ * across activity renames, server restarts, and server instances.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
 public class LtiResourceLinksTest extends LocalDatastoreTestCase {
 
   private static final String USER_ID = "1";
-  private static final String KEY_A =
-      LtiResourceLinks.key("http://localhost:8080", "1", "42");
-  private static final String KEY_B =
-      LtiResourceLinks.key("http://localhost:8080", "1", "43");
+  private static final String ISSUER = "http://localhost:8080";
+  private static final String DEPLOYMENT = "1";
+  private static final String LINK_A = "42";
+  private static final String LINK_B = "43";
 
   @Override
   protected void setUp() throws Exception {
@@ -29,34 +29,36 @@ public class LtiResourceLinksTest extends LocalDatastoreTestCase {
   }
 
   /** An unknown assignment has no linked project. */
-  public void testUnknownKeyReturnsMinusOne() {
-    assertEquals(-1, LtiResourceLinks.get(USER_ID, KEY_A));
+  public void testUnknownAssignmentReturnsZero() {
+    assertEquals(0, LtiResourceLinks.get(USER_ID, ISSUER, DEPLOYMENT, LINK_A));
   }
 
   /** A stored link comes back, and other assignments stay independent. */
   public void testPutThenGetRoundTrip() {
-    LtiResourceLinks.put(USER_ID, KEY_A, 5066549580791808L);
-    assertEquals(5066549580791808L, LtiResourceLinks.get(USER_ID, KEY_A));
-    assertEquals(-1, LtiResourceLinks.get(USER_ID, KEY_B));
+    LtiResourceLinks.put(USER_ID, ISSUER, DEPLOYMENT, LINK_A, 5066549580791808L);
+    assertEquals(5066549580791808L, LtiResourceLinks.get(USER_ID, ISSUER, DEPLOYMENT, LINK_A));
+    assertEquals(0, LtiResourceLinks.get(USER_ID, ISSUER, DEPLOYMENT, LINK_B));
   }
 
   /** Two assignments map to two projects side by side. */
   public void testTwoAssignmentsCoexist() {
-    LtiResourceLinks.put(USER_ID, KEY_A, 11L);
-    LtiResourceLinks.put(USER_ID, KEY_B, 22L);
-    assertEquals(11L, LtiResourceLinks.get(USER_ID, KEY_A));
-    assertEquals(22L, LtiResourceLinks.get(USER_ID, KEY_B));
+    LtiResourceLinks.put(USER_ID, ISSUER, DEPLOYMENT, LINK_A, 11L);
+    LtiResourceLinks.put(USER_ID, ISSUER, DEPLOYMENT, LINK_B, 22L);
+    assertEquals(11L, LtiResourceLinks.get(USER_ID, ISSUER, DEPLOYMENT, LINK_A));
+    assertEquals(22L, LtiResourceLinks.get(USER_ID, ISSUER, DEPLOYMENT, LINK_B));
   }
 
   /** Relinking an assignment replaces the earlier project id. */
   public void testPutReplacesEarlierLink() {
-    LtiResourceLinks.put(USER_ID, KEY_A, 11L);
-    LtiResourceLinks.put(USER_ID, KEY_A, 33L);
-    assertEquals(33L, LtiResourceLinks.get(USER_ID, KEY_A));
+    LtiResourceLinks.put(USER_ID, ISSUER, DEPLOYMENT, LINK_A, 11L);
+    LtiResourceLinks.put(USER_ID, ISSUER, DEPLOYMENT, LINK_A, 33L);
+    assertEquals(33L, LtiResourceLinks.get(USER_ID, ISSUER, DEPLOYMENT, LINK_A));
   }
 
-  /** The key separates platform, deployment, and resource link. */
-  public void testKeyShape() {
-    assertEquals("iss|dep|rl", LtiResourceLinks.key("iss", "dep", "rl"));
+  /** Another user's identical assignment is a separate link. */
+  public void testDifferentUserIsSeparate() {
+    StorageIoInstanceHolder.getInstance().getUser("2", "other@example.com");
+    LtiResourceLinks.put(USER_ID, ISSUER, DEPLOYMENT, LINK_A, 11L);
+    assertEquals(0, LtiResourceLinks.get("2", ISSUER, DEPLOYMENT, LINK_A));
   }
 }

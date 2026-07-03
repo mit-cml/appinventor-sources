@@ -624,16 +624,17 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testLtiGradeContext() {
     final String userId = "user-300";
+    final String issuer = "https://moodle.example.org";
     assertNull(storage.getLtiGradeContext(userId));
-    storage.storeLtiGradeContext(userId, "https://moodle.example.org/lineitem/9", "sub-9");
+    storage.storeLtiGradeContext(userId, issuer, issuer + "/lineitem/9", "sub-9");
     StoredData.LtiGradeContextData ctx = storage.getLtiGradeContext(userId);
     assertNotNull(ctx);
-    assertEquals("https://moodle.example.org/lineitem/9", ctx.lineItemUrl);
+    assertEquals(issuer, ctx.issuer);
+    assertEquals(issuer + "/lineitem/9", ctx.lineItemUrl);
     assertEquals("sub-9", ctx.ltiUserSub);
     // The latest launch overwrites the grade context for that user.
-    storage.storeLtiGradeContext(userId, "https://moodle.example.org/lineitem/10", "sub-10");
-    assertEquals("https://moodle.example.org/lineitem/10",
-        storage.getLtiGradeContext(userId).lineItemUrl);
+    storage.storeLtiGradeContext(userId, issuer, issuer + "/lineitem/10", "sub-10");
+    assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(userId).lineItemUrl);
   }
 
   /*

@@ -10,6 +10,7 @@ import com.google.appinventor.server.OdeAuthFilter;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -71,25 +72,37 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Missing id_token");
         return;
       }
-      String expectedNonce = LtiState.consumeNonce(state);
-      if (expectedNonce == null) {
+      LtiState.Entry stateEntry = LtiState.consume(state);
+      if (stateEntry == null) {
         fail(resp, "Invalid or expired state");
         return;
       }
+      StoredData.LtiPlatformData platform = LtiConfig.platform(stateEntry.issuer);
+      if (platform == null) {
+        fail(resp, "Unknown platform issuer");
+        return;
+      }
 
-      String jwks = LtiHttp.get(LtiConfig.jwksEndpoint());
+      String jwks = LtiHttp.get(platform.jwksEndpoint);
       JSONObject claims = LtiJwt.verify(idToken, jwks);
 
-      if (!LtiConfig.issuer().equals(claims.optString("iss"))) {
+      if (!platform.issuer.equals(claims.optString("iss"))) {
         fail(resp, "Issuer mismatch");
         return;
       }
-      if (!audienceContains(claims.opt("aud"), LtiConfig.clientId())) {
+      if (!audienceContains(claims.opt("aud"), platform.clientId)) {
         fail(resp, "Audience mismatch");
         return;
       }
-      if (!expectedNonce.equals(claims.optString("nonce"))) {
+      String nonce = claims.optString("nonce");
+      if (!stateEntry.nonce.equals(nonce)) {
         fail(resp, "Nonce mismatch");
+        return;
+      }
+      // One time use of the launch nonce, enforced in the datastore so a captured
+      // launch cannot be replayed against another server instance.
+      if (!storageIo.useLtiNonce(nonce)) {
+        fail(resp, "Replayed launch");
         return;
       }
       long now = System.currentTimeMillis() / 1000L;
@@ -97,8 +110,8 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Token expired");
         return;
       }
-      if (!LtiConfig.deploymentId().isEmpty()
-          && !LtiConfig.deploymentId().equals(claims.optString(LTI + "deployment_id"))) {
+      if (!platform.deploymentId.isEmpty()
+          && !platform.deploymentId.equals(claims.optString(LTI + "deployment_id"))) {
         fail(resp, "Unknown deployment id");
         return;
       }
@@ -129,7 +142,7 @@ public class LtiLaunchServlet extends HttpServlet {
 
       JSONObject ags = claims.optJSONObject(AGS);
       if (ags != null) {
-        LtiGradeContext.put(user.getUserId(), ags.optString("lineitem", ""), sub);
+        LtiGradeContext.put(user.getUserId(), platform.issuer, ags.optString("lineitem", ""), sub);
       }
 
       long projectId = maybeForkStarterProject(user, claims);
@@ -154,8 +167,19 @@ public class LtiLaunchServlet extends HttpServlet {
    * existing App Inventor account, if wanted, would be a separate explicit step.
    */
   private User userForLaunch(JSONObject claims) {
-    String key = ltiAccountKey(claims.optString("iss", ""), claims.optString("sub", ""));
-    User user = storageIo.getUserFromEmail(key);
+    String issuer = claims.optString("iss", "");
+    String sub = claims.optString("sub", "");
+    String linkedUserId = storageIo.getLtiUserId(issuer, sub);
+    User user;
+    if (linkedUserId != null) {
+      user = storageIo.getUser(linkedUserId);
+    } else {
+      // First launch for this platform identity. Provision the namespaced
+      // account and record the durable link, so the account id stays stable
+      // even if the account key derivation ever changes.
+      user = storageIo.getUserFromEmail(ltiAccountKey(issuer, sub));
+      storageIo.storeLtiUserLink(issuer, sub, user.getUserId());
+    }
     storageIo.setTosAccepted(user.getUserId());
     return user;
   }
@@ -218,9 +242,11 @@ public class LtiLaunchServlet extends HttpServlet {
         return -1;
       }
       String userId = user.getUserId();
-      String linkKey = resourceLinkKey(claims);
-      if (!linkKey.isEmpty()) {
-        long linked = LtiResourceLinks.get(userId, linkKey);
+      String issuer = claims.optString("iss", "");
+      String deploymentId = claims.optString(LTI + "deployment_id", "");
+      String resourceLinkId = resourceLinkId(claims);
+      if (!resourceLinkId.isEmpty()) {
+        long linked = LtiResourceLinks.get(userId, issuer, deploymentId, resourceLinkId);
         if (linked > 0 && storageIo.getProjects(userId).contains(linked)) {
           LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
               + " for this assignment");
@@ -231,15 +257,15 @@ public class LtiLaunchServlet extends HttpServlet {
       long existing = findProjectByName(userId, projectName);
       if (existing > 0) {
         // Created before the durable link existed (or by name only). Adopt it.
-        if (!linkKey.isEmpty()) {
-          LtiResourceLinks.put(userId, linkKey, existing);
+        if (!resourceLinkId.isEmpty()) {
+          LtiResourceLinks.put(userId, issuer, deploymentId, resourceLinkId, existing);
         }
         LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + projectName);
         return existing;
       }
       long projectId = forkNewProject(user, claims, projectName);
-      if (projectId > 0 && !linkKey.isEmpty()) {
-        LtiResourceLinks.put(userId, linkKey, projectId);
+      if (projectId > 0 && !resourceLinkId.isEmpty()) {
+        LtiResourceLinks.put(userId, issuer, deploymentId, resourceLinkId, projectId);
       }
       return projectId;
     } catch (Exception e) {
@@ -272,15 +298,10 @@ public class LtiLaunchServlet extends HttpServlet {
     return projectId;
   }
 
-  /** The durable assignment key from the launch claims, or empty if unavailable. */
-  private static String resourceLinkKey(JSONObject claims) {
+  /** The resource link id from the launch claims, or empty if unavailable. */
+  private static String resourceLinkId(JSONObject claims) {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
-    String id = (resourceLink == null) ? "" : resourceLink.optString("id", "");
-    if (id.isEmpty()) {
-      return "";
-    }
-    return LtiResourceLinks.key(
-        claims.optString("iss", ""), claims.optString(LTI + "deployment_id", ""), id);
+    return (resourceLink == null) ? "" : resourceLink.optString("id", "");
   }
 
   /** Returns the id of the user's project with the given name, or -1. */
@@ -424,6 +445,7 @@ public class LtiLaunchServlet extends HttpServlet {
         (dls == null) ? "" : dls.optString("deep_link_return_url", ""),
         (dls == null) ? "" : dls.optString("data", ""),
         claims.optString(LTI + "deployment_id", ""),
+        claims.optString("iss", ""),
         teacher.getUserId());
     html.append("<form method='post' action='/lti/deeplink/select'>");
     html.append("<input type='hidden' name='dl' value='").append(LtiHtml.escape(dlToken))
