@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -84,6 +85,14 @@ final class LtiHttp {
     URL url = new URL(urlString);
     if (!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol())) {
       throw new IOException("Refusing a non HTTP URL");
+    }
+    // Block link local and wildcard hosts so a platform supplied key set or
+    // registration URL can not reach a cloud metadata endpoint. Loopback stays
+    // reachable for the local platform used in development.
+    InetAddress address = InetAddress.getByName(url.getHost());
+    if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
+        || address.isMulticastAddress()) {
+      throw new IOException("Refusing a link local address");
     }
     HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
     conn.setInstanceFollowRedirects(false);

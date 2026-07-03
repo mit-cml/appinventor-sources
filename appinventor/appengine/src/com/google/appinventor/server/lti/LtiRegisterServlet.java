@@ -31,6 +31,10 @@ import org.json.JSONObject;
  *
  * <p>The endpoint is closed by default and opened by a flag, because registering
  * a platform lets it launch users, so it must not be open to an untrusted party.
+ * While it is open it fetches the administrator supplied configuration URL, so
+ * the shared HTTP helper refuses link local and metadata hosts. A production
+ * deployment should also put this endpoint behind an administrator session and
+ * restrict the fetch to known platform hosts.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
