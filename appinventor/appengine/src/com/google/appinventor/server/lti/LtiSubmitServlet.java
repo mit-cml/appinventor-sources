@@ -38,12 +38,11 @@ public class LtiSubmitServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     resp.setContentType("text/html; charset=utf-8");
-    resp.getWriter().write("<!DOCTYPE html><html><head><meta charset='utf-8'>"
-        + "<title>Submit to LMS</title></head>"
-        + "<body style='font-family:sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem'>"
-        + "<h2>Submit to LMS</h2>"
-        + "<p>To submit your work, open the project in App Inventor and choose "
-        + "Submit to LMS from the Project menu.</p></body></html>");
+    resp.getWriter().write(LtiHtml.pageHead("Submit to LMS")
+        + "<h1>Submit to LMS</h1>"
+        + "<p>To submit your work, go back to App Inventor and choose "
+        + "<strong>Submit to LMS</strong> from the <strong>Project</strong> menu.</p>"
+        + LtiHtml.pageFoot());
   }
 
   @Override

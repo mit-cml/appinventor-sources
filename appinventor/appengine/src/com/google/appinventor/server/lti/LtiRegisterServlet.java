@@ -81,14 +81,13 @@ public class LtiRegisterServlet extends HttpServlet {
           config.getString("jwks_uri"),
           deploymentId, false);
       resp.setContentType("text/html; charset=utf-8");
-      resp.getWriter().write("<!DOCTYPE html><html><head><meta charset='utf-8'>"
-          + "<title>App Inventor registered</title></head>"
-          + "<body style='font-family:sans-serif;max-width:640px;margin:2rem auto'>"
-          + "<h2>App Inventor is registered with this platform.</h2>"
-          + "<p>An App Inventor administrator enables the platform before students can "
+      resp.getWriter().write(LtiHtml.pageHead("App Inventor registered")
+          + "<h1>App Inventor is registered</h1>"
+          + "<p>An App Inventor administrator enables this platform before students can "
           + "launch. You can close this window.</p>"
-          + "<script>(window.opener || window.parent).postMessage("
-          + "{subject: 'org.imsglobal.lti.close'}, '*');</script></body></html>");
+          + "<script>(window.opener||window.parent).postMessage("
+          + "{subject:'org.imsglobal.lti.close'},'*');</script>"
+          + LtiHtml.pageFoot());
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI dynamic registration failed", e);
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Dynamic registration failed");

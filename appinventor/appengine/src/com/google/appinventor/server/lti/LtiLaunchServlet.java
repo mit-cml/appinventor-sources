@@ -224,8 +224,10 @@ public class LtiLaunchServlet extends HttpServlet {
   private void fail(HttpServletResponse resp, String message) throws IOException {
     LOG.warning("LTI launch rejected: " + message);
     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    resp.setContentType("text/plain; charset=utf-8");
-    resp.getWriter().println("LTI launch error: " + message);
+    resp.setContentType("text/html; charset=utf-8");
+    resp.getWriter().write(LtiHtml.pageHead("Launch problem")
+        + "<h1>This assignment could not open</h1><p>" + LtiHtml.escape(message)
+        + ". Please go back to your LMS and open the activity again.</p>" + LtiHtml.pageFoot());
   }
 
   /**
@@ -432,17 +434,13 @@ public class LtiLaunchServlet extends HttpServlet {
       throws IOException {
     resp.setContentType("text/html; charset=utf-8");
     User teacher = userForLaunch(claims);
-    StringBuilder html = new StringBuilder();
-    html.append("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Choose a template</title>"
-        + "<style>body{font-family:sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem}"
-        + "h2{color:#1a73e8}li{margin:.5rem 0;list-style:none}"
-        + "button{background:#1a73e8;color:#fff;border:0;padding:.6rem 1.2rem;border-radius:4px;"
-        + "font-size:1rem;cursor:pointer;margin-top:1rem}</style></head><body>");
-    html.append("<h2>App Inventor — choose a template for this assignment</h2>");
+    StringBuilder html = new StringBuilder(LtiHtml.pageHead("Choose a template"))
+        .append("<h1>Choose a template for this assignment</h1>");
     List<Long> projects = storageIo.getProjects(teacher.getUserId());
     if (projects.isEmpty()) {
-      html.append("<p>You have no App Inventor projects yet. Open App Inventor, build a template "
-          + "project first, then add this assignment again.</p></body></html>");
+      html.append("<p>You do not have any App Inventor projects yet. Open App Inventor, build "
+          + "the project you want students to start from, then add this assignment again.</p>")
+          .append(LtiHtml.pageFoot());
       resp.getWriter().write(html.toString());
       return;
     }
@@ -453,23 +451,20 @@ public class LtiLaunchServlet extends HttpServlet {
         claims.optString(LTI + "deployment_id", ""),
         claims.optString("iss", ""),
         teacher.getUserId());
-    html.append("<form method='post' action='/lti/deeplink/select'>");
+    html.append("<p>Each student who opens this assignment gets their own copy of the project "
+        + "you choose here.</p><form method='post' action='/lti/deeplink/select'>");
     html.append("<input type='hidden' name='dl' value='").append(LtiHtml.escape(dlToken))
-        .append("'>");
-    html.append("<ul>");
+        .append("'><ul>");
     boolean first = true;
     for (long pid : projects) {
       String name = storageIo.getProjectName(teacher.getUserId(), pid);
-      html.append("<li><label><input type='radio' name='template_project_id' value='").append(pid)
-          .append("'");
-      if (first) {
-        html.append(" checked");
-        first = false;
-      }
-      html.append("> ").append(LtiHtml.escape(name)).append("</label></li>");
+      html.append("<li><label class='opt'><input type='radio' name='template_project_id' value='")
+          .append(pid).append(first ? "' checked>" : "'>")
+          .append("<span>").append(LtiHtml.escape(name)).append("</span></label></li>");
+      first = false;
     }
-    html.append("</ul><button type='submit'>Use this as the assignment template</button>"
-        + "</form></body></html>");
+    html.append("</ul><button class='btn' type='submit'>Use this as the assignment template"
+        + "</button></form>").append(LtiHtml.pageFoot());
     resp.getWriter().write(html.toString());
   }
 
