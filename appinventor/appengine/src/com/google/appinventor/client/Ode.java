@@ -1046,6 +1046,7 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
+    ShortcutRegistry.getInstance().applyKeyOverrides(ShortcutRegistry.getInstance().loadKeyOverrides());
     RootPanel.get().addDomHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent keyDownEvent) {

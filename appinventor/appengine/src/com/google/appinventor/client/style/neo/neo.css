@@ -1436,6 +1436,10 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-700;
 }
 
+.ode-DialogBox .ode-shortcut-conflict {
+  color: v-red;
+}
+
 .ode-FormCheckboxLabel {
   display: inline-block;
   margin: 10px;

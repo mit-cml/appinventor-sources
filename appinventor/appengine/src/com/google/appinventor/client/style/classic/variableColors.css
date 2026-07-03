@@ -792,6 +792,10 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-800;
 }
 
+.ode-DialogBox .ode-shortcut-conflict {
+  color: v-red;
+}
+
 .ode-DialogBox .gwt-Tree {
   border: thin solid gray-300;
 }

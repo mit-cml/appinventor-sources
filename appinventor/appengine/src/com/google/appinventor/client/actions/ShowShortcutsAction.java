@@ -55,10 +55,11 @@ public class ShowShortcutsAction implements Command {
     SHORTCUTS.add(new ShortcutDef("focus_properties",    MESSAGES.shortcutFocusProperties(),     "Alt+80",           true));
     SHORTCUTS.add(new ShortcutDef("focus_media",         MESSAGES.shortcutFocusMedia(),          "Alt+77",           true));
     SHORTCUTS.add(new ShortcutDef("toggle_view",         MESSAGES.shortcutToggleView(),          "Control+Alt",      false));
-    SHORTCUTS.add(new ShortcutDef("rename_component",    MESSAGES.shortcutRenameComponent(),     "Alt+78",           true));
+    // Not yet wired into ShortcutRegistry (see plan follow-up) — remapping them currently has no effect.
+    SHORTCUTS.add(new ShortcutDef("rename_component",    MESSAGES.shortcutRenameComponent(),     "Alt+78",           false));
     SHORTCUTS.add(new ShortcutDef("delete_component",    MESSAGES.shortcutDeleteComponent(),     "Delete/Backspace", false));
-    SHORTCUTS.add(new ShortcutDef("reset_connection",    MESSAGES.shortcutResetConnection(),     "Alt+Shift+82",     true));
-    SHORTCUTS.add(new ShortcutDef("refresh_companion",   MESSAGES.shortcutRefreshCompanion(),    "Alt+82",           true));
+    SHORTCUTS.add(new ShortcutDef("reset_connection",    MESSAGES.shortcutResetConnection(),     "Alt+Shift+82",     false));
+    SHORTCUTS.add(new ShortcutDef("refresh_companion",   MESSAGES.shortcutRefreshCompanion(),    "Alt+82",           false));
     SHORTCUTS.add(new ShortcutDef("navigate_components", MESSAGES.shortcutNavigateComponents(),  "↑/↓",              false));
     SHORTCUTS.add(new ShortcutDef("listview_add_row", MESSAGES.shortcutListViewAddRow(), "13", false));
     SHORTCUTS.add(new ShortcutDef("listview_navigate_rows", MESSAGES.shortcutListViewNavigateRows(), "↑/↓", false));
@@ -238,6 +239,7 @@ public class ShowShortcutsAction implements Command {
     label.removeStyleName("ode-shortcut-capturing");
     label.removeStyleName("ode-shortcut-editable");
     label.removeStyleName("ode-shortcut-locked");
+    label.removeStyleName("ode-shortcut-conflict");
     if (s == activeCapture) {
       label.setText(MESSAGES.shortcutsPressKey());
       label.addStyleName("ode-shortcut-capturing");
@@ -276,13 +278,40 @@ public class ShowShortcutsAction implements Command {
         }
 
         event.cancel();
-        s.currentKey = buildSerializedKey(nativeEvent);
+        String candidateKey = buildSerializedKey(nativeEvent);
+        String conflictingActionId = ShortcutRegistry.getInstance().findConflict(s.actionId, candidateKey);
+        if (conflictingActionId != null) {
+          showConflict(s, row, conflictingActionId);
+          return;
+        }
+        s.currentKey = candidateKey;
         activeCapture = null;
         cancelCapture();
         updateKeyCell(s, row);
         resetButton.setEnabled(hasOverrides());
       }
     });
+  }
+
+  // Shows an inline "already used by X" message on the row without committing
+  // the captured key; capture stays active so the user can try another combo.
+  private void showConflict(ShortcutDef s, int row, String conflictingActionId) {
+    String otherName = findDisplayName(conflictingActionId);
+    Label label = keyLabels[row - 1];
+    label.setText(otherName != null
+        ? MESSAGES.shortcutKeyConflict(otherName)
+        : MESSAGES.shortcutKeyConflictGeneric());
+    label.removeStyleName("ode-shortcut-capturing");
+    label.addStyleName("ode-shortcut-conflict");
+  }
+
+  private static String findDisplayName(String actionId) {
+    for (ShortcutDef s : SHORTCUTS) {
+      if (s.actionId.equals(actionId)) {
+        return s.displayName;
+      }
+    }
+    return null;
   }
 
   private void cancelCapture() {
@@ -320,6 +349,7 @@ public class ShowShortcutsAction implements Command {
       }
     }
     ShortcutRegistry.getInstance().saveKeyOverrides(overrides);
+    ShortcutRegistry.getInstance().applyKeyOverrides(overrides);
   }
 
   // Converts a Blockly-style serialized key string to a human-readable label.

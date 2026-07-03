@@ -80,18 +80,114 @@ public class ShortcutRegistry {
   private static final ShortcutRegistry instance = new ShortcutRegistry();
   private final Map<Class<?>, Map<String, Function<?, Boolean>>> registry =  new HashMap<Class<?>, Map<String, Function<?, Boolean>>>();
 
+  // Bookkeeping only, never consulted by onKeyDown: lets a later remap find and
+  // move an already-registered shortcut's entry in `registry` without changing
+  // that map's shape or dispatch lookup.
+  private static final class RegisteredShortcut<T> {
+    final String actionId;
+    final Class<T> viewClass;
+    final String defaultKey;
+    final Function<T, Boolean> callback;
+    String currentKey;
+
+    RegisteredShortcut(String actionId, Class<T> viewClass, String defaultKey, Function<T, Boolean> callback) {
+      this.actionId = actionId;
+      this.viewClass = viewClass;
+      this.defaultKey = defaultKey;
+      this.callback = callback;
+      this.currentKey = defaultKey;
+    }
+  }
+
+  private final Map<String, RegisteredShortcut<?>> byActionId = new HashMap<String, RegisteredShortcut<?>>();
+  private Map<String, String> overrides = new HashMap<String, String>();
+
   public static ShortcutRegistry getInstance() {
     return instance;
   }
 
   public <T extends Widget> void registerViewShortcut(Class<T> viewClass, String name, String displayName, int keyCode,
       int[] modifiers, Function<T, Boolean> callback) {
+    registerWithDefaultKey(viewClass, name, createSerializedKey(keyCode, modifiers), callback);
+  }
+
+  /**
+   * Registers a shortcut with an already-serialized default key, bypassing the
+   * JSNI-only {@link #createSerializedKey}. Package-visible for unit tests,
+   * which run as plain JVM tests with no {@code $wnd.Blockly} available.
+   */
+  <T extends Widget> void registerWithDefaultKey(Class<T> viewClass, String name, String defaultKey,
+      Function<T, Boolean> callback) {
     Map<String, Function<?, Boolean>> viewShortcuts = registry.get(viewClass);
     if (viewShortcuts == null) {
       viewShortcuts = new HashMap<String, Function<?, Boolean>>();
       registry.put(viewClass, viewShortcuts);
     }
-    viewShortcuts.put(createSerializedKey(keyCode, modifiers), callback);
+    RegisteredShortcut<T> shortcut = new RegisteredShortcut<T>(name, viewClass, defaultKey, callback);
+    shortcut.currentKey = overrides.getOrDefault(name, defaultKey);
+    byActionId.put(name, shortcut);
+    viewShortcuts.put(shortcut.currentKey, callback);
+  }
+
+  /**
+   * Replaces the cached key overrides and moves every already-registered
+   * shortcut's entry in {@code registry} to match, patching the dispatch map
+   * in place rather than rebuilding it. Safe to call at any time (app startup
+   * and again whenever the user saves a remap) — a shortcut whose resolved
+   * key hasn't changed is left untouched.
+   *
+   * @param newOverrides a map of actionId to serialized key string, as returned
+   *     by {@link #loadKeyOverrides()}
+   */
+  public void applyKeyOverrides(Map<String, String> newOverrides) {
+    this.overrides = new HashMap<String, String>(newOverrides);
+    for (RegisteredShortcut<?> shortcut : byActionId.values()) {
+      String newKey = overrides.getOrDefault(shortcut.actionId, shortcut.defaultKey);
+      if (newKey.equals(shortcut.currentKey)) {
+        continue;
+      }
+      Map<String, Function<?, Boolean>> viewShortcuts = registry.get(shortcut.viewClass);
+      viewShortcuts.remove(shortcut.currentKey);
+      viewShortcuts.put(newKey, shortcut.callback);
+      shortcut.currentKey = newKey;
+    }
+  }
+
+  /**
+   * Looks up whether {@code candidateKey} is already bound, within
+   * {@code actionId}'s own scope, to a different shortcut.
+   *
+   * @return the actionId of the conflicting shortcut, or {@code null} if
+   *     there's no conflict — including when {@code actionId} isn't (yet)
+   *     live-registered, since remapping it currently has no dispatch effect
+   */
+  public String findConflict(String actionId, String candidateKey) {
+    RegisteredShortcut<?> mine = byActionId.get(actionId);
+    if (mine == null) {
+      return null;
+    }
+    for (RegisteredShortcut<?> entry : byActionId.values()) {
+      if (entry.viewClass == mine.viewClass && !entry.actionId.equals(actionId)
+          && entry.currentKey.equals(candidateKey)) {
+        return entry.actionId;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Resolves the callback a live keydown with this serialized key would
+   * dispatch to, using the same view-class walk as {@link #onKeyDown}.
+   * Package-visible for unit tests, which can't construct a real
+   * {@link KeyDownEvent} outside a browser.
+   */
+  Function<?, Boolean> resolveDispatch(Class<?> viewClass, String serializedKey) {
+    Map<String, Function<?, Boolean>> viewShortcuts = null;
+    while (viewShortcuts == null && viewClass != Widget.class) {
+      viewShortcuts = registry.get(viewClass);
+      viewClass = viewClass.getSuperclass();
+    }
+    return viewShortcuts == null ? null : viewShortcuts.get(serializedKey);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

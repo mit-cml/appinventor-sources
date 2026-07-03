@@ -784,6 +784,14 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Placeholder shown in the key column while waiting for the user to press a key")
   String shortcutsPressKey();
 
+  @DefaultMessage("Already used by {0}")
+  @Description("Shown when the user presses a key combo already bound to another shortcut")
+  String shortcutKeyConflict(String otherDisplayName);
+
+  @DefaultMessage("Already used by another shortcut")
+  @Description("Shown when the user presses a key combo already bound to another shortcut whose name isn't shown in this dialog")
+  String shortcutKeyConflictGeneric();
+
   @DefaultMessage("Focus Component search box")
   @Description("Keyboard shortcut action: move focus to the component search box")
   String shortcutFocusSearch();
