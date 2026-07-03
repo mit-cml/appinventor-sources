@@ -18,7 +18,7 @@ Register App Inventor as an LTI 1.3 external tool with these values, where SERVE
 | Tool URL (redirect URL) | SERVER/lti/launch |
 | Initiate login URL | SERVER/lti/login |
 | Public keyset URL | SERVER/lti/jwks |
-| Deep Linking (Content-Item) | Supported, request URL SERVER/lti/launch |
+| Deep Linking (Content Item) | Supported, request URL SERVER/lti/launch |
 | Launch container | New window |
 | Services | Assignment and Grade Services (grade sync), send the launcher's name and email |
 
