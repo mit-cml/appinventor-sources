@@ -24,6 +24,10 @@ Register App Inventor as an LTI 1.3 external tool with these values, where SERVE
 
 In Moodle this is Site administration, Plugins, External tool, Manage tools. In Canvas this is an LTI Developer Key. The platform assigns a client id and a deployment id during registration. Launching in a new window matters, because App Inventor sends anti clickjacking headers and will not render inside a cross site frame.
 
+## Registering by URL (dynamic registration)
+
+Both Moodle and Canvas also support LTI Dynamic Registration, where the administrator pastes one tool URL and the platform and the tool exchange their configuration automatically. Turn on the flag lti.registration.enabled, then in the platform paste SERVER/lti/register as the registration URL. App Inventor fetches the platform configuration, registers itself, and stores the platform. Turn the flag off again afterward, because an open registration endpoint would let an untrusted platform register itself.
+
 ## Configuring the App Inventor server
 
 The tool reads its configuration from these flags (Java system properties on the dev server).
