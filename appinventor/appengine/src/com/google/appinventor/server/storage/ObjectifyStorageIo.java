@@ -32,6 +32,11 @@ import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
+import com.google.appinventor.server.storage.StoredData.LtiGradeContextData;
+import com.google.appinventor.server.storage.StoredData.LtiNonceData;
+import com.google.appinventor.server.storage.StoredData.LtiPlatformData;
+import com.google.appinventor.server.storage.StoredData.LtiResourceLinkData;
+import com.google.appinventor.server.storage.StoredData.LtiUserLinkData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
@@ -210,6 +215,11 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(Backpack.class);
     ObjectifyService.register(AllowedTutorialUrls.class);
     ObjectifyService.register(AllowedIosExtensions.class);
+    ObjectifyService.register(LtiPlatformData.class);
+    ObjectifyService.register(LtiUserLinkData.class);
+    ObjectifyService.register(LtiNonceData.class);
+    ObjectifyService.register(LtiResourceLinkData.class);
+    ObjectifyService.register(LtiGradeContextData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     // gcsBucket is where project storage goes
@@ -2337,6 +2347,234 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private Key<StoredData.Backpack> backpackdataKey(String backPackId) {
     return new Key<StoredData.Backpack>(Backpack.class, backPackId);
+  }
+
+  // LTI 1.3 integration store. The reads and writes mirror the existing nonce
+  // and password data methods: a begin for a plain query, and runJobWithRetries
+  // for a keyed read or for a write.
+
+  @Override
+  public LtiPlatformData getLtiPlatform(String issuer) {
+    Objectify datastore = ObjectifyService.begin();
+    for (LtiPlatformData platform
+        : datastore.query(LtiPlatformData.class).filter("issuer", issuer)) {
+      if (platform.enabled) {
+        return platform;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public List<LtiPlatformData> getLtiPlatforms() {
+    Objectify datastore = ObjectifyService.begin();
+    List<LtiPlatformData> platforms = new ArrayList<LtiPlatformData>();
+    for (LtiPlatformData platform : datastore.query(LtiPlatformData.class)) {
+      platforms.add(platform);
+    }
+    return platforms;
+  }
+
+  @Override
+  public void storeLtiPlatform(final String issuer, final String clientId,
+      final String authEndpoint, final String tokenEndpoint, final String jwksEndpoint,
+      final String deploymentId, final boolean enabled) {
+    Objectify datastore = ObjectifyService.begin();
+    final LtiPlatformData existing =
+        datastore.query(LtiPlatformData.class).filter("issuer", issuer).get();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiPlatformData data = (existing == null) ? new LtiPlatformData() : existing;
+            data.issuer = issuer;
+            data.clientId = clientId;
+            data.authEndpoint = authEndpoint;
+            data.tokenEndpoint = tokenEndpoint;
+            data.jwksEndpoint = jwksEndpoint;
+            data.deploymentId = deploymentId;
+            data.enabled = enabled;
+            datastore.put(data);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public String getLtiUserId(final String issuer, final String subject) {
+    final Result<String> result = new Result<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiUserLinkData data = datastore.find(ltiUserLinkKey(issuer, subject));
+            if (data != null) {
+              result.t = data.userId;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public void storeLtiUserLink(final String issuer, final String subject, final String userId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiUserLinkData data = new LtiUserLinkData();
+            data.id = issuer + "\n" + subject;
+            data.userId = userId;
+            data.created = new Date();
+            datastore.put(data);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public boolean useLtiNonce(final String nonce) {
+    final Result<Boolean> fresh = new Result<Boolean>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            if (datastore.find(ltiNonceKey(nonce)) != null) {
+              fresh.t = Boolean.FALSE;
+            } else {
+              LtiNonceData data = new LtiNonceData();
+              data.id = nonce;
+              data.timestamp = new Date();
+              datastore.put(data);
+              fresh.t = Boolean.TRUE;
+            }
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return Boolean.TRUE.equals(fresh.t);
+  }
+
+  // Remove up to 10 launch nonces older than one hour. A launch completes in
+  // seconds, so an hour is a wide margin before the record may be dropped.
+  @Override
+  public void cleanupLtiNonces() {
+    Objectify datastore = ObjectifyService.begin();
+    try {
+      datastore.delete(datastore.query(LtiNonceData.class)
+          .filter("timestamp <", new Date((new Date()).getTime() - 3600 * 1000L))
+          .limit(10).fetchKeys());
+    } catch (Exception ex) {
+      LOG.log(Level.WARNING, "Exception during cleanupLtiNonces", ex);
+    }
+  }
+
+  @Override
+  public long getLtiForkProject(final String userId, final String issuer,
+      final String deploymentId, final String resourceLinkId) {
+    final Result<Long> result = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiResourceLinkData data =
+                datastore.find(ltiResourceLinkKey(userId, issuer, deploymentId, resourceLinkId));
+            if (data != null) {
+              result.t = data.projectId;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return (result.t == null) ? 0 : result.t;
+  }
+
+  @Override
+  public void storeLtiForkProject(final String userId, final String issuer,
+      final String deploymentId, final String resourceLinkId, final long projectId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiResourceLinkData data = new LtiResourceLinkData();
+            data.id = ltiResourceLinkId(userId, issuer, deploymentId, resourceLinkId);
+            data.projectId = projectId;
+            datastore.put(data);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public LtiGradeContextData getLtiGradeContext(final String userId) {
+    final Result<LtiGradeContextData> result = new Result<LtiGradeContextData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiGradeContextData data = datastore.find(ltiGradeContextKey(userId));
+            if (data != null) {
+              result.t = data;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public void storeLtiGradeContext(final String userId, final String lineItemUrl,
+      final String ltiUserSub) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiGradeContextData data = new LtiGradeContextData();
+            data.id = userId;
+            data.lineItemUrl = lineItemUrl;
+            data.ltiUserSub = ltiUserSub;
+            datastore.put(data);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  private static String ltiResourceLinkId(String userId, String issuer, String deploymentId,
+      String resourceLinkId) {
+    return userId + "\t" + issuer + "\t" + deploymentId + "\t" + resourceLinkId;
+  }
+
+  private Key<StoredData.LtiUserLinkData> ltiUserLinkKey(String issuer, String subject) {
+    return new Key<StoredData.LtiUserLinkData>(LtiUserLinkData.class, issuer + "\n" + subject);
+  }
+
+  private Key<StoredData.LtiNonceData> ltiNonceKey(String nonce) {
+    return new Key<StoredData.LtiNonceData>(LtiNonceData.class, nonce);
+  }
+
+  private Key<StoredData.LtiResourceLinkData> ltiResourceLinkKey(String userId, String issuer,
+      String deploymentId, String resourceLinkId) {
+    return new Key<StoredData.LtiResourceLinkData>(LtiResourceLinkData.class,
+        ltiResourceLinkId(userId, issuer, deploymentId, resourceLinkId));
+  }
+
+  private Key<StoredData.LtiGradeContextData> ltiGradeContextKey(String userId) {
+    return new Key<StoredData.LtiGradeContextData>(LtiGradeContextData.class, userId);
   }
 
   // Create a name for a blob from a project id and file name. This is mostly

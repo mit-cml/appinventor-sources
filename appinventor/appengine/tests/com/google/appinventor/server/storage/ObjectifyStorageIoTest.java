@@ -570,6 +570,72 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     sourcesFiles = storage.getProjectSourceFiles(USER_ID, projectId);
     assertFalse(sourcesFiles.contains(YAIL_FILE_NAME2));
   }
+
+  public void testLtiPlatformRegistry() {
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiPlatform(issuer));
+    storage.storeLtiPlatform(issuer, "client-1", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-1", true);
+    StoredData.LtiPlatformData platform = storage.getLtiPlatform(issuer);
+    assertNotNull(platform);
+    assertEquals("client-1", platform.clientId);
+    assertEquals(issuer + "/token", platform.tokenEndpoint);
+    assertEquals("dep-1", platform.deploymentId);
+    assertEquals(1, storage.getLtiPlatforms().size());
+    // Storing the same issuer again updates in place rather than adding a row.
+    storage.storeLtiPlatform(issuer, "client-2", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-2", true);
+    assertEquals(1, storage.getLtiPlatforms().size());
+    assertEquals("client-2", storage.getLtiPlatform(issuer).clientId);
+    // A disabled platform is not returned for launch resolution.
+    storage.storeLtiPlatform(issuer, "client-2", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-2", false);
+    assertNull(storage.getLtiPlatform(issuer));
+  }
+
+  public void testLtiUserLink() {
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiUserId(issuer, "subject-1"));
+    storage.storeLtiUserLink(issuer, "subject-1", "user-100");
+    assertEquals("user-100", storage.getLtiUserId(issuer, "subject-1"));
+    // A different subject, or a different issuer, is a different account.
+    assertNull(storage.getLtiUserId(issuer, "subject-2"));
+    assertNull(storage.getLtiUserId("https://other.example.org", "subject-1"));
+  }
+
+  public void testLtiNonceReplay() {
+    assertTrue(storage.useLtiNonce("nonce-aaa"));
+    // The same nonce a second time is a replay and must be rejected.
+    assertFalse(storage.useLtiNonce("nonce-aaa"));
+    // A fresh nonce is still accepted.
+    assertTrue(storage.useLtiNonce("nonce-bbb"));
+  }
+
+  public void testLtiForkProjectIdempotency() {
+    final String userId = "user-200";
+    final String issuer = "https://moodle.example.org";
+    assertEquals(0, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-1"));
+    storage.storeLtiForkProject(userId, issuer, "dep-1", "rl-1", 4242L);
+    assertEquals(4242L, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-1"));
+    // A different resource link, or a different user, is a separate fork.
+    assertEquals(0, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-2"));
+    assertEquals(0, storage.getLtiForkProject("user-201", issuer, "dep-1", "rl-1"));
+  }
+
+  public void testLtiGradeContext() {
+    final String userId = "user-300";
+    assertNull(storage.getLtiGradeContext(userId));
+    storage.storeLtiGradeContext(userId, "https://moodle.example.org/lineitem/9", "sub-9");
+    StoredData.LtiGradeContextData ctx = storage.getLtiGradeContext(userId);
+    assertNotNull(ctx);
+    assertEquals("https://moodle.example.org/lineitem/9", ctx.lineItemUrl);
+    assertEquals("sub-9", ctx.ltiUserSub);
+    // The latest launch overwrites the grade context for that user.
+    storage.storeLtiGradeContext(userId, "https://moodle.example.org/lineitem/10", "sub-10");
+    assertEquals("https://moodle.example.org/lineitem/10",
+        storage.getLtiGradeContext(userId).lineItemUrl);
+  }
+
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the
    * failingRun argument to the constructor. Also allows counting
