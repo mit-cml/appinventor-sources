@@ -2696,6 +2696,13 @@ input[type="checkbox"]:focus {
     text-align: center;
 }
 
+.ode-BottomNavBar .ode-TextButton > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .ode-BottomNavBar .left,
 .ode-BottomNavBar .center,
 .ode-BottomNavBar .right {
