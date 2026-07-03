@@ -32,7 +32,7 @@ final class LtiState {
   static final class Entry {
     final String nonce;
     final String issuer;
-    final long ts;
+    private final long ts;
 
     Entry(String nonce, String issuer, long ts) {
       this.nonce = nonce;

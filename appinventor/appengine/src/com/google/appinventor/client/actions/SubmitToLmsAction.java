@@ -26,7 +26,7 @@ import com.google.gwt.user.client.Command;
 public class SubmitToLmsAction implements Command {
 
   // Guards against a double click sending two submissions.
-  private static volatile boolean submitting = false;
+  private static boolean submitting = false;
 
   @Override
   public void execute() {

@@ -71,18 +71,22 @@ public class LtiRegisterServlet extends HttpServlet {
       JSONObject registeredTool = registered.optJSONObject(TOOL_CONFIG);
       String deploymentId =
           (registeredTool == null) ? "" : registeredTool.optString("deployment_id", "");
+      // Store the platform disabled. An administrator enables it, so a
+      // registration made while the endpoint is open can not launch users on its
+      // own.
       storageIo.storeLtiPlatform(config.getString("issuer"),
           registered.getString("client_id"),
           config.getString("authorization_endpoint"),
           config.getString("token_endpoint"),
           config.getString("jwks_uri"),
-          deploymentId, true);
+          deploymentId, false);
       resp.setContentType("text/html; charset=utf-8");
       resp.getWriter().write("<!DOCTYPE html><html><head><meta charset='utf-8'>"
           + "<title>App Inventor registered</title></head>"
           + "<body style='font-family:sans-serif;max-width:640px;margin:2rem auto'>"
           + "<h2>App Inventor is registered with this platform.</h2>"
-          + "<p>You can close this window and add App Inventor activities to your courses.</p>"
+          + "<p>An App Inventor administrator enables the platform before students can "
+          + "launch. You can close this window.</p>"
           + "<script>(window.opener || window.parent).postMessage("
           + "{subject: 'org.imsglobal.lti.close'}, '*');</script></body></html>");
     } catch (Exception e) {

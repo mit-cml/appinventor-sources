@@ -51,7 +51,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
     try {
       String templateId = req.getParameter("template_project_id");
       LtiState.DeepLink dl = LtiState.consumeDeepLink(req.getParameter("dl"));
-      if (templateId == null || templateId.isEmpty() || dl == null || dl.returnUrl.isEmpty()) {
+      if (templateId == null || templateId.isEmpty() || dl == null || !isHttpUrl(dl.returnUrl)) {
         invalidSelection(resp);
         return;
       }
@@ -86,8 +86,9 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       // the teacher was verified to own can reach a student, even if a custom
       // parameter were set outside this flow.
       String templateRef = LtiJwt.sign(
-          new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", signing.kid),
-          new JSONObject().put("template_project_id", templateId).put("iat", now),
+          LtiJwt.rs256Header(signing.kid),
+          new JSONObject().put("template_project_id", templateId).put("iat", now)
+              .put("iss", dl.issuer),
           signing.privateKey);
 
       JSONObject contentItem = new JSONObject()
@@ -97,8 +98,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
           .put("custom", new JSONObject().put("template", templateRef));
       JSONArray contentItems = new JSONArray().put(contentItem);
 
-      JSONObject header = new JSONObject()
-          .put("alg", "RS256").put("typ", "JWT").put("kid", signing.kid);
+      JSONObject header = LtiJwt.rs256Header(signing.kid);
       JSONObject payload = new JSONObject()
           .put("iss", platform.clientId)
           .put("aud", platform.issuer)
@@ -130,6 +130,10 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       LOG.log(Level.WARNING, "LTI deep linking selection failed", e);
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Deep linking failed");
     }
+  }
+
+  private static boolean isHttpUrl(String url) {
+    return url != null && (url.startsWith("http://") || url.startsWith("https://"));
   }
 
   private static void invalidSelection(HttpServletResponse resp) throws IOException {

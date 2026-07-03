@@ -55,7 +55,7 @@ public class LtiSubmitServlet extends HttpServlet {
       return;
     }
     OdeAuthFilter.UserInfo userInfo = OdeAuthFilter.getUserInfo(req);
-    if (userInfo == null || userInfo.getUserId().isEmpty()) {
+    if (userInfo == null || userInfo.getUserId() == null || userInfo.getUserId().isEmpty()) {
       resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       resp.getWriter().println("Not signed in. Launch the activity from the LMS first.");
       return;

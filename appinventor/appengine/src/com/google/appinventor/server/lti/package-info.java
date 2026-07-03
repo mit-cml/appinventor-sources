@@ -40,9 +40,11 @@
  * restarts.
  *
  * <p>This package is an exploration spike. The in flight OIDC state is held in
- * memory ({@link com.google.appinventor.server.lti.LtiState}), configuration
- * is read from flags ({@link com.google.appinventor.server.lti.LtiConfig}) for
- * a single platform, and role checks are lenient. A production version would
- * move the platform registrations into the datastore.
+ * memory ({@link com.google.appinventor.server.lti.LtiState}). The platform
+ * registry, the account link, the assignment to project link, the grade
+ * context, the one time launch nonces, and the tool key pair are kept in the
+ * datastore ({@link com.google.appinventor.server.lti.LtiConfig} seeds the
+ * registry from flags on first use), so several platforms can share one server
+ * and can register through Dynamic Registration.
  */
 package com.google.appinventor.server.lti;
