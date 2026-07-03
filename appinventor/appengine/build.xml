@@ -440,8 +440,8 @@
     <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
     <pathelement location="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
 
-    <!-- Powermock and dependencies -->
-    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
+    <!-- Mocking libraries (EasyMock 5, Mockito 5, byte-buddy) -->
+    <fileset dir="${lib.dir}/mocklibs" includes="*.jar" />
 
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />

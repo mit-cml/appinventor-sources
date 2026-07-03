@@ -8,8 +8,7 @@ package com.google.appinventor.server;
 
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 import static com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters.YOUNG_ANDROID_FORM_NAME;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
+import static org.mockito.Mockito.when;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
@@ -39,11 +38,8 @@ import junitx.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -57,9 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Tests for {@link ProjectServiceImpl}.
  *
  */
-@PowerMockIgnore({"javax.crypto.*" })
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ LocalUser.class })
 public class ProjectServiceTest {
   // If ProjectServiceTest (which uses PowerMock.mockStatic) extends LocalDatastoreTestCase, then
   // it will fail with Ant version 1.8.2.
@@ -100,6 +93,7 @@ public class ProjectServiceTest {
   private Map<String, ProjectServiceImpl> projectServiceImpls;
 
   private LocalUser localUserMock;
+  private MockedStatic<LocalUser> localUserStatic;
 
   public static final String KEYSTORE_ROOT_PATH = TestUtils.APP_INVENTOR_ROOT_DIR +
       "/appengine/build/war/";  // must end with a slash
@@ -109,14 +103,10 @@ public class ProjectServiceTest {
     helper.setUp();
     storageIo = StorageIoInstanceHolder.getInstance();
 
-    PowerMock.mockStatic(LocalUser.class);
-    localUserMock = PowerMock.createMock(LocalUser.class);
-    expect(localUserMock.getSessionId()).andReturn("test-session").anyTimes();
-    localUserMock.setSessionId("test-session");
-    expectLastCall().times(1);
-    expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-    localUserMock.set(new User("1", "NonSuch", false, false, null));
-    expectLastCall().anyTimes();
+    localUserMock = Mockito.mock(LocalUser.class);
+    localUserStatic = Mockito.mockStatic(LocalUser.class);
+    Mockito.when(localUserMock.getSessionId()).thenReturn("test-session");
+    localUserStatic.when(LocalUser::getInstance).thenReturn(localUserMock);
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
 
@@ -135,7 +125,7 @@ public class ProjectServiceTest {
   @After
   public void tearDown() throws Exception {
     helper.tearDown();
-    PowerMock.resetAll();
+    localUserStatic.close();
   }
 
   private void checkModificationDateMatchesStored(long oldModificationDate, String userId,
@@ -146,12 +136,14 @@ public class ProjectServiceTest {
 
   @Test
   public void testProjectService() throws Exception {
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).times(2);
-    expect(localUserMock.getUserId()).andReturn(USER_ID_TWO).times(2);
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).times(4);
-    expect(localUserMock.getUserId()).andReturn(USER_ID_TWO).times(2);
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).times(11);
-    PowerMock.replayAll();
+    when(localUserMock.getUserId())
+        .thenReturn(USER_ID_ONE, USER_ID_ONE,
+                    USER_ID_TWO, USER_ID_TWO,
+                    USER_ID_ONE, USER_ID_ONE, USER_ID_ONE, USER_ID_ONE,
+                    USER_ID_TWO, USER_ID_TWO,
+                    USER_ID_ONE, USER_ID_ONE, USER_ID_ONE, USER_ID_ONE, USER_ID_ONE,
+                    USER_ID_ONE, USER_ID_ONE, USER_ID_ONE, USER_ID_ONE, USER_ID_ONE,
+                    USER_ID_ONE);
     do_init();
 
     // Create a new young android project
@@ -169,7 +161,7 @@ public class ProjectServiceTest {
     assertEquals(1, user2Projects.length);
     assertEquals(user2Project1, user2Projects[0]);
 
-    // Change the source file in the second users project and make sure only that file
+    // Change the source file in the second user's project and make sure only that file
     // got changed (and not the one of the same name owned by the first user)
     ProjectRootNode user1Project1Root = projectServiceImpl.getProject(user1Project1);
     String user1Project1Source1FileId = findFileIdByName(user1Project1Root,
@@ -253,15 +245,11 @@ public class ProjectServiceTest {
     projectServiceImpl.deleteProject(user1Project2);
     user1Projects = projectServiceImpl.getProjects();
     assertTrue(user1Projects.length == 0);
-    PowerMock.verifyAll();
   }
 
   @Test
   public void testNewYoungAndroidProject() throws Exception {
-    // Since only USER_ID_ONE is used, we don't care how many times
-    // getUserId is called
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    PowerMock.replayAll();
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
     do_init();
 
     // First create a Young Android project.
@@ -292,17 +280,12 @@ public class ProjectServiceTest {
     checkUserProjects(projectServiceImpl.getProjectInfos(),
         new UserProject(yaProject, PROJECT1_NAME,
             YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, System.currentTimeMillis(), System.currentTimeMillis()));
-    PowerMock.verifyAll();
   }
 
   @Test
   public void testCopyProject() throws Exception {
-    // Since only USER_ID_ONE is used in this test, we don't care how
-    // many times getUser or getUserId are called; they'll always
-    // return the same result
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE)).anyTimes();
-    PowerMock.replayAll();
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
     do_init();
 
     // First create a Young Android project.
@@ -348,7 +331,6 @@ public class ProjectServiceTest {
     assertTrue(project1CopyCreationDate > project1CreationDate);
     assertTrue(project1CopyCreationDate > project1ModificationDate);
     assertTrue(project1CopyModificationDate >= project1CopyCreationDate);
-    PowerMock.verifyAll();
   }
 
   /**
@@ -382,12 +364,8 @@ public class ProjectServiceTest {
 
   @Test
   public void testCreateManyYoungAndroidProjects() throws Exception {
-    // Since only USER_ID_ONE is used in this test, we don't care how
-    // many times getUser or getUserId are called; they'll always
-    // return the same result
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE)).anyTimes();
-    PowerMock.replayAll();
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
     do_init();
 
     List<Thread> threads = Lists.newArrayList();
@@ -457,17 +435,12 @@ public class ProjectServiceTest {
 
     assertEquals(numThreads, successes.get());
     assertEquals(0, failures.get());
-    PowerMock.verifyAll();
   }
 
   @Test
   public void testLoadAndStoreProjectSettings() throws Exception {
-    // Since only USER_ID_ONE is used in this test, we don't care how
-    // many times getUser or getUserId are called; they'll always
-    // return the same result
-    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
-    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE)).anyTimes();
-    PowerMock.replayAll();
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
     do_init();
 
     NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
@@ -488,7 +461,6 @@ public class ProjectServiceTest {
     projectServiceImpl.storeProjectSettings("test-session", projectId, storedSettings);
     loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
     assertEquals(storedSettings, loadedSettings);
-    PowerMock.verifyAll();
   }
 
   private String getProjectProperties(String userId, long projectId) {
