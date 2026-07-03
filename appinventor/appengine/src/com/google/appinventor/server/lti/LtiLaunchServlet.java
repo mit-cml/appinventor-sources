@@ -359,16 +359,30 @@ public class LtiLaunchServlet extends HttpServlet {
     return suffix.isEmpty() ? "AppInventorAssignment" : "Assignment_" + suffix;
   }
 
-  /** The teacher-attached template project id from the launch custom claim, or -1. */
+  /**
+   * The teacher-attached template project id from the launch custom claim, or
+   * -1. The value is a short JWT the tool signed for itself when the teacher
+   * selected a template they own, so it is verified here against the tool key
+   * before it is trusted. A custom parameter set outside the Deep Linking flow,
+   * for example by hand editing the activity, carries no valid signature and is
+   * therefore ignored.
+   */
   private static long templateProjectId(JSONObject claims) {
     JSONObject custom = claims.optJSONObject(LTI + "custom");
     if (custom == null) {
       return -1;
     }
-    String value = custom.optString("template_project_id", "");
+    String ref = custom.optString("template", "");
+    if (ref.isEmpty()) {
+      return -1;
+    }
     try {
+      String jwks =
+          LtiJwt.publicJwks(LtiJwt.loadPublicKey(LtiConfig.publicKeyFile()), LtiConfig.KID);
+      String value = LtiJwt.verify(ref, jwks).optString("template_project_id", "");
       return value.isEmpty() ? -1 : Long.parseLong(value);
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "LTI fork: ignoring an unverifiable template reference", e);
       return -1;
     }
   }

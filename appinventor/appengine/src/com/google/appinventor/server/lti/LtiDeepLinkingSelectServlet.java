@@ -74,14 +74,24 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
         return;
       }
 
+      long now = System.currentTimeMillis() / 1000L;
+      PrivateKey key = LtiJwt.loadPrivateKey(LtiConfig.privateKeyFile());
+
+      // A template reference the tool signs for itself, so that only a template
+      // the teacher was verified to own can reach a student, even if a custom
+      // parameter were set outside this flow.
+      String templateRef = LtiJwt.sign(
+          new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID),
+          new JSONObject().put("template_project_id", templateId).put("iat", now),
+          key);
+
       JSONObject contentItem = new JSONObject()
           .put("type", "ltiResourceLink")
           .put("title", title)
           .put("url", LtiConfig.launchUrl())
-          .put("custom", new JSONObject().put("template_project_id", templateId));
+          .put("custom", new JSONObject().put("template", templateRef));
       JSONArray contentItems = new JSONArray().put(contentItem);
 
-      long now = System.currentTimeMillis() / 1000L;
       JSONObject header = new JSONObject()
           .put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID);
       JSONObject payload = new JSONObject()
@@ -98,7 +108,6 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
         payload.put(LTI_DL + "data", dl.data);
       }
 
-      PrivateKey key = LtiJwt.loadPrivateKey(LtiConfig.privateKeyFile());
       String jwt = LtiJwt.sign(header, payload, key);
 
       // Auto POST the signed response back to the platform return url.
