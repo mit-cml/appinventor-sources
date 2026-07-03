@@ -29,12 +29,14 @@ final class LtiState {
   private static final Map<String, Entry> STORE = new ConcurrentHashMap<>();
   private static final Map<String, DeepLink> DEEP_LINKS = new ConcurrentHashMap<>();
 
-  private static final class Entry {
+  static final class Entry {
     final String nonce;
+    final String issuer;
     final long ts;
 
-    Entry(String nonce, long ts) {
+    Entry(String nonce, String issuer, long ts) {
       this.nonce = nonce;
+      this.issuer = issuer;
       this.ts = ts;
     }
   }
@@ -48,13 +50,16 @@ final class LtiState {
     final String returnUrl;
     final String data;
     final String deploymentId;
+    final String issuer;
     final String teacherUserId;
     private final long ts;
 
-    DeepLink(String returnUrl, String data, String deploymentId, String teacherUserId) {
+    DeepLink(String returnUrl, String data, String deploymentId, String issuer,
+        String teacherUserId) {
       this.returnUrl = returnUrl;
       this.data = data;
       this.deploymentId = deploymentId;
+      this.issuer = issuer;
       this.teacherUserId = teacherUserId;
       this.ts = System.currentTimeMillis();
     }
@@ -68,20 +73,20 @@ final class LtiState {
     return Base64.getUrlEncoder().withoutPadding().encodeToString(b);
   }
 
-  /** Mints a state and nonce, stores them, and returns {state, nonce}. */
-  static String[] create() {
+  /** Mints a state and nonce for a platform, stores them, returns {state, nonce}. */
+  static String[] create(String issuer) {
     String state = random();
     String nonce = random();
-    STORE.put(state, new Entry(nonce, System.currentTimeMillis()));
+    STORE.put(state, new Entry(nonce, issuer, System.currentTimeMillis()));
     sweep();
     return new String[] {state, nonce};
   }
 
   /**
-   * Consumes a state once and returns its nonce, or null if the state is
-   * unknown or expired.
+   * Consumes a state once and returns its entry, holding the nonce and the
+   * platform issuer, or null if the state is unknown or expired.
    */
-  static String consumeNonce(String state) {
+  static Entry consume(String state) {
     if (state == null) {
       return null;
     }
@@ -89,14 +94,14 @@ final class LtiState {
     if (e == null || System.currentTimeMillis() - e.ts > TTL_MILLIS) {
       return null;
     }
-    return e.nonce;
+    return e;
   }
 
   /** Saves a Deep Linking selection context and returns its one time token. */
   static String createDeepLink(String returnUrl, String data, String deploymentId,
-      String teacherUserId) {
+      String issuer, String teacherUserId) {
     String token = random();
-    DEEP_LINKS.put(token, new DeepLink(returnUrl, data, deploymentId, teacherUserId));
+    DEEP_LINKS.put(token, new DeepLink(returnUrl, data, deploymentId, issuer, teacherUserId));
     sweep();
     return token;
   }

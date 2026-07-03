@@ -72,7 +72,7 @@ public class LtiSubmitServlet extends HttpServlet {
       return;
     }
     try {
-      LtiAgs.postSubmission(ctx.lineItemUrl, ctx.ltiUserSub);
+      LtiAgs.postSubmission(ctx.issuer, ctx.lineItemUrl, ctx.ltiUserSub);
       resp.getWriter().println(
           "Submitted to your LMS. Your teacher will grade it, and the grade will then "
           + "appear in the LMS gradebook.");

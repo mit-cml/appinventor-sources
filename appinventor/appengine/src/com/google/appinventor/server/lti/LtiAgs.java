@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.lti;
 
+import com.google.appinventor.server.storage.StoredData;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -35,8 +37,13 @@ final class LtiAgs {
    * activityProgress Submitted and gradingProgress PendingManual (no score), so
    * the teacher grades it in the LMS and the student then views that grade.
    */
-  static void postSubmission(String lineItemUrl, String ltiUserSub) throws Exception {
-    String token = accessToken(SCORE_SCOPE);
+  static void postSubmission(String issuer, String lineItemUrl, String ltiUserSub)
+      throws Exception {
+    StoredData.LtiPlatformData platform = LtiConfig.platform(issuer);
+    if (platform == null) {
+      throw new IllegalStateException("No registered LTI platform for issuer " + issuer);
+    }
+    String token = accessToken(platform, SCORE_SCOPE);
     JSONObject score = new JSONObject()
         .put("userId", ltiUserSub)
         .put("activityProgress", "Submitted")
@@ -47,15 +54,16 @@ final class LtiAgs {
   }
 
   /** Gets an AGS access token via the client credentials private key JWT flow. */
-  private static String accessToken(String scope) throws Exception {
+  private static String accessToken(StoredData.LtiPlatformData platform, String scope)
+      throws Exception {
     PrivateKey key = LtiJwt.loadPrivateKey(LtiConfig.privateKeyFile());
     long now = System.currentTimeMillis() / 1000L;
     JSONObject header = new JSONObject()
         .put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID);
     JSONObject claims = new JSONObject()
-        .put("iss", LtiConfig.clientId())
-        .put("sub", LtiConfig.clientId())
-        .put("aud", LtiConfig.tokenEndpoint())
+        .put("iss", platform.clientId)
+        .put("sub", platform.clientId)
+        .put("aud", platform.tokenEndpoint)
         .put("iat", now)
         .put("exp", now + TOKEN_TTL_SECONDS)
         .put("jti", LtiState.random());
@@ -64,7 +72,7 @@ final class LtiAgs {
         + "&client_assertion_type=" + enc(ASSERTION_TYPE)
         + "&client_assertion=" + enc(assertion)
         + "&scope=" + enc(scope);
-    String resp = LtiHttp.postForm(LtiConfig.tokenEndpoint(), body);
+    String resp = LtiHttp.postForm(platform.tokenEndpoint, body);
     return new JSONObject(resp).getString("access_token");
   }
 

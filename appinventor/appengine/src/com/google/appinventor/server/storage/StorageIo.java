@@ -621,7 +621,7 @@ public interface StorageIo {
 
   StoredData.LtiGradeContextData getLtiGradeContext(String userId);
 
-  void storeLtiGradeContext(String userId, String lineItemUrl, String ltiUserSub);
+  void storeLtiGradeContext(String userId, String issuer, String lineItemUrl, String ltiUserSub);
 
   // Routines for user admin interface
 

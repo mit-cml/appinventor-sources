@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.lti;
 
+import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.util.UriBuilder;
 
 import java.io.IOException;
@@ -35,7 +36,11 @@ public class LtiLoginServlet extends HttpServlet {
 
   private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     String iss = req.getParameter("iss");
-    if (iss != null && !iss.isEmpty() && !iss.equals(LtiConfig.issuer())) {
+    if (iss == null || iss.isEmpty()) {
+      iss = LtiConfig.issuer();
+    }
+    StoredData.LtiPlatformData platform = LtiConfig.platform(iss);
+    if (platform == null) {
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown platform issuer");
       return;
     }
@@ -43,10 +48,10 @@ public class LtiLoginServlet extends HttpServlet {
     String messageHint = req.getParameter("lti_message_hint");
     String clientId = req.getParameter("client_id");
     if (clientId == null || clientId.isEmpty()) {
-      clientId = LtiConfig.clientId();
+      clientId = platform.clientId;
     }
-    String[] stateNonce = LtiState.create();
-    String url = new UriBuilder(LtiConfig.authEndpoint())
+    String[] stateNonce = LtiState.create(iss);
+    String url = new UriBuilder(platform.authEndpoint)
         .add("scope", "openid")
         .add("response_type", "id_token")
         .add("response_mode", "form_post")

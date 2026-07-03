@@ -6,6 +6,9 @@
 package com.google.appinventor.server.lti;
 
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData;
 
 /**
  * Configuration for the experimental LTI 1.3 tool that lets a Learning
@@ -54,24 +57,25 @@ public final class LtiConfig {
     return ISSUER.get();
   }
 
-  public static String authEndpoint() {
-    return AUTH_ENDPOINT.get();
-  }
-
-  public static String tokenEndpoint() {
-    return TOKEN_ENDPOINT.get();
-  }
-
-  public static String jwksEndpoint() {
-    return JWKS_ENDPOINT.get();
-  }
-
-  public static String clientId() {
-    return CLIENT_ID.get();
-  }
-
-  public static String deploymentId() {
-    return DEPLOYMENT_ID.get();
+  /**
+   * The registered platform for an issuer, or null if none is enabled for it.
+   * The single platform configured by flags is seeded into the datastore on the
+   * first lookup, so an existing flag based setup keeps working and the
+   * datastore then holds the source of truth. Additional platforms are added
+   * straight to the datastore.
+   */
+  public static StoredData.LtiPlatformData platform(String issuer) {
+    StorageIo storageIo = StorageIoInstanceHolder.getInstance();
+    StoredData.LtiPlatformData found = storageIo.getLtiPlatform(issuer);
+    if (found != null) {
+      return found;
+    }
+    if (issuer != null && issuer.equals(ISSUER.get()) && !CLIENT_ID.get().isEmpty()) {
+      storageIo.storeLtiPlatform(ISSUER.get(), CLIENT_ID.get(), AUTH_ENDPOINT.get(),
+          TOKEN_ENDPOINT.get(), JWKS_ENDPOINT.get(), DEPLOYMENT_ID.get(), true);
+      return storageIo.getLtiPlatform(issuer);
+    }
+    return null;
   }
 
   public static String privateKeyFile() {
