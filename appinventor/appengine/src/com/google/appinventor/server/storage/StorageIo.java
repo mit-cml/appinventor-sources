@@ -632,6 +632,10 @@ public interface StorageIo {
 
   void storeLtiGradeContext(String userId, String issuer, String lineItemUrl, String ltiUserSub);
 
+  List<StoredData.LtiKeyData> getLtiKeys();
+
+  void storeLtiKey(String kid, byte[] privateKey, byte[] publicKey);
+
   // Routines for user admin interface
 
   List<AdminUser> searchUsers(String partialEmail);

@@ -33,6 +33,7 @@ import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.LtiGradeContextData;
+import com.google.appinventor.server.storage.StoredData.LtiKeyData;
 import com.google.appinventor.server.storage.StoredData.LtiNonceData;
 import com.google.appinventor.server.storage.StoredData.LtiPlatformData;
 import com.google.appinventor.server.storage.StoredData.LtiResourceLinkData;
@@ -220,6 +221,7 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(LtiNonceData.class);
     ObjectifyService.register(LtiResourceLinkData.class);
     ObjectifyService.register(LtiGradeContextData.class);
+    ObjectifyService.register(LtiKeyData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
     // gcsBucket is where project storage goes
@@ -2547,6 +2549,35 @@ public class ObjectifyStorageIo implements StorageIo {
             data.issuer = issuer;
             data.lineItemUrl = lineItemUrl;
             data.ltiUserSub = ltiUserSub;
+            datastore.put(data);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
+  public List<LtiKeyData> getLtiKeys() {
+    Objectify datastore = ObjectifyService.begin();
+    List<LtiKeyData> keys = new ArrayList<LtiKeyData>();
+    for (LtiKeyData key : datastore.query(LtiKeyData.class)) {
+      keys.add(key);
+    }
+    return keys;
+  }
+
+  @Override
+  public void storeLtiKey(final String kid, final byte[] privateKey, final byte[] publicKey) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiKeyData data = new LtiKeyData();
+            data.kid = kid;
+            data.privateKey = privateKey;
+            data.publicKey = publicKey;
+            data.created = new Date();
             datastore.put(data);
           }
         }, true);

@@ -10,7 +10,6 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,15 +80,15 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       }
 
       long now = System.currentTimeMillis() / 1000L;
-      PrivateKey key = LtiJwt.loadPrivateKey(LtiConfig.privateKeyFile());
+      LtiKeys.SigningKey signing = LtiKeys.signingKey();
 
       // A template reference the tool signs for itself, so that only a template
       // the teacher was verified to own can reach a student, even if a custom
       // parameter were set outside this flow.
       String templateRef = LtiJwt.sign(
-          new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID),
+          new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", signing.kid),
           new JSONObject().put("template_project_id", templateId).put("iat", now),
-          key);
+          signing.privateKey);
 
       JSONObject contentItem = new JSONObject()
           .put("type", "ltiResourceLink")
@@ -99,7 +98,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       JSONArray contentItems = new JSONArray().put(contentItem);
 
       JSONObject header = new JSONObject()
-          .put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID);
+          .put("alg", "RS256").put("typ", "JWT").put("kid", signing.kid);
       JSONObject payload = new JSONObject()
           .put("iss", platform.clientId)
           .put("aud", platform.issuer)
@@ -114,7 +113,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
         payload.put(LTI_DL + "data", dl.data);
       }
 
-      String jwt = LtiJwt.sign(header, payload, key);
+      String jwt = LtiJwt.sign(header, payload, signing.privateKey);
 
       // Auto POST the signed response back to the platform return url.
       resp.setContentType("text/html; charset=utf-8");

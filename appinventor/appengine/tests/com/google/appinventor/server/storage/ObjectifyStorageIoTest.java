@@ -637,6 +637,19 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(userId).lineItemUrl);
   }
 
+  public void testLtiKeys() {
+    assertTrue(storage.getLtiKeys().isEmpty());
+    storage.storeLtiKey("kid-1", new byte[] {1, 2, 3}, new byte[] {4, 5, 6});
+    java.util.List<StoredData.LtiKeyData> keys = storage.getLtiKeys();
+    assertEquals(1, keys.size());
+    assertEquals("kid-1", keys.get(0).kid);
+    assertTrue(java.util.Arrays.equals(new byte[] {1, 2, 3}, keys.get(0).privateKey));
+    assertTrue(java.util.Arrays.equals(new byte[] {4, 5, 6}, keys.get(0).publicKey));
+    // A second key coexists, which is what makes key rotation possible.
+    storage.storeLtiKey("kid-2", new byte[] {7}, new byte[] {8});
+    assertEquals(2, storage.getLtiKeys().size());
+  }
+
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the
    * failingRun argument to the constructor. Also allows counting

@@ -406,8 +406,7 @@ public class LtiLaunchServlet extends HttpServlet {
       return -1;
     }
     try {
-      String jwks =
-          LtiJwt.publicJwks(LtiJwt.loadPublicKey(LtiConfig.publicKeyFile()), LtiConfig.KID);
+      String jwks = LtiKeys.jwksJson();
       String value = LtiJwt.verify(ref, jwks).optString("template_project_id", "");
       return value.isEmpty() ? -1 : Long.parseLong(value);
     } catch (Exception e) {

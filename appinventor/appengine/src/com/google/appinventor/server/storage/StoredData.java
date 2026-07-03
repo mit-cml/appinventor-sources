@@ -386,6 +386,18 @@ public class StoredData {
     public String ltiUserSub;
   }
 
+  // The tool RSA key pair, generated on first use and kept in the datastore so
+  // it is not part of the deployed artifact. The kid identifies the key in the
+  // published JWK set. The newest key signs, so adding a key rotates in a new
+  // signer while the older public keys stay published for verification.
+  @Unindexed
+  public static final class LtiKeyData {
+    @Id public String kid;
+    public byte[] privateKey;
+    public byte[] publicKey;
+    @Indexed public Date created;
+  }
+
   public static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);
