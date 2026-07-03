@@ -38,8 +38,8 @@ import org.json.JSONObject;
  * redirects into the IDE opened on that project. The grade service line item is
  * remembered for a later passback.
  *
- * <p>This is an exploration spike. It auto accepts the terms of service for
- * the provisioned account.
+ * <p>An exploration spike. It auto accepts the terms of service for the
+ * provisioned account.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -226,8 +226,9 @@ public class LtiLaunchServlet extends HttpServlet {
     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     resp.setContentType("text/html; charset=utf-8");
     resp.getWriter().write(LtiHtml.pageHead("Launch problem")
-        + "<h1>This assignment could not open</h1><p>" + LtiHtml.escape(message)
-        + ". Please go back to your LMS and open the activity again.</p>" + LtiHtml.pageFoot());
+        + "<h1>This assignment could not open</h1><p>Please go back to your LMS and open the "
+        + "activity again. If it keeps happening, ask your teacher for help.</p>"
+        + LtiHtml.pageFoot());
   }
 
   /**
@@ -257,17 +258,7 @@ public class LtiLaunchServlet extends HttpServlet {
           return linked;
         }
       }
-      String projectName = forkProjectName(claims);
-      long existing = findProjectByName(userId, projectName);
-      if (existing > 0) {
-        // Created before the durable link existed (or by name only). Adopt it.
-        if (!resourceLinkId.isEmpty()) {
-          LtiResourceLinks.put(userId, issuer, deploymentId, resourceLinkId, existing);
-        }
-        LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + projectName);
-        return existing;
-      }
-      long projectId = forkNewProject(user, claims, projectName);
+      long projectId = forkNewProject(user, claims, forkProjectName(claims));
       if (projectId > 0 && !resourceLinkId.isEmpty()) {
         LtiResourceLinks.put(userId, issuer, deploymentId, resourceLinkId, projectId);
       }
@@ -279,7 +270,8 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /** Copies the teacher template, or creates a blank project when there is none. */
-  private long forkNewProject(User user, JSONObject claims, String projectName) {
+  private long forkNewProject(User user, JSONObject claims, String baseName) {
+    String projectName = uniqueProjectName(user.getUserId(), baseName);
     long templateId = templateProjectId(claims);
     if (templateId > 0) {
       try {
@@ -302,13 +294,11 @@ public class LtiLaunchServlet extends HttpServlet {
     return projectId;
   }
 
-  /** The resource link id from the launch claims, or empty if unavailable. */
   private static String resourceLinkId(JSONObject claims) {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
     return (resourceLink == null) ? "" : resourceLink.optString("id", "");
   }
 
-  /** Returns the id of the user's project with the given name, or -1. */
   private long findProjectByName(String userId, String projectName) {
     for (long pid : storageIo.getProjects(userId)) {
       if (projectName.equals(storageIo.getProjectName(userId, pid))) {
@@ -316,6 +306,25 @@ public class LtiLaunchServlet extends HttpServlet {
       }
     }
     return -1;
+  }
+
+  /**
+   * The base name, or the base with a numeric suffix, chosen so the student does
+   * not already own a project with it. Two assignments whose titles happen to
+   * match fork into separate projects, each with its own grade line item, rather
+   * than colliding on one.
+   */
+  private String uniqueProjectName(String userId, String base) {
+    if (findProjectByName(userId, base) < 0) {
+      return base;
+    }
+    for (int suffix = 2; suffix <= 99; suffix++) {
+      String candidate = base + "_" + suffix;
+      if (findProjectByName(userId, candidate) < 0) {
+        return candidate;
+      }
+    }
+    return base;
   }
 
   /**
@@ -390,11 +399,16 @@ public class LtiLaunchServlet extends HttpServlet {
     }
     String id = (resourceLink == null) ? "" : resourceLink.optString("id", "");
     String suffix = id.replaceAll("[^A-Za-z0-9]", "");
-    return suffix.isEmpty() ? "AppInventorAssignment" : "Assignment_" + suffix;
+    if (suffix.isEmpty()) {
+      return "AppInventorAssignment";
+    }
+    String fallback = "Assignment_" + suffix;
+    return fallback.length() > MAX_PROJECT_NAME_LENGTH
+        ? fallback.substring(0, MAX_PROJECT_NAME_LENGTH) : fallback;
   }
 
   /**
-   * The teacher-attached template project id from the launch custom claim, or
+   * The teacher attached template project id from the launch custom claim, or
    * -1. The value is a short JWT the tool signed for itself when the teacher
    * selected a template they own, so it is verified here against the tool key
    * before it is trusted. A custom parameter set outside the Deep Linking flow,
@@ -425,7 +439,7 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * Deep Linking: shows the teacher a picker of their own App Inventor projects so
+   * Renders the Deep Linking picker of the teacher's own App Inventor projects, so
    * they can choose one as the assignment template. The platform return context is
    * held server side under a one time token, and the choice is posted to
    * /lti/deeplink/select, which returns the signed Deep Linking response to the LMS.
@@ -435,7 +449,7 @@ public class LtiLaunchServlet extends HttpServlet {
     resp.setContentType("text/html; charset=utf-8");
     User teacher = userForLaunch(claims);
     StringBuilder html = new StringBuilder(LtiHtml.pageHead("Choose a template"))
-        .append("<h1>Choose a template for this assignment</h1>");
+        .append("<h1 id='pick'>Choose a template for this assignment</h1>");
     List<Long> projects = storageIo.getProjects(teacher.getUserId());
     if (projects.isEmpty()) {
       html.append("<p>You do not have any App Inventor projects yet. Open App Inventor, build "
@@ -454,7 +468,7 @@ public class LtiLaunchServlet extends HttpServlet {
     html.append("<p>Each student who opens this assignment gets their own copy of the project "
         + "you choose here.</p><form method='post' action='/lti/deeplink/select'>");
     html.append("<input type='hidden' name='dl' value='").append(LtiHtml.escape(dlToken))
-        .append("'><ul>");
+        .append("'><ul role='radiogroup' aria-labelledby='pick'>");
     boolean first = true;
     for (long pid : projects) {
       String name = storageIo.getProjectName(teacher.getUserId(), pid);
