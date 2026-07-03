@@ -184,10 +184,12 @@ public class LtiLaunchServlet extends HttpServlet {
 
   /**
    * Gives a learner their own App Inventor project to work in (the student
-   * "fork"), once per resource link, mirroring the server side create path used
-   * by RestServlet. Returns the project id for this assignment (newly created or
-   * already existing), or -1 when no project applies (instructor, or failure).
-   * Any failure here is logged and never blocks the launch.
+   * "fork"), once per assignment, mirroring the server side create path used by
+   * RestServlet. The assignment to project link is stored durably per user, so
+   * a relaunch finds the same project even after the activity is renamed or the
+   * server restarts. Returns the project id for this assignment (newly created
+   * or already existing), or -1 when no project applies (instructor, or
+   * failure). Any failure here is logged and never blocks the launch.
    */
   private long maybeForkStarterProject(User user, JSONObject claims) {
     try {
@@ -195,36 +197,70 @@ public class LtiLaunchServlet extends HttpServlet {
         LOG.info("LTI fork: launcher is an instructor, no student project created");
         return -1;
       }
+      String userId = user.getUserId();
+      String linkKey = resourceLinkKey(claims);
+      if (!linkKey.isEmpty()) {
+        long linked = LtiResourceLinks.get(userId, linkKey);
+        if (linked > 0 && storageIo.getProjects(userId).contains(linked)) {
+          LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
+              + " for this assignment");
+          return linked;
+        }
+      }
       String projectName = forkProjectName(claims);
-      long existing = findProjectByName(user.getUserId(), projectName);
+      long existing = findProjectByName(userId, projectName);
       if (existing > 0) {
+        // Created before the durable link existed (or by name only). Adopt it.
+        if (!linkKey.isEmpty()) {
+          LtiResourceLinks.put(userId, linkKey, existing);
+        }
         LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + projectName);
         return existing;
       }
-      long templateId = templateProjectId(claims);
-      if (templateId > 0) {
-        try {
-          String ownerId = storageIo.getProjectUserId(templateId);
-          long copied =
-              projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
-          LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
-              + projectName + ") for " + user.getUserEmail());
-          return copied;
-        } catch (Exception te) {
-          LOG.log(Level.WARNING, "LTI fork: template " + templateId
-              + " copy failed, falling back to a blank project", te);
-        }
+      long projectId = forkNewProject(user, claims, projectName);
+      if (projectId > 0 && !linkKey.isEmpty()) {
+        LtiResourceLinks.put(userId, linkKey, projectId);
       }
-      String packageName = StringUtils.getProjectPackage(user.getUserEmail(), projectName);
-      NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(packageName);
-      long projectId = projectService.newProject(user.getUserId(), projectName, params);
-      LOG.info("LTI fork: created blank project " + projectId + " (" + projectName + ") for "
-          + user.getUserEmail());
       return projectId;
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI fork: could not create the student project (continuing)", e);
       return -1;
     }
+  }
+
+  /** Copies the teacher template, or creates a blank project when there is none. */
+  private long forkNewProject(User user, JSONObject claims, String projectName) {
+    long templateId = templateProjectId(claims);
+    if (templateId > 0) {
+      try {
+        String ownerId = storageIo.getProjectUserId(templateId);
+        long copied =
+            projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
+        LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
+            + projectName + ") for " + user.getUserEmail());
+        return copied;
+      } catch (Exception te) {
+        LOG.log(Level.WARNING, "LTI fork: template " + templateId
+            + " copy failed, falling back to a blank project", te);
+      }
+    }
+    String packageName = StringUtils.getProjectPackage(user.getUserEmail(), projectName);
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(packageName);
+    long projectId = projectService.newProject(user.getUserId(), projectName, params);
+    LOG.info("LTI fork: created blank project " + projectId + " (" + projectName + ") for "
+        + user.getUserEmail());
+    return projectId;
+  }
+
+  /** The durable assignment key from the launch claims, or empty if unavailable. */
+  private static String resourceLinkKey(JSONObject claims) {
+    JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
+    String id = (resourceLink == null) ? "" : resourceLink.optString("id", "");
+    if (id.isEmpty()) {
+      return "";
+    }
+    return LtiResourceLinks.key(
+        claims.optString("iss", ""), claims.optString(LTI + "deployment_id", ""), id);
   }
 
   /** Returns the id of the user's project with the given name, or -1. */
@@ -282,12 +318,12 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * A valid, stable project name for this resource link, so a re-launch is
-   * idempotent. Prefers the activity title from the launch (for example
-   * "Exercise 2" becomes Exercise_2) so students can tell which project belongs
-   * to which assignment, and falls back to the opaque resource link id. If a
-   * teacher renames the activity later, the next launch forks a fresh project
-   * under the new name, which is an accepted spike simplification.
+   * A valid App Inventor project name for this assignment. Prefers the activity
+   * title from the launch (for example "Exercise 2" becomes Exercise_2) so
+   * students can tell which project belongs to which assignment, and falls back
+   * to the opaque resource link id. The name is display only. Relaunch
+   * idempotency comes from the stored resource link, so renaming the activity
+   * does not fork a second project.
    */
   @VisibleForTesting
   static String forkProjectName(JSONObject claims) {
