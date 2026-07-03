@@ -13,7 +13,7 @@ import com.google.appinventor.server.storage.StoredData;
 /**
  * Configuration for the experimental LTI 1.3 tool that lets a Learning
  * Management System (for example Moodle) launch a student into App Inventor and
- * receive a grade back. This is an exploration spike, not production code.
+ * receive a grade back. An exploration spike, not production code.
  *
  * <p>The platform endpoints default to a local Moodle on port 8080. The client
  * id and deployment id are assigned by the platform when an administrator
@@ -70,7 +70,11 @@ public final class LtiConfig {
     if (found != null) {
       return found;
     }
-    if (issuer != null && issuer.equals(ISSUER.get()) && !CLIENT_ID.get().isEmpty()) {
+    // Seed the flag configured platform only when no row for it exists yet. A row
+    // that is present but disabled was left disabled on purpose, a dynamic
+    // registration always lands disabled, so it is not re-seeded or re-enabled.
+    if (issuer != null && issuer.equals(ISSUER.get()) && !CLIENT_ID.get().isEmpty()
+        && !platformExists(storageIo, issuer)) {
       StoredData.LtiPlatformData seeded = new StoredData.LtiPlatformData();
       seeded.issuer = ISSUER.get();
       seeded.clientId = CLIENT_ID.get();
@@ -84,6 +88,15 @@ public final class LtiConfig {
       return seeded;
     }
     return null;
+  }
+
+  private static boolean platformExists(StorageIo storageIo, String issuer) {
+    for (StoredData.LtiPlatformData p : storageIo.getLtiPlatforms()) {
+      if (issuer.equals(p.issuer)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public static String toolBaseUrl() {
