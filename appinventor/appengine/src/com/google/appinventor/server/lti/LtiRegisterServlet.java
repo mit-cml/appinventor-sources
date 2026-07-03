@@ -83,7 +83,7 @@ public class LtiRegisterServlet extends HttpServlet {
       resp.setContentType("text/html; charset=utf-8");
       resp.getWriter().write(LtiHtml.pageHead("App Inventor registered")
           + "<h1>App Inventor is registered</h1>"
-          + "<p>An App Inventor administrator enables this platform before students can "
+          + "<p>An App Inventor administrator must enable this platform before students can "
           + "launch. You can close this window.</p>"
           + "<script>(window.opener||window.parent).postMessage("
           + "{subject:'org.imsglobal.lti.close'},'*');</script>"

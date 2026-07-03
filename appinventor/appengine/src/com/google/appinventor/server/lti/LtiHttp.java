@@ -18,7 +18,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Minimal direct HTTP helper for the LTI tool. Opens connections with no proxy,
  * because the LTI platform (Moodle) is reached on localhost while the dev server
- * may be launched with a SOCKS proxy meant only for the Google calls.
+ * may be launched with a SOCKS proxy meant only for the Google calls. Every call
+ * throws on a 4xx or 5xx response, which HttpURLConnection does not do by default.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -30,7 +31,6 @@ final class LtiHttp {
 
   private LtiHttp() {}
 
-  /** GETs a URL and returns the body, throwing on a 4xx or 5xx response. */
   static String get(String urlString) throws IOException {
     HttpURLConnection conn = open(urlString, "GET");
     try {
@@ -41,26 +41,14 @@ final class LtiHttp {
     }
   }
 
-  /**
-   * POSTs an application/x-www-form-urlencoded body and returns the response,
-   * throwing on a 4xx or 5xx response.
-   */
   static String postForm(String urlString, String body) throws IOException {
     return post(urlString, body, "application/x-www-form-urlencoded", null);
   }
 
-  /**
-   * POSTs a JSON body without a bearer token and returns the response, throwing
-   * on a 4xx or 5xx response.
-   */
   static String postJson(String urlString, String json) throws IOException {
     return post(urlString, json, "application/json", null);
   }
 
-  /**
-   * POSTs a JSON body with a bearer token and returns the response, throwing on
-   * a 4xx or 5xx response.
-   */
   static String postJsonWithBearer(String urlString, String json, String bearer,
       String contentType) throws IOException {
     return post(urlString, json, contentType, bearer);

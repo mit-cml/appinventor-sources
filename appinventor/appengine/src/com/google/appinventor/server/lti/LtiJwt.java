@@ -152,7 +152,7 @@ final class LtiJwt {
     return null;
   }
 
-  /** Returns the unsigned big-endian bytes of a non-negative BigInteger. */
+  /** Returns the unsigned big endian bytes of a BigInteger, without a leading sign byte. */
   private static byte[] toUnsigned(BigInteger v) {
     byte[] b = v.toByteArray();
     if (b.length > 1 && b[0] == 0) {
