@@ -49,6 +49,14 @@ final class LtiHttp {
   }
 
   /**
+   * POSTs a JSON body without a bearer token and returns the response, throwing
+   * on a 4xx or 5xx response.
+   */
+  static String postJson(String urlString, String json) throws IOException {
+    return post(urlString, json, "application/json", null);
+  }
+
+  /**
    * POSTs a JSON body with a bearer token and returns the response, throwing on
    * a 4xx or 5xx response.
    */

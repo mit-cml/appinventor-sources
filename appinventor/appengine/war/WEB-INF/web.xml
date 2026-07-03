@@ -120,6 +120,15 @@
     <url-pattern>/lti/deeplink/select</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ltiRegisterServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiRegisterServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiRegisterServlet</servlet-name>
+    <url-pattern>/lti/register</url-pattern>
+  </servlet-mapping>
+
   <!-- Nonce based APK download -->
 
   <servlet>
