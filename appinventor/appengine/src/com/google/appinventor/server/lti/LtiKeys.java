@@ -12,6 +12,8 @@ import com.google.appinventor.server.storage.StoredData;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -61,13 +63,8 @@ final class LtiKeys {
   }
 
   private static List<StoredData.LtiKeyData> keysOrGenerate() {
-    StorageIo storageIo = StorageIoInstanceHolder.getInstance();
-    List<StoredData.LtiKeyData> keys = storageIo.getLtiKeys();
-    if (keys.isEmpty()) {
-      generate();
-      keys = storageIo.getLtiKeys();
-    }
-    return keys;
+    List<StoredData.LtiKeyData> keys = StorageIoInstanceHolder.getInstance().getLtiKeys();
+    return keys.isEmpty() ? generate() : keys;
   }
 
   private static StoredData.LtiKeyData newest(List<StoredData.LtiKeyData> keys) {
@@ -80,18 +77,24 @@ final class LtiKeys {
     return newest;
   }
 
-  /** Generates and stores one RSA key pair. */
-  private static synchronized void generate() {
+  /** Generates and stores one RSA key pair, returning the keys now on record. */
+  private static synchronized List<StoredData.LtiKeyData> generate() {
     StorageIo storageIo = StorageIoInstanceHolder.getInstance();
-    if (!storageIo.getLtiKeys().isEmpty()) {
-      return;   // another thread generated it while we waited for the lock
+    List<StoredData.LtiKeyData> keys = storageIo.getLtiKeys();
+    if (!keys.isEmpty()) {
+      return keys;   // another thread generated it while we waited for the lock
     }
     try {
       KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
       generator.initialize(KEY_SIZE);
       KeyPair pair = generator.generateKeyPair();
-      storageIo.storeLtiKey("ai-lti-" + LtiState.random(),
-          pair.getPrivate().getEncoded(), pair.getPublic().getEncoded());
+      StoredData.LtiKeyData created = new StoredData.LtiKeyData();
+      created.kid = "ai-lti-" + LtiState.random();
+      created.privateKey = pair.getPrivate().getEncoded();
+      created.publicKey = pair.getPublic().getEncoded();
+      created.created = new Date();
+      storageIo.storeLtiKey(created.kid, created.privateKey, created.publicKey);
+      return Collections.singletonList(created);
     } catch (Exception e) {
       throw new IllegalStateException("Could not generate the LTI tool key pair", e);
     }

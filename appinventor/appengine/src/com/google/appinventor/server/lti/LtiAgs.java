@@ -42,7 +42,7 @@ final class LtiAgs {
     if (platform == null) {
       throw new IllegalStateException("No registered LTI platform for issuer " + issuer);
     }
-    String token = accessToken(platform, SCORE_SCOPE);
+    String token = accessToken(platform);
     JSONObject score = new JSONObject()
         .put("userId", ltiUserSub)
         .put("activityProgress", "Submitted")
@@ -53,12 +53,10 @@ final class LtiAgs {
   }
 
   /** Gets an AGS access token via the client credentials private key JWT flow. */
-  private static String accessToken(StoredData.LtiPlatformData platform, String scope)
-      throws Exception {
+  private static String accessToken(StoredData.LtiPlatformData platform) throws Exception {
     LtiKeys.SigningKey signing = LtiKeys.signingKey();
     long now = System.currentTimeMillis() / 1000L;
-    JSONObject header = new JSONObject()
-        .put("alg", "RS256").put("typ", "JWT").put("kid", signing.kid);
+    JSONObject header = LtiJwt.rs256Header(signing.kid);
     JSONObject claims = new JSONObject()
         .put("iss", platform.clientId)
         .put("sub", platform.clientId)
@@ -70,7 +68,7 @@ final class LtiAgs {
     String body = "grant_type=client_credentials"
         + "&client_assertion_type=" + enc(ASSERTION_TYPE)
         + "&client_assertion=" + enc(assertion)
-        + "&scope=" + enc(scope);
+        + "&scope=" + enc(SCORE_SCOPE);
     String resp = LtiHttp.postForm(platform.tokenEndpoint, body);
     return new JSONObject(resp).getString("access_token");
   }

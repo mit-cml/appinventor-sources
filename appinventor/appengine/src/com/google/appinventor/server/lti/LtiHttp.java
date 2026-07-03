@@ -26,6 +26,7 @@ final class LtiHttp {
 
   private static final int CONNECT_TIMEOUT_MILLIS = 15000;
   private static final int READ_TIMEOUT_MILLIS = 30000;
+  private static final int MAX_BODY_BYTES = 1 << 20;
 
   private LtiHttp() {}
 
@@ -88,11 +89,16 @@ final class LtiHttp {
   /**
    * Opens a connection to the URL with the given method. Forces a direct
    * connection, because Moodle is on localhost and the dev server may carry a
-   * proxy meant only for the Google calls.
+   * proxy meant only for the Google calls. Redirects are not followed, so a
+   * platform response can not bounce a request to an unintended host.
    */
   private static HttpURLConnection open(String urlString, String method) throws IOException {
-    HttpURLConnection conn =
-        (HttpURLConnection) new URL(urlString).openConnection(Proxy.NO_PROXY);
+    URL url = new URL(urlString);
+    if (!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol())) {
+      throw new IOException("Refusing a non HTTP URL");
+    }
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
+    conn.setInstanceFollowRedirects(false);
     conn.setConnectTimeout(CONNECT_TIMEOUT_MILLIS);
     conn.setReadTimeout(READ_TIMEOUT_MILLIS);
     conn.setRequestMethod(method);
@@ -110,6 +116,9 @@ final class LtiHttp {
         int n;
         while ((n = reader.read(buffer)) != -1) {
           sb.append(buffer, 0, n);
+          if (sb.length() > MAX_BODY_BYTES) {
+            throw new IOException("Response body over " + MAX_BODY_BYTES + " bytes");
+          }
         }
       }
     }

@@ -38,8 +38,8 @@ import org.json.JSONObject;
  * redirects into the IDE opened on that project. The grade service line item is
  * remembered for a later passback.
  *
- * <p>This is an exploration spike. It is lenient about role checks, and auto
- * accepts the terms of service for the provisioned user.
+ * <p>This is an exploration spike. It auto accepts the terms of service for
+ * the provisioned account.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -61,10 +61,6 @@ public class LtiLaunchServlet extends HttpServlet {
   // log. A GET therefore gets the servlet default 405.
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    handle(req, resp);
-  }
-
-  private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     try {
       String idToken = req.getParameter("id_token");
       String state = req.getParameter("state");
@@ -99,12 +95,6 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Nonce mismatch");
         return;
       }
-      // One time use of the launch nonce, enforced in the datastore so a captured
-      // launch cannot be replayed against another server instance.
-      if (!storageIo.useLtiNonce(nonce)) {
-        fail(resp, "Replayed launch");
-        return;
-      }
       long now = System.currentTimeMillis() / 1000L;
       if (claims.optLong("exp", 0) < now - CLOCK_SKEW_SECONDS) {
         fail(resp, "Token expired");
@@ -113,6 +103,18 @@ public class LtiLaunchServlet extends HttpServlet {
       if (!platform.deploymentId.isEmpty()
           && !platform.deploymentId.equals(claims.optString(LTI + "deployment_id"))) {
         fail(resp, "Unknown deployment id");
+        return;
+      }
+      if (claims.optString("sub").isEmpty()) {
+        // Without a subject every launcher would share one provisioned account.
+        fail(resp, "Missing subject");
+        return;
+      }
+      // Consume the one time nonce only after every other check has passed, and
+      // in the datastore so a captured launch cannot be replayed on another
+      // server instance.
+      if (!storageIo.useLtiNonce(nonce)) {
+        fail(resp, "Replayed launch");
         return;
       }
 
@@ -155,7 +157,7 @@ public class LtiLaunchServlet extends HttpServlet {
       resp.sendRedirect("/");
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI launch failed", e);
-      fail(resp, "Launch failed: " + e.getMessage());
+      fail(resp, "Launch failed");
     }
   }
 
@@ -194,7 +196,7 @@ public class LtiLaunchServlet extends HttpServlet {
   @VisibleForTesting
   static String ltiAccountKey(String issuer, String sub) {
     try {
-      return "lti-" + LtiJwt.b64u(LtiJwt.sha256(issuer + "\n" + sub)).substring(0, 24)
+      return "lti-" + LtiJwt.hex(LtiJwt.sha256(issuer + "\n" + sub)).substring(0, 32)
           + "@lti.invalid";
     } catch (Exception e) {
       throw new IllegalStateException("SHA-256 is unavailable", e);
@@ -343,8 +345,9 @@ public class LtiLaunchServlet extends HttpServlet {
 
   /**
    * Whether the launch carries a teaching role. Matches the fragment of the IMS
-   * role vocabulary URIs, so a course or an institution level Instructor or
-   * Administrator counts, and plain Learner launches do not.
+   * role vocabulary URIs, so a course or institution level Instructor,
+   * Administrator, or Teaching Assistant counts, and plain Learner launches do
+   * not.
    */
   private static boolean isInstructor(JSONObject claims) {
     JSONArray roles = claims.optJSONArray(LTI + "roles");
@@ -374,11 +377,11 @@ public class LtiLaunchServlet extends HttpServlet {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
     String title = (resourceLink == null) ? "" : resourceLink.optString("title", "");
     String name = title.replaceAll("[^A-Za-z0-9]+", "_").replaceAll("^_+|_+$", "");
-    if (name.length() > MAX_PROJECT_NAME_LENGTH) {
-      name = name.substring(0, MAX_PROJECT_NAME_LENGTH).replaceAll("_+$", "");
-    }
     if (!name.isEmpty() && !Character.isLetter(name.charAt(0))) {
       name = "Project_" + name;
+    }
+    if (name.length() > MAX_PROJECT_NAME_LENGTH) {
+      name = name.substring(0, MAX_PROJECT_NAME_LENGTH).replaceAll("_+$", "");
     }
     if (!name.isEmpty()) {
       return name;
@@ -406,8 +409,12 @@ public class LtiLaunchServlet extends HttpServlet {
       return -1;
     }
     try {
-      String jwks = LtiKeys.jwksJson();
-      String value = LtiJwt.verify(ref, jwks).optString("template_project_id", "");
+      JSONObject refClaims = LtiJwt.verify(ref, LtiKeys.jwksJson());
+      if (!refClaims.optString("iss").equals(claims.optString("iss"))) {
+        // The reference was signed for a different platform, so it does not apply.
+        return -1;
+      }
+      String value = refClaims.optString("template_project_id", "");
       return value.isEmpty() ? -1 : Long.parseLong(value);
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI fork: ignoring an unverifiable template reference", e);

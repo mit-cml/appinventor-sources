@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.lti;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +49,20 @@ final class LtiJwt {
     return MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8));
   }
 
+  /** Lowercase hex of a byte array, a case insensitive stable encoding. */
+  static String hex(byte[] data) {
+    StringBuilder sb = new StringBuilder(data.length * 2);
+    for (byte b : data) {
+      sb.append(Character.forDigit((b >> 4) & 0xf, 16)).append(Character.forDigit(b & 0xf, 16));
+    }
+    return sb.toString();
+  }
+
+  /** The RS256 header the tool signs with, naming the published key. */
+  static JSONObject rs256Header(String kid) {
+    return new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", kid);
+  }
+
   static PrivateKey privateKeyFromDer(byte[] der) throws Exception {
     return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(der));
   }
@@ -67,7 +83,8 @@ final class LtiJwt {
     return jwk;
   }
 
-  /** Builds a one key JWK set string, used by the tests and callers with one key. */
+  /** Builds a one key JWK set string, standing in for a platform JWKS in tests. */
+  @VisibleForTesting
   static String publicJwks(RSAPublicKey pub, String kid) {
     return new JSONObject().put("keys", new JSONArray().put(jwk(pub, kid))).toString();
   }
@@ -96,9 +113,13 @@ final class LtiJwt {
     if (!"RS256".equals(header.optString("alg"))) {
       throw new IOException("Unexpected JWT alg: " + header.optString("alg"));
     }
-    RSAPublicKey pub = findKey(jwksJson, header.optString("kid", null));
+    String kid = header.optString("kid", null);
+    if (kid == null || kid.isEmpty()) {
+      throw new IOException("JWT header has no kid");
+    }
+    RSAPublicKey pub = findKey(jwksJson, kid);
     if (pub == null) {
-      throw new IOException("No JWKS key for kid " + header.optString("kid", null));
+      throw new IOException("No JWKS key for kid " + kid);
     }
     Signature sig = Signature.getInstance("SHA256withRSA");
     sig.initVerify(pub);
@@ -117,16 +138,16 @@ final class LtiJwt {
     }
     for (int i = 0; i < keys.length(); i++) {
       JSONObject k = keys.getJSONObject(i);
-      if (!"RSA".equals(k.optString("kty"))) {
+      if (!"RSA".equals(k.optString("kty")) || !kid.equals(k.optString("kid"))) {
         continue;
       }
-      if (kid != null && !kid.equals(k.optString("kid"))) {
+      String n = k.optString("n", "");
+      String e = k.optString("e", "");
+      if (n.isEmpty() || e.isEmpty()) {
         continue;
       }
-      BigInteger n = new BigInteger(1, unb64u(k.getString("n")));
-      BigInteger e = new BigInteger(1, unb64u(k.getString("e")));
-      return (RSAPublicKey) KeyFactory.getInstance("RSA")
-          .generatePublic(new RSAPublicKeySpec(n, e));
+      return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(
+          new RSAPublicKeySpec(new BigInteger(1, unb64u(n)), new BigInteger(1, unb64u(e))));
     }
     return null;
   }

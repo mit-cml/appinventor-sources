@@ -48,8 +48,8 @@ public final class LtiConfig {
   // Whether the dynamic registration endpoint (/lti/register) is open. Off by
   // default, an administrator turns it on to register a platform, then off, so
   // an untrusted party can not register itself as a platform.
-  private static final Flag<String> REGISTRATION_ENABLED =
-      Flag.createFlag("lti.registration.enabled", "false");
+  private static final Flag<Boolean> REGISTRATION_ENABLED =
+      Flag.createFlag("lti.registration.enabled", false);
 
   private LtiConfig() {}
 
@@ -71,9 +71,17 @@ public final class LtiConfig {
       return found;
     }
     if (issuer != null && issuer.equals(ISSUER.get()) && !CLIENT_ID.get().isEmpty()) {
-      storageIo.storeLtiPlatform(ISSUER.get(), CLIENT_ID.get(), AUTH_ENDPOINT.get(),
-          TOKEN_ENDPOINT.get(), JWKS_ENDPOINT.get(), DEPLOYMENT_ID.get(), true);
-      return storageIo.getLtiPlatform(issuer);
+      StoredData.LtiPlatformData seeded = new StoredData.LtiPlatformData();
+      seeded.issuer = ISSUER.get();
+      seeded.clientId = CLIENT_ID.get();
+      seeded.authEndpoint = AUTH_ENDPOINT.get();
+      seeded.tokenEndpoint = TOKEN_ENDPOINT.get();
+      seeded.jwksEndpoint = JWKS_ENDPOINT.get();
+      seeded.deploymentId = DEPLOYMENT_ID.get();
+      seeded.enabled = true;
+      storageIo.storeLtiPlatform(seeded.issuer, seeded.clientId, seeded.authEndpoint,
+          seeded.tokenEndpoint, seeded.jwksEndpoint, seeded.deploymentId, seeded.enabled);
+      return seeded;
     }
     return null;
   }
@@ -99,6 +107,6 @@ public final class LtiConfig {
 
   /** Whether the dynamic registration endpoint is currently open. */
   public static boolean registrationEnabled() {
-    return "true".equalsIgnoreCase(REGISTRATION_ENABLED.get());
+    return REGISTRATION_ENABLED.get();
   }
 }
