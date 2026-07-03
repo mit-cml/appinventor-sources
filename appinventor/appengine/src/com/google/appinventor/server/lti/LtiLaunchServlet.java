@@ -159,7 +159,8 @@ public class LtiLaunchServlet extends HttpServlet {
    * issuer and subject and placed in the reserved .lti.invalid space so it can
    * never equal a real login email.
    */
-  private static String ltiAccountKey(String issuer, String sub) {
+  @VisibleForTesting
+  static String ltiAccountKey(String issuer, String sub) {
     return sanitize(sub.isEmpty() ? "unknown" : sub) + "." + sanitize(issuer) + "@lti.invalid";
   }
 

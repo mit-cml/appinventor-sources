@@ -69,4 +69,24 @@ public class LtiLaunchServletTest extends TestCase {
     assertEquals("AppInventorAssignment",
         LtiLaunchServlet.forkProjectName(new JSONObject()));
   }
+
+  /** An LTI account lands in the reserved space and never looks like a real email. */
+  public void testAccountKeyIsNamespaced() {
+    String key = LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42");
+    assertTrue("was: " + key, key.startsWith("42."));
+    assertTrue("was: " + key, key.endsWith("@lti.invalid"));
+  }
+
+  /** The same subject on two platforms maps to two different accounts. */
+  public void testAccountKeySeparatesPlatforms() {
+    assertFalse(LtiLaunchServlet.ltiAccountKey("http://a.example.org", "1")
+        .equals(LtiLaunchServlet.ltiAccountKey("http://b.example.org", "1")));
+  }
+
+  /** A missing subject still produces a stable, valid key. */
+  public void testAccountKeyHandlesMissingSubject() {
+    String key = LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "");
+    assertTrue("was: " + key, key.startsWith("unknown."));
+    assertTrue("was: " + key, key.endsWith("@lti.invalid"));
+  }
 }
