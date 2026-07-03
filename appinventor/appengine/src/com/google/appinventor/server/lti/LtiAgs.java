@@ -9,7 +9,6 @@ import com.google.appinventor.server.storage.StoredData;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
 import java.time.Instant;
 
 import org.json.JSONObject;
@@ -56,10 +55,10 @@ final class LtiAgs {
   /** Gets an AGS access token via the client credentials private key JWT flow. */
   private static String accessToken(StoredData.LtiPlatformData platform, String scope)
       throws Exception {
-    PrivateKey key = LtiJwt.loadPrivateKey(LtiConfig.privateKeyFile());
+    LtiKeys.SigningKey signing = LtiKeys.signingKey();
     long now = System.currentTimeMillis() / 1000L;
     JSONObject header = new JSONObject()
-        .put("alg", "RS256").put("typ", "JWT").put("kid", LtiConfig.KID);
+        .put("alg", "RS256").put("typ", "JWT").put("kid", signing.kid);
     JSONObject claims = new JSONObject()
         .put("iss", platform.clientId)
         .put("sub", platform.clientId)
@@ -67,7 +66,7 @@ final class LtiAgs {
         .put("iat", now)
         .put("exp", now + TOKEN_TTL_SECONDS)
         .put("jti", LtiState.random());
-    String assertion = LtiJwt.sign(header, claims, key);
+    String assertion = LtiJwt.sign(header, claims, signing.privateKey);
     String body = "grant_type=client_credentials"
         + "&client_assertion_type=" + enc(ASSERTION_TYPE)
         + "&client_assertion=" + enc(assertion)

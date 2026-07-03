@@ -6,7 +6,6 @@
 package com.google.appinventor.server.lti;
 
 import java.io.IOException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,9 +27,8 @@ public class LtiJwksServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     try {
-      RSAPublicKey pub = LtiJwt.loadPublicKey(LtiConfig.publicKeyFile());
       resp.setContentType("application/json; charset=utf-8");
-      resp.getWriter().write(LtiJwt.publicJwks(pub, LtiConfig.KID));
+      resp.getWriter().write(LtiKeys.jwksJson());
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI JWKS generation failed", e);
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "JWKS error");

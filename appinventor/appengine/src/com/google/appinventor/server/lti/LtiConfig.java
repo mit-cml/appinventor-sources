@@ -18,7 +18,7 @@ import com.google.appinventor.server.storage.StoredData;
  * <p>The platform endpoints default to a local Moodle on port 8080. The client
  * id and deployment id are assigned by the platform when an administrator
  * registers this tool, so they are read from flags and left empty by default.
- * The tool key pair is generated once and stored under WEB-INF.
+ * The tool key pair is generated on first use and kept in the datastore.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -40,16 +40,10 @@ public final class LtiConfig {
   private static final Flag<String> DEPLOYMENT_ID =
       Flag.createFlag("lti.tool.deploymentid", "");
 
-  // The tool key pair (PKCS8 and X.509 DER) and this server's own base URL.
-  private static final Flag<String> PRIVATE_KEY_FILE =
-      Flag.createFlag("lti.tool.privatekey", "WEB-INF/lti_private_key.der");
-  private static final Flag<String> PUBLIC_KEY_FILE =
-      Flag.createFlag("lti.tool.publickey", "WEB-INF/lti_public_key.der");
+  // This server's own base URL. The tool key pair is generated on first use and
+  // held in the datastore, see LtiKeys.
   private static final Flag<String> TOOL_BASE_URL =
       Flag.createFlag("lti.tool.baseurl", "http://localhost:8888");
-
-  /** Key id advertised in the tool JWKS and in tokens the tool signs. */
-  public static final String KID = "appinventor-lti-1";
 
   private LtiConfig() {}
 
@@ -76,14 +70,6 @@ public final class LtiConfig {
       return storageIo.getLtiPlatform(issuer);
     }
     return null;
-  }
-
-  public static String privateKeyFile() {
-    return PRIVATE_KEY_FILE.get();
-  }
-
-  public static String publicKeyFile() {
-    return PUBLIC_KEY_FILE.get();
   }
 
   public static String toolBaseUrl() {

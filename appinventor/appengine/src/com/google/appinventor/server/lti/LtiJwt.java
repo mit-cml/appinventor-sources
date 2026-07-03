@@ -8,8 +8,6 @@ package com.google.appinventor.server.lti;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
@@ -49,18 +47,16 @@ final class LtiJwt {
     return MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8));
   }
 
-  static PrivateKey loadPrivateKey(String file) throws Exception {
-    byte[] der = Files.readAllBytes(Paths.get(file));
+  static PrivateKey privateKeyFromDer(byte[] der) throws Exception {
     return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(der));
   }
 
-  static RSAPublicKey loadPublicKey(String file) throws Exception {
-    byte[] der = Files.readAllBytes(Paths.get(file));
+  static RSAPublicKey publicKeyFromDer(byte[] der) throws Exception {
     return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(der));
   }
 
-  /** Builds the JWK set string for the tool public key, served at /lti/jwks. */
-  static String publicJwks(RSAPublicKey pub, String kid) {
+  /** Builds one JWK object for an RSA public key. */
+  static JSONObject jwk(RSAPublicKey pub, String kid) {
     JSONObject jwk = new JSONObject();
     jwk.put("kty", "RSA");
     jwk.put("alg", "RS256");
@@ -68,7 +64,12 @@ final class LtiJwt {
     jwk.put("kid", kid);
     jwk.put("n", b64u(toUnsigned(pub.getModulus())));
     jwk.put("e", b64u(toUnsigned(pub.getPublicExponent())));
-    return new JSONObject().put("keys", new JSONArray().put(jwk)).toString();
+    return jwk;
+  }
+
+  /** Builds a one key JWK set string, used by the tests and callers with one key. */
+  static String publicJwks(RSAPublicKey pub, String kid) {
+    return new JSONObject().put("keys", new JSONArray().put(jwk(pub, kid))).toString();
   }
 
   /** Signs a compact RS256 JWT from the given header and payload. */
