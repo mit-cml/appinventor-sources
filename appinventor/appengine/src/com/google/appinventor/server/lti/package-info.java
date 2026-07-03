@@ -33,12 +33,16 @@
  *   <li>The teacher grades in the LMS and the student views the grade there.
  * </ol>
  *
- * <p>This package is an exploration spike. The OIDC state and the grade
- * passback context are held in memory
- * ({@link com.google.appinventor.server.lti.LtiState},
- * {@link com.google.appinventor.server.lti.LtiGradeContext}), configuration is
- * read from flags ({@link com.google.appinventor.server.lti.LtiConfig}), and
- * role and deployment checks are lenient. A production version would move that
- * state and the platform registrations into the datastore.
+ * <p>The assignment to project link and the grade passback target are stored
+ * durably per user ({@link com.google.appinventor.server.lti.LtiResourceLinks},
+ * {@link com.google.appinventor.server.lti.LtiGradeContext}), so relaunches are
+ * idempotent across activity renames and submissions work across server
+ * restarts.
+ *
+ * <p>This package is an exploration spike. The in flight OIDC state is held in
+ * memory ({@link com.google.appinventor.server.lti.LtiState}), configuration
+ * is read from flags ({@link com.google.appinventor.server.lti.LtiConfig}) for
+ * a single platform, and role checks are lenient. A production version would
+ * move the platform registrations into the datastore.
  */
 package com.google.appinventor.server.lti;
