@@ -118,13 +118,16 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       // Auto POST the signed response back to the platform return url.
       resp.setContentType("text/html; charset=utf-8");
       StringBuilder html = new StringBuilder()
-          .append("<!DOCTYPE html><html><body onload='document.forms[0].submit()'>")
+          .append(LtiHtml.pageHead("Returning your selection",
+              "onload='document.forms[0].submit()'"))
+          .append("<h1>Returning your selection</h1>")
+          .append("<p>Sending your template choice back to your course.</p>")
           .append("<form method='post' action='")
           .append(LtiHtml.escape(dl.returnUrl)).append("'>")
           .append("<input type='hidden' name='JWT' value='")
           .append(LtiHtml.escape(jwt)).append("'>")
-          .append("<noscript><button type='submit'>Continue</button></noscript>")
-          .append("</form></body></html>");
+          .append("<noscript><button class='btn' type='submit'>Continue</button></noscript>")
+          .append("</form>").append(LtiHtml.pageFoot());
       resp.getWriter().write(html.toString());
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI deep linking selection failed", e);
@@ -138,8 +141,10 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
 
   private static void invalidSelection(HttpServletResponse resp) throws IOException {
     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    resp.setContentType("text/plain; charset=utf-8");
-    resp.getWriter().println("This selection is no longer valid. Close this window, then use "
-        + "Select content again from your course.");
+    resp.setContentType("text/html; charset=utf-8");
+    resp.getWriter().write(LtiHtml.pageHead("Selection expired")
+        + "<h1>This selection is no longer valid</h1>"
+        + "<p>Close this window, then choose <strong>Select content</strong> again from your "
+        + "course to pick a template.</p>" + LtiHtml.pageFoot());
   }
 }
