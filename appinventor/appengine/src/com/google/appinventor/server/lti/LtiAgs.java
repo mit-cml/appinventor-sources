@@ -25,6 +25,7 @@ final class LtiAgs {
       "https://purl.imsglobal.org/spec/lti-ags/scope/score";
   private static final String ASSERTION_TYPE =
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+  private static final long TOKEN_TTL_SECONDS = 300;
 
   private LtiAgs() {}
 
@@ -56,7 +57,7 @@ final class LtiAgs {
         .put("sub", LtiConfig.clientId())
         .put("aud", LtiConfig.tokenEndpoint())
         .put("iat", now)
-        .put("exp", now + 300)
+        .put("exp", now + TOKEN_TTL_SECONDS)
         .put("jti", LtiState.random());
     String assertion = LtiJwt.sign(header, claims, key);
     String body = "grant_type=client_credentials"

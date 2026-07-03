@@ -48,18 +48,18 @@ public class LtiLaunchServlet extends HttpServlet {
   private static final String LTI = "https://purl.imsglobal.org/spec/lti/claim/";
   private static final String LTI_DL = "https://purl.imsglobal.org/spec/lti-dl/claim/";
   private static final String AGS = "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint";
+  private static final long CLOCK_SKEW_SECONDS = 60;
+  private static final int MAX_PROJECT_NAME_LENGTH = 40;
 
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
   private final transient YoungAndroidProjectService projectService =
       new YoungAndroidProjectService(storageIo);
 
+  // Only POST is served. LTI delivers the launch with response_mode=form_post,
+  // so accepting GET would only risk the signed id_token landing in a URL or a
+  // log. A GET therefore gets the servlet default 405.
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    handle(req, resp);
-  }
-
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     handle(req, resp);
   }
 
@@ -93,7 +93,7 @@ public class LtiLaunchServlet extends HttpServlet {
         return;
       }
       long now = System.currentTimeMillis() / 1000L;
-      if (claims.optLong("exp", 0) < now - 60) {
+      if (claims.optLong("exp", 0) < now - CLOCK_SKEW_SECONDS) {
         fail(resp, "Token expired");
         return;
       }
@@ -141,20 +141,31 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * Provisions or looks up the App Inventor user for the launch claims. When the
-   * platform withholds the email for privacy, a stable pseudo address derived
-   * from the subject claim keeps the same person on the same account across
-   * launches.
+   * Provisions or looks up the App Inventor account for the launch. The account
+   * is namespaced by the platform issuer and the stable subject claim, so an
+   * LTI launch can only ever reach an LTI provisioned account and never a Google
+   * signed in user, whatever email the platform asserts. Linking a launch to an
+   * existing App Inventor account, if wanted, would be a separate explicit step.
    */
   private User userForLaunch(JSONObject claims) {
-    String email = claims.optString("email", "");
-    if (email.isEmpty()) {
-      String sub = claims.optString("sub", "");
-      email = (sub.isEmpty() ? "unknown" : sub) + "@lti.invalid";
-    }
-    User user = storageIo.getUserFromEmail(email);
+    String key = ltiAccountKey(claims.optString("iss", ""), claims.optString("sub", ""));
+    User user = storageIo.getUserFromEmail(key);
     storageIo.setTosAccepted(user.getUserId());
     return user;
+  }
+
+  /**
+   * A stable, collision free account key for a launch, formed from the platform
+   * issuer and subject and placed in the reserved .lti.invalid space so it can
+   * never equal a real login email.
+   */
+  private static String ltiAccountKey(String issuer, String sub) {
+    return sanitize(sub.isEmpty() ? "unknown" : sub) + "." + sanitize(issuer) + "@lti.invalid";
+  }
+
+  private static String sanitize(String s) {
+    String out = s.replaceAll("[^A-Za-z0-9]", "-");
+    return out.length() > 64 ? out.substring(0, 64) : out;
   }
 
   private static boolean audienceContains(Object aud, String clientId) {
@@ -275,9 +286,12 @@ public class LtiLaunchServlet extends HttpServlet {
 
   /**
    * Points the IDE at the given project by storing it as the user's current
-   * project, so that after the launch redirect the IDE opens the project that
-   * belongs to this assignment instead of whatever the user had open last.
-   * Reuses the same user setting that the IDE itself maintains.
+   * project and turning on autoload of the last project, so that after the
+   * launch redirect the IDE opens the project for this assignment rather than
+   * the projects list. Both are the same user settings the IDE itself maintains,
+   * and the IDE opens the current project only when autoload is on. For an LTI
+   * provisioned account, created for exactly this purpose, that is the wanted
+   * default.
    */
   private void pointIdeAtProject(String userId, long projectId) {
     try {
@@ -330,8 +344,8 @@ public class LtiLaunchServlet extends HttpServlet {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
     String title = (resourceLink == null) ? "" : resourceLink.optString("title", "");
     String name = title.replaceAll("[^A-Za-z0-9]+", "_").replaceAll("^_+|_+$", "");
-    if (name.length() > 40) {
-      name = name.substring(0, 40).replaceAll("_+$", "");
+    if (name.length() > MAX_PROJECT_NAME_LENGTH) {
+      name = name.substring(0, MAX_PROJECT_NAME_LENGTH).replaceAll("_+$", "");
     }
     if (!name.isEmpty() && !Character.isLetter(name.charAt(0))) {
       name = "Project_" + name;
@@ -386,9 +400,11 @@ public class LtiLaunchServlet extends HttpServlet {
     String dlToken = LtiState.createDeepLink(
         (dls == null) ? "" : dls.optString("deep_link_return_url", ""),
         (dls == null) ? "" : dls.optString("data", ""),
-        claims.optString(LTI + "deployment_id", ""));
+        claims.optString(LTI + "deployment_id", ""),
+        teacher.getUserId());
     html.append("<form method='post' action='/lti/deeplink/select'>");
-    html.append("<input type='hidden' name='dl' value='").append(escape(dlToken)).append("'>");
+    html.append("<input type='hidden' name='dl' value='").append(LtiHtml.escape(dlToken))
+        .append("'>");
     html.append("<ul>");
     boolean first = true;
     for (long pid : projects) {
@@ -399,18 +415,11 @@ public class LtiLaunchServlet extends HttpServlet {
         html.append(" checked");
         first = false;
       }
-      html.append("> ").append(escape(name)).append("</label></li>");
+      html.append("> ").append(LtiHtml.escape(name)).append("</label></li>");
     }
     html.append("</ul><button type='submit'>Use this as the assignment template</button>"
         + "</form></body></html>");
     resp.getWriter().write(html.toString());
   }
 
-  private static String escape(String s) {
-    if (s == null) {
-      return "";
-    }
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        .replace("\"", "&quot;").replace("'", "&#39;");
-  }
 }

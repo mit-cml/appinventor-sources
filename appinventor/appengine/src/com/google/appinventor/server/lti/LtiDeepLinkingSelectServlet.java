@@ -29,8 +29,11 @@ import org.json.JSONObject;
  * the student is given a copy of the teacher's template.
  *
  * <p>The platform return url and opaque data are held server side under a one
- * time token minted when the picker was rendered, so the form itself carries
- * nothing that could be tampered with.
+ * time token minted when the picker was rendered, so the form carries nothing
+ * that could be tampered with. The token also records the teacher, and the
+ * chosen project is verified to belong to that teacher before it is signed into
+ * the response, so a tampered form cannot hand another user's project to
+ * students.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -39,6 +42,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
   private static final Logger LOG = Logger.getLogger(LtiDeepLinkingSelectServlet.class.getName());
   private static final String LTI = "https://purl.imsglobal.org/spec/lti/claim/";
   private static final String LTI_DL = "https://purl.imsglobal.org/spec/lti-dl/claim/";
+  private static final long RESPONSE_TTL_SECONDS = 300;
 
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
 
@@ -48,20 +52,26 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       String templateId = req.getParameter("template_project_id");
       LtiState.DeepLink dl = LtiState.consumeDeepLink(req.getParameter("dl"));
       if (templateId == null || templateId.isEmpty() || dl == null || dl.returnUrl.isEmpty()) {
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        resp.setContentType("text/plain; charset=utf-8");
-        resp.getWriter().println("This selection has expired. Close this window, then use "
-            + "Select content again from your course.");
+        invalidSelection(resp);
         return;
       }
 
-      String title = "App Inventor assignment";
+      // The chosen project must belong to the teacher who opened the picker. The
+      // picker only lists that teacher's own projects, but the posted id is
+      // editable, so the owner is verified here before it is signed into a
+      // response that would copy the project to students.
+      String title;
       try {
         long pid = Long.parseLong(templateId);
         String owner = storageIo.getProjectUserId(pid);
-        title = "App Inventor: " + storageIo.getProjectName(owner, pid);
-      } catch (Exception ignore) {
-        // Keep the default title if the name cannot be read.
+        if (owner == null || !owner.equals(dl.teacherUserId)) {
+          invalidSelection(resp);
+          return;
+        }
+        title = "App Inventor " + storageIo.getProjectName(owner, pid);
+      } catch (NumberFormatException e) {
+        invalidSelection(resp);
+        return;
       }
 
       JSONObject contentItem = new JSONObject()
@@ -78,7 +88,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
           .put("iss", LtiConfig.clientId())
           .put("aud", LtiConfig.issuer())
           .put("iat", now)
-          .put("exp", now + 300)
+          .put("exp", now + RESPONSE_TTL_SECONDS)
           .put("nonce", LtiState.random())
           .put(LTI + "deployment_id", dl.deploymentId)
           .put(LTI + "message_type", "LtiDeepLinkingResponse")
@@ -95,23 +105,23 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       resp.setContentType("text/html; charset=utf-8");
       StringBuilder html = new StringBuilder()
           .append("<!DOCTYPE html><html><body onload='document.forms[0].submit()'>")
-          .append("<form method='post' action='").append(escapeAttr(dl.returnUrl)).append("'>")
-          .append("<input type='hidden' name='JWT' value='").append(escapeAttr(jwt)).append("'>")
+          .append("<form method='post' action='")
+          .append(LtiHtml.escape(dl.returnUrl)).append("'>")
+          .append("<input type='hidden' name='JWT' value='")
+          .append(LtiHtml.escape(jwt)).append("'>")
           .append("<noscript><button type='submit'>Continue</button></noscript>")
           .append("</form></body></html>");
       resp.getWriter().write(html.toString());
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI deep linking selection failed", e);
-      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-          "Deep linking failed: " + e.getMessage());
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Deep linking failed");
     }
   }
 
-  private static String escapeAttr(String s) {
-    if (s == null) {
-      return "";
-    }
-    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        .replace("\"", "&quot;").replace("'", "&#39;");
+  private static void invalidSelection(HttpServletResponse resp) throws IOException {
+    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    resp.setContentType("text/plain; charset=utf-8");
+    resp.getWriter().println("This selection is no longer valid. Close this window, then use "
+        + "Select content again from your course.");
   }
 }

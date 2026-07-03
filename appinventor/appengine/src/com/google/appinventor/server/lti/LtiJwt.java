@@ -103,12 +103,6 @@ final class LtiJwt {
     return new JSONObject(new String(unb64u(parts[1]), StandardCharsets.UTF_8));
   }
 
-  /** Reads the claims of a JWT without verifying, for tests and diagnostics. */
-  static JSONObject claimsUnsafe(String jwt) {
-    String[] parts = jwt.split("\\.");
-    return new JSONObject(new String(unb64u(parts[1]), StandardCharsets.UTF_8));
-  }
-
   private static RSAPublicKey findKey(String jwksJson, String kid) throws Exception {
     JSONArray keys = new JSONObject(jwksJson).optJSONArray("keys");
     if (keys == null) {
