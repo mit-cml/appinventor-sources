@@ -2352,8 +2352,8 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   // LTI 1.3 integration store. The reads and writes mirror the existing nonce
-  // and password data methods: a begin for a plain query, and runJobWithRetries
-  // for a keyed read or for a write.
+  // and password data methods, a begin for a plain query and runJobWithRetries
+  // for a keyed read or a write.
 
   @Override
   public LtiPlatformData getLtiPlatform(String issuer) {
