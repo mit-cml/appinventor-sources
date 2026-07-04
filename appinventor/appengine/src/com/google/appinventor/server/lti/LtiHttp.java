@@ -5,11 +5,10 @@
 
 package com.google.appinventor.server.lti;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Proxy;
@@ -88,11 +87,17 @@ final class LtiHttp {
     }
     // Block private, link local, and wildcard hosts so a platform supplied key
     // set or registration URL cannot reach an internal service or a cloud
-    // metadata endpoint. Loopback stays reachable for the local platform used in
-    // development.
+    // metadata endpoint. The address predicates miss carrier grade NAT and the
+    // IPv6 unique local range, where some clouds still expose metadata, so those
+    // two are checked by hand. Loopback stays reachable for the local platform
+    // used in development.
     InetAddress address = InetAddress.getByName(url.getHost());
+    byte[] raw = address.getAddress();
+    boolean carrierGradeNat = raw.length == 4 && (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;
+    boolean uniqueLocalV6 = raw.length == 16 && (raw[0] & 0xfe) == 0xfc;
     if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
-        || address.isMulticastAddress() || address.isSiteLocalAddress()) {
+        || address.isMulticastAddress() || address.isSiteLocalAddress()
+        || carrierGradeNat || uniqueLocalV6) {
       throw new IOException("Refusing a private address");
     }
     HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
@@ -107,22 +112,23 @@ final class LtiHttp {
     int status = conn.getResponseCode();
     InputStream stream =
         (status >= 200 && status < 400) ? conn.getInputStream() : conn.getErrorStream();
-    StringBuilder sb = new StringBuilder();
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     if (stream != null) {
-      try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-        char[] buffer = new char[4096];
+      try (InputStream in = stream) {
+        byte[] buffer = new byte[4096];
         int n;
-        while ((n = reader.read(buffer)) != -1) {
-          sb.append(buffer, 0, n);
-          if (sb.length() > MAX_BODY_BYTES) {
+        while ((n = in.read(buffer)) != -1) {
+          bytes.write(buffer, 0, n);
+          if (bytes.size() > MAX_BODY_BYTES) {
             throw new IOException("Response body over " + MAX_BODY_BYTES + " bytes");
           }
         }
       }
     }
+    String body = bytes.toString(StandardCharsets.UTF_8);
     if (status >= 400) {
-      throw new IOException("HTTP " + status + " from " + conn.getURL() + ": " + sb);
+      throw new IOException("HTTP " + status + " from " + conn.getURL() + ": " + body);
     }
-    return sb.toString();
+    return body;
   }
 }
