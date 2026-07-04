@@ -37,7 +37,7 @@ public class SubmitToLmsAction implements Command {
     submitting = true;
     ErrorReporter.reportInfo(MESSAGES.submittingToLms());
     RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, "/lti/submit");
-    // A custom header the server requires. A cross site page can not set it, so
+    // A custom header the server requires. A cross site page cannot set it, so
     // only a submission started from within App Inventor is accepted.
     builder.setHeader("X-AppInventor-LTI", "1");
     builder.setHeader("Content-Type", "application/x-www-form-urlencoded");

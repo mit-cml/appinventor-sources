@@ -26,7 +26,7 @@ In Moodle this is Site administration, Plugins, External tool, Manage tools. In 
 
 ## Registering by URL (dynamic registration)
 
-Both Moodle and Canvas also support LTI Dynamic Registration, where the administrator pastes one tool URL and the platform and the tool exchange their configuration automatically. Turn on the flag lti.registration.enabled, then in the platform paste SERVER/lti/register as the registration URL. App Inventor fetches the platform configuration, registers itself, and stores the platform disabled. An App Inventor administrator then enables the platform, so a registration made while the endpoint is open can not launch students on its own. Turn the flag off again afterward.
+Both Moodle and Canvas also support LTI Dynamic Registration, where the administrator pastes one tool URL and the platform and the tool exchange their configuration automatically. Turn on the flag lti.registration.enabled, then in the platform paste SERVER/lti/register as the registration URL. App Inventor fetches the platform configuration, registers itself, and stores the platform disabled. An App Inventor administrator then enables the platform, so a registration made while the endpoint is open cannot launch students on its own. Turn the flag off again afterward.
 
 ## Configuring the App Inventor server
 
