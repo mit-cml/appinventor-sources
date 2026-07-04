@@ -140,9 +140,8 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Missing subject");
         return;
       }
-      // Consume the one time nonce only after every other check has passed, and
-      // in the datastore so a captured launch cannot be replayed on another
-      // server instance.
+      // Consume the one time nonce only after the token checks pass, as a
+      // transactional datastore write so two racing replays cannot both succeed.
       if (!storageIo.useLtiNonce(nonce)) {
         fail(resp, "Replayed launch");
         return;
@@ -358,10 +357,7 @@ public class LtiLaunchServlet extends HttpServlet {
    * on one.
    */
   private String uniqueProjectName(String userId, String base) {
-    Set<String> taken = new HashSet<>();
-    for (long pid : storageIo.getProjects(userId)) {
-      taken.add(storageIo.getProjectName(userId, pid));
-    }
+    Set<String> taken = new HashSet<>(storageIo.getProjectNames(userId));
     for (int suffix = 1; suffix <= 99; suffix++) {
       String candidate = (suffix == 1) ? base : cappedName(base, "_" + suffix);
       if (!taken.contains(candidate)) {
