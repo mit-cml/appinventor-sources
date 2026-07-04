@@ -163,7 +163,7 @@ public class LtiLaunchServlet extends HttpServlet {
           fail(resp, "Only an instructor can add an App Inventor assignment");
           return;
         }
-        renderTemplatePicker(resp, claims);
+        renderTemplatePicker(resp, claims, userForLaunch(claims));
         return;
       }
       if (!"LtiResourceLinkRequest".equals(messageType)) {
@@ -310,7 +310,7 @@ public class LtiLaunchServlet extends HttpServlet {
       String resourceLinkId = resourceLinkId(claims);
       if (!resourceLinkId.isEmpty()) {
         long linked = LtiResourceLinks.get(userId, issuer, deploymentId, resourceLinkId);
-        if (linked > 0 && storageIo.getProjects(userId).contains(linked)) {
+        if (linked > 0 && stillOwns(userId, linked)) {
           LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
               + " for this assignment");
           return linked;
@@ -355,6 +355,15 @@ public class LtiLaunchServlet extends HttpServlet {
     LOG.info("LTI fork: created blank project " + projectId + " (" + projectName + ") for "
         + user.getUserEmail());
     return projectId;
+  }
+
+  /** Whether the user still owns the project, false if it is gone. */
+  private boolean stillOwns(String userId, long projectId) {
+    try {
+      return userId.equals(storageIo.getProjectUserId(projectId));
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   private static String resourceLinkId(JSONObject claims) {
@@ -505,10 +514,9 @@ public class LtiLaunchServlet extends HttpServlet {
    * held server side under a one time token, and the choice is posted to
    * /lti/deeplink/select, which returns the signed Deep Linking response to the LMS.
    */
-  private void renderTemplatePicker(HttpServletResponse resp, JSONObject claims)
+  private void renderTemplatePicker(HttpServletResponse resp, JSONObject claims, User teacher)
       throws IOException {
     resp.setContentType("text/html; charset=utf-8");
-    User teacher = userForLaunch(claims);
     StringBuilder html = new StringBuilder(LtiHtml.pageHead("Choose a template"))
         .append("<h1 id='pick'>Choose a template for this assignment</h1>");
     List<UserProject> live = new ArrayList<>();
@@ -521,7 +529,7 @@ public class LtiLaunchServlet extends HttpServlet {
     if (live.isEmpty()) {
       html.append("<p>You do not have an App Inventor project to use as a template yet. Open App "
           + "Inventor, build the project you want students to start from, then add this assignment "
-          + "again.</p>").append(LtiHtml.pageFoot());
+          + "again.</p>").append(LtiHtml.closeButton()).append(LtiHtml.pageFoot());
       resp.getWriter().write(html.toString());
       return;
     }
