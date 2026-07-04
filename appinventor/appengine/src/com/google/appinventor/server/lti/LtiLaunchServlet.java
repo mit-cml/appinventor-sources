@@ -165,6 +165,10 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Unsupported message type");
         return;
       }
+      if (resourceLinkId(claims).isEmpty()) {
+        fail(resp, "Missing resource link id");
+        return;
+      }
 
       String sub = claims.optString("sub", "");
       User user = userForLaunch(claims);
