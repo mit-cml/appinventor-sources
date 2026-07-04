@@ -40,7 +40,9 @@
  * restarts.
  *
  * <p>This package is an exploration spike. The in flight OIDC state is held in
- * memory ({@link com.google.appinventor.server.lti.LtiState}). The platform
+ * memory ({@link com.google.appinventor.server.lti.LtiState}), so a launch must
+ * finish on the same server instance that began it, which suits a single
+ * instance development server. The platform
  * registry, the account link, the assignment to project link, the grade
  * context, the one time launch nonces, and the tool key pair are kept in the
  * datastore ({@link com.google.appinventor.server.lti.LtiConfig} seeds the
