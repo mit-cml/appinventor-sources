@@ -47,7 +47,7 @@ public final class LtiConfig {
 
   // Whether the dynamic registration endpoint (/lti/register) is open. Off by
   // default, an administrator turns it on to register a platform, then off, so
-  // an untrusted party can not register itself as a platform.
+  // an untrusted party cannot register itself as a platform.
   private static final Flag<Boolean> REGISTRATION_ENABLED =
       Flag.createFlag("lti.registration.enabled", false);
 
@@ -72,9 +72,9 @@ public final class LtiConfig {
     }
     // Seed the flag configured platform only when no row for it exists yet. A row
     // that is present but disabled was left disabled on purpose, a dynamic
-    // registration always lands disabled, so it is not re-seeded or re-enabled.
+    // registration always lands disabled, so it is not seeded again or enabled again.
     if (issuer != null && issuer.equals(ISSUER.get()) && !CLIENT_ID.get().isEmpty()
-        && !platformExists(storageIo, issuer)) {
+        && !platformExists(issuer)) {
       StoredData.LtiPlatformData seeded = new StoredData.LtiPlatformData();
       seeded.issuer = ISSUER.get();
       seeded.clientId = CLIENT_ID.get();
@@ -90,8 +90,8 @@ public final class LtiConfig {
     return null;
   }
 
-  private static boolean platformExists(StorageIo storageIo, String issuer) {
-    for (StoredData.LtiPlatformData p : storageIo.getLtiPlatforms()) {
+  static boolean platformExists(String issuer) {
+    for (StoredData.LtiPlatformData p : StorageIoInstanceHolder.getInstance().getLtiPlatforms()) {
       if (issuer.equals(p.issuer)) {
         return true;
       }
