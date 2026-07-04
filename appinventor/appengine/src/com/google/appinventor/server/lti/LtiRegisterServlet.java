@@ -63,6 +63,14 @@ public class LtiRegisterServlet extends HttpServlet {
     }
     try {
       JSONObject config = new JSONObject(LtiHttp.get(configUrl));
+      String issuer = config.getString("issuer");
+      if (LtiConfig.platformExists(issuer)) {
+        // Registration is create only. Overwriting an existing row here would let
+        // an open endpoint repoint or disable a live platform integration.
+        resp.sendError(HttpServletResponse.SC_CONFLICT,
+            "A platform for this issuer is already registered, remove it before registering again");
+        return;
+      }
       JSONObject request = toolRegistration(LtiConfig.loginUrl(), LtiConfig.launchUrl(),
           LtiConfig.jwksUrl(), domainOf(LtiConfig.toolBaseUrl()), CLIENT_NAME);
       String registrationEndpoint = config.getString("registration_endpoint");
@@ -76,9 +84,9 @@ public class LtiRegisterServlet extends HttpServlet {
       String deploymentId =
           (registeredTool == null) ? "" : registeredTool.optString("deployment_id", "");
       // Store the platform disabled. An administrator enables it, so a
-      // registration made while the endpoint is open can not launch users on its
+      // registration made while the endpoint is open cannot launch users on its
       // own.
-      storageIo.storeLtiPlatform(config.getString("issuer"),
+      storageIo.storeLtiPlatform(issuer,
           registered.getString("client_id"),
           config.getString("authorization_endpoint"),
           config.getString("token_endpoint"),
