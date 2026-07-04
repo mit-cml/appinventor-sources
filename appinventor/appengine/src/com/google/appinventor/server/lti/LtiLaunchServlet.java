@@ -11,14 +11,17 @@ import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectSer
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -138,6 +141,10 @@ public class LtiLaunchServlet extends HttpServlet {
       if (claims.optString("sub").isEmpty()) {
         // Without a subject every launcher would share one provisioned account.
         fail(resp, "Missing subject");
+        return;
+      }
+      if (!claims.has(LTI + "roles")) {
+        fail(resp, "Missing roles");
         return;
       }
       // Consume the one time nonce only after the token checks pass, as a
@@ -515,12 +522,15 @@ public class LtiLaunchServlet extends HttpServlet {
         + "you choose here.</p><form method='post' action='/lti/deeplink/select'>");
     html.append("<input type='hidden' name='dl' value='").append(LtiHtml.escape(dlToken))
         .append("'><ul role='radiogroup' aria-labelledby='pick'>");
+    Map<Long, String> names = new HashMap<>();
+    for (UserProject up : storageIo.getUserProjects(teacher.getUserId(), projects)) {
+      names.put(up.getProjectId(), up.getProjectName());
+    }
     boolean first = true;
     for (long pid : projects) {
-      String name = storageIo.getProjectName(teacher.getUserId(), pid);
       html.append("<li><label class='opt'><input type='radio' name='template_project_id' value='")
           .append(pid).append(first ? "' checked>" : "'>")
-          .append("<span>").append(LtiHtml.escape(name)).append("</span></label></li>");
+          .append("<span>").append(LtiHtml.escape(names.get(pid))).append("</span></label></li>");
       first = false;
     }
     html.append("</ul><button class='btn' type='submit'>Use this as the assignment template"
