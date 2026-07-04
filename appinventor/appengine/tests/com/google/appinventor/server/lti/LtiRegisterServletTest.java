@@ -20,6 +20,7 @@ public class LtiRegisterServletTest extends TestCase {
   private static final String TOOL_CONFIG =
       "https://purl.imsglobal.org/spec/lti-tool-configuration";
 
+  /** The registration request carries the tool endpoints and both message types. */
   public void testToolRegistrationShape() {
     JSONObject reg = LtiRegisterServlet.toolRegistration(
         "https://tool.example.org/lti/login",

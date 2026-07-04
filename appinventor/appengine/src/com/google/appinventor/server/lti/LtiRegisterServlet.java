@@ -132,7 +132,6 @@ public class LtiRegisterServlet extends HttpServlet {
   }
 
   private static String domainOf(String baseUrl) throws Exception {
-    URI uri = new URI(baseUrl);
-    return (uri.getPort() == -1) ? uri.getHost() : uri.getHost() + ":" + uri.getPort();
+    return new URI(baseUrl).getHost();
   }
 }
