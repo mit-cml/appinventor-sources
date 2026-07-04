@@ -86,13 +86,14 @@ final class LtiHttp {
     if (!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol())) {
       throw new IOException("Refusing a non HTTP URL");
     }
-    // Block link local and wildcard hosts so a platform supplied key set or
-    // registration URL cannot reach a cloud metadata endpoint. Loopback stays
-    // reachable for the local platform used in development.
+    // Block private, link local, and wildcard hosts so a platform supplied key
+    // set or registration URL cannot reach an internal service or a cloud
+    // metadata endpoint. Loopback stays reachable for the local platform used in
+    // development.
     InetAddress address = InetAddress.getByName(url.getHost());
     if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
-        || address.isMulticastAddress()) {
-      throw new IOException("Refusing a link local address");
+        || address.isMulticastAddress() || address.isSiteLocalAddress()) {
+      throw new IOException("Refusing a private address");
     }
     HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
     conn.setInstanceFollowRedirects(false);
