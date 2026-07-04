@@ -18,10 +18,9 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -221,10 +220,10 @@ public class LtiLaunchServlet extends HttpServlet {
     if (linkedUserId != null) {
       user = storageIo.getUser(linkedUserId);
     } else {
-      // First launch for this platform identity. Provision the namespaced
-      // account and record the durable link, so the account id stays stable
-      // even if the account key derivation ever changes.
-      user = storageIo.getUserFromEmail(ltiAccountKey(issuer, sub));
+      // First launch for this platform identity. The account id is derived from
+      // the issuer and subject, so two racing first launches converge on one
+      // account rather than each creating one, and the durable link is recorded.
+      user = storageIo.getUser(ltiUserId(issuer, sub), ltiAccountKey(issuer, sub));
       storageIo.storeLtiUserLink(issuer, sub, user.getUserId());
     }
     storageIo.setTosAccepted(user.getUserId());
@@ -232,20 +231,25 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * A stable account key for a launch, derived from the full platform issuer and
-   * subject so two distinct launchers never share an account, and placed in the
-   * reserved .lti.invalid space so it can never equal a real login email. The
-   * digest avoids the collisions a lossy character replacement would cause on
-   * platforms whose subjects contain punctuation.
+   * A stable App Inventor account id for a launch, derived from the full platform
+   * issuer and subject so two distinct launchers never share an account and two
+   * racing first launches converge on one. The digest avoids the collisions a
+   * lossy character replacement would cause on platforms whose subjects contain
+   * punctuation.
    */
   @VisibleForTesting
-  static String ltiAccountKey(String issuer, String sub) {
+  static String ltiUserId(String issuer, String sub) {
     try {
-      return "lti-" + LtiJwt.hex(LtiJwt.sha256(issuer + "\n" + sub)).substring(0, 32)
-          + "@lti.invalid";
+      return "lti-" + LtiJwt.hex(LtiJwt.sha256(issuer + "\n" + sub)).substring(0, 32);
     } catch (Exception e) {
       throw new IllegalStateException("SHA-256 is unavailable", e);
     }
+  }
+
+  /** The provisioned account email, in the reserved space that no real login uses. */
+  @VisibleForTesting
+  static String ltiAccountKey(String issuer, String sub) {
+    return ltiUserId(issuer, sub) + "@lti.invalid";
   }
 
   private static boolean audienceContains(Object aud, String clientId) {
@@ -333,11 +337,13 @@ public class LtiLaunchServlet extends HttpServlet {
     if (templateId > 0) {
       try {
         String ownerId = storageIo.getProjectUserId(templateId);
-        long copied =
-            projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
-        LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
-            + projectName + ") for " + user.getUserEmail());
-        return copied;
+        if (ownerId != null) {
+          long copied =
+              projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
+          LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
+              + projectName + ") for " + user.getUserEmail());
+          return copied;
+        }
       } catch (Exception te) {
         LOG.log(Level.WARNING, "LTI fork: template " + templateId
             + " copy failed, falling back to a blank project", te);
@@ -466,7 +472,9 @@ public class LtiLaunchServlet extends HttpServlet {
    * selected a template they own, so it is verified here against the tool key
    * before it is trusted. A custom parameter set outside the Deep Linking flow,
    * for example by hand editing the activity, carries no valid signature and is
-   * therefore ignored.
+   * therefore ignored. The reference is bound to the platform issuer, not to one
+   * assignment, so a party who can read a signed reference from one activity
+   * could reuse it in another on the same platform.
    */
   private static long templateProjectId(JSONObject claims) {
     JSONObject custom = claims.optJSONObject(LTI + "custom");
@@ -503,11 +511,17 @@ public class LtiLaunchServlet extends HttpServlet {
     User teacher = userForLaunch(claims);
     StringBuilder html = new StringBuilder(LtiHtml.pageHead("Choose a template"))
         .append("<h1 id='pick'>Choose a template for this assignment</h1>");
-    List<Long> projects = storageIo.getProjects(teacher.getUserId());
-    if (projects.isEmpty()) {
-      html.append("<p>You do not have any App Inventor projects yet. Open App Inventor, build "
-          + "the project you want students to start from, then add this assignment again.</p>")
-          .append(LtiHtml.pageFoot());
+    List<UserProject> live = new ArrayList<>();
+    for (UserProject up : storageIo.getUserProjects(teacher.getUserId(),
+        storageIo.getProjects(teacher.getUserId()))) {
+      if (!up.isInTrash() && up.getProjectName() != null && !up.getProjectName().isEmpty()) {
+        live.add(up);
+      }
+    }
+    if (live.isEmpty()) {
+      html.append("<p>You do not have an App Inventor project to use as a template yet. Open App "
+          + "Inventor, build the project you want students to start from, then add this assignment "
+          + "again.</p>").append(LtiHtml.pageFoot());
       resp.getWriter().write(html.toString());
       return;
     }
@@ -522,15 +536,11 @@ public class LtiLaunchServlet extends HttpServlet {
         + "you choose here.</p><form method='post' action='/lti/deeplink/select'>");
     html.append("<input type='hidden' name='dl' value='").append(LtiHtml.escape(dlToken))
         .append("'><ul role='radiogroup' aria-labelledby='pick'>");
-    Map<Long, String> names = new HashMap<>();
-    for (UserProject up : storageIo.getUserProjects(teacher.getUserId(), projects)) {
-      names.put(up.getProjectId(), up.getProjectName());
-    }
     boolean first = true;
-    for (long pid : projects) {
+    for (UserProject up : live) {
       html.append("<li><label class='opt'><input type='radio' name='template_project_id' value='")
-          .append(pid).append(first ? "' checked>" : "'>")
-          .append("<span>").append(LtiHtml.escape(names.get(pid))).append("</span></label></li>");
+          .append(up.getProjectId()).append(first ? "' checked>" : "'>").append("<span>")
+          .append(LtiHtml.escape(up.getProjectName())).append("</span></label></li>");
       first = false;
     }
     html.append("</ul><button class='btn' type='submit'>Use this as the assignment template"

@@ -103,4 +103,10 @@ public class LtiLaunchServletTest extends TestCase {
     assertTrue("was: " + key, key.startsWith("lti-"));
     assertTrue("was: " + key, key.endsWith("@lti.invalid"));
   }
+
+  /** One launcher always resolves to one account, so racing first launches converge. */
+  public void testAccountKeyIsStableForOneLauncher() {
+    assertEquals(LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42"),
+        LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42"));
+  }
 }
