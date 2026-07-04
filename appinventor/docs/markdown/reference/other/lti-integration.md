@@ -22,7 +22,7 @@ Register App Inventor as an LTI 1.3 external tool with these values, where SERVE
 | Launch container | New window |
 | Services | Assignment and Grade Services (grade sync), send the launcher's name and email |
 
-In Moodle this is Site administration, Plugins, External tool, Manage tools. In Canvas this is an LTI Developer Key. The platform assigns a client id and a deployment id during registration. Launching in a new window matters, because App Inventor sends anti clickjacking headers and will not render inside a cross site frame.
+In Moodle this is Site administration, Plugins, External tool, Manage tools. In Canvas this is an LTI Developer Key. The platform assigns a client id and a deployment id during registration. Launching in a new window matters, because the App Inventor IDE is a full application that is not built to run embedded in another site, and the launch needs its own first party context to establish the sign in session.
 
 ## Registering by URL (dynamic registration)
 
