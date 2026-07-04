@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.lti;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
@@ -89,6 +90,33 @@ public class LtiJwtTest extends TestCase {
     try {
       LtiJwt.verify(jwt, jwks);
       fail("expected a token signed by a different key to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
+
+  /** A token that claims a non RS256 algorithm is rejected, blocking algorithm confusion. */
+  public void testNonRs256TokenIsRejected() throws Exception {
+    String header = LtiJwt.b64u(new JSONObject().put("alg", "HS256").put("kid", "test-kid")
+        .toString().getBytes(StandardCharsets.UTF_8));
+    String payload = LtiJwt.b64u(new JSONObject().put("sub", "student-1")
+        .toString().getBytes(StandardCharsets.UTF_8));
+    try {
+      LtiJwt.verify(header + "." + payload + ".AAAA", jwks);
+      fail("expected a non RS256 token to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
+
+  /** A token with no key id is rejected. */
+  public void testTokenWithoutKidIsRejected() throws Exception {
+    JSONObject header = new JSONObject().put("alg", "RS256");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    try {
+      LtiJwt.verify(jwt, jwks);
+      fail("expected a token with no key id to be rejected");
     } catch (Exception expected) {
       // expected
     }
