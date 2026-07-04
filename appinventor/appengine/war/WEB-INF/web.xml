@@ -71,10 +71,12 @@
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
 
-  <!-- Experimental LTI 1.3 tool (for Moodle, Canvas, etc.). These endpoints are
-       reached by the LMS platform or during the launch flow, so they are not
-       behind odeAuthFilter; the launch servlet establishes the App Inventor
-       session itself after it validates the platform id_token. -->
+  <!-- Experimental LTI 1.3 tool (for Moodle, Canvas, etc.). None of these
+       servlets is behind odeAuthFilter, because each is an entry point reached
+       before an App Inventor session exists. The launch servlet establishes the
+       session itself after it validates the platform id_token. The submit
+       servlet guards itself with a custom request header a cross site page can
+       not set. The register servlet is closed by a flag by default. -->
   <servlet>
     <servlet-name>ltiLoginServlet</servlet-name>
     <servlet-class>com.google.appinventor.server.lti.LtiLoginServlet</servlet-class>
