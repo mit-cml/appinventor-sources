@@ -40,11 +40,12 @@ final class LtiHtml {
       + "label.opt{display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;"
       + "margin:.5rem 0;border:1px solid #dadce0;border-radius:8px;cursor:pointer}"
       + "label.opt:hover{border-color:#1a73e8;background:#f8fbff}"
-      + "label.opt:focus-within{border-color:#1a73e8;outline:3px solid #a8c7fa}"
+      + "label.opt:focus-within{border-color:#1a73e8;outline:3px solid #0d47a1}"
       + "input[type=radio]{flex:none;width:1.15rem;height:1.15rem;accent-color:#1a73e8}"
       + ".btn{appearance:none;margin-top:1rem;padding:.7rem 1.4rem;border:0;border-radius:8px;"
       + "background:#1a73e8;color:#fff;font-size:1rem;font-weight:500;cursor:pointer}"
-      + ".btn:hover{background:#0d47a1}.btn:focus-visible{outline:3px solid #a8c7fa}"
+      + ".btn:hover{background:#0d47a1}"
+      + ".btn:focus-visible{outline:3px solid #0d47a1;outline-offset:2px}"
       + "@media(max-width:600px){body{padding:0}"
       + "main{margin:0;border-radius:0;min-height:100vh;box-shadow:none}}";
 
