@@ -132,6 +132,13 @@ public class LtiRegisterServlet extends HttpServlet {
   }
 
   private static String domainOf(String baseUrl) throws Exception {
-    return new URI(baseUrl).getHost();
+    // getHost returns null for a value with no authority, for example a base URL
+    // that was configured without its scheme. Fail loudly rather than let org.json
+    // drop a null domain and leave the platform to reject an incomplete request.
+    String host = new URI(baseUrl).getHost();
+    if (host == null || host.isEmpty()) {
+      throw new IllegalStateException("The lti.tool.baseurl flag has no host: " + baseUrl);
+    }
+    return host;
   }
 }
