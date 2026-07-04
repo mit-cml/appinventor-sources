@@ -36,7 +36,7 @@ final class LtiHtml {
       + "text-transform:uppercase;color:#1a73e8}"
       + "h1{margin:0 0 .75rem;font-size:1.375rem;font-weight:500;line-height:1.3;color:#0d47a1}"
       + "p{margin:.75rem 0;color:#3c4043}"
-      + "ul{list-style:none;margin:1.25rem 0;padding:0;max-height:50vh;overflow:auto}"
+      + "ul{list-style:none;margin:1.25rem 0;padding:.25rem;max-height:50vh;overflow:auto}"
       + "label.opt{display:flex;align-items:center;gap:.75rem;padding:.75rem .875rem;"
       + "margin:.5rem 0;border:1px solid #dadce0;border-radius:8px;cursor:pointer}"
       + "label.opt:hover{border-color:#1a73e8;background:#f8fbff}"
@@ -47,7 +47,7 @@ final class LtiHtml {
       + ".btn:hover{background:#0d47a1}"
       + ".btn:focus-visible{outline:3px solid #0d47a1;outline-offset:2px}"
       + "@media(max-width:600px){body{padding:0}"
-      + "main{margin:0;border-radius:0;min-height:100vh;box-shadow:none}}";
+      + "main{margin:0;border-radius:0;min-height:100vh;box-shadow:none;max-width:none}}";
 
   /**
    * Opens a styled App Inventor page with a valid doctype, language, charset, and
