@@ -75,8 +75,8 @@
        servlets is behind odeAuthFilter, because each is an entry point reached
        before an App Inventor session exists. The launch servlet establishes the
        session itself after it validates the platform id_token. The submit
-       servlet guards itself with a custom request header a cross site page can
-       not set. The register servlet is closed by a flag by default. -->
+       servlet guards itself with a custom request header a cross site page
+       cannot set. The register servlet is closed by a flag by default. -->
   <servlet>
     <servlet-name>ltiLoginServlet</servlet-name>
     <servlet-class>com.google.appinventor.server.lti.LtiLoginServlet</servlet-class>
