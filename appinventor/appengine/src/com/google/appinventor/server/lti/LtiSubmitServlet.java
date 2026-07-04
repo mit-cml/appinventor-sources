@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  * <p>Only POST performs the submission, and it requires a custom request header
  * that a cross site form cannot set and a cross site script cannot add without a
  * CORS preflight this server does not grant. A page on another site therefore
- * can not cause a submission on the student's behalf. A GET returns a short page
+ * cannot cause a submission on the student's behalf. A GET returns a short page
  * that points the student back to the Project menu.
  *
  * @author zikun@stanford.edu (Zikun Zhu)

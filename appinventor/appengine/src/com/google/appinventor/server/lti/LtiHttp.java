@@ -79,7 +79,7 @@ final class LtiHttp {
    * Opens a connection to the URL with the given method. Forces a direct
    * connection, because Moodle is on localhost and the dev server may carry a
    * proxy meant only for the Google calls. Redirects are not followed, so a
-   * platform response can not bounce a request to an unintended host.
+   * platform response cannot bounce a request to an unintended host.
    */
   private static HttpURLConnection open(String urlString, String method) throws IOException {
     URL url = new URL(urlString);
@@ -87,7 +87,7 @@ final class LtiHttp {
       throw new IOException("Refusing a non HTTP URL");
     }
     // Block link local and wildcard hosts so a platform supplied key set or
-    // registration URL can not reach a cloud metadata endpoint. Loopback stays
+    // registration URL cannot reach a cloud metadata endpoint. Loopback stays
     // reachable for the local platform used in development.
     InetAddress address = InetAddress.getByName(url.getHost());
     if (address.isLinkLocalAddress() || address.isAnyLocalAddress()

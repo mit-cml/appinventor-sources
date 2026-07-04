@@ -15,10 +15,10 @@ import junit.framework.TestCase;
 import org.json.JSONObject;
 
 /**
- * Tests the LTI JWT crypto without a live platform: a sign and verify round trip
- * against a generated JWKS, and rejection of tampered or wrong key tokens. This
- * proves the make or break piece, validating the platform id_token, before the
- * live Moodle test.
+ * Tests the LTI JWT crypto without a live platform. It runs a sign and verify
+ * round trip against a generated JWKS, and rejects tampered or wrong key tokens.
+ * This proves the make or break piece, validating the platform id_token, before
+ * the live Moodle test.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
