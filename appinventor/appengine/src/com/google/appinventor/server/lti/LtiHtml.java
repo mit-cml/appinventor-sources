@@ -72,4 +72,14 @@ final class LtiHtml {
   static String pageFoot() {
     return "</main></body></html>";
   }
+
+  /**
+   * A button that asks the LMS to close the popup it opened for a flow. The deep
+   * linking pages open in that popup, so a terminal page needs a way to dismiss
+   * it that does not depend on the user finding the window controls.
+   */
+  static String closeButton() {
+    return "<button class='btn' type='button' onclick=\"(window.opener||window.parent)."
+        + "postMessage({subject:'org.imsglobal.lti.close'},'*')\">Close this window</button>";
+  }
 }
