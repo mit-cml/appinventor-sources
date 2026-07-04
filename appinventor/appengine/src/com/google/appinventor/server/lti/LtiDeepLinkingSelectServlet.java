@@ -131,7 +131,12 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       resp.getWriter().write(html.toString());
     } catch (Exception e) {
       LOG.log(Level.WARNING, "LTI deep linking selection failed", e);
-      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Deep linking failed");
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      resp.setContentType("text/html; charset=utf-8");
+      resp.getWriter().write(LtiHtml.pageHead("Deep linking failed")
+          + "<h1>Something went wrong</h1>"
+          + "<p>App Inventor could not return your selection. Close this window, then try adding "
+          + "the assignment again.</p>" + LtiHtml.closeButton() + LtiHtml.pageFoot());
     }
   }
 
@@ -145,6 +150,6 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
     resp.getWriter().write(LtiHtml.pageHead("Selection expired")
         + "<h1>This selection is no longer valid</h1>"
         + "<p>Close this window, then choose <strong>Select content</strong> again from your "
-        + "course to pick a template.</p>" + LtiHtml.pageFoot());
+        + "course to pick a template.</p>" + LtiHtml.closeButton() + LtiHtml.pageFoot());
   }
 }
