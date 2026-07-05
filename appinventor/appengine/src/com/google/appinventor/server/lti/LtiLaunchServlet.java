@@ -537,7 +537,8 @@ public class LtiLaunchServlet extends HttpServlet {
         .append("'><ul role='radiogroup' aria-labelledby='pick'>");
     boolean first = true;
     for (UserProject up : live) {
-      html.append("<li><label class='opt'><input type='radio' name='template_project_id' value='")
+      html.append("<li role='none'><label class='opt'><input type='radio' "
+          + "name='template_project_id' value='")
           .append(up.getProjectId()).append(first ? "' checked>" : "'>").append("<span>")
           .append(LtiHtml.escape(up.getProjectName())).append("</span></label></li>");
       first = false;
