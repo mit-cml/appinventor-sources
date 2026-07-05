@@ -101,32 +101,55 @@ final class LtiHttp {
   /**
    * Whether a resolved host is one a platform supplied URL must not reach, so a
    * key set or registration fetch cannot land on an internal service or a cloud
-   * metadata endpoint. Loopback stays reachable for the local platform used in
-   * development. The standard predicates miss carrier grade NAT and two IPv6
-   * forms that carry a private IPv4, so those are judged from the address bytes.
+   * metadata endpoint. Loopback stays reachable for the local development
+   * platform. Several IPv6 notations embed an IPv4, so such a host is reduced to
+   * the address it carries and judged by the same rules.
    */
   @VisibleForTesting
-  static boolean isForbiddenHost(InetAddress address) {
+  static boolean isForbiddenHost(InetAddress address) throws IOException {
     if (address.isLoopbackAddress()) {
       return false;
+    }
+    byte[] raw = address.getAddress();
+    if (raw.length == 16) {
+      byte[] embedded = embeddedIpv4(raw);
+      if (embedded != null) {
+        address = InetAddress.getByAddress(embedded);
+        raw = embedded;
+      }
     }
     if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
         || address.isMulticastAddress() || address.isSiteLocalAddress()) {
       return true;
     }
-    byte[] raw = address.getAddress();
     if (raw.length == 4) {
-      return (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;
+      return (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;   // carrier grade NAT
     }
-    if ((raw[0] & 0xfe) == 0xfc) {
-      return true;
-    }
-    return isIpv4CompatibleV6(raw);
+    return (raw[0] & 0xfe) == 0xfc;   // unique local
   }
 
-  /** An IPv4-compatible IPv6 literal such as ::a.b.c.d keeps twelve leading zero bytes. */
-  private static boolean isIpv4CompatibleV6(byte[] raw) {
-    for (int i = 0; i < 12; i++) {
+  /**
+   * The IPv4 that a transitional IPv6 literal carries, or null for an ordinary
+   * address. Covers the IPv4-compatible, 6to4, and NAT64 well known forms. The
+   * IPv4-mapped form does not appear here because the runtime resolves it to a
+   * four byte address.
+   */
+  private static byte[] embeddedIpv4(byte[] raw) {
+    if (allZero(raw, 0, 12)) {
+      return new byte[] {raw[12], raw[13], raw[14], raw[15]};
+    }
+    if ((raw[0] & 0xff) == 0x20 && (raw[1] & 0xff) == 0x02) {
+      return new byte[] {raw[2], raw[3], raw[4], raw[5]};
+    }
+    if ((raw[0] & 0xff) == 0x00 && (raw[1] & 0xff) == 0x64 && (raw[2] & 0xff) == 0xff
+        && (raw[3] & 0xff) == 0x9b && allZero(raw, 4, 12)) {
+      return new byte[] {raw[12], raw[13], raw[14], raw[15]};
+    }
+    return null;
+  }
+
+  private static boolean allZero(byte[] raw, int from, int to) {
+    for (int i = from; i < to; i++) {
       if (raw[i] != 0) {
         return false;
       }
