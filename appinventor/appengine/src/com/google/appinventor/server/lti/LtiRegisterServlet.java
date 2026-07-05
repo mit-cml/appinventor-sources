@@ -113,7 +113,7 @@ public class LtiRegisterServlet extends HttpServlet {
     JSONObject toolConfig = new JSONObject()
         .put("domain", domain)
         .put("target_link_uri", launchUrl)
-        .put("claims", new JSONArray().put("iss").put("sub").put("name").put("email"))
+        .put("claims", new JSONArray().put("iss").put("sub"))
         .put("messages", new JSONArray()
             .put(new JSONObject().put("type", "LtiResourceLinkRequest"))
             .put(new JSONObject().put("type", "LtiDeepLinkingRequest")
