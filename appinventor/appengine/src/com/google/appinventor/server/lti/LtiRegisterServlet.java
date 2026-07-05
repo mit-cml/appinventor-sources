@@ -10,7 +10,7 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -132,10 +132,11 @@ public class LtiRegisterServlet extends HttpServlet {
   }
 
   private static String domainOf(String baseUrl) throws Exception {
-    // getHost returns null for a value with no authority, for example a base URL
-    // that was configured without its scheme. Fail loudly rather than let org.json
-    // drop a null domain and leave the platform to reject an incomplete request.
-    String host = new URI(baseUrl).getHost();
+    // URL tolerates a host with an underscore that URI rejects, and a base URL
+    // with no scheme fails here with a clear protocol error. An empty host is
+    // refused so org.json cannot drop a null domain and leave the platform to
+    // reject an incomplete request.
+    String host = new URL(baseUrl).getHost();
     if (host == null || host.isEmpty()) {
       throw new IllegalStateException("The lti.tool.baseurl flag has no host: " + baseUrl);
     }
