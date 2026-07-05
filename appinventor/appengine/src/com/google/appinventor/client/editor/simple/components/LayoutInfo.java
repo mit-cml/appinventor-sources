@@ -41,6 +41,23 @@ abstract class LayoutInfo {
     }
   }
 
+
+  public int getLayoutWidth() {
+    if (component instanceof MockVisibleComponent && width >= 0) {
+      MockVisibleComponent visibleComp = (MockVisibleComponent) component;
+      return width + visibleComp.getPaddingSumWidth() + visibleComp.getMarginSumWidth();
+    }
+    return width;
+  }
+
+  public int getLayoutHeight() {
+    if (component instanceof MockVisibleComponent && height >= 0) {
+      MockVisibleComponent visibleComp = (MockVisibleComponent) component;
+      return height + visibleComp.getPaddingSumHeight() + visibleComp.getMarginSumHeight();
+    }
+    return height;
+  }
+
   protected void prepareToGatherDimensions() {
   }
 

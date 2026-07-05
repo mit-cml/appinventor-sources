@@ -72,7 +72,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
   protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_MAIN = "TextAlignmentMain";
   protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_DETAIL = "TextAlignmentDetail";
-
+  protected static final String PROPERTY_NAME_PADDING = "Padding";
+  protected static final String PROPERTY_NAME_MARGIN = "Margin";
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!
 
@@ -202,11 +203,89 @@ public abstract class MockVisibleComponent extends MockComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TOP)) {
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_PADDING)) {
+      applyMockPadding(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_MARGIN)) {
+      applyMockMargin(newValue);
+      refreshForm();
     }
   }
   
   public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
     return editor.getNonVisibleComponentsPanel();
+  }
+
+  private void applyMockPadding(String paddingValues) {
+    if (paddingValues != null && paddingValues.contains(",")) {
+      String[] sides = paddingValues.split(",");
+      if (sides.length == 4) {
+        try {
+          Widget w = getWidget();
+          if (w != null && w.getElement() != null) {
+            com.google.gwt.dom.client.Style style = w.getElement().getStyle();
+            style.setProperty("paddingTop", Integer.parseInt(sides[0].trim()) + "px");
+            style.setProperty("paddingLeft", Integer.parseInt(sides[1].trim()) + "px");
+            style.setProperty("paddingRight", Integer.parseInt(sides[2].trim()) + "px");
+            style.setProperty("paddingBottom", Integer.parseInt(sides[3].trim()) + "px");
+          }
+        } catch (NumberFormatException e) {
+          // Graceful catch
+        }
+      }
+    }
+  }
+
+  private void applyMockMargin(String marginValues) {
+    if (marginValues != null && marginValues.contains(",")) {
+      String[] sides = marginValues.split(",");
+      if (sides.length == 4) {
+        try {
+          Widget w = getWidget();
+          if (w != null && w.getElement() != null) {
+            com.google.gwt.dom.client.Style style = w.getElement().getStyle();
+            style.setProperty("marginTop", Integer.parseInt(sides[0].trim()) + "px");
+            style.setProperty("marginLeft", Integer.parseInt(sides[1].trim()) + "px");
+            style.setProperty("marginRight", Integer.parseInt(sides[2].trim()) + "px");
+            style.setProperty("marginBottom", Integer.parseInt(sides[3].trim()) + "px");
+          }
+        } catch (NumberFormatException e) {
+          // Graceful catch
+        }
+      }
+    }
+  }
+
+  public int getPaddingSumHeight() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_PADDING), true);
+  }
+
+  public int getPaddingSumWidth() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_PADDING), false);
+  }
+
+  public int getMarginSumHeight() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_MARGIN), true);
+  }
+
+  public int getMarginSumWidth() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_MARGIN), false);
+  }
+
+  private int getSideValueSum(EditableProperty prop, boolean vertical) {
+    if (prop != null && prop.getValue().contains(",")) {
+      String[] sides = prop.getValue().split(",");
+      if (sides.length == 4) {
+        try {
+          if (vertical) {
+            return Integer.parseInt(sides[0].trim()) + Integer.parseInt(sides[3].trim()); // Top + Bottom
+          } else {
+            return Integer.parseInt(sides[1].trim()) + Integer.parseInt(sides[2].trim()); // Left + Right
+          }
+        } catch (NumberFormatException ignored) {}
+      }
+    }
+    return 0;
   }
 
   /**
