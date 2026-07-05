@@ -48,7 +48,7 @@ public class SubmitToLmsAction implements Command {
         @Override
         public void onResponseReceived(Request request, Response response) {
           submitting = false;
-          if (response.getStatusCode() == Response.SC_OK) {
+          if (response.getStatusCode() / 100 == 2) {
             ErrorReporter.reportInfo(MESSAGES.submitToLmsSuccess());
           } else {
             ErrorReporter.reportError(MESSAGES.submitToLmsFailed());
