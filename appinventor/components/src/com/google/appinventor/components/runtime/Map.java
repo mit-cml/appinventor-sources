@@ -610,6 +610,17 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
     return sensor == null ? -999 : sensor.Longitude();
   }
 
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void Margin(String margin) {
+    // Not supported for this component type
+  }
+
+
   @SimpleFunction(description = "Pans the map center to the given latitude and longitude and " +
       "adjust the zoom level to the specified zoom.")
   public void PanTo(double latitude, double longitude, int zoom) {

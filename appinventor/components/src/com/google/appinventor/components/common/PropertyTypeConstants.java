@@ -299,6 +299,18 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_VISIBILITY = "visibility";
 
   /**
+   * Padding values (Top,Left,Right,Bottom) for visible components.
+   * @see com.google.appinventor.client.editor.youngandroid.properties.PaddingMarginPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_PADDING = "padding";
+
+  /**
+   * Margin values (Top,Left,Right,Bottom) for visible components.
+   * @see com.google.appinventor.client.editor.youngandroid.properties.PaddingMarginPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_MARGIN = "margin";
+
+  /**
    * Choices of Text Receiving options. {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor}.
    */

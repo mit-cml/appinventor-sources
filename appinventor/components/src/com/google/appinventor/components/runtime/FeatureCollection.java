@@ -122,6 +122,18 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
     getMap().getController().setFeatureCollectionVisible(this, visibility);
   }
 
+
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void Margin(String margin) {
+    // Not supported for this component type
+  }
+
+
   @Override
   public View getView() {
     // Even though we are an AndroidViewComponent, we don't actually have a view because the view

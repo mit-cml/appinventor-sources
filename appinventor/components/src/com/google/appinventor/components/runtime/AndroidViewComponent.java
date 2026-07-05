@@ -39,6 +39,10 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   private int left = ComponentConstants.DEFAULT_X_Y;
   private int top = ComponentConstants.DEFAULT_X_Y;
 
+  private String paddingString = ComponentConstants.DEFAULT_PADDING_VALUE;
+  private String marginString = ComponentConstants.DEFAULT_MARGIN_VALUE;
+
+
   /**
    * Creates a new AndroidViewComponent.
    *
@@ -319,6 +323,104 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Top(int y) {
     this.top = y;
     container.setChildNeedsLayout(this);
+  }
+
+  /**
+   * Returns the padding space inside the component's bounds (Top,Left,Right,Bottom).
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
+  public String Padding() {
+    return paddingString;
+  }
+
+  /**
+   * Specifies the padding space inside the component's bounds (Top,Left,Right,Bottom).
+   *
+   * @param padding comma-separated "top,left,right,bottom" values in pixels
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_PADDING,
+          defaultValue = "0,0,0,0")
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "The padding space inside the component bounds (Top,Left,Right,Bottom).")
+  public void Padding(String padding) {
+    this.paddingString = padding;
+    applyPadding();
+  }
+
+  /**
+   * Applies the current paddingString to the underlying view. Subclasses whose
+   * appearance logic resets padding as a side effect (e.g. background drawable
+   * reassignment) should call this again after that logic runs.
+   */
+  protected void applyPadding() {
+    if (paddingString != null && paddingString.contains(",")) {
+      String[] sides = paddingString.split(",");
+      if (sides.length == 4) {
+        try {
+          int t = Integer.parseInt(sides[0].trim());
+          int l = Integer.parseInt(sides[1].trim());
+          int r = Integer.parseInt(sides[2].trim());
+          int b = Integer.parseInt(sides[3].trim());
+          getView().setPadding(l, t, r, b);
+        } catch (NumberFormatException e) {
+          // Ignore malformed input safely
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns the margin space outside the %type%'s bounds (Top,Left,Right,Bottom).
+   */
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          userVisible = false)
+  public String Margin() {
+    return marginString;
+  }
+
+  /**
+   * Specifies the margin space outside the component's bounds (Top,Left,Right,Bottom).
+   *
+   * @param margin comma-separated "top,left,right,bottom" values in pixels
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MARGIN,
+          defaultValue = "0,0,0,0")
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "The margin space outside the component bounds (Top,Left,Right,Bottom).")
+  public void Margin(String margin) {
+    this.marginString = margin;
+    applyMargin();
+  }
+
+  /**
+   * Applies the current marginString to the underlying view's LayoutParams,
+   * if the parent container's LayoutParams subtype supports margins.
+   */
+  protected void applyMargin() {
+    if (marginString != null && marginString.contains(",")) {
+      String[] sides = marginString.split(",");
+      if (sides.length == 4) {
+        try {
+          final int t = Integer.parseInt(sides[0].trim());
+          final int l = Integer.parseInt(sides[1].trim());
+          final int r = Integer.parseInt(sides[2].trim());
+          final int b = Integer.parseInt(sides[3].trim());
+
+          android.view.ViewGroup.LayoutParams lp = getView().getLayoutParams();
+          if (lp instanceof android.view.ViewGroup.MarginLayoutParams) {
+            ((android.view.ViewGroup.MarginLayoutParams) lp).setMargins(l, t, r, b);
+            getView().requestLayout();
+          }
+        } catch (NumberFormatException e) {
+          // Ignore malformed input safely
+        }
+      }
+    }
   }
 
   // Component implementation

@@ -1277,6 +1277,16 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     extendMovesOutsideCanvas = extend;   
   }
 
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void Margin(String margin) {
+    // Not supported for this component type
+  }
+
   // Methods supporting event handling
 
   /**

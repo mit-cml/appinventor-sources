@@ -193,4 +193,10 @@ public final class LinearProgress extends AndroidViewComponent {
   public void ProgressChanged(int progress) {
     EventDispatcher.dispatchEvent(this, "ProgressChanged", progress);
   }
+
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
 }

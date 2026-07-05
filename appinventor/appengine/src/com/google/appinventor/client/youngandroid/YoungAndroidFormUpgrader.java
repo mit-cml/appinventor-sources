@@ -440,6 +440,16 @@ public final class YoungAndroidFormUpgrader {
         srcCompVersion = upgradeEv3UltrasonicSensorProperties(componentProperties, srcCompVersion);
       } else if (componentType.equals("NxtDirectCommands")) {
         srcCompVersion = upgradeNxtDirectCommandsProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("AbsoluteArrangement")) {
+        srcCompVersion = upgradeAbsoluteArrangementProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("CircularProgress")) {
+        srcCompVersion = upgradeCircularProgressProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("LinearProgress")) {
+        srcCompVersion = upgradeLinearProgressProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("Switch")) {
+        srcCompVersion = upgradeSwitchProperties(componentProperties, srcCompVersion);
+      } else if (componentType.equals("TableArrangement")) {
+        srcCompVersion = upgradeTableArrangementProperties(componentProperties, srcCompVersion);
       }
 
       if (srcCompVersion < sysCompVersion) {
@@ -701,6 +711,11 @@ public final class YoungAndroidFormUpgrader {
       // Added the NumberOfSteps property, TouchDown and TouchUp events
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // Margin property were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -765,6 +780,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // Assets helper block was added.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -880,6 +900,11 @@ public final class YoungAndroidFormUpgrader {
       // The ValueFormat property was added.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Margin property were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -920,6 +945,11 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "Value", "Checked");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -965,6 +995,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 6.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -984,6 +1019,11 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1002,6 +1042,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1300,6 +1345,11 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1310,6 +1360,11 @@ public final class YoungAndroidFormUpgrader {
       // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
       // Assets helper block was added.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -1346,6 +1401,11 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -1380,6 +1440,11 @@ public final class YoungAndroidFormUpgrader {
       handlePropertyRename(componentProperties, "ImagePath", "Selection");
       // Properties related to this component have now been upgraded to version 2.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -1474,6 +1539,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 5) {
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1515,6 +1585,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 9) {
       // Added ItemTextColor, ItemBackgroundColor
       srcCompVersion = 9;
+    }
+    if (srcCompVersion < 10) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 10;
     }
     return srcCompVersion;
   }
@@ -1577,6 +1652,11 @@ public final class YoungAndroidFormUpgrader {
       // Added TextAlignmentDetail property (default: 0 = left).
       srcCompVersion = 11;
     }
+    if (srcCompVersion < 12) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 12;
+    }
     return srcCompVersion;
   }
 
@@ -1633,6 +1713,11 @@ public final class YoungAndroidFormUpgrader {
       // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 
@@ -1667,6 +1752,11 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1779,6 +1869,11 @@ public final class YoungAndroidFormUpgrader {
       // TextColor properties were added.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -1814,6 +1909,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // Assets helper block was added.
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -1858,6 +1958,11 @@ public final class YoungAndroidFormUpgrader {
       // Assets helper block was added.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -1868,6 +1973,11 @@ public final class YoungAndroidFormUpgrader {
       // Add HorizontalAlignment and VerticalAlignment dropdown blocks.
       // Assets helper block was added.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }
@@ -2020,6 +2130,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 14) {
       // TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
       srcCompVersion = 14;
+    }
+    if (srcCompVersion < 15) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 15;
     }
     return srcCompVersion;
   }
@@ -2287,6 +2402,65 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 2;
     }
     return srcCompVersion;
+  }
+
+  private static int upgradeAbsoluteArrangementProperties(
+          Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeCircularProgressProperties(
+          Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeLinearProgressProperties(
+          Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeSwitchProperties(
+          Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeTableArrangementProperties(
+          Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static void handlePaddingMarginDefaultProperty(Map<String, JSONValue> componentProperties) {
+    if (!componentProperties.containsKey("Padding")) {
+      componentProperties.put("Padding", new ClientJsonString("0,0,0,0"));
+    }
+    if (!componentProperties.containsKey("Margin")) {
+      componentProperties.put("Margin", new ClientJsonString("0,0,0,0"));
+    }
   }
 
   private static void handlePropertyRename(Map<String, JSONValue> componentProperties,

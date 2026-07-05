@@ -472,6 +472,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   }
 
   @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
+  @Override
   public View getView() {
     return seekbar;
   }

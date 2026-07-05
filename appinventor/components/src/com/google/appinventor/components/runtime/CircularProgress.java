@@ -79,4 +79,11 @@ public final class CircularProgress extends AndroidViewComponent {
   public int Color() {
     return this.indeterminateColor;
   }
+
+
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
 }

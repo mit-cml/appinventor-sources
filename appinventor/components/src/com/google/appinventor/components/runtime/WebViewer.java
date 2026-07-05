@@ -393,6 +393,16 @@ public final class WebViewer extends AndroidViewComponent {
     resetWebViewClient();
   }
 
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void Margin(String margin) {
+    // Not supported for this component type
+  }
+
   /**
    * Loads the  page from the home URL.  This happens automatically when
    * home URL is changed.

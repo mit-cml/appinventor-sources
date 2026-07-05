@@ -301,6 +301,15 @@ public final class VideoPlayer extends AndroidViewComponent implements
     }
   }
 
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void Margin(String margin) {
+    // Not supported for this component type
+  }
 
   /**
    * Method for starting the VideoPlayer once the media has been loaded.

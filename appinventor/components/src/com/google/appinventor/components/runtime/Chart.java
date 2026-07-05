@@ -554,6 +554,11 @@ public class Chart extends AndroidViewComponent
     return this.zeroY;
   }
 
+  @Override
+  public void Padding(String padding) {
+    // Not supported for this component type
+  }
+
   /**
    * Extends the domain of the chart to include the provided x value. If x is already within the
    * bounds of the domain, this method has no effect.

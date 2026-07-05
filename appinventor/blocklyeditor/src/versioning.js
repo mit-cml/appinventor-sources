@@ -1751,7 +1751,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     7: Blockly.Versioning.makeSetterUseHelper(
-        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    8: "noUpgrade"
 
   }, // End BarcodeScanner upgraders
 
@@ -1861,7 +1864,9 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: The ExtendDomainToInclude and ExtendRangeToInclude methods were added.
     3: "noUpgrade",
     // AI2: The property axesTextColor and method setAxesTextColor were added.
-    4: "noUpgrade"
+    4: "noUpgrade",
+    // Added Margin property. No block manipulation necessary.
+    5: "noUpgrade"
 
   }, // End Chart upgraders
 
@@ -1888,7 +1893,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    3: "noUpgrade"
 
   }, // End CheckBox upgraders
 
@@ -1950,7 +1958,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2:  Added ContactUri
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    7: "noUpgrade"
 
   }, // End ContactPicker upgraders
 
@@ -1973,7 +1984,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     4: Blockly.Versioning.makeSetterUseHelper(
-        'DatePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'DatePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    5: "noUpgrade"
 
   }, // End DatePicker upgraders
 
@@ -1998,7 +2012,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: [
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd"),
-      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")]
+      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    8: "noUpgrade"
 
   }, // End EmailPicker upgraders
 
@@ -2093,7 +2110,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'HorizontalArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper(
-           'HorizontalArrangement', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)]
+           'HorizontalArrangement', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    5: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
 
@@ -2110,7 +2130,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'HorizontalScrollArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper('HorizontalScrollArrangement', 'Image',
-           Blockly.Versioning.tryReplaceBlockWithAssets)]
+           Blockly.Versioning.tryReplaceBlockWithAssets)],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    3: "noUpgrade"
 
   }, // End HorizontalScrollArrangement upgraders
 
@@ -2135,8 +2158,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     6: Blockly.Versioning.makeSetterUseHelper(
-        'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets),
 
+    // Added Padding and Margin properties. No block manipulation necessary.
+    7: "noUpgrade"
   }, // End Image upgraders
 
   "ImageBot": {
@@ -2168,7 +2193,10 @@ Blockly.Versioning.AllUpgradeMaps =
     /* From BlockSaveFile.java:
       handlePropertyRename(componentName, "ImagePath", "Selection");
     */
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    6: "noUpgrade"
 
   }, // End ImagePicker upgraders
 
@@ -2236,7 +2264,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Add HTMLFormat property
     4: "noUpgrade",
 
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    6: "noUpgrade"
 
   }, // End Label upgraders
 
@@ -2448,7 +2479,10 @@ Blockly.Versioning.AllUpgradeMaps =
     8: "noUpgrade",
 
     // AI2: Added  ItemTextColor and ItemBackgroundColor
-    9: "noUpgrade"
+    9: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    10: "noUpgrade"
 
   }, // End ListPicker upgraders
 
@@ -2482,11 +2516,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // - Changed TextSize property to FontSize
     // - Add new layout
     10: "noUpgrade",
-
     // AI2:
     // - Added TextAlignmentMain property
     // - Added TextAlignmentDetail property
-    11: "noUpgrade"
+    11: "noUpgrade",
+    // Added Padding and Margin properties. No block manipulation necessary.
+    12: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -2853,7 +2888,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: [
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
-      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")]
+      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    8: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
@@ -2896,7 +2934,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI1: The Shape property was added.
     // No blocks need to be modified to upgrade to version 4.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    5: "noUpgrade"
 
   }, // End PhoneNumberPicker upgraders
 
@@ -3125,7 +3166,10 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // Added the NumberOfSteps and ColorThumb property, TouchDown and TouchUp events, 
-    3: "noUpgrade"
+    3: "noUpgrade",
+
+    // Added Margin property. No block manipulation necessary.
+    4: "noUpgrade"
 
   }, // End Slider upgraders
 
@@ -3181,7 +3225,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2: The BackgroundColor, Enabled, FontBold, FontSize, Height, Image, ShowFeedback, TextAlignment, and
     // TextColor properties were added.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    3: "noUpgrade"
 
 
   }, // End Spinner upgraders
@@ -3210,7 +3257,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "TableArrangement": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    2: "noUpgrade"
 
   }, // End TableArrangementupgraders
 
@@ -3253,7 +3303,10 @@ Blockly.Versioning.AllUpgradeMaps =
     14: [
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
-      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")]
+      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    15: "noUpgrade"
 
   }, // End TextBox upgraders
 
@@ -3314,7 +3367,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     4: Blockly.Versioning.makeSetterUseHelper(
-        'TimePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'TimePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    5: "noUpgrade"
 
   }, // End TimePicker upgraders
 
@@ -3406,7 +3462,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'VerticalArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper('VerticalArrangement', 'Image',
-           Blockly.Versioning.tryReplaceBlockWithAssets)]
+           Blockly.Versioning.tryReplaceBlockWithAssets)],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    5: "noUpgrade"
   }, // End VerticalArrangement upgraders
 
   "VerticalScrollArrangement": {
@@ -3422,7 +3481,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeSetterUseDropdown(
            'VerticalScrollArrangement', 'AlignVertical', 'VerticalAlignment'),
         Blockly.Versioning.makeSetterUseHelper('VerticalScrollArrangement', 'Image',
-           Blockly.Versioning.tryReplaceBlockWithAssets)]
+           Blockly.Versioning.tryReplaceBlockWithAssets)],
+
+    // Added Padding and Margin properties. No block manipulation necessary.
+    3: "noUpgrade"
   }, // End VerticalScrollArrangement upgraders
 
   "VideoPlayer": {
