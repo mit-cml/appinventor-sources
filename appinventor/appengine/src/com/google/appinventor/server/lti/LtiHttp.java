@@ -5,6 +5,8 @@
 
 package com.google.appinventor.server.lti;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,19 +87,7 @@ final class LtiHttp {
     if (!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol())) {
       throw new IOException("Refusing a non HTTP URL");
     }
-    // Block private, link local, and wildcard hosts so a platform supplied key
-    // set or registration URL cannot reach an internal service or a cloud
-    // metadata endpoint. The address predicates miss carrier grade NAT and the
-    // IPv6 unique local range, where some clouds still expose metadata, so those
-    // two are checked by hand. Loopback stays reachable for the local platform
-    // used in development.
-    InetAddress address = InetAddress.getByName(url.getHost());
-    byte[] raw = address.getAddress();
-    boolean carrierGradeNat = raw.length == 4 && (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;
-    boolean uniqueLocalV6 = raw.length == 16 && (raw[0] & 0xfe) == 0xfc;
-    if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
-        || address.isMulticastAddress() || address.isSiteLocalAddress()
-        || carrierGradeNat || uniqueLocalV6) {
+    if (isForbiddenHost(InetAddress.getByName(url.getHost()))) {
       throw new IOException("Refusing a private address");
     }
     HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
@@ -106,6 +96,42 @@ final class LtiHttp {
     conn.setReadTimeout(READ_TIMEOUT_MILLIS);
     conn.setRequestMethod(method);
     return conn;
+  }
+
+  /**
+   * Whether a resolved host is one a platform supplied URL must not reach, so a
+   * key set or registration fetch cannot land on an internal service or a cloud
+   * metadata endpoint. Loopback stays reachable for the local platform used in
+   * development. The standard predicates miss carrier grade NAT and two IPv6
+   * forms that carry a private IPv4, so those are judged from the address bytes.
+   */
+  @VisibleForTesting
+  static boolean isForbiddenHost(InetAddress address) {
+    if (address.isLoopbackAddress()) {
+      return false;
+    }
+    if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
+        || address.isMulticastAddress() || address.isSiteLocalAddress()) {
+      return true;
+    }
+    byte[] raw = address.getAddress();
+    if (raw.length == 4) {
+      return (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;
+    }
+    if ((raw[0] & 0xfe) == 0xfc) {
+      return true;
+    }
+    return isIpv4CompatibleV6(raw);
+  }
+
+  /** An IPv4-compatible IPv6 literal such as ::a.b.c.d keeps twelve leading zero bytes. */
+  private static boolean isIpv4CompatibleV6(byte[] raw) {
+    for (int i = 0; i < 12; i++) {
+      if (raw[i] != 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static String readBody(HttpURLConnection conn) throws IOException {
