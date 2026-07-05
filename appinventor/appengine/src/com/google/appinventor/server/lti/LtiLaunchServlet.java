@@ -310,7 +310,7 @@ public class LtiLaunchServlet extends HttpServlet {
       String resourceLinkId = resourceLinkId(claims);
       if (!resourceLinkId.isEmpty()) {
         long linked = LtiResourceLinks.get(userId, issuer, deploymentId, resourceLinkId);
-        if (linked > 0 && stillOwns(userId, linked)) {
+        if (linked > 0 && storageIo.getProjects(userId).contains(linked)) {
           LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
               + " for this assignment");
           return linked;
@@ -355,15 +355,6 @@ public class LtiLaunchServlet extends HttpServlet {
     LOG.info("LTI fork: created blank project " + projectId + " (" + projectName + ") for "
         + user.getUserEmail());
     return projectId;
-  }
-
-  /** Whether the user still owns the project, false if it is gone. */
-  private boolean stillOwns(String userId, long projectId) {
-    try {
-      return userId.equals(storageIo.getProjectUserId(projectId));
-    } catch (Exception e) {
-      return false;
-    }
   }
 
   private static String resourceLinkId(JSONObject claims) {
