@@ -49,5 +49,13 @@ public class LtiHttpTest extends TestCase {
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("::169.254.169.254")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("::100.64.0.1")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("::ffff:10.0.0.1")));
+    assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("2002:a9fe:a9fe::1")));
+    assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("2002:c0a8:0101::1")));
+    assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("64:ff9b::a9fe:a9fe")));
+  }
+
+  /** A 6to4 host that carries a public IPv4 stays reachable. */
+  public void testTransitionalIpv6OfPublicIsAllowed() throws Exception {
+    assertFalse(LtiHttp.isForbiddenHost(InetAddress.getByName("2002:0808:0808::1")));
   }
 }
