@@ -252,7 +252,9 @@ public class LtiLaunchServlet extends HttpServlet {
     return ltiUserId(issuer, sub) + "@lti.invalid";
   }
 
-  private static boolean audienceContains(Object aud, String clientId) {
+  /** Whether the token audience names this tool, as the audience string or one array entry. */
+  @VisibleForTesting
+  static boolean audienceContains(Object aud, String clientId) {
     if (clientId == null || clientId.isEmpty()) {
       return false;
     }
@@ -419,7 +421,8 @@ public class LtiLaunchServlet extends HttpServlet {
    * Administrator, or Teaching Assistant counts, and plain Learner launches do
    * not.
    */
-  private static boolean isInstructor(JSONObject claims) {
+  @VisibleForTesting
+  static boolean isInstructor(JSONObject claims) {
     JSONArray roles = claims.optJSONArray(LTI + "roles");
     if (roles == null) {
       return false;
