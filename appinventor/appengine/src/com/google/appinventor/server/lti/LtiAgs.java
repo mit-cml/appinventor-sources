@@ -6,6 +6,7 @@
 package com.google.appinventor.server.lti;
 
 import com.google.appinventor.server.storage.StoredData;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -74,7 +75,8 @@ final class LtiAgs {
   }
 
   /** Inserts /scores into the line item path, before any query string. */
-  private static String scoresUrl(String lineItemUrl) {
+  @VisibleForTesting
+  static String scoresUrl(String lineItemUrl) {
     int q = lineItemUrl.indexOf('?');
     if (q < 0) {
       return lineItemUrl + "/scores";
