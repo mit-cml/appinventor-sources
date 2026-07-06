@@ -7,6 +7,7 @@ package com.google.appinventor.server.lti;
 
 import junit.framework.TestCase;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -21,6 +22,7 @@ public class LtiLaunchServletTest extends TestCase {
 
   private static final String RESOURCE_LINK =
       "https://purl.imsglobal.org/spec/lti/claim/resource_link";
+  private static final String ROLES = "https://purl.imsglobal.org/spec/lti/claim/roles";
 
   private static JSONObject claimsWith(String title, String id) {
     JSONObject link = new JSONObject();
@@ -108,5 +110,42 @@ public class LtiLaunchServletTest extends TestCase {
   public void testAccountKeyIsStableForOneLauncher() {
     assertEquals(LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42"),
         LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42"));
+  }
+
+  /** A course or institution instructor, administrator, or teaching assistant may add work. */
+  public void testInstructorRolesAreRecognized() {
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership#Administrator")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant")));
+  }
+
+  /** A learner, a missing roles claim, and an empty roles array are not an instructor. */
+  public void testLearnerAndMissingRolesAreNotInstructor() {
+    assertFalse(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner")));
+    assertFalse(LtiLaunchServlet.isInstructor(new JSONObject()));
+    assertFalse(LtiLaunchServlet.isInstructor(rolesClaim()));
+  }
+
+  /** The audience check accepts a matching string or array entry and refuses anything else. */
+  public void testAudienceContains() {
+    assertTrue(LtiLaunchServlet.audienceContains("client-a", "client-a"));
+    assertTrue(LtiLaunchServlet.audienceContains(
+        new JSONArray().put("other").put("client-a"), "client-a"));
+    assertFalse(LtiLaunchServlet.audienceContains("other", "client-a"));
+    assertFalse(LtiLaunchServlet.audienceContains(new JSONArray().put("other"), "client-a"));
+    assertFalse(LtiLaunchServlet.audienceContains("client-a", ""));
+    assertFalse(LtiLaunchServlet.audienceContains(null, "client-a"));
+  }
+
+  private static JSONObject rolesClaim(String... roles) {
+    JSONArray array = new JSONArray();
+    for (String role : roles) {
+      array.put(role);
+    }
+    return new JSONObject().put(ROLES, array);
   }
 }
