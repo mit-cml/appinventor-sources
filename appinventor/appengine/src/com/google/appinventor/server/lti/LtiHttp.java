@@ -85,11 +85,12 @@ final class LtiHttp {
    */
   private static HttpURLConnection open(String urlString, String method) throws IOException {
     URL url = new URL(urlString);
-    if (!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol())) {
-      throw new IOException("Refusing a non HTTP URL");
+    boolean allowInsecure = LtiConfig.allowInsecure();
+    if (!transportAllowed(url.getProtocol(), allowInsecure)) {
+      throw new IOException("Refusing an insecure or non HTTP URL");
     }
-    if (isForbiddenHost(InetAddress.getByName(url.getHost()))) {
-      throw new IOException("Refusing a private address");
+    if (!hostAllowedForFetch(InetAddress.getByName(url.getHost()), allowInsecure)) {
+      throw new IOException("Refusing a private or loopback address");
     }
     HttpURLConnection conn = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
     conn.setInstanceFollowRedirects(false);
@@ -97,6 +98,26 @@ final class LtiHttp {
     conn.setReadTimeout(READ_TIMEOUT_MILLIS);
     conn.setRequestMethod(method);
     return conn;
+  }
+
+  /** Whether the transport is allowed, https always and plain http only in dev. */
+  @VisibleForTesting
+  static boolean transportAllowed(String protocol, boolean allowInsecure) {
+    return "https".equals(protocol) || ("http".equals(protocol) && allowInsecure);
+  }
+
+  /**
+   * Whether the tool may fetch from a resolved host. A public host is allowed, a
+   * private or internal one is refused, and loopback is allowed only in
+   * development, so a production tool cannot be pointed at a loopback service.
+   */
+  @VisibleForTesting
+  static boolean hostAllowedForFetch(InetAddress address, boolean allowInsecure)
+      throws IOException {
+    if (address.isLoopbackAddress()) {
+      return allowInsecure;
+    }
+    return !isForbiddenHost(address);
   }
 
   /**

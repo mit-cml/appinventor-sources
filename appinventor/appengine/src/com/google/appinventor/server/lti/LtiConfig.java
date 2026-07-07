@@ -51,6 +51,14 @@ public final class LtiConfig {
   private static final Flag<Boolean> REGISTRATION_ENABLED =
       Flag.createFlag("lti.registration.enabled", false);
 
+  // Whether loopback hosts and plain http are allowed on the tool's outbound LTI
+  // fetches. On by default for a local development platform, which runs on http
+  // loopback. A production deployment sets this false, so every platform endpoint
+  // must be a public https URL and the tool cannot be pointed at a loopback or
+  // internal host.
+  private static final Flag<Boolean> ALLOW_INSECURE =
+      Flag.createFlag("lti.allow.insecure", true);
+
   private LtiConfig() {}
 
   public static String issuer() {
@@ -121,5 +129,10 @@ public final class LtiConfig {
   /** Whether the dynamic registration endpoint is currently open. */
   public static boolean registrationEnabled() {
     return REGISTRATION_ENABLED.get();
+  }
+
+  /** Whether loopback hosts and plain http are allowed on outbound LTI fetches. */
+  public static boolean allowInsecure() {
+    return ALLOW_INSECURE.get();
   }
 }
