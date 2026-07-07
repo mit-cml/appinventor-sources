@@ -120,6 +120,11 @@ public class LtiLaunchServletTest extends TestCase {
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Administrator")));
     assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
         "http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim("Instructor")));
   }
 
   /** A learner, a missing roles claim, and an empty roles array are not an instructor. */
@@ -128,6 +133,15 @@ public class LtiLaunchServletTest extends TestCase {
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Learner")));
     assertFalse(LtiLaunchServlet.isInstructor(new JSONObject()));
     assertFalse(LtiLaunchServlet.isInstructor(rolesClaim()));
+  }
+
+  /** A crafted role, a foreign vocabulary, and a non array roles claim are refused. */
+  public void testCraftedInstructorRolesAreRejected() {
+    assertFalse(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership#InstructorCandidate")));
+    assertFalse(LtiLaunchServlet.isInstructor(rolesClaim("https://evil.example/roles#Instructor")));
+    assertFalse(LtiLaunchServlet.isInstructor(
+        new JSONObject().put(ROLES, "Instructor")));
   }
 
   /** The audience check accepts a matching string or array entry and refuses anything else. */
