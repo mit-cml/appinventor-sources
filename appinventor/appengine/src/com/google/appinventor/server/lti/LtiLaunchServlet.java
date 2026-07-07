@@ -73,7 +73,7 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Missing id_token");
         return;
       }
-      LtiState.Entry stateEntry = LtiState.consume(state);
+      LtiState.Entry stateEntry = LtiState.peek(state);
       if (stateEntry == null) {
         fail(resp, "Invalid or expired state");
         return;
@@ -99,6 +99,9 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Token verification failed");
         return;
       }
+      // The token is proven, so spend the one time state now. A failure before
+      // this point leaves the state for the honest platform to retry.
+      LtiState.consume(state);
 
       if (!platform.issuer.equals(claims.optString("iss"))) {
         fail(resp, "Issuer mismatch");
