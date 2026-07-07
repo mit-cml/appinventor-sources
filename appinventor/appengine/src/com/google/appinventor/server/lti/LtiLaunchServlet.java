@@ -53,6 +53,7 @@ public class LtiLaunchServlet extends HttpServlet {
   private static final String LTI = "https://purl.imsglobal.org/spec/lti/claim/";
   private static final String LTI_DL = "https://purl.imsglobal.org/spec/lti-dl/claim/";
   private static final String AGS = "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint";
+  private static final String LIS = "http://purl.imsglobal.org/vocab/lis/v2/";
   private static final long CLOCK_SKEW_SECONDS = 60;
   private static final int MAX_PROJECT_NAME_LENGTH = 40;
 
@@ -142,8 +143,8 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Missing subject");
         return;
       }
-      if (!claims.has(LTI + "roles")) {
-        fail(resp, "Missing roles");
+      if (claims.optJSONArray(LTI + "roles") == null) {
+        fail(resp, "Missing or malformed roles");
         return;
       }
       // Consume the one time nonce only after the token checks pass, as a
@@ -416,10 +417,10 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * Whether the launch carries a teaching role. Matches the fragment of the IMS
-   * role vocabulary URIs, so a course or institution level Instructor,
-   * Administrator, or Teaching Assistant counts, and plain Learner launches do
-   * not.
+   * Whether the launch carries a teaching role. Matches a core Instructor or
+   * Administrator context, institution, or system role, a sub role of Instructor
+   * such as TeachingAssistant, or the deprecated simple names, so a plain Learner
+   * and a crafted role that merely ends in a teaching word do not count.
    */
   @VisibleForTesting
   static boolean isInstructor(JSONObject claims) {
@@ -428,13 +429,29 @@ public class LtiLaunchServlet extends HttpServlet {
       return false;
     }
     for (int i = 0; i < roles.length(); i++) {
-      String role = roles.optString(i);
-      if (role.contains("#Instructor") || role.contains("#Administrator")
-          || role.contains("#TeachingAssistant")) {
+      if (isInstructorRole(roles.optString(i))) {
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Whether one role value grants the instructor flow, comparing the role fragment
+   * exactly rather than by substring, so a value such as one ending in
+   * InstructorCandidate, or one from another vocabulary, does not slip through.
+   */
+  private static boolean isInstructorRole(String role) {
+    if (role.equals("Instructor") || role.equals("Administrator")) {
+      return true;
+    }
+    int hash = role.indexOf('#');
+    if (hash < 0 || !role.startsWith(LIS)) {
+      return false;
+    }
+    String fragment = role.substring(hash + 1);
+    return fragment.equals("Instructor") || fragment.equals("Administrator")
+        || role.substring(0, hash).endsWith("/Instructor");
   }
 
   /**
