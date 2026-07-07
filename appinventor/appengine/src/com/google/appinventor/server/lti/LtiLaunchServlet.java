@@ -121,8 +121,8 @@ public class LtiLaunchServlet extends HttpServlet {
         return;
       }
       long now = System.currentTimeMillis() / 1000L;
-      if (claims.optLong("exp", 0) < now - CLOCK_SKEW_SECONDS) {
-        fail(resp, "Token expired");
+      if (!tokenTimeValid(claims, now)) {
+        fail(resp, "Token timing invalid");
         return;
       }
       if (!"1.3.0".equals(claims.optString(LTI + "version"))) {
@@ -452,6 +452,25 @@ public class LtiLaunchServlet extends HttpServlet {
     String fragment = role.substring(hash + 1);
     return fragment.equals("Instructor") || fragment.equals("Administrator")
         || role.substring(0, hash).endsWith("/Instructor");
+  }
+
+  /**
+   * Whether the token timing claims are acceptable now. Requires a numeric issued
+   * at that is not in the future and a live expiry, both within the clock skew, so
+   * a token with no iat or a future iat is refused rather than accepted on exp
+   * alone.
+   */
+  @VisibleForTesting
+  static boolean tokenTimeValid(JSONObject claims, long nowSeconds) {
+    long iat = claims.optLong("iat", 0);
+    long exp = claims.optLong("exp", 0);
+    if (iat <= 0 || exp <= 0) {
+      return false;
+    }
+    if (iat > nowSeconds + CLOCK_SKEW_SECONDS) {
+      return false;
+    }
+    return exp >= nowSeconds - CLOCK_SKEW_SECONDS;
   }
 
   /**

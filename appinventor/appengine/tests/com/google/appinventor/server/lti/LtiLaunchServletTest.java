@@ -155,6 +155,28 @@ public class LtiLaunchServletTest extends TestCase {
     assertFalse(LtiLaunchServlet.audienceContains(null, "client-a"));
   }
 
+  /** The timing check requires a numeric iat that is not in the future and a live exp. */
+  public void testTokenTimeValid() {
+    long now = 1_000_000L;
+    assertTrue(LtiLaunchServlet.tokenTimeValid(timing(now, now + 3600), now));
+    assertFalse("missing iat", LtiLaunchServlet.tokenTimeValid(timing(0, now + 3600), now));
+    assertFalse("missing exp", LtiLaunchServlet.tokenTimeValid(timing(now, 0), now));
+    assertFalse("future iat", LtiLaunchServlet.tokenTimeValid(timing(now + 1000, now + 3600), now));
+    assertFalse("expired", LtiLaunchServlet.tokenTimeValid(timing(now - 3600, now - 1000), now));
+    assertTrue("within skew", LtiLaunchServlet.tokenTimeValid(timing(now + 30, now - 30), now));
+  }
+
+  private static JSONObject timing(long iat, long exp) {
+    JSONObject c = new JSONObject();
+    if (iat != 0) {
+      c.put("iat", iat);
+    }
+    if (exp != 0) {
+      c.put("exp", exp);
+    }
+    return c;
+  }
+
   private static JSONObject rolesClaim(String... roles) {
     JSONArray array = new JSONArray();
     for (String role : roles) {
