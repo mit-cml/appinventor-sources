@@ -41,6 +41,8 @@ The tool reads its configuration from these flags (Java system properties on the
 | lti.tool.clientid | The client id the platform assigned |
 | lti.tool.deploymentid | The deployment id the platform assigned (enforced when set) |
 | lti.tool.baseurl | This server's own base URL |
+| lti.registration.enabled | Whether the dynamic registration endpoint is open, off by default |
+| lti.allow.insecure | Whether loopback hosts and plain http are allowed on outbound fetches. On by default for a local Moodle. Set false in production so the tool only reaches public https platform endpoints and refuses a loopback or internal host |
 
 The tool RSA key pair is generated on first use and kept in the datastore, and the public key is served at /lti/jwks for the platform to verify the tool's messages. The platform flags describe one platform and seed the platform registry in the datastore on the first login, so an existing flag setup keeps working, and further platforms can be added to the registry directly.
 
