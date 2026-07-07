@@ -80,26 +80,26 @@ public class NoProjectDialogBox extends DialogBox {
   }
 
   @UiHandler("closeDialogBox")
-  protected void handleClose(ClickEvent e) {
+  public void handleClose(ClickEvent e) {
     this.hide();
   }
 
   @UiHandler("goToPurr")
-  protected void handleGoToPurr(ClickEvent e) {
+  public void handleGoToPurr(ClickEvent e) {
     this.hide();
     new TemplateUploadWizard().createProjectFromExistingZip("HelloPurr", new NewTutorialProject(),
             "HelloPurr");
   }
 
   @UiHandler("goToChat")
-  protected void handleGoToChat(ClickEvent e) {
+  public void handleGoToChat(ClickEvent e) {
     this.hide();
     new TemplateUploadWizard().createProjectFromExistingZip("SimpleChatbot", new NewTutorialProject(),
         "SimpleChatbot");
   }
 
   @UiHandler("goToYR")
-  protected void handleGoToYR(ClickEvent e) {
+  public void handleGoToYR(ClickEvent e) {
     this.hide();
     TemplateUploadWizard.openProjectFromTemplate(Window.Location.getProtocol()
         + "//appinventor.mit.edu/yrtoolkit/yr/aiaFiles/hello_bonjour/translate_tutorial.asc",
@@ -107,7 +107,7 @@ public class NoProjectDialogBox extends DialogBox {
   }
 
   @UiHandler("noDialogNewProject")
-  protected void handleNewProject(ClickEvent e) {
+  public void handleNewProject(ClickEvent e) {
     this.hide();
     new NewYoungAndroidProjectWizard().show();
   }
@@ -120,12 +120,12 @@ public class NoProjectDialogBox extends DialogBox {
   }
 
   @UiHandler("topInvisible")
-  protected void FocusLast(FocusEvent event) {
+  public void FocusLast(FocusEvent event) {
      closeDialogBox.setFocus(true);
   }
 
   @UiHandler("bottomInvisible")
-  protected void FocusFirst(FocusEvent event) {
+  public void FocusFirst(FocusEvent event) {
      goToPurr.setFocus(true);
   }
 }

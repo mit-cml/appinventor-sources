@@ -59,38 +59,4 @@ public class NoProjectDialogBoxMob extends NoProjectDialogBox {
     super.bottomInvisible = this.bottomInvisible;
   }
 
-  @UiHandler("closeDialogBox")
-  protected void handleClose(ClickEvent e) {
-    super.handleClose(e);
-  }
-
-  @UiHandler("goToPurr")
-  protected void handleGoToPurr(ClickEvent e) {
-    super.handleGoToPurr(e);
-  }
-
-  @UiHandler("goToChat")
-  protected void handleGoToChat(ClickEvent e) {
-    super.handleGoToChat(e);
-  }
-
-  @UiHandler("goToYR")
-  protected void handleGoToYR(ClickEvent e) {
-    super.handleGoToYR(e);
-  }
-
-  @UiHandler("noDialogNewProject")
-  protected void handleNewProject(ClickEvent e) {
-    super.handleNewProject(e);
-  }
-
-  @UiHandler("topInvisible")
-  protected void FocusLast(FocusEvent event) {
-     closeDialogBox.setFocus(true);
-  }
-
-  @UiHandler("bottomInvisible")
-  protected void FocusFirst(FocusEvent event) {
-     goToPurr.setFocus(true);
-  }
 }
