@@ -69,4 +69,21 @@ public class LtiHttpTest extends TestCase {
     assertFalse(LtiHttp.isSuccessStatus(400));
     assertFalse(LtiHttp.isSuccessStatus(500));
   }
+
+  /** Loopback is fetchable only in development, a public host always, a private host never. */
+  public void testHostAllowedForFetch() throws Exception {
+    assertTrue(LtiHttp.hostAllowedForFetch(InetAddress.getByName("127.0.0.1"), true));
+    assertFalse(LtiHttp.hostAllowedForFetch(InetAddress.getByName("127.0.0.1"), false));
+    assertTrue(LtiHttp.hostAllowedForFetch(InetAddress.getByName("8.8.8.8"), false));
+    assertFalse(LtiHttp.hostAllowedForFetch(InetAddress.getByName("10.0.0.1"), true));
+    assertFalse(LtiHttp.hostAllowedForFetch(InetAddress.getByName("169.254.169.254"), true));
+  }
+
+  /** https is always allowed, plain http only in development. */
+  public void testTransportAllowed() {
+    assertTrue(LtiHttp.transportAllowed("https", false));
+    assertTrue(LtiHttp.transportAllowed("http", true));
+    assertFalse(LtiHttp.transportAllowed("http", false));
+    assertFalse(LtiHttp.transportAllowed("ftp", true));
+  }
 }
