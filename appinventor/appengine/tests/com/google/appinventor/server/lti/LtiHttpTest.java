@@ -58,4 +58,15 @@ public class LtiHttpTest extends TestCase {
   public void testTransitionalIpv6OfPublicIsAllowed() throws Exception {
     assertFalse(LtiHttp.isForbiddenHost(InetAddress.getByName("2002:0808:0808::1")));
   }
+
+  /** Only a 2xx response is a success, so a redirect the tool does not follow is a failure. */
+  public void testOnlyTwoHundredsAreSuccess() {
+    assertTrue(LtiHttp.isSuccessStatus(200));
+    assertTrue(LtiHttp.isSuccessStatus(201));
+    assertTrue(LtiHttp.isSuccessStatus(299));
+    assertFalse(LtiHttp.isSuccessStatus(302));
+    assertFalse(LtiHttp.isSuccessStatus(304));
+    assertFalse(LtiHttp.isSuccessStatus(400));
+    assertFalse(LtiHttp.isSuccessStatus(500));
+  }
 }

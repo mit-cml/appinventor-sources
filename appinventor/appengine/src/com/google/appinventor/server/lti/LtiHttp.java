@@ -21,7 +21,8 @@ import java.nio.charset.StandardCharsets;
  * Minimal direct HTTP helper for the LTI tool. Opens connections with no proxy,
  * because the LTI platform (Moodle) is reached on localhost while the dev server
  * may be launched with a SOCKS proxy meant only for the Google calls. Every call
- * throws on a 4xx or 5xx response, which HttpURLConnection does not do by default.
+ * throws on any non 2xx response, so a redirect the tool does not follow cannot
+ * read as a success.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
@@ -159,8 +160,7 @@ final class LtiHttp {
 
   private static String readBody(HttpURLConnection conn) throws IOException {
     int status = conn.getResponseCode();
-    InputStream stream =
-        (status >= 200 && status < 400) ? conn.getInputStream() : conn.getErrorStream();
+    InputStream stream = isSuccessStatus(status) ? conn.getInputStream() : conn.getErrorStream();
     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     if (stream != null) {
       try (InputStream in = stream) {
@@ -175,9 +175,15 @@ final class LtiHttp {
       }
     }
     String body = bytes.toString(StandardCharsets.UTF_8);
-    if (status >= 400) {
+    if (!isSuccessStatus(status)) {
       throw new IOException("HTTP " + status + " from " + conn.getURL() + ": " + body);
     }
     return body;
+  }
+
+  /** Whether an HTTP status is a success, so a redirect or an error is not read as a body. */
+  @VisibleForTesting
+  static boolean isSuccessStatus(int status) {
+    return status >= 200 && status < 300;
   }
 }
