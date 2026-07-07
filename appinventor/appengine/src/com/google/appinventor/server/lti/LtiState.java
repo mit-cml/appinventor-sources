@@ -83,6 +83,22 @@ final class LtiState {
   }
 
   /**
+   * Returns the entry for a state without spending it, or null if the state is
+   * unknown or expired, so the launch can validate the token before the state is
+   * consumed and a transient failure does not burn a launch the platform can retry.
+   */
+  static Entry peek(String state) {
+    if (state == null) {
+      return null;
+    }
+    Entry e = STORE.get(state);
+    if (e == null || System.currentTimeMillis() - e.ts > TTL_MILLIS) {
+      return null;
+    }
+    return e;
+  }
+
+  /**
    * Consumes a state once and returns its entry, holding the nonce and the
    * platform issuer, or null if the state is unknown or expired.
    */
