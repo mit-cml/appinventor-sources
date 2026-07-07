@@ -14,6 +14,7 @@ import com.google.appinventor.client.editor.simple.components.MockComponentsUtil
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.utils.ImageAccessibility;
 import com.google.appinventor.client.style.mobile.MobileSidebar;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
@@ -178,7 +179,10 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   @Override
   public void onDragStart() {
-    // no action
+    MobileSidebar sidebar = Ode.getInstance().getmobileSideBar();
+    if (sidebar != null && sidebar.isOpen()) {
+      sidebar.close();
+    }
   }
 
   @Override
