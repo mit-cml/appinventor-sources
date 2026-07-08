@@ -3832,31 +3832,6 @@ div.dropdiv p {
   border-top: 1px solid #eee;
   background: #fafafa;
 }
-.lie-btn {
-  border: none;
-  border-radius: 4px;
-  font: 500 13px 'Roboto', sans-serif;
-  cursor: pointer;
-  margin: 0;
-}
-.lie-btn-ghost {
-  padding: 8px 16px;
-  background: none;
-  color: #888888;
-}
-.lie-btn-ghost:hover {
-  background: #ededed;
-  color: #555555;
-}
-.lie-btn-primary {
-  padding: 8px 22px;
-  background: #a5cf47;
-  color: #33401a;
-}
-.lie-btn-primary:hover {
-  background: #98c23a;
-}
-
 /* ---- Image picker popup (Susan's click-the-thumbnail option) ------ */
 .lie-picker {
   max-height: 280px;

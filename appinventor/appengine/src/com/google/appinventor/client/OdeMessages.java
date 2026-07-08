@@ -5283,6 +5283,9 @@ public interface OdeMessages extends Messages, ComponentTranslations {
     "<tr><td>Reset Connection</td><td>Alt + Shift + R</td></tr>" +
     "<tr><td>Refresh Companion Screen</td><td>Alt + R</td></tr>" +
     "<tr><td>Navigate Components in components tree</td><td>↑/↓</td></tr>" +
+    "<tr><td>Add a row in the ListView data editor</td><td>Enter</td></tr>" +
+    "<tr><td>Navigate rows in the ListView data editor</td><td>↑/↓</td></tr>" +
+    "<tr><td>Move to the next / previous field in the ListView data editor</td><td>Tab / Shift+Tab</td></tr>" +
     "<tr><td>Open this dialog</td><td>Alt + ?</td></tr>" +
     "</tbody>" +
     "</table>")
