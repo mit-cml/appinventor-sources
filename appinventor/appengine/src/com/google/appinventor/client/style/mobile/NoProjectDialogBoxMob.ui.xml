@@ -31,14 +31,14 @@
           <g:Button ui:field='goToPurr' styleName="ode-tutorialButton" text="{messages.startTutorialButton}" />
         </g:FlowPanel>
 
-        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv">
+        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv" visible="false">
           <g:Label styleName="ode-noDialogExampleTitle" text="{messages.talkToMeTitle}" />
           <g:Image resource="{res.talkToMeLogo}" altText="Talk to Me Logo"/>
           <g:Label styleName="ode-noDialogExampleAbout" text="{messages.talkToMeDescription}" />
           <g:Button ui:field='goToChat' text='{messages.startTutorialButton}' styleName="ode-tutorialButton"/>
         </g:FlowPanel>
 
-        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv">
+        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv" visible="false">
           <g:Label styleName="ode-noDialogExampleTitle" text="{messages.translateAppTitle}" />
           <g:Image resource="{res.YRLogo}" altText="YR Media Logo"/>
           <g:Label styleName="ode-noDialogExampleAbout" text="{messages.translateAppDescription}" />
