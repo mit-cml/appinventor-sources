@@ -49,7 +49,7 @@ final class LtiAgs {
         .put("activityProgress", "Submitted")
         .put("gradingProgress", "PendingManual")
         .put("timestamp", Instant.now().toString());
-    LtiHttp.postJsonWithBearer(scoresUrl(lineItemUrl), score.toString(), token,
+    LtiHttp.postWithBearer(scoresUrl(lineItemUrl), score.toString(), token,
         "application/vnd.ims.lis.v1.score+json");
   }
 

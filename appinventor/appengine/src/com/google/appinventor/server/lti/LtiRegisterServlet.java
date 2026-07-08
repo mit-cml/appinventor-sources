@@ -77,7 +77,7 @@ public class LtiRegisterServlet extends HttpServlet {
       String regToken = req.getParameter("registration_token");
       String body = (regToken == null || regToken.isEmpty())
           ? LtiHttp.postJson(registrationEndpoint, request.toString())
-          : LtiHttp.postJsonWithBearer(registrationEndpoint, request.toString(), regToken,
+          : LtiHttp.postWithBearer(registrationEndpoint, request.toString(), regToken,
               "application/json");
       JSONObject registered = new JSONObject(body);
       JSONObject registeredTool = registered.optJSONObject(TOOL_CONFIG);
