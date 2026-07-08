@@ -1245,6 +1245,9 @@ Top-level component containing all other components in the program.
  are: `1` (aligned at the top), `2` (vertically centered), `3` (aligned at the bottom). Vertical
  alignment has no effect if the screen is scrollable.
 
+{:id="Screen.AndroidMinSdk" .text .wo .do} *AndroidMinSdk*
+: The minimum Android API level required to install this app. The build system may automatically raise this value if selected components require a higher APIlevel.
+
 {:id="Screen.AppName" .text .wo .do} *AppName*
 : This is the display name of the installed application in the phone. If the `AppName` is blank,
  it will be set to the name of the project when the project is built.

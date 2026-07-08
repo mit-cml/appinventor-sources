@@ -2232,7 +2232,7 @@ public class Form extends AppInventorCompatActivity
     description = "The minimum Android SDK required to install the app. " +
         "The system may automatically increase this value if components " +
         "require a higher SDK.", 
-    category = PropertyCategory.GENERAL)
+    category = PropertyCategory.PUBLISHING)
   public void AndroidMinSdk(String value) {
     // Stored automatically in project properties
   }
