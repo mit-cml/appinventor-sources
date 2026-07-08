@@ -49,7 +49,7 @@ final class LtiJwt {
     return MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8));
   }
 
-  /** Lowercase hex of a byte array, a case insensitive stable encoding. */
+  /** Lowercase hex of a byte array. */
   static String hex(byte[] data) {
     StringBuilder sb = new StringBuilder(data.length * 2);
     for (byte b : data) {

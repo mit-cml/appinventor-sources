@@ -24,7 +24,7 @@ import com.google.appinventor.server.storage.StoredData;
  */
 public final class LtiConfig {
 
-  // The platform (Moodle) side. Default to a local Moodle on 8080.
+  // The platform (Moodle) side.
   private static final Flag<String> ISSUER =
       Flag.createFlag("lti.platform.issuer", "http://localhost:8080");
   private static final Flag<String> AUTH_ENDPOINT =
@@ -40,8 +40,7 @@ public final class LtiConfig {
   private static final Flag<String> DEPLOYMENT_ID =
       Flag.createFlag("lti.tool.deploymentid", "");
 
-  // This server's own base URL. The tool key pair is generated on first use and
-  // held in the datastore, see LtiKeys.
+  // This server's own base URL.
   private static final Flag<String> TOOL_BASE_URL =
       Flag.createFlag("lti.tool.baseurl", "http://localhost:8888");
 
@@ -51,11 +50,8 @@ public final class LtiConfig {
   private static final Flag<Boolean> REGISTRATION_ENABLED =
       Flag.createFlag("lti.registration.enabled", false);
 
-  // Whether loopback hosts and plain http are allowed on the tool's outbound LTI
-  // fetches. On by default for a local development platform, which runs on http
-  // loopback. A production deployment sets this false, so every platform endpoint
-  // must be a public https URL and the tool cannot be pointed at a loopback or
-  // internal host.
+  // Whether loopback hosts and plain http are allowed on outbound LTI fetches.
+  // True for local dev, false in production.
   private static final Flag<Boolean> ALLOW_INSECURE =
       Flag.createFlag("lti.allow.insecure", true);
 

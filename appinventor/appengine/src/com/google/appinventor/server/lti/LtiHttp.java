@@ -52,9 +52,9 @@ final class LtiHttp {
     return post(urlString, json, "application/json", null);
   }
 
-  static String postJsonWithBearer(String urlString, String json, String bearer,
+  static String postWithBearer(String urlString, String body, String bearer,
       String contentType) throws IOException {
-    return post(urlString, json, contentType, bearer);
+    return post(urlString, body, contentType, bearer);
   }
 
   private static String post(String urlString, String body, String contentType, String bearer)
@@ -78,10 +78,8 @@ final class LtiHttp {
   }
 
   /**
-   * Opens a connection to the URL with the given method. Forces a direct
-   * connection, because Moodle is on localhost and the dev server may carry a
-   * proxy meant only for the Google calls. Redirects are not followed, so a
-   * platform response cannot bounce a request to an unintended host.
+   * Opens a direct connection with no proxy. Redirects are not followed, so a
+   * platform response cannot bounce the request to an unintended host.
    */
   private static HttpURLConnection open(String urlString, String method) throws IOException {
     URL url = new URL(urlString);
@@ -197,7 +195,9 @@ final class LtiHttp {
     }
     String body = bytes.toString(StandardCharsets.UTF_8);
     if (!isSuccessStatus(status)) {
-      throw new IOException("HTTP " + status + " from " + conn.getURL() + ": " + body);
+      // Do not carry a large or third party response body into the log in full.
+      String detail = body.length() > 500 ? body.substring(0, 500) : body;
+      throw new IOException("HTTP " + status + " from " + conn.getURL() + ": " + detail);
     }
     return body;
   }

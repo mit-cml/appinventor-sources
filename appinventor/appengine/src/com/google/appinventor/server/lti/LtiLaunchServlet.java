@@ -34,15 +34,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Receives the signed LTI 1.3 launch at /lti/launch. Validates the platform
- * id_token (signature against the platform JWKS, issuer, audience, nonce,
- * expiry, and, when configured, the deployment id), then establishes an App
- * Inventor session for the launched user by reusing the existing encrypted
- * AppInventor cookie, gives a learner their own project for the assignment, and
- * redirects into the IDE opened on that project. The grade service line item is
- * remembered for a later passback.
- *
- * <p>An exploration spike. It auto accepts the terms of service for the
+ * Serves the signed LTI 1.3 launch at /lti/launch. Validates the platform
+ * id_token, establishes the App Inventor session, and opens the learner on their
+ * own project for the assignment, remembering the grade line item for a later
+ * passback. An exploration spike that auto accepts the terms of service for the
  * provisioned account.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
@@ -58,12 +53,11 @@ public class LtiLaunchServlet extends HttpServlet {
   private static final int MAX_PROJECT_NAME_LENGTH = 40;
 
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
-  private final YoungAndroidProjectService projectService =
+  private final transient YoungAndroidProjectService projectService =
       new YoungAndroidProjectService(storageIo);
 
-  // Only POST is served. LTI delivers the launch with response_mode=form_post,
-  // so accepting GET would only risk the signed id_token landing in a URL or a
-  // log. A GET therefore gets the servlet default 405.
+  // POST only. The launch arrives as a form_post, so a GET would only risk the
+  // signed id_token landing in a URL or a log.
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     try {
@@ -296,13 +290,9 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * Gives a learner their own App Inventor project to work in (the student
-   * "fork"), once per assignment, mirroring the server side create path used by
-   * RestServlet. The assignment to project link is stored durably per user, so
-   * a relaunch finds the same project even after the activity is renamed or the
-   * server restarts. Returns the project id for this assignment (newly created
-   * or already existing), or -1 when no project applies (instructor, or
-   * failure). Any failure here is logged and never blocks the launch.
+   * Gives a learner their own project for the assignment, once per resource link,
+   * so a relaunch finds the same project after a rename or a restart. Returns the
+   * project id, or -1 for an instructor or a failure, which never blocks the launch.
    */
   private long maybeForkStarterProject(User user, JSONObject claims) {
     try {
@@ -439,11 +429,7 @@ public class LtiLaunchServlet extends HttpServlet {
     return false;
   }
 
-  /**
-   * Whether one role value grants the instructor flow, comparing the role fragment
-   * exactly rather than by substring, so a value such as one ending in
-   * InstructorCandidate, or one from another vocabulary, does not slip through.
-   */
+  /** Whether one role value grants the instructor flow, matched by exact fragment not substring. */
   private static boolean isInstructorRole(String role) {
     if (role.equals("Instructor") || role.equals("Administrator")) {
       return true;
@@ -457,12 +443,7 @@ public class LtiLaunchServlet extends HttpServlet {
         || role.substring(0, hash).endsWith("/Instructor");
   }
 
-  /**
-   * Whether the token timing claims are acceptable now. Requires a numeric issued
-   * at that is not in the future and a live expiry, both within the clock skew, so
-   * a token with no iat or a future iat is refused rather than accepted on exp
-   * alone.
-   */
+  /** Whether the token iat and exp are present and live within the clock skew. */
   @VisibleForTesting
   static boolean tokenTimeValid(JSONObject claims, long nowSeconds) {
     long iat = claims.optLong("iat", 0);
