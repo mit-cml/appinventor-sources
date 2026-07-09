@@ -51,9 +51,10 @@ public final class LtiConfig {
       Flag.createFlag("lti.registration.enabled", false);
 
   // Whether loopback hosts and plain http are allowed on outbound LTI fetches.
-  // True for local dev, false in production.
+  // Off by default so a production server is safe without extra configuration, a
+  // local development server against a loopback platform sets it true.
   private static final Flag<Boolean> ALLOW_INSECURE =
-      Flag.createFlag("lti.allow.insecure", true);
+      Flag.createFlag("lti.allow.insecure", false);
 
   private LtiConfig() {}
 

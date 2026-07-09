@@ -44,4 +44,18 @@ public class LtiRegisterServletTest extends TestCase {
     assertEquals("LtiDeepLinkingRequest",
         toolConfig.getJSONArray("messages").getJSONObject(1).getString("type"));
   }
+
+  /** The configuration URL must share the issuer's origin, per Dynamic Registration 3.5.1. */
+  public void testConfigUrlMustMatchIssuer() {
+    assertTrue(LtiRegisterServlet.sameOrigin(
+        "https://lms.example.org/.well-known/openid-configuration", "https://lms.example.org"));
+    assertTrue(LtiRegisterServlet.sameOrigin(
+        "https://lms.example.org/lti/config/849", "https://lms.example.org"));
+    assertFalse("a different host is a different issuer", LtiRegisterServlet.sameOrigin(
+        "https://attacker.example/openid.json", "https://lms.example.org"));
+    assertFalse("a subdomain is not the issuer", LtiRegisterServlet.sameOrigin(
+        "https://lti.lms.example.org/config", "https://lms.example.org"));
+    assertFalse("a different scheme does not match", LtiRegisterServlet.sameOrigin(
+        "http://lms.example.org/config", "https://lms.example.org"));
+  }
 }

@@ -429,7 +429,7 @@ public class LtiLaunchServlet extends HttpServlet {
     return false;
   }
 
-  /** Whether one role value grants the instructor flow, matched by exact fragment not substring. */
+  /** Whether a role value grants the instructor flow, by an exact IMS vocabulary match. */
   private static boolean isInstructorRole(String role) {
     if (role.equals("Instructor") || role.equals("Administrator")) {
       return true;
@@ -438,9 +438,15 @@ public class LtiLaunchServlet extends HttpServlet {
     if (hash < 0 || !role.startsWith(LIS)) {
       return false;
     }
+    String vocab = role.substring(LIS.length(), hash);
     String fragment = role.substring(hash + 1);
-    return fragment.equals("Instructor") || fragment.equals("Administrator")
-        || role.substring(0, hash).endsWith("/Instructor");
+    if (fragment.equals("Instructor") || fragment.equals("Administrator")) {
+      // A principal Instructor or Administrator in a context, institution, or system role.
+      return vocab.equals("membership") || vocab.equals("institution/person")
+          || vocab.equals("system/person");
+    }
+    // A sub role of Instructor, which lives only under the membership/Instructor vocabulary.
+    return vocab.equals("membership/Instructor");
   }
 
   /** Whether the token iat and exp are present and live within the clock skew. */

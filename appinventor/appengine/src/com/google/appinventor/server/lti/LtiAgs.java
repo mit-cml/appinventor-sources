@@ -11,6 +11,8 @@ import com.google.common.annotations.VisibleForTesting;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import org.json.JSONObject;
 
@@ -28,6 +30,8 @@ final class LtiAgs {
   private static final String ASSERTION_TYPE =
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   private static final long TOKEN_TTL_SECONDS = 300;
+  private static final DateTimeFormatter TIMESTAMP =
+      DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC);
 
   private LtiAgs() {}
 
@@ -48,7 +52,7 @@ final class LtiAgs {
         .put("userId", ltiUserSub)
         .put("activityProgress", "Submitted")
         .put("gradingProgress", "PendingManual")
-        .put("timestamp", Instant.now().toString());
+        .put("timestamp", TIMESTAMP.format(Instant.now()));
     LtiHttp.postWithBearer(scoresUrl(lineItemUrl), score.toString(), token,
         "application/vnd.ims.lis.v1.score+json");
   }

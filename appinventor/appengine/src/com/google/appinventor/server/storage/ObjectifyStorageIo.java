@@ -2589,15 +2589,27 @@ public class ObjectifyStorageIo implements StorageIo {
 
   private static String ltiResourceLinkId(String userId, String issuer, String deploymentId,
       String resourceLinkId) {
-    return userId + "\t" + issuer + "\t" + deploymentId + "\t" + resourceLinkId;
+    return ltiKey(userId, issuer, deploymentId, resourceLinkId);
   }
 
   private static String ltiUserLinkId(String issuer, String subject) {
-    return issuer + "\n" + subject;
+    return ltiKey(issuer, subject);
+  }
+
+  // A composite datastore key that cannot collide, each part length prefixed so a
+  // delimiter inside a platform supplied value cannot shift a field boundary.
+  private static String ltiKey(String... parts) {
+    StringBuilder sb = new StringBuilder();
+    for (String part : parts) {
+      String value = (part == null) ? "" : part;
+      sb.append(value.length()).append(':').append(value);
+    }
+    return sb.toString();
   }
 
   private Key<StoredData.LtiUserLinkData> ltiUserLinkKey(String issuer, String subject) {
-    return new Key<StoredData.LtiUserLinkData>(LtiUserLinkData.class, ltiUserLinkId(issuer, subject));
+    return new Key<StoredData.LtiUserLinkData>(
+        LtiUserLinkData.class, ltiUserLinkId(issuer, subject));
   }
 
   private Key<StoredData.LtiNonceData> ltiNonceKey(String nonce) {
