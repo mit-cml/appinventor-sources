@@ -56,14 +56,14 @@ public class ListViewTest extends RobolectricTestBase {
     ShadowEventDispatcher.clearEvents();
 
     // Click on the second list view
-    assertTrue(getViewForPosition(listView2, 0).performClick());
+    assertTrue(getViewForPosition(listView2, 1).performClick());
     ShadowEventDispatcher.assertEventNotFired(listView1, "AfterPicking");
     ShadowEventDispatcher.assertEventFired(listView2, "AfterPicking");
     ShadowEventDispatcher.assertEventNotFired(listView3, "AfterPicking");
     ShadowEventDispatcher.clearEvents();
 
     // Click on the third list view
-    assertTrue(getViewForPosition(listView3, 0).performClick());
+    assertTrue(getViewForPosition(listView3, 2).performClick());
     ShadowEventDispatcher.assertEventNotFired(listView1, "AfterPicking");
     ShadowEventDispatcher.assertEventNotFired(listView2, "AfterPicking");
     ShadowEventDispatcher.assertEventFired(listView3, "AfterPicking");
@@ -122,6 +122,8 @@ public class ListViewTest extends RobolectricTestBase {
   private View getViewForPosition(ListView listView, int position) {
     LinearLayout listLayout = (LinearLayout) ((LinearLayout) listView.getView()).getChildAt(1);
     RecyclerView rv = (RecyclerView) listLayout.getChildAt(0);
+    rv.scrollToPosition(position);
+    shadowOf(Looper.getMainLooper()).idle();
     RecyclerView.ViewHolder vh = rv.findViewHolderForAdapterPosition(position);
     assertNotNull(vh);
     return vh.itemView;
