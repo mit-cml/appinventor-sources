@@ -21,19 +21,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Receives the teacher's template choice from the Deep Linking picker
- * (LtiLaunchServlet renders it) and returns a signed LTI 1.3 Deep Linking
- * Response to the platform. The response contains one ltiResourceLink content
- * item whose custom parameter carries the chosen template project id, so that
- * when a student later launches the assignment the launch delivers that id and
- * the student is given a copy of the teacher's template.
+ * Receives the teacher's template choice from the Deep Linking picker and
+ * returns a signed LTI 1.3 Deep Linking Response to the platform, carrying the
+ * chosen template project id so a student who later launches the assignment is
+ * given a copy of that project.
  *
- * <p>The platform return url and opaque data are held server side under a one
- * time token minted when the picker was rendered, so the form carries nothing
- * that could be tampered with. The token also records the teacher, and the
- * chosen project is verified to belong to that teacher before it is signed into
- * the response, so a tampered form cannot hand another user's project to
- * students.
+ * <p>The platform return context is held server side under a one time token
+ * minted when the picker was rendered, so the form carries nothing that could be
+ * tampered with. The token also records the teacher, so the chosen project is
+ * checked to belong to them before it is used.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */

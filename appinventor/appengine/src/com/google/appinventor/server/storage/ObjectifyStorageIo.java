@@ -2430,7 +2430,7 @@ public class ObjectifyStorageIo implements StorageIo {
           @Override
           public void run(Objectify datastore) {
             LtiUserLinkData data = new LtiUserLinkData();
-            data.id = issuer + "\n" + subject;
+            data.id = ltiUserLinkId(issuer, subject);
             data.userId = userId;
             data.created = new Date();
             datastore.put(data);
@@ -2592,8 +2592,12 @@ public class ObjectifyStorageIo implements StorageIo {
     return userId + "\t" + issuer + "\t" + deploymentId + "\t" + resourceLinkId;
   }
 
+  private static String ltiUserLinkId(String issuer, String subject) {
+    return issuer + "\n" + subject;
+  }
+
   private Key<StoredData.LtiUserLinkData> ltiUserLinkKey(String issuer, String subject) {
-    return new Key<StoredData.LtiUserLinkData>(LtiUserLinkData.class, issuer + "\n" + subject);
+    return new Key<StoredData.LtiUserLinkData>(LtiUserLinkData.class, ltiUserLinkId(issuer, subject));
   }
 
   private Key<StoredData.LtiNonceData> ltiNonceKey(String nonce) {

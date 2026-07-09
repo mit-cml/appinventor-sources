@@ -13,7 +13,7 @@ import com.google.appinventor.server.storage.StoredData;
 /**
  * Configuration for the experimental LTI 1.3 tool that lets a Learning
  * Management System (for example Moodle) launch a student into App Inventor and
- * receive a grade back. An exploration spike, not production code.
+ * receive a grade back.
  *
  * <p>The platform endpoints default to a local Moodle on port 8080. The client
  * id and deployment id are assigned by the platform when an administrator
