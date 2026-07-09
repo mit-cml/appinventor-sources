@@ -40,4 +40,21 @@ public class LtiStateTest extends TestCase {
     assertNull(LtiState.peek(null));
     assertNull(LtiState.consume("no-such-state"));
   }
+
+  /** A Deep Linking token returns its saved context once, then never again. */
+  public void testDeepLinkTokenIsConsumedOnce() {
+    String token = LtiState.createDeepLink("https://platform.example.org/return", "opaque-data",
+        "deployment-1", "http://platform.example.org", "teacher-42");
+
+    LtiState.DeepLink first = LtiState.consumeDeepLink(token);
+    assertNotNull(first);
+    assertEquals("https://platform.example.org/return", first.returnUrl);
+    assertEquals("http://platform.example.org", first.issuer);
+    assertEquals("teacher-42", first.teacherUserId);
+
+    // Spent once, so a replay of the same token, and an unknown or null token, find nothing.
+    assertNull(LtiState.consumeDeepLink(token));
+    assertNull(LtiState.consumeDeepLink("no-such-token"));
+    assertNull(LtiState.consumeDeepLink(null));
+  }
 }

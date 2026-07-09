@@ -17,13 +17,9 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 
 /**
- * Submits the current work to the LMS that launched App Inventor over LTI. Posts
- * to the same origin /lti/submit endpoint, which records the submission with the
- * LMS through LTI Assignment and Grade Services using the launch context. A
- * fixed status message is shown, an info banner while submitting and on success
- * and an error banner on failure, and the server response text is never
- * rendered. No separate LMS login is needed, because the LTI launch already
- * established the session.
+ * Submits the current project to the LMS that launched App Inventor over LTI, by
+ * posting to the same origin /lti/submit endpoint. No separate LMS login is
+ * needed, because the LTI launch already established the session.
  */
 public class SubmitToLmsAction implements Command {
 

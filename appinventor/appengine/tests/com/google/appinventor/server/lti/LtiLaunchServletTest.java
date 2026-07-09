@@ -164,6 +164,11 @@ public class LtiLaunchServletTest extends TestCase {
     assertFalse("future iat", LtiLaunchServlet.tokenTimeValid(timing(now + 1000, now + 3600), now));
     assertFalse("expired", LtiLaunchServlet.tokenTimeValid(timing(now - 3600, now - 1000), now));
     assertTrue("within skew", LtiLaunchServlet.tokenTimeValid(timing(now + 30, now - 30), now));
+    // The clock skew is 60 seconds, so check the exact edges of that window.
+    assertTrue("iat at edge", LtiLaunchServlet.tokenTimeValid(timing(now + 60, now + 3600), now));
+    assertFalse("iat too new", LtiLaunchServlet.tokenTimeValid(timing(now + 61, now + 3600), now));
+    assertTrue("exp at edge", LtiLaunchServlet.tokenTimeValid(timing(now, now - 60), now));
+    assertFalse("exp too old", LtiLaunchServlet.tokenTimeValid(timing(now, now - 61), now));
   }
 
   private static JSONObject timing(long iat, long exp) {

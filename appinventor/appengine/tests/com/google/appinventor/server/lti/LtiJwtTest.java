@@ -121,4 +121,29 @@ public class LtiJwtTest extends TestCase {
       // expected
     }
   }
+
+  /** A token that is not three dot separated parts is rejected before any crypto. */
+  public void testMalformedTokenShapeIsRejected() throws Exception {
+    for (String bad : new String[] {"a.b", "a.b.c.d"}) {
+      try {
+        LtiJwt.verify(bad, jwks);
+        fail("expected a malformed token to be rejected: " + bad);
+      } catch (Exception expected) {
+        // expected
+      }
+    }
+  }
+
+  /** A token whose key id is not published in the JWKS is rejected at key lookup. */
+  public void testTokenWithUnknownKidIsRejected() throws Exception {
+    JSONObject header = new JSONObject().put("alg", "RS256").put("kid", "unpublished-kid");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    try {
+      LtiJwt.verify(jwt, jwks);
+      fail("expected a token with an unknown key id to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
 }
