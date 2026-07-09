@@ -23,8 +23,8 @@ public class ComponentConstants {
   /**
    * Default value for padding and margin (top,left,right,bottom)
    */
-  public static final String DEFAULT_PADDING_VALUE = "0,0,0,0";
-  public static final String DEFAULT_MARGIN_VALUE = "0,0,0,0";
+  public static final String DEFAULT_PADDING_VALUE = "{\"top\":0,\"left\":0,\"right\":0,\"bottom\":0}";
+  public static final String DEFAULT_MARGIN_VALUE = "{\"top\":0,\"left\":0,\"right\":0,\"bottom\":0}";
 
   /**
    * Layout constants.

@@ -30,6 +30,7 @@ import com.google.appinventor.components.common.MapType;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.ScaleUnits;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.common.BoxSide;
 
 import com.google.appinventor.components.runtime.LocationSensor.LocationSensorListener;
 
@@ -50,6 +51,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapPolygon;
 import com.google.appinventor.components.runtime.util.MapFactory.MapRectangle;
 import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.io.IOException;
 
@@ -611,13 +613,18 @@ public class Map extends MapFeatureContainerBase implements MapEventListener {
   }
 
   @Override
-  public void Padding(String padding) {
+  public void Padding(YailDictionary padding) {
     // Not supported for this component type
   }
 
   @Override
-  public void Margin(String margin) {
+  public void Margin(YailDictionary margin) {
     // Not supported for this component type
+  }
+
+  @Override
+  public void LayoutDimensionHelper(@Options(BoxSide.class) String dimension) {
+    // Ignored
   }
 
 

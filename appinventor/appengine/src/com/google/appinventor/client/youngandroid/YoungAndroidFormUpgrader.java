@@ -2456,10 +2456,10 @@ public final class YoungAndroidFormUpgrader {
 
   private static void handlePaddingMarginDefaultProperty(Map<String, JSONValue> componentProperties) {
     if (!componentProperties.containsKey("Padding")) {
-      componentProperties.put("Padding", new ClientJsonString("0,0,0,0"));
+      componentProperties.put("Padding", new ClientJsonString("{\"top\":0,\"left\":0,\"right\":0,\"bottom\":0}"));
     }
     if (!componentProperties.containsKey("Margin")) {
-      componentProperties.put("Margin", new ClientJsonString("0,0,0,0"));
+      componentProperties.put("Margin", new ClientJsonString("{\"top\":0,\"left\":0,\"right\":0,\"bottom\":0}"));
     }
   }
 

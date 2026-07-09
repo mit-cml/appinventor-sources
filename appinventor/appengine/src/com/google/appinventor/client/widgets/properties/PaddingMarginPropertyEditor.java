@@ -13,6 +13,11 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.json.client.JSONException;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextBox;
@@ -20,8 +25,16 @@ import com.google.gwt.user.client.ui.TextBox;
 /**
  * Property editor for native Padding and Margin structural bounds.
  * Displays a compact, space-saving "+" directional cross layout.
+ *
+ * Values are stored/round-tripped as a JSON string of the form:
+ *   {"top":T,"left":L,"right":R,"bottom":B}
  */
 public class PaddingMarginPropertyEditor extends PropertyEditor {
+
+  private static final String KEY_TOP = "top";
+  private static final String KEY_LEFT = "left";
+  private static final String KEY_RIGHT = "right";
+  private static final String KEY_BOTTOM = "bottom";
 
   private final Grid crossGrid;
   private final TextBox topBox;
@@ -95,15 +108,13 @@ public class PaddingMarginPropertyEditor extends PropertyEditor {
   @Override
   protected void updateValue() {
     String value = property.getValue();
-    if (value != null && value.contains(",")) {
-      String[] parts = value.split(",");
-      if (parts.length == 4) {
-        topBox.setText(parts[0].trim());
-        leftBox.setText(parts[1].trim());
-        rightBox.setText(parts[2].trim());
-        bottomBox.setText(parts[3].trim());
-        return;
-      }
+    int[] sides = parseJsonSides(value);
+    if (sides != null) {
+      topBox.setText(String.valueOf(sides[0]));
+      leftBox.setText(String.valueOf(sides[1]));
+      rightBox.setText(String.valueOf(sides[2]));
+      bottomBox.setText(String.valueOf(sides[3]));
+      return;
     }
     // Reliable system defaults
     topBox.setText("0");
@@ -113,35 +124,79 @@ public class PaddingMarginPropertyEditor extends PropertyEditor {
   }
 
   /**
+   * Parses a JSON string of the form {"top":T,"left":L,"right":R,"bottom":B}
+   * into a 4-element int[] {top, left, right, bottom}. Returns null if the
+   * input is null, empty, or malformed in any way.
+   */
+  private int[] parseJsonSides(String value) {
+    if (value == null || value.trim().isEmpty()) {
+      return null;
+    }
+    try {
+      JSONValue parsed = JSONParser.parseStrict(value);
+      JSONObject obj = parsed.isObject();
+      if (obj == null) {
+        return null;
+      }
+      int t = getIntOrZero(obj, KEY_TOP);
+      int l = getIntOrZero(obj, KEY_LEFT);
+      int r = getIntOrZero(obj, KEY_RIGHT);
+      int b = getIntOrZero(obj, KEY_BOTTOM);
+      return new int[]{t, l, r, b};
+    } catch (JSONException | IllegalArgumentException e) {
+      // Malformed JSON — treat as absent, caller falls back to defaults
+      return null;
+    }
+  }
+
+  private int getIntOrZero(JSONObject obj, String key) {
+    JSONValue v = obj.get(key);
+    if (v == null) {
+      return 0;
+    }
+    JSONNumber num = v.isNumber();
+    return num != null ? (int) num.doubleValue() : 0;
+  }
+
+  /**
    * Evaluates input layout integrity, handles text parsing safely,
    * and normalizes malformed inputs instantly without infinite focus alert loops.
    */
   private void validateAndSetValues() {
-    String t = parseNumericInput(topBox.getText());
-    String l = parseNumericInput(leftBox.getText());
-    String r = parseNumericInput(rightBox.getText());
-    String b = parseNumericInput(bottomBox.getText());
+    int t = parseNumericInput(topBox.getText());
+    int l = parseNumericInput(leftBox.getText());
+    int r = parseNumericInput(rightBox.getText());
+    int b = parseNumericInput(bottomBox.getText());
 
-    String csvValue = t + "," + l + "," + r + "," + b;
+    // Reflect any silently-cleaned values back into the text boxes
+    topBox.setText(String.valueOf(t));
+    leftBox.setText(String.valueOf(l));
+    rightBox.setText(String.valueOf(r));
+    bottomBox.setText(String.valueOf(b));
+
+    JSONObject json = new JSONObject();
+    json.put(KEY_TOP, new JSONNumber(t));
+    json.put(KEY_LEFT, new JSONNumber(l));
+    json.put(KEY_RIGHT, new JSONNumber(r));
+    json.put(KEY_BOTTOM, new JSONNumber(b));
+    String jsonValue = json.toString();
 
     // Only update and trigger a property change event if the values actually changed
-    if (!csvValue.equals(property.getValue())) {
-      property.setValue(csvValue);
+    if (!jsonValue.equals(property.getValue())) {
+      property.setValue(jsonValue);
     }
   }
 
-  private String parseNumericInput(String text) {
+  private int parseNumericInput(String text) {
     String cleanStr = text.trim();
     if (cleanStr.isEmpty()) {
-      return "0";
+      return 0;
     }
     try {
-      // If it's valid code bytecode representation, keep it intact
-      Integer.parseInt(cleanStr);
-      return cleanStr;
+      return Integer.parseInt(cleanStr);
     } catch (NumberFormatException e) {
       // Silently clean bad data to prevent UI lockup loops
-      return "0";
+      return 0;
     }
   }
 }

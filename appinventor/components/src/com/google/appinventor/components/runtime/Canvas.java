@@ -46,12 +46,14 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.Options;
 
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.common.BoxSide;
 
 import com.google.appinventor.components.runtime.collect.Sets;
 
@@ -68,6 +70,7 @@ import com.google.appinventor.components.runtime.util.ScopedFile;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.Synchronizer;
 import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -1278,13 +1281,18 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   @Override
-  public void Padding(String padding) {
+  public void Padding(YailDictionary padding) {
     // Not supported for this component type
   }
 
   @Override
-  public void Margin(String margin) {
+  public void Margin(YailDictionary margin) {
     // Not supported for this component type
+  }
+
+  @Override
+  public void LayoutDimensionHelper(@Options(BoxSide.class) String dimension) {
+    // Ignored
   }
 
   // Methods supporting event handling
