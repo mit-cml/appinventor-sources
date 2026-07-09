@@ -301,6 +301,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("File")) {
         srcCompVersion = upgradeFileProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FilePicker")) {
+        srcCompVersion = upgradeFilePickerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
@@ -1073,6 +1076,16 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.put("DefaultScope", new ClientJsonString("Legacy"));
       }
       srcCompVersion = 4;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFilePickerProperties(
+          Map<String, JSONValue> componentProperties, int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Padding and Margin properties were added.
+      handlePaddingMarginDefaultProperty(componentProperties);
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

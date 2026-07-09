@@ -787,7 +787,7 @@ public class YaVersion {
   // - AbsoluteArrangement component was added.
   // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 2:
   // - Padding and Margin properties was added.
-  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 2;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
