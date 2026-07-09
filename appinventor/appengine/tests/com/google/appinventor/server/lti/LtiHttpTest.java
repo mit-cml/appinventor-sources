@@ -79,6 +79,16 @@ public class LtiHttpTest extends TestCase {
     assertFalse(LtiHttp.hostAllowedForFetch(InetAddress.getByName("169.254.169.254"), true));
   }
 
+  /** An IPv6 literal that embeds loopback is gated by the dev flag, not reachable in production. */
+  public void testEmbeddedLoopbackIsDevGated() throws Exception {
+    for (String host : new String[] {"::127.0.0.1", "2002:7f00:1::", "64:ff9b::7f00:1"}) {
+      assertFalse("production must refuse " + host,
+          LtiHttp.hostAllowedForFetch(InetAddress.getByName(host), false));
+      assertTrue("development may reach " + host,
+          LtiHttp.hostAllowedForFetch(InetAddress.getByName(host), true));
+    }
+  }
+
   /** https is always allowed, plain http only in development. */
   public void testTransportAllowed() {
     assertTrue(LtiHttp.transportAllowed("https", false));

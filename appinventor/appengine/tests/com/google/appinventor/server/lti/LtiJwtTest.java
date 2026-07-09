@@ -12,6 +12,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import junit.framework.TestCase;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -124,7 +125,7 @@ public class LtiJwtTest extends TestCase {
 
   /** A token that is not three dot separated parts is rejected before any crypto. */
   public void testMalformedTokenShapeIsRejected() throws Exception {
-    for (String bad : new String[] {"a.b", "a.b.c.d"}) {
+    for (String bad : new String[] {"a.b", "a.b.c.d", "a.b.c."}) {
       try {
         LtiJwt.verify(bad, jwks);
         fail("expected a malformed token to be rejected: " + bad);
@@ -142,6 +143,20 @@ public class LtiJwtTest extends TestCase {
     try {
       LtiJwt.verify(jwt, jwks);
       fail("expected a token with an unknown key id to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
+
+  /** A token with a critical header parameter the tool does not process is rejected. */
+  public void testCritHeaderIsRejected() throws Exception {
+    JSONObject header = new JSONObject().put("alg", "RS256").put("kid", "test-kid")
+        .put("crit", new JSONArray().put("x-unknown")).put("x-unknown", 1);
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    try {
+      LtiJwt.verify(jwt, jwks);
+      fail("expected a token with a crit header to be rejected");
     } catch (Exception expected) {
       // expected
     }

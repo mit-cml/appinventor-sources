@@ -112,10 +112,13 @@ final class LtiHttp {
   @VisibleForTesting
   static boolean hostAllowedForFetch(InetAddress address, boolean allowInsecure)
       throws IOException {
-    if (address.isLoopbackAddress()) {
+    // Reduce a transitional IPv6 first, so a literal that embeds loopback is
+    // gated by the dev flag rather than slipping past as a non loopback host.
+    InetAddress host = reduceEmbeddedIpv4(address);
+    if (host.isLoopbackAddress()) {
       return allowInsecure;
     }
-    return !isForbiddenHost(address);
+    return !isForbiddenHost(host);
   }
 
   /**
@@ -130,14 +133,8 @@ final class LtiHttp {
     if (address.isLoopbackAddress()) {
       return false;
     }
+    address = reduceEmbeddedIpv4(address);
     byte[] raw = address.getAddress();
-    if (raw.length == 16) {
-      byte[] embedded = embeddedIpv4(raw);
-      if (embedded != null) {
-        address = InetAddress.getByAddress(embedded);
-        raw = embedded;
-      }
-    }
     if (address.isLinkLocalAddress() || address.isAnyLocalAddress()
         || address.isMulticastAddress() || address.isSiteLocalAddress()) {
       return true;
@@ -146,6 +143,18 @@ final class LtiHttp {
       return (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;   // carrier grade NAT
     }
     return (raw[0] & 0xfe) == 0xfc;   // unique local
+  }
+
+  /** Reduces a transitional IPv6 literal to the IPv4 it embeds, or returns it unchanged. */
+  private static InetAddress reduceEmbeddedIpv4(InetAddress address) throws IOException {
+    byte[] raw = address.getAddress();
+    if (raw.length == 16) {
+      byte[] embedded = embeddedIpv4(raw);
+      if (embedded != null) {
+        return InetAddress.getByAddress(embedded);
+      }
+    }
+    return address;
   }
 
   /**

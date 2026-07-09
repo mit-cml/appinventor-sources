@@ -105,13 +105,17 @@ final class LtiJwt {
    * the claim values, the caller does that.
    */
   static JSONObject verify(String jwt, String jwksJson) throws Exception {
-    String[] parts = jwt.split("\\.");
+    String[] parts = jwt.split("\\.", -1);
     if (parts.length != 3) {
       throw new IOException("Malformed JWT");
     }
     JSONObject header = new JSONObject(new String(unb64u(parts[0]), StandardCharsets.UTF_8));
     if (!"RS256".equals(header.optString("alg"))) {
       throw new IOException("Unexpected JWT alg: " + header.optString("alg"));
+    }
+    if (header.has("crit")) {
+      // A critical header parameter this tool does not process must be rejected (RFC 7515).
+      throw new IOException("Unsupported JWT crit header");
     }
     String kid = header.optString("kid", null);
     if (kid == null || kid.isEmpty()) {
