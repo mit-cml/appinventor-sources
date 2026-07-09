@@ -140,6 +140,12 @@ public class LtiLaunchServletTest extends TestCase {
     assertFalse(LtiLaunchServlet.isInstructor(rolesClaim(
         "http://purl.imsglobal.org/vocab/lis/v2/membership#InstructorCandidate")));
     assertFalse(LtiLaunchServlet.isInstructor(rolesClaim("https://evil.example/roles#Instructor")));
+    // A fragment that is a learner, under a path that merely ends in Instructor, is not a teacher.
+    assertFalse(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/foo/Instructor#Learner")));
+    // A principal Instructor fragment under an unknown vocabulary does not count either.
+    assertFalse(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/foo#Instructor")));
     assertFalse(LtiLaunchServlet.isInstructor(
         new JSONObject().put(ROLES, "Instructor")));
   }

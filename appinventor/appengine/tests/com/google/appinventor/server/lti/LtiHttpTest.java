@@ -52,6 +52,8 @@ public class LtiHttpTest extends TestCase {
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("2002:a9fe:a9fe::1")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("2002:c0a8:0101::1")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("64:ff9b::a9fe:a9fe")));
+    // RFC 8215 local use NAT64 prefix is not globally routable, so refuse it.
+    assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("64:ff9b:1::a9fe:a9fe")));
   }
 
   /** A 6to4 host that carries a public IPv4 stays reachable. */

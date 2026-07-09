@@ -139,6 +139,11 @@ final class LtiHttp {
         || address.isMulticastAddress() || address.isSiteLocalAddress()) {
       return true;
     }
+    if (raw.length == 16 && (raw[0] & 0xff) == 0x00 && (raw[1] & 0xff) == 0x64
+        && (raw[2] & 0xff) == 0xff && (raw[3] & 0xff) == 0x9b
+        && (raw[4] & 0xff) == 0x00 && (raw[5] & 0xff) == 0x01) {
+      return true;   // RFC 8215 local use NAT64 64:ff9b:1::/48, not globally routable
+    }
     if (raw.length == 4) {
       return (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;   // carrier grade NAT
     }

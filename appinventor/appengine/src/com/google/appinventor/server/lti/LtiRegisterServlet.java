@@ -64,6 +64,14 @@ public class LtiRegisterServlet extends HttpServlet {
     try {
       JSONObject config = new JSONObject(LtiHttp.get(configUrl));
       String issuer = config.getString("issuer");
+      if (!sameOrigin(configUrl, issuer)) {
+        // Dynamic Registration 3.5.1 requires the configuration URL to belong to
+        // the issuer, so an attacker hosted configuration cannot register a
+        // platform under another issuer's name.
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+            "The openid_configuration URL does not match the issuer");
+        return;
+      }
       if (LtiConfig.platformExists(issuer)) {
         // Registration is create only. Overwriting an existing row here would let
         // an open endpoint repoint or disable a live platform integration.
@@ -129,6 +137,24 @@ public class LtiRegisterServlet extends HttpServlet {
         .put("token_endpoint_auth_method", "private_key_jwt")
         .put("scope", SCORE_SCOPE)
         .put(TOOL_CONFIG, toolConfig);
+  }
+
+  /** Whether two URLs share a scheme, host, and effective port, per Dynamic Registration 3.4. */
+  @VisibleForTesting
+  static boolean sameOrigin(String a, String b) {
+    try {
+      URL ua = new URL(a);
+      URL ub = new URL(b);
+      return ua.getProtocol().equalsIgnoreCase(ub.getProtocol())
+          && ua.getHost().equalsIgnoreCase(ub.getHost())
+          && effectivePort(ua) == effectivePort(ub);
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  private static int effectivePort(URL url) {
+    return url.getPort() >= 0 ? url.getPort() : url.getDefaultPort();
   }
 
   private static String domainOf(String baseUrl) throws Exception {
