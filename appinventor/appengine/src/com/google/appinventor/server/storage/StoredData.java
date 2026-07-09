@@ -396,7 +396,7 @@ public class StoredData {
     @Id public String kid;
     public byte[] privateKey;
     public byte[] publicKey;
-    @Indexed public Date created;
+    public Date created;
   }
 
   public static final class ProjectNotFoundException extends IOException {
