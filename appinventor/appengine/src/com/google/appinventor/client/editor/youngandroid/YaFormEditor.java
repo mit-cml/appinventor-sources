@@ -551,6 +551,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
       switch (event.getNativeKeyCode()) {
         case KeyCodes.KEY_Z:
           event.preventDefault();
+          event.stopPropagation();
           if (event.isShiftKeyDown()) {
             if (undoManager.canRedo()) {
               undoManager.redo();
@@ -563,6 +564,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
           return;
         case KeyCodes.KEY_Y:
           event.preventDefault();
+          event.stopPropagation();
           if (undoManager.canRedo()) {
             undoManager.redo();
           }
