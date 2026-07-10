@@ -12,6 +12,10 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData.ConversationData;
 import com.google.appinventor.server.storage.StoredData.MessageRole;
+import com.google.appinventor.shared.rpc.aiagent.AIOperationResult;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Tests for {@link AIAgentEngine} routing / rehydration behaviour that does
@@ -137,5 +141,58 @@ public class AIAgentEngineTest extends LocalDatastoreTestCase {
         before, AgentRole.PROJECT_EDITOR);
     assertSame("first-call (lastRole=null) should not clear ref",
         before, after);
+  }
+
+  // ---------- buildOutcomeNote (Bug 1: durable outcome fidelity) ----------
+
+  /** A failed op records its error detail so it survives in durable history. */
+  public void testBuildOutcomeNoteRecordsFailureDetail() {
+    String note = AIAgentEngine.buildOutcomeNote(Collections.singletonList(
+        AIOperationResult.failed("write_block Button1.Click", "unknown component Button1")));
+    assertNotNull(note);
+    assertTrue(note.contains("write_block Button1.Click"));
+    assertTrue(note.contains("FAILED"));
+    assertTrue(note.contains("unknown component Button1"));
+    assertFalse("must not carry the stale placeholder forward",
+        note.contains("Pending client execution.") && !note.contains("replace"));
+  }
+
+  /** Succeeded and skipped outcomes are both recorded. */
+  public void testBuildOutcomeNoteRecordsSucceededAndSkipped() {
+    String note = AIAgentEngine.buildOutcomeNote(Arrays.asList(
+        AIOperationResult.succeeded("add_component Label1"),
+        AIOperationResult.skipped("set_property Label1.Text")));
+    assertNotNull(note);
+    assertTrue(note.contains("add_component Label1"));
+    assertTrue(note.contains("applied successfully"));
+    assertTrue(note.contains("set_property Label1.Text"));
+    assertTrue(note.contains("skipped"));
+  }
+
+  /** Runtime reads are not edit outcomes and are omitted from the note. */
+  public void testBuildOutcomeNoteOmitsRuntimeReads() {
+    String note = AIAgentEngine.buildOutcomeNote(Arrays.asList(
+        AIOperationResult.succeeded("add_component Label1"),
+        AIOperationResult.runtimeRead("read_variable(count) = 5")));
+    assertNotNull(note);
+    assertTrue(note.contains("add_component Label1"));
+    assertFalse("runtime reads are fed via continuation state, not this note",
+        note.contains("read_variable"));
+  }
+
+  /** A runtime-read-only report has nothing to correct, so returns null. */
+  public void testBuildOutcomeNoteNullWhenOnlyRuntimeReads() {
+    String note = AIAgentEngine.buildOutcomeNote(Collections.singletonList(
+        AIOperationResult.runtimeRead("read_recent_logs(10) = ...")));
+    assertNull("no edit outcomes to record", note);
+  }
+
+  /** A missing summary falls back to a placeholder rather than emitting null text. */
+  public void testBuildOutcomeNoteHandlesMissingSummary() {
+    String note = AIAgentEngine.buildOutcomeNote(Collections.singletonList(
+        AIOperationResult.failed(null, null)));
+    assertNotNull(note);
+    assertTrue(note.contains("(operation)"));
+    assertTrue(note.contains("unknown error"));
   }
 }

@@ -601,6 +601,21 @@ public class AIAgentEngine {
       if (convId == null) {
         convId = conv.getConversationId();
       }
+      // Append-only fidelity: the tool_result stored in durable history at
+      // response time is a neutral "Pending client execution." placeholder,
+      // because the client had not yet executed the operations. Now that the
+      // real client-side outcomes are in, append a durable note recording them
+      // so later stateless replays (and cold-memcache continuations) see what
+      // actually happened instead of the stale "Pending". History is never
+      // mutated -- the placeholder stays and this note corrects it.
+      // Main path only: child (screen-scoped) conversations keep no Datastore
+      // messages.
+      if (routingScreen == null) {
+        String outcomeNote = buildOutcomeNote(results);
+        if (outcomeNote != null) {
+          conversationManager.storeMessage(convId, MessageRole.USER, outcomeNote, false);
+        }
+      }
       // Fallback path: providerRef missing (cold memcache). Synthesize a
       // chat() call describing the outcomes so the LLM can react, using full
       // persisted history via the provider's history-replay branch.
@@ -1229,6 +1244,58 @@ public class AIAgentEngine {
     response.setHasMore(hasMore);
     response.setConversationId(conv.getConversationId());
     return response;
+  }
+
+  /**
+   * Builds a durable history note recording the real client-side outcomes of
+   * the previous step's operations.
+   *
+   * <p>Durable history is append-only, and the tool_result stored at response
+   * time is a neutral {@code "Pending client execution."} placeholder (the
+   * client had not executed yet). This note is appended once the outcomes are
+   * known so later stateless replays -- and cold-memcache continuations that
+   * replay persisted history -- see what actually happened rather than a stale
+   * "Pending".
+   *
+   * <p>Only edit outcomes are recorded. Companion runtime reads
+   * ({@link AIOperationResult.Status#RUNTIME_READ}) are fed back through the
+   * continuation state and are not corrections of prior edits, so they are
+   * omitted. Returns {@code null} when there is nothing to record (e.g. a
+   * runtime-read-only report), so the caller can skip storing an empty note.
+   */
+  static String buildOutcomeNote(List<AIOperationResult> results) {
+    StringBuilder body = new StringBuilder();
+    for (AIOperationResult r : results) {
+      String summary = r.getSummary();
+      if (summary == null || summary.isEmpty()) {
+        summary = "(operation)";
+      }
+      switch (r.getStatus()) {
+        case SUCCEEDED:
+          body.append("- ").append(summary).append(": applied successfully\n");
+          break;
+        case FAILED:
+          String detail = r.getErrorDetail();
+          body.append("- ").append(summary).append(": FAILED - ")
+              .append(detail != null && !detail.isEmpty() ? detail : "unknown error")
+              .append("\n");
+          break;
+        case SKIPPED:
+          body.append("- ").append(summary)
+              .append(": skipped (execution halted after a prior failure)\n");
+          break;
+        case RUNTIME_READ:
+        default:
+          // Not an edit outcome -- omit.
+          break;
+      }
+    }
+    if (body.length() == 0) {
+      return null;
+    }
+    return "[System note] Actual outcomes of the operations from the previous step "
+        + "(these replace the earlier \"Pending client execution.\" placeholders):\n"
+        + body.toString().trim();
   }
 
   // ---------- Continuation state annotation ----------
