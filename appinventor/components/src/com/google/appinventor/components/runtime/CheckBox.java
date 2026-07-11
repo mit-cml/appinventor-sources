@@ -6,6 +6,8 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.res.ColorStateList;
+import androidx.core.widget.CompoundButtonCompat;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -33,6 +35,12 @@ import com.google.appinventor.components.common.YaVersion;
 @SimpleObject
 public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
 
+  // Backing for box color when checked
+  private int checkedColor;
+
+  // Backing for box color when unchecked
+  private int uncheckedColor;
+
   /**
    * Creates a new CheckBox component.
    *
@@ -42,7 +50,20 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
     super(container);
     view = new android.widget.CheckBox(container.$context());
     Checked(false);
+    CheckedColor(Component.COLOR_GREEN);
+    UncheckedColor(Component.COLOR_LTGRAY);
     initToggle();
+  }
+
+  private ColorStateList createCheckBoxColors(int checked_color, int unchecked_color) {
+    return new ColorStateList(new int[][]{
+            new int[]{android.R.attr.state_checked},
+            new int[]{}
+            },
+            new int[]{
+                    checked_color,
+                    unchecked_color
+            });
   }
 
   /**
@@ -68,6 +89,56 @@ public final class CheckBox extends ToggleBase<android.widget.CheckBox> {
   @SimpleProperty
   public void Checked(boolean value) {
     view.setChecked(value);
+    view.invalidate();
+  }
+
+  /**
+   * Returns the checkbox's color when checked.
+   *
+   * @return  checkbox RGB color with alpha
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Color of the checkbox when checked.")
+  public int CheckedColor() {
+    return checkedColor;
+  }
+
+  /**
+   * Specifies the checkbox's color when checked.
+   *
+   * @param argb  checkbox RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_GREEN)
+  @SimpleProperty
+  public void CheckedColor(int argb) {
+    checkedColor = argb;
+    CompoundButtonCompat.setButtonTintList(view, createCheckBoxColors(argb, uncheckedColor));
+    view.invalidate();
+  }
+
+  /**
+   * Returns the checkbox's color when unchecked.
+   *
+   * @return  checkbox RGB color with alpha
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Color of the checkbox when unchecked.")
+  public int UncheckedColor() {
+    return uncheckedColor;
+  }
+
+  /**
+   * Specifies the checkbox's color when unchecked.
+   *
+   * @param argb  checkbox RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
+  @SimpleProperty
+  public void UncheckedColor(int argb) {
+    uncheckedColor = argb;
+    CompoundButtonCompat.setButtonTintList(view, createCheckBoxColors(checkedColor, argb));
     view.invalidate();
   }
 

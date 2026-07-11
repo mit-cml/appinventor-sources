@@ -397,6 +397,7 @@
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_EVENT_TITLE": "երբ ինչ-որ ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL": "կանչել ",
     "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "կանչել ",
+    "Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "Ավելացնել",
     "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME": "կանչել վերադարձը",
     "Blockly.Msg.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX": "կանչել ",
     "Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME": "կանչել առանց վերադարձի",

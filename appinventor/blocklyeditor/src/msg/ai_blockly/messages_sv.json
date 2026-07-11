@@ -444,6 +444,7 @@
 	"Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_STEP": "stega",
 	"Blockly.Msg.LANG_MATH_COMPARE_GTE": "≥",
 	"Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "anropa ",
+	"Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "Lägg till",
 	"Blockly.Msg.LANG_MATH_TRIG_ACOS": "acos",
 	"Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN": "Ger vinkeln i intervallet (-90, +90)\ngrader med det givna tan-värdet.",
 	"Blockly.Msg.LANG_PROCEDURES_DEFRETURN_DEFINE": "för att",

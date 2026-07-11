@@ -184,6 +184,7 @@
   "DISABLE_BLOCK": "השבת בלוק",
   "MATH_ADDITION_SYMBOL": "+",
   "LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL": "הפעל ",
+  "LANG_COMPONENT_BLOCK_METHOD_TITLE_ADD": "הוסף",
   "MATH_IS_DIVISIBLE_BY": "מתחלק ב",
   "LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS": "הסתכל בזוגות",
   "LANG_MATH_CONVERT_NUMBER_TOOLTIP_BIN_TO_DEC": "לוקח מחרוזת המייצגת מספר בינארי ומחזיר את המחרוזת המייצגת את המספר כבסיס 10",
