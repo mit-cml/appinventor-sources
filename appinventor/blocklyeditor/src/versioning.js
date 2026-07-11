@@ -1888,7 +1888,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // CheckedColor and UncheckedColor properties added
+    3: "noUpgrade"
 
   }, // End CheckBox upgraders
 
