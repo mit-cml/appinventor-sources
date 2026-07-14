@@ -689,24 +689,52 @@ let HORIZONTAL_LAYOUT = 1
       let hasElements = _elements.count > 0
       
       let listDataIndex = indexPath.row - _items.count
-      
       if _listViewLayoutMode == 0 { // assume only strings (no dicts]
         if hasElements {
           let item = _elements[indexPath.row]
-          cell.textLabel?.text = item
-          cell.detailTextLabel?.text = ""
-          // Simple text-only layout
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
+          cell.textLabel?.text = item as? String
+        } else{
+          let item = _items[indexPath.row]
+          cell.textLabel?.text = item["Text1"] as? String
         }
+        
       } else {
         let item = _items[indexPath.row]
-        if _listViewLayoutMode == 1 {
-          
+        if _listViewLayoutMode == 1  || _listViewLayoutMode == 2 {
           tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
+          tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
+          let stackView = UIStackView()
+
+          if _listViewLayoutMode == 2 {
+            stackView.axis = .horizontal
+          } else {
+            stackView.axis = .vertical
+          }
+
+          stackView.alignment = .leading
+          stackView.distribution = .fill
+          stackView.spacing = 8.0
+          
+          // Add the labels to the stack view
+          stackView.addArrangedSubview(cell.textLabel!)
+          stackView.addArrangedSubview(cell.detailTextLabel!)
+          
+          // Add the stack view to the cell's content view
+          cell.contentView.addSubview(stackView)
+          
+          // Set up constraints
+          stackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
+            cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+          ])
+          
         } else if _listViewLayoutMode == 3 {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 60
@@ -838,13 +866,11 @@ let HORIZONTAL_LAYOUT = 1
               cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
             ])
           }
-        
-        
-      } else {
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 44
-        cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
-      }
+        } else {
+          tableView.rowHeight = UITableView.automaticDimension
+          tableView.estimatedRowHeight = 44
+          cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
+        }
     }
 
     cell.textLabel?.numberOfLines = 0
@@ -878,17 +904,17 @@ let HORIZONTAL_LAYOUT = 1
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
-    
-    if _elementColor != Color.none.int32 {
-      // if elementColor at the table cell level, laid over backgroundColor
-      if _elementColor == Color.default.int32 {
-        cell.backgroundColor = preferredTextColor(form)
-      } else {
-        cell.backgroundColor = argbToColor(_elementColor)
-      }
-    } else {
-      cell.backgroundColor = argbToColor(_backgroundColor)
-    }
+
+    (cell.backgroundView as? UIView)?.backgroundColor =
+          (_elementColor != Color.none.int32)
+          ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
+          : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+
+    cell.backgroundColor =
+            ((_elementColor != Color.none.int32) && (_elementColor != Color.default.int32))
+            ? argbToColor(_elementColor)
+            : cell.backgroundColor
+
     
     //maintext
     if _textColor == Color.default.int32 {
