@@ -685,10 +685,6 @@ path.ode-SimpleMockMapFeature-selected {
   color: panel-shadow;
 }
 
-.ode-DialogBox .ExtendedText {
-  color: top-panel-color;
-}
-
 .ode-DialogBox .gwt-Tree {
   border: thin solid border-color;
 }
@@ -1097,18 +1093,6 @@ textarea::-webkit-input-placeholder {
 .message-popup {
   background-color: background-color;
   border: 1px solid border-color;
-}
-
-
-.ac-renderer {
-  background: background-color;
-  border: 1px solid #666;
-  /* -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
-  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4); */
-}
-
-.ac-active {
-  background-color: #b2b4bf;
 }
 
 div.dropdiv.good {

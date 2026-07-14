@@ -302,7 +302,7 @@ AI.Events.ComponentMove = class extends AI.Events.ComponentEvent {
 
   constructor(projectId, component) {
     super(projectId, component);
-    let location = this.currentLocation_();
+    let location = this.currentLocation();
     this.oldParentUuid = location.parentUuid;
     this.oldIndex = location.index;
   };

@@ -19,6 +19,7 @@ import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -31,9 +32,9 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
@@ -77,13 +78,14 @@ public abstract class AbstractPalettePanel<
   private DropTargetProvider dropTargetProvider;
 
   // panel that holds all palette items
-  private final VerticalPanel panel;
+  private final FlowPanel panel;
 
   // Map translated component names to English names
   private final Map<String, String> translationMap;
 
   private final TextBox searchText;
-  private final VerticalPanel searchResults;
+  private final FlowPanel searchResults;
+  private Element previousFocus;
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
   private Map<String, SimplePaletteItem> searchSimplePaletteItems = new HashMap<String, SimplePaletteItem>();
@@ -143,7 +145,7 @@ public abstract class AbstractPalettePanel<
     simplePaletteItems = new HashMap<String, SimplePaletteItem>();
 
     translationMap = new HashMap<String, String>();
-    panel = new VerticalPanel();
+    panel = new FlowPanel();
     panel.setWidth("100%");
 
     for (String component : componentDatabase.getComponentNames()) {
@@ -156,6 +158,7 @@ public abstract class AbstractPalettePanel<
     searchText.setWidth("100%");
     searchText.getElement().setPropertyString("placeholder", MESSAGES.searchComponents());
     searchText.getElement().setAttribute("style", "width: 100%; box-sizing: border-box;");
+    searchText.getElement().setAttribute("aria-label", MESSAGES.paletteSearchAriaLabel());
 
     searchText.addKeyUpHandler(new SearchKeyUpHandler());
     searchText.addKeyPressHandler(new ReturnKeyHandler());
@@ -179,24 +182,28 @@ public abstract class AbstractPalettePanel<
       public void onKeyDown(KeyDownEvent event) {
         DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
         if (designToolbar.currentView == DesignToolbar.View.DESIGNER && event.getNativeKeyCode() == 191
-                && !isTextboxFocused() && !event.isAltKeyDown()) {
+                && !shouldSuppressShortcuts() && !event.isAltKeyDown()) {
           {
             event.preventDefault();
+            previousFocus = getActiveElement();
             searchText.setFocus(true);
           }
         }
       }
     }, KeyDownEvent.getType());
 
-    panel.setSpacing(3);
     panel.add(searchText);
     panel.setWidth("100%");
 
-    searchResults = new VerticalPanel();
+    searchResults = new FlowPanel();
     searchResults.setWidth("100%");
+    searchResults.getElement().setAttribute("role", "list");
+    searchResults.getElement().setAttribute("aria-label", MESSAGES.paletteSearchResultsAriaLabel());
     stackPalette.setWidth("100%");
 
     initWidget(panel);
+    panel.getElement().setAttribute("role", "region");
+    panel.getElement().setAttribute("aria-label", MESSAGES.paletteAriaLabel());
     panel.add(searchResults);
     panel.add(stackPalette);
 
@@ -252,8 +259,17 @@ public abstract class AbstractPalettePanel<
     @Override
     public void onKeyDown(KeyDownEvent event) {
       if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        event.preventDefault();
+        event.stopPropagation();
         searchResults.clear();
         searchText.setText("");
+        lastSearch = "";
+        doSearch();
+        if (previousFocus != null && canReceiveFocus(previousFocus)) {
+          previousFocus.focus();
+        } else {
+          searchText.getElement().blur();
+        }
       }
     }
   }
@@ -432,7 +448,7 @@ public abstract class AbstractPalettePanel<
    * Adds a component entry to the palette.
    */
   private void addPaletteItem(SimplePaletteItem component, ComponentCategory category) {
-    VerticalPanel panel = stackPalette.getCategoryPanel(category);
+    FlowPanel panel = stackPalette.getCategoryPanel(category);
     if (panel == null) {
       panel = addComponentCategory(category);
     }
@@ -444,8 +460,8 @@ public abstract class AbstractPalettePanel<
     }
   }
 
-  protected VerticalPanel addComponentCategory(ComponentCategory category) {
-    VerticalPanel panel = new VerticalPanel();
+  protected FlowPanel addComponentCategory(ComponentCategory category) {
+    FlowPanel panel = new FlowPanel();
     panel.setWidth("100%");
     String title = "";
     if (ComponentCategory.EXTENSION.equals(category)) {
@@ -459,7 +475,7 @@ public abstract class AbstractPalettePanel<
   }
 
   private void removePaletteItem(SimplePaletteItem component, ComponentCategory category) {
-    VerticalPanel panel = stackPalette.getCategoryPanel(category);
+    FlowPanel panel = stackPalette.getCategoryPanel(category);
     panel.remove(component);
     if (panel.getWidgetCount() < 1) {
       stackPalette.remove(panel, category);
@@ -532,6 +548,22 @@ public abstract class AbstractPalettePanel<
   public native boolean isTextboxFocused()/*-{
     var element = $doc.activeElement;
     return element.tagName === 'INPUT' && element.type === 'text' || element.tagName === 'TEXTAREA';
+  }-*/;
+
+  public native boolean isMenuOpen()/*-{
+    return $doc.querySelector('[aria-haspopup="menu"][aria-expanded="true"]') !== null;
+  }-*/;
+
+  public boolean shouldSuppressShortcuts() {
+    return isTextboxFocused() || isMenuOpen();
+  }
+
+  private native boolean canReceiveFocus(Element el)/*-{
+    return $doc.body.contains(el) && el.offsetParent != null;
+  }-*/;
+
+  private native Element getActiveElement()/*-{
+    return $doc.activeElement;
   }-*/;
 
   private void requestRebuildList() {

@@ -79,6 +79,20 @@ public final class BlockSelectorBox extends Box {
     @Override
     public void delete() {
     }
+
+    @Override
+    public boolean canDrag() {
+      return false;
+    }
+
+    @Override
+    public boolean isContainer() {
+      return false;
+    }
+
+    @Override
+    public void moveTo(SourceStructureExplorerItem target, int position) {
+    }
   }
 
   // Singleton block selector box instance
@@ -86,7 +100,7 @@ public final class BlockSelectorBox extends Box {
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
 
   private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(
-      Arrays.asList("Control", "Logic", "Math", "Text", "Lists", "Dictionaries", "Colors",
+      Arrays.asList("Control", "Logic", "Math", "Matrices", "Text", "Lists", "Dictionaries", "Colors",
           "Variables", "Procedures"));
 
   private static final Images images = Ode.getImageBundle();
@@ -95,7 +109,7 @@ public final class BlockSelectorBox extends Box {
   // Source structure explorer (for components and built-in blocks)
   private final SourceStructureExplorer sourceStructureExplorer;
 
-  private final Map<BlocksLanguage, TreeItem> languageTreeItems;
+  private final Map<String, TreeItem> languageTreeItems;
 
   private List<BlockDrawerSelectionListener> drawerListeners;
 
@@ -148,6 +162,11 @@ public final class BlockSelectorBox extends Box {
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
+
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.blockSelectorAriaLabel());
+    sourceStructureExplorer.getElement().setAttribute("aria-live", "polite");
+    sourceStructureExplorer.getElement().setAttribute("aria-atomic", "false");
   }
 
   /**
@@ -164,26 +183,48 @@ public final class BlockSelectorBox extends Box {
    *
    * @return tree item
    */
-  public TreeItem getBuiltInBlocksTree(BlocksLanguage language, DesignerRootComponent form) {
-    TreeItem rootItem = languageTreeItems.get(language);
+  public TreeItem getBuiltInBlocksTree(BlocksLanguage language, DesignerRootComponent form,
+      String contextId) {
+    String cacheKey = language.getName() + ":" + contextId;
+    TreeItem rootItem = languageTreeItems.get(cacheKey);
     if (rootItem != null) {
       return rootItem;
     }
     rootItem = new TreeItem(new HTML("<span>" + MESSAGES.builtinBlocksLabel() + "</span>"));
     for (final BlocksCategory category : getSubsetDrawerNames(language, form)) {
-      TreeItem itemNode = new TreeItem(new HTML("<span>" + new Image(category.getImage()) +
+      Image categoryImage = new Image(category.getImage());
+      categoryImage.setAltText(category.getName() + " blocks");
+      TreeItem itemNode = new TreeItem(new HTML("<span>" + categoryImage +
           category.getName() + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
         public void onSelected(NativeEvent event) {
           fireBuiltinDrawerSelected(category.getCategory());
         }
+
+        @Override
+        public boolean isInitiallyExpanded() {
+          return !"Procedures".equals(category.getCategory());
+        }
       };
       itemNode.setUserObject(sourceItem);
+      if ("Procedures".equals(category.getCategory())) {
+        itemNode.getElement().setAttribute("data-name", contextId + "_builtin_Procedures");
+        TreeItem moreItemNode = new TreeItem(new HTML("<span>" + MESSAGES.builtinMoreLabel()
+            + "</span>"));
+        SourceStructureExplorerItem moreSourceItem = new BlockSelectorItem() {
+          @Override
+          public void onSelected(NativeEvent event) {
+            fireBuiltinDrawerSelected("ProceduresMore");
+          }
+        };
+        moreItemNode.setUserObject(moreSourceItem);
+        itemNode.addItem(moreItemNode);
+      }
       rootItem.addItem(itemNode);
     }
     rootItem.setState(true);
-    languageTreeItems.put(language, rootItem);
+    languageTreeItems.put(cacheKey, rootItem);
     return rootItem;
   }
 
@@ -195,10 +236,17 @@ public final class BlockSelectorBox extends Box {
    *          only component types that appear in this Form will be included
    * @return tree item for this form
    */
-  public TreeItem getGenericComponentsTree(DesignerRootComponent form) {
+  public TreeItem getGenericComponentsTree(DesignerRootComponent form, String contextId) {
     Map<String, String> typesAndIcons = Maps.newHashMap();
     form.collectTypesAndIcons(typesAndIcons);
     TreeItem advanced = new TreeItem(new HTML("<span>" + MESSAGES.anyComponentLabel() + "</span>"));
+    advanced.getElement().setAttribute("data-name", contextId + "_builtin_AnyComponent");
+    advanced.setUserObject(new BlockSelectorItem() {
+      @Override
+      public boolean isInitiallyExpanded() {
+        return false;
+      }
+    });
     List<String> typeList = new ArrayList<String>(typesAndIcons.keySet());
     Collections.sort(typeList);
     for (final String typeName : typeList) {
@@ -215,6 +263,14 @@ public final class BlockSelectorBox extends Box {
       advanced.addItem(itemNode);
     }
     return advanced;
+  }
+
+  /**
+   * Clears the cached built-in blocks tree so the next access rebuilds from
+   * the latest BlocksToolkit value.
+   */
+  public void clearBuiltInBlocksCache() {
+    languageTreeItems.clear();
   }
 
   public void addBlockDrawerSelectionListener(BlockDrawerSelectionListener listener) {

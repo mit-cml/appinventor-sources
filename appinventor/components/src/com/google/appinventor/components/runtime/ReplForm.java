@@ -36,6 +36,7 @@ import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.ProjectManager;
 import com.google.appinventor.components.runtime.util.QUtil;
 import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.WebRTCNativeMgr;
@@ -86,9 +87,19 @@ public class ReplForm extends Form {
   private String currentTheme = ComponentConstants.DEFAULT_THEME;
   private WebRTCNativeMgr webRTCNativeMgr;
 
+  /**
+   * variables for the App Library
+   */
+
+  private boolean inAppLibrary = false; // We are loading from the App Library
+  private ArrayList<String> libraryScreens= new ArrayList(); // Stack of screens
+
   SchemeInterface schemeInterface = new SchemeInterface();
 
   private static final String SPLASH_ACTIVITY_CLASS = SplashActivity.class
+      .getName();
+
+  private static final String PROJECTS_ACTIVITY_CLASS = ProjectsActivity.class
       .getName();
 
   public ReplForm() {
@@ -228,7 +239,13 @@ public class ReplForm extends Form {
     if (startupValue != null) {
       this.startupValue = jsonEncodeForForm(startupValue, "open another screen with start value");
     }
-    RetValManager.pushScreen(nextFormName, startupValue);
+    if (inAppLibrary) {
+      libraryScreens.add(0, this.formName);
+      // setFormName(nextFormName);
+      ProjectManager.evalScreenYail(nextFormName);
+    } else {
+      RetValManager.pushScreen(nextFormName, startupValue);
+    }
   }
 
   public void setFormName(String formName) {
@@ -238,7 +255,15 @@ public class ReplForm extends Form {
 
   @Override
   protected void closeForm(Intent resultIntent) {
-    RetValManager.popScreen("Not Yet");
+    if (inAppLibrary) {
+      if (!libraryScreens.isEmpty()) {
+        String newScreen = libraryScreens.remove(0);
+        // setFormName(newScreen);
+        ProjectManager.evalScreenYail(newScreen);
+      }
+    } else {
+      RetValManager.popScreen("Not Yet");
+    }
   }
 
   protected void setResult(Object result) {
@@ -267,6 +292,8 @@ public class ReplForm extends Form {
     // we would use onPrepareOptionsMenu.
     super.onCreateOptionsMenu(menu); // sets up the exit and about buttons
     addSettingsButton(menu);         // Now add our button!
+    addStartCacheButton(menu);
+    addProjectsButton(menu);
     addLogcatButton(menu);           // Add button to report LogCat information
     return true;
   }
@@ -281,6 +308,32 @@ public class ReplForm extends Form {
           }
         });
     showSettingsItem.setIcon(android.R.drawable.sym_def_app_icon);
+  }
+
+  public void addStartCacheButton(Menu menu) {
+    MenuItem startCacheItem = menu.add(Menu.NONE, Menu.NONE, 3,
+      "Save Project").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            PhoneStatus.startCache();
+            return true;
+          }
+        });
+    startCacheItem.setIcon(android.R.drawable.sym_def_app_icon);
+  }
+
+  public void addProjectsButton(Menu menu) {
+    MenuItem addProjectsItem = menu.add(Menu.NONE, Menu.NONE, 3,
+      "Load Project").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            Intent projectsIntent = new Intent(Intent.ACTION_MAIN);
+            projectsIntent.setClassName(activeForm.$context(), PROJECTS_ACTIVITY_CLASS);
+            activeForm.$context().startActivity(projectsIntent);
+            return true;
+          }
+        });
+    addProjectsItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
   public void addLogcatButton(Menu menu) {
@@ -588,6 +641,10 @@ public class ReplForm extends Form {
   @Override
   protected void updateTitle() {
     themeHelper.setTitle(title, "AppTheme.Light".equals(currentTheme));
+  }
+
+  public void setInAppLibrary() {
+    inAppLibrary = true;
   }
 
   private String genReportId() {

@@ -3,6 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import { ISelectable } from '../blockly.js';
 import { IBubble } from '../interfaces/i_bubble.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Rect } from '../utils/rect.js';
@@ -13,8 +14,8 @@ import { WorkspaceSvg } from '../workspace_svg.js';
  * bubble, where it has a "tail" that points to the block, and a "head" that
  * displays arbitrary svg elements.
  */
-export declare abstract class Bubble implements IBubble {
-    protected readonly workspace: WorkspaceSvg;
+export declare abstract class Bubble implements IBubble, ISelectable {
+    readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
     /** The width of the border around the bubble. */
@@ -37,6 +38,7 @@ export declare abstract class Bubble implements IBubble {
     static readonly TAIL_BEND = 4;
     /** Distance between arrow point and anchor point. */
     static readonly ANCHOR_RADIUS = 8;
+    id: string;
     /** The SVG group containing all parts of the bubble. */
     protected svgRoot: SVGGElement;
     /** The SVG path for the arrow from the anchor to the bubble. */
@@ -57,6 +59,7 @@ export declare abstract class Bubble implements IBubble {
     private relativeTop;
     /** The position of the left of the bubble realtive to its anchor. */
     private relativeLeft;
+    private dragStrategy;
     /**
      * @param workspace The workspace this bubble belongs to.
      * @param anchor The anchor location of the thing this bubble is attached to.
@@ -93,7 +96,7 @@ export declare abstract class Bubble implements IBubble {
     protected getColour(): string;
     /** Sets the colour of the background and tail of this bubble. */
     setColour(colour: string): void;
-    /** Passes the pointer event off to the gesture system. */
+    /** Brings the bubble to the front and passes the pointer event off to the gesture system. */
     private onMouseDown;
     /** Positions the bubble relative to its anchor. Does not render its tail. */
     protected positionRelativeToAnchor(): void;
@@ -175,5 +178,17 @@ export declare abstract class Bubble implements IBubble {
     isDeletable(): boolean;
     /** @internal */
     showContextMenu(_e: Event): void;
+    /** Returns whether this bubble is movable or not. */
+    isMovable(): boolean;
+    /** Starts a drag on the bubble. */
+    startDrag(): void;
+    /** Drags the bubble to the given location. */
+    drag(newLoc: Coordinate): void;
+    /** Ends the drag on the bubble. */
+    endDrag(): void;
+    /** Moves the bubble back to where it was at the start of a drag. */
+    revertDrag(): void;
+    select(): void;
+    unselect(): void;
 }
 //# sourceMappingURL=bubble.d.ts.map

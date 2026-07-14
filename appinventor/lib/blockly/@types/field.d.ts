@@ -17,13 +17,13 @@ import type { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.j
 import type { IASTNodeLocationWithBlock } from './interfaces/i_ast_node_location_with_block.js';
 import type { IKeyboardAccessible } from './interfaces/i_keyboard_accessible.js';
 import type { IRegistrable } from './interfaces/i_registrable.js';
+import { ISerializable } from './interfaces/i_serializable.js';
 import type { ConstantProvider } from './renderers/common/constants.js';
 import type { KeyboardShortcut } from './shortcut_registry.js';
 import * as Tooltip from './tooltip.js';
 import type { Coordinate } from './utils/coordinate.js';
 import { Rect } from './utils/rect.js';
 import { Size } from './utils/size.js';
-import { ISerializable } from './interfaces/i_serializable.js';
 /**
  * A function that is called to validate changes to the field's value before
  * they are set.
@@ -74,18 +74,18 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * Used to cache the field's tooltip value if setTooltip is called when the
      * field is not yet initialized. Is *not* guaranteed to be accurate.
      */
-    private tooltip_;
+    private tooltip;
     protected size_: Size;
     /**
      * Holds the cursors svg element when the cursor is attached to the field.
      * This is null if there is no cursor on the field.
      */
-    private cursorSvg_;
+    private cursorSvg;
     /**
      * Holds the markers svg element when the marker is attached to the field.
      * This is null if there is no marker on the field.
      */
-    private markerSvg_;
+    private markerSvg;
     /** The rendered field's SVG group element. */
     protected fieldGroup_: SVGGElement | null;
     /** The rendered field's SVG border element. */
@@ -95,7 +95,7 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
     /** The rendered field's text content element. */
     protected textContent_: Text | null;
     /** Mouse down event listener data. */
-    private mouseDownWrapper_;
+    private mouseDownWrapper;
     /** Constants associated with the source block's renderer. */
     protected constants_: ConstantProvider | null;
     /**
@@ -561,9 +561,10 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      *
      * @param newValue New value.
      * @param validatedValue Validated value.
+     * @param fireChangeEvent Whether to fire a change event if the value changes.
      * @returns New value, or an Error object.
      */
-    private processValidation_;
+    private processValidation;
     /**
      * Get the current value of the field.
      *
@@ -605,8 +606,9 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * No-op by default.
      *
      * @param _invalidValue The input value that was determined to be invalid.
+     * @param _fireChangeEvent Whether to fire a change event if the value changes.
      */
-    protected doValueInvalid_(_invalidValue: any): void;
+    protected doValueInvalid_(_invalidValue: any, _fireChangeEvent?: boolean): void;
     /**
      * Handle a pointerdown event on a field.
      *
@@ -706,6 +708,17 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * @internal
      */
     updateMarkers_(): void;
+    /**
+     * Subclasses should reimplement this method to construct their Field
+     * subclass from a JSON arg object.
+     *
+     * It is an error to attempt to register a field subclass in the
+     * FieldRegistry if that subclass has not overridden this method.
+     *
+     * @param _options JSON configuration object with properties needed
+     *    to configure a specific field.
+     */
+    static fromJson(_options: FieldConfig): Field;
 }
 /**
  * Extra configuration options for the base field.
@@ -714,12 +727,14 @@ export interface FieldConfig {
     tooltip?: string;
 }
 /**
- * For use by Field and descendants of Field. Constructors can change
+ * Represents an object that has all the prototype properties of the `Field`
+ * class. This is necessary because constructors can change
  * in descendants, though they should contain all of Field's prototype methods.
  *
- * @internal
+ * This type should only be used in places where we directly access the prototype
+ * of a Field class or subclass.
  */
-export type FieldProto = Pick<typeof Field, 'prototype'>;
+type FieldProto = Pick<typeof Field, 'prototype'>;
 /**
  * Represents an error where the field is trying to access its block or
  * information about its block before it has actually been attached to said
@@ -729,4 +744,5 @@ export declare class UnattachedFieldError extends Error {
     /** @internal */
     constructor();
 }
+export {};
 //# sourceMappingURL=field.d.ts.map

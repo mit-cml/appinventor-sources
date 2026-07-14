@@ -904,19 +904,16 @@ let HORIZONTAL_LAYOUT = 1
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
-      
+
     (cell.backgroundView as? UIView)?.backgroundColor =
-            (_elementColor != Color.none.int32)
-            ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
-            : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
-      
+          (_elementColor != Color.none.int32)
+          ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
+          : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+
     cell.backgroundColor =
             ((_elementColor != Color.none.int32) && (_elementColor != Color.default.int32))
             ? argbToColor(_elementColor)
             : cell.backgroundColor
-
-    
-
 
     
     //maintext

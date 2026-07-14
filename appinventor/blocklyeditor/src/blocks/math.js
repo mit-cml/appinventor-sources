@@ -75,7 +75,7 @@ Blockly.Blocks['math_number_radix'] = {
 
   dropdownListener: function(newValue) {
     this.getSourceBlock().currentPrefix = Blockly.Blocks.math_number_radix.PREFIX[newValue];
-    var numberField = this.sourceBlock_.numberField;
+    var numberField = this.getSourceBlock().numberField;
     var oldPrefix = Blockly.Blocks.math_number_radix.PREFIX[this.getValue()];
     var oldValue = Number(oldPrefix + numberField.getValue());
     var newRadix = Blockly.Blocks.math_number_radix.RADIX[newValue];
@@ -175,16 +175,16 @@ Blockly.Blocks['math_compare'] = {
 };
 
 Blockly.Blocks.math_compare.onchange = function (value) {
-  if (!this.sourceBlock_) {
+  if (!this.getSourceBlock || !this.getSourceBlock()) {
     return;
   }
   if (value == "EQ" || value == "NEQ") {
-    this.sourceBlock_.getInput("A").setCheck(null);
-    this.sourceBlock_.getInput("B").setCheck(null);
+    this.getSourceBlock().getInput("A").setCheck(null);
+    this.getSourceBlock().getInput("B").setCheck(null);
   } else {
-    this.sourceBlock_.getInput("A")
+    this.getSourceBlock().getInput("A")
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
-    this.sourceBlock_.getInput("B")
+    this.getSourceBlock().getInput("B")
         .setCheck(AI.BlockUtils.YailTypeToBlocklyType("number", AI.BlockUtils.INPUT));
   }
 };

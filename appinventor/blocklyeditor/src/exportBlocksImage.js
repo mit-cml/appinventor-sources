@@ -12,8 +12,6 @@
 'use strict';
 
 goog.provide('AI.Blockly.ExportBlocksImage');
-goog.require('goog.Timer');
-
 
 /**
  * saveSvgAsPng
@@ -464,7 +462,7 @@ Blockly.exportBlockAsPng = function(block) {
   var xml = document.createElement('xml');
   xml.appendChild(Blockly.Xml.blockToDom(block, true));
   var code = Blockly.Xml.domToText(xml);
-  svgAsDataUri(block.svgGroup_, block.workspace.getMetrics(), null, function(uri) {
+  svgAsDataUri(block.getSvgRoot(), block.workspace.getMetrics(), null, function(uri) {
     var img = new Image();
     img.src = uri;
     img.onload = function() {
@@ -583,7 +581,7 @@ function showMissingExtensionDialog(missingExtensions) {
 /**
  * Imports a block from a PNG file if the code chunk is present.
  * @param {!Blockly.WorkspaceSvg} workspace the target workspace for the block
- * @param {goog.math.Coordinate} xy the coordinate to place the block
+ * @param {{x: number, y: number}} xy the coordinate to place the block
  * @param {Blob} png the blob representing the PNG file
  */
 Blockly.importPngAsBlock = function(workspace, xy, png) {

@@ -3,8 +3,8 @@
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { Rect } from '../utils/rect.js';
 import type { UiMetrics } from '../metrics_manager.js';
+import type { Rect } from '../utils/rect.js';
 import type { IComponent } from './i_component.js';
 /**
  * Interface for a component that is positioned on top of the workspace.

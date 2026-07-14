@@ -27,6 +27,7 @@ import com.google.appinventor.client.editor.youngandroid.events.EventHelper;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -37,6 +38,7 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.HashMap;
@@ -385,7 +387,15 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   // Note: our companion designer adds us as a listener on the form
   @Override
   public void onComponentPropertyChanged(MockComponent component, String propertyName, String propertyValue) {
-    // nothing to do here
+    if (!SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET.equals(propertyName) || !loadComplete) {
+      return;
+    }
+
+    BlockSelectorBox.getBlockSelectorBox().clearBuiltInBlocksCache();
+    blocksArea.resetDrawerLanguageTreeCache();
+    updateSourceStructureExplorer();
+    // Close any open drawer because its contents may no longer match the toolkit.
+    hideBlocksDrawer();
   }
 
   @Override
@@ -421,6 +431,15 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     // not relevant for blocks editor - this happens on clicks in the mock form areas
+  }
+
+  @Override
+  public void onSourceStructureItemSelected(MockComponent component, NativeEvent source) {
+    // Call showComponentBlocks directly so its selectedDrawer toggle still
+    // closes the drawer on a second click of the same component.
+    if (loadComplete && Ode.getInstance().getCurrentFileEditor() == this) {
+      showComponentBlocks(component.getName());
+    }
   }
 
   // BlocksEditor implementation
@@ -557,7 +576,7 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
               var connections = block.getConnections_(false);
               for (var i = 0, connection; connection = connections[i]; i++) {
                 var neighbour = connection.closest($wnd.Blockly.config.snapRadius,
-                  new $wnd.goog.math.Coordinate(blockX, blockY));
+                  new $wnd.Blockly.utils.Coordinate(blockX, blockY));
                 if (neighbour.connection) {
                   collide = true;
                   break;
@@ -665,9 +684,10 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   private void updateBlocksTree(DesignerRootComponent root,
                                 SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
-    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(language, root);
+    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree(language, root,
+        entityName);
     items[1] = root.buildComponentsTree();
-    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(root);
+    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(root, entityName);
     sourceStructureExplorer.updateTree(items, itemToSelect);
   }
 }

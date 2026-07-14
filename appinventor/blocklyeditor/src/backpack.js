@@ -39,7 +39,6 @@ goog.provide('AI.Blockly.Backpack');
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.BackpackFlyout');
 goog.require('AI.Blockly.Util');
-goog.require('goog.Timer');
 
 /**
  * Class for a backpack.
@@ -119,13 +118,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
    * @private
    */
   svgBody_ = null;
-
-  /**
-   * Task ID of opening/closing animation.
-   * @type {number}
-   * @private
-   */
-  openTask_ = 0;
 
   /**
    * Left coordinate of the backpack.
@@ -305,7 +297,7 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
   }
 
   onDragEnter(e) {
-    if (e instanceof Blockly.BlockSvg) {
+    if (e instanceof Blockly.BlockSvg || e.toFlyoutInfo !== undefined) {
       // switch to open backpack icon
       this.setOpen_(true);
     }
@@ -320,6 +312,17 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     try {
       if (dragElement instanceof Blockly.BlockSvg) {
         this.addToBackpack(/** @type {!Blockly.BlockSvg} */ (dragElement), true);
+      } else if (dragElement.toFlyoutInfo !== undefined) {
+        const headlessWorkspace = new Blockly.Workspace();
+        headlessWorkspace.targetWorkspace = this.workspace_;
+        try {
+          for (const blockInfo of dragElement.toFlyoutInfo()) {
+            const tempBlock = Blockly.serialization.blocks.append(blockInfo, headlessWorkspace);
+            this.addToBackpack(tempBlock, true);
+          }
+        } finally {
+          headlessWorkspace.dispose();
+        }
       }
     } finally {
       this.setOpen_(false);
@@ -372,7 +375,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     }
     this.flyout_.dispose();
     this.flyout_ = null;
-    clearTimeout(this.openTask_);
   }
 
   /**
@@ -385,6 +387,8 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
             return;
           }
           let lastPastedBlock = null;
+          const headlessWorkspace = new Blockly.Workspace();
+          headlessWorkspace.targetWorkspace = this.workspace_;
           try {
             Blockly.Events.setGroup(true);
             for (let i = 0; i < contents.length; i++) {
@@ -401,7 +405,17 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
                 }
               }
               if (ok) {
-                const newBlock = this.workspace_.paste(blk);
+                const tempBlock = Blockly.Xml.domToBlock(blk, headlessWorkspace);
+                // Manually construct BlockCopyData since headless blocks don't have toCopyData()
+                // See: https://github.com/google/blockly/blob/blockly-v11.2.2/core/block_svg.ts#L851-L868
+                const copyData = {
+                  paster: Blockly.clipboard.BlockPaster.TYPE,
+                  blockState: Blockly.serialization.blocks.save(tempBlock, {
+                    addNextBlocks: false,
+                  }),
+                  typeCounts: Blockly.common.getBlockTypeCounts(tempBlock, true)
+                };
+                const newBlock = Blockly.clipboard.paste(copyData, this.workspace_);
                 if (newBlock) {
                   lastPastedBlock = newBlock;
                 }
@@ -412,9 +426,10 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
             }
           } finally {
             Blockly.Events.setGroup(false);
+            headlessWorkspace.dispose();
           }
           if (lastPastedBlock) {
-            lastPastedBlock.select();
+            Blockly.common.setSelected(lastPastedBlock);
           }
         });
   }
@@ -454,16 +469,12 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
    * @param {boolean} store If true, store the backpack to the server.
    */
   addToBackpack(block, store) {
-    // Copy is made of the expanded block.
-    const isCollapsed = block.isCollapsed();
-    block.setCollapsed(false);
     const xmlBlock = Blockly.Xml.blockToDom(block);
     Blockly.Xml.deleteNext(xmlBlock);
     // Encode start position in XML.
     const xy = block.getRelativeToSurfaceXY();
     xmlBlock.setAttribute('x', this.workspace_.RTL ? -xy.x : xy.x);
     xmlBlock.setAttribute('y', xy.y);
-    block.setCollapsed(isCollapsed);
 
     // Add the block to the backpack
     this.getContents()
@@ -670,7 +681,6 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
     if (this.isOpen == state) {
       return;
     }
-    goog.Timer.clear(this.openTask_);
     this.isOpen = state;
     this.animateBackpack_();
   }
@@ -763,11 +773,11 @@ AI.Blockly.Backpack.prototype.openBackpack = function(e) {
 /**
  * When block is let go over the backpack, copy it and return to original position
  * @param {!Event} e Mouse up event
- * @param {!goog.math.Coordinate} start coordinate of the mouseDown event
+ * @param {!Blockly.utils.Coordinate} start coordinate of the mouseDown event
  */
 AI.Blockly.Backpack.prototype.onMouseUp = function(e, start){
   var xy = Blockly.common.getSelected().getRelativeToSurfaceXY();
-  var diffXY = goog.math.Coordinate.difference(start, xy);
+  var diffXY = Blockly.utils.Coordinate.difference(start, xy);
   Blockly.common.getSelected().moveBy(diffXY.x, diffXY.y);
   Blockly.common.getMainWorkspace().render();
 };

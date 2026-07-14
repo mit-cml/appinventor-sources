@@ -63,6 +63,17 @@ public class TextButton extends PushButton {
     });
   }
 
+  @Override
+  public void setText(String text) {
+    // Because there is no good way to iterate over all the combinations...
+    getUpFace().setText(text);
+    getDownFace().setText(text);
+    getUpDisabledFace().setText(text);
+    getDownDisabledFace().setText(text);
+    getUpHoveringFace().setText(text);
+    getDownHoveringFace().setText(text);
+  }
+
   protected String makeText(String caption, Icon icon) {
     String text = "";
     if (icon != null) {
