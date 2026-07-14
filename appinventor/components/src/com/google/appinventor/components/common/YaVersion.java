@@ -1738,6 +1738,8 @@ public class YaVersion {
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
+  // IOS URL
+  public static final String COMPANION_IOS_URL = "https://apps.apple.com/us/app/mit-app-inventor/id1422709355";
   public static final String [] ACCEPTABLE_COMPANIONS = { "2.78", "2.78u" };
 
   // Splash Screen Values
