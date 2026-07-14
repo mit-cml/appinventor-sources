@@ -42,7 +42,7 @@ The tool reads its configuration from these flags (Java system properties on the
 | lti.tool.deploymentid | The deployment id the platform assigned (enforced when set) |
 | lti.tool.baseurl | This server's own base URL |
 | lti.registration.enabled | Whether the dynamic registration endpoint is open, off by default |
-| lti.allow.insecure | Whether loopback hosts and plain http are allowed on outbound fetches. On by default for a local Moodle. Set false in production so the tool only reaches public https platform endpoints and refuses a loopback or internal host |
+| lti.allow.insecure | Whether loopback hosts and plain http are allowed on outbound fetches. Off by default so a production tool reaches only public https platform endpoints and refuses a loopback or internal host. Set true for a local Moodle reached over loopback |
 
 The tool RSA key pair is generated on first use and kept in the datastore, and the public key is served at /lti/jwks for the platform to verify the tool's messages. The platform flags describe one platform and seed the platform registry in the datastore on the first login, so an existing flag setup keeps working, and further platforms can be added to the registry directly.
 
@@ -59,3 +59,12 @@ To exercise the full loop locally, run Moodle in Docker and register App Invento
 3. Point the tool keyset URL at an address the Moodle container can reach the dev server on. Inside the container localhost is the container itself, so use the host address (for example host.docker.internal) for the server side keyset fetch, while the browser facing login and launch URLs stay localhost.
 4. Moodle blocks server side requests to loopback and private addresses by default (curlsecurityblockedhosts) and allows only ports 80 and 443 (curlsecurityallowedport). Clear both for a local development platform, otherwise the keyset fetch and the grade passback fail.
 5. As a teacher, add the activity and pick a template through Select content. As a student, open the activity, work, and use Submit to LMS. As a teacher, grade it, then as the student confirm the grade appears.
+
+## Known limitations
+
+This is an experimental single server spike, and a few limits are worth naming before any production use.
+
+1. The launch state is single use but not yet bound to the browser that began the login, so a captured state and token could in principle be replayed into another browser. Binding the state to a Secure SameSite None cookie closes this and is the main item to add before a real student pilot.
+2. The in memory launch state and Deep Linking context are process local, so the design targets a single server instance. A load balanced deployment would move these to the shared datastore.
+3. The platform registry keys a registration by issuer, which fits one registration per issuer. Multiple client registrations, or multiple deployments under one issuer, are a later data model change.
+4. Submit to LMS posts the status Submitted with PendingManual and no score, so the grade itself is entered by the teacher in the LMS. This is intentional, and it keeps grading where teachers expect it.

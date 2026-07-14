@@ -127,6 +127,60 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(USER_EMAIL_NEW, user4.getUserEmail());
   }
 
+  public void testGetUserFromEmailRefusesReservedLtiNamespace() {
+    // The @lti.invalid domain is reserved for accounts provisioned by the verified LTI launch.
+    // getUserFromEmail is reachable unauthenticated (the local login form), so it must refuse
+    // to create or resolve a row there; otherwise a pre-seeded row with a different id would
+    // let a launch alias onto it by email and hijack the real user's identity.
+    try {
+      storage.getUserFromEmail("lti-0123456789abcdef0123456789abcdef@lti.invalid");
+      fail("expected getUserFromEmail to refuse the reserved LTI namespace");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    // A mixed case domain must be refused too, since a launch would still match by emaillower.
+    try {
+      storage.getUserFromEmail("lti-0123456789abcdef0123456789abcdef@LTI.Invalid");
+      fail("expected getUserFromEmail to refuse the reserved namespace regardless of case");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    // An ordinary email is unaffected and still resolves.
+    User user = storage.getUserFromEmail("real.person@example.com");
+    assertNotNull(user);
+    assertEquals("real.person@example.com", user.getUserEmail());
+  }
+
+  public void testDeleteAccountCascadesLtiRows() {
+    final String USER_ID = "700";
+    final String USER_EMAIL = "user700@test.com";
+    final String ISSUER = "https://platform.example.org";
+    final String SUBJECT = "platform-subject-700";
+    final String DEPLOYMENT = "deployment-1";
+    final String RESOURCE_LINK = "resource-link-1";
+    storage.getUser(USER_ID, USER_EMAIL);
+
+    // A forked assignment project, plus the identity link, resource link, and grade context that
+    // the LTI launch and submit paths write for it.
+    long projectId = storage.createProject(USER_ID, project, SETTINGS);
+    storage.storeLtiUserLink(ISSUER, SUBJECT, USER_ID);
+    storage.storeLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
+    storage.storeLtiGradeContext(projectId, USER_ID, ISSUER, "https://platform/lineitem/1", SUBJECT);
+    assertEquals(USER_ID, storage.getLtiUserId(ISSUER, SUBJECT));
+    assertEquals(projectId, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
+    assertNotNull(storage.getLtiGradeContext(projectId));
+
+    // Deletion only proceeds once every project is trashed.
+    storage.setMoveToTrashFlag(USER_ID, projectId, true);
+    assertTrue(storage.deleteAccount(USER_ID));
+
+    // Identity link, resource link, and grade context are all gone, so a later launch of the same
+    // subject provisions a fresh account rather than resurrecting the deleted one.
+    assertNull(storage.getLtiUserId(ISSUER, SUBJECT));
+    assertEquals(0, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
+    assertNull(storage.getLtiGradeContext(projectId));
+  }
+
   public void testSetTosAccepted() {
     final String USER_ID = "100";
     final String USER_EMAIL = "newuser100@test.com";

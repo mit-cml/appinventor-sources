@@ -603,7 +603,7 @@ public interface StorageIo {
   void cleanuppwdata();
 
   // LTI 1.3 integration. The platform registry, the account link, the launch
-  // nonce, the per assignment fork, and the per user grade context.
+  // nonce, the per assignment fork, and the per project grade context.
 
   StoredData.LtiPlatformData getLtiPlatform(String issuer);
 

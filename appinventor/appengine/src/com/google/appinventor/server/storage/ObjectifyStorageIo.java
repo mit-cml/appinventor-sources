@@ -357,6 +357,17 @@ public class ObjectifyStorageIo implements StorageIo {
   // if they don't exist
   @Override
   public User getUserFromEmail(String email) {
+    // The "@lti.invalid" domain is a reserved namespace for accounts provisioned by the
+    // LTI launch path (see LtiLaunchServlet.ltiAccountKey), keyed by a deterministic LTI
+    // user id. Those accounts are created only through the RS256-verified launch. Refuse
+    // to resolve or create one here: getUserFromEmail is reachable unauthenticated (the
+    // local login form), and creating a row in this namespace with a different id would
+    // let a launch alias onto it by email (getUser rebinds to the found row's id),
+    // hijacking the real user's identity. Compare in lower case so a mixed-case domain
+    // cannot slip past and still match by emaillower.
+    if (email != null && email.toLowerCase().endsWith("@lti.invalid")) {
+      throw new IllegalArgumentException("Refusing to resolve a reserved LTI account by email");
+    }
     String emaillower = email.toLowerCase();
     LOG.info("getUserFromEmail: email = " + email + " emaillower = " + emaillower);
     Objectify datastore = ObjectifyService.begin();
@@ -3115,6 +3126,40 @@ public class ObjectifyStorageIo implements StorageIo {
     // Got here, no live projects, remove the remainders
     for (long projectId : projectIds) {
       deleteProject(userId, projectId);
+    }
+
+    // Remove the LTI rows tied to this account. Without this a deletion would leave the durable
+    // identity link, which a later launch of the same platform subject would resurrect the
+    // account through, plus grade context and resource link rows for projects that no longer
+    // exist. These kinds are keyed by composite ids rather than by a queryable owner, so on this
+    // single instance spike they are found by a kind scan filtered in memory; a production port
+    // that indexes the owner would replace the scan with a filtered query. Best effort, so a
+    // hiccup here does not fail the account deletion.
+    try {
+      Objectify ltiDatastore = ObjectifyService.begin();
+      List<Key<LtiUserLinkData>> linkKeys = new ArrayList<Key<LtiUserLinkData>>();
+      for (LtiUserLinkData link : ltiDatastore.query(LtiUserLinkData.class)) {
+        if (userId.equals(link.userId)) {
+          linkKeys.add(new Key<LtiUserLinkData>(LtiUserLinkData.class, link.id));
+        }
+      }
+      List<Key<LtiGradeContextData>> gradeKeys = new ArrayList<Key<LtiGradeContextData>>();
+      for (LtiGradeContextData grade : ltiDatastore.query(LtiGradeContextData.class)) {
+        if (userId.equals(grade.userId)) {
+          gradeKeys.add(new Key<LtiGradeContextData>(LtiGradeContextData.class, grade.id));
+        }
+      }
+      List<Key<LtiResourceLinkData>> resourceKeys = new ArrayList<Key<LtiResourceLinkData>>();
+      for (LtiResourceLinkData resource : ltiDatastore.query(LtiResourceLinkData.class)) {
+        if (projectIds.contains(resource.projectId)) {
+          resourceKeys.add(new Key<LtiResourceLinkData>(LtiResourceLinkData.class, resource.id));
+        }
+      }
+      ltiDatastore.delete(linkKeys);
+      ltiDatastore.delete(gradeKeys);
+      ltiDatastore.delete(resourceKeys);
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "Exception cascading LTI rows on account deletion", e);
     }
 
     // Now flush the user data object both from the datastore and the

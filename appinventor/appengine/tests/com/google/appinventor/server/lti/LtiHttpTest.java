@@ -23,6 +23,17 @@ public class LtiHttpTest extends TestCase {
     assertFalse(LtiHttp.isForbiddenHost(InetAddress.getByName("::1")));
   }
 
+  /** Loopback is fetchable only in development, in every IPv4 and IPv6 notation. */
+  public void testLoopbackFetchableOnlyInDevelopment() throws Exception {
+    for (String loopback : new String[] {"127.0.0.1", "::1", "::127.0.0.1", "::ffff:127.0.0.1"}) {
+      assertFalse("production must refuse " + loopback,
+          LtiHttp.hostAllowedForFetch(InetAddress.getByName(loopback), false));
+      assertTrue("development may reach " + loopback,
+          LtiHttp.hostAllowedForFetch(InetAddress.getByName(loopback), true));
+    }
+    assertTrue(LtiHttp.hostAllowedForFetch(InetAddress.getByName("8.8.8.8"), false));
+  }
+
   /** A public host is reachable. */
   public void testPublicHostIsAllowed() throws Exception {
     assertFalse(LtiHttp.isForbiddenHost(InetAddress.getByName("8.8.8.8")));
@@ -97,5 +108,16 @@ public class LtiHttpTest extends TestCase {
     assertTrue(LtiHttp.transportAllowed("http", true));
     assertFalse(LtiHttp.transportAllowed("http", false));
     assertFalse(LtiHttp.transportAllowed("ftp", true));
+  }
+
+  /** A browser-facing URL must be https, or http only when insecure transport is allowed. */
+  public void testBrowserUrlAllowed() {
+    assertTrue(LtiHttp.browserUrlAllowed("https://lms.example.org/auth", false));
+    assertTrue(LtiHttp.browserUrlAllowed("https://lms.example.org/auth", true));
+    assertFalse(LtiHttp.browserUrlAllowed("http://lms.example.org/auth", false));
+    assertTrue(LtiHttp.browserUrlAllowed("http://lms.example.org/auth", true));
+    // A malformed URL or a non http(s) scheme is refused.
+    assertFalse(LtiHttp.browserUrlAllowed("not a url", true));
+    assertFalse(LtiHttp.browserUrlAllowed("ftp://lms.example.org/auth", true));
   }
 }

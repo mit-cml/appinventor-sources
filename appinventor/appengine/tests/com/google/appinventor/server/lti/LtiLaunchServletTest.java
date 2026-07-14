@@ -99,6 +99,12 @@ public class LtiLaunchServletTest extends TestCase {
         .equals(LtiLaunchServlet.ltiAccountKey("http://x.org", "a.b")));
   }
 
+  /** A newline in a platform value cannot shift a field boundary onto another identity. */
+  public void testAccountKeyResistsDelimiterShift() {
+    assertFalse(LtiLaunchServlet.ltiAccountKey("http://x.org", "a\nb")
+        .equals(LtiLaunchServlet.ltiAccountKey("http://x.org\na", "b")));
+  }
+
   /** A missing subject still produces a stable, valid key. */
   public void testAccountKeyHandlesMissingSubject() {
     String key = LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "");
@@ -112,6 +118,19 @@ public class LtiLaunchServletTest extends TestCase {
         LtiLaunchServlet.ltiAccountKey("http://moodle.example.org", "42"));
   }
 
+  /** The subject must be a present ASCII string, so a malformed value cannot merge accounts. */
+  public void testUsableSubject() {
+    assertTrue(LtiLaunchServlet.isUsableSubject("2a9f-c3"));
+    assertFalse(LtiLaunchServlet.isUsableSubject(""));
+    assertFalse("a lone surrogate must be refused",
+        LtiLaunchServlet.isUsableSubject(new JSONObject("{\"s\":\"\\ud800\"}").getString("s")));
+    StringBuilder tooLong = new StringBuilder();
+    for (int i = 0; i < 256; i++) {
+      tooLong.append('a');
+    }
+    assertFalse(LtiLaunchServlet.isUsableSubject(tooLong.toString()));
+  }
+
   /** A course or institution instructor, administrator, or teaching assistant may add work. */
   public void testInstructorRolesAreRecognized() {
     assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
@@ -120,6 +139,10 @@ public class LtiLaunchServletTest extends TestCase {
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Administrator")));
     assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
         "http://purl.imsglobal.org/vocab/lis/v2/membership/Instructor#TeachingAssistant")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership/Administrator#SystemAdministrator")));
+    assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
+        "http://purl.imsglobal.org/vocab/lis/v2/membership/Administrator#Administrator")));
     assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator")));
     assertTrue(LtiLaunchServlet.isInstructor(rolesClaim(
@@ -150,15 +173,47 @@ public class LtiLaunchServletTest extends TestCase {
         new JSONObject().put(ROLES, "Instructor")));
   }
 
-  /** The audience check accepts a matching string or array entry and refuses anything else. */
+  /**
+   * The audience check accepts this tool as the string audience or as every array entry, and
+   * rejects an array that carries any other, untrusted audience (Security Framework 5.1.3).
+   */
   public void testAudienceContains() {
     assertTrue(LtiLaunchServlet.audienceContains("client-a", "client-a"));
-    assertTrue(LtiLaunchServlet.audienceContains(
+    // An array whose only entry is this tool is accepted.
+    assertTrue(LtiLaunchServlet.audienceContains(new JSONArray().put("client-a"), "client-a"));
+    // An array carrying an additional, untrusted audience is rejected.
+    assertFalse(LtiLaunchServlet.audienceContains(
         new JSONArray().put("other").put("client-a"), "client-a"));
     assertFalse(LtiLaunchServlet.audienceContains("other", "client-a"));
     assertFalse(LtiLaunchServlet.audienceContains(new JSONArray().put("other"), "client-a"));
+    assertFalse(LtiLaunchServlet.audienceContains(new JSONArray(), "client-a"));
     assertFalse(LtiLaunchServlet.audienceContains("client-a", ""));
     assertFalse(LtiLaunchServlet.audienceContains(null, "client-a"));
+  }
+
+  /**
+   * A gradable AGS claim names a specific line item and grants the score scope. Anything else
+   * (no line item, no score scope, or no scope array) is not gradable, so no grade context is
+   * stored and the tool never posts to a line item the launch did not authorize.
+   */
+  public void testGradableAgs() {
+    String score = "https://purl.imsglobal.org/spec/lti-ags/scope/score";
+    assertTrue(LtiLaunchServlet.gradableAgs(new JSONObject()
+        .put("lineitem", "https://lms.example.org/li/1")
+        .put("scope", new JSONArray()
+            .put("https://purl.imsglobal.org/spec/lti-ags/scope/lineitem").put(score))));
+    // A line item but no score scope granted.
+    assertFalse(LtiLaunchServlet.gradableAgs(new JSONObject()
+        .put("lineitem", "https://lms.example.org/li/1")
+        .put("scope", new JSONArray()
+            .put("https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly"))));
+    // The score scope but no specific line item.
+    assertFalse(LtiLaunchServlet.gradableAgs(new JSONObject()
+        .put("scope", new JSONArray().put(score))));
+    // No scope array at all.
+    assertFalse(LtiLaunchServlet.gradableAgs(new JSONObject()
+        .put("lineitem", "https://lms.example.org/li/1")));
+    assertFalse(LtiLaunchServlet.gradableAgs(null));
   }
 
   /** The timing check requires a numeric iat that is not in the future and a live exp. */
@@ -175,6 +230,25 @@ public class LtiLaunchServletTest extends TestCase {
     assertFalse("iat too new", LtiLaunchServlet.tokenTimeValid(timing(now + 61, now + 3600), now));
     assertTrue("exp at edge", LtiLaunchServlet.tokenTimeValid(timing(now, now - 60), now));
     assertFalse("exp too old", LtiLaunchServlet.tokenTimeValid(timing(now, now - 61), now));
+    // A not before in the future is refused, one now or past is fine (RFC 7519 4.1.5).
+    assertFalse("future nbf",
+        LtiLaunchServlet.tokenTimeValid(timing(now, now + 3600).put("nbf", now + 1000), now));
+    assertTrue("present nbf",
+        LtiLaunchServlet.tokenTimeValid(timing(now, now + 3600).put("nbf", now), now));
+    assertFalse("nbf too new",
+        LtiLaunchServlet.tokenTimeValid(timing(now, now + 3600).put("nbf", now + 61), now));
+  }
+
+  /** A present authorized party must name this tool, and multiple audiences require one. */
+  public void testAuthorizedPartyOk() {
+    assertTrue("single aud no azp", LtiLaunchServlet.authorizedPartyOk("client", "", "client"));
+    assertTrue("azp names tool", LtiLaunchServlet.authorizedPartyOk("client", "client", "client"));
+    assertFalse("azp wrong", LtiLaunchServlet.authorizedPartyOk("client", "other", "client"));
+    JSONArray multi = new JSONArray().put("client").put("other");
+    assertFalse("multi aud no azp", LtiLaunchServlet.authorizedPartyOk(multi, "", "client"));
+    assertTrue("multi aud azp ok", LtiLaunchServlet.authorizedPartyOk(multi, "client", "client"));
+    assertFalse("multi aud azp wrong",
+        LtiLaunchServlet.authorizedPartyOk(multi, "other", "client"));
   }
 
   private static JSONObject timing(long iat, long exp) {

@@ -49,6 +49,8 @@ public class LtiStateTest extends TestCase {
     LtiState.DeepLink first = LtiState.consumeDeepLink(token);
     assertNotNull(first);
     assertEquals("https://platform.example.org/return", first.returnUrl);
+    assertEquals("opaque-data", first.data);
+    assertEquals("deployment-1", first.deploymentId);
     assertEquals("http://platform.example.org", first.issuer);
     assertEquals("teacher-42", first.teacherUserId);
 
@@ -56,5 +58,29 @@ public class LtiStateTest extends TestCase {
     assertNull(LtiState.consumeDeepLink(token));
     assertNull(LtiState.consumeDeepLink("no-such-token"));
     assertNull(LtiState.consumeDeepLink(null));
+  }
+
+  /**
+   * The cap keeps the maps bounded under a flood of login initiations. Over the cap the oldest
+   * entries are dropped down to evictTo, and a freshly created entry (far from the oldest)
+   * survives; under the cap nothing is removed.
+   */
+  public void testCapOldestEvictsOldestDownToEvictTo() {
+    java.util.Map<String, Long> map = new java.util.concurrent.ConcurrentHashMap<>();
+    // Timestamps equal the age rank: k1 is oldest, k5 is newest.
+    for (long i = 1; i <= 5; i++) {
+      map.put("k" + i, i);
+    }
+    // Cap 3, evict down to 2: over the cap, so the three oldest go and the two newest remain.
+    LtiState.capOldest(map, v -> v, 3, 2);
+    assertEquals(2, map.size());
+    assertTrue(map.containsKey("k4"));
+    assertTrue(map.containsKey("k5"));
+    assertFalse(map.containsKey("k1"));
+    assertFalse(map.containsKey("k2"));
+    assertFalse(map.containsKey("k3"));
+    // Under the cap it is a no op.
+    LtiState.capOldest(map, v -> v, 10, 5);
+    assertEquals(2, map.size());
   }
 }

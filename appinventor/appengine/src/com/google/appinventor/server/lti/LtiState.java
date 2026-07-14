@@ -5,10 +5,15 @@
 
 package com.google.appinventor.server.lti;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.ToLongFunction;
+import java.util.stream.Collectors;
 
 /**
  * Server side store for the short lived context of an in flight LTI exchange.
@@ -18,6 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * SameSite cookie set earlier would not be returned. Single instance dev spike
  * only.
  *
+ * <p>The state is single use but not yet bound to the browser that began the
+ * login, so a captured state and token could be replayed into another browser.
+ * Binding the state to a SameSite None cookie closes this and is tracked as a
+ * known limitation before any production use.
+ *
  * @author zikun@stanford.edu (Zikun Zhu)
  */
 final class LtiState {
@@ -26,6 +36,13 @@ final class LtiState {
   private static final int TOKEN_BYTES = 24;
   private static final long TTL_MILLIS = 10 * 60 * 1000L;
   private static final long DEEP_LINK_TTL_MILLIS = 30 * 60 * 1000L;
+  // Bound the in memory maps. The state map is filled by unauthenticated login initiations,
+  // which create entries faster than the TTL sweep removes them, so without a cap a flood
+  // grows memory without limit. When the cap is exceeded the oldest entries are dropped down
+  // to EVICT_TO (an in flight login just created its entry and is far from the oldest), which
+  // degrades gracefully under a flood instead of exhausting memory.
+  private static final int MAX_ENTRIES = 50_000;
+  private static final int EVICT_TO = 45_000;
   private static final Map<String, Entry> STORE = new ConcurrentHashMap<>();
   private static final Map<String, DeepLink> DEEP_LINKS = new ConcurrentHashMap<>();
 
@@ -141,5 +158,27 @@ final class LtiState {
     long now = System.currentTimeMillis();
     STORE.entrySet().removeIf(en -> now - en.getValue().ts > TTL_MILLIS);
     DEEP_LINKS.entrySet().removeIf(en -> now - en.getValue().ts > DEEP_LINK_TTL_MILLIS);
+    capOldest(STORE, e -> e.ts, MAX_ENTRIES, EVICT_TO);
+    capOldest(DEEP_LINKS, d -> d.ts, MAX_ENTRIES, EVICT_TO);
+  }
+
+  /**
+   * Drops the oldest entries once a map exceeds {@code maxEntries}, down to {@code evictTo}.
+   * The hysteresis means the O(n log n) selection runs at most once every
+   * {@code maxEntries - evictTo} inserts rather than on every insert once at the cap.
+   */
+  @VisibleForTesting
+  static <V> void capOldest(Map<String, V> map, ToLongFunction<V> tsOf, int maxEntries,
+      int evictTo) {
+    int size = map.size();
+    if (size <= maxEntries) {
+      return;
+    }
+    map.entrySet().stream()
+        .sorted(Comparator.comparingLong(en -> tsOf.applyAsLong(en.getValue())))
+        .limit(Math.max(0L, (long) size - evictTo))
+        .map(Map.Entry::getKey)
+        .collect(Collectors.toList())
+        .forEach(map::remove);
   }
 }

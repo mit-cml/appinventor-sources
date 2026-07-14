@@ -347,7 +347,8 @@ public class StoredData {
   // A durable link from a launching LTI identity (the issuer and subject the
   // platform asserts) to the App Inventor account provisioned for it, so the
   // account stays stable and can later be linked to an existing account by an
-  // explicit opt in. The id is the issuer and subject joined by a newline.
+  // explicit opt in. The id is the issuer and subject, each length prefixed then
+  // joined (see ObjectifyStorageIo.ltiKey), so no platform value shifts a field.
   @Unindexed
   public static final class LtiUserLinkData {
     @Id public String id;
@@ -366,8 +367,9 @@ public class StoredData {
 
   // The per assignment resource link. Maps one user's assignment (issuer,
   // deployment, and resource link id) to the App Inventor project forked for
-  // it, so a relaunch finds the same project instead of forking again. The id
-  // joins the user id and those three values.
+  // it, so a relaunch finds the same project instead of forking again. The id is
+  // the user id and those three values, each length prefixed then joined (see
+  // ObjectifyStorageIo.ltiKey).
   @Unindexed
   public static final class LtiResourceLinkData {
     @Id public String id;
