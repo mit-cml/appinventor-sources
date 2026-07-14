@@ -59,6 +59,13 @@ public class LtiSubmitServlet extends HttpServlet {
       resp.getWriter().println("Not signed in. Launch the activity from the LMS first.");
       return;
     }
+    if (userInfo.getReadOnly()) {
+      // A read-only session (for example an admin viewing another account) must not act
+      // as the student and push a grade line item to the LMS on their behalf.
+      resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      resp.getWriter().println("This session is read-only and cannot submit to the LMS.");
+      return;
+    }
     long projectId;
     try {
       projectId = Long.parseLong(req.getParameter("projectId"));

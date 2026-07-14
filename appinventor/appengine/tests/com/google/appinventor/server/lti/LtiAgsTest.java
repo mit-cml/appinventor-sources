@@ -27,4 +27,17 @@ public class LtiAgsTest extends TestCase {
     assertEquals("https://lms.example.org/lineitems/1/lineitem/scores?type_id=1",
         LtiAgs.scoresUrl("https://lms.example.org/lineitems/1/lineitem?type_id=1"));
   }
+
+  /**
+   * Consecutive submissions get strictly increasing timestamps, even within one millisecond, so
+   * the platform can order them and does not ignore a later one as not newer than the last.
+   */
+  public void testTimestampsAreStrictlyIncreasing() {
+    String a = LtiAgs.nextTimestamp();
+    String b = LtiAgs.nextTimestamp();
+    String c = LtiAgs.nextTimestamp();
+    // The format is fixed width ISO 8601 UTC, so lexical order matches chronological order.
+    assertTrue(a + " < " + b, a.compareTo(b) < 0);
+    assertTrue(b + " < " + c, b.compareTo(c) < 0);
+  }
 }

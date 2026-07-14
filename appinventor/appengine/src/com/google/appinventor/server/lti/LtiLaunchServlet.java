@@ -48,6 +48,8 @@ public class LtiLaunchServlet extends HttpServlet {
   private static final String LTI = "https://purl.imsglobal.org/spec/lti/claim/";
   private static final String LTI_DL = "https://purl.imsglobal.org/spec/lti-dl/claim/";
   private static final String AGS = "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint";
+  private static final String AGS_SCORE_SCOPE =
+      "https://purl.imsglobal.org/spec/lti-ags/scope/score";
   private static final String LIS = "http://purl.imsglobal.org/vocab/lis/v2/";
   private static final long CLOCK_SKEW_SECONDS = 60;
   private static final int MAX_PROJECT_NAME_LENGTH = 40;
@@ -94,8 +96,13 @@ public class LtiLaunchServlet extends HttpServlet {
         return;
       }
       // The token is proven, so spend the one time state now. A failure before
-      // this point leaves the state for the honest platform to retry.
-      LtiState.consume(state);
+      // this point leaves the state for the honest platform to retry. If the state
+      // lapsed between the peek and here (a slow verification), consume returns null
+      // and the launch is rejected rather than proceeding on an expired state.
+      if (LtiState.consume(state) == null) {
+        fail(resp, "Invalid or expired state");
+        return;
+      }
 
       if (!platform.issuer.equals(claims.optString("iss"))) {
         fail(resp, "Issuer mismatch");
@@ -106,9 +113,9 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Audience mismatch");
         return;
       }
-      if (aud instanceof JSONArray && ((JSONArray) aud).length() > 1
-          && !platform.clientId.equals(claims.optString("azp"))) {
-        // With more than one audience the authorized party must name this tool.
+      if (!authorizedPartyOk(aud, claims.optString("azp", ""), platform.clientId)) {
+        // A present authorized party must name this tool, and more than one
+        // audience requires one (Security Framework 5.1.3).
         fail(resp, "Authorized party mismatch");
         return;
       }
@@ -135,9 +142,11 @@ public class LtiLaunchServlet extends HttpServlet {
         fail(resp, "Unknown deployment id");
         return;
       }
-      if (claims.optString("sub").isEmpty()) {
-        // Without a subject every launcher would share one provisioned account.
-        fail(resp, "Missing subject");
+      if (!isUsableSubject(claims.optString("sub"))) {
+        // The subject provisions the account, so it must be present and, per the
+        // Security Framework, an ASCII string within the length limit. A malformed
+        // subject could otherwise collapse two identities onto one account.
+        fail(resp, "Missing or invalid subject");
         return;
       }
       if (claims.optJSONArray(LTI + "roles") == null) {
@@ -188,7 +197,7 @@ public class LtiLaunchServlet extends HttpServlet {
       if (projectId > 0) {
         pointIdeAtProject(user.getUserId(), projectId);
         JSONObject ags = claims.optJSONObject(AGS);
-        if (ags != null) {
+        if (gradableAgs(ags)) {
           LtiGradeContext.put(projectId, user.getUserId(), platform.issuer,
               ags.optString("lineitem", ""), sub);
         }
@@ -231,14 +240,16 @@ public class LtiLaunchServlet extends HttpServlet {
   /**
    * A stable App Inventor account id for a launch, derived from the full platform
    * issuer and subject so two distinct launchers never share an account and two
-   * racing first launches converge on one. The digest avoids the collisions a
-   * lossy character replacement would cause on platforms whose subjects contain
-   * punctuation.
+   * racing first launches converge on one. Each part is length prefixed before the
+   * digest, the same encoding ObjectifyStorageIo.ltiKey uses for the durable link,
+   * so a delimiter inside a platform supplied issuer or subject cannot shift the
+   * boundary and collapse two identities onto one account.
    */
   @VisibleForTesting
   static String ltiUserId(String issuer, String sub) {
     try {
-      return "lti-" + LtiJwt.hex(LtiJwt.sha256(issuer + "\n" + sub)).substring(0, 32);
+      String combined = issuer.length() + ":" + issuer + sub.length() + ":" + sub;
+      return "lti-" + LtiJwt.hex(LtiJwt.sha256(combined)).substring(0, 32);
     } catch (Exception e) {
       throw new IllegalStateException("SHA-256 is unavailable", e);
     }
@@ -250,7 +261,30 @@ public class LtiLaunchServlet extends HttpServlet {
     return ltiUserId(issuer, sub) + "@lti.invalid";
   }
 
-  /** Whether the token audience names this tool, as the audience string or one array entry. */
+  /**
+   * Whether a platform subject is usable to provision an account, present and an
+   * ASCII string within the Security Framework length limit, so a malformed value
+   * cannot collapse two distinct identities onto one account through lossy encoding.
+   */
+  @VisibleForTesting
+  static boolean isUsableSubject(String sub) {
+    if (sub.isEmpty() || sub.length() > 255) {
+      return false;
+    }
+    for (int i = 0; i < sub.length(); i++) {
+      char c = sub.charAt(i);
+      if (c < 0x20 || c > 0x7e) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Whether the token audience is acceptable: the audience string is this tool, or every entry of
+   * the audience array is this tool. An array carrying any other, untrusted audience is rejected
+   * (Security Framework 5.1.3), since this single tenant tool trusts no audience but its own.
+   */
   @VisibleForTesting
   static boolean audienceContains(Object aud, String clientId) {
     if (clientId == null || clientId.isEmpty()) {
@@ -261,13 +295,56 @@ public class LtiLaunchServlet extends HttpServlet {
     }
     if (aud instanceof JSONArray) {
       JSONArray a = (JSONArray) aud;
+      if (a.length() == 0) {
+        return false;
+      }
       for (int i = 0; i < a.length(); i++) {
-        if (clientId.equals(a.optString(i))) {
-          return true;
+        // Every audience must name this tool. The tool trusts no other audience, and the
+        // Security Framework 5.1.3 requires rejecting a token that carries an additional
+        // audience the tool does not trust.
+        if (!clientId.equals(a.optString(i))) {
+          return false;
         }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Whether the AGS endpoint claim authorizes a gradable context: it must name a specific line
+   * item and grant the score scope. Otherwise no grade context is stored, so the tool never later
+   * mints a token and posts to a line item the launch did not authorize (AGS 3.1).
+   */
+  @VisibleForTesting
+  static boolean gradableAgs(JSONObject ags) {
+    if (ags == null || ags.optString("lineitem", "").isEmpty()) {
+      return false;
+    }
+    JSONArray scopes = ags.optJSONArray("scope");
+    if (scopes == null) {
+      return false;
+    }
+    for (int i = 0; i < scopes.length(); i++) {
+      if (AGS_SCORE_SCOPE.equals(scopes.optString(i))) {
+        return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Whether the authorized party claim is acceptable for the audience. A present
+   * azp must name this tool, and more than one audience requires one, per the
+   * Security Framework 5.1.3.
+   */
+  @VisibleForTesting
+  static boolean authorizedPartyOk(Object aud, String azp, String clientId) {
+    boolean present = azp != null && !azp.isEmpty();
+    if (aud instanceof JSONArray && ((JSONArray) aud).length() > 1 && !present) {
+      return false;
+    }
+    return !present || clientId.equals(azp);
   }
 
   private void fail(HttpServletResponse resp, String message) throws IOException {
@@ -292,7 +369,9 @@ public class LtiLaunchServlet extends HttpServlet {
   /**
    * Gives a learner their own project for the assignment, once per resource link,
    * so a relaunch finds the same project after a rename or a restart. Returns the
-   * project id, or -1 for an instructor or a failure, which never blocks the launch.
+   * project id, or -1 for an instructor, who needs no student project. A genuine
+   * failure is thrown rather than returned, so the launch surfaces a retry page
+   * instead of silently dropping the student into an empty IDE with no assignment.
    */
   private long maybeForkStarterProject(User user, JSONObject claims) {
     try {
@@ -307,9 +386,16 @@ public class LtiLaunchServlet extends HttpServlet {
       if (!resourceLinkId.isEmpty()) {
         long linked = LtiResourceLinks.get(userId, issuer, deploymentId, resourceLinkId);
         if (linked > 0 && storageIo.getProjects(userId).contains(linked)) {
-          LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
-              + " for this assignment");
-          return linked;
+          UserProject linkedProject = storageIo.getUserProject(userId, linked);
+          if (linkedProject != null && !linkedProject.isInTrash()) {
+            LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
+                + " for this assignment");
+            return linked;
+          }
+          // The link resolves to a project the user still owns but has moved to
+          // trash, or one whose data was purged while its membership row lingers,
+          // so fork a fresh one rather than point the IDE at a project it will
+          // not open. The template picker filters a trashed project the same way.
         }
       }
       // Not transactional across the read and the create, so two launches of a
@@ -321,8 +407,11 @@ public class LtiLaunchServlet extends HttpServlet {
       }
       return projectId;
     } catch (Exception e) {
-      LOG.log(Level.WARNING, "LTI fork: could not create the student project (continuing)", e);
-      return -1;
+      // A student reached here (an instructor returned above), so the fork genuinely failed.
+      // Surface it to the launch handler, whose catch shows a retry page, rather than sending
+      // the student to an empty IDE that looks like the launch succeeded.
+      LOG.log(Level.WARNING, "LTI fork: could not create the student project", e);
+      throw new RuntimeException("LTI fork failed", e);
     }
   }
 
@@ -405,7 +494,11 @@ public class LtiLaunchServlet extends HttpServlet {
       general.put(SettingsConstants.USER_AUTOLOAD_PROJECT, "true");
       storageIo.storeSettings(userId, settings.toString());
     } catch (Exception e) {
+      // Do not swallow this. If the current project setting is not stored, the IDE opens the
+      // previous project rather than this assignment, so surface it as a failed launch (the
+      // relaunch is idempotent and re-points at the same resource-link project).
       LOG.log(Level.WARNING, "LTI launch: could not point the IDE at project " + projectId, e);
+      throw new RuntimeException("could not point the IDE at project " + projectId, e);
     }
   }
 
@@ -432,21 +525,23 @@ public class LtiLaunchServlet extends HttpServlet {
   /** Whether a role value grants the instructor flow, by an exact IMS vocabulary match. */
   private static boolean isInstructorRole(String role) {
     if (role.equals("Instructor") || role.equals("Administrator")) {
-      return true;
+      return true;   // the deprecated simple names
     }
     int hash = role.indexOf('#');
     if (hash < 0 || !role.startsWith(LIS)) {
       return false;
     }
     String vocab = role.substring(LIS.length(), hash);
-    String fragment = role.substring(hash + 1);
-    if (fragment.equals("Instructor") || fragment.equals("Administrator")) {
-      // A principal Instructor or Administrator in a context, institution, or system role.
-      return vocab.equals("membership") || vocab.equals("institution/person")
-          || vocab.equals("system/person");
+    // Any sub role under the Instructor or Administrator context vocabulary, whatever the
+    // fragment, so the self named membership/Administrator#Administrator is covered too.
+    if (vocab.equals("membership/Instructor") || vocab.equals("membership/Administrator")) {
+      return true;
     }
-    // A sub role of Instructor, which lives only under the membership/Instructor vocabulary.
-    return vocab.equals("membership/Instructor");
+    // A core context, institution, or system principal named Instructor or Administrator.
+    String fragment = role.substring(hash + 1);
+    return (fragment.equals("Instructor") || fragment.equals("Administrator"))
+        && (vocab.equals("membership") || vocab.equals("institution/person")
+            || vocab.equals("system/person"));
   }
 
   /** Whether the token iat and exp are present and live within the clock skew. */
@@ -459,6 +554,10 @@ public class LtiLaunchServlet extends HttpServlet {
     }
     if (iat > nowSeconds + CLOCK_SKEW_SECONDS) {
       return false;
+    }
+    long nbf = claims.optLong("nbf", 0);
+    if (nbf > 0 && nbf > nowSeconds + CLOCK_SKEW_SECONDS) {
+      return false;   // a token must not be processed before its not before time (RFC 7519 4.1.5)
     }
     return exp >= nowSeconds - CLOCK_SKEW_SECONDS;
   }
@@ -556,7 +655,9 @@ public class LtiLaunchServlet extends HttpServlet {
     JSONObject dls = claims.optJSONObject(LTI_DL + "deep_linking_settings");
     String dlToken = LtiState.createDeepLink(
         (dls == null) ? "" : dls.optString("deep_link_return_url", ""),
-        (dls == null) ? "" : dls.optString("data", ""),
+        // Preserve presence: null means the request had no data property, so the response omits
+        // it; a present value (even empty) is echoed back per Deep Linking 4.5.
+        (dls == null || !dls.has("data")) ? null : dls.optString("data", ""),
         claims.optString(LTI + "deployment_id", ""),
         claims.optString("iss", ""),
         teacher.getUserId());

@@ -8,6 +8,7 @@ package com.google.appinventor.server.lti;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData;
+import com.google.appinventor.shared.rpc.project.UserProject;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -47,7 +48,10 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
     try {
       String templateId = req.getParameter("template_project_id");
       LtiState.DeepLink dl = LtiState.consumeDeepLink(req.getParameter("dl"));
-      if (templateId == null || templateId.isEmpty() || dl == null || !isHttpUrl(dl.returnUrl)) {
+      if (templateId == null || templateId.isEmpty() || dl == null || !isHttpUrl(dl.returnUrl)
+          || !LtiHttp.browserUrlAllowed(dl.returnUrl, LtiConfig.allowInsecure())) {
+        // The signed response is auto posted to returnUrl, so it must use an allowed transport
+        // (https outside development) in addition to being a well formed http(s) URL.
         invalidSelection(resp);
         return;
       }
@@ -66,6 +70,13 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
         long pid = Long.parseLong(templateId);
         String owner = storageIo.getProjectUserId(pid);
         if (owner == null || !owner.equals(dl.teacherUserId)) {
+          invalidSelection(resp);
+          return;
+        }
+        UserProject selected = storageIo.getUserProject(owner, pid);
+        if (selected == null || selected.isInTrash()) {
+          // A template trashed or purged after the picker was rendered must not be signed as the
+          // assignment, since a student launch could not open it.
           invalidSelection(resp);
           return;
         }
@@ -105,7 +116,9 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
           .put(LTI + "message_type", "LtiDeepLinkingResponse")
           .put(LTI + "version", "1.3.0")
           .put(LTI_DL + "content_items", contentItems);
-      if (!dl.data.isEmpty()) {
+      if (dl.data != null) {
+        // Echo data whenever it was present in the request, including an empty string, per
+        // Deep Linking 4.5 (null means it was absent).
         payload.put(LTI_DL + "data", dl.data);
       }
 

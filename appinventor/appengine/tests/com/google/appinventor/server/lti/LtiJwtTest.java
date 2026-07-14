@@ -161,4 +161,70 @@ public class LtiJwtTest extends TestCase {
       // expected
     }
   }
+
+  /** A JWK for the right key id but marked for encryption does not verify a launch. */
+  public void testJwkMarkedForEncryptionIsRejected() throws Exception {
+    JSONObject header =
+        new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", "test-kid");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    // The same key material, published use "enc", must not be selected to verify a
+    // signature (RFC 7517).
+    JSONObject encJwks = new JSONObject(jwks);
+    encJwks.getJSONArray("keys").getJSONObject(0).put("use", "enc");
+    try {
+      LtiJwt.verify(jwt, encJwks.toString());
+      fail("expected a key marked for encryption to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
+
+  /** A JWK whose key_ops is present but not an array is malformed and must not be used. */
+  public void testJwkWithMalformedKeyOpsIsRejected() throws Exception {
+    JSONObject header =
+        new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", "test-kid");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    // key_ops must be an array (RFC 7517 4.3). A present but malformed value, here a bare string,
+    // must not be treated as unrestricted, so the key is not selected to verify.
+    JSONObject badJwks = new JSONObject(jwks);
+    badJwks.getJSONArray("keys").getJSONObject(0).put("key_ops", "verify");
+    try {
+      LtiJwt.verify(jwt, badJwks.toString());
+      fail("expected a key with malformed key_ops to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
+
+  /** A JWK whose key_ops is a well formed array that includes verify stays usable. */
+  public void testJwkWithKeyOpsVerifyIsAccepted() throws Exception {
+    JSONObject header =
+        new JSONObject().put("alg", "RS256").put("typ", "JWT").put("kid", "test-kid");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    // A well formed key_ops that includes "verify" leaves the key usable for verification.
+    JSONObject okJwks = new JSONObject(jwks);
+    okJwks.getJSONArray("keys").getJSONObject(0).put("key_ops", new JSONArray().put("verify"));
+    JSONObject claims = LtiJwt.verify(jwt, okJwks.toString());
+    assertEquals("student-1", claims.getString("sub"));
+  }
+
+  /** A 1024 bit RSA key is refused for RS256 verification (RFC 7518 requires 2048 or more). */
+  public void testUndersizedRsaKeyIsRejected() throws Exception {
+    KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+    gen.initialize(1024);
+    KeyPair weak = gen.generateKeyPair();
+    String weakJwks = LtiJwt.publicJwks((RSAPublicKey) weak.getPublic(), "test-kid");
+    JSONObject header = new JSONObject().put("alg", "RS256").put("kid", "test-kid");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, weak.getPrivate());
+    try {
+      LtiJwt.verify(jwt, weakJwks);
+      fail("expected an undersized RSA key to be rejected");
+    } catch (Exception expected) {
+      // expected
+    }
+  }
 }

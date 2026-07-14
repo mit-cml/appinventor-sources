@@ -105,6 +105,19 @@ final class LtiHttp {
   }
 
   /**
+   * Whether a browser-facing URL, an authorization endpoint or a Deep Linking return URL, uses an
+   * allowed transport, so state, tokens, and signed content are not redirected or auto posted over
+   * plain http outside development (LTI Core 3.5).
+   */
+  static boolean browserUrlAllowed(String url, boolean allowInsecure) {
+    try {
+      return transportAllowed(new URL(url).getProtocol(), allowInsecure);
+    } catch (java.net.MalformedURLException e) {
+      return false;
+    }
+  }
+
+  /**
    * Whether the tool may fetch from a resolved host. A public host is allowed, a
    * private or internal one is refused, and loopback is allowed only in
    * development, so a production tool cannot be pointed at a loopback service.
@@ -112,8 +125,13 @@ final class LtiHttp {
   @VisibleForTesting
   static boolean hostAllowedForFetch(InetAddress address, boolean allowInsecure)
       throws IOException {
-    // Reduce a transitional IPv6 first, so a literal that embeds loopback is
-    // gated by the dev flag rather than slipping past as a non loopback host.
+    // Loopback is reachable only in development. Judge the original address first,
+    // so IPv6 loopback ::1 is caught before the embedded IPv4 reduction rewrites it
+    // to a non loopback literal. Then judge the reduced form too, so a transitional
+    // literal that carries loopback such as ::127.0.0.1 is gated the same way.
+    if (address.isLoopbackAddress()) {
+      return allowInsecure;
+    }
     InetAddress host = reduceEmbeddedIpv4(address);
     if (host.isLoopbackAddress()) {
       return allowInsecure;

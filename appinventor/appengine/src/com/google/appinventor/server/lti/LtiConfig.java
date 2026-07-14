@@ -15,10 +15,12 @@ import com.google.appinventor.server.storage.StoredData;
  * Management System (for example Moodle) launch a student into App Inventor and
  * receive a grade back.
  *
- * <p>The platform endpoints default to a local Moodle on port 8080. The client
- * id and deployment id are assigned by the platform when an administrator
- * registers this tool, so they are read from flags and left empty by default.
- * The tool key pair is generated on first use and kept in the datastore.
+ * <p>The runtime platform registry lives in the datastore. Flags seed a single
+ * default platform (endpoints default to a local Moodle on port 8080) into it on
+ * the first lookup, and dynamic registration writes additional platforms directly,
+ * so the client id and deployment id come from the datastore row rather than being
+ * read from flags at each launch. The tool key pair is generated on first use and
+ * kept in the datastore.
  *
  * @author zikun@stanford.edu (Zikun Zhu)
  */

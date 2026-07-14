@@ -7,6 +7,7 @@ package com.google.appinventor.server.lti;
 
 import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.server.util.UriBuilder;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 
@@ -37,7 +38,11 @@ public class LtiLoginServlet extends HttpServlet {
   private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     String iss = req.getParameter("iss");
     if (iss == null || iss.isEmpty()) {
-      iss = LtiConfig.issuer();
+      // iss, login_hint, and target_link_uri are required login initiation parameters (Security
+      // Framework 5.1.1.1). A protocol request that omits iss is rejected rather than defaulted
+      // to a configured issuer.
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing iss");
+      return;
     }
     StoredData.LtiPlatformData platform = LtiConfig.platform(iss);
     if (platform == null) {
@@ -45,10 +50,29 @@ public class LtiLoginServlet extends HttpServlet {
       return;
     }
     String loginHint = req.getParameter("login_hint");
+    if (loginHint == null || loginHint.isEmpty()) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing login_hint");
+      return;
+    }
+    String targetLinkUri = req.getParameter("target_link_uri");
+    if (targetLinkUri == null || targetLinkUri.isEmpty()) {
+      // Presence only. The signed launch is what actually routes, so target_link_uri is not
+      // compared against a registered value here, which could reject a conformant launch.
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing target_link_uri");
+      return;
+    }
     String messageHint = req.getParameter("lti_message_hint");
-    String clientId = req.getParameter("client_id");
-    if (clientId == null || clientId.isEmpty()) {
-      clientId = platform.clientId;
+    String clientId = resolveClientId(req.getParameter("client_id"), platform.clientId);
+    if (clientId == null) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown client_id for issuer");
+      return;
+    }
+    if (!LtiHttp.browserUrlAllowed(platform.authEndpoint, LtiConfig.allowInsecure())) {
+      // The browser is about to be redirected here with state and nonce, so it must be https
+      // outside development (LTI Core 3.5).
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          "Insecure platform authorization endpoint");
+      return;
     }
     String[] stateNonce = LtiState.create(iss);
     String url = new UriBuilder(platform.authEndpoint)
@@ -64,5 +88,19 @@ public class LtiLoginServlet extends HttpServlet {
         .add("lti_message_hint", messageHint)
         .build();
     resp.sendRedirect(url);
+  }
+
+  /**
+   * The client_id to place in the authorization request, or null if the request must be
+   * rejected. The platform may echo client_id in the login initiation; when present it must
+   * equal the one registered for this issuer, so an arbitrary caller supplied value is never
+   * reflected into the authorization request. When absent the registered id is used.
+   */
+  @VisibleForTesting
+  static String resolveClientId(String supplied, String registered) {
+    if (supplied == null || supplied.isEmpty()) {
+      return registered;
+    }
+    return supplied.equals(registered) ? registered : null;
   }
 }

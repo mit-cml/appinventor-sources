@@ -145,15 +145,54 @@ final class LtiJwt {
       if (!"RSA".equals(k.optString("kty")) || !kid.equals(k.optString("kid"))) {
         continue;
       }
+      // Honor the JWK usage restrictions the platform sets, so a key it published
+      // for encryption or a different algorithm is not used to verify a launch
+      // (RFC 7517 sections 4.2 to 4.4). A field left absent means unrestricted.
+      if (!usableForRs256Verify(k)) {
+        continue;
+      }
       String n = k.optString("n", "");
       String e = k.optString("e", "");
       if (n.isEmpty() || e.isEmpty()) {
         continue;
       }
-      return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(
+      RSAPublicKey key = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(
           new RSAPublicKeySpec(new BigInteger(1, unb64u(n)), new BigInteger(1, unb64u(e))));
+      // RS256 requires at least a 2048 bit modulus (RFC 7518 section 3.3).
+      if (key.getModulus().bitLength() < 2048) {
+        continue;
+      }
+      return key;
     }
     return null;
+  }
+
+  /** Whether a JWK's declared use, key operations, and algorithm allow RS256 verification. */
+  private static boolean usableForRs256Verify(JSONObject k) {
+    String use = k.optString("use", "");
+    if (!use.isEmpty() && !"sig".equals(use)) {
+      return false;
+    }
+    String alg = k.optString("alg", "");
+    if (!alg.isEmpty() && !"RS256".equals(alg)) {
+      return false;
+    }
+    if (k.has("key_ops")) {
+      JSONArray keyOps = k.optJSONArray("key_ops");
+      if (keyOps == null) {
+        // Present but not an array is a malformed JWK (RFC 7517 section 4.3); do not use it.
+        return false;
+      }
+      for (int i = 0; i < keyOps.length(); i++) {
+        if ("verify".equals(keyOps.optString(i))) {
+          return true;
+        }
+      }
+      // key_ops is present and well formed but does not permit verification.
+      return false;
+    }
+    // key_ops absent, so the key is not restricted by operation.
+    return true;
   }
 
   /** Returns the unsigned big endian bytes of a BigInteger, without a leading sign byte. */

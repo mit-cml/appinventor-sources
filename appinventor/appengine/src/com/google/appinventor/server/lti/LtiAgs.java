@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.json.JSONObject;
 
@@ -32,8 +33,22 @@ final class LtiAgs {
   private static final long TOKEN_TTL_SECONDS = 300;
   private static final DateTimeFormatter TIMESTAMP =
       DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC);
+  private static final AtomicLong LAST_TIMESTAMP_MS = new AtomicLong(0);
 
   private LtiAgs() {}
+
+  /**
+   * A strictly increasing UTC timestamp at the millisecond resolution the score format carries,
+   * so two submissions never share a timestamp and the platform can order them, even when they
+   * fall in the same millisecond or the clock does not advance. AGS 2.0 orders scores by
+   * timestamp and may ignore one that is not newer than the last recorded score.
+   */
+  @VisibleForTesting
+  static String nextTimestamp() {
+    long now = System.currentTimeMillis();
+    long stamp = LAST_TIMESTAMP_MS.updateAndGet(prev -> Math.max(prev + 1, now));
+    return TIMESTAMP.format(Instant.ofEpochMilli(stamp));
+  }
 
   /**
    * Records that the given platform user has submitted, leaving the grade for
@@ -52,7 +67,7 @@ final class LtiAgs {
         .put("userId", ltiUserSub)
         .put("activityProgress", "Submitted")
         .put("gradingProgress", "PendingManual")
-        .put("timestamp", TIMESTAMP.format(Instant.now()));
+        .put("timestamp", nextTimestamp());
     LtiHttp.postWithBearer(scoresUrl(lineItemUrl), score.toString(), token,
         "application/vnd.ims.lis.v1.score+json");
   }
