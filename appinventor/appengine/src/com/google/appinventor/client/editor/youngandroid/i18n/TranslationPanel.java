@@ -44,9 +44,13 @@ public final class TranslationPanel extends Composite {
   private final FlexTable table;
   private final Map<String, Map<String, String>> translationValues;
   private final Map<String, TranslationEntry> translationEntries;
+  private final Map<String, DynamicTranslationEntry> dynamicTranslationEntries;
   private final List<String> languages;
   private final TextBox languageTextBox;
   private final ListBox languageListBox;
+  private final TextBox dynamicKeyTextBox;
+  private final TextBox dynamicBaseTextBox;
+  private final TextBox dynamicPlaceholdersTextBox;
   private String selectedLanguage;
   private static final String LOCATOR_SEPARATOR = "\u0000";
   private final Map<String, String> locatorToTranslationKey;
@@ -60,12 +64,16 @@ public final class TranslationPanel extends Composite {
     this.table = new FlexTable();
     this.translationValues = new HashMap<String, Map<String, String>>();
     this.translationEntries = new HashMap<String, TranslationEntry>();
+    this.dynamicTranslationEntries = new HashMap<String, DynamicTranslationEntry>();
     this.savedTranslationsLoaded = false;
     this.languages = new ArrayList<String>();
     this.languages.add(DEFAULT_LANGUAGE);
     this.selectedLanguage = DEFAULT_LANGUAGE;
     this.languageTextBox = new TextBox();
     this.languageListBox = new ListBox();
+    this.dynamicKeyTextBox = new TextBox();
+    this.dynamicBaseTextBox = new TextBox();
+    this.dynamicPlaceholdersTextBox = new TextBox();
     this.locatorToTranslationKey = new HashMap<String, String>();
 
     FlowPanel root = new FlowPanel();
@@ -103,6 +111,41 @@ public final class TranslationPanel extends Composite {
 
     root.add(title);
     root.add(description);
+
+    Label dynamicLabel = new Label("Dynamic translations:");
+    dynamicLabel.setStylePrimaryName("ode-i18n-subtitle");
+
+    Label dynamicHelpLabel = new Label(
+        "Create user-defined message keys for runtime lookup. "
+            + "Example key: welcome_message, base text: Hello {name}, placeholders: name");
+
+    dynamicKeyTextBox.setWidth("180px");
+    dynamicKeyTextBox.getElement().setPropertyString("placeholder", "welcome_message");
+
+    dynamicBaseTextBox.setWidth("320px");
+    dynamicBaseTextBox.getElement().setPropertyString("placeholder", "Hello {name}");
+
+    dynamicPlaceholdersTextBox.setWidth("180px");
+    dynamicPlaceholdersTextBox.getElement().setPropertyString("placeholder", "name,count");
+
+    Button addDynamicButton = new Button("Add Dynamic Key");
+    addDynamicButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        addDynamicTranslationEntry();
+      }
+    });
+
+    root.add(dynamicLabel);
+    root.add(dynamicHelpLabel);
+    root.add(new Label("Key:"));
+    root.add(dynamicKeyTextBox);
+    root.add(new Label("Base text:"));
+    root.add(dynamicBaseTextBox);
+    root.add(new Label("Placeholders:"));
+    root.add(dynamicPlaceholdersTextBox);
+    root.add(addDynamicButton);
+
     root.add(table);
 
     Label languageLabel = new Label("Language code, e.g. hi, es, pt-BR:");
@@ -203,10 +246,44 @@ public final class TranslationPanel extends Composite {
           table.setText(row, 4, generatedKey);
           table.setText(row, 5, propertyValue);
           table.setWidget(row, 6, createTranslationTextBox(generatedKey, selectedLanguage));
+          table.setText(row, 7, "");
           row++;
         }
       }
     }
+    addDynamicRows(row);
+  }
+
+  private int addDynamicRows(int row) {
+    ArrayList<String> keys = new ArrayList<String>(dynamicTranslationEntries.keySet());
+    Collections.sort(keys);
+
+    for (final String key : keys) {
+      DynamicTranslationEntry entry = dynamicTranslationEntries.get(key);
+      if (entry == null) {
+        continue;
+      }
+
+      Button deleteButton = new Button("Delete");
+      deleteButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          deleteDynamicTranslationEntry(key);
+        }
+      });
+
+      table.setText(row, 0, "Dynamic");
+      table.setText(row, 1, "");
+      table.setText(row, 2, "Dynamic");
+      table.setText(row, 3, "Message");
+      table.setText(row, 4, key);
+      table.setText(row, 5, entry.getBaseText());
+      table.setWidget(row, 6, createTranslationTextBox(key, selectedLanguage));
+      table.setWidget(row, 7, deleteButton);
+      row++;
+    }
+
+    return row;
   }
 
   private void addHeader() {
@@ -217,6 +294,7 @@ public final class TranslationPanel extends Composite {
     table.setText(0, 4, "Internal Key");
     table.setText(0, 5, "Base Text");
     table.setText(0, 6, selectedLanguage);
+    table.setText(0, 7, "Actions");
     table.getRowFormatter().setStylePrimaryName(0, "ode-i18n-table-header");
   }
 
@@ -302,6 +380,24 @@ public final class TranslationPanel extends Composite {
     return object.get(name).isString().stringValue();
   }
 
+  private List<String> getJsonStringArray(JSONObject object, String name) {
+    List<String> values = new ArrayList<String>();
+
+    if (object == null || object.get(name) == null || object.get(name).isArray() == null) {
+      return values;
+    }
+
+    JSONArray array = object.get(name).isArray();
+    for (int i = 0; i < array.size(); i++) {
+      JSONValue value = array.get(i);
+      if (value != null && value.isString() != null) {
+        values.add(value.isString().stringValue());
+      }
+    }
+
+    return values;
+  }
+
   private void loadSavedTranslations() {
     if (savedTranslationsLoaded) {
       return;
@@ -354,6 +450,15 @@ public final class TranslationPanel extends Composite {
         }
 
         JSONObject entry = entryValue.isObject();
+
+        String kind = getJsonString(entry, "kind");
+        if ("dynamic".equals(kind)) {
+          String baseText = getJsonString(entry, "baseText");
+          List<String> placeholders = getJsonStringArray(entry, "placeholders");
+
+          dynamicTranslationEntries.put(key,
+              new DynamicTranslationEntry(key, baseText, placeholders));
+        }
 
         JSONValue sourceValue = entry.get("source");
         JSONObject source = null;
@@ -491,6 +596,7 @@ public final class TranslationPanel extends Composite {
       }
 
       JSONObject entryObject = new JSONObject();
+      entryObject.put("kind", new JSONString("static"));
 
       JSONObject source = new JSONObject();
       source.put("screen", new JSONString(entry.getScreenName()));
@@ -512,9 +618,139 @@ public final class TranslationPanel extends Composite {
       entries.put(key, entryObject);
     }
 
+    ArrayList<String> dynamicKeys = new ArrayList<String>(dynamicTranslationEntries.keySet());
+    Collections.sort(dynamicKeys);
+
+    for (String key : dynamicKeys) {
+      DynamicTranslationEntry entry = dynamicTranslationEntries.get(key);
+      if (entry == null) {
+        continue;
+      }
+
+      JSONObject entryObject = new JSONObject();
+      entryObject.put("kind", new JSONString("dynamic"));
+      entryObject.put("baseText", new JSONString(entry.getBaseText()));
+
+      JSONArray placeholders = new JSONArray();
+      for (int i = 0; i < entry.getPlaceholders().size(); i++) {
+        placeholders.set(i, new JSONString(entry.getPlaceholders().get(i)));
+      }
+      entryObject.put("placeholders", placeholders);
+
+      JSONObject translations = new JSONObject();
+      for (String language : languages) {
+        String translatedValue = getTranslationValue(key, language);
+        if (translatedValue.length() > 0) {
+          translations.put(language, new JSONString(translatedValue));
+        }
+      }
+      entryObject.put("translations", translations);
+
+      entries.put(key, entryObject);
+    }
+
     root.put("entries", entries);
 
     return root.toString();
+  }
+
+  private void addDynamicTranslationEntry() {
+    loadSavedTranslations();
+
+    String key = dynamicKeyTextBox.getValue();
+    String baseText = dynamicBaseTextBox.getValue();
+    String placeholdersText = dynamicPlaceholdersTextBox.getValue();
+
+    if (key != null) {
+      key = key.trim();
+    }
+
+    if (baseText != null) {
+      baseText = baseText.trim();
+    }
+
+    if (!isValidDynamicKey(key)) {
+      Window.alert("Use a safe dynamic key such as welcome_message or errors.network_timeout.");
+      return;
+    }
+
+    if (baseText == null || baseText.length() == 0) {
+      Window.alert("Base text is required for a dynamic translation.");
+      return;
+    }
+
+    if (dynamicTranslationEntries.containsKey(key) || translationEntries.containsKey(key)) {
+      Window.alert("A translation key with this name already exists.");
+      return;
+    }
+
+    List<String> placeholders = parsePlaceholders(placeholdersText);
+    if (placeholders == null) {
+      Window.alert("Placeholders must be comma-separated names like name, count, or user_id.");
+      return;
+    }
+
+    dynamicTranslationEntries.put(key, new DynamicTranslationEntry(key, baseText, placeholders));
+
+    dynamicKeyTextBox.setValue("");
+    dynamicBaseTextBox.setValue("");
+    dynamicPlaceholdersTextBox.setValue("");
+
+    refresh();
+  }
+
+  private void deleteDynamicTranslationEntry(String key) {
+    if (key == null || key.length() == 0) {
+      return;
+    }
+
+    boolean confirmed = Window.confirm("Delete dynamic translation key '" + key + "'?");
+    if (!confirmed) {
+      return;
+    }
+
+    dynamicTranslationEntries.remove(key);
+    translationValues.remove(key);
+
+    refresh();
+  }
+
+  private boolean isValidDynamicKey(String key) {
+    return key != null
+        && key.length() > 0
+        && key.matches("[A-Za-z][A-Za-z0-9_.-]*");
+  }
+
+  private List<String> parsePlaceholders(String placeholdersText) {
+    List<String> placeholders = new ArrayList<String>();
+
+    if (placeholdersText == null || placeholdersText.trim().length() == 0) {
+      return placeholders;
+    }
+
+    String[] parts = placeholdersText.split(",");
+    for (String part : parts) {
+      String placeholder = part.trim();
+      if (placeholder.length() == 0) {
+        continue;
+      }
+
+      if (!isValidPlaceholderName(placeholder)) {
+        return null;
+      }
+
+      if (!placeholders.contains(placeholder)) {
+        placeholders.add(placeholder);
+      }
+    }
+
+    return placeholders;
+  }
+
+  private boolean isValidPlaceholderName(String placeholder) {
+    return placeholder != null
+        && placeholder.length() > 0
+        && placeholder.matches("[A-Za-z_][A-Za-z0-9_]*");
   }
 
   private void addLanguage(String language, boolean selectLanguage) {

@@ -1440,6 +1440,12 @@ Top-level component containing all other components in the program.
 {:id="Screen.HideKeyboard" class="method"} <i/> HideKeyboard()
 : Hide the soft keyboard
 
+{:id="Screen.Translate" class="method returns text"} <i/> Translate(*key*{:.text})
+: Looks up a dynamic translation by key.
+
+{:id="Screen.TranslateWithValues" class="method returns text"} <i/> TranslateWithValues(*key*{:.text},*values*{:.dictionary})
+: Looks up a dynamic translation by key and replaces placeholders using a dictionary.
+
 ## Slider  {#Slider}
 
 This class is used to display a `Slider`.

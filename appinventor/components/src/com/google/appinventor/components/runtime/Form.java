@@ -92,6 +92,7 @@ import com.google.appinventor.components.runtime.util.PermissionRegistry;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -2830,6 +2831,48 @@ public class Form extends AppInventorCompatActivity
 
   public static boolean getCompatibilityMode() {
     return sCompatibilityMode;
+  }
+
+  /**
+   * Looks up a dynamic translation by key.
+   *
+   * @param key The dynamic translation key, such as welcome_message.
+   * @return The translated text, or an empty string if the key is missing.
+   */
+  @SimpleFunction(description = "Looks up a dynamic translation by key.")
+  public String Translate(String key) {
+    return I18nTranslationManager.lookupDynamic(this, key, null);
+  }
+
+  /**
+   * Looks up a dynamic translation by key and replaces placeholders using a dictionary.
+   *
+   * @param key The dynamic translation key, such as welcome_message.
+   * @param values A dictionary mapping placeholder names to replacement values.
+   * @return The translated and formatted text, or an empty string if the key is missing.
+   */
+  @SimpleFunction(description = "Looks up a dynamic translation by key and replaces placeholders using a dictionary.")
+  public String TranslateWithValues(String key, YailDictionary values) {
+    return I18nTranslationManager.lookupDynamic(this, key, toStringMap(values));
+  }
+
+  private Map<String, String> toStringMap(YailDictionary values) {
+    Map<String, String> result = new HashMap<String, String>();
+
+    if (values == null) {
+      return result;
+    }
+
+    for (Object key : values.keySet()) {
+      if (key == null) {
+        continue;
+      }
+
+      Object value = values.get(key);
+      result.put(key.toString(), value == null ? "" : value.toString());
+    }
+
+    return result;
   }
 
   /**
