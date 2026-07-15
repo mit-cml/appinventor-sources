@@ -251,7 +251,7 @@ public final class TranslationPanel extends Composite {
         }
       }
     }
-    row = addDynamicRows(row);
+    addDynamicRows(row);
   }
 
   private int addDynamicRows(int row) {
