@@ -205,6 +205,17 @@ public final class YoungAndroidFormUpgrader {
       }
     }
   }
+  
+  private static int upgradeSharingProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Version 2:
+      // Added CopyToClipboard method.
+      // No properties need to be modified.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 
   private static void upgradeComponentProperties(Map<String, JSONValue> componentProperties,
       String componentType, int srcCompVersion, final int sysCompVersion) {
@@ -357,6 +368,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Regression")) {
         srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Sharing")) {
+        srcCompVersion = upgradeSharingProperties(componentProperties, srcCompVersion);
+        
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
