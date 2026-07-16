@@ -19,6 +19,7 @@ import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -84,6 +85,7 @@ public abstract class AbstractPalettePanel<
 
   private final TextBox searchText;
   private final FlowPanel searchResults;
+  private Element previousFocus;
   private JsArrayString arrayString = (JsArrayString) JsArrayString.createArray();
   private String lastSearch = "";
   private Map<String, SimplePaletteItem> searchSimplePaletteItems = new HashMap<String, SimplePaletteItem>();
@@ -180,9 +182,10 @@ public abstract class AbstractPalettePanel<
       public void onKeyDown(KeyDownEvent event) {
         DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
         if (designToolbar.currentView == DesignToolbar.View.DESIGNER && event.getNativeKeyCode() == 191
-                && !isTextboxFocused() && !event.isAltKeyDown()) {
+                && !shouldSuppressShortcuts() && !event.isAltKeyDown()) {
           {
             event.preventDefault();
+            previousFocus = getActiveElement();
             searchText.setFocus(true);
           }
         }
@@ -256,8 +259,17 @@ public abstract class AbstractPalettePanel<
     @Override
     public void onKeyDown(KeyDownEvent event) {
       if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+        event.preventDefault();
+        event.stopPropagation();
         searchResults.clear();
         searchText.setText("");
+        lastSearch = "";
+        doSearch();
+        if (previousFocus != null && canReceiveFocus(previousFocus)) {
+          previousFocus.focus();
+        } else {
+          searchText.getElement().blur();
+        }
       }
     }
   }
@@ -536,6 +548,22 @@ public abstract class AbstractPalettePanel<
   public native boolean isTextboxFocused()/*-{
     var element = $doc.activeElement;
     return element.tagName === 'INPUT' && element.type === 'text' || element.tagName === 'TEXTAREA';
+  }-*/;
+
+  public native boolean isMenuOpen()/*-{
+    return $doc.querySelector('[aria-haspopup="menu"][aria-expanded="true"]') !== null;
+  }-*/;
+
+  public boolean shouldSuppressShortcuts() {
+    return isTextboxFocused() || isMenuOpen();
+  }
+
+  private native boolean canReceiveFocus(Element el)/*-{
+    return $doc.body.contains(el) && el.offsetParent != null;
+  }-*/;
+
+  private native Element getActiveElement()/*-{
+    return $doc.activeElement;
   }-*/;
 
   private void requestRebuildList() {

@@ -7,6 +7,9 @@
 package com.google.appinventor.client.widgets;
 
 import com.google.gwt.aria.client.Roles;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -149,6 +152,10 @@ public final class ContextMenu {
    */
   public void hide() {
     popupPanel.hide();
+  }
+
+  public HandlerRegistration addCloseHandler(CloseHandler<PopupPanel> handler) {
+    return popupPanel.addCloseHandler(handler);
   }
 
   /* Returns if the context menu is showing */

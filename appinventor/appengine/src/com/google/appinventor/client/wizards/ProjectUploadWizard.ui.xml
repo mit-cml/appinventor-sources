@@ -9,9 +9,8 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-  <wiz:Dialog ui:field="uploadDialog" caption="{messages.projectUploadWizardCaption}"
-              styleName="ode-DialogBox" width="340px" height="40px">
-    <g:FlowPanel>
+  <wiz:Dialog ui:field="uploadDialog" caption="{messages.projectUploadWizardCaption}" styleName="ode-DialogBox">
+    <g:FlowPanel styleName="uploadDialogContent">
       <g:FileUpload ui:field="upload" />
       <g:FlowPanel styleName="buttonRow" >
         <g:Button ui:field='cancelButton' text='{messages.cancelButton}'  />

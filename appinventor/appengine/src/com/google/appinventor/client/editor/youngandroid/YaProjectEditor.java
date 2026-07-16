@@ -663,6 +663,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         editors.blocksEditor = null;
       }
     }
+    loadedBlocksEditors.remove(formName);
   }
 
   /**

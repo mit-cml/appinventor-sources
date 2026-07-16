@@ -969,6 +969,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
 .blocklyZoom:hover, .blocklyTrash:hover, .blocklyMultiselect:hover { cursor: pointer; }
 .blocklyZoom>image, .blocklyZoom>image:hover { opacity: 1.0; }
 .blocklyMultiselect>image, .blocklyMultiselect>image:hover { opacity: 1.0; }
+.blocklyTrash { opacity: 1.0 !important; }
 `);
     } catch (e) {
       // Thrown if we've already registered the CSS. This should only happen in unit tests.
