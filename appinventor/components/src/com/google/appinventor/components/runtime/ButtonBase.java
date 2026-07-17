@@ -317,6 +317,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         ViewUtil.setBackgroundImage(view, new BitmapDrawable(result));
       }
     }
+    applyPadding();
   }
 
   private Drawable getSafeBackgroundDrawable() {
@@ -649,6 +650,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         TextViewUtil.setTextColors(view, defaultColorStateList);
       }
     }
+    applyPadding();
   }
 
   @Override

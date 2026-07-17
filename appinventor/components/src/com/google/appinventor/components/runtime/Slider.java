@@ -24,6 +24,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 /**
  * This class is used to display a `Slider`.
@@ -469,6 +470,11 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   public void ThumbColor(int argb) {
     thumbColor = argb;
     setSliderColors();
+  }
+
+  @Override
+  public void Padding(YailDictionary padding) {
+    // Not supported for this component type
   }
 
   @Override

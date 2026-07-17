@@ -25,6 +25,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 
 @DesignerComponent(
@@ -193,4 +194,10 @@ public final class LinearProgress extends AndroidViewComponent {
   public void ProgressChanged(int progress) {
     EventDispatcher.dispatchEvent(this, "ProgressChanged", progress);
   }
+
+  @Override
+  public void Padding(YailDictionary padding) {
+    // Not supported for this component type
+  }
+
 }

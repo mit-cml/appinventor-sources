@@ -11,12 +11,15 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.BoxSide;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MapFactory;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeatureCollection;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.view.View;
@@ -121,6 +124,23 @@ public class FeatureCollection extends MapFeatureContainerBase implements MapFea
   public void Visible(boolean visibility) {
     getMap().getController().setFeatureCollectionVisible(this, visibility);
   }
+
+
+  @Override
+  public void Padding(YailDictionary padding) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void Margin(YailDictionary margin) {
+    // Not supported for this component type
+  }
+
+  @Override
+  public void LayoutDimensionHelper(@Options(BoxSide.class) String dimension) {
+    // Ignored
+  }
+
 
   @Override
   public View getView() {

@@ -19,6 +19,11 @@ import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.json.client.JSONException;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 
 /**
  * Abstract superclass for components with a visual representation.
@@ -73,7 +78,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
   protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_MAIN = "TextAlignmentMain";
   protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_DETAIL = "TextAlignmentDetail";
-
+  protected static final String PROPERTY_NAME_PADDING = "Padding";
+  protected static final String PROPERTY_NAME_MARGIN = "Margin";
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!
 
@@ -203,11 +209,112 @@ public abstract class MockVisibleComponent extends MockComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TOP)) {
       refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_PADDING)) {
+      applyMockPadding(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_MARGIN)) {
+      applyMockMargin(newValue);
+      refreshForm();
     }
   }
   
   public SimpleNonVisibleComponentsPanel getNonVisibleComponentsPanel() {
     return editor.getNonVisibleComponentsPanel();
+  }
+
+  private void applyMockPadding(String paddingValues) {
+    int[] sides = parseJsonSides(paddingValues);
+    if (sides == null) {
+      return;
+    }
+    Widget w = getWidget();
+    if (w != null && w.getElement() != null) {
+      com.google.gwt.dom.client.Style style = w.getElement().getStyle();
+      style.setProperty("paddingTop", sides[0] + "px");
+      style.setProperty("paddingLeft", sides[1] + "px");
+      style.setProperty("paddingRight", sides[2] + "px");
+      style.setProperty("paddingBottom", sides[3] + "px");
+    }
+  }
+
+  private void applyMockMargin(String marginValues) {
+    int[] sides = parseJsonSides(marginValues);
+    if (sides == null) {
+      return;
+    }
+    Widget w = getWidget();
+    if (w != null && w.getElement() != null) {
+      com.google.gwt.dom.client.Style style = w.getElement().getStyle();
+      style.setProperty("marginTop", sides[0] + "px");
+      style.setProperty("marginLeft", sides[1] + "px");
+      style.setProperty("marginRight", sides[2] + "px");
+      style.setProperty("marginBottom", sides[3] + "px");
+    }
+  }
+
+  public int getPaddingSumHeight() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_PADDING), true);
+  }
+
+  public int getPaddingSumWidth() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_PADDING), false);
+  }
+
+  public int getMarginSumHeight() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_MARGIN), true);
+  }
+
+  public int getMarginSumWidth() {
+    return getSideValueSum(properties.getProperty(PROPERTY_NAME_MARGIN), false);
+  }
+
+  private int getSideValueSum(EditableProperty prop, boolean vertical) {
+    if (prop == null) {
+      return 0;
+    }
+    int[] sides = parseJsonSides(prop.getValue());
+    if (sides == null) {
+      return 0;
+    }
+    if (vertical) {
+      return sides[0] + sides[3]; // Top + Bottom
+    } else {
+      return sides[1] + sides[2]; // Left + Right
+    }
+  }
+
+  /**
+   * Parses a JSON string of the form {"top":T,"left":L,"right":R,"bottom":B}
+   * into a 4-element int[] {top, left, right, bottom}. Returns null if the
+   * input is null, empty, or malformed in any way.
+   */
+  private int[] parseJsonSides(String value) {
+    if (value == null || value.trim().isEmpty()) {
+      return null;
+    }
+    try {
+      JSONValue parsed = JSONParser.parseStrict(value);
+      JSONObject obj = parsed.isObject();
+      if (obj == null) {
+        return null;
+      }
+      int t = getIntOrZero(obj, "top");
+      int l = getIntOrZero(obj, "left");
+      int r = getIntOrZero(obj, "right");
+      int b = getIntOrZero(obj, "bottom");
+      return new int[]{t, l, r, b};
+    } catch (JSONException | IllegalArgumentException e) {
+      return null;
+    }
+  }
+
+  private int getIntOrZero(JSONObject obj, String key) {
+    JSONValue v = obj.get(key);
+    if (v == null) {
+      return 0;
+    }
+    JSONNumber num = v.isNumber();
+    return num != null ? (int) num.doubleValue() : 0;
   }
 
   /**

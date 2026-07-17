@@ -21,6 +21,12 @@ public class ComponentConstants {
   public static final int APP_INVENTOR_MIN_SDK = 14;
 
   /**
+   * Default value for padding and margin (top,left,right,bottom)
+   */
+  public static final String DEFAULT_PADDING_VALUE = "{\"top\":0,\"left\":0,\"right\":0,\"bottom\":0}";
+  public static final String DEFAULT_MARGIN_VALUE = "{\"top\":0,\"left\":0,\"right\":0,\"bottom\":0}";
+
+  /**
    * Layout constants.
    */
   public static final int LAYOUT_ORIENTATION_HORIZONTAL = 1;

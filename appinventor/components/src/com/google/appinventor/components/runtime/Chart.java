@@ -26,6 +26,7 @@ import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import java.util.ArrayList;
@@ -552,6 +553,11 @@ public class Chart extends AndroidViewComponent
   @SimpleProperty
   public boolean YFromZero() {
     return this.zeroY;
+  }
+
+  @Override
+  public void Padding(YailDictionary padding) {
+    // Not supported for this component type
   }
 
   /**

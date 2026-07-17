@@ -79,6 +79,7 @@ import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.SubsetJSONPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextAreaPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
+import com.google.appinventor.client.widgets.properties.PaddingMarginPropertyEditor;
 
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
@@ -216,6 +217,10 @@ public class PropertiesUtil {
   public static PropertyEditor createPropertyEditor(String editorType, String defaultValue, DesignerEditor editor, String[] editorArgs) {
     if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT)) {
       return new YoungAndroidHorizontalAlignmentChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_PADDING)) {
+      return new PaddingMarginPropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_MARGIN)) {
+      return new PaddingMarginPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT)) {
       return new YoungAndroidVerticalAlignmentChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ASSET)) {

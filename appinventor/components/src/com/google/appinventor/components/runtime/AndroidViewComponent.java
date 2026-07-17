@@ -7,15 +7,19 @@
 package com.google.appinventor.components.runtime;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimplePropertyCopier;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.BoxSide;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 /**
  * Underlying base class for all components with views; not accessible to Simple programmers.
@@ -38,6 +42,12 @@ public abstract class AndroidViewComponent extends VisibleComponent {
 
   private int left = ComponentConstants.DEFAULT_X_Y;
   private int top = ComponentConstants.DEFAULT_X_Y;
+
+  private String paddingString = ComponentConstants.DEFAULT_PADDING_VALUE;
+  private String marginString = ComponentConstants.DEFAULT_MARGIN_VALUE;
+
+  protected YailDictionary paddingSource;
+  protected YailDictionary marginSource;
 
   /**
    * Creates a new AndroidViewComponent.
@@ -319,6 +329,166 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Top(int y) {
     this.top = y;
     container.setChildNeedsLayout(this);
+  }
+
+  /**
+   * This hidden property is used solely to force the App Inventor compiler
+   * to generate the helper dropdown blocks for LayoutDimension.
+   * It is not intended to be used by the end-user.
+   */
+  @SimpleProperty(
+          userVisible = false,
+          description = "Internal helper to expose LayoutDimension blocks."
+  )
+  public void LayoutDimensionHelper(@Options(BoxSide.class) String dimension) {
+    // Dummy setter; no implementation needed as this is just a compiler hook.
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_PADDING,
+          defaultValue = ComponentConstants.DEFAULT_PADDING_VALUE)
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "The padding space inside the component bounds. Accepts a Dictionary in blocks."
+  )
+  public void Padding(YailDictionary padding) {
+    this.paddingSource = padding;
+    applyPadding();
+  }
+
+  /**
+   * Re-applies the last known padding input to the view. Safe to call with
+   * no arguments any time the view's padding may have been reset as a side
+   * effect of other logic (e.g. background drawable reassignment).
+   */
+  protected void applyPadding() {
+    applyPadding(paddingSource);
+  }
+
+  protected void applyPadding(YailDictionary input) {
+    View view = getView();
+    float density = container.$form().deviceDensity();
+
+    int t = (int) (view.getPaddingTop() / density);
+    int l = (int) (view.getPaddingLeft() / density);
+    int r = (int) (view.getPaddingRight() / density);
+    int b = (int) (view.getPaddingBottom() / density);
+
+    int[] merged = mergeSides(input, t, l, r, b); // merged is in dp
+    if (merged != null) {
+      view.setPadding(
+              Math.round(merged[1] * density),
+              Math.round(merged[0] * density),
+              Math.round(merged[2] * density),
+              Math.round(merged[3] * density)
+      ); // l, t, r, b
+    }
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_MARGIN,
+          defaultValue = ComponentConstants.DEFAULT_MARGIN_VALUE)
+  @SimpleProperty(
+          category = PropertyCategory.APPEARANCE,
+          description = "The margin space outside the component bounds. Accepts a Dictionary in blocks."
+  )
+  public void Margin(YailDictionary margin) {
+    this.marginSource = margin;
+    applyMargin();
+  }
+
+  /**
+   * Re-applies the last known margin input to the view's LayoutParams. Safe
+   * to call with no arguments any time margins may need to be reasserted.
+   */
+  protected void applyMargin() {
+    applyMargin(marginSource);
+  }
+
+  protected void applyMargin(YailDictionary input) {
+    View view = getView();
+    ViewGroup.LayoutParams lp = view.getLayoutParams();
+
+    if (lp instanceof ViewGroup.MarginLayoutParams) {
+      ViewGroup.MarginLayoutParams marginLp = (ViewGroup.MarginLayoutParams) lp;
+      float density = container.$form().deviceDensity();
+
+      int t = (int) (marginLp.topMargin / density);
+      int l = (int) (marginLp.leftMargin / density);
+      int r = (int) (marginLp.rightMargin / density);
+      int b = (int) (marginLp.bottomMargin / density);
+
+      int[] merged = mergeSides(input, t, l, r, b); // merged is in dp
+      if (merged != null) {
+        marginLp.setMargins(
+                Math.round(merged[1] * density),
+                Math.round(merged[0] * density),
+                Math.round(merged[2] * density),
+                Math.round(merged[3] * density)
+        ); // l, t, r, b
+        view.requestLayout();
+      }
+    }
+  }
+
+  /**
+   * Resolves a Padding/Margin YailDictionary against the view's current
+   * side values, returning a merged [top, left, right, bottom] array.
+   * "all" overrides every side if present and valid; otherwise each side
+   * is read individually, with "leading"/"trailing" as fallbacks for
+   * "left"/"right". Any side not specified (or invalid) keeps its current
+   * value. Returns null if the input is null.
+   */
+  private int[] mergeSides(YailDictionary dict, int curT, int curL, int curR, int curB) {
+    if (dict == null) {
+      return null;
+    }
+
+    int t = curT, l = curL, r = curR, b = curB;
+
+    int allVal = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.All));
+    if (allVal >= 0) {
+      return new int[]{allVal, allVal, allVal, allVal};
+    }
+
+    int dictTop = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.Top));
+    if (dictTop >= 0) t = dictTop;
+
+    int dictLeft = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.Left));
+    if (dictLeft < 0) dictLeft = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.Leading));
+    if (dictLeft >= 0) l = dictLeft;
+
+    int dictRight = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.Right));
+    if (dictRight < 0) dictRight = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.Trailing));
+    if (dictRight >= 0) r = dictRight;
+
+    int dictBottom = parsePositiveIntOrMinusOne(getSide(dict, BoxSide.Bottom));
+    if (dictBottom >= 0) b = dictBottom;
+
+    return new int[]{t, l, r, b};
+  }
+
+  /**
+   * Looks up a side's value in the dictionary, accepting either the
+   * BoxSide enum constant itself as a key, or its underlying String
+   * value (e.g. "top") — the latter being what blocks-built
+   * dictionaries will actually contain, since OptionList blocks
+   * evaluate to their underlying value at runtime.
+   */
+  private Object getSide(YailDictionary dict, BoxSide side) {
+    Object val = dict.get(side.toUnderlyingValue());
+    if (val == null) {
+      val = dict.get(side);
+    }
+    return val;
+  }
+
+  private int parsePositiveIntOrMinusOne(Object val) {
+    if (val == null) return -1;
+    try {
+      int parsed = (val instanceof Number) ? ((Number) val).intValue() : Integer.parseInt(val.toString().trim());
+      return (parsed >= 0) ? parsed : -1;
+    } catch (NumberFormatException e) {
+      return -1;
+    }
   }
 
   // Component implementation

@@ -612,7 +612,35 @@ public class YaVersion {
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 234:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 39.
-  public static final int YOUNG_ANDROID_VERSION = 234;
+  // For YOUNG_ANDROID_VERSION 235:
+  // - ABSOLUTEARRANGEMENT_COMPONENT_VERSION was incremented to 2
+  // - BUTTON_COMPONENT_VERSION was incremented to 8
+  // - CHART_COMPONENT_VERSION was incremented to 5
+  // - CHECKBOX_COMPONENT_VERSION was incremented to 3
+  // - CIRCULAR_PROGRESS_COMPONENT_VERSION was incremented to 2
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 7
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 5
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 8
+  // - FILEPICKER_COMPONENT_VERSION was incremented to 2
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 5
+  // - HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION was incremented to 3
+  // - IMAGE_COMPONENT_VERSION was incremented to 7
+  // - IMAGEPICKER_COMPONENT_VERSION was incremented to 6
+  // - LABEL_COMPONENT_VERSION was incremented to 6
+  // - LINEAR_PROGRESS_COMPONENT_VERSION was incremented to 2
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 10
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 12
+  // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 8
+  // - PHONENUMBERPICKER_COMPONENT_VERSION was incremented to 5
+  // - SLIDER_COMPONENT_VERSION was incremented to 4
+  // - SPINNER_COMPONENT_VERSION was incremented to 3
+  // - SWITCH_COMPONENT_VERSION was incremented to 2
+  // - TABLEARRANGEMENT_COMPONENT_VERSION was incremented to 2
+  // - TEXTBOX_COMPONENT_VERSION was incremented to 15
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 5
+  // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 5
+  // - VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION was incremented to 3
+  public static final int YOUNG_ANDROID_VERSION = 235;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -757,7 +785,9 @@ public class YaVersion {
 
   // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 1:
   // - AbsoluteArrangement component was added.
-  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
+  // For ABSOLUTEARRANGEMENT_COMPONENT_VERSION 2:
+  // - Padding and Margin properties was added.
+  public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 2;
 
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
@@ -851,7 +881,9 @@ public class YaVersion {
   // - FontSize, FontBold, FontItalic properties made visible in block editor
   // For BUTTON_COMPONENT_VERSION 7:
   // - Assets helper block was added.
-  public static final int BUTTON_COMPONENT_VERSION = 7;
+  // For BUTTON_COMPONENT_VERSION 8:
+  //- Padding and Margin properties was added.
+  public static final int BUTTON_COMPONENT_VERSION = 8;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -909,7 +941,9 @@ public class YaVersion {
   // - The axesTextColor property was added
   // - The setAxesTextColor method was added
   // - The ValueFormat property was added
-  public static final int CHART_COMPONENT_VERSION = 4;
+  // For CHART_COMPONENT_VERSION 5:
+  // - Margin property was added.
+  public static final int CHART_COMPONENT_VERSION = 5;
 
   // For CHART_DATA_2D_COMPONENT_VERSION 2:
   // - The dataLabelColor property was added
@@ -932,7 +966,9 @@ public class YaVersion {
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
-  public static final int CHECKBOX_COMPONENT_VERSION = 2;
+  // For CHECKBOX_COMPONENT_VERSION 3:
+  // - Padding and Margin properties was added.
+  public static final int CHECKBOX_COMPONENT_VERSION = 3;
 
   // For CIRCLE_COMPONENT_VERSION 1:
   // - Initial implementation of Circle for Maps
@@ -960,7 +996,9 @@ public class YaVersion {
   // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
   // For CONTACTPICKER_COMPONENT_VERSION 6:
   // - The ContactUri property was added
-  public static final int CONTACTPICKER_COMPONENT_VERSION = 6;
+  // For CONTACTPICKER_COMPONENT_VERSION 7:
+  // - Padding and Margin properties was added.
+  public static final int CONTACTPICKER_COMPONENT_VERSION = 7;
 
   public static final int DATA_FILE_COMPONENT_VERSION = 1;
 
@@ -974,7 +1012,9 @@ public class YaVersion {
   // - SetDateToDisplayFromInstant, and Instant property are added.
   // For DATEPICKER_COMPONENT_VERSION 3:
   // - Assets helper block was added.
-  public static final int DATEPICKER_COMPONENT_VERSION = 4;
+  // For DATEPICKER_COMPONENT_VERSION 5:
+  // - Padding and Margin properties was added.
+  public static final int DATEPICKER_COMPONENT_VERSION = 5;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -983,7 +1023,9 @@ public class YaVersion {
   // For EMAILPICKER_COMPONENT_VERSION 7:
   // - Bumped up to be strictly greater than Kodular's EmailPicker (6).
   // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
-  public static final int EMAILPICKER_COMPONENT_VERSION = 7;
+  // For EMAILPICKER_COMPONENT_VERSION 8:
+  // - Padding and Margin properties was added.
+  public static final int EMAILPICKER_COMPONENT_VERSION = 8;
 
   // For FEATURE_COLLECTION_COMPONENT_VERSION 1:
   // - Initial FeatureCollection implementation for Maps
@@ -1005,7 +1047,9 @@ public class YaVersion {
   // - The LegacyMode property was removed. Use DefaultScope instead.
   public static final int FILE_COMPONENT_VERSION = 4;
 
-  public static final int FILEPICKER_COMPONENT_VERSION = 1;
+  // For FILEPICKER_COMPONENT_VERSION 2:
+  // - Padding and Margin properties was added.
+  public static final int FILEPICKER_COMPONENT_VERSION = 2;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -1108,12 +1152,16 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 5:
+  // - Padding and Margin properties was added.
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 5;
 
   // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
+  // For HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION 3:
+  // - Padding and Margin properties was added.
+  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 3;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -1126,7 +1174,9 @@ public class YaVersion {
   // - The AlternateText property was added.
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
-  public static final int IMAGE_COMPONENT_VERSION = 6;
+  // For IMAGE_COMPONENT_VERSION 7:
+  // - Padding and Margin properties was added.
+  public static final int IMAGE_COMPONENT_VERSION = 7;
 
   // For IMAGEBOT_COMPONENT_VERSION 2:
   // - The ApiKey property was made available in the designer
@@ -1141,8 +1191,9 @@ public class YaVersion {
   // For IMAGEPICKER_COMPONENT_VERSION 5:
   // - The ImagePath property was changed to Selection, and now returns a file path to
   //   external storage
-
-  public static final int IMAGEPICKER_COMPONENT_VERSION = 5;
+  // For IMAGEPICKER_COMPONENT_VERSION 6:
+  // - Padding and Margin properties was added.
+  public static final int IMAGEPICKER_COMPONENT_VERSION = 6;
 
   // For IMAGESPRITE_COMPONENT_VERSION 2:
   // - The Rotates property was added.
@@ -1174,8 +1225,9 @@ public class YaVersion {
   // - The HTML format is defined.
   // For LABEL_COMPONENT_VERSION 5:
   // - The HTMLContent property is defined.
-
-  public static final int LABEL_COMPONENT_VERSION = 5;
+  // For LABEL_COMPONENT_VERSION 6:
+  // - Padding and Margin properties was added.
+  public static final int LABEL_COMPONENT_VERSION = 6;
 
   // For LINESTRING_COMPONENT_VERSION 1:
   // - Initial LineString implementation for Maps
@@ -1200,7 +1252,9 @@ public class YaVersion {
   // - Added title property
   // For LISTPICKER_COMPONENT_VERSION 9:
   // - Added ItemTextColor, ItemBackgroundColor
-  public static final int LISTPICKER_COMPONENT_VERSION = 9;
+  // For LISTPICKER_COMPONENT_VERSION 10:
+  // - Padding and Margin properties was added.
+  public static final int LISTPICKER_COMPONENT_VERSION = 10;
 
   // For LISTVIEW_COMPONENT_VERSION 1:
   // - Initial version.
@@ -1227,7 +1281,12 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 11:
   // - Added TextAlignmentMain property
   // - Added TextAlignmentDetail property
-  public static final int LISTVIEW_COMPONENT_VERSION = 11;
+  // For LISTVIEW_COMPONENT_VERSION 11:
+  // - Added TextAlignmentMain property
+  // - Added TextAlignmentDetail property
+  // For LISTVIEW_COMPONENT_VERSION 12:
+  // - Padding and Margin properties was added.
+  public static final int LISTVIEW_COMPONENT_VERSION = 12;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1346,7 +1405,9 @@ public class YaVersion {
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 7:
   // - Bumped up to be strictly greater than Kodular's PasswordTextBox (6).
   // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
-  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 7;
+  // For PASSWORDTEXTBOX_COMPONENT_VERSION 8:
+  // - Padding and Margin properties was added.
+  public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 8;
 
   // For PEDOMETER_COMPONENT_VERSION 2:
   // - The step sensing algorithm was updated to be more accurate.
@@ -1370,7 +1431,9 @@ public class YaVersion {
   // - The method Open was added.
   // For PHONENUMBERPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 4;
+  // For PHONENUMBERPICKER_COMPONENT_VERSION 5:
+  // - Padding and Margin properties was added.
+  public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 5;
 
   public static final int PHONESTATUS_COMPONENT_VERSION = 1;
 
@@ -1416,7 +1479,9 @@ public class YaVersion {
   // - Added the property to allow for the removal of the Thumb Slider
   // For SLIDER_COMPONENT_VERSION 3:
   // - Added the NumberOfStepsand ThumbColor property, TouchDown and TouchUp events
-  public static final int SLIDER_COMPONENT_VERSION = 3;
+  // For SLIDER_COMPONENT_VERSION 4:
+  // - Margin property was added.
+  public static final int SLIDER_COMPONENT_VERSION = 4;
 
   // For SPINNER_COMPONENT_VERSION 1:
   // - Initial version.
@@ -1424,7 +1489,9 @@ public class YaVersion {
   // - Added BackgroundColor, Enabled, Image, ShowFeedback properties
   // - Added TextSize, TextColor, TextAlignment, TextBold, TextItalic, TextTypeface properties
   // - Added TouchUp and TouchDown events
-  public static final int SPINNER_COMPONENT_VERSION = 2;
+  // For SPINNER_COMPONENT_VERSION 3:
+  // - Padding and Margin properties was added.
+  public static final int SPINNER_COMPONENT_VERSION = 3;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
@@ -1467,9 +1534,13 @@ public class YaVersion {
 
   // For SWITCH_COMPONENT_VERSION 1
   //  - Initial Version
-  public static final int SWITCH_COMPONENT_VERSION = 1;
+  // For SWITCH_COMPONENT_VERSION 2
+  // - Padding and Margin properties was added.
+  public static final int SWITCH_COMPONENT_VERSION = 2;
 
-  public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 1;
+  // For TABLEARRANGEMENT_COMPONENT_VERSION 2
+  // - Padding and Margin properties was added.
+  public static final int TABLEARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For TEXTBOX_COMPONENT_VERSION 2:
   // - The TextBox.NumbersOnly property was added.
@@ -1485,7 +1556,9 @@ public class YaVersion {
   // For TEXTBOX_COMPONENT_VERSION 14:
   // - Bumped up to be strictly greater than Kodular's TextBox (13).
   // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
-  public static final int TEXTBOX_COMPONENT_VERSION = 14;
+  // For TEXTBOX_COMPONENT_VERSION 15:
+  // - Padding and Margin properties was added.
+  public static final int TEXTBOX_COMPONENT_VERSION = 15;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
@@ -1528,7 +1601,9 @@ public class YaVersion {
   // - SetTimeToDisplayFromInstant, and Instant property are added.
   // For TIMEPICKER_COMPONENT_VERSION 4:
   // - Assets helper block was added.
-  public static final int TIMEPICKER_COMPONENT_VERSION = 4;
+  // For TIMEPICKER_COMPONENT_VERSION 5:
+  // - Padding and Margin properties was added.
+  public static final int TIMEPICKER_COMPONENT_VERSION = 5;
 
   // For TINYDB_COMPONENT_VERSION 2:
   // - Added Property: Namespace
@@ -1596,12 +1671,16 @@ public class YaVersion {
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 5:
+  // - Padding and Margin properties was added.
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 5;
 
   // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 2:
   // - Add HorizontalAlignment and VerticalAlignment dropdown blocks.
   // - Assets helper block was added.
-  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 2;
+  // For VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION 3:
+  // - Padding and Margin properties was added.
+  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 3;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.
@@ -1714,11 +1793,15 @@ public class YaVersion {
 
   // For CIRCULAR_PROGRESS_COMPONENT_VERSION 1:
   // - Initial version
-  public static final int CIRCULAR_PROGRESS_COMPONENT_VERSION = 1;
+  // For CIRCULAR_PROGRESS_COMPONENT_VERSION 2:
+  // - Margin property was added.
+  public static final int CIRCULAR_PROGRESS_COMPONENT_VERSION = 2;
 
   // For LINEAR_PROGRESS_COMPONENT_VERSION 1:
   // - Initial version
-  public static final int LINEAR_PROGRESS_COMPONENT_VERSION = 1;
+  // For LINEAR_PROGRESS_COMPONENT_VERSION 2:
+  // - Margin property was added.
+  public static final int LINEAR_PROGRESS_COMPONENT_VERSION = 2;
 
   // Companion Versions and Update Information
 

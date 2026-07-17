@@ -270,7 +270,7 @@ abstract class MockHVLayoutBase extends MockLayout {
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       if (childLayoutInfo.width != MockVisibleComponent.LENGTH_FILL_PARENT) {
-        width = Math.max(width, childLayoutInfo.width + BORDER_SIZE);
+        width = Math.max(width, childLayoutInfo.getLayoutWidth() + BORDER_SIZE);
         allFillParent = false;
       }
     }
@@ -298,6 +298,9 @@ abstract class MockHVLayoutBase extends MockLayout {
         childHeight = childLayoutInfo.calculateAutomaticHeight();
       } else if (childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         childHeight = convertFromPercent(childHeight, Dim.HEIGHT);
+      }else {
+        // Fetch the inflated footprint if it is an absolute metric size
+        childHeight = childLayoutInfo.getLayoutHeight();
       }
       height += childHeight + BORDER_SIZE;
     }
@@ -399,8 +402,8 @@ abstract class MockHVLayoutBase extends MockLayout {
       topY += COMPONENT_SPACING;
 
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
-      int childWidthWithBorder = childLayoutInfo.width + BORDER_SIZE;
-      int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;
+      int childWidthWithBorder = childLayoutInfo.getLayoutWidth() + BORDER_SIZE;
+      int childHeightWithBorder = childLayoutInfo.getLayoutHeight() + BORDER_SIZE;
 
       // leftX is where the left edge of the child should be.  For a vertical alignment
       // it's either zero (left align) or set so the center of child is at the centered
@@ -438,8 +441,8 @@ abstract class MockHVLayoutBase extends MockLayout {
     int height = 0;
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
-      if (childLayoutInfo.height != MockVisibleComponent.LENGTH_FILL_PARENT) {
-        height = Math.max(height, childLayoutInfo.height + BORDER_SIZE);
+      if (childLayoutInfo.getLayoutHeight() != MockVisibleComponent.LENGTH_FILL_PARENT) {
+        height = Math.max(height, childLayoutInfo.getLayoutHeight() + BORDER_SIZE);
         allFillParent = false;
       }
     }
@@ -594,8 +597,8 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
       dividerLocations[index] = leftX;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
-      int childWidthWithBorder = childLayoutInfo.width + BORDER_SIZE;
-      int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;
+      int childWidthWithBorder = childLayoutInfo.getLayoutWidth() + BORDER_SIZE;
+      int childHeightWithBorder = childLayoutInfo.getLayoutHeight() + BORDER_SIZE;
 
       // topY is where the top of each component goes.  It starts out either at zero, or offset
       // so the entire stack is vertically centered in the arrangement (i.e., offset by
