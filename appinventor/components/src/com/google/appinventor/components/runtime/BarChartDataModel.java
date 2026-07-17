@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -111,13 +112,13 @@ public class BarChartDataModel
       try {
         float x = (float) Math.floor(Float.parseFloat(rawX));
         if (DATE_PATTERN_PATTERN.matcher(rawX).matches()) {
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+          SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
           Date date = sdf.parse(rawX);
           if (date != null) {
             x = date.getTime();
           }
         } else if (TIME_PATTERN_PATTERN.matcher(rawX).matches()) {
-          SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+          SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.US);
           Date date = sdf.parse(rawX);
           if (date != null) {
             x = date.getTime();

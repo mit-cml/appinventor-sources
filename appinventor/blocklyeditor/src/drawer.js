@@ -48,6 +48,17 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
 Blockly.Drawer.PREFIX_ = 'cat_';
 
 /**
+ * Blocks shown directly when opening the Procedures drawer.
+ * @private
+ */
+Blockly.Drawer.PROCEDURE_PRIMARY_BLOCKS_ = [
+  'procedures_defnoreturn',
+  'procedures_defreturn',
+  'procedures_callnoreturn',
+  'procedures_callreturn'
+];
+
+/**
  * Build the hierarchical tree of block types.
  * Note: taken from Blockly's toolbox.js
  * @return {!Object} Tree object.
@@ -129,17 +140,11 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   }
   var blockSet = this.options.languageTree[drawerName];
   if (drawerName == "cat_Procedures") {
-    var newBlockSet = [];
-    for (var i = 0; i < blockSet.length; i++) {
-      if(!(blockSet[i] == "procedures_callnoreturn" // Include callnoreturn only if at least one defnoreturn declaration
-           && this.workspace_.getProcedureDatabase().voidProcedures == 0)
-         &&
-         !(blockSet[i] == "procedures_callreturn" // Include callreturn only if at least one defreturn declaration
-           && this.workspace_.getProcedureDatabase().returnProcedures == 0)){
-        newBlockSet.push(blockSet[i]);
-      }
-    }
-    blockSet = newBlockSet;
+    this.showProcedurePrimary_(blockSet);
+    return;
+  } else if (drawerName == "cat_ProceduresMore") {
+    this.showProcedureMore_();
+    return;
   }
 
   if (!blockSet) {
@@ -148,6 +153,66 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   Blockly.hideChaff();
   var xmlList = this.blockListToXMLArray(blockSet);
   this.flyout_.show(xmlList);
+};
+
+/**
+ * Show the primary Procedures drawer contents.
+ * @param {!Array<string>} blockSet All block types in the Procedures category.
+ * @private
+ */
+Blockly.Drawer.prototype.showProcedurePrimary_ = function(blockSet) {
+  if (!blockSet) {
+    throw "no such drawer: cat_Procedures";
+  }
+  Blockly.hideChaff();
+  var xmlList = this.blockListToXMLArray(
+      this.filterProcedureBlocks_(blockSet, true));
+  this.flyout_.show(xmlList);
+};
+
+/**
+ * Show procedure blocks that are tucked behind the More button.
+ * @private
+ */
+Blockly.Drawer.prototype.showProcedureMore_ = function() {
+  if (!this.options.languageTree) {
+    this.options.languageTree = Blockly.Drawer.buildTree_();
+  }
+  var blockSet = this.options.languageTree['cat_Procedures'];
+  if (!blockSet) {
+    throw "no such drawer: cat_Procedures";
+  }
+  Blockly.hideChaff();
+  this.flyout_.show(this.blockListToXMLArray(
+      this.filterProcedureBlocks_(blockSet, false)));
+};
+
+/**
+ * Filters procedure block types for the primary or More view.
+ * @param {!Array<string>} blockSet All block types in the Procedures category.
+ * @param {boolean} primaryView Whether to return primary procedure blocks.
+ * @return {!Array<string>}
+ * @private
+ */
+Blockly.Drawer.prototype.filterProcedureBlocks_ = function(blockSet, primaryView) {
+  var procDb = this.workspace_.getProcedureDatabase();
+  var primaryBlocks = Blockly.Drawer.PROCEDURE_PRIMARY_BLOCKS_;
+  var filteredBlockSet = [];
+  for (var i = 0; i < blockSet.length; i++) {
+    var blockType = blockSet[i];
+    var isPrimary = primaryBlocks.indexOf(blockType) != -1;
+    if (primaryView != isPrimary) {
+      continue;
+    }
+    if (blockType == "procedures_callnoreturn" && procDb.voidProcedures == 0) {
+      continue;
+    }
+    if (blockType == "procedures_callreturn" && procDb.returnProcedures == 0) {
+      continue;
+    }
+    filteredBlockSet.push(blockType);
+  }
+  return filteredBlockSet;
 };
 
 /**
@@ -312,11 +377,9 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     }
 
     // Create event blocks.
-    Object.entries(componentInfo.eventDictionary).forEach(function (pair) {
-      const name = pair[0];
-      const event = pair[1];
+    for (const [name, event] of Object.entries(componentInfo.eventDictionary)) {
       if (event.deprecated) {
-        return;
+        continue;
       }
 
       var eventObj = {
@@ -330,14 +393,12 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
       // Determine if any parameters are associated with a helper which should
       // be added at the bottom of the drawer.
       event.parameters.forEach(getHelper);
-    }, this);
+    }
 
     // Create method blocks.
-    Object.entries(componentInfo.methodDictionary).forEach(function (pair) {
-      const name = pair[0];
-      const method = pair[1];
+    for (const [name, method] of Object.entries(componentInfo.methodDictionary)) {
       if (method.deprecated) {
-        return;
+        continue;
       }
 
       var methodObj = {
@@ -358,21 +419,19 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
         var inputXml = xmlUtils.valueWithHelperXML('ARG' + index, param.helperKey);
         // First child b/c these are wrapped in an <xml/> node.
         methodXml.firstChild.appendChild(inputXml.firstChild);
-      }.bind(this));
+      });
 
       Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(methodXml));
-    }, this);
+    }
 
     // Create getter and setter blocks.
-    Object.entries(componentInfo.properties).forEach(function(pair) {
-      const name = pair[0];
-      const property = pair[1];
+    for (const [name, property] of Object.entries(componentInfo.properties)) {
       if (property.deprecated) {
-        return;
+        continue;
       }
 
       if ((name == 'Left' || name == 'Top') && !freePosition) {
-        return;
+        continue;
       }
 
       var propertyObj = {
@@ -405,7 +464,7 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
       // Collects up helper blocks for properties which use them so they can
       // be added to the bottom of the drawer.
       getHelper(property);
-    }, this);
+    }
 
     // Create helper blocks at the bottom of the drawer, right above the
     // component block.
@@ -415,7 +474,7 @@ Blockly.Drawer.prototype.createAllComponentBlocks =
     helperKeys.forEach(function(helper) {
       var xml = xmlUtils.helperKeyToXML(helper);
       Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
-    }.bind(this));
+    });
 
     // Create component literal block.
     var componentObj = {
@@ -463,9 +522,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   }
 
   //create generic event blocks
-  Object.entries(componentInfo.eventDictionary).forEach(function(pair){
-    const name = pair[0];
-    const event = pair[1];
+  for (const [name, event] of Object.entries(componentInfo.eventDictionary)) {
     if(!event.deprecated){
       Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_event', {
         component_type: typeName, event_name: name, is_generic: 'true'
@@ -475,12 +532,10 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
       // be added at the bottom of the drawer.
       event.parameters.forEach(getHelper);
     }
-  }, this);
+  }
 
   //create generic method blocks
-  Object.entries(componentInfo.methodDictionary).forEach(function(pair) {
-    const name = pair[0];
-    const method = pair[1];
+  for (const [name, method] of Object.entries(componentInfo.methodDictionary)) {
     if (!method.deprecated) {
       var methodXml = this.blockTypeToXML('component_method', {
         component_type: typeName, method_name: name, is_generic: "true"
@@ -498,11 +553,11 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
         var inputXml = xmlUtils.valueWithHelperXML('ARG' + index, param.helperKey);
         // First child b/c these are wrapped in an <xml/> node.
         methodXml.firstChild.appendChild(inputXml.firstChild);
-      }.bind(this));
+      });
 
       Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(methodXml));
     }
-  }, this);
+  }
 
   //for each property
   for (const [name, property] of Object.entries(componentInfo.properties)) {
@@ -536,7 +591,7 @@ Blockly.Drawer.prototype.componentTypeToXMLArray = function(typeName) {
   helperKeys.forEach(function(helper) {
     var xml = xmlUtils.helperKeyToXML(helper);
     Array.prototype.push.apply(xmlArray, xmlUtils.XMLToArray(xml));
-  }.bind(this));
+  });
 
   // add the all components getter
   Array.prototype.push.apply(xmlArray, this.blockTypeToXMLArray('component_all_component_block', {
@@ -1078,13 +1133,11 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     {matchingMutatorAttributes:{component_type:"Regression", method_name:"CalculateLineOfBestFitValue"},
       mutatorXMLStringFunction: function(mutatorAttributes) {
         return (
-            '<xml>' +
-            '<block type="component_method">' +
-            // mutator generator
-            Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
-            '<value name="ARG2"><block type="helpers_dropdown"><mutation key="LOBFValues"></mutation><field name="OPTION">Slope</field></block></value>' +
-            '</block>' +
-            '</xml>'
+          '<xml>' +
+          '<block type="component_method">' +
+          Blockly.Util.xml.mutatorAttributesXmlString(mutatorAttributes) +
+          '</block>' +
+          '</xml>'
         );
       }},
     {matchingMutatorAttributes:{component_type:"Spreadsheet", method_name:"RemoveCol"},

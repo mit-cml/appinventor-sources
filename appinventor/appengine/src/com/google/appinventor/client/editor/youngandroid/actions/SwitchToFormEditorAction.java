@@ -31,7 +31,7 @@ public class SwitchToFormEditorAction implements Command {
           long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
           toolbar.switchToScreen(projectId, toolbar.getCurrentProject().currentScreen, View.DESIGNER);
           toolbar.toggleEditor(false);      // Gray out the Designer button and enable the blocks button
-          Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+          Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
         }
       }, false);
     }

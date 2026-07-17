@@ -231,22 +231,6 @@ public final class Project {
     fireProjectNodeRemoved(node);
   }
 
-  public void moveToTrash() {
-    Tracking.trackEvent(Tracking.PROJECT_EVENT,
-        Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());
-    Ode.getInstance().getProjectService().moveToTrash(getProjectId(),
-        new OdeAsyncCallback<UserProject>(
-            // failure message
-            MESSAGES.moveToTrashProjectError()) {
-          @Override
-          public void onSuccess(UserProject project) {
-            if (project.getProjectId() == projectInfo.getProjectId()) {
-              projectInfo.moveToTrash();
-            }
-          }
-        });
-  }
-
   public void deleteFromTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
         Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());

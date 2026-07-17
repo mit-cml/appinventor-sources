@@ -17,6 +17,7 @@ import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.Notifier;
 import com.google.appinventor.components.runtime.ReplForm;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import com.google.appinventor.components.runtime.util.AppinvSslSocketFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,8 +25,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -201,20 +203,22 @@ public class AssetFetcher {
     final boolean makeReadonly = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         && asset.contains("/external_comps/") && asset.endsWith("/classes.jar");
 
-    HttpURLConnection connection = null;
+    HttpsURLConnection connection = null;
     int responseCode = 0;
     String fileHash = null;
     boolean error = false;
 
     try {
       URL url = new URL(fileName);
-      connection = (HttpURLConnection) url.openConnection();
+      connection = (HttpsURLConnection) url.openConnection();
+      SSLSocketFactory sslSocketFactory = AppinvSslSocketFactory.getSocketFactory();
       if (connection != null) {
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
         HashFile hashFile = db.getHashFile(destinationFilename);
         if (hashFile != null && outFile.exists()) {
           connection.addRequestProperty("If-None-Match", hashFile.getHash()); // get old_hash from database
         }
+        connection.setSSLSocketFactory(sslSocketFactory);
         connection.setRequestMethod("GET");
         responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);

@@ -195,7 +195,7 @@ AI.Yail.forBlock['controls_do_then_return'] = function(block, generator) {
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
-AI.Yail['controls_run_in_background'] = function(block, generator) {
+AI.Yail.forBlock['controls_run_in_background'] = function(block, generator) {
   var procedure = generator.valueToCode(block, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
   var callback = generator.valueToCode(block, 'CALLBACK', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
   var code = AI.Yail.YailCallYialPrimitive(
@@ -203,7 +203,7 @@ AI.Yail['controls_run_in_background'] = function(block, generator) {
   return code;
 };
 
-AI.Yail['controls_run_after_period'] = function(block, generator) {
+AI.Yail.forBlock['controls_run_after_period'] = function(block, generator) {
   var millis = generator.valueToCode(block, 'MILLIS', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
   var procedure = generator.valueToCode(block, 'PROCEDURE', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_NULL;
   var code = AI.Yail.YailCallYialPrimitive(

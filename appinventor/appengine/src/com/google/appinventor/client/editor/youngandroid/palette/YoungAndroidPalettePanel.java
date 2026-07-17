@@ -8,8 +8,6 @@ package com.google.appinventor.client.editor.youngandroid.palette;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.Images;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
@@ -17,13 +15,9 @@ import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -60,15 +54,15 @@ public class YoungAndroidPalettePanel extends AbstractPalettePanel<SimpleCompone
   }
 
   @Override
-  public VerticalPanel addComponentCategory(ComponentCategory category) {
-    VerticalPanel panel = super.addComponentCategory(category);
+  public FlowPanel addComponentCategory(ComponentCategory category) {
+    FlowPanel panel = super.addComponentCategory(category);
     if (category == ComponentCategory.EXTENSION) {
       initExtensionPanel(panel);
     }
     return panel;
   }
 
-  private void initExtensionPanel(VerticalPanel panel) {
+  private void initExtensionPanel(FlowPanel panel) {
     Anchor addComponentAnchor = new Anchor(MESSAGES.importExtensionMenuItem());
     addComponentAnchor.setStylePrimaryName("ode-ExtensionAnchor");
     addComponentAnchor.addClickHandler(new ClickHandler() {
@@ -79,6 +73,5 @@ public class YoungAndroidPalettePanel extends AbstractPalettePanel<SimpleCompone
     });
 
     panel.add(addComponentAnchor);
-    panel.setCellHorizontalAlignment(addComponentAnchor, HasHorizontalAlignment.ALIGN_CENTER);
   }
 }

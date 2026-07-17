@@ -448,4 +448,9 @@ public class PropertyTypeConstants {
    * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidChartLabelValueTypeChoicePropertyEditor
    */
   public static final String PROPERTY_TYPE_CHART_VALUE_TYPE = "chart_value_type";
+
+  /**
+   * Dynamic Android minimum SDK selector.
+   */
+  public static final String PROPERTY_TYPE_ANDROID_MIN_SDK = "android_min_sdk";
 }

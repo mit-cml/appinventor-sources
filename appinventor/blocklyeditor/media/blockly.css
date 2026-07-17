@@ -68,6 +68,9 @@
 .blocklyNonEditableText>text, .blocklyEditableText>text {
   fill: #000;
 }
+.blocklyMultilineText {
+  fill: #000;
+}
 .blocklyEditableText:hover>rect {
   stroke-width: 2;
   stroke: #fff;

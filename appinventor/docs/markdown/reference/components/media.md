@@ -523,6 +523,20 @@ None
 
 {:.properties}
 
+{:id="SpeechRecognizer.AvailableCountries" .list .ro .bo} *AvailableCountries*
+: List of the country codes available on this device for use with
+ SpeechRecognizer. The country codes are derived from the region subtags of
+ the supported BCP-47 language tags (for example, US from en-US). An empty
+ list is returned if the device does not support speech recognition or if
+ the list has not yet been populated.
+
+{:id="SpeechRecognizer.AvailableLanguages" .list .ro .bo} *AvailableLanguages*
+: List of the languages available on this device for use with SpeechRecognizer.
+ The languages are provided as
+ [BCP-47](https://en.wikipedia.org/wiki/IETF_language_tag) language tags
+ such as en-US and es-MX. An empty list is returned if the device does not
+ support speech recognition or if the list has not yet been populated.
+
 {:id="SpeechRecognizer.Language" .text .bo} *Language*
 : Suggests the language to use for recognizing speech. An empty string (the default) will
  use the system's default language.

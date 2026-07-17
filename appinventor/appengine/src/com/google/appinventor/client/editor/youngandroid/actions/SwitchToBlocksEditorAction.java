@@ -26,7 +26,7 @@ public class SwitchToBlocksEditorAction implements Command {
       long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
       toolbar.switchToScreen(projectId, toolbar.getCurrentProject().currentScreen, DesignToolbar.View.BLOCKS);
       toolbar.toggleEditor(true);       // Gray out the blocks button and enable the designer button
-      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     }
   }
 }

@@ -148,7 +148,7 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
    */
   public void fireComponentPropertyChanged(MockComponent component,
                                            String propertyName, String propertyValue) {
-    for (DesignerChangeListener listener : changeListeners) {
+    for (DesignerChangeListener listener : new ArrayList<>(changeListeners)) {
       listener.onComponentPropertyChanged(component, propertyName, propertyValue);
     }
   }
@@ -157,7 +157,7 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
    * Triggers a component removed event to be sent to the listener on the listener list.
    */
   public void fireComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
-    for (DesignerChangeListener listener : changeListeners) {
+    for (DesignerChangeListener listener : new ArrayList<>(changeListeners)) {
       listener.onComponentRemoved(component, permanentlyDeleted);
     }
   }
@@ -166,7 +166,7 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
    * Triggers a component added event to be sent to the listener on the listener list.
    */
   public void fireComponentAdded(MockComponent component) {
-    for (DesignerChangeListener listener : changeListeners) {
+    for (DesignerChangeListener listener : new ArrayList<>(changeListeners)) {
       listener.onComponentAdded(component);
     }
   }
@@ -175,7 +175,7 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
    * Triggers a component renamed event to be sent to the listener on the listener list.
    */
   public void fireComponentRenamed(MockComponent component, String oldName) {
-    for (DesignerChangeListener listener : changeListeners) {
+    for (DesignerChangeListener listener : new ArrayList<>(changeListeners)) {
       listener.onComponentRenamed(component, oldName);
     }
   }
@@ -184,8 +184,19 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
    * Triggers a component selection change event to be sent to the listener on the listener list.
    */
   public void fireComponentSelectionChange(MockComponent component, boolean selected) {
-    for (DesignerChangeListener listener : changeListeners) {
+    for (DesignerChangeListener listener : new ArrayList<>(changeListeners)) {
       listener.onComponentSelectionChange(component, selected);
+    }
+  }
+
+  /**
+   * Triggers a source structure item selection event to be sent to the listener
+   * on the listener list.
+   */
+  @Override
+  public void fireSourceStructureItemSelected(MockComponent component, NativeEvent source) {
+    for (DesignerChangeListener listener : changeListeners) {
+      listener.onSourceStructureItemSelected(component, source);
     }
   }
 

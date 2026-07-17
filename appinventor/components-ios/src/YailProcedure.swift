@@ -51,7 +51,7 @@ import SchemeKit
   }
 
   @objc public func call(args: [Any]) -> Any {
-    let correct_args = args[0] is SCMSymbol ? Array(args.dropFirst()) : args
+    let correct_args = args.first is SCMSymbol ? Array(args.dropFirst()) : args
     let returnVal = executable.invoke(withArguments: correct_args)
 
     return returnVal ?? YailProcedure.RETURN_VALUE_WHEN_NULL

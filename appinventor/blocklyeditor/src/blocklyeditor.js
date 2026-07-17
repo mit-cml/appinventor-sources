@@ -23,6 +23,7 @@ goog.require('AI.Blockly.ComponentDatabase');
 goog.require('AI.Blockly.CustomizableConnectionChecker');
 goog.require('AI.Blockly.Drawer');
 goog.require('AI.Blockly.ExportBlocksImage');
+goog.require('AI.Blockly.FieldMultilineInput');
 goog.require('AI.Blockly.Flydown');
 goog.require('AI.Blockly.ProcedureDatabase');
 goog.require('AI.Blockly.ReplMgr');
@@ -968,6 +969,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
 .blocklyZoom:hover, .blocklyTrash:hover, .blocklyMultiselect:hover { cursor: pointer; }
 .blocklyZoom>image, .blocklyZoom>image:hover { opacity: 1.0; }
 .blocklyMultiselect>image, .blocklyMultiselect>image:hover { opacity: 1.0; }
+.blocklyTrash { opacity: 1.0 !important; }
 `);
     } catch (e) {
       // Thrown if we've already registered the CSS. This should only happen in unit tests.
@@ -1154,10 +1156,10 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Blockly.WorkspaceSvg} workspace
  */
 AI.inject = function(container, workspace, isDarkMode=false) {
+  Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   if (isDarkMode) {
     Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
   }
-  Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();
   var gridSnap = top.BlocklyPanel_getSnapEnabled && top.BlocklyPanel_getSnapEnabled();

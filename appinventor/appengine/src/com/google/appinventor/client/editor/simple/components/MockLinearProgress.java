@@ -16,13 +16,14 @@ public final class MockLinearProgress extends MockVisibleComponent {
   private static final String PROPERTY_NAME_INDETERMINATE = "Indeterminate";
   private static final String PROPERTY_NAME_PROGRESS_COLOR = "ProgressColor";
   private static final String PROPERTY_NAME_INDETERMINATE_COLOR = "IndeterminateColor";
+  private static final String DEFAULT_COLOR_BLUE = "&HFF0000FF";
 
   private HorizontalPanel horizontalPanel;
   private SimplePanel leftBar;
   private SimplePanel middleBar;
   private boolean isIndeterminate = true;
-  private String progressColorBackup = "&HFF2196F2";
-  private String indeterminateColorBackup = "&HFF2196F2";
+  private String progressColorBackup = DEFAULT_COLOR_BLUE;
+  private String indeterminateColorBackup = DEFAULT_COLOR_BLUE;
 
   public MockLinearProgress(SimpleEditor editor) {
     super(editor, TYPE, images.linearProgress());
@@ -47,12 +48,11 @@ public final class MockLinearProgress extends MockVisibleComponent {
     horizontalPanel.add(middleBar);
 
     initComponent(horizontalPanel);
+    setIndeterminate(Boolean.toString(isIndeterminate));
   }
 
   private void setProgressColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  //white
-    }
+    text = getResolvedColor(text);
     progressColorBackup = text;
     if (!isIndeterminate) {
       setColor(text);
@@ -60,13 +60,15 @@ public final class MockLinearProgress extends MockVisibleComponent {
   }
 
   private void setIndeterminateColorProperty(String text) {
-    if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  //white
-    }
+    text = getResolvedColor(text);
     indeterminateColorBackup = text;
     if (isIndeterminate) {
       setColor(text);
     }
+  }
+
+  private String getResolvedColor(String text) {
+    return MockComponentsUtil.isDefaultColor(text) ? DEFAULT_COLOR_BLUE : text;
   }
 
   private void setColor(String text) {

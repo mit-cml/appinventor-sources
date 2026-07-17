@@ -207,26 +207,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
-   * Moves the project to trash.
-   * @param projectId  project ID
-   */
-  @Override
-  public UserProject moveToTrash(long projectId) {
-    String userId = userInfoProvider.getUserId();
-    return getProjectRpcImpl(userId, projectId).setMovedToTrash(userId, projectId, true);
-  }
-
-  /**
-   * Moves the project back to My Projects Tab.
-   * @param projectId  project ID
-   */
-  @Override
-  public UserProject restoreProject(long projectId) {
-    String userId = userInfoProvider.getUserId();
-    return getProjectRpcImpl(userId, projectId).setMovedToTrash(userId, projectId, false);
-  }
-
-  /**
    * Login to the new Gallery
    *
    * Generate a token used to login to the new gallery
@@ -692,7 +672,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     if (sessionId.equals("force")) { // If we are forcing our way -- no check
       return;
     }
-    if (!storedSessionId.equals(sessionId))
+    if (storedSessionId == null || !storedSessionId.equals(sessionId))
       if (AppInventorFeatures.requireOneLogin()) {
         throw new InvalidSessionException("A more recent login has occurred since we started. No further changes will be saved.");
       }

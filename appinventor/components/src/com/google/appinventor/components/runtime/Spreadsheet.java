@@ -33,6 +33,7 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -108,7 +109,7 @@ import java.util.regex.Pattern;
       "finally create a Service Account for the Sheets API.</p>" +
       "<p>Instructions on how to create the Service Account, as well as where to " +
       "find other relevant information for using the Spreadsheet Component, " +
-      "can be found <a href='/reference/other/googlesheets-api-setup.html'>" +
+      "can be found <a href='https://docs.google.com/document/d/10PcV0WGgtedebzxn1H1tu58BP1cSFOIVSUGPwVQ_rsQ'>" +
       "here</a>.</p>",
     nonVisible = true,
     iconName = "images/spreadsheet.png")
@@ -157,7 +158,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
   // Designer Properties
   private String apiKey;
-  private String credentialsPath;
+  private String credentialsPath = "";
   private String spreadsheetID = "";
   // This gets changed to the name of the project by MockSpreadsheet by default
   private String applicationName = "App Inventor";
@@ -234,8 +235,8 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(description = "The JSON File with credentials for the Service Account")
-  public void CredentialsJson(String credentialsPath) {
-    this.credentialsPath = credentialsPath;
+  public void CredentialsJson(@Asset String credentialsPath) {
+    this.credentialsPath = (credentialsPath == null) ? "" : credentialsPath;
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
@@ -500,7 +501,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       "callback event.")
   public void ReadRow (String sheetName, int rowNumber) {
 
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadRow: " + "SpreadsheetID is empty.");
       return;
     }
@@ -519,7 +520,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       public void run () {
         try {
           // If no Credentials.json is provided, attempt the HTTP request
-          if (credentialsPath == null) {
+          if (credentialsPath == null || credentialsPath.isEmpty()) {
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
             try {
@@ -623,10 +624,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       "row of the sheet with the given row number.")
   public void WriteRow (String sheetName, int rowNumber, YailList data) {
 
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("WriteRow: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == "" || credentialsPath == null) {
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
       ErrorOccurred("WriteRow: " + "Credentials JSON file is required.");
       return;
     }
@@ -1032,7 +1033,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       public void run() {
         try {
           // If no Credentials.json is provided, attempt the HTTP request
-          if (credentialsPath == null) {
+          if (credentialsPath == null || credentialsPath.isEmpty()) {
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
             try {
@@ -1240,19 +1241,16 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             .get(spreadsheetID, sheetName).execute();
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
-          // If the data we got is empty, then return so.
-          if (values == null || values.isEmpty()) {
-            ErrorOccurred("AddColumn: No data found");
-            return;
-          }
 
-          // nextCol gets mutated, keep addedColumn as a constant
+          // nextCol gets mutated, keep columnNumber as a constant
           int maxCol = 0;
-          for (List<Object> list : values) {
-            maxCol = Math.max(maxCol, list.size());
+          if (values != null) {
+            for (List<Object> list : values) {
+              maxCol = Math.max(maxCol, list.size());
+            }
           }
           int nextCol = maxCol + 1;
-          final int addedColumn = nextCol;
+          final int columnNumber = nextCol;
           // Converts the col number to the corresponding letter
           String[] alphabet = {
             "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
@@ -1268,7 +1266,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              FinishedAddColumn(addedColumn);
+              FinishedAddColumn(columnNumber);
             }
           });
         } catch (IOException e) {
@@ -1396,7 +1394,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
         try {
           // If no Credentials.json is provided, attempt the HTTP request
-          if (credentialsPath == null) {
+          if (credentialsPath == null || credentialsPath.isEmpty()) {
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
             try {
@@ -1513,10 +1511,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="Given text or a number as `data`, writes the value into the " +
       "cell. Once complete, it triggers the FinishedWriteCell callback event")
   public void WriteCell (String sheetName, String cellReference, Object data) {
-    if (spreadsheetID == "") {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("WriteCell: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == null) {
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
       ErrorOccurred("WriteCell: " + "Credentials JSON is required.");
       return;
     }
@@ -1594,7 +1592,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="On the page with the provided sheetName, reads the cells at " +
       "the given range. Triggers the getRangeReference once complete.")
   public void ReadRange (final String sheetName, final String rangeReference) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ReadRange: " + "SpreadsheetID is empty.");
       return;
     }
@@ -1612,7 +1610,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
         try {
           // If no Credentials.json is provided, attempt the HTTP request
-          if (credentialsPath == null) {
+          if (credentialsPath == null || credentialsPath.isEmpty()) {
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
             try {
@@ -1714,10 +1712,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
       "range. The number of rows and columns in the range reference must " +
       "match the dimensions of the data.")
   public void WriteRange (String sheetName, String rangeReference, YailList data) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("WriteRange: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == null) {
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
       ErrorOccurred("WriteRange: " + "Credentials JSON is required.");
       return;
     }
@@ -1807,10 +1805,10 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
     description="Empties the cells in the given range. Once complete, this " +
       "block triggers the FinishedClearRange callback event.")
   public void ClearRange (String sheetName, String rangeReference) {
-    if (spreadsheetID == "" || spreadsheetID == null) {
+    if (spreadsheetID == null || spreadsheetID.isEmpty()) {
       ErrorOccurred("ClearRange: " + "SpreadsheetID is empty.");
       return;
-    } else if (credentialsPath == null) {
+    } else if (credentialsPath == null || credentialsPath.isEmpty()) {
       ErrorOccurred("ClearRange: " + "Credential JSON is required.");
       return;
     }
@@ -1892,7 +1890,7 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
 
         try {
           // If no Credentials.json is provided, attempt the HTTP request
-          if (credentialsPath == null) {
+          if (credentialsPath == null || credentialsPath.isEmpty()) {
             Log.d(LOG_TAG, "Reading Sheet: No credentials");
             // Cleans the formatted url in case the sheetname needs to be cleaned
             String cleanRangeReference = "";
