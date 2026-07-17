@@ -44,4 +44,8 @@ public interface SimplePalettePanel {
   MockComponent createMockComponent(String name, String type);
 
   boolean isTextboxFocused();
+
+  boolean isMenuOpen();
+
+  boolean shouldSuppressShortcuts();
 }

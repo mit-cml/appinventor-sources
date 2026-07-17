@@ -54,6 +54,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -366,6 +367,15 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
       LOG.severe("onComponentSelectionChange called when loadComplete is false");
     }
 
+  }
+
+  @Override
+  public void onSourceStructureItemSelected(MockComponent component, NativeEvent source) {
+    // Route tree clicks through the normal selection flow so the
+    // setSelectedComponent early-exit for Marker drag (issue #1936) still applies.
+    if (loadComplete && Ode.getInstance().getCurrentFileEditor() == this) {
+      component.select(source);
+    }
   }
 
   // SimpleEditor implementation
@@ -729,11 +739,11 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
           }
         }
       }
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
+    } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.shouldSuppressShortcuts()) {
       SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
-      PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused()) {
+    } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.shouldSuppressShortcuts()) {
+      designProperties.focusFirstCategory();
+    } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.shouldSuppressShortcuts()) {
       AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
     }
   }

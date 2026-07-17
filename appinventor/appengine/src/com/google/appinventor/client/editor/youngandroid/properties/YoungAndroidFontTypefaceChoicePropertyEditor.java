@@ -236,10 +236,12 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
 
       // Check whether our asset was removed.
       String currentValue = property.getValue();
-      if (node.getName().equals(currentValue)) {
-        // Our asset was removed.
-        choices.selectValue(MESSAGES.defaultFontTypeface());
-        property.setValue(MESSAGES.defaultFontTypeface());
+
+      // Check whether our asset was removed.
+      if (assetName.equals(currentValue)) {
+        // Our asset was removed, fallback to default.
+        choices.selectValue("0");
+        property.setValue("0");
       }
 
       // Remove the asset from the list.

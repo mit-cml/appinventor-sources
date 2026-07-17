@@ -933,6 +933,16 @@ This is a visible component that displays a list of text and image elements in y
 : Sets visibility of the filter bar. `true`{:.logic.block} will show the bar,
  `false`{:.logic.block} will hide it.
 
+{:id="ListView.TextAlignmentDetail" .number} *TextAlignmentDetail*
+: Specifies the alignment of the detail text in ListView elements: center, normal
+ (e.g., left-justified if text is written left to right), or opposite
+ (e.g., right-justified if text is written left to right).
+
+{:id="ListView.TextAlignmentMain" .number} *TextAlignmentMain*
+: Specifies the alignment of the main text in ListView elements: center, normal
+ (e.g., left-justified if text is written left to right), or opposite
+ (e.g., right-justified if text is written left to right).
+
 {:id="ListView.TextColor" .color} *TextColor*
 : The text color of the `ListView` items.
 
@@ -1244,6 +1254,9 @@ Top-level component containing all other components in the program.
 : A number that encodes how the contents of the arrangement are aligned vertically. The choices
  are: `1` (aligned at the top), `2` (vertically centered), `3` (aligned at the bottom). Vertical
  alignment has no effect if the screen is scrollable.
+
+{:id="Screen.AndroidMinSdk" .text .wo .do} *AndroidMinSdk*
+: The minimum Android API level required to install this app. The build system may automatically raise this value if selected components require a higher APIlevel.
 
 {:id="Screen.AppName" .text .wo .do} *AppName*
 : This is the display name of the installed application in the phone. If the `AppName` is blank,

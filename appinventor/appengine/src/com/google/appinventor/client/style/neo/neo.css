@@ -1072,6 +1072,10 @@ select.ode-PropertyEditor[disabled] {
   overflow: auto;
 }
 
+.ode-DialogBox-message a {
+  color: selected-color;
+}
+
 .ode-DialogBox .dialogContent td a {
     color: selected-color;
 }
@@ -1162,6 +1166,16 @@ path.ode-SimpleMockMapFeature-selected {
   .ode-DialogBox .dialogContent td {
     padding: 2px 5px;
     color: context-menu-color;
+  }
+
+  .ode-DialogBox .settings-labeled-textbox td:first-child {
+    width: 60%;
+  }
+  
+  .ode-DialogBox .uploadDialogContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .ode-DialogBox .gwt-FileUpload {

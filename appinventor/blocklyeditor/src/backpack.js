@@ -469,16 +469,12 @@ AI.Blockly.Backpack = class extends Blockly.DragTarget {
    * @param {boolean} store If true, store the backpack to the server.
    */
   addToBackpack(block, store) {
-    // Copy is made of the expanded block.
-    const isCollapsed = block.isCollapsed();
-    block.setCollapsed(false);
     const xmlBlock = Blockly.Xml.blockToDom(block);
     Blockly.Xml.deleteNext(xmlBlock);
     // Encode start position in XML.
     const xy = block.getRelativeToSurfaceXY();
     xmlBlock.setAttribute('x', this.workspace_.RTL ? -xy.x : xy.x);
     xmlBlock.setAttribute('y', xy.y);
-    block.setCollapsed(isCollapsed);
 
     // Add the block to the backpack
     this.getContents()

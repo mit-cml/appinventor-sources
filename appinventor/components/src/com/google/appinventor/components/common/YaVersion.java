@@ -610,7 +610,11 @@ public class YaVersion {
   // - CHART_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 233:
   // - CHATBOT_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 233;
+  // For YOUNG_ANDROID_VERSION 234:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 39.
+  // For YOUNG_ANDROID_VERSION 235:
+  // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 4
+  public static final int YOUNG_ANDROID_VERSION = 235;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -710,7 +714,9 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 38
   // - Control: run-in-background & run-after-period were added.
   // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
-  public static final int BLOCKS_LANGUAGE_VERSION = 38;
+  // For BLOCKS_LANGUAGE_VERSION 39
+  // - The Multiline Text block was added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 39;
 
   // ................................. Target SDK Version Number ..................................
 
@@ -926,7 +932,9 @@ public class YaVersion {
   // - Added CreateImage and GotResponseWithImage blocks
   // For CHATBOT_COMPONENT_VERSION 5:
   // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
-  public static final int CHATBOT_COMPONENT_VERSION = 5;
+  // For CHATBOT_COMPONENT_VERSION 6:
+  // - Added GetModels and GetProviders methods with GotModels and GotProviders events
+  public static final int CHATBOT_COMPONENT_VERSION = 6;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1087,7 +1095,9 @@ public class YaVersion {
   // - Add DefaultFileScope designer property.
   // For FORM_COMPONENT_VERSION 31:
   // - The default theme was changed to Device Default.
-  public static final int FORM_COMPONENT_VERSION = 31;
+  // For FORM_COMPONENT_VERSION 32:
+  // - Added the AndroidMinSdk designer property.
+  public static final int FORM_COMPONENT_VERSION = 32;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -1234,7 +1244,10 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 10:
   // - Changed TextSize property to FontSize
   // - Add new layout
-  public static final int LISTVIEW_COMPONENT_VERSION = 10;
+  // For LISTVIEW_COMPONENT_VERSION 11:
+  // - Added TextAlignmentMain property
+  // - Added TextAlignmentDetail property
+  public static final int LISTVIEW_COMPONENT_VERSION = 11;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1447,7 +1460,7 @@ public class YaVersion {
   // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
   public static final int REGRESSION_COMPONENT_VERSION = 2;
 
-  public static final int SHARING_COMPONENT_VERSION = 1;
+  public static final int SHARING_COMPONENT_VERSION = 2;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
@@ -1483,7 +1496,10 @@ public class YaVersion {
   //   property is set to False.
   // For SPEECHRECOGNIZER_COMPONENT_VERSION 3:
   // - The Language property was added.
-  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 3;
+  // For SPEECHRECOGNIZER_COMPONENT_VERSION 4:
+  // - The AvailableLanguages property was added.
+  // - The AvailableCountries property was added.
+  public static final int SPEECHRECOGNIZER_COMPONENT_VERSION = 4;
 
   // For SPREADSHEET_COMPONENT_VERSION 2:
   // - Added the HasHeaders property

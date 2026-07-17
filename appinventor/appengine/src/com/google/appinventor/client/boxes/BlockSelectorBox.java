@@ -109,7 +109,7 @@ public final class BlockSelectorBox extends Box {
   // Source structure explorer (for components and built-in blocks)
   private final SourceStructureExplorer sourceStructureExplorer;
 
-  private final Map<BlocksLanguage, TreeItem> languageTreeItems;
+  private final Map<String, TreeItem> languageTreeItems;
 
   private List<BlockDrawerSelectionListener> drawerListeners;
 
@@ -183,8 +183,10 @@ public final class BlockSelectorBox extends Box {
    *
    * @return tree item
    */
-  public TreeItem getBuiltInBlocksTree(BlocksLanguage language, DesignerRootComponent form) {
-    TreeItem rootItem = languageTreeItems.get(language);
+  public TreeItem getBuiltInBlocksTree(BlocksLanguage language, DesignerRootComponent form,
+      String contextId) {
+    String cacheKey = language.getName() + ":" + contextId;
+    TreeItem rootItem = languageTreeItems.get(cacheKey);
     if (rootItem != null) {
       return rootItem;
     }
@@ -199,12 +201,30 @@ public final class BlockSelectorBox extends Box {
         public void onSelected(NativeEvent event) {
           fireBuiltinDrawerSelected(category.getCategory());
         }
+
+        @Override
+        public boolean isInitiallyExpanded() {
+          return !"Procedures".equals(category.getCategory());
+        }
       };
       itemNode.setUserObject(sourceItem);
+      if ("Procedures".equals(category.getCategory())) {
+        itemNode.getElement().setAttribute("data-name", contextId + "_builtin_Procedures");
+        TreeItem moreItemNode = new TreeItem(new HTML("<span>" + MESSAGES.builtinMoreLabel()
+            + "</span>"));
+        SourceStructureExplorerItem moreSourceItem = new BlockSelectorItem() {
+          @Override
+          public void onSelected(NativeEvent event) {
+            fireBuiltinDrawerSelected("ProceduresMore");
+          }
+        };
+        moreItemNode.setUserObject(moreSourceItem);
+        itemNode.addItem(moreItemNode);
+      }
       rootItem.addItem(itemNode);
     }
     rootItem.setState(true);
-    languageTreeItems.put(language, rootItem);
+    languageTreeItems.put(cacheKey, rootItem);
     return rootItem;
   }
 
@@ -216,11 +236,11 @@ public final class BlockSelectorBox extends Box {
    *          only component types that appear in this Form will be included
    * @return tree item for this form
    */
-  public TreeItem getGenericComponentsTree(DesignerRootComponent form) {
+  public TreeItem getGenericComponentsTree(DesignerRootComponent form, String contextId) {
     Map<String, String> typesAndIcons = Maps.newHashMap();
     form.collectTypesAndIcons(typesAndIcons);
     TreeItem advanced = new TreeItem(new HTML("<span>" + MESSAGES.anyComponentLabel() + "</span>"));
-    advanced.getElement().setAttribute("data-name", "AnyComponent");
+    advanced.getElement().setAttribute("data-name", contextId + "_builtin_AnyComponent");
     advanced.setUserObject(new BlockSelectorItem() {
       @Override
       public boolean isInitiallyExpanded() {

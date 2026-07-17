@@ -59,7 +59,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_IMAGEWIDTH = "ImageWidth";
   protected static final String PROPERTY_NAME_CHECKED = "Checked"; // checkbox and radio button
   protected static final String PROPERTY_NAME_ON = "On"; // toggle switch
-  protected static final String PROPERTY_NAME_HINT = "HintText";
+  protected static final String PROPERTY_NAME_HINT = "Hint";
+  protected static final String PROPERTY_NAME_HINT_TEXT = "HintText";
   protected static final String PROPERTY_NAME_HTMLFORMAT = "HTMLFormat";
   protected static final String PROPERTY_NAME_VISIBLE = "Visible";
   protected static final String PROPERTY_NAME_WIDTH = "Width";
@@ -70,6 +71,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_TOP = "Top";
   protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
+  protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_MAIN = "TextAlignmentMain";
+  protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_DETAIL = "TextAlignmentDetail";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!

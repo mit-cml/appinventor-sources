@@ -791,10 +791,6 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-800;
 }
 
-.ode-DialogBox .ExtendedText {
-  color: top-panel-color;
-}
-
 .ode-DialogBox .gwt-Tree {
   border: thin solid gray-300;
 }

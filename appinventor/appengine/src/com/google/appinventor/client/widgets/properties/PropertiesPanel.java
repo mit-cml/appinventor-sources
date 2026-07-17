@@ -169,6 +169,15 @@ public class PropertiesPanel extends Composite implements ComponentDatabaseChang
   }
 
   /**
+   * Focuses the first category header in the panel, if one exists.
+   */
+  public void focusFirstCategory() {
+    if (panel.getWidgetCount() > 0) {
+      ((CollapsibleCategoryPanel) panel.getWidget(0)).focus();
+    }
+  }
+
+  /**
    * Set the label at the top of the properties panel. Note that you have
    * to do this after calling setProperties because it clears the label!
    * @param name

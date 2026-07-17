@@ -104,6 +104,17 @@ public interface DesignerRootComponent {
 
   void fireComponentSelectionChange(MockComponent component, boolean selected);
 
+  /**
+   * Fires a source structure item selection event to all listeners. Unlike
+   * {@link #fireComponentSelectionChange}, this fires on every click of a
+   * tree item in the source structure explorer, not just on actual selection
+   * state changes.
+   *
+   * @param component  the component whose tree item was clicked
+   * @param source  the native event from the click
+   */
+  void fireSourceStructureItemSelected(MockComponent component, NativeEvent source);
+
   void fireComponentPropertyChanged(MockComponent component, String propertyName,
                                     String propertyValue);
 
