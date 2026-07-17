@@ -5,6 +5,7 @@
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
+	"Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS": "This is a duplicate key - the current value has been overwritten ",
 	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "This image references the following blocks which require extensions that are not present in the project:\n\n",
 	"Blockly.Msg.ERROR_PARSING_XML": "Error: Failed to parse XML from the PNG file. Please try again.",
 	"Blockly.Msg.UNDO": "Undo",
@@ -752,11 +753,11 @@
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_VALUE": "value",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX": "matrix",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM": "dim",
-	
+
 	"Blockly.Msg.LANG_MATRICES_GET_ROW": "get matrix row",
 	"Blockly.Msg.LANG_MATRICES_GET_ROW_TOOLTIP": "Returns the row of the matrix",
 	"Blockly.Msg.LANG_MATRICES_GET_ROW_HELPURL": "/reference/blocks/matrices.html#getrow",
-	
+
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN": "get matrix column",
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_TOOLTIP": "Returns the column of the matrix",
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_HELPURL": "/reference/blocks/matrices.html#getcolumn",
