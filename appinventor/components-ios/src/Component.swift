@@ -19,7 +19,7 @@ public enum AccelerometerSensitivity: Int32 {
     case strong = 3
 }
 
-public enum ButtonShape: Int32 {
+public enum ButtonShapeStyle: Int32 {
     case normal
     case rounded
     case rect

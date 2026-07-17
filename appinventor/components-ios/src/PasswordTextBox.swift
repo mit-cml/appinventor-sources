@@ -57,7 +57,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
       }
     }
   }
-  
+
   open var textColor: UIColor? {
     get {
       return _field.textColor
@@ -107,7 +107,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     _field.endEditing(true)
   }
 
-  // prevents clearing of password field when changing 
+  // prevents clearing of password field when changing
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
     guard !_readOnly else {
       return false
@@ -136,7 +136,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
     _field.text = ""
     _field.text = text
   }
-  
+
   func setTextbase(_ base: TextBoxBase) {
     _base = base
     _field.addTarget(base, action: #selector(TextBoxBase.textFieldChanged(_:)), for: .editingChanged)
@@ -145,7 +145,7 @@ class PasswordTextBoxAdapter: NSObject, AbstractMethodsForTextBox, UITextFieldDe
   func textFieldDidBeginEditing(_ textField: UITextField) {
     _base?.GotFocus()
   }
-  
+
   func textFieldDidEndEditing(_ textField: UITextField) {
     _base?.LostFocus()
   }
@@ -183,9 +183,9 @@ open class PasswordTextBox: TextBoxBase {
     didSet {
       _adapter.toggleVisible(PasswordVisible)
       // maintain proper type face
-      FontTypeface = FontTypeface + 0
+      FontTypeface = FontTypeface
     }
   }
-  
-  
+
+
 }

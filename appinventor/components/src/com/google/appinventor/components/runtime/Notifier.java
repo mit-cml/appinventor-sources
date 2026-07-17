@@ -28,12 +28,14 @@ import android.view.View;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.NotifierLength;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.RetValManager;
@@ -451,9 +453,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
       defaultValue = Component.TOAST_LENGTH_LONG + "")
-  @SimpleProperty(
-      userVisible = false)
-  public void NotifierLength(int length){
+  @SimpleProperty
+  public void NotifierLength(@Options(NotifierLength.class) int length){
     notifierLength = length;
   }
 
@@ -463,8 +464,19 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   @SimpleProperty(
       description="Specifies the length of time that the alert is shown -- either \"short\" or \"long\".",
       category = PropertyCategory.APPEARANCE)
-  public int NotifierLength() {
+  public @Options(NotifierLength.class) int NotifierLength() {
     return notifierLength;
+  }
+
+  /**
+   * Returns the alert's background color.
+   *
+   * @return   text RGB color with alpha
+   */
+  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).",
+      category = PropertyCategory.APPEARANCE)
+  public int BackgroundColor() {
+    return backgroundColor;
   }
 
   /**

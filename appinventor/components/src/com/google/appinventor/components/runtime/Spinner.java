@@ -18,13 +18,16 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TextAlignment;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
@@ -300,7 +303,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       category = PropertyCategory.APPEARANCE,
       description = "Left, center, or right.",
       userVisible = false)
-  public int TextAlignment() {
+  public @Options(TextAlignment.class) int TextAlignment() {
     return adapter.getTextAlignment();
   }
 
@@ -316,7 +319,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
       defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty(userVisible = false)
-  public void TextAlignment(int alignment) {
+  public void TextAlignment(@Options(TextAlignment.class) int alignment) {
     adapter.setTextAlignment(alignment);
   }
 
@@ -414,7 +417,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       category = PropertyCategory.APPEARANCE,
       description = "Font family for spinner text.",
       userVisible = false)
-  public String FontTypeface() {
+  public @Options(FontTypeface.class) String FontTypeface() {
     return adapter.getFontTypeface();
   }
 
@@ -431,7 +434,7 @@ public final class Spinner extends TouchComponent<android.widget.Spinner> implem
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
-  public void FontTypeface(String typeface) {
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     adapter.setFontTypeface(typeface);
   }
 

@@ -46,6 +46,31 @@ func getFontTypeface(font: UIFont?, typeFace: Typeface) -> UIFont? {
   }
 }
 
+func getFontTypeface(font: UIFont?, typeFace: String) -> UIFont? {
+  if let rawValue = Int32(typeFace), let type = Typeface(rawValue: rawValue) {
+    return getFontTypeface(font: font, typeFace: type)
+  }
+  if let descriptor = font?.fontDescriptor, let size = font?.pointSize,
+     let customFont = UIFont(name: typeFace, size: size) {
+    var result: UIFont? = customFont
+    if descriptor.symbolicTraits.contains(.traitBold) {
+      result = getFontTrait(font: result, trait: .traitBold, shouldSet: true)
+    }
+    if descriptor.symbolicTraits.contains(.traitItalic) {
+      result = getFontTrait(font: result, trait: .traitItalic, shouldSet: true)
+    }
+    return result ?? customFont
+  }
+  return font
+}
+
+func getTypeface(_ typeFace: String) -> Typeface? {
+  if let rawValue = Int32(typeFace) {
+    return Typeface(rawValue: rawValue)
+  }
+  return nil
+}
+
 func getFontSize(font: UIFont?, size: Float32) -> UIFont? {
   if let descriptor = font?.fontDescriptor {
     return UIFont(descriptor: descriptor, size: CGFloat(size))
@@ -53,4 +78,3 @@ func getFontSize(font: UIFont?, size: Float32) -> UIFont? {
     return font
   }
 }
-
