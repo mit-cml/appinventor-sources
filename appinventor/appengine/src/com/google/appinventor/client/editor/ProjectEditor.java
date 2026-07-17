@@ -15,6 +15,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.SourceNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.common.collect.Maps;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 
@@ -316,6 +317,11 @@ public abstract class ProjectEditor extends Composite {
       }
       ode.getEditorManager().scheduleAutoSave(projectSettings);
     }
+  }
+
+  public final void saveProjectSettings(Command command) {
+    ProjectSettings projectSettings = project.getSettings();
+    projectSettings.saveSettings(command);
   }
 
   /**

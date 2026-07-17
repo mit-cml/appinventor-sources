@@ -24,12 +24,15 @@ import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockFusionTablesControl;
+import com.google.appinventor.client.editor.youngandroid.i18n.TranslationEditor;
+import com.google.appinventor.client.editor.youngandroid.i18n.TranslationDesignerChangeListener;
 import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.properties.json.ClientJsonString;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.properties.json.JSONArray;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -127,6 +130,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
    // variable which open the ProjectPropertyDialog(per project)
   private ProjectPropertiesDialogBox propertyDialogBox = null;
+  private TranslationEditor translationEditor = null;
+  private final Map<String, TranslationDesignerChangeListener> translationChangeListeners =
+    new HashMap<String, TranslationDesignerChangeListener>();
 
   private String defaultCloudDBToken = null;
 
@@ -323,6 +329,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       }
     }
 
+    addTranslationEditor();
+
     // New project loading logic
     // 1. Create all editors
     // 2. Load all files
@@ -468,6 +476,58 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     return components;
   }
 
+  public List<String> getFormNames() {
+    List<String> formNames = new ArrayList<String>(editorMap.keySet());
+    Collections.sort(formNames);
+    return formNames;
+  }
+
+  public List<String> getComponentPropertyNames(String formName, String componentName) {
+    List<String> propertyNames = new ArrayList<String>();
+
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null) {
+      return propertyNames;
+    }
+
+    MockComponent component = editorSet.formEditor.getComponents().get(componentName);
+    if (component == null) {
+      return propertyNames;
+    }
+
+    for (EditableProperty property : component.getProperties()) {
+      propertyNames.add(property.getName());
+    }
+
+    Collections.sort(propertyNames);
+    return propertyNames;
+  }
+
+  public String getComponentPropertyValue(String formName, String componentName,
+     String propertyName) {
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null) {
+      return "";
+    }
+
+    MockComponent component = editorSet.formEditor.getComponents().get(componentName);
+    if (component == null || !component.hasProperty(propertyName)) {
+      return "";
+    }
+
+    return component.getPropertyValue(propertyName);
+  }
+
+  public String getComponentType(String formName, String componentName) {
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null) {
+      return "";
+    }
+
+    MockComponent component = editorSet.formEditor.getComponents().get(componentName);
+    return component == null ? "" : component.getType();
+  }
+
   public Set<String> getComponentTypes(String formName) {
     Set<String> types = new HashSet<String>();
     EditorSet editorSet = editorMap.get(formName);
@@ -574,6 +634,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           pos = -pos - 1;
         }
         insertFileEditor(newDesigner, pos);
+        registerTranslationChangeListener(entityName);
         if (isLastOpened(entityName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
@@ -621,9 +682,53 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     addFileEditorByType(newBlocksEditor);
   }
 
+  private void addTranslationEditor() {
+    if (translationEditor != null) {
+      return;
+    }
+
+    translationEditor = new TranslationEditor(this, projectRootNode);
+    insertFileEditor(translationEditor, fileIds.size());
+    addFileEditorByType(translationEditor);
+    Ode.getInstance().getDesignToolbar().addTranslationEditor(projectRootNode.getProjectId(),
+        translationEditor);
+
+    for (String formName : editorMap.keySet()) {
+      registerTranslationChangeListener(formName);
+    }
+  }
+
+  /**
+   * Registers a change listener for translation updates after the form editor has loaded.
+   */
+  private void registerTranslationChangeListener(String formName) {
+    if (translationEditor == null || translationChangeListeners.containsKey(formName)) {
+      return;
+    }
+
+    EditorSet editorSet = editorMap.get(formName);
+    if (editorSet == null || editorSet.formEditor == null
+        || !fileIds.contains(editorSet.formEditor.getFileId())) {
+      return;
+    }
+
+    TranslationDesignerChangeListener listener = new TranslationDesignerChangeListener(
+        formName, translationEditor.getTranslationPanel());
+    editorSet.formEditor.getRoot().addDesignerChangeListener(listener);
+    translationChangeListeners.put(formName, listener);
+
+    LOG.info("Registered translation change listener for form " + formName);
+  }
+
   private void removeFormEditor(String formName) {
     if (editorMap.containsKey(formName)) {
       EditorSet editors = editorMap.get(formName);
+
+      TranslationDesignerChangeListener listener = translationChangeListeners.remove(formName);
+      if (listener != null && editors.formEditor != null) {
+        editors.formEditor.getRoot().removeDesignerChangeListener(listener);
+      }
+
       if (editors.blocksEditor == null) {
         editorMap.remove(formName);
       } else {

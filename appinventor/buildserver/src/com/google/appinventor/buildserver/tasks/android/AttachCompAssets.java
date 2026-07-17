@@ -17,7 +17,7 @@ import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.nio.charset.StandardCharsets;
 
 /**
  * compiler.attachCompAssets()
@@ -25,6 +25,9 @@ import java.io.IOException;
 
 @BuildType(apk = true, aab = true)
 public class AttachCompAssets implements AndroidTask {
+
+  private static final String I18N_ASSET_DIRECTORY = "i18n";
+  private static final String I18N_TRANSLATIONS_FILE = "translations.json";
 
   @Override
   public TaskResult execute(AndroidCompilerContext context) {
@@ -70,11 +73,33 @@ public class AttachCompAssets implements AndroidTask {
           }
         }
       }
+      writeI18nTranslationsAsset(context, mergedAssetDir);
     } catch (IOException e) {
       context.getReporter().error("There was an unknown error while processing assets", true);
       return TaskResult.generateError(e);
     }
 
     return TaskResult.generateSuccess();
+  }
+
+  // TODO: Generate per-locale values-*/strings.xml resources once the i18n packaging format is finalized.
+  private void writeI18nTranslationsAsset(AndroidCompilerContext context, File mergedAssetDir)
+      throws IOException {
+    String translationsJson = context.getProject().getI18nTranslations();
+
+    context.getReporter().info("i18n translations length = "
+        + (translationsJson == null ? "null" : translationsJson.length()));
+
+    if (translationsJson == null || translationsJson.trim().length() == 0) {
+      return;
+    }
+
+    File i18nDir = ExecutorUtils.createDir(mergedAssetDir, I18N_ASSET_DIRECTORY);
+    File translationsFile = new File(i18nDir, I18N_TRANSLATIONS_FILE);
+
+    context.getReporter().info("Writing i18n translations asset to "
+        + translationsFile.getAbsolutePath());
+
+    Files.write(translationsJson.getBytes(StandardCharsets.UTF_8), translationsFile);
   }
 }

@@ -84,6 +84,7 @@ import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
+import com.google.appinventor.components.runtime.util.I18nTranslationManager;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -91,6 +92,7 @@ import com.google.appinventor.components.runtime.util.PermissionRegistry;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -176,6 +178,7 @@ public class Form extends AppInventorCompatActivity
 
   protected String formName;
   protected String componentName;
+  private final java.util.Map<String, Component> componentsByName = Maps.newHashMap();
 
   private boolean screenInitialized;
 
@@ -430,6 +433,9 @@ public class Form extends AppInventorCompatActivity
 
     // Add application components to the form
     $define();
+
+    // Load bundled translation data before the user Initialize event runs.
+    I18nTranslationManager.load(this);
 
     // Special case for Event.Initialize(): all other initialize events are triggered after
     // completing the constructor. This doesn't work for Android apps though because this method
@@ -2680,7 +2686,8 @@ public class Form extends AppInventorCompatActivity
     onCreateOptionsMenuListeners.clear();
     onOptionsItemSelectedListeners.clear();
     screenInitialized = false;
-    // Notifiy those who care
+    clearComponentsByName();
+    // Notify those who care
     for (OnClearListener onClearListener : onClearListeners) {
       onClearListener.onClear();
     }
@@ -2824,6 +2831,48 @@ public class Form extends AppInventorCompatActivity
 
   public static boolean getCompatibilityMode() {
     return sCompatibilityMode;
+  }
+
+  /**
+   * Looks up a dynamic translation by key.
+   *
+   * @param key The dynamic translation key, such as welcome_message.
+   * @return The translated text, or an empty string if the key is missing.
+   */
+  @SimpleFunction(description = "Looks up a dynamic translation by key.")
+  public String Translate(String key) {
+    return I18nTranslationManager.lookupDynamic(this, key, null);
+  }
+
+  /**
+   * Looks up a dynamic translation by key and replaces placeholders using a dictionary.
+   *
+   * @param key The dynamic translation key, such as welcome_message.
+   * @param values A dictionary mapping placeholder names to replacement values.
+   * @return The translated and formatted text, or an empty string if the key is missing.
+   */
+  @SimpleFunction(description = "Looks up a dynamic translation by key and replaces placeholders using a dictionary.")
+  public String TranslateWithValues(String key, YailDictionary values) {
+    return I18nTranslationManager.lookupDynamic(this, key, toStringMap(values));
+  }
+
+  private Map<String, String> toStringMap(YailDictionary values) {
+    Map<String, String> result = new HashMap<String, String>();
+
+    if (values == null) {
+      return result;
+    }
+
+    for (Object key : values.keySet()) {
+      if (key == null) {
+        continue;
+      }
+
+      Object value = values.get(key);
+      result.put(key.toString(), value == null ? "" : value.toString());
+    }
+
+    return result;
   }
 
   /**
@@ -3091,9 +3140,36 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  public void registerComponent(String componentName, Component component) {
+    if (componentName != null && component != null) {
+      componentsByName.put(componentName, component);
+    }
+  }
+
+  public Component lookupComponent(String componentName) {
+    if (componentName == null) {
+      return null;
+    }
+
+    if (componentName.equals(formName)) {
+      return this;
+    }
+
+    return componentsByName.get(componentName);
+  }
+
+  protected void clearComponentsByName() {
+    componentsByName.clear();
+  }
+
+  public String getFormName() {
+    return formName;
+  }
+
   @Override
   public void setComponentName(String componentName) {
     // Note this here will have the same value as formName, but formName is specific to only Forms
     this.componentName = componentName;
+    registerComponent(componentName, this);
   }
 }

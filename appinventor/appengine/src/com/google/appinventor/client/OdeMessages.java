@@ -198,6 +198,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button for switching to the blocks editor")
   String switchToBlocksEditorButton();
 
+  @DefaultMessage("Translations")
+  @Description("Text for the button switching to the translations editor")
+  String switchToTranslationEditorButton();
+
   @DefaultMessage("Designer")
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();

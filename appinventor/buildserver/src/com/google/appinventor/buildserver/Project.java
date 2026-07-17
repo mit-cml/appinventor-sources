@@ -112,6 +112,7 @@ public final class Project {
   private static final String COLOR_ACCENTTAG = "color.accent";
   private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
   private static final String BUILD_NUMBER = "buildnumber";
+  private static final String I18N_TRANSLATIONS = "I18nTranslations";
 
   // Do not leave it empty because even though it compiles
   // alright but Android OS can't install it!
@@ -365,6 +366,10 @@ public final class Project {
 
   public String getBuildNumber() {
     return properties.getProperty(BUILD_NUMBER, DEFAULT_BUILD_NUMBER);
+  }
+
+  public String getI18nTranslations() {
+    return properties.getProperty(I18N_TRANSLATIONS, "");
   }
 
   /**

@@ -51,5 +51,9 @@
                     ui:field="switchToBlocks" align="right">
       <ya:SwitchToBlocksEditorAction />
     </ai:ToolbarItem>
+    <ai:ToolbarItem name="switchToTranslations" caption="{messages.switchToTranslationEditorButton}"
+                    ui:field="switchToTranslations" align="right">
+      <ya:SwitchToTranslationEditorAction />
+    </ai:ToolbarItem>
   </ai:Toolbar>
 </ui:UiBinder>

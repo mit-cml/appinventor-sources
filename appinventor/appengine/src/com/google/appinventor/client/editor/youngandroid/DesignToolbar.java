@@ -79,6 +79,7 @@ public class DesignToolbar extends Toolbar {
     public final Map<String, Screen> screens; // screen name -> Screen
     public String currentScreen; // name of currently displayed screen
     private final long projectId;
+    public FileEditor translationEditor;
 
     public DesignProject(String name, long projectId) {
       this.name = name;
@@ -124,7 +125,8 @@ public class DesignToolbar extends Toolbar {
   // Enum for type of view showing in the design tab
   public enum View {
     DESIGNER,   // Designer editor view
-    BLOCKS  // Blocks editor view
+    BLOCKS,  // Blocks editor view
+    TRANSLATION  // Translation editor view
   }
   public View currentView = View.DESIGNER;
 
@@ -155,7 +157,7 @@ public class DesignToolbar extends Toolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
-
+  @UiField protected ToolbarItem switchToTranslations;
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
@@ -239,6 +241,14 @@ public class DesignToolbar extends Toolbar {
     if (currentView == View.DESIGNER) {
       projectEditor.selectFileEditor(screen.designerEditor);
       toggleEditor(false);
+    } else if (currentView == View.TRANSLATION) {
+      if (currentProject.translationEditor == null) {
+        ErrorReporter.reportError("Translation editor is not available for project "
+            + currentProject.name);
+        return;
+      }
+      projectEditor.selectFileEditor(currentProject.translationEditor);
+      toggleEditor(false);
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
@@ -246,7 +256,9 @@ public class DesignToolbar extends Toolbar {
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
-    screen.blocksEditor.makeActiveWorkspace();
+    if (currentView == View.BLOCKS) {
+      screen.blocksEditor.makeActiveWorkspace();
+    }
     projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED, newScreenName);
   }
@@ -319,6 +331,17 @@ public class DesignToolbar extends Toolbar {
             name, new SwitchScreenAction(projectId, name), new Image(Ode.getImageBundle().form())));
       }
     }
+  }
+
+  public void addTranslationEditor(long projectId, FileEditor translationEditor) {
+    if (!projectMap.containsKey(projectId)) {
+      LOG.warning("DesignToolbar can't find project with id " + projectId
+          + ". Ignoring addTranslationEditor().");
+      return;
+    }
+
+    DesignProject project = projectMap.get(projectId);
+    project.translationEditor = translationEditor;
   }
 
   /*
@@ -394,11 +417,12 @@ public class DesignToolbar extends Toolbar {
   }
 
   public void toggleEditor(boolean blocks) {
-    setButtonEnabled(switchToBlocks.getName(), !blocks);
-    setButtonEnabled(switchToDesign.getName(), blocks);
+    setButtonEnabled(switchToDesign.getName(), currentView != View.DESIGNER);
+    setButtonEnabled(switchToTranslations.getName(), currentView != View.TRANSLATION);
+    setButtonEnabled(switchToBlocks.getName(), currentView != View.BLOCKS);
 
     boolean notOnScreen1 = getCurrentProject() != null
-        && !"Screen1".equals(getCurrentProject().currentScreen);
+        && !YoungAndroidSourceNode.SCREEN1_FORM_NAME.equals(getCurrentProject().currentScreen);
     setButtonEnabled(WIDGET_NAME_REMOVEFORM, notOnScreen1);
   }
 
