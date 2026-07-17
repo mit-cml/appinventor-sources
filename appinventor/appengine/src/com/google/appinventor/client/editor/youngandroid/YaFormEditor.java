@@ -522,7 +522,7 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     if (!isActiveEditor()) {
       return;  // Not the active editor
     }
-    if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.isTextboxFocused()
+    if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.shouldSuppressShortcuts()
         && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
       getVisibleComponentsPanel().focusCheckbox();
     } else {

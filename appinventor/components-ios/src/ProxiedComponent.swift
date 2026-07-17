@@ -37,11 +37,17 @@ open class ProxiedComponent<
     Response: HasResponse & Message
 >: NonvisibleComponent, URLSessionDelegate, LifecycleDelegate where Request.T == T {
 
-  var url: URL
+  var url: URL {
+    didSet {
+      self.apiUrl = url.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("model_list/v1", isDirectory: false)
+    }
+  }
+  var apiUrl: URL
   private var _urlSession: URLSession! = nil
 
   public init(_ parent: ComponentContainer, _ url: URL) {
     self.url = url
+    self.apiUrl = url.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("model_list/v1", isDirectory: false)
     super.init(parent)
     _urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self,
                              delegateQueue: nil)

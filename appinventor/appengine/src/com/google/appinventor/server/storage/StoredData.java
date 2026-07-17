@@ -99,9 +99,6 @@ public class StoredData {
 
     // The specially formatted project history
     String history;
-
-    //adding a boolean variable to mark deleted project
-    boolean projectMovedToTrashFlag;
   }
 
   // Project properties specific to the user

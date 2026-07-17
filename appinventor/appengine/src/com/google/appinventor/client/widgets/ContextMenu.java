@@ -7,6 +7,9 @@
 package com.google.appinventor.client.widgets;
 
 import com.google.gwt.aria.client.Roles;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -35,6 +38,8 @@ public final class ContextMenu {
     popupPanel.setGlassStyleName("none"); //No style is passed (the default grays out the window)
     menuBar = new MenuBar(true);
     menuBar.setStylePrimaryName("ode-ContextMenu");
+    menuBar.getElement().getStyle().setProperty("maxHeight", "80%");
+    menuBar.getElement().getStyle().setProperty("overflowY", "auto");
     popupPanel.add(menuBar);
   }
 
@@ -149,6 +154,10 @@ public final class ContextMenu {
    */
   public void hide() {
     popupPanel.hide();
+  }
+
+  public HandlerRegistration addCloseHandler(CloseHandler<PopupPanel> handler) {
+    return popupPanel.addCloseHandler(handler);
   }
 
   /* Returns if the context menu is showing */

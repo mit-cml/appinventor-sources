@@ -1883,6 +1883,8 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade",
     // Added ServiceURL property
     5: "noUpgrade",
+    // Added GetModels and GetProviders methods with GotModels and GotProviders events
+    6: "noUpgrade",
   }, // End ChatBot upgraders
 
   "CheckBox": {
@@ -2411,8 +2413,10 @@ Blockly.Versioning.AllUpgradeMaps =
     37: "noUpgrade",
 
     // AI2: Added Anonymous procedure Blocks
-    38: "noUpgrade"
+    38: "noUpgrade",
 
+    // AI2: Added Multiline Text block.
+    39: "noUpgrade"
   }, // End Language upgraders
 
 
@@ -2476,10 +2480,15 @@ Blockly.Versioning.AllUpgradeMaps =
     8: "noUpgrade",
     // AI2: Fixed a designer property issue with ElementColor
     9: "noUpgrade",
-    // AI2: 
+    // AI2:
     // - Changed TextSize property to FontSize
     // - Add new layout
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // AI2:
+    // - Added TextAlignmentMain property
+    // - Added TextAlignmentDetail property
+    11: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -3098,14 +3107,22 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // For FORM_COMPONENT_VERSION 31:
     // - The default theme was changed in the designer. No block changes required.
-    31: "noUpgrade"
+    31: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 32:
+    // - Added AndroidMinSdk designer property.
+    // No blocks need to be changed.
+    32: "noUpgrade"
 
   }, // End Screen
 
   "Sharing": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // Added CopyToClipboard method
+    2: "noUpgrade"
 
   }, // End Sharing upgraders
 

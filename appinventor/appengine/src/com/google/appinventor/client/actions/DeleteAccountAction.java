@@ -7,7 +7,7 @@ package com.google.appinventor.client.actions;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -17,7 +17,7 @@ public class DeleteAccountAction implements Command {
   private static final String SIGNOUT_URL = "/ode/_logout";
   @Override
   public void execute() {
-    if(ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() > 0) {
+    if(getMyLiveProjectsCount() > 0) {
       Ode.getInstance().genericWarning(MESSAGES.warnHasProjects());
     } else {
       Ode.getInstance().getUserInfoService().deleteAccount(
@@ -37,4 +37,13 @@ public class DeleteAccountAction implements Command {
           });
     }
     return;
-  }}
+  }
+
+  private int getMyLiveProjectsCount() {
+    ProjectFolder globalFolder = Ode.getInstance().getFolderManager().getGlobalFolder();
+    if (globalFolder == null) {
+      return 0;
+    }
+    return globalFolder.getLiveProjects().size();
+  }
+}

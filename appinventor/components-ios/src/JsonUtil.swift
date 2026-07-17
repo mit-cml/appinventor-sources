@@ -5,10 +5,18 @@
 
 import Foundation
 
+let TYPE_FIELD = "\u{0002}$type$\u{0003}"
+
 // let numberRegex = NSRegularExpression(pattern: "-?[1-9]?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?")
 public func getJsonRepresentation(_ object: AnyObject?) throws -> String {
   guard let object = object else {
     return "null"
+  }
+  if let matrix = object as? YailMatrix {
+    let dict: NSDictionary = [TYPE_FIELD as NSString: "YailMatrix" as NSString,
+                              "data" as NSString: matrix.toDataArray()]
+    let jsonData = try JSONSerialization.data(withJSONObject: dict)
+    return String(data: jsonData, encoding: .utf8)!
   }
   let wrappedObject = [object]
   guard JSONSerialization.isValidJSONObject(wrappedObject) else {
@@ -27,7 +35,7 @@ public func getObjectFromJson(_ json: String?) throws -> AnyObject? {
     return "" as NSString
   }
   // NSJSONSerialization can only parse arrays and objects at the top level, so we wrap value here
-  let jsonArray = "[\(jsonString)]"
+  let jsonArray = "[\(jsonString)]".replace(target: "\u{02}", withString: "\\u0002").replace(target: "\u{03}", withString: "\\u0003")
   let result = try JSONSerialization.jsonObject(with: jsonArray.data(using: .utf8)!,
                                                 options: JSONSerialization.ReadingOptions.mutableContainers)
   if let array = result as? Array<AnyObject> {
@@ -82,6 +90,12 @@ fileprivate func convertJsonItem(_ item: AnyObject?, _ useDicts: Bool) -> AnyObj
   if item == nil || item is NSNull {
     return "null" as AnyObject
   } else if let jsonObject = item as? NSDictionary {
+    if let typeValue = jsonObject[TYPE_FIELD as NSString] as? String,
+       typeValue == "YailMatrix",
+       let dataArray = jsonObject["data"] as? NSArray,
+       let matrix = try? YailMatrix.fromJsonArray(dataArray) {
+      return matrix
+    }
     if useDicts {
       return getDictFromJsonObject(jsonObject) as AnyObject
     } else {

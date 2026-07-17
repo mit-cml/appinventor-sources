@@ -1072,8 +1072,16 @@ select.ode-PropertyEditor[disabled] {
   overflow: auto;
 }
 
+.ode-DialogBox-message a {
+  color: selected-color;
+}
+
 .ode-DialogBox .dialogContent td a {
     color: selected-color;
+}
+
+.ode-DialogBox .download-button span {
+  color: gray-800;
 }
 
 .ode-SimpleMockContainer {
@@ -1158,6 +1166,16 @@ path.ode-SimpleMockMapFeature-selected {
   .ode-DialogBox .dialogContent td {
     padding: 2px 5px;
     color: context-menu-color;
+  }
+
+  .ode-DialogBox .settings-labeled-textbox td:first-child {
+    width: 60%;
+  }
+  
+  .ode-DialogBox .uploadDialogContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .ode-DialogBox .gwt-FileUpload {
@@ -2009,7 +2027,8 @@ display: contents;
   border-bottom: 1px solid gray-400;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .header {
+.ode-CollapsablePanel .gwt-DisclosurePanel .header,
+.ode-PaletteCategoryHeader {
   border-bottom: 1px solid gray-400;
   border-top: 0px;
   cursor: pointer;
@@ -2019,7 +2038,8 @@ display: contents;
   height: unset;
 }
 
-.ode-CollapsablePanel .gwt-DisclosurePanel .content {
+.ode-CollapsablePanel .gwt-DisclosurePanel .content,
+.ode-PaletteCategoryContentInner {
   padding: 0px;
   border: 0px;
   margin-left: 0px;

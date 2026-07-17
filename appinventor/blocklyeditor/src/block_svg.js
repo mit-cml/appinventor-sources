@@ -107,7 +107,7 @@ Blockly.BlockSvg.prototype.isBadBlock = function() {
  * Mark this block as Bad.  Highlight it visually in Red.
  */
 Blockly.BlockSvg.prototype.badBlock = function() {
-  this.isBad = true;
+  Object.getPrototypeOf(Blockly.BlockSvg.prototype).badBlock.call(this);
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block bad only if it is on the main workspace
     if (!((typeof this.getSvgRoot()) == 'object' && this.getSvgRoot() != null)) {
@@ -121,7 +121,7 @@ Blockly.BlockSvg.prototype.badBlock = function() {
  * Unmark this block as Bad.
  */
 Blockly.BlockSvg.prototype.notBadBlock = function() {
-  this.isBad = false;
+  Object.getPrototypeOf(Blockly.BlockSvg.prototype).notBadBlock.call(this);
   if (this.workspace == Blockly.common.getMainWorkspace()) {
     // mark a block not bad only if it is on the main workspace
     if (!((typeof this.getSvgRoot()) == 'object' && this.getSvgRoot() != null)) {
@@ -153,16 +153,6 @@ Blockly.BlockSvg.prototype.dispose = (function(func) {
     return wrappedFunc;
   }
 })(Blockly.BlockSvg.prototype.dispose);
-
-/**
- * Get the top-most workspace. Typically this is the current workspace except for flyout/flydowns.
- * @returns {!Blockly.WorkspaceSvg}
- */
-Blockly.BlockSvg.prototype.getTopWorkspace = function() {
-  var workspace = this.workspace;
-  while (workspace.targetWorkspace) workspace = workspace.targetWorkspace;
-  return workspace;
-};
 
 /**
  * Load the block's help page in a new window. This version overrides the implementation in Blockly
