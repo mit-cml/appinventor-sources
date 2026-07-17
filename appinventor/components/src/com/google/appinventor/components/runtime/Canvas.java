@@ -40,6 +40,7 @@ import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -51,6 +52,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.FileScope;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TextAlignment;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.collect.Sets;
@@ -1223,7 +1225,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 //    TODO: (Hal) Check that this is still correct for RTL languages.
       category = PropertyCategory.APPEARANCE,
       userVisible = true)
-  public int TextAlignment() {
+  public @Options(TextAlignment.class) int TextAlignment() {
     return textAlignment;
   }
 
@@ -1242,7 +1244,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = DEFAULT_TEXTALIGNMENT + "")
   @SimpleProperty(userVisible = true)
-  public void TextAlignment(int alignment) {
+  public void TextAlignment(@Options(TextAlignment.class) int alignment) {
     this.textAlignment = alignment;
     switch (alignment) {
       case Component.ALIGNMENT_NORMAL:
@@ -1757,4 +1759,3 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
-

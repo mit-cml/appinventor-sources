@@ -1570,7 +1570,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Adds Sensitivity dropdown block.
     5: Blockly.Versioning.makeSetterUseDropdown(
-          'AccelerometerSensor', 'Sensitivity', 'Sensitivity')
+          'AccelerometerSensor', 'Sensitivity', 'Sensitivity'),
+
+    // AI2: LegacyMode property made visible in block editor.
+    6: "noUpgrade"
 
   }, // End Accelerometer upgraders
 
@@ -1751,7 +1754,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     7: Blockly.Versioning.makeSetterUseHelper(
-        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Button', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    8: "noUpgrade"
 
   }, // End BarcodeScanner upgraders
 
@@ -1890,7 +1896,10 @@ Blockly.Versioning.AllUpgradeMaps =
   "CheckBox": {
 
     // AI2: The Value property was renamed to Checked.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    3: "noUpgrade"
 
   }, // End CheckBox upgraders
 
@@ -1952,7 +1961,10 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // AI2:  Added ContactUri
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    7: "noUpgrade"
 
   }, // End ContactPicker upgraders
 
@@ -1975,7 +1987,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     4: Blockly.Versioning.makeSetterUseHelper(
-        'DatePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'DatePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    5: "noUpgrade"
 
   }, // End DatePicker upgraders
 
@@ -2000,7 +2015,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: [
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("EmailPicker", "SetCursorAtEnd", "MoveCursorToEnd"),
-      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")]
+      Blockly.Versioning.changeEventName("EmailPicker", "OnTextChanged", "TextChanged")],
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    8: "noUpgrade"
 
   }, // End EmailPicker upgraders
 
@@ -2137,7 +2155,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     6: Blockly.Versioning.makeSetterUseHelper(
-        'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // AI2: ScalePictureToFit property (getter only) made visible in block editor.
+    7: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -2170,7 +2191,11 @@ Blockly.Versioning.AllUpgradeMaps =
     /* From BlockSaveFile.java:
       handlePropertyRename(componentName, "ImagePath", "Selection");
     */
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface, HTMLFormat properties made visible
+    // in block editor.
+    6: "noUpgrade"
 
   }, // End ImagePicker upgraders
 
@@ -2238,7 +2263,11 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Add HTMLFormat property
     4: "noUpgrade",
 
-    5: "noUpgrade"
+    5: "noUpgrade",
+
+    // TextAlignment, FontBold, FontItalic, FontTypeface, HTMLFormat properties made visible
+    // in block editor.
+    6: "noUpgrade"
 
   }, // End Label upgraders
 
@@ -2450,7 +2479,10 @@ Blockly.Versioning.AllUpgradeMaps =
     8: "noUpgrade",
 
     // AI2: Added  ItemTextColor and ItemBackgroundColor
-    9: "noUpgrade"
+    9: "noUpgrade",
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    10: "noUpgrade"
 
   }, // End ListPicker upgraders
 
@@ -2542,7 +2574,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // AI2:
     // - Adds CustomUrl (MapType 4).
-    7: "noUpgrade"
+    7: "noUpgrade",
+
+    // AI2: LocationSensor property (getter only) made visible in block editor.
+    8: "noUpgrade"
 
   }, // End Map upgraders
 
@@ -2643,14 +2678,21 @@ Blockly.Versioning.AllUpgradeMaps =
     5: "noUpgrade",
 
     // Added a PasswordDialog for masked text input.
-    6: "noUpgrade"
+    6: "noUpgrade",
+
+    // AI2: NotifierLength property (setter only), BackgroundColor property (getter only) made
+    // visible in block editor.
+    7: "noUpgrade"
 
   }, // End Notifier upgraders
 
   "NxtColorSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtColorSensor upgraders
 
@@ -2691,49 +2733,71 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.makeMethodUseDropdown(
             'NxtDirectCommands', 'MessageRead', 0, 'NxtMailbox'),
         Blockly.Versioning.makeMethodUseDropdown(
-            'NxtDirectCommands', 'MessageWrite', 0, 'NxtMailbox')]
+            'NxtDirectCommands', 'MessageWrite', 0, 'NxtMailbox')],
+
+    // AI2: BluetoothClient property made visible in block editor.
+    3: "noUpgrade"
 
   }, // End NxtDirectCommands upgraders
 
   "NxtDrive": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: DriveMotors, WheelDiameter properties (getters only), BluetoothClient property made
+    // visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtDrive upgraders
 
   "NxtLightSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtLightSensor upgraders
 
   "NxtSoundSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtSoundSensor upgraders
 
   "NxtTouchSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtTouchSensor upgraders
 
   "NxtUltrasonicSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort, BluetoothClient properties made visible in block editor.
+    2: "noUpgrade"
 
   }, // End NxtUltrasonicSensor upgraders
 
   "Ev3Motors": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: MotorPorts, WheelDiameter properties (getters only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3Motors upgraders
 
@@ -2751,7 +2815,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.methodToSetterWithValue(
           'Ev3ColorSensor', 'SetReflectedMode', 'Mode', 'reflected'),
         Blockly.Versioning.makeSetterUseDropdown(
-         'Ev3ColorSensor', 'Mode', 'ColorSensorMode')]
+         'Ev3ColorSensor', 'Mode', 'ColorSensorMode')],
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    3: "noUpgrade"
 
   }, // End Ev3ColorSensor upgraders
 
@@ -2767,14 +2834,20 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.methodToSetterWithValue(
           'Ev3GyroSensor', 'SetRateMode', 'Mode', 'rate'),
         Blockly.Versioning.makeSetterUseDropdown(
-          'Ev3GyroSensor', 'Mode', 'GyroSensorMode')]
+          'Ev3GyroSensor', 'Mode', 'GyroSensorMode')],
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    3: "noUpgrade"
 
   }, // End Ev3GyroSensor upgraders
 
   "Ev3TouchSensor": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End Ev3TouchSensor upgraders
 
@@ -2789,7 +2862,10 @@ Blockly.Versioning.AllUpgradeMaps =
         Blockly.Versioning.methodToSetterWithValue(
           'Ev3UltrasonicSensor', 'SetInchUnit', 'Unit', 'inch'),
         Blockly.Versioning.makeSetterUseDropdown(
-          'Ev3UltrasonicSensor', 'Unit', 'UltrasonicSensorUnit')]
+          'Ev3UltrasonicSensor', 'Unit', 'UltrasonicSensorUnit')],
+
+    // AI2: SensorPort property (getter only) made visible in block editor.
+    3: "noUpgrade"
 
   }, // End Ev3UltrasonicSensor upgraders
 
@@ -2855,7 +2931,10 @@ Blockly.Versioning.AllUpgradeMaps =
     7: [
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("PasswordTextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
-      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")]
+      Blockly.Versioning.changeEventName("PasswordTextBox", "OnTextChanged", "TextChanged")],
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    8: "noUpgrade"
 
   }, // End PasswordTextBox upgraders
 
@@ -2935,7 +3014,10 @@ Blockly.Versioning.AllUpgradeMaps =
     6: "noUpgrade",
 
     // AI2: - The PlayOnlyInForeground default value was changed. No upgrade w.r.t. blocks.
-    7: "noUpgrade"
+    7: "noUpgrade",
+
+    // AI2: The Volume property (getter only) was made visible in block editor.
+    8: "noUpgrade"
 
   }, // End Player upgraders
 
@@ -3134,7 +3216,7 @@ Blockly.Versioning.AllUpgradeMaps =
     // Added the property to allow for the removal of the Thumb Slider
     2: "noUpgrade",
 
-    // Added the NumberOfSteps and ColorThumb property, TouchDown and TouchUp events, 
+    // Added the NumberOfSteps and ColorThumb property, TouchDown and TouchUp events,
     3: "noUpgrade"
 
   }, // End Slider upgraders
@@ -3220,10 +3302,23 @@ Blockly.Versioning.AllUpgradeMaps =
     4: "noUpgrade"
   },
 
+  "Switch": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade",
+
+    // AI2: FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    2: "noUpgrade"
+
+  }, // End Switch upgraders
+
   "TableArrangement": {
 
     //This is initial version. Placeholder for future upgrades
-    1: "noUpgrade"
+    1: "noUpgrade",
+
+    // AI2: Columns, Rows property (getters only) made visible in block editor.
+    2: "noUpgrade"
 
   }, // End TableArrangementupgraders
 
@@ -3266,7 +3361,10 @@ Blockly.Versioning.AllUpgradeMaps =
     14: [
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAt", "MoveCursorTo"),
       Blockly.Versioning.changeMethodName("TextBox", "SetCursorAtEnd", "MoveCursorToEnd"),
-      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")]
+      Blockly.Versioning.changeEventName("TextBox", "OnTextChanged", "TextChanged")],
+
+    // AI2: TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
+    15: "noUpgrade"
 
   }, // End TextBox upgraders
 
@@ -3327,7 +3425,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     4: Blockly.Versioning.makeSetterUseHelper(
-        'TimePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'TimePicker', 'Image', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // AI2: TextAlignment, Shape, FontTypeface properties made visible in block editor.
+    5: "noUpgrade"
 
   }, // End TimePicker upgraders
 
@@ -3466,7 +3567,10 @@ Blockly.Versioning.AllUpgradeMaps =
 
     // Assets helper block was added.
     7: Blockly.Versioning.makeSetterUseHelper(
-        'VideoPlayer', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets)
+        'VideoPlayer', 'Source', Blockly.Versioning.tryReplaceBlockWithAssets),
+
+    // AI2: Source, Volume property (getters only) made visible in block editor.
+    8: "noUpgrade"
 
   }, // End VideoPlayer upgraders
 

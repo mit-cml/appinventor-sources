@@ -111,7 +111,7 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       description = "The BluetoothClient component that should be used for communication.",
-      category = PropertyCategory.BEHAVIOR, userVisible = false)
+      category = PropertyCategory.BEHAVIOR)
   public BluetoothClient BluetoothClient() {
     return bluetooth;
   }
@@ -122,7 +122,7 @@ public class LegoMindstormsNxtBase extends AndroidNonvisibleComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BLUETOOTHCLIENT,
       defaultValue = "")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public void BluetoothClient(BluetoothClient bluetoothClient) {
     if (bluetooth != null) {
       bluetooth.removeBluetoothConnectionListener(this);

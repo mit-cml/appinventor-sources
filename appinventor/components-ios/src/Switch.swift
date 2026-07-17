@@ -23,7 +23,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
   fileprivate var _hasMargins = false
   fileprivate var _userFontSize = kFontSizeDefault
   fileprivate var _isBigText = false
-  
+
   public override init(_ parent: ComponentContainer) {
     _switch.isOn = false
     self.On = false
@@ -34,7 +34,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
     _text.textColor = preferredTextColor(parent.form)
     FontSize = 14.0
     parent.add(self)
-    
+
     setupViews()
   }
 
@@ -44,10 +44,10 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
     _text.translatesAutoresizingMaskIntoConstraints = false
     _switch.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
     _text.numberOfLines = 0
-    
+
     _view.addSubview(_switch)
     _view.addSubview(_text)
-    
+
     _switch.trailingAnchor.constraint(equalTo: _view.trailingAnchor, constant: -5).isActive = true
     _text.leadingAnchor.constraint(equalTo: _view.leadingAnchor, constant: 5).isActive = true
     _switch.centerYAnchor.constraint(equalTo: _view.centerYAnchor).isActive = true
@@ -75,7 +75,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       return _view
     }
   }
-  
+
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
@@ -85,7 +85,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _view.backgroundColor = argbToColor(argb)
     }
   }
-  
+
   @objc open var TrackColorActive: Int32 {
     get {
       return _trackColorActive
@@ -95,7 +95,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _switch.onTintColor = argbToColor(argb)
     }
   }
-  
+
   @objc open var ThumbColorActive: Int32 {
     get {
       return _thumbColorActive
@@ -118,7 +118,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _switch.backgroundColor = argbToColor(argb)
     }
   }
-  
+
   @objc open var ThumbColorInactive: Int32 {
     get {
       return _thumbColorInactive
@@ -150,7 +150,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       }
     }
   }
-  
+
 
   @objc open var FontBold: Bool {
     get {
@@ -161,7 +161,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _text.font = getFontTrait(font: _text.font, trait: .traitBold, shouldSet: shouldBold)
     }
   }
-  
+
   @objc open var FontItalic: Bool {
     get {
       return _italic
@@ -171,7 +171,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _text.font = getFontTrait(font: _text.font, trait: .traitItalic, shouldSet: shouldItalic)
     }
   }
-  
+
   @objc open var FontSize: Float32 {
     get {
       return Float32(_text.font.pointSize)
@@ -181,13 +181,16 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       updateFontSize()
     }
   }
-  
-  @objc open var FontTypeface: Int32 {
+
+  @objc open var FontTypeface: String {
     get {
-      return _fontTypeface.rawValue
+      return String(_fontTypeface.rawValue)
     }
     set(newTypeface) {
-      
+      if let type = getTypeface(newTypeface) {
+        _fontTypeface = type
+      }
+      _text.font = getFontTypeface(font: _text.font, typeFace: newTypeface)
     }
   }
 
@@ -200,7 +203,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       updateFontSize()
     }
   }
-  
+
   @objc open var Text: String {
     get {
       return _text.text ?? ""
@@ -209,7 +212,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _text.text = newText
     }
   }
-  
+
   @objc open var TextColor: Int32 {
     get {
       return colorToArgb(_text.textColor)
@@ -218,7 +221,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       _text.textColor = argbToColor(color)
     }
   }
-  
+
   @objc fileprivate func changeSwitch(gesture: UITapGestureRecognizer) {
     if _switch.isEnabled {
       On = !On
@@ -229,15 +232,15 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       }
     }
   }
-  
+
   @objc open func Changed() {
     EventDispatcher.dispatchEvent(of: self, called: "Changed")
   }
-  
+
   @objc open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
   }
-  
+
   @objc open func LostFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }}

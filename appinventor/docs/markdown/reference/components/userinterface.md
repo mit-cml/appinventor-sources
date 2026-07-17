@@ -58,7 +58,7 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.FontSize" .number} *FontSize*
 : Specifies the text font size of the `Button`, measured in sp(scale-independent pixels).
 
-{:id="Button.FontTypeface" .text .do} *FontTypeface*
+{:id="Button.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `Button` as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project's media.
@@ -78,7 +78,7 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 : Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.
 
-{:id="Button.Shape" .number .do} *Shape*
+{:id="Button.Shape" .number} *Shape*
 : Specifies the shape of the `Button`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#Button.Image) is used.
@@ -90,7 +90,7 @@ Button with the ability to detect clicks. Many aspects of its appearance can be 
 {:id="Button.Text" .text} *Text*
 : Specifies the text displayed by the `Button`.
 
-{:id="Button.TextAlignment" .number .do} *TextAlignment*
+{:id="Button.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `Button`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -170,18 +170,18 @@ None
 {:id="CheckBox.Enabled" .boolean} *Enabled*
 : Specifies whether the `CheckBox` should be active and clickable.
 
-{:id="CheckBox.FontBold" .boolean .do} *FontBold*
+{:id="CheckBox.FontBold" .boolean} *FontBold*
 : Specifies whether the text of the `CheckBox` should be bold.
  Some fonts do not support bold.
 
-{:id="CheckBox.FontItalic" .boolean .do} *FontItalic*
+{:id="CheckBox.FontItalic" .boolean} *FontItalic*
 : Specifies whether the text of the `CheckBox` should be italic.
  Some fonts do not support italic.
 
 {:id="CheckBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `CheckBox`, measured in sp(scale-independent pixels).
 
-{:id="CheckBox.FontTypeface" .text .do} *FontTypeface*
+{:id="CheckBox.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `CheckBox` as default, serif, sans
  serif, or monospace.
 
@@ -323,7 +323,7 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `DatePicker`, measured in sp(scale-independent pixels).
 
-{:id="DatePicker.FontTypeface" .text .do} *FontTypeface*
+{:id="DatePicker.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `DatePicker` as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project's media.
@@ -352,7 +352,7 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.MonthInText" .text .ro .bo} *MonthInText*
 : Returns the name of the Month that was last picked using the DatePicker.
 
-{:id="DatePicker.Shape" .number .do} *Shape*
+{:id="DatePicker.Shape" .number} *Shape*
 : Specifies the shape of the `DatePicker`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#DatePicker.Image) is used.
@@ -364,7 +364,7 @@ A button that, when clicked on, launches a popup dialog to allow the user to sel
 {:id="DatePicker.Text" .text} *Text*
 : Specifies the text displayed by the `DatePicker`.
 
-{:id="DatePicker.TextAlignment" .number .do} *TextAlignment*
+{:id="DatePicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `DatePicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -469,7 +469,7 @@ Component for displaying images and basic animations.
 {:id="Image.RotationAngle" .number} *RotationAngle*
 : The angle at which the image picture appears rotated. This rotation does not appear on the designer screen, only on the device.
 
-{:id="Image.ScalePictureToFit" .boolean .wo} *ScalePictureToFit*
+{:id="Image.ScalePictureToFit" .boolean} *ScalePictureToFit*
 : Specifies whether the image should be resized to match the size of the ImageView.
 
 {:id="Image.Scaling" .number .bo} *Scaling*
@@ -522,18 +522,18 @@ Labels are components used to show text.
 : Specifies the label's background color as an alpha-red-green-blue
  integer.
 
-{:id="Label.FontBold" .boolean .do} *FontBold*
+{:id="Label.FontBold" .boolean} *FontBold*
 : Specifies whether the label's text should be bold.
  Some fonts do not support bold.
 
-{:id="Label.FontItalic" .boolean .do} *FontItalic*
+{:id="Label.FontItalic" .boolean} *FontItalic*
 : Specifies whether the label's text should be italic.
  Some fonts do not support italic.
 
 {:id="Label.FontSize" .number} *FontSize*
 : Specifies the label's text's font size, measured in sp(scale-independent pixels).
 
-{:id="Label.FontTypeface" .text .do} *FontTypeface*
+{:id="Label.FontTypeface" .text} *FontTypeface*
 : Specifies the label's text's font face as default, serif, sans
  serif, or monospace.
 
@@ -541,7 +541,7 @@ Labels are components used to show text.
 : Returns the content of the Label as HTML. This is only useful if the
  HTMLFormat property is true.
 
-{:id="Label.HTMLFormat" .boolean .do} *HTMLFormat*
+{:id="Label.HTMLFormat" .boolean} *HTMLFormat*
 : Specifies the label's text's format
 
 {:id="Label.HasMargins" .boolean} *HasMargins*
@@ -564,7 +564,7 @@ Labels are components used to show text.
 {:id="Label.Text" .text} *Text*
 : Specifies the text displayed by the label.
 
-{:id="Label.TextAlignment" .number .do} *TextAlignment*
+{:id="Label.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the label's text: center, normal
  (e.g., left-justified if text is written left to right), or
  opposite (e.g., right-justified if text is written left to right).
@@ -705,7 +705,7 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 {:id="ListPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ListPicker`, measured in sp(scale-independent pixels).
 
-{:id="ListPicker.FontTypeface" .text .do} *FontTypeface*
+{:id="ListPicker.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `ListPicker` as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project's media.
@@ -739,7 +739,7 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 {:id="ListPicker.SelectionIndex" .number .bo} *SelectionIndex*
 : Selection index property setter method.
 
-{:id="ListPicker.Shape" .number .do} *Shape*
+{:id="ListPicker.Shape" .number} *Shape*
 : Specifies the shape of the `ListPicker`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#ListPicker.Image) is used.
@@ -754,7 +754,7 @@ A button that, when clicked on, displays a list of texts for the user to choose 
 {:id="ListPicker.Text" .text} *Text*
 : Specifies the text displayed by the `ListPicker`.
 
-{:id="ListPicker.TextAlignment" .number .do} *TextAlignment*
+{:id="ListPicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `ListPicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -1014,10 +1014,10 @@ The Notifier component displays alert messages and creates Android log entries t
 
 {:.properties}
 
-{:id="Notifier.BackgroundColor" .color .wo} *BackgroundColor*
+{:id="Notifier.BackgroundColor" .color} *BackgroundColor*
 : Specifies the background color for alerts (not dialogs).
 
-{:id="Notifier.NotifierLength" .number .do} *NotifierLength*
+{:id="Notifier.NotifierLength" .number} *NotifierLength*
 : Specifies the length of time that the alert is shown -- either "short" or "long".
 
 {:id="Notifier.TextColor" .color} *TextColor*
@@ -1125,18 +1125,18 @@ Users enter passwords in a password text box component, which hides the text tha
 {:id="PasswordTextBox.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `PasswordTextBox`.
 
-{:id="PasswordTextBox.FontBold" .boolean .do} *FontBold*
+{:id="PasswordTextBox.FontBold" .boolean} *FontBold*
 : Specifies whether the text of the `PasswordTextBox` should be bold.
  Some fonts do not support bold.
 
-{:id="PasswordTextBox.FontItalic" .boolean .do} *FontItalic*
+{:id="PasswordTextBox.FontItalic" .boolean} *FontItalic*
 : Specifies whether the text of the `PasswordTextBox` should be italic.
  Some fonts do not support italic.
 
 {:id="PasswordTextBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `PasswordTextBox`, measured in sp(scale-independent pixels).
 
-{:id="PasswordTextBox.FontTypeface" .text .do} *FontTypeface*
+{:id="PasswordTextBox.FontTypeface" .text} *FontTypeface*
 : The text font face of the `PasswordTextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -1170,7 +1170,7 @@ Users enter passwords in a password text box component, which hides the text tha
 : The text in the `PasswordTextBox`, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the [`Enabled`](#PasswordTextBox.Enabled) property is false).
 
-{:id="PasswordTextBox.TextAlignment" .number .do} *TextAlignment*
+{:id="PasswordTextBox.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `PasswordTextBox`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -1698,18 +1698,18 @@ A `Spinner` component that displays a dialog with a list of elements. These elem
 {:id="Switch.Enabled" .boolean} *Enabled*
 : Specifies whether the `Switch` should be active and clickable.
 
-{:id="Switch.FontBold" .boolean .do} *FontBold*
+{:id="Switch.FontBold" .boolean} *FontBold*
 : Specifies whether the text of the `Switch` should be bold.
  Some fonts do not support bold.
 
-{:id="Switch.FontItalic" .boolean .do} *FontItalic*
+{:id="Switch.FontItalic" .boolean} *FontItalic*
 : Specifies whether the text of the `Switch` should be italic.
  Some fonts do not support italic.
 
 {:id="Switch.FontSize" .number} *FontSize*
 : Specifies the text font size of the `Switch`, measured in sp(scale-independent pixels).
 
-{:id="Switch.FontTypeface" .text .do} *FontTypeface*
+{:id="Switch.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `Switch` as default, serif, sans
  serif, or monospace.
 
@@ -1819,18 +1819,18 @@ Users enter text in a text box component.
 {:id="TextBox.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `TextBox`.
 
-{:id="TextBox.FontBold" .boolean .do} *FontBold*
+{:id="TextBox.FontBold" .boolean} *FontBold*
 : Specifies whether the text of the `TextBox` should be bold.
  Some fonts do not support bold.
 
-{:id="TextBox.FontItalic" .boolean .do} *FontItalic*
+{:id="TextBox.FontItalic" .boolean} *FontItalic*
 : Specifies whether the text of the `TextBox` should be italic.
  Some fonts do not support italic.
 
 {:id="TextBox.FontSize" .number} *FontSize*
 : Specifies the text font size of the `TextBox`, measured in sp(scale-independent pixels).
 
-{:id="TextBox.FontTypeface" .text .do} *FontTypeface*
+{:id="TextBox.FontTypeface" .text} *FontTypeface*
 : The text font face of the `TextBox`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -1870,7 +1870,7 @@ Users enter text in a text box component.
 : The text in the `TextBox`, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the [`Enabled`](#TextBox.Enabled) property is false).
 
-{:id="TextBox.TextAlignment" .number .do} *TextAlignment*
+{:id="TextBox.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `TextBox`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -1961,7 +1961,7 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `TimePicker`, measured in sp(scale-independent pixels).
 
-{:id="TimePicker.FontTypeface" .text .do} *FontTypeface*
+{:id="TimePicker.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `TimePicker` as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project's media.
@@ -1992,7 +1992,7 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 : Returns the hour of the time that was last picked using the `TimePicker`.
  The time returned is always in the 24hour format.
 
-{:id="TimePicker.Shape" .number .do} *Shape*
+{:id="TimePicker.Shape" .number} *Shape*
 : Specifies the shape of the `TimePicker`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#TimePicker.Image) is used.
@@ -2004,7 +2004,7 @@ A button that, when clicked on, opens a dialog to allow the user to select a tim
 {:id="TimePicker.Text" .text} *Text*
 : Specifies the text displayed by the `TimePicker`.
 
-{:id="TimePicker.TextAlignment" .number .do} *TextAlignment*
+{:id="TimePicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `TimePicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or

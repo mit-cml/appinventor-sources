@@ -74,7 +74,7 @@ A button that, when clicked on, displays a list of the contacts to choose among.
 {:id="ContactPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `ContactPicker`, measured in sp(scale-independent pixels).
 
-{:id="ContactPicker.FontTypeface" .text .do} *FontTypeface*
+{:id="ContactPicker.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `ContactPicker` as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project's media.
@@ -105,7 +105,7 @@ A button that, when clicked on, displays a list of the contacts to choose among.
 : Returns a picture URI for the selected contact, which can be
  used to retrieve the contact's photo and other fields.
 
-{:id="ContactPicker.Shape" .number .do} *Shape*
+{:id="ContactPicker.Shape" .number} *Shape*
 : Specifies the shape of the `ContactPicker`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#ContactPicker.Image) is used.
@@ -117,7 +117,7 @@ A button that, when clicked on, displays a list of the contacts to choose among.
 {:id="ContactPicker.Text" .text} *Text*
 : Specifies the text displayed by the `ContactPicker`.
 
-{:id="ContactPicker.TextAlignment" .number .do} *TextAlignment*
+{:id="ContactPicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `ContactPicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -209,18 +209,18 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 {:id="EmailPicker.Enabled" .boolean} *Enabled*
 : If set, user can enter text into the `EmailPicker`.
 
-{:id="EmailPicker.FontBold" .boolean .do} *FontBold*
+{:id="EmailPicker.FontBold" .boolean} *FontBold*
 : Specifies whether the text of the `EmailPicker` should be bold.
  Some fonts do not support bold.
 
-{:id="EmailPicker.FontItalic" .boolean .do} *FontItalic*
+{:id="EmailPicker.FontItalic" .boolean} *FontItalic*
 : Specifies whether the text of the `EmailPicker` should be italic.
  Some fonts do not support italic.
 
 {:id="EmailPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `EmailPicker`, measured in sp(scale-independent pixels).
 
-{:id="EmailPicker.FontTypeface" .text .do} *FontTypeface*
+{:id="EmailPicker.FontTypeface" .text} *FontTypeface*
 : The text font face of the `EmailPicker`. Valid values are `0` (default), `1` (serif), `2` (sans
  serif), or `3` (monospace).
 
@@ -245,7 +245,7 @@ An `EmailPicker` is a kind of text box. If the user begins entering the name or 
 : The text in the `EmailPicker`, which can be set by the programmer in the Designer or Blocks Editor,
  or it can be entered by the user (unless the [`Enabled`](#EmailPicker.Enabled) property is false).
 
-{:id="EmailPicker.TextAlignment" .number .do} *TextAlignment*
+{:id="EmailPicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `EmailPicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -418,7 +418,7 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
 {:id="PhoneNumberPicker.FontSize" .number} *FontSize*
 : Specifies the text font size of the `PhoneNumberPicker`, measured in sp(scale-independent pixels).
 
-{:id="PhoneNumberPicker.FontTypeface" .text .do} *FontTypeface*
+{:id="PhoneNumberPicker.FontTypeface" .text} *FontTypeface*
 : Specifies the text font face of the `PhoneNumberPicker` as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project's media.
@@ -449,7 +449,7 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
 : Returns a picture URI for the selected contact, which can be
  used to retrieve the contact's photo and other fields.
 
-{:id="PhoneNumberPicker.Shape" .number .do} *Shape*
+{:id="PhoneNumberPicker.Shape" .number} *Shape*
 : Specifies the shape of the `PhoneNumberPicker`. The valid values for this property are `0` (default),
  `1` (rounded), `2` (rectangle), and `3` (oval). The `Shape` will not be visible if an
  [`Image`](#PhoneNumberPicker.Image) is used.
@@ -461,7 +461,7 @@ A button that, when clicked on, displays a list of the contacts' phone numbers t
 {:id="PhoneNumberPicker.Text" .text} *Text*
 : Specifies the text displayed by the `PhoneNumberPicker`.
 
-{:id="PhoneNumberPicker.TextAlignment" .number .do} *TextAlignment*
+{:id="PhoneNumberPicker.TextAlignment" .number} *TextAlignment*
 : Specifies the alignment of the `PhoneNumberPicker`'s text. Valid values are:
  `0` (normal; e.g., left-justified if text is written left to right),
  `1` (center), or
@@ -535,7 +535,7 @@ Sharing is a non-visible component that enables sharing files and/or messages be
  specified directly to read from storage. The default behaviour is to share files from the private
  data directory associated with your app. If the file path starts with a slash (`/`), then the file
  relative to `/` is shared.
- 
+
  Be aware that different devices treat storage differently, so a few things to try if, for
  instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
 
@@ -625,8 +625,8 @@ None
  using diacritical marks.
 
 {:id="Texting.PhoneNumber" .text} *PhoneNumber*
-: The number that the message will be sent to when the SendMessage method is called.  The 
- number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, 
+: The number that the message will be sent to when the SendMessage method is called.  The
+ number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots,
  and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces
  should not be included. Multiple numbers can be included if separated by commas.
 

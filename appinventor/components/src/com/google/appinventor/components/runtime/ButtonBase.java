@@ -32,12 +32,16 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewOutlineProvider;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.ButtonShape;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TextAlignment;
 import com.google.appinventor.components.runtime.util.IceCreamSandwichUtil;
 import com.google.appinventor.components.runtime.util.KitkatUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
@@ -187,9 +191,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Left, center, or right.",
-      userVisible = false)
-  public int TextAlignment() {
+      description = "Left, center, or right.")
+  public @Options(TextAlignment.class) int TextAlignment() {
     return textAlignment;
   }
 
@@ -205,8 +208,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
-  @SimpleProperty(userVisible = false)
-  public void TextAlignment(int alignment) {
+  @SimpleProperty
+  public void TextAlignment(@Options(TextAlignment.class) int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, true);
   }
@@ -220,9 +223,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    *          {@link Component#BUTTON_SHAPE_OVAL}
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
-  public int Shape() {
+      category = PropertyCategory.APPEARANCE)
+  public @Options(ButtonShape.class) int Shape() {
     return shape;
   }
 
@@ -244,9 +246,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
   @SimpleProperty(description = "Specifies the shape of the %type% (default, rounded," +
-      " rectangular, oval). The shape will not be visible if an Image is being displayed.",
-      userVisible = false)
-  public void Shape(int shape) {
+      " rectangular, oval). The shape will not be visible if an Image is being displayed.")
+  public void Shape(@Options(ButtonShape.class) int shape) {
     this.shape = shape;
     updateAppearance();
   }
@@ -298,7 +299,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
         switch (shape) {
           case Component.BUTTON_SHAPE_ROUNDED:
             canvas.drawRoundRect(new RectF(0, 0,shapeWidth, shapeHeight), 100f, 100f, paint);
-            //100f was used because the rounded feature could not be seen with 10f in companion, emulator, and phone. 
+            //100f was used because the rounded feature could not be seen with 10f in companion, emulator, and phone.
             break;
           case Component.BUTTON_SHAPE_RECT:
             canvas.drawRect(new RectF(0, 0, shapeWidth, shapeHeight), paint);
@@ -506,9 +507,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      description = "Font family for %type% text.",
-      userVisible = false)
-  public String FontTypeface() {
+      description = "Font family for %type% text.")
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 
@@ -524,9 +524,8 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
-  @SimpleProperty(
-      userVisible = false)
-  public void FontTypeface(String typeface) {
+  @SimpleProperty
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
