@@ -50,6 +50,7 @@ public class CreateInfoPlist implements IosTask {
       root.put("CFBundleIdentifier", context.getBundleId());
       root.put("CFBundleShortVersionString", project.getVName());
       root.put("CFBundleVersion", project.getVCode());
+      root.put("MinimumOSVersion", project.getIosMinSdk());
       root.put("NSBluetoothAlwaysUsageDescription",
           project.getProperty("NSBluetoothAlwaysUsageDescription", DEFAULT_MESSAGE));
       root.put("NSBluetoothPeripheralUsageDescription",
