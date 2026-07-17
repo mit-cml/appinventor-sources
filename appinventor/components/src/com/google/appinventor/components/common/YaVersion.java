@@ -614,7 +614,36 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 39.
   // For YOUNG_ANDROID_VERSION 235:
   // - SPEECHRECOGNIZER_COMPONENT_VERSION was incremented to 4
-  public static final int YOUNG_ANDROID_VERSION = 235;
+  // For YOUNG_ANDROID_VERSION 236:
+  // - IMAGE_COMPONENT_VERSION was incremented to 7.
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 11.
+  // For YOUNG_ANDROID_VERSION 237:
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 6.
+  // - BUTTON_COMPONENT_VERSION was incremented to 8.
+  // - CHECKBOX_COMPONENT_VERSION was incremented to 3.
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 7.
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 4.
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 5.
+  // - EMAILPICKER_COMPONENT_VERSION was incremented to 8.
+  // - IMAGE_COMPONENT_VERSION was incremented to 8.
+  // - IMAGEPICKER_COMPONENT_VERSION was incremented to 6.
+  // - LABEL_COMPONENT_VERSION was incremented to 6.
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 10.
+  // - MAP_COMPONENT_VERSION was incremented to 8.
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 7.
+  // - NXT_COLORSENSOR_COMPONENT_VERSION was incremented to 2.
+  // - NXT_DIRECT_COMMANDS_COMPONENT_VERSION was incremented to 3.
+  // - NXT_DRIVE_COMPONENT_VERSION was incremented to 2.
+  // - NXT_LIGHTSENSOR_COMPONENT_VERSION was incremented to 2.
+  // - NXT_SOUNDSENSOR_COMPONENT_VERSION was incremented to 2.
+  // - NXT_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
+  // - NXT_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 2.
+  // - EV3_MOTORS_COMPONENT_VERSION was incremented to 2.
+  // - EV3_COLORSENSOR_COMPONENT_VERSION was incremented to 3.
+  // - EV3_GYROSENSOR_COMPONENT_VERSION was incremented to 3.
+  // - EV3_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
+  // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
+  public static final int YOUNG_ANDROID_VERSION = 237;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1141,8 +1170,10 @@ public class YaVersion {
   // For IMAGE_COMPONENT_VERSION 6:
   // - Assets helper block was added.
   // For IMAGE_COMPONENT_VERSION 7:
+  // - Added animated GIF support (Animated property and ResetAnimation method).
+  // For IMAGE_COMPONENT_VERSION 8:
   // - ScalePictureToFit property (getter only) made visible in block editor.
-  public static final int IMAGE_COMPONENT_VERSION = 7;
+  public static final int IMAGE_COMPONENT_VERSION = 8;
 
   // For IMAGEBOT_COMPONENT_VERSION 2:
   // - The ApiKey property was made available in the designer
@@ -1181,7 +1212,9 @@ public class YaVersion {
   // - The MarkOrigin, OriginX, and OriginY properties were added.
   // For IMAGESPRITE_COMPONENT_VERSION 10:
   // - A fix for MarkOrigin, OriginX, and OriginY properties was added.
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 10;
+  // For IMAGESPRITE_COMPONENT_VERSION 11:
+  // - Added animated GIF support (Animated property and ResetAnimation method).
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 11;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

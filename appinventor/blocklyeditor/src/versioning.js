@@ -2157,8 +2157,11 @@ Blockly.Versioning.AllUpgradeMaps =
     6: Blockly.Versioning.makeSetterUseHelper(
         'Image', 'Picture', Blockly.Versioning.tryReplaceBlockWithAssets),
 
+    // Added animated GIF support (Animated property and ResetAnimation method).
+    7: "noUpgrade",
+
     // AI2: ScalePictureToFit property (getter only) made visible in block editor.
-    7: "noUpgrade"
+    8: "noUpgrade"
 
   }, // End Image upgraders
 
@@ -2243,7 +2246,10 @@ Blockly.Versioning.AllUpgradeMaps =
     9: "noUpgrade",
 
     // A fix for the MarkOrigin, OriginX, and OriginY properties in the designer was fixed
-    10: "noUpgrade"
+    10: "noUpgrade",
+
+    // Added animated GIF support (Animated property and ResetAnimation method).
+    11: "noUpgrade"
 
   }, // End ImageSprite upgraders
 

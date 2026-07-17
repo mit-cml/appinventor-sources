@@ -1414,8 +1414,12 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 6;
     }
     if (srcCompVersion < 7) {
-      // ScalePictureToFit property (getter only) made visible in block editor.
+      // Added animated GIF support with Animated property and ResetAnimation method.
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      // ScalePictureToFit property (getter only) made visible in block editor.
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -1528,6 +1532,10 @@ public final class YoungAndroidFormUpgrader {
         }
       }
       srcCompVersion = 10;
+    }
+    if (srcCompVersion < 11) {
+      // Added animated GIF support with Animated property and ResetAnimation method.
+      srcCompVersion = 11;
     }
     return srcCompVersion;
   }

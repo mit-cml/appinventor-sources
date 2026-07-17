@@ -472,6 +472,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <dl class="properties">
   <dt id="Image.AlternateText" class="text wo"><em>AlternateText</em></dt>
   <dd>A written description of what the image looks like.</dd>
+  <dt id="Image.Animated" class="boolean"><em>Animated</em></dt>
+  <dd>Controls whether an animated GIF image is playing. Setting to true resumes animation; setting to false pauses at the current frame. Has no effect on non-animated images.</dd>
   <dt id="Image.Animation" class="text wo bo"><em>Animation</em></dt>
   <dd>This is a limited form of animation that can attach a small number of motion types to images.
  The allowable motions are <code class="highlighter-rouge">ScrollRightSlow</code>, <code class="highlighter-rouge">ScrollRight</code>, <code class="highlighter-rouge">ScrollRightFast</code>,
@@ -516,7 +518,10 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h3 id="Image-Methods">Methods</h3>
 
-<p class="methods">None</p>
+<dl class="methods">
+  <dt id="Image.ResetAnimation" class="method"><i></i> ResetAnimation()</dt>
+  <dd>Resets the animation of an animated GIF image to the first frame. If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.</dd>
+</dl>
 
 <h2 id="Label">Label</h2>
 
