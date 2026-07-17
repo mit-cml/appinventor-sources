@@ -81,7 +81,7 @@ public class TableArrangement extends AndroidViewComponent
    *
    * @return  number of columns in this layout
    */
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public int Columns() {
     return viewLayout.getNumColumns();
   }
@@ -103,7 +103,7 @@ public class TableArrangement extends AndroidViewComponent
    *
    * @return  number of rows in this layout
    */
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public int Rows() {
     return viewLayout.getNumRows();
   }

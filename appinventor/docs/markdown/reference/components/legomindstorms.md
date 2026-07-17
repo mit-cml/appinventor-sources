@@ -63,7 +63,7 @@ Table of Contents:
      Ambient: Senses the current light level *not* including light reflected by the sensor.
      Color: Senses the color the sensor is pointing at.
 
-{:id="Ev3ColorSensor.SensorPort" .text .do} *SensorPort*
+{:id="Ev3ColorSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -175,7 +175,7 @@ None
 {:id="Ev3GyroSensor.Mode" .text} *Mode*
 : Returns the mode of the sensor.
 
-{:id="Ev3GyroSensor.SensorPort" .text .do} *SensorPort*
+{:id="Ev3GyroSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -217,7 +217,7 @@ None
 {:id="Ev3Motors.EnableSpeedRegulation" .boolean} *EnableSpeedRegulation*
 : Returns whether to keep motor rotation at constant speed.
 
-{:id="Ev3Motors.MotorPorts" .text .do} *MotorPorts*
+{:id="Ev3Motors.MotorPorts" .text} *MotorPorts*
 : Specifies the motor port.
 
 {:id="Ev3Motors.ReverseDirection" .boolean} *ReverseDirection*
@@ -229,7 +229,7 @@ None
 {:id="Ev3Motors.TachoCountChangedEventEnabled" .boolean} *TachoCountChangedEventEnabled*
 : Returns whether the TachoCountChanged event should fire when the motor angle is increaing.
 
-{:id="Ev3Motors.WheelDiameter" .number .do} *WheelDiameter*
+{:id="Ev3Motors.WheelDiameter" .number} *WheelDiameter*
 : Returns the diameter of the wheels attached on motors.
 
 ### Events  {#Ev3Motors-Events}
@@ -337,7 +337,7 @@ None
 : Specifies whether the Released event should fire when the touch sensor is
  released.
 
-{:id="Ev3TouchSensor.SensorPort" .text .do} *SensorPort*
+{:id="Ev3TouchSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -432,7 +432,7 @@ None
 : Specifies the bottom of the range used for the BelowRange, WithinRange,
  and AboveRange events.
 
-{:id="Ev3UltrasonicSensor.SensorPort" .text .do} *SensorPort*
+{:id="Ev3UltrasonicSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -488,7 +488,7 @@ None
 : Specifies whether the BelowRange event should fire when the DetectColor
  property is set to False and the light level goes below the BottomOfRange.
 
-{:id="NxtColorSensor.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtColorSensor.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
@@ -511,7 +511,7 @@ None
  The sensor will not generate color when the DetectColor property is set to
  True.
 
-{:id="NxtColorSensor.SensorPort" .text .do} *SensorPort*
+{:id="NxtColorSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -563,7 +563,7 @@ None
 
 {:.properties}
 
-{:id="NxtDirectCommands.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtDirectCommands.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
@@ -668,17 +668,17 @@ None
 
 {:.properties}
 
-{:id="NxtDrive.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtDrive.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
-{:id="NxtDrive.DriveMotors" .text .do} *DriveMotors*
+{:id="NxtDrive.DriveMotors" .text} *DriveMotors*
 : Specifies the motor ports that are used for driving.
 
 {:id="NxtDrive.StopBeforeDisconnect" .boolean} *StopBeforeDisconnect*
 : Specifies whether to stop the drive motors before disconnecting.
 
-{:id="NxtDrive.WheelDiameter" .number .do} *WheelDiameter*
+{:id="NxtDrive.WheelDiameter" .number} *WheelDiameter*
 : Returns the diameter of the wheels used for driving.
 
 ### Events  {#NxtDrive-Events}
@@ -733,7 +733,7 @@ None
 : Specifies whether the BelowRange event should fire when the light level
  goes below the BottomOfRange.
 
-{:id="NxtLightSensor.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtLightSensor.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
@@ -744,7 +744,7 @@ None
 {:id="NxtLightSensor.GenerateLight" .boolean} *GenerateLight*
 : Specifies whether the light sensor should generate light.
 
-{:id="NxtLightSensor.SensorPort" .text .do} *SensorPort*
+{:id="NxtLightSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be specified in the Designer.**
 
@@ -797,7 +797,7 @@ None
 : Specifies whether the BelowRange event should fire when the sound level
  goes below the BottomOfRange.
 
-{:id="NxtSoundSensor.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtSoundSensor.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
@@ -805,7 +805,7 @@ None
 : Specifies the bottom of the range used for the BelowRange, WithinRange,
  and AboveRange events.
 
-{:id="NxtSoundSensor.SensorPort" .text .do} *SensorPort*
+{:id="NxtSoundSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -850,7 +850,7 @@ None
 
 {:.properties}
 
-{:id="NxtTouchSensor.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtTouchSensor.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
@@ -862,7 +862,7 @@ None
 : Specifies whether the Released event should fire when the touch sensor is
  released.
 
-{:id="NxtTouchSensor.SensorPort" .text .do} *SensorPort*
+{:id="NxtTouchSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 
@@ -904,7 +904,7 @@ None
 : Specifies whether the BelowRange event should fire when the distance
  goes below the BottomOfRange.
 
-{:id="NxtUltrasonicSensor.BluetoothClient" .component .do} *BluetoothClient*
+{:id="NxtUltrasonicSensor.BluetoothClient" .component} *BluetoothClient*
 : Specifies the BluetoothClient component that should be used for communication.
  **Must be set in the Designer.**
 
@@ -912,7 +912,7 @@ None
 : Specifies the bottom of the range used for the BelowRange, WithinRange,
  and AboveRange events.
 
-{:id="NxtUltrasonicSensor.SensorPort" .text .do} *SensorPort*
+{:id="NxtUltrasonicSensor.SensorPort" .text} *SensorPort*
 : Specifies the sensor port that the sensor is connected to.
  **Must be set in the Designer.**
 

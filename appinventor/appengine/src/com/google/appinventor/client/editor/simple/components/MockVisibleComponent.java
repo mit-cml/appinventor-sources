@@ -71,6 +71,8 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_TOP = "Top";
   protected static final String PROPERTY_NAME_LISTVIEW_ADD_DATA = "ListData";
   protected static final String PROPERTY_NAME_LISTVIEW_LAYOUT = "ListViewLayout";
+  protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_MAIN = "TextAlignmentMain";
+  protected static final String PROPERTY_NAME_TEXT_ALIGNMENT_DETAIL = "TextAlignmentDetail";
 
   // Note: the values below are duplicated in Component.java
   // If you change them here, change them there!

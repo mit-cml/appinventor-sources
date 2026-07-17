@@ -10,6 +10,11 @@ import Base58Swift
 let CHATBOT_HOST: URL! = URL(string:  "https://chatbot.appinventor.mit.edu/")
 let kRequestError: Int32 = -1
 
+struct ProviderResponse: Decodable {
+  var provider: [String]
+  var model: [String:String]
+}
+
 open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_response> {
   private static let SERVICE_URL = CHATBOT_HOST.appendingPathComponent("chat/v1")
   private var _uuid = ""
@@ -134,6 +139,37 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
     }
   }
 
+  @objc open func GetModels() {
+    fetchProviders { self.GotModels([String]($0.model.keys)) }
+  }
+
+  @objc open func GetProviders() {
+    fetchProviders { self.GotProviders($0.provider) }
+  }
+
+  private func fetchProviders(_ callback: @escaping (ProviderResponse) -> ()) {
+    let session = URLSession.shared
+    let task = session.dataTask(with: apiUrl) { data, response, error in
+      if let error = error {
+        self.ErrorOccurred(Int32((response as? HTTPURLResponse)?.statusCode ?? Int(kRequestError)), "\(error)")
+        return
+      }
+      guard let data = data else {
+        self.ErrorOccurred(kRequestError, "No data returned by server")
+        return
+      }
+      do {
+        let modelInfo = try JSONDecoder().decode(ProviderResponse.self, from: data)
+        callback(modelInfo)
+      } catch {
+        print("\(error)")
+        self.ErrorOccurred(kRequestError, "\(error)")
+      }
+    }
+    task.priority = 1.0
+    task.resume()
+  }
+
   // MARK: Events
 
   @objc open func GotResponse(_ responseText: String) {
@@ -158,6 +194,18 @@ open class ChatBot: ProxiedComponent<ChatBot_token, ChatBot_request, ChatBot_res
         self._form?.dispatchErrorOccurredEvent(self, "ErrorOccurred",
             ErrorMessage.ERROR_CHATBOT_ERROR, responseCode as AnyObject, responseText as AnyObject)
       }
+    }
+  }
+
+  @objc open func GotModels(_ models: [String]) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "GotModels", arguments: models as NSArray)
+    }
+  }
+
+  @objc open func GotProviders(_ providers: [String]) {
+    DispatchQueue.main.async {
+      EventDispatcher.dispatchEvent(of: self, called: "GotProviders", arguments: providers as NSArray)
     }
   }
 }

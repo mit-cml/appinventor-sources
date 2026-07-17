@@ -64,6 +64,11 @@
 		0641606B2EA75C0400FF5BD7 /* LayoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606A2EA75C0100FF5BD7 /* LayoutType.swift */; };
 		0641606D2EA75CC600FF5BD7 /* ListOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */; };
 		0641606F2EA75D3600FF5BD7 /* ScaleUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606E2EA75D3200FF5BD7 /* ScaleUnits.swift */; };
+		064160712EA75E0000FF5BD7 /* ButtonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160702EA75E0000FF5BD7 /* ButtonShape.swift */; };
+		064160732EA7600000FF5BD7 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160722EA7600000FF5BD7 /* TextAlignment.swift */; };
+		064160752EA7600100FF5BD7 /* FontTypeface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160742EA7600100FF5BD7 /* FontTypeface.swift */; };
+		064160772EA7600200FF5BD7 /* NotifierLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160762EA7600200FF5BD7 /* NotifierLength.swift */; };
+		064160792EA7600300FF5BD7 /* ImageAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160782EA7600300FF5BD7 /* ImageAnimation.swift */; };
 		064218BC2C776D7100F10FBD /* Vector2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064218BB2C776D7100F10FBD /* Vector2D.swift */; };
 		064326B9289602770001297F /* Spreadsheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064326B8289602770001297F /* Spreadsheet.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
@@ -482,6 +487,11 @@
 		0641606A2EA75C0100FF5BD7 /* LayoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutType.swift; sourceTree = "<group>"; };
 		0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrientation.swift; sourceTree = "<group>"; };
 		0641606E2EA75D3200FF5BD7 /* ScaleUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleUnits.swift; sourceTree = "<group>"; };
+		064160702EA75E0000FF5BD7 /* ButtonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonShape.swift; sourceTree = "<group>"; };
+		064160722EA7600000FF5BD7 /* TextAlignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
+		064160742EA7600100FF5BD7 /* FontTypeface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontTypeface.swift; sourceTree = "<group>"; };
+		064160762EA7600200FF5BD7 /* NotifierLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotifierLength.swift; sourceTree = "<group>"; };
+		064160782EA7600300FF5BD7 /* ImageAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnimation.swift; sourceTree = "<group>"; };
 		064218BB2C776D7100F10FBD /* Vector2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector2D.swift; sourceTree = "<group>"; };
 		064326B8289602770001297F /* Spreadsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spreadsheet.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
@@ -1501,15 +1511,19 @@
 		681D59032A84137D007B5DB5 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				064160702EA75E0000FF5BD7 /* ButtonShape.swift */,
 				0641605B2EA7529F00FF5BD7 /* ColorSensorMode.swift */,
 				06C43B332D44699100BEF000 /* FileAction.swift */,
 				681D59042A84138A007B5DB5 /* FileScope.swift */,
 				06C43B342D44699100BEF000 /* FileType.swift */,
+				064160742EA7600100FF5BD7 /* FontTypeface.swift */,
 				0641605D2EA7556F00FF5BD7 /* GyroSensorMode.swift */,
 				064160642EA759C300FF5BD7 /* HorizontalAlignment.swift */,
+				064160782EA7600300FF5BD7 /* ImageAnimation.swift */,
 				0641606A2EA75C0100FF5BD7 /* LayoutType.swift */,
 				0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */,
 				06E91E112D2B236800377845 /* LOBFValues.swift */,
+				064160762EA7600200FF5BD7 /* NotifierLength.swift */,
 				06B204422EA6A70C004FAC09 /* OptionHelper.swift */,
 				681D59062A84139E007B5DB5 /* OptionList.swift */,
 				060F4AED2D35B583005D01BA /* ReceivingState.swift */,
@@ -1517,6 +1531,7 @@
 				064160622EA758B000FF5BD7 /* ScreenAnimation.swift */,
 				06208B512BD9D7380097EF43 /* ScreenOrientation.swift */,
 				064160682EA75B5D00FF5BD7 /* Sensitivity.swift */,
+				064160722EA7600000FF5BD7 /* TextAlignment.swift */,
 				0641605F2EA7574C00FF5BD7 /* UltrasonicSensorUnit.swift */,
 				064160662EA75A8500FF5BD7 /* VerticalAlignment.swift */,
 			);
@@ -2060,6 +2075,8 @@
 				06604B732034EFE70066C459 /* CsvUtil.swift in Sources */,
 				22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */,
 				06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */,
+				064160712EA75E0000FF5BD7 /* ButtonShape.swift in Sources */,
+				064160752EA7600100FF5BD7 /* FontTypeface.swift in Sources */,
 				064160652EA759C700FF5BD7 /* HorizontalAlignment.swift in Sources */,
 				061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
@@ -2131,6 +2148,9 @@
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,
 				0644F6C01F37CAD800642E4D /* Player.swift in Sources */,
 				064160632EA758B400FF5BD7 /* ScreenAnimation.swift in Sources */,
+				064160772EA7600200FF5BD7 /* NotifierLength.swift in Sources */,
+				064160732EA7600000FF5BD7 /* TextAlignment.swift in Sources */,
+				064160792EA7600300FF5BD7 /* ImageAnimation.swift in Sources */,
 				067BBF312C480CEF0058B1BD /* BaseAiComponent.swift in Sources */,
 				06B216081DB954A5000B3366 /* ColorUtil.swift in Sources */,
 				068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */,

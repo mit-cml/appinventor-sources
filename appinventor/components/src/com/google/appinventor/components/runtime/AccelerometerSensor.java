@@ -479,6 +479,7 @@ public int getDeviceDefaultOrientation() {
     this.legacyMode = legacyMode;
   }
 
+  @SimpleProperty
   public boolean LegacyMode() {
     return legacyMode;
   }

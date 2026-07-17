@@ -10,6 +10,7 @@ import android.Manifest;
 import com.google.appinventor.components.annotations.Asset;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -17,12 +18,14 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ImageAnimation;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.EventDispatcher;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.GifMovieDrawable;
 import com.google.appinventor.components.runtime.util.HoneycombUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -61,7 +64,8 @@ public final class Image extends AndroidViewComponent {
   private double rotationAngle = 0.0;
 
   private int scalingMode = Component.SCALING_SCALE_PROPORTIONALLY;
-  
+  private GifMovieDrawable gifDrawable;
+
   private boolean clickable = false;
 
   /**
@@ -168,13 +172,43 @@ public final class Image extends AndroidViewComponent {
 
     Drawable drawable;
     try {
-      drawable = MediaUtil.getBitmapDrawable(container.$form(), picturePath);
+      drawable = MediaUtil.getDrawable(container.$form(), picturePath);
     } catch (IOException ioe) {
       Log.e("Image", "Unable to load " + picturePath);
       drawable = null;
     }
 
+    gifDrawable = (drawable instanceof GifMovieDrawable) ? (GifMovieDrawable) drawable : null;
+
     ViewUtil.setImage(view, drawable);
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty(description = "Controls whether an animated GIF image is playing. " +
+      "Setting to true resumes animation; setting to false pauses at the current frame. " +
+      "Has no effect on non-animated images.")
+  public void Animated(boolean animated) {
+    if (gifDrawable != null) {
+      if (animated) {
+        gifDrawable.start();
+      } else {
+        gifDrawable.stop();
+      }
+    }
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public boolean Animated() {
+    return gifDrawable != null && gifDrawable.isRunning();
+  }
+
+  @SimpleFunction(description = "Resets the animation of an animated GIF image to the first frame. " +
+      "If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.")
+  public void ResetAnimation() {
+    if (gifDrawable != null) {
+      gifDrawable.reset();
+    }
   }
 
   /**
@@ -219,6 +253,11 @@ public final class Image extends AndroidViewComponent {
       view.setScaleType(ImageView.ScaleType.FIT_CENTER);
   }
 
+  @SimpleProperty
+  public boolean ScalePictureToFit() {
+    return view.getScaleType() == ImageView.ScaleType.FIT_XY;
+  }
+
   /**
    * This is a limited form of animation that can attach a small number of motion types to images.
    * The allowable motions are `ScrollRightSlow`, `ScrollRight`, `ScrollRightFast`,
@@ -236,7 +275,7 @@ public final class Image extends AndroidViewComponent {
   // TODO(user): This should be changed from a property to an "animate" method, and have the choices
   // placed in a dropdown.  Aternatively the whole thing should be removed and we should do
   // something that is more consistent with sprites.
-  public void Animation(String animation) {
+  public void Animation(@Options(ImageAnimation.class) String animation) {
     AnimationUtil.ApplyAnimation(view, animation);
   }
 

@@ -2130,6 +2130,9 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private boolean tryAddOptionList(Element optionElem) {
     String className = optionElem.asType().toString();
     String tagName = optionElem.getSimpleName().toString();
+    if (tagName.equals("ButtonShape")) {
+      tagName = "Shape";
+    }
     OptionList optionList = new OptionList(className, tagName);
 
     // Get the class.

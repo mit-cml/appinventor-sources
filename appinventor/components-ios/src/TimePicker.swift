@@ -13,7 +13,6 @@ open class TimePicker: Picker, DateTimePickerDelegate {
   fileprivate var _viewController: DateTimePickerController?
   fileprivate var _hour, _minute: Int
   fileprivate var _instant: Date
-  fileprivate var _customTime = false
   fileprivate let _isPhone = UIDevice.current.userInterfaceIdiom == .phone
   
   public override init(_ parent: ComponentContainer) {
@@ -69,7 +68,8 @@ open class TimePicker: Picker, DateTimePickerDelegate {
       let time = Calendar.current.date(from: timeComponents)!
       _instant = time
       _viewController?.setTime(_instant)
-      _customTime = true
+      _hour = Int(hour)
+      _minute = Int(minute)
     }
   }
   
@@ -77,7 +77,8 @@ open class TimePicker: Picker, DateTimePickerDelegate {
     let timeComponents = Calendar.current.dateComponents([.day, .month, .year, .hour, .minute, .timeZone], from: instant)
     _instant = Calendar.current.date(from: timeComponents)!
     self._viewController?.setTime(_instant)
-    _customTime = true
+    _hour = timeComponents.hour!
+    _minute = timeComponents.minute!
   }
   
   @objc open func LaunchPicker() {
@@ -100,12 +101,6 @@ open class TimePicker: Picker, DateTimePickerDelegate {
   }
   
   open override func click() {
-    if !_customTime {
-      _instant = Date()
-      _viewController?.setTime(_instant)
-    } else {
-      _customTime = false
-    }
     if !_isPhone {
       if let popover = (_viewController as! UIViewController).popoverPresentationController {
         popover.delegate = self
