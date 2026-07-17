@@ -138,13 +138,16 @@ public final class PropertiesBox extends Box {
     if (components.size() > 1) {
       // TODO: Localize
       designProperties.setPropertiesCaption(MESSAGES.componentsSelected(components.size()));
+      designProperties.setPropertiesExtension(null);
     } else {
       // need to update the caption after the setProperties call, since
       // setProperties clears the caption!
-      String componentType = components.get(0).getType();
-      designProperties.setPropertiesCaption(components.get(0).getName() + " (" +
+      MockComponent single = components.get(0);
+      String componentType = single.getType();
+      designProperties.setPropertiesCaption(single.getName() + " (" +
           ComponentTranslationTable.getComponentName(componentType.equals("Form")
               ? "Screen" : componentType) + ")");
+      designProperties.setPropertiesExtension(single.getPropertiesPanelExtension());
     }
   }
 }
