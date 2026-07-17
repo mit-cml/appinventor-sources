@@ -128,16 +128,8 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     // New layouts don't need all this messing; see comments on selected answer at:
     // http://stackoverflow.com/questions/86901/creating-a-fluid-panel-in-gwt-to-fill-the-page
     initWidget(blocksArea);
-    blocksArea.populateComponentTypes(componentDatabase.getComponentsJSONString());
-
     // Get references to the source structure explorer
     sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();
-
-    // Listen for selection events for built-in drawers
-    BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
-
-    designer = (T) projectEditor.getFileEditor(blocksNode.getEntityName(), DesignerEditor.EDITOR_TYPE);
-    formToBlocksEditor.put(entityName, this);
   }
 
   public abstract void prepareForUnload();
@@ -216,6 +208,17 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
 
   public boolean isLoaded() {
     return loadComplete;
+  }
+
+  public void initWorkspace() {
+    blocksArea.initWorkspace();
+    blocksArea.populateComponentTypes(componentDatabase.getComponentsJSONString());
+
+    // Listen for selection events for built-in drawers
+    BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
+
+    designer = (T) projectEditor.getFileEditor(blocksNode.getEntityName(), DesignerEditor.EDITOR_TYPE);
+    formToBlocksEditor.put(entityName, this);
   }
 
   public WorkspaceSvg getWorkspace() {

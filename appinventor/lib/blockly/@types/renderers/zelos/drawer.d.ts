@@ -46,6 +46,6 @@ export declare class Drawer extends BaseDrawer {
     private getInlineInputPath;
     drawStatementInput_(row: Row): void;
     /** Returns a path to highlight the given connection. */
-    drawConnectionHighlightPath(measurable: Connection): void;
+    drawConnectionHighlightPath(measurable: Connection): SVGElement | undefined;
 }
 //# sourceMappingURL=drawer.d.ts.map

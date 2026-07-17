@@ -692,7 +692,7 @@ AI.Blockly.ContextMenuItems.registerEnableDisableAllBlocksOption = function() {
       let allBlocks = scope.workspace.getAllBlocks();
       try {
         Blockly.Events.setGroup(true);
-        allBlocks.forEach(block => block.setEnabled(true));
+        allBlocks.forEach(block => block.setDisabledReason(false, Blockly.constants.MANUALLY_DISABLED));
       } finally {
         Blockly.Events.setGroup(false);
       }
@@ -713,7 +713,7 @@ AI.Blockly.ContextMenuItems.registerEnableDisableAllBlocksOption = function() {
       let allBlocks = scope.workspace.getAllBlocks();
       try {
         Blockly.Events.setGroup(true);
-        allBlocks.forEach(block => block.setEnabled(false));
+        allBlocks.forEach(block => block.setDisabledReason(true, Blockly.constants.MANUALLY_DISABLED));
       } finally {
         Blockly.Events.setGroup(false);
       }
@@ -970,6 +970,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
 .blocklyMultiselect>image, .blocklyMultiselect>image:hover { opacity: 1.0; }
 .blocklyTrash { opacity: 1.0 !important; }
 `);
+      KeyboardNavigation.registerKeyboardNavigationStyles();
     } catch (e) {
       // Thrown if we've already registered the CSS. This should only happen in unit tests.
     }
@@ -1025,14 +1026,23 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       slowBlockSpeed: .15
     }
   });
-  /*
-    Keyboard navigation -- needs to be fixed with multiselect
-  if (!AI.Blockly.navigationController) {
-    AI.Blockly.navigationController = new NavigationController();
-    AI.Blockly.navigationController.init();
+  if (!AI.Blockly.keyboardNavigation) {
+    AI.Blockly.keyboardNavigation = new KeyboardNavigation(workspace);
+    multiselectPlugin.onKeyboardNavigationInit({
+      instance: AI.Blockly.keyboardNavigation,
+      shortcutKeybindings: {
+        toolbox: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.T],
+        clean_up_workspace: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.C],
+        list_shortcuts: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.SLASH],
+        disconnect: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.X],
+        start_move: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.M],
+        duplicate: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.SHIFT, Blockly.utils.KeyCodes.D],
+        next_stack: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.N],
+        previous_stack: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.B],
+        to_workspace: [Blockly.utils.KeyCodes.ALT, Blockly.utils.KeyCodes.W],
+      },
+    });
   }
-  AI.Blockly.navigationController.addWorkspace(workspace);
-  */
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
@@ -1177,7 +1187,6 @@ AI.inject = function(container, workspace, isDarkMode=false) {
     workspace.notYetRendered = false;
     workspace.scrollCenter();
   }
-  //AI.Blockly.navigationController.enable(workspace);
 };
 
 // Preserve Blockly during Closure and GWT optimizations

@@ -9,6 +9,7 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import jsinterop.annotations.JsMethod;
 
 public class ShowShortcutsAction implements Command {
 
@@ -34,18 +36,25 @@ public class ShowShortcutsAction implements Command {
         shortcutKeyHandler();
     }
 
+    @JsMethod(namespace = "AI.Blockly.keyboardNavigation")
+    private static native void toggleShortcutDialog();
+
     @Override
     public void execute() {
-        VerticalPanel DialogBoxContents = new VerticalPanel();
-        HTML message = new HTML(MESSAGES.KeyBoardShortcuts());
-        Button button = new Button(Ode.MESSAGES.okButton());
-        button.addClickHandler(event -> db.hide());
-        DialogBoxContents.add(message);
-        DialogBoxContents.add(button);
-        db.setWidget(DialogBoxContents);
-        db.center();
-        db.show();
-        button.setFocus(true);
+        if (Ode.getInstance().getDesignToolbar().getCurrentView() == DesignToolbar.View.BLOCKS) {
+            toggleShortcutDialog();
+        } else {
+            VerticalPanel DialogBoxContents = new VerticalPanel();
+            HTML message = new HTML(MESSAGES.KeyBoardShortcuts());
+            Button button = new Button(Ode.MESSAGES.okButton());
+            button.addClickHandler(event -> db.hide());
+            DialogBoxContents.add(message);
+            DialogBoxContents.add(button);
+            db.setWidget(DialogBoxContents);
+            db.center();
+            db.show();
+            button.setFocus(true);
+        }
     }
 
     private void shortcutKeyHandler() {
@@ -56,6 +65,7 @@ public class ShowShortcutsAction implements Command {
                 if (event.getTypeInt() == Event.ONKEYDOWN) {
                     if (nativeEvent.getKeyCode() == 191 && nativeEvent.getAltKey()) {
                         shortcutPressed();
+                        nativeEvent.stopPropagation();
                     }
                     if (nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE) {
                         escPressed();
