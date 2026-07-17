@@ -141,15 +141,6 @@ public interface StorageIo {
   void deleteProject(String userId, long projectId);
 
   /**
-   * Sets the bit true and moves the project to trash.
-   *
-   * @param userId user ID
-   * @param projectId project ID
-   * @param flag
-   */
-  void setMoveToTrashFlag(final String userId, final long projectId, boolean flag);
-
-  /**
    * Returns an array with the user's projects.
    *
    * @param userId  user ID
@@ -673,8 +664,8 @@ public interface StorageIo {
   /**
    * Delete a user account.
    *
-   * This requires that all of the user's projects are delete, or at
-   * least has the projectMovedToTrashFlag set.  If so, this method
+   * This requires that all of the user's projects are deleted, or
+   * at least is in *trash* folder. If so, this method
    * will remove all vestiges of the user's account and returns
    * true. Otherwise returns false.
    *

@@ -49,7 +49,6 @@ public class DatePicker extends ButtonBase {
   private int year, month, javaMonth, day;
   private Calendar instant;
   private String [] localizedMonths = new DateFormatSymbols().getMonths();
-  private boolean customDate = false;
   private Form form;
   private Handler androidUIHandler;
 
@@ -139,17 +138,24 @@ public class DatePicker extends ButtonBase {
     }
     date.updateDate(year, jMonth, day);
     instant = Dates.DateInstant(year, month, day);
-    customDate = true;
+    this.year = year;
+    this.month = month;
+    this.javaMonth = jMonth;
+    this.day = day;
   }
 
   @SimpleFunction(description = "Allows the user to set the date from the instant to be displayed when the date picker opens.")
   public void SetDateToDisplayFromInstant(Calendar instant) {
     int year = Dates.Year(instant);
-    int month = Dates.Month(instant);
+    int jMonth = Dates.Month(instant);
+    int month = jMonth + 1;
     int day = Dates.Day(instant);
-    date.updateDate(year, month, day);
-    instant = Dates.DateInstant(year, month, day);
-    customDate = true;
+    date.updateDate(year, jMonth, day);
+    this.instant = Dates.DateInstant(year, month, day);
+    this.year = year;
+    this.month = month;
+    this.javaMonth = jMonth;
+    this.day = day;
   }
 
   /**
@@ -166,16 +172,7 @@ public class DatePicker extends ButtonBase {
    */
   @Override
   public void click() {
-    if (!customDate) {
-      Calendar c = Calendar.getInstance();
-      int year = c.get(Calendar.YEAR);
-      int jMonth = c.get(Calendar.MONTH);
-      int day = c.get(Calendar.DAY_OF_MONTH);
-      date.updateDate(year, jMonth, day);
-      instant = Dates.DateInstant(year, jMonth+1, day);
-    } else {
-      customDate = false;
-    }
+    date.updateDate(year, javaMonth, day);
     date.show();
   }
 

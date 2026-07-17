@@ -850,6 +850,14 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="ListView.ShowFilterBar" class="boolean"><em>ShowFilterBar</em></dt>
   <dd>Sets visibility of the filter bar. <code class="logic block highlighter-rouge">true</code> will show the bar,
  <code class="logic block highlighter-rouge">false</code> will hide it.</dd>
+  <dt id="ListView.TextAlignmentDetail" class="number"><em>TextAlignmentDetail</em></dt>
+  <dd>Specifies the alignment of the detail text in ListView elements: center, normal
+ (e.g., left-justified if text is written left to right), or opposite
+ (e.g., right-justified if text is written left to right).</dd>
+  <dt id="ListView.TextAlignmentMain" class="number"><em>TextAlignmentMain</em></dt>
+  <dd>Specifies the alignment of the main text in ListView elements: center, normal
+ (e.g., left-justified if text is written left to right), or opposite
+ (e.g., right-justified if text is written left to right).</dd>
   <dt id="ListView.TextColor" class="color"><em>TextColor</em></dt>
   <dd>The text color of the <code class="highlighter-rouge">ListView</code> items.</dd>
   <dt id="ListView.TextColorDetail" class="color"><em>TextColorDetail</em></dt>
@@ -1101,6 +1109,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices
  are: <code class="highlighter-rouge">1</code> (aligned at the top), <code class="highlighter-rouge">2</code> (vertically centered), <code class="highlighter-rouge">3</code> (aligned at the bottom). Vertical
  alignment has no effect if the screen is scrollable.</dd>
+  <dt id="Screen.AndroidMinSdk" class="text wo do"><em>AndroidMinSdk</em></dt>
+  <dd>The minimum Android API level required to install this app. The build system may automatically raise this value if selected components require a higher APIlevel.</dd>
   <dt id="Screen.AppName" class="text wo do"><em>AppName</em></dt>
   <dd>This is the display name of the installed application in the phone. If the <code class="highlighter-rouge">AppName</code> is blank,
  it will be set to the name of the project when the project is built.</dd>

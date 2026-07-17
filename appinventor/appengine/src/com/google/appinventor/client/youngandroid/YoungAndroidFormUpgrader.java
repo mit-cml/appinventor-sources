@@ -205,6 +205,17 @@ public final class YoungAndroidFormUpgrader {
       }
     }
   }
+  
+  private static int upgradeSharingProperties(Map<String, JSONValue> componentProperties,
+    int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Version 2:
+      // Added CopyToClipboard method.
+      // No properties need to be modified.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
 
   private static void upgradeComponentProperties(Map<String, JSONValue> componentProperties,
       String componentType, int srcCompVersion, final int sysCompVersion) {
@@ -357,6 +368,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Regression")) {
         srcCompVersion = upgradePlayerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Sharing")) {
+        srcCompVersion = upgradeSharingProperties(componentProperties, srcCompVersion);
+        
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
@@ -910,6 +924,10 @@ public final class YoungAndroidFormUpgrader {
       // The ServiceURL property was added.
       srcCompVersion = 5;
     }
+    if  (srcCompVersion < 6) {
+      // The GetModels and GetProviders methods with GotModels and GotProviders events were added
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -1257,6 +1275,11 @@ public final class YoungAndroidFormUpgrader {
         componentProperties.put("Theme", new ClientJsonString("Classic"));
       }
       srcCompVersion = 31;
+    }
+    if (srcCompVersion < 32) {
+      // The AndroidMinSdk property was added.
+      // No migration required. Default value will be applied automatically.
+      srcCompVersion = 32;
     }
 
     return srcCompVersion;

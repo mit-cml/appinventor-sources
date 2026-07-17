@@ -37,7 +37,6 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.appinventor.components.runtime.chatbot.ChatBotToken;
-
 import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
@@ -46,7 +45,7 @@ import com.google.appinventor.components.runtime.util.Base58Util;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
-
+import com.google.appinventor.components.runtime.util.YailList;
 import com.google.protobuf.ByteString;
 
 import java.io.ByteArrayInputStream;
@@ -56,7 +55,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+import java.net.URI;
 import java.net.URL;
 
 import java.security.KeyStore;
@@ -64,6 +63,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -71,6 +72,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * The ChatBot component is a non-visible component for chatting with an AI
@@ -228,6 +232,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     "-----END CERTIFICATE-----\n";
 
   private static final String CHATBOT_SERVICE_URL = AppInventorFeatures.chatBotHost() + "chat/v1";
+  private static final String CHATBOT_API_URL = AppInventorFeatures.chatBotHost() + "model_list/v1";
   private static final String LOG_TAG = "ChatBot";
   private static final boolean DEBUG = false;
 
@@ -241,6 +246,7 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   private String uuid = "";     // The UUID for continuing conversations
   private int size = 256;
   private String serviceURL = CHATBOT_SERVICE_URL;    // The service URL to use
+  private String apiURL = CHATBOT_API_URL;    // The API URL to fetch models & providers list
 
   /**
    * Creates a new component.
@@ -281,6 +287,74 @@ public final class ChatBot extends AndroidNonvisibleComponent {
         performRequest(uuid, description, null, true);
       }
     });
+  }
+
+  @SimpleFunction(description = "Get the list of available models.")
+  public void GetModels() {
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        fetchList("models");
+      }
+    });
+  }
+
+  @SimpleFunction(description = "Get the list of available providers.")
+  public void GetProviders() {
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        fetchList("providers");
+      }
+    });
+  }
+
+  private void fetchList(String type) {
+    int responseCode = -1;
+    HttpsURLConnection connection = null;
+    ensureSslSockFactory();
+
+    try {
+      Log.d(LOG_TAG, "fetchList: fetching " + type + " list");
+      URL url = new URL(apiURL);
+      connection = (HttpsURLConnection) url.openConnection();
+
+      connection.setSSLSocketFactory(sslSockFactory);
+      connection.setRequestMethod("GET");
+      responseCode = connection.getResponseCode();
+
+      if (responseCode == 200) {
+        String response = getResponseContent(connection, false);
+        JSONObject json = new JSONObject(response);
+
+        if (type.equals("models")) {
+          JSONObject modelObject = json.getJSONObject("model");
+          List<String> models = new ArrayList<>();
+          Iterator<String> keys = modelObject.keys();
+          while (keys.hasNext()) {
+            models.add(modelObject.getString(keys.next()));
+          }
+          GotModels(YailList.makeList(models));
+        } else {
+          JSONArray providerArray = json.getJSONArray("provider");
+          List<String> providers = new ArrayList<>();
+          for (int i = 0; i < providerArray.length(); i++) {
+            providers.add(providerArray.getString(i));
+          }
+          GotProviders(YailList.makeList(providers));
+        }
+      } else {
+        String returnText = getResponseContent(connection, true);
+        ErrorOccurred(responseCode, returnText);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      ErrorOccurred(responseCode, "Error talking to ChatBot proxy: " + e.toString());
+    } finally {
+      if (connection != null) connection.disconnect();
+    }
   }
 
   private void performRequest(String uuid, String question, Bitmap image, boolean doImage) {
@@ -426,6 +500,26 @@ public final class ChatBot extends AndroidNonvisibleComponent {
     });
   }
 
+  @SimpleEvent(description = "Event fired when models list is fetched.")
+  public void GotModels(final YailList models) {
+    form.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(ChatBot.this, "GotModels", models);
+      }
+    });
+  }
+
+  @SimpleEvent(description = "Event fired when providers list is fetched.")
+  public void GotProviders(final YailList providers) {
+    form.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(ChatBot.this, "GotProviders", providers);
+      }
+    });
+  }
+
   /**
    * The "System" value. Used by ChatGPT. Example: "You are a funny person"
    * It sets the tone for the conversation.
@@ -559,8 +653,10 @@ public final class ChatBot extends AndroidNonvisibleComponent {
   public void ServiceURL(String url) {
     if (url.equals("DEFAULT")) {
       serviceURL = CHATBOT_SERVICE_URL;
+      apiURL = CHATBOT_API_URL;
     } else {
       serviceURL = url;
+      apiURL = URI.create(url).resolve("../model_list/v1").toString();
     }
   }
 

@@ -926,7 +926,9 @@ public class YaVersion {
   // - Added CreateImage and GotResponseWithImage blocks
   // For CHATBOT_COMPONENT_VERSION 5:
   // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
-  public static final int CHATBOT_COMPONENT_VERSION = 5;
+  // For CHATBOT_COMPONENT_VERSION 6:
+  // - Added GetModels and GetProviders methods with GotModels and GotProviders events
+  public static final int CHATBOT_COMPONENT_VERSION = 6;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -1079,7 +1081,9 @@ public class YaVersion {
   // - Add DefaultFileScope designer property.
   // For FORM_COMPONENT_VERSION 31:
   // - The default theme was changed to Device Default.
-  public static final int FORM_COMPONENT_VERSION = 31;
+  // For FORM_COMPONENT_VERSION 32:
+  // - Added the AndroidMinSdk designer property.
+  public static final int FORM_COMPONENT_VERSION = 32;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -1404,7 +1408,7 @@ public class YaVersion {
   // - The CalculateLineOfBestFitValue second argument was changed from String to LOBFValues
   public static final int REGRESSION_COMPONENT_VERSION = 2;
 
-  public static final int SHARING_COMPONENT_VERSION = 1;
+  public static final int SHARING_COMPONENT_VERSION = 2;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.

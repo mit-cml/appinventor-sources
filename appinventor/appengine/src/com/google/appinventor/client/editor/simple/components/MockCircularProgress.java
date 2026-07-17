@@ -7,33 +7,63 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.gwt.user.client.ui.InlineHTML;
+import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 
 public final class MockCircularProgress extends MockVisibleComponent {
-
-
   public static final String TYPE = "CircularProgress";
   private static final String PROPERTY_NAME_COLOR = "Color";
-  private InlineHTML progressBarWidget;
+  private static final String DEFAULT_COLOR = "&HFF0000FF"; // Blue.
+  private static final int DEFAULT_SIZE = 40;
+
+  private final SimplePanel panel; // Root panel that holds svgpanel.
+  private final SVGPanel svgpanel;
 
   public MockCircularProgress(SimpleEditor editor) {
     super(editor, TYPE, images.circularProgress());
 
-    progressBarWidget = new InlineHTML();
-    progressBarWidget.setStylePrimaryName("ode-SimpleMockComponent");
-    progressBarWidget.setText("\u25ef");
-    MockComponentsUtil.setWidgetFontSize(progressBarWidget, "35");
-    MockComponentsUtil.setWidgetTextAlign(progressBarWidget, "1");
-    MockComponentsUtil.setWidgetFontBold(progressBarWidget, "bold");
-    initComponent(progressBarWidget);
+    panel = new SimplePanel();
+    panel.setStylePrimaryName("ode-SimpleMockComponent");
+
+    svgpanel = new SVGPanel();
+    svgpanel.getElement().setAttribute("viewBox", "0 0 40 40");
+
+    panel.setWidget(svgpanel);
+    updateProgressSize(DEFAULT_SIZE, DEFAULT_SIZE);
+
+    initComponent(panel);
+    setIndeterminateColorProperty(DEFAULT_COLOR);
+  }
+
+  private void updateProgressSize(int width, int height) {
+    panel.setPixelSize(width, height);
+    svgpanel.setPixelSize(width, height);
   }
 
   private void setIndeterminateColorProperty(String text) {
     if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  //white
+      text = DEFAULT_COLOR;
     }
-    MockComponentsUtil.setWidgetTextColor(progressBarWidget, text);
+    String color = MockComponentsUtil.getColor(text).toString();
+    svgpanel.setInnerSVG("<circle cx=\"20\" cy=\"20\" r=\"16\" fill=\"none\" "
+        + "stroke=\"" + color + "\" stroke-width=\"4\"/>");
+  }
+
+  @Override
+  public int getPreferredWidth() {
+    return DEFAULT_SIZE;
+  }
+
+  @Override
+  public int getPreferredHeight() {
+    return DEFAULT_SIZE;
+  }
+
+  @Override
+  public void setPixelSize(int width, int height) {
+    super.setPixelSize(width, height);
+    updateProgressSize(width, height);
   }
 
   @Override

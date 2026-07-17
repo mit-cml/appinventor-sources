@@ -4,6 +4,7 @@ layout: documentation
 ---
 
 * [string](#string)
+* [multiline text](#multiline-text)
 * [join](#join)
 * [length](#length)
 * [is empty](#isempty)
@@ -34,6 +35,14 @@ layout: documentation
 Contains a text string.
 
 This string can contain any characters (letters, numbers, or other special characters). On App Inventor it will be considered a Text object.
+
+### multiline text
+
+![](images/text/multilinetext.png)
+
+Contains a text string that can span multiple lines.
+
+This works like the regular string block but supports line breaks within the text. Press Enter inside the block to insert a new line.
 
 ### join   {#join}
 

@@ -739,11 +739,11 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
           }
         }
       }
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.isTextboxFocused()) {
+    } else if (event.getNativeKeyCode() == KeyCodes.KEY_T && !palettePanel.shouldSuppressShortcuts()) {
       SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.isTextboxFocused()) {
-      PropertiesBox.getPropertiesBox().getElement().getElementsByTagName("a").getItem(0).focus();
-    } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.isTextboxFocused()) {
+    } else if (event.getNativeKeyCode() == KeyCodes.KEY_P && !palettePanel.shouldSuppressShortcuts()) {
+      designProperties.focusFirstCategory();
+    } else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !palettePanel.shouldSuppressShortcuts()) {
       AssetListBox.getAssetListBox().getAssetList().getTree().setFocus(true);
     }
   }
