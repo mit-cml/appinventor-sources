@@ -24,8 +24,39 @@ class ListDataModel {
   var elements = [String]()
   /// Rich rows: Text1 / Text2 / Image (populated for ListData / image layouts).
   var items: [[String: AnyObject]] = []
-  /// The current filtered view of `elements` (nil when no filter is active).
-  var results: [String]? = nil
+
+  // ---- Filtering (makes the search box actually filter the list, for both string and rich rows) ----
+  private var query = ""
+
+  /// true when the list holds rich rows (dicts); false for a plain string list.
+  var isDataMode: Bool { !items.isEmpty }
+  /// Total number of rows before filtering.
+  var count: Int { isDataMode ? items.count : elements.count }
+
+  /// Original-index positions of the rows matching the current search (identity when no search).
+  /// Recomputed on demand — fine for realistic list sizes; cache if huge lists ever matter.
+  var filteredIndices: [Int] {
+    guard !query.isEmpty else { return Array(0..<count) }
+    let q = query.lowercased()
+    return (0..<count).filter { i in
+      if isDataMode {
+        let row = items[i]
+        let t1 = (row["Text1"] as? String ?? "").lowercased()
+        let t2 = (row["Text2"] as? String ?? "").lowercased()
+        return t1.contains(q) || t2.contains(q)
+      } else {
+        return elements[i].lowercased().contains(q)
+      }
+    }
+  }
+
+  func setFilter(_ text: String) { query = text }
+
+  // ---- What the table / collection actually draws (filter-aware) ----
+  /// Number of rows currently visible (after filtering).
+  var displayCount: Int { filteredIndices.count }
+  /// Maps a visible row back to its real position in `elements` / `items`.
+  func originalIndex(_ displayRow: Int) -> Int { filteredIndices[displayRow] }
 }
 
   open class ListView: ViewComponent, AbstractMethodsForViewComponent,
@@ -752,18 +783,19 @@ class ListDataModel {
       UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
       let hasElements = _model.elements.count > 0
       
-      let listDataIndex = indexPath.row - _model.items.count
+      // Map the visible row back to its real position so search filtering works.
+      let origRow = _model.originalIndex(indexPath.row)
       if _listViewLayoutMode == 0 { // assume only strings (no dicts]
         if hasElements {
-          let item = _model.elements[indexPath.row]
+          let item = _model.elements[origRow]
           cell.textLabel?.text = item as? String
         } else{
-          let item = _model.items[indexPath.row]
+          let item = _model.items[origRow]
           cell.textLabel?.text = item["Text1"] as? String
         }
         
       } else {
-        let item = _model.items[indexPath.row]
+        let item = _model.items[origRow]
         if _listViewLayoutMode == 1 {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
@@ -976,7 +1008,7 @@ class ListDataModel {
         } else {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
-          cell.textLabel?.text = _model.items[listDataIndex]["Text1"] as? String
+          cell.textLabel?.text = item["Text1"] as? String
         }
     }
 
@@ -1075,21 +1107,21 @@ class ListDataModel {
 
   
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return _model.items.isEmpty ? _model.elements.count : _model.items.count
+      return _model.displayCount
     }
 
     // MARK: UITableViewDelegate
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      if indexPath.row < _model.elements.count {
-        _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _model.elements[indexPath.row]
+      // Map the tapped visible row back to its real position, so selection is correct while filtering.
+      let origRow = _model.originalIndex(indexPath.row)
+      _selectionIndex = Int32(origRow) + 1
+      if _model.isDataMode {
+        _selection = _model.items[origRow]["Text1"] as? String ?? ""
+        _selectionDetailText = _model.items[origRow]["Text2"] as? String ?? ""
+      } else {
+        _selection = _model.elements[origRow]
         _selectionDetailText = ""
-      } else if indexPath.row < _model.elements.count + _model.items.count {
-        let listDataIndex = indexPath.row - _model.elements.count
-        _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _model.items[listDataIndex]["Text1"] as! String
-        _selectionDetailText = _model.items[listDataIndex]["Text2"] as! String
       }
       AfterPicking()
     }
@@ -1097,16 +1129,9 @@ class ListDataModel {
   // MARK: UISearchBarDelegate
 
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    _model.results = nil
-    if !searchText.isEmpty  {
-      _model.results = [String]()
-      for item in _model.elements {
-        if item.starts(with: searchText) {
-          _model.results?.append(item)
-        }
-      }
-    }
+    _model.setFilter(searchText)
     _view.reloadData()
+    _collectionView.reloadData()
   }
 
   open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -1166,25 +1191,24 @@ class ListDataModel {
   required init?(coder: NSCoder) { fatalError() }
   }
 
-  var elements: [String] {
-      return _model.results ?? _model.elements
-    }
     
   // UICollectionViewDataSource
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return _model.items.isEmpty ? _model.elements.count : _model.items.count
+    return _model.displayCount
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
 
-    let isData = !_model.items.isEmpty
+    let isData = _model.isDataMode
+    // Map the visible item back to its real position so search filtering works here too.
+    let origRow = _model.originalIndex(indexPath.item)
     let mainText: String
     let detailText: String
     var image: UIImage? = nil
 
     if isData {
-      let item = _model.items[indexPath.item]
+      let item = _model.items[origRow]
       mainText = item["Text1"] as? String ?? ""
       detailText = item["Text2"] as? String ?? ""
       if let path = item["Image"] as? String,
@@ -1193,7 +1217,7 @@ class ListDataModel {
         image = AssetManager.shared.imageFromPath(path: path)
       }
     } else {
-      mainText = _model.elements[indexPath.item] //_model.items[indexPath.item] as? String ?? ""
+      mainText = _model.elements[origRow]
       detailText = ""
     }
 
@@ -1255,16 +1279,17 @@ class ListDataModel {
 
   // UICollectionViewDelegate (selection → AfterPicking)
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if !_model.items.isEmpty {
-      let item = _model.items[indexPath.item]
-      _selectionIndex = Int32(indexPath.item) + 1
+    // Map the tapped visible item back to its real position, so selection is correct while filtering.
+    let origRow = _model.originalIndex(indexPath.item)
+    _selectionIndex = Int32(origRow) + 1
+    if _model.isDataMode {
+      let item = _model.items[origRow]
       _selection = item["Text1"] as? String ?? ""
       _selectionDetailText = item["Text2"] as? String ?? ""
-    } /*else {
-      _selectionIndex = Int32(indexPath.item) + 1
-      _selection = elements[indexPath.item] as? String ?? ""
+    } else {
+      _selection = _model.elements[origRow]
       _selectionDetailText = ""
-    } */
+    }
     AfterPicking()
   }
 
