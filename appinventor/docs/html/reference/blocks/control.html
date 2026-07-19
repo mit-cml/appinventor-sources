@@ -161,19 +161,19 @@
 
 <p><img src="images/control/forrange.png" alt="" /></p>
 
-<p>Runs the blocks in the do section for each numeric value in the range starting from <em>from</em> and ending at <em>to</em>, incrementing <code class="variable block highlighter-rouge">number</code> by the value of <em>by</em> each time. Use the given variable name, <code class="variable block highlighter-rouge">number</code>, to refer to the current value. You can change the name <code class="variable block highlighter-rouge">number</code> to something else if you wish.</p>
+<p>Runs the blocks in the do section for each numeric value in the range starting from <em>from</em> and ending at <em>to</em>, incrementing <code class="language-plaintext variable block highlighter-rouge">number</code> by the value of <em>by</em> each time. Use the given variable name, <code class="language-plaintext variable block highlighter-rouge">number</code>, to refer to the current value. You can change the name <code class="language-plaintext variable block highlighter-rouge">number</code> to something else if you wish.</p>
 
 <h3 id="foreach">for each item in list</h3>
 
 <p><img src="images/control/foreach.png" alt="" /></p>
 
-<p>Runs the blocks in the do section for each item in the list. Use the given variable name, <code class="variable block highlighter-rouge">item</code>, to refer to the current list item. You can change the name <code class="variable block highlighter-rouge">item</code> to something else if you wish.</p>
+<p>Runs the blocks in the do section for each item in the list. Use the given variable name, <code class="language-plaintext variable block highlighter-rouge">item</code>, to refer to the current list item. You can change the name <code class="language-plaintext variable block highlighter-rouge">item</code> to something else if you wish.</p>
 
 <h3 id="foreachdict">for each key with value in dictionary</h3>
 
 <p><img src="images/control/foreachdict.png" alt="" /></p>
 
-<p>Runs the blocks in the do section for each key-value entry in the dictionary. Use the given variables, <code class="variable block highlighter-rouge">key</code> and <code class="variable block highlighter-rouge">value</code>, to refer to the key and value of the current dictionary entry. You can change the names <code class="variable block highlighter-rouge">key</code> and <code class="variable block highlighter-rouge">value</code> to something else if you wish.</p>
+<p>Runs the blocks in the do section for each key-value entry in the dictionary. Use the given variables, <code class="language-plaintext variable block highlighter-rouge">key</code> and <code class="language-plaintext variable block highlighter-rouge">value</code>, to refer to the key and value of the current dictionary entry. You can change the names <code class="language-plaintext variable block highlighter-rouge">key</code> and <code class="language-plaintext variable block highlighter-rouge">value</code> to something else if you wish.</p>
 
 <h3 id="while">while</h3>
 
@@ -208,7 +208,7 @@ screenName should be selected from the connected screen name dropdown block.</p>
 
 <p>If you do open another screen, you should close it when returning to your main screen to free system memory. Failure to close a screen upon leaving it will eventually lead to memory problems.</p>
 
-<p>App developers should never close Screen1 or use this block to return to Screen1. Use the <code class="control block highlighter-rouge">close screen</code> block instead.</p>
+<p>App developers should never close Screen1 or use this block to return to Screen1. Use the <code class="language-plaintext control block highlighter-rouge">close screen</code> block instead.</p>
 
 <h3 id="openscreenwithvalue">open another screen with start value</h3>
 
@@ -220,7 +220,7 @@ screenName should be selected from the connected screen name dropdown block.</p>
 
 <p><img src="images/control/getplainstarttext.png" alt="" /></p>
 
-<p>Returns the plain text that was passed to this screen when it was started by another app. If no value was passed, it returns the empty text. For multiple screen apps, use <code class="control block highlighter-rouge">get start value</code> rather than <code class="control block highlighter-rouge">get plain start text</code>.</p>
+<p>Returns the plain text that was passed to this screen when it was started by another app. If no value was passed, it returns the empty text. For multiple screen apps, use <code class="language-plaintext control block highlighter-rouge">get start value</code> rather than <code class="language-plaintext control block highlighter-rouge">get plain start text</code>.</p>
 
 <h3 id="getstartvalue">get start value</h3>
 
@@ -228,7 +228,7 @@ screenName should be selected from the connected screen name dropdown block.</p>
 
 <p>Returns the start value given to the current screen.</p>
 
-<p>This value is given from using <code class="control block highlighter-rouge">open another screen with start value</code> or <code class="control block highlighter-rouge">close screen with value</code>.</p>
+<p>This value is given from using <code class="language-plaintext control block highlighter-rouge">open another screen with start value</code> or <code class="language-plaintext control block highlighter-rouge">close screen with value</code>.</p>
 
 <h3 id="closescreen">close screen</h3>
 
@@ -240,7 +240,7 @@ screenName should be selected from the connected screen name dropdown block.</p>
 
 <p><img src="images/control/closescreenwithplaintext.png" alt="" /></p>
 
-<p>Closes the current screen and passes text to the app that opened this one. This command is for returning text to non-App Inventor activities, not to App Inventor screens. For App Inventor Screens, as in multiple screen apps, use <code class="control block highlighter-rouge">close screen with value</code>, not <code class="control block highlighter-rouge">close screen with plain text</code>.</p>
+<p>Closes the current screen and passes text to the app that opened this one. This command is for returning text to non-App Inventor activities, not to App Inventor screens. For App Inventor Screens, as in multiple screen apps, use <code class="language-plaintext control block highlighter-rouge">close screen with value</code>, not <code class="language-plaintext control block highlighter-rouge">close screen with plain text</code>.</p>
 
 <h3 id="closescreenwithvalue">close screen with value</h3>
 
@@ -258,7 +258,7 @@ screenName should be selected from the connected screen name dropdown block.</p>
 
 <p><img src="images/control/break.png" alt="" /></p>
 
-<p>When looping using the <a href="#forrange">for range</a>, <a href="#foreach">for each</a>, or <a href="#while">while</a> blocks it is sometimes useful to be able to exit the loop early. The <code class="control block highlighter-rouge">break</code> allows you to escape the loop. When executed, this will exit the loop and continue the app with the statements that occur after the loop in the blocks.</p>
+<p>When looping using the <a href="#forrange">for range</a>, <a href="#foreach">for each</a>, or <a href="#while">while</a> blocks it is sometimes useful to be able to exit the loop early. The <code class="language-plaintext control block highlighter-rouge">break</code> allows you to escape the loop. When executed, this will exit the loop and continue the app with the statements that occur after the loop in the blocks.</p>
 
 </article>
 <script>
@@ -338,11 +338,11 @@ screenName should be selected from the connected screen name dropdown block.</p>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

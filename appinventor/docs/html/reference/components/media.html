@@ -150,8 +150,8 @@
 
 <p>A component to record a video using the device’s camcorder. After the video is recorded, the
  name of the file on the phone containing the clip is available as an argument to the
- <a href="#Camcorder.AfterRecording"><code class="highlighter-rouge">AfterRecording</code></a> event. The file name can be used, for example, to set the source
- property of a <a href="#VideoPlayer"><code class="highlighter-rouge">VideoPlayer</code></a> component.</p>
+ <a href="#Camcorder.AfterRecording"><code class="language-plaintext highlighter-rouge">AfterRecording</code></a> event. The file name can be used, for example, to set the source
+ property of a <a href="#VideoPlayer"><code class="language-plaintext highlighter-rouge">VideoPlayer</code></a> component.</p>
 
 <h3 id="Camcorder-Properties">Properties</h3>
 
@@ -169,7 +169,7 @@
 
 <dl class="methods">
   <dt id="Camcorder.RecordVideo" class="method"><i></i> RecordVideo()</dt>
-  <dd>Records a video, then raises the <a href="#Camcorder.AfterRecording"><code class="highlighter-rouge">AfterRecording</code></a> event.</dd>
+  <dd>Records a video, then raises the <a href="#Camcorder.AfterRecording"><code class="language-plaintext highlighter-rouge">AfterRecording</code></a> event.</dd>
 </dl>
 
 <h2 id="Camera">Camera</h2>
@@ -178,10 +178,10 @@
 
 <p>Use a camera component to take a picture on the phone.</p>
 
-<p><code class="highlighter-rouge">Camera</code> is a non-visible component that takes a picture using the device’s camera. After the
+<p><code class="language-plaintext highlighter-rouge">Camera</code> is a non-visible component that takes a picture using the device’s camera. After the
  picture is taken, the path to the file on the phone containing the picture is available as an
- argument to the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event. The path can be used, for example, as the
- <a href="userinterface.html#Image.Picture"><code class="highlighter-rouge">Picture</code></a> property of an <a href="userinterface.html3Image"><code class="highlighter-rouge">Image</code></a>
+ argument to the <a href="#Camera.AfterPicture"><code class="language-plaintext highlighter-rouge">AfterPicture</code></a> event. The path can be used, for example, as the
+ <a href="userinterface.html#Image.Picture"><code class="language-plaintext highlighter-rouge">Picture</code></a> property of an <a href="userinterface.html3Image"><code class="language-plaintext highlighter-rouge">Image</code></a>
  component.</p>
 
 <h3 id="Camera-Properties">Properties</h3>
@@ -192,7 +192,7 @@
 
 <dl class="events">
   <dt id="Camera.AfterPicture">AfterPicture(<em class="text">image</em>)</dt>
-  <dd>Called after the picture is taken. The text argument <code class="highlighter-rouge">image</code> is the path that can be used to
+  <dd>Called after the picture is taken. The text argument <code class="language-plaintext highlighter-rouge">image</code> is the path that can be used to
  locate the image on the phone.</dd>
 </dl>
 
@@ -200,7 +200,7 @@
 
 <dl class="methods">
   <dt id="Camera.TakePicture" class="method"><i></i> TakePicture()</dt>
-  <dd>Takes a picture, then raises the <a href="#Camera.AfterPicture"><code class="highlighter-rouge">AfterPicture</code></a> event.</dd>
+  <dd>Takes a picture, then raises the <a href="#Camera.AfterPicture"><code class="language-plaintext highlighter-rouge">AfterPicture</code></a> event.</dd>
 </dl>
 
 <h2 id="FilePicker">FilePicker</h2>
@@ -224,31 +224,31 @@
     </ul>
   </dd>
   <dt id="FilePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s background color as an alpha-red-green-blue
- integer.  If an <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
- change will not be visible until the <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">FilePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#FilePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#FilePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> is removed.</dd>
   <dt id="FilePicker.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">FilePicker</code> should be active and clickable.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">FilePicker</code> should be active and clickable.</dd>
   <dt id="FilePicker.FontBold" class="boolean"><em>FontBold</em></dt>
-  <dd>Specifies whether the text of the <code class="highlighter-rouge">FilePicker</code> should be bold.
+  <dd>Specifies whether the text of the <code class="language-plaintext highlighter-rouge">FilePicker</code> should be bold.
  Some fonts do not support bold.</dd>
   <dt id="FilePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
-  <dd>Specifies whether the text of the <code class="highlighter-rouge">FilePicker</code> should be italic.
+  <dd>Specifies whether the text of the <code class="language-plaintext highlighter-rouge">FilePicker</code> should be italic.
  Some fonts do not support italic.</dd>
   <dt id="FilePicker.FontSize" class="number"><em>FontSize</em></dt>
-  <dd>Specifies the text font size of the <code class="highlighter-rouge">FilePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dd>Specifies the text font size of the <code class="language-plaintext highlighter-rouge">FilePicker</code>, measured in sp(scale-independent pixels).</dd>
   <dt id="FilePicker.FontTypeface" class="text"><em>FontTypeface</em></dt>
-  <dd>Specifies the text font face of the <code class="highlighter-rouge">FilePicker</code> as default, serif, sans
+  <dd>Specifies the text font face of the <code class="language-plaintext highlighter-rouge">FilePicker</code> as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project’s media.</dd>
   <dt id="FilePicker.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s vertical height, measured in pixels.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">FilePicker</code>’s vertical height, measured in pixels.</dd>
   <dt id="FilePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">FilePicker</code>’s vertical height as a percentage
- of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">FilePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Height</code></a>.</dd>
   <dt id="FilePicker.Image" class="text"><em>Image</em></dt>
-  <dd>Specifies the path of the <code class="highlighter-rouge">FilePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
- <a href="#FilePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dd>Specifies the path of the <code class="language-plaintext highlighter-rouge">FilePicker</code>’s image. If there is both an <code class="language-plaintext highlighter-rouge">Image</code> and a
+ <a href="#FilePicker.BackgroundColor"><code class="language-plaintext highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="language-plaintext highlighter-rouge">Image</code> will be visible.</dd>
   <dt id="FilePicker.Left" class="number"><em>Left</em></dt>
   <dd>Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.</dd>
@@ -257,69 +257,69 @@
   <dt id="FilePicker.Selection" class="text ro bo"><em>Selection</em></dt>
   <dd>Returns the selected file, possibly as a content URI.</dd>
   <dt id="FilePicker.Shape" class="number"><em>Shape</em></dt>
-  <dd>Specifies the shape of the <code class="highlighter-rouge">FilePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
- <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
- <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dd>Specifies the shape of the <code class="language-plaintext highlighter-rouge">FilePicker</code>. The valid values for this property are <code class="language-plaintext highlighter-rouge">0</code> (default),
+ <code class="language-plaintext highlighter-rouge">1</code> (rounded), <code class="language-plaintext highlighter-rouge">2</code> (rectangle), and <code class="language-plaintext highlighter-rouge">3</code> (oval). The <code class="language-plaintext highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#FilePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> is used.</dd>
   <dt id="FilePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
-  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">FilePicker</code> with an assigned
- <a href="#FilePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dd>Specifies if a visual feedback should be shown when a <code class="language-plaintext highlighter-rouge">FilePicker</code> with an assigned
+ <a href="#FilePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> is pressed.</dd>
   <dt id="FilePicker.Text" class="text"><em>Text</em></dt>
-  <dd>Specifies the text displayed by the <code class="highlighter-rouge">FilePicker</code>.</dd>
+  <dd>Specifies the text displayed by the <code class="language-plaintext highlighter-rouge">FilePicker</code>.</dd>
   <dt id="FilePicker.TextAlignment" class="number"><em>TextAlignment</em></dt>
-  <dd>Specifies the alignment of the <code class="highlighter-rouge">FilePicker</code>’s text. Valid values are:
- <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
- <code class="highlighter-rouge">1</code> (center), or
- <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dd>Specifies the alignment of the <code class="language-plaintext highlighter-rouge">FilePicker</code>’s text. Valid values are:
+ <code class="language-plaintext highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="language-plaintext highlighter-rouge">1</code> (center), or
+ <code class="language-plaintext highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
   <dt id="FilePicker.TextColor" class="color"><em>TextColor</em></dt>
-  <dd>Specifies the text color of the <code class="highlighter-rouge">FilePicker</code> as an alpha-red-green-blue
+  <dd>Specifies the text color of the <code class="language-plaintext highlighter-rouge">FilePicker</code> as an alpha-red-green-blue
  integer.</dd>
   <dt id="FilePicker.Top" class="number"><em>Top</em></dt>
   <dd>Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.</dd>
   <dt id="FilePicker.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">FilePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
- if the <code class="highlighter-rouge">FilePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">FilePicker</code> should be visible on the screen.  Value is <code class="language-plaintext logic block highlighter-rouge">true</code>
+ if the <code class="language-plaintext highlighter-rouge">FilePicker</code> is showing and <code class="language-plaintext logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="FilePicker.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FilePicker</code>, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">FilePicker</code>, measured in pixels.</dd>
   <dt id="FilePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">FilePicker</code> as a percentage
- of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">FilePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
 <h3 id="FilePicker-Events">Events</h3>
 
 <dl class="events">
   <dt id="FilePicker.AfterPicking">AfterPicking()</dt>
-  <dd>Event to be raised after the <code class="highlighter-rouge">FilePicker</code> activity returns its
+  <dd>Event to be raised after the <code class="language-plaintext highlighter-rouge">FilePicker</code> activity returns its
  result and the properties have been filled in.</dd>
   <dt id="FilePicker.BeforePicking">BeforePicking()</dt>
-  <dd>Event to raise when the <code class="highlighter-rouge">FilePicker</code> is clicked or the picker is shown
- using the <a href="#FilePicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+  <dd>Event to raise when the <code class="language-plaintext highlighter-rouge">FilePicker</code> is clicked or the picker is shown
+ using the <a href="#FilePicker.Open"><code class="language-plaintext highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
  can be used to prepare the picker before it is shown.</dd>
   <dt id="FilePicker.GotFocus">GotFocus()</dt>
-  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">FilePicker</code> so it is now possible
+  <dd>Indicates the cursor moved over the <code class="language-plaintext highlighter-rouge">FilePicker</code> so it is now possible
  to click it.</dd>
   <dt id="FilePicker.LostFocus">LostFocus()</dt>
-  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">FilePicker</code> so it is now no
+  <dd>Indicates the cursor moved away from the <code class="language-plaintext highlighter-rouge">FilePicker</code> so it is now no
  longer possible to click it.</dd>
   <dt id="FilePicker.TouchDown">TouchDown()</dt>
-  <dd>Indicates that the <code class="highlighter-rouge">FilePicker</code> was pressed down.</dd>
+  <dd>Indicates that the <code class="language-plaintext highlighter-rouge">FilePicker</code> was pressed down.</dd>
   <dt id="FilePicker.TouchUp">TouchUp()</dt>
-  <dd>Indicates that the <code class="highlighter-rouge">FilePicker</code> has been released.</dd>
+  <dd>Indicates that the <code class="language-plaintext highlighter-rouge">FilePicker</code> has been released.</dd>
 </dl>
 
 <h3 id="FilePicker-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="FilePicker.Open" class="method"><i></i> Open()</dt>
-  <dd>Opens the <code class="highlighter-rouge">FilePicker</code>, as though the user clicked on it.</dd>
+  <dd>Opens the <code class="language-plaintext highlighter-rouge">FilePicker</code>, as though the user clicked on it.</dd>
 </dl>
 
 <h2 id="ImagePicker">ImagePicker</h2>
 
-<p>A special-purpose button. When the user taps an <code class="highlighter-rouge">ImagePicker</code>, the device’s image gallery
+<p>A special-purpose button. When the user taps an <code class="language-plaintext highlighter-rouge">ImagePicker</code>, the device’s image gallery
  appears, and the user can choose an image. After an image is picked, it is saved, and the
- <a href="#ImagePicker.Selection"><code class="highlighter-rouge">Selection</code></a> property will be the name of the file where the image is stored. In order
+ <a href="#ImagePicker.Selection"><code class="language-plaintext highlighter-rouge">Selection</code></a> property will be the name of the file where the image is stored. In order
  to not fill up storage, a maximum of 10 images will be stored. Picking more images will delete
  previous images, in order from oldest to newest.</p>
 
@@ -327,106 +327,106 @@
 
 <dl class="properties">
   <dt id="ImagePicker.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s background color as an alpha-red-green-blue
- integer.  If an <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> has been set, the color
- change will not be visible until the <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is removed.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">ImagePicker</code>’s background color as an alpha-red-green-blue
+ integer.  If an <a href="#ImagePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> has been set, the color
+ change will not be visible until the <a href="#ImagePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> is removed.</dd>
   <dt id="ImagePicker.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">ImagePicker</code> should be active and clickable.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">ImagePicker</code> should be active and clickable.</dd>
   <dt id="ImagePicker.FontBold" class="boolean"><em>FontBold</em></dt>
-  <dd>Specifies whether the text of the <code class="highlighter-rouge">ImagePicker</code> should be bold.
+  <dd>Specifies whether the text of the <code class="language-plaintext highlighter-rouge">ImagePicker</code> should be bold.
  Some fonts do not support bold.</dd>
   <dt id="ImagePicker.FontItalic" class="boolean"><em>FontItalic</em></dt>
-  <dd>Specifies whether the text of the <code class="highlighter-rouge">ImagePicker</code> should be italic.
+  <dd>Specifies whether the text of the <code class="language-plaintext highlighter-rouge">ImagePicker</code> should be italic.
  Some fonts do not support italic.</dd>
   <dt id="ImagePicker.FontSize" class="number"><em>FontSize</em></dt>
-  <dd>Specifies the text font size of the <code class="highlighter-rouge">ImagePicker</code>, measured in sp(scale-independent pixels).</dd>
+  <dd>Specifies the text font size of the <code class="language-plaintext highlighter-rouge">ImagePicker</code>, measured in sp(scale-independent pixels).</dd>
   <dt id="ImagePicker.FontTypeface" class="text"><em>FontTypeface</em></dt>
-  <dd>Specifies the text font face of the <code class="highlighter-rouge">ImagePicker</code> as default, serif, sans
+  <dd>Specifies the text font face of the <code class="language-plaintext highlighter-rouge">ImagePicker</code> as default, serif, sans
  serif, monospace, or custom font typeface. To add a custom typeface,
  upload a .ttf file to the project’s media.</dd>
   <dt id="ImagePicker.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s vertical height, measured in pixels.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">ImagePicker</code>’s vertical height, measured in pixels.</dd>
   <dt id="ImagePicker.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">ImagePicker</code>’s vertical height as a percentage
- of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">ImagePicker</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Height</code></a>.</dd>
   <dt id="ImagePicker.Image" class="text"><em>Image</em></dt>
-  <dd>Specifies the path of the <code class="highlighter-rouge">ImagePicker</code>’s image. If there is both an <code class="highlighter-rouge">Image</code> and a
- <a href="#ImagePicker.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="highlighter-rouge">Image</code> will be visible.</dd>
+  <dd>Specifies the path of the <code class="language-plaintext highlighter-rouge">ImagePicker</code>’s image. If there is both an <code class="language-plaintext highlighter-rouge">Image</code> and a
+ <a href="#ImagePicker.BackgroundColor"><code class="language-plaintext highlighter-rouge">BackgroundColor</code></a> specified, only the <code class="language-plaintext highlighter-rouge">Image</code> will be visible.</dd>
   <dt id="ImagePicker.Left" class="number"><em>Left</em></dt>
   <dd>Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.</dd>
   <dt id="ImagePicker.Selection" class="text ro bo"><em>Selection</em></dt>
   <dd>Path to the file containing the image that was selected.</dd>
   <dt id="ImagePicker.Shape" class="number"><em>Shape</em></dt>
-  <dd>Specifies the shape of the <code class="highlighter-rouge">ImagePicker</code>. The valid values for this property are <code class="highlighter-rouge">0</code> (default),
- <code class="highlighter-rouge">1</code> (rounded), <code class="highlighter-rouge">2</code> (rectangle), and <code class="highlighter-rouge">3</code> (oval). The <code class="highlighter-rouge">Shape</code> will not be visible if an
- <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is used.</dd>
+  <dd>Specifies the shape of the <code class="language-plaintext highlighter-rouge">ImagePicker</code>. The valid values for this property are <code class="language-plaintext highlighter-rouge">0</code> (default),
+ <code class="language-plaintext highlighter-rouge">1</code> (rounded), <code class="language-plaintext highlighter-rouge">2</code> (rectangle), and <code class="language-plaintext highlighter-rouge">3</code> (oval). The <code class="language-plaintext highlighter-rouge">Shape</code> will not be visible if an
+ <a href="#ImagePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> is used.</dd>
   <dt id="ImagePicker.ShowFeedback" class="boolean"><em>ShowFeedback</em></dt>
-  <dd>Specifies if a visual feedback should be shown when a <code class="highlighter-rouge">ImagePicker</code> with an assigned
- <a href="#ImagePicker.Image"><code class="highlighter-rouge">Image</code></a> is pressed.</dd>
+  <dd>Specifies if a visual feedback should be shown when a <code class="language-plaintext highlighter-rouge">ImagePicker</code> with an assigned
+ <a href="#ImagePicker.Image"><code class="language-plaintext highlighter-rouge">Image</code></a> is pressed.</dd>
   <dt id="ImagePicker.Text" class="text"><em>Text</em></dt>
-  <dd>Specifies the text displayed by the <code class="highlighter-rouge">ImagePicker</code>.</dd>
+  <dd>Specifies the text displayed by the <code class="language-plaintext highlighter-rouge">ImagePicker</code>.</dd>
   <dt id="ImagePicker.TextAlignment" class="number"><em>TextAlignment</em></dt>
-  <dd>Specifies the alignment of the <code class="highlighter-rouge">ImagePicker</code>’s text. Valid values are:
- <code class="highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
- <code class="highlighter-rouge">1</code> (center), or
- <code class="highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
+  <dd>Specifies the alignment of the <code class="language-plaintext highlighter-rouge">ImagePicker</code>’s text. Valid values are:
+ <code class="language-plaintext highlighter-rouge">0</code> (normal; e.g., left-justified if text is written left to right),
+ <code class="language-plaintext highlighter-rouge">1</code> (center), or
+ <code class="language-plaintext highlighter-rouge">2</code> (opposite; e.g., right-justified if text is written left to right).</dd>
   <dt id="ImagePicker.TextColor" class="color"><em>TextColor</em></dt>
-  <dd>Specifies the text color of the <code class="highlighter-rouge">ImagePicker</code> as an alpha-red-green-blue
+  <dd>Specifies the text color of the <code class="language-plaintext highlighter-rouge">ImagePicker</code> as an alpha-red-green-blue
  integer.</dd>
   <dt id="ImagePicker.Top" class="number"><em>Top</em></dt>
   <dd>Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.</dd>
   <dt id="ImagePicker.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">ImagePicker</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
- if the <code class="highlighter-rouge">ImagePicker</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">ImagePicker</code> should be visible on the screen.  Value is <code class="language-plaintext logic block highlighter-rouge">true</code>
+ if the <code class="language-plaintext highlighter-rouge">ImagePicker</code> is showing and <code class="language-plaintext logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="ImagePicker.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ImagePicker</code>, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">ImagePicker</code>, measured in pixels.</dd>
   <dt id="ImagePicker.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">ImagePicker</code> as a percentage
- of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">ImagePicker</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
 <h3 id="ImagePicker-Events">Events</h3>
 
 <dl class="events">
   <dt id="ImagePicker.AfterPicking">AfterPicking()</dt>
-  <dd>Event to be raised after the <code class="highlighter-rouge">ImagePicker</code> activity returns its
+  <dd>Event to be raised after the <code class="language-plaintext highlighter-rouge">ImagePicker</code> activity returns its
  result and the properties have been filled in.</dd>
   <dt id="ImagePicker.BeforePicking">BeforePicking()</dt>
-  <dd>Event to raise when the <code class="highlighter-rouge">ImagePicker</code> is clicked or the picker is shown
- using the <a href="#ImagePicker.Open"><code class="highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
+  <dd>Event to raise when the <code class="language-plaintext highlighter-rouge">ImagePicker</code> is clicked or the picker is shown
+ using the <a href="#ImagePicker.Open"><code class="language-plaintext highlighter-rouge">Open</code></a> method.  This event occurs before the picker is displayed, and
  can be used to prepare the picker before it is shown.</dd>
   <dt id="ImagePicker.GotFocus">GotFocus()</dt>
-  <dd>Indicates the cursor moved over the <code class="highlighter-rouge">ImagePicker</code> so it is now possible
+  <dd>Indicates the cursor moved over the <code class="language-plaintext highlighter-rouge">ImagePicker</code> so it is now possible
  to click it.</dd>
   <dt id="ImagePicker.LostFocus">LostFocus()</dt>
-  <dd>Indicates the cursor moved away from the <code class="highlighter-rouge">ImagePicker</code> so it is now no
+  <dd>Indicates the cursor moved away from the <code class="language-plaintext highlighter-rouge">ImagePicker</code> so it is now no
  longer possible to click it.</dd>
   <dt id="ImagePicker.TouchDown">TouchDown()</dt>
-  <dd>Indicates that the <code class="highlighter-rouge">ImagePicker</code> was pressed down.</dd>
+  <dd>Indicates that the <code class="language-plaintext highlighter-rouge">ImagePicker</code> was pressed down.</dd>
   <dt id="ImagePicker.TouchUp">TouchUp()</dt>
-  <dd>Indicates that the <code class="highlighter-rouge">ImagePicker</code> has been released.</dd>
+  <dd>Indicates that the <code class="language-plaintext highlighter-rouge">ImagePicker</code> has been released.</dd>
 </dl>
 
 <h3 id="ImagePicker-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="ImagePicker.Open" class="method"><i></i> Open()</dt>
-  <dd>Opens the <code class="highlighter-rouge">ImagePicker</code>, as though the user clicked on it.</dd>
+  <dd>Opens the <code class="language-plaintext highlighter-rouge">ImagePicker</code>, as though the user clicked on it.</dd>
 </dl>
 
 <h2 id="Player">Player</h2>
 
 <p>Multimedia component that plays audio and controls phone vibration. The name of a multimedia
- file is specified in the <a href="#Player.Source"><code class="highlighter-rouge">Source</code></a> property, which can be set in the Designer or
+ file is specified in the <a href="#Player.Source"><code class="language-plaintext highlighter-rouge">Source</code></a> property, which can be set in the Designer or
  in the Blocks Editor. The length of time for a vibration is specified in the Blocks Editor in
  milliseconds (thousandths of a second).</p>
 
 <p>For supported audio formats, see
  <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
 
-<p>This component is best for long sound files, such as songs, while the <a href="#Sound"><code class="highlighter-rouge">Sound</code></a> component is
+<p>This component is best for long sound files, such as songs, while the <a href="#Sound"><code class="language-plaintext highlighter-rouge">Sound</code></a> component is
  more efficient for short files, such as sound effects.</p>
 
 <h3 id="Player-Properties">Properties</h3>
@@ -435,11 +435,11 @@
   <dt id="Player.IsPlaying" class="boolean ro bo"><em>IsPlaying</em></dt>
   <dd>Reports whether the media is playing.</dd>
   <dt id="Player.Loop" class="boolean"><em>Loop</em></dt>
-  <dd>If true, the <code class="highlighter-rouge">Player</code> will loop when it plays. Setting <code class="highlighter-rouge">Loop</code> while the player is playing will
+  <dd>If true, the <code class="language-plaintext highlighter-rouge">Player</code> will loop when it plays. Setting <code class="language-plaintext highlighter-rouge">Loop</code> while the player is playing will
  affect the current playing.</dd>
   <dt id="Player.PlayOnlyInForeground" class="boolean"><em>PlayOnlyInForeground</em></dt>
-  <dd>If true (the default option), the <code class="highlighter-rouge">Player</code> will pause playing when leaving the current screen;
- if false, the <code class="highlighter-rouge">Player</code> continues playing whenever the current screen is displaying or
+  <dd>If true (the default option), the <code class="language-plaintext highlighter-rouge">Player</code> will pause playing when leaving the current screen;
+ if false, the <code class="language-plaintext highlighter-rouge">Player</code> continues playing whenever the current screen is displaying or
  not.</dd>
   <dt id="Player.Source" class="text"><em>Source</em></dt>
   <dd>Sets the audio source.</dd>
@@ -480,16 +480,16 @@
 <p>For supported sound file formats, see
  <a href="//developer.android.com/guide/appendix/media-formats.html">Android Supported Media Formats</a>.</p>
 
-<p>This <code class="highlighter-rouge">Sound</code> component is best for short sound files, such as sound effects, while the
- <a href="#Player"><code class="highlighter-rouge">Player</code></a> component is more efficient for longer sounds, such as songs.</p>
+<p>This <code class="language-plaintext highlighter-rouge">Sound</code> component is best for short sound files, such as sound effects, while the
+ <a href="#Player"><code class="language-plaintext highlighter-rouge">Player</code></a> component is more efficient for longer sounds, such as songs.</p>
 
 <h3 id="Sound-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Sound.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
-  <dd>Specifies the minimum interval required between calls to <a href="#Sound.Play"><code class="highlighter-rouge">Play</code></a>, in
+  <dd>Specifies the minimum interval required between calls to <a href="#Sound.Play"><code class="language-plaintext highlighter-rouge">Play</code></a>, in
  milliseconds.
- Once the sound starts playing, all further <a href="#Sound.Play"><code class="highlighter-rouge">Play</code></a> calls will be ignored
+ Once the sound starts playing, all further <a href="#Sound.Play"><code class="language-plaintext highlighter-rouge">Play</code></a> calls will be ignored
  until the interval has elapsed.</dd>
   <dt id="Sound.Source" class="text"><em>Source</em></dt>
   <dd>The name of the sound file. Only certain formats are supported.
@@ -555,16 +555,24 @@
 
 <p><img src="images/speechrecognizer.png" alt="SpeechRecognizer icon" /></p>
 
-<p>Use a <code class="highlighter-rouge">SpeechRecognizer</code> component to listen to the user speaking and convert the spoken sound
+<p>Use a <code class="language-plaintext highlighter-rouge">SpeechRecognizer</code> component to listen to the user speaking and convert the spoken sound
  into text using the device’s speech recognition feature.</p>
 
 <h3 id="SpeechRecognizer-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="SpeechRecognizer.AvailableCountries" class="list ro bo"><em>AvailableCountries</em></dt>
-  <dd>List of the country codes available on this device for use with SpeechRecognizer. The country codes are derived from the region subtags of the supported language tags.</dd>
+  <dd>List of the country codes available on this device for use with
+ SpeechRecognizer. The country codes are derived from the region subtags of
+ the supported BCP-47 language tags (for example, US from en-US). An empty
+ list is returned if the device does not support speech recognition or if
+ the list has not yet been populated.</dd>
   <dt id="SpeechRecognizer.AvailableLanguages" class="list ro bo"><em>AvailableLanguages</em></dt>
-  <dd>List of the languages available on this device for use with SpeechRecognizer. The languages are provided as <a href="https://en.wikipedia.org/wiki/IETF_language_tag">BCP-47</a> language tags such as en-US and es-MX.</dd>
+  <dd>List of the languages available on this device for use with SpeechRecognizer.
+ The languages are provided as
+ <a href="https://en.wikipedia.org/wiki/IETF_language_tag">BCP-47</a> language tags
+ such as en-US and es-MX. An empty list is returned if the device does not
+ support speech recognition or if the list has not yet been populated.</dd>
   <dt id="SpeechRecognizer.Language" class="text bo"><em>Language</em></dt>
   <dd>Suggests the language to use for recognizing speech. An empty string (the default) will
  use the system’s default language.
@@ -578,11 +586,11 @@
   <dt id="SpeechRecognizer.UseLegacy" class="boolean"><em>UseLegacy</em></dt>
   <dd>If true, a separate dialog is used to recognize speech (the default). If false, speech is
  recognized in the background and updates are received as it recognizes words.
- <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> may get several calls with <code class="highlighter-rouge">partial</code> set to <code class="logic block highlighter-rouge">true</code>.
- Once sufficient time has elapsed since the last utterance, or <code class="highlighter-rouge">StopListening</code> is called,
- the last string will be returned with <code class="highlighter-rouge">partial</code> set to <code class="logic block highlighter-rouge">false</code> to indicate that it is the
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="language-plaintext highlighter-rouge">AfterGettingText</code></a> may get several calls with <code class="language-plaintext highlighter-rouge">partial</code> set to <code class="language-plaintext logic block highlighter-rouge">true</code>.
+ Once sufficient time has elapsed since the last utterance, or <code class="language-plaintext highlighter-rouge">StopListening</code> is called,
+ the last string will be returned with <code class="language-plaintext highlighter-rouge">partial</code> set to <code class="language-plaintext logic block highlighter-rouge">false</code> to indicate that it is the
  final recognized string and no more data will be provided until recognition is again started. See
- <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> for more details on partial speech recognition.</dd>
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="language-plaintext highlighter-rouge">AfterGettingText</code></a> for more details on partial speech recognition.</dd>
 </dl>
 
 <h3 id="SpeechRecognizer-Events">Events</h3>
@@ -590,14 +598,14 @@
 <dl class="events">
   <dt id="SpeechRecognizer.AfterGettingText">AfterGettingText(<em class="text">result</em>,<em class="boolean">partial</em>)</dt>
   <dd>Simple event to raise after the SpeechRecognizer has recognized speech. If
- <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> is <code class="logic block highlighter-rouge">true</code>, then this event will only happen once
- at the very end of the recognition. If <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> is <code class="logic block highlighter-rouge">false</code>,
- then this event will run multiple times as the <code class="highlighter-rouge">SpeechRecognizer</code> incrementally recognizes
- speech. In this case, <code class="highlighter-rouge">partial</code> will be <code class="logic block highlighter-rouge">true</code> until the recognized speech
- has been finalized (e.g., the user has stopped speaking), in which case <code class="highlighter-rouge">partial</code> will be
- <code class="logic block highlighter-rouge">false</code>.</dd>
+ <a href="#SpeechRecognizer.UseLegacy"><code class="language-plaintext highlighter-rouge">UseLegacy</code></a> is <code class="language-plaintext logic block highlighter-rouge">true</code>, then this event will only happen once
+ at the very end of the recognition. If <a href="#SpeechRecognizer.UseLegacy"><code class="language-plaintext highlighter-rouge">UseLegacy</code></a> is <code class="language-plaintext logic block highlighter-rouge">false</code>,
+ then this event will run multiple times as the <code class="language-plaintext highlighter-rouge">SpeechRecognizer</code> incrementally recognizes
+ speech. In this case, <code class="language-plaintext highlighter-rouge">partial</code> will be <code class="language-plaintext logic block highlighter-rouge">true</code> until the recognized speech
+ has been finalized (e.g., the user has stopped speaking), in which case <code class="language-plaintext highlighter-rouge">partial</code> will be
+ <code class="language-plaintext logic block highlighter-rouge">false</code>.</dd>
   <dt id="SpeechRecognizer.BeforeGettingText">BeforeGettingText()</dt>
-  <dd>Simple event to raise when the <code class="highlighter-rouge">SpeechRecognizer</code> is invoked but before its
+  <dd>Simple event to raise when the <code class="language-plaintext highlighter-rouge">SpeechRecognizer</code> is invoked but before its
  activity is started.</dd>
 </dl>
 
@@ -606,29 +614,29 @@
 <dl class="methods">
   <dt id="SpeechRecognizer.GetText" class="method"><i></i> GetText()</dt>
   <dd>Asks the user to speak, and converts the speech to text. Signals the
- <a href="#SpeechRecognizer.AfterGettingText"><code class="highlighter-rouge">AfterGettingText</code></a> event when the result is available.</dd>
+ <a href="#SpeechRecognizer.AfterGettingText"><code class="language-plaintext highlighter-rouge">AfterGettingText</code></a> event when the result is available.</dd>
   <dt id="SpeechRecognizer.Stop" class="method"><i></i> Stop()</dt>
   <dd>Function used to forcefully stop listening speech in cases where
  SpeechRecognizer cannot stop automatically.
- This function works only when the <a href="#SpeechRecognizer.UseLegacy"><code class="highlighter-rouge">UseLegacy</code></a> property is
- set to <code class="logic block highlighter-rouge">false</code>.</dd>
+ This function works only when the <a href="#SpeechRecognizer.UseLegacy"><code class="language-plaintext highlighter-rouge">UseLegacy</code></a> property is
+ set to <code class="language-plaintext logic block highlighter-rouge">false</code>.</dd>
 </dl>
 
 <h2 id="TextToSpeech">TextToSpeech</h2>
 
-<p>The <code class="highlighter-rouge">TextToSpeech</code> component speaks a given text aloud. You can set the pitch
+<p>The <code class="language-plaintext highlighter-rouge">TextToSpeech</code> component speaks a given text aloud. You can set the pitch
  and the rate of speech.</p>
 
 <p>You can also set a language by supplying a language code. This changes the pronunciation of
- words, not the actual language spoken. For example, setting the <a href="#TextToSpeech.Language"><code class="highlighter-rouge">Language</code></a> to French
+ words, not the actual language spoken. For example, setting the <a href="#TextToSpeech.Language"><code class="language-plaintext highlighter-rouge">Language</code></a> to French
  and speaking English text will sound like someone speaking English (en) with a French accent.</p>
 
-<p>You can also specify a country by supplying a <a href="#TextToSpeech.Country"><code class="highlighter-rouge">Country</code></a> code. This can affect the
+<p>You can also specify a country by supplying a <a href="#TextToSpeech.Country"><code class="language-plaintext highlighter-rouge">Country</code></a> code. This can affect the
  pronunciation. For example, British English (GBR) will sound different from US English (USA).
  Not every country code will affect every language.</p>
 
 <p>The languages and countries available depend on the particular device, and can be listed with
- the <a href="#TextToSpeech.AvailableLanguages"><code class="highlighter-rouge">AvailableLanguages</code></a> and <a href="#TextToSpeech.AvailableCountries"><code class="highlighter-rouge">AvailableCountries</code></a> properties.</p>
+ the <a href="#TextToSpeech.AvailableLanguages"><code class="language-plaintext highlighter-rouge">AvailableLanguages</code></a> and <a href="#TextToSpeech.AvailableCountries"><code class="language-plaintext highlighter-rouge">AvailableCountries</code></a> properties.</p>
 
 <h3 id="TextToSpeech-Properties">Properties</h3>
 
@@ -654,8 +662,8 @@
     <p>The default value is 1.0 for normal pitch.</p>
   </dd>
   <dt id="TextToSpeech.Result" class="boolean ro bo"><em>Result</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if the text was successfully converted to
- speech, otherwise <code class="logic block highlighter-rouge">false</code>.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if the text was successfully converted to
+ speech, otherwise <code class="language-plaintext logic block highlighter-rouge">false</code>.</dd>
   <dt id="TextToSpeech.SpeechRate" class="number"><em>SpeechRate</em></dt>
   <dd>Sets the SpeechRate for TextToSpeech.
 
@@ -670,9 +678,9 @@
 
 <dl class="events">
   <dt id="TextToSpeech.AfterSpeaking">AfterSpeaking(<em class="boolean">result</em>)</dt>
-  <dd>Event to raise after the message is spoken. The <code class="variable block highlighter-rouge">result</code> will be
- <code class="logic block highlighter-rouge">true</code> if the message is spoken successfully, otherwise it will be
- <code class="logic block highlighter-rouge">false</code>.</dd>
+  <dd>Event to raise after the message is spoken. The <code class="language-plaintext variable block highlighter-rouge">result</code> will be
+ <code class="language-plaintext logic block highlighter-rouge">true</code> if the message is spoken successfully, otherwise it will be
+ <code class="language-plaintext logic block highlighter-rouge">false</code>.</dd>
   <dt id="TextToSpeech.BeforeSpeaking">BeforeSpeaking()</dt>
   <dd>Event to raise when Speak is invoked, before the message is spoken.</dd>
 </dl>
@@ -700,7 +708,7 @@
  attempt to detect the source language and translate it to Spanish.</p>
 
 <p><strong>Note:</strong> Translation happens asynchronously in the background. When the translation is complete,
- the <a href="#Translator.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> event is triggered.</p>
+ the <a href="#Translator.GotTranslation"><code class="language-plaintext highlighter-rouge">GotTranslation</code></a> event is triggered.</p>
 
 <h3 id="Translator-Properties">Properties</h3>
 
@@ -724,7 +732,7 @@
   <dd>By providing a target language to translate to (for instance, ‘es’ for Spanish, ‘en’ for
  English, or ‘ru’ for Russian), and a word or sentence to translate, this method will request
  a translation. Once the text is translated by the external
- service, the event <a href="#Translator.GotTranslation"><code class="highlighter-rouge">GotTranslation</code></a> will be executed.
+ service, the event <a href="#Translator.GotTranslation"><code class="language-plaintext highlighter-rouge">GotTranslation</code></a> will be executed.
 
     <p><strong>Note:</strong> Translator will attempt to detect the source language. You can also specify
  prepending it to the language translation, e.g., es-ru will specify Spanish to Russian
@@ -734,10 +742,10 @@
 
 <h2 id="VideoPlayer">VideoPlayer</h2>
 
-<p>A multimedia component capable of playing videos. When the application is run, the <code class="highlighter-rouge">VideoPlayer</code>
+<p>A multimedia component capable of playing videos. When the application is run, the <code class="language-plaintext highlighter-rouge">VideoPlayer</code>
  will be displayed as a rectangle on-screen. If the user touches the rectangle, controls will
  appear to play/pause, skip ahead, and skip backward within the video. The application can also
- control behavior by calling the <a href="#VideoPlayer.Start"><code class="highlighter-rouge">Start</code></a>, <a href="#VideoPlayer.Pause"><code class="highlighter-rouge">Pause</code></a>, and <a href="#VideoPlayer.SeekTo"><code class="highlighter-rouge">SeekTo</code></a>
+ control behavior by calling the <a href="#VideoPlayer.Start"><code class="language-plaintext highlighter-rouge">Start</code></a>, <a href="#VideoPlayer.Pause"><code class="language-plaintext highlighter-rouge">Pause</code></a>, and <a href="#VideoPlayer.SeekTo"><code class="language-plaintext highlighter-rouge">SeekTo</code></a>
  methods.</p>
 
 <p>Video files should be in 3GPP (.3gp) or MPEG-4 (.mp4) formats. For more details about legal
@@ -762,8 +770,8 @@
   <dt id="VideoPlayer.Height" class="number bo"><em>Height</em></dt>
   <dd>Specifies the component’s vertical height, measured in pixels.</dd>
   <dt id="VideoPlayer.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">VideoPlayer</code>’s vertical height as a percentage
- of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">VideoPlayer</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Height</code></a>.</dd>
   <dt id="VideoPlayer.Left" class="number"><em>Left</em></dt>
   <dd>Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.</dd>
@@ -773,16 +781,16 @@
   <dd>Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.</dd>
   <dt id="VideoPlayer.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">VideoPlayer</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
- if the <code class="highlighter-rouge">VideoPlayer</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">VideoPlayer</code> should be visible on the screen.  Value is <code class="language-plaintext logic block highlighter-rouge">true</code>
+ if the <code class="language-plaintext highlighter-rouge">VideoPlayer</code> is showing and <code class="language-plaintext logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="VideoPlayer.Volume" class="number"><em>Volume</em></dt>
   <dd>Sets the volume property to a number between 0 and 100. Values less than 0
  will be treated as 0, and values greater than 100 will be treated as 100.</dd>
   <dt id="VideoPlayer.Width" class="number bo"><em>Width</em></dt>
   <dd>Specifies the component’s horizontal width, measured in pixels.</dd>
   <dt id="VideoPlayer.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">VideoPlayer</code> as a percentage
- of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">VideoPlayer</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
 <h3 id="VideoPlayer-Events">Events</h3>
@@ -799,11 +807,11 @@
   <dd>Returns duration of the video in milliseconds.</dd>
   <dt id="VideoPlayer.Pause" class="method"><i></i> Pause()</dt>
   <dd>Pauses playback of the video.  Playback can be resumed at the same location by calling the
- <a href="#VideoPlayer.Start"><code class="highlighter-rouge">Start</code></a> method.</dd>
+ <a href="#VideoPlayer.Start"><code class="language-plaintext highlighter-rouge">Start</code></a> method.</dd>
   <dt id="VideoPlayer.SeekTo" class="method"><i></i> SeekTo(<em class="number">ms</em>)</dt>
   <dd>Seeks to the requested time (specified in milliseconds) in the video. If the video is paused, the frame shown will not be updated by the seek. The player can jump only to key frames in the video, so seeking to times that differ by short intervals may not actually move to different frames.</dd>
   <dt id="VideoPlayer.Start" class="method"><i></i> Start()</dt>
-  <dd>Plays the media specified by the <a href="#VideoPlayer.Source"><code class="highlighter-rouge">Source</code></a>.</dd>
+  <dd>Plays the media specified by the <a href="#VideoPlayer.Source"><code class="language-plaintext highlighter-rouge">Source</code></a>.</dd>
   <dt id="VideoPlayer.Stop" class="method"><i></i> Stop()</dt>
   <dd>Resets to start of video and pauses it if video was playing.</dd>
 </dl>
@@ -886,11 +894,11 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

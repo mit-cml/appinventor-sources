@@ -535,7 +535,7 @@ Sharing is a non-visible component that enables sharing files and/or messages be
  specified directly to read from storage. The default behaviour is to share files from the private
  data directory associated with your app. If the file path starts with a slash (`/`), then the file
  relative to `/` is shared.
-
+ 
  Be aware that different devices treat storage differently, so a few things to try if, for
  instance, you have a file called `arrow.gif` in the folder `Appinventor/assets`, would be:
 
@@ -559,6 +559,9 @@ None
 ### Methods  {#Sharing-Methods}
 
 {:.methods}
+
+{:id="Sharing.CopyToClipboard" class="method"} <i/> CopyToClipboard(*text*{:.text})
+: Copies the given text to the system clipboard.
 
 {:id="Sharing.ShareFile" class="method"} <i/> ShareFile(*file*{:.text})
 : Shares a file through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the file inserted on it.
@@ -625,8 +628,8 @@ None
  using diacritical marks.
 
 {:id="Texting.PhoneNumber" .text} *PhoneNumber*
-: The number that the message will be sent to when the SendMessage method is called.  The
- number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots,
+: The number that the message will be sent to when the SendMessage method is called.  The 
+ number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, 
  and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces
  should not be included. Multiple numbers can be included if separated by commas.
 

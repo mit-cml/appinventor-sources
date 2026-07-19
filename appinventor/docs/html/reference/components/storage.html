@@ -141,11 +141,11 @@
 
 <h2 id="CloudDB">CloudDB</h2>
 
-<p>The <code class="highlighter-rouge">CloudDB</code> component is a Non-visible component that allows you to store data on a Internet
+<p>The <code class="language-plaintext highlighter-rouge">CloudDB</code> component is a Non-visible component that allows you to store data on a Internet
  connected database server (using Redis software). This allows the users of your App to share
  data with each other. By default data will be stored in a server maintained by MIT, however you
- can setup and run your own server. Set the <a href="#CloudDB.RedisServer"><code class="highlighter-rouge">RedisServer</code></a> property and
- <a href="#CloudDB.RedisPort"><code class="highlighter-rouge">RedisPort</code></a> property to access your own server.</p>
+ can setup and run your own server. Set the <a href="#CloudDB.RedisServer"><code class="language-plaintext highlighter-rouge">RedisServer</code></a> property and
+ <a href="#CloudDB.RedisPort"><code class="language-plaintext highlighter-rouge">RedisPort</code></a> property to access your own server.</p>
 
 <h3 id="CloudDB-Properties">Properties</h3>
 
@@ -173,16 +173,16 @@
   <dd>Indicates that an error occurred while communicating with the CloudDB Redis server.</dd>
   <dt id="CloudDB.DataChanged">DataChanged(<em class="text">tag</em>,<em class="any">value</em>)</dt>
   <dd>Indicates that the data in the CloudDB project has changed. Launches an event with the
- <code class="text block highlighter-rouge">tag</code> that has been updated and the <code class="variable block highlighter-rouge">value</code> it now has.</dd>
+ <code class="language-plaintext text block highlighter-rouge">tag</code> that has been updated and the <code class="language-plaintext variable block highlighter-rouge">value</code> it now has.</dd>
   <dt id="CloudDB.FirstRemoved">FirstRemoved(<em class="any">value</em>)</dt>
-  <dd>Event triggered by the <a href="#CloudDB.RemoveFirstFromList"><code class="highlighter-rouge">RemoveFirstFromList</code></a> function. The argument
- <code class="variable block highlighter-rouge">value</code> is the object that was the first in the list, and which is now
+  <dd>Event triggered by the <a href="#CloudDB.RemoveFirstFromList"><code class="language-plaintext highlighter-rouge">RemoveFirstFromList</code></a> function. The argument
+ <code class="language-plaintext variable block highlighter-rouge">value</code> is the object that was the first in the list, and which is now
  removed.</dd>
   <dt id="CloudDB.GotValue">GotValue(<em class="text">tag</em>,<em class="any">value</em>)</dt>
-  <dd>Indicates that a <a href="#CloudDB.GetValue"><code class="highlighter-rouge">GetValue</code></a> request has succeeded.</dd>
+  <dd>Indicates that a <a href="#CloudDB.GetValue"><code class="language-plaintext highlighter-rouge">GetValue</code></a> request has succeeded.</dd>
   <dt id="CloudDB.TagList">TagList(<em class="list">value</em>)</dt>
   <dd>Event triggered when we have received the list of known tags. Run in response to a call to the
- <a href="#CloudDB.GetTagList"><code class="highlighter-rouge">GetTagList</code></a> function.</dd>
+ <a href="#CloudDB.GetTagList"><code class="language-plaintext highlighter-rouge">GetTagList</code></a> function.</dd>
   <dt id="CloudDB.UpdateDone">UpdateDone(<em class="text">tag</em>,<em class="text">operation</em>)</dt>
   <dd>Indicates that operations that store data to CloudDB have completed.</dd>
 </dl>
@@ -195,22 +195,22 @@
   <dt id="CloudDB.ClearTag" class="method"><i></i> ClearTag(<em class="text">tag</em>)</dt>
   <dd>Remove the tag from CloudDB.</dd>
   <dt id="CloudDB.CloudConnected" class="method returns boolean"><i></i> CloudConnected()</dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if we are on the network and will likely be able to connect to
- the <code class="highlighter-rouge">CloudDB</code> server.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if we are on the network and will likely be able to connect to
+ the <code class="language-plaintext highlighter-rouge">CloudDB</code> server.</dd>
   <dt id="CloudDB.GetTagList" class="method"><i></i> GetTagList()</dt>
-  <dd>Asks <code class="highlighter-rouge">CloudDB</code> to retrieve all the tags belonging to this project. The
- resulting list is returned in the event <a href="#CloudDB.TagList"><code class="highlighter-rouge">TagList</code></a>.</dd>
+  <dd>Asks <code class="language-plaintext highlighter-rouge">CloudDB</code> to retrieve all the tags belonging to this project. The
+ resulting list is returned in the event <a href="#CloudDB.TagList"><code class="language-plaintext highlighter-rouge">TagList</code></a>.</dd>
   <dt id="CloudDB.GetValue" class="method"><i></i> GetValue(<em class="text">tag</em>,<em class="any">valueIfTagNotThere</em>)</dt>
-  <dd><code class="highlighter-rouge">GetValue</code> asks <code class="highlighter-rouge">CloudDB</code> to get the value stored under the given tag.
- It will pass the result to the <a href="#CloudDB.GotValue"><code class="highlighter-rouge">GotValue</code></a> will be given.</dd>
+  <dd><code class="language-plaintext highlighter-rouge">GetValue</code> asks <code class="language-plaintext highlighter-rouge">CloudDB</code> to get the value stored under the given tag.
+ It will pass the result to the <a href="#CloudDB.GotValue"><code class="language-plaintext highlighter-rouge">GotValue</code></a> will be given.</dd>
   <dt id="CloudDB.RemoveFirstFromList" class="method"><i></i> RemoveFirstFromList(<em class="text">tag</em>)</dt>
   <dd>Obtain the first element of a list and atomically remove it. If two devices use this function
  simultaneously, one will get the first element and the the other will get the second element,
  or an error if there is no available element. When the element is available, the
- <a href="#CloudDB.FirstRemoved"><code class="highlighter-rouge">FirstRemoved</code></a> event will be triggered.</dd>
+ <a href="#CloudDB.FirstRemoved"><code class="language-plaintext highlighter-rouge">FirstRemoved</code></a> event will be triggered.</dd>
   <dt id="CloudDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
-  <dd>Asks <code class="highlighter-rouge">CloudDB</code> to store the given <code class="variable block highlighter-rouge">value</code> under the given
- <code class="text block highlighter-rouge">tag</code>.</dd>
+  <dd>Asks <code class="language-plaintext highlighter-rouge">CloudDB</code> to store the given <code class="language-plaintext variable block highlighter-rouge">value</code> under the given
+ <code class="language-plaintext text block highlighter-rouge">tag</code>.</dd>
 </dl>
 
 <h2 id="DataFile">DataFile</h2>
@@ -237,8 +237,8 @@
   <dd>Retrieve a List of rows of the currently loaded Source file.</dd>
   <dt id="DataFile.SourceFile" class="text wo do"><em>SourceFile</em></dt>
   <dd>Sets the source file to parse data from, and then parses the
- file asynchronously. The results are stored in the <a href="#DataFile.Columns"><code class="highlighter-rouge">Columns</code></a>,
- <a href="#DataFile.Rows"><code class="highlighter-rouge">Rows</code></a> and <a href="#DataFile.ColumnNames"><code class="highlighter-rouge">ColumnNames</code></a> properties.
+ file asynchronously. The results are stored in the <a href="#DataFile.Columns"><code class="language-plaintext highlighter-rouge">Columns</code></a>,
+ <a href="#DataFile.Rows"><code class="language-plaintext highlighter-rouge">Rows</code></a> and <a href="#DataFile.ColumnNames"><code class="language-plaintext highlighter-rouge">ColumnNames</code></a> properties.
  The expected formatting of the file is either the CSV or JSON format.</dd>
 </dl>
 
@@ -251,12 +251,12 @@
 <dl class="methods">
   <dt id="DataFile.ReadFile" class="method"><i></i> ReadFile(<em class="text">fileName</em>)</dt>
   <dd>Indicates source file to load data from. The expected format of the contents of the file
- are either CSV or JSON. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
- specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
- <code class="highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
- Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
- <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
- private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
+ are either CSV or JSON. Prefix the <code class="language-plaintext text block highlighter-rouge">fileName</code> with <code class="language-plaintext highlighter-rouge">/</code> to read from a
+ specific file on the SD card (for example, <code class="language-plaintext highlighter-rouge">/myFile.txt</code> will read the file
+ <code class="language-plaintext highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
+ Companion) start the <code class="language-plaintext text block highlighter-rouge">fileName</code> with <code class="language-plaintext highlighter-rouge">//</code> (two slashes). If a
+ <code class="language-plaintext text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
+ private storage (for packaged apps) and from <code class="language-plaintext highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
 </dl>
 
 <h2 id="File">File</h2>
@@ -265,13 +265,13 @@
  on the device.</p>
 
 <p>The exact location where external files are placed is a function of the value of the
- <a href="#File.Scope"><code class="highlighter-rouge">Scope</code></a> property, whether the app is running in the Companion or compiled,
+ <a href="#File.Scope"><code class="language-plaintext highlighter-rouge">Scope</code></a> property, whether the app is running in the Companion or compiled,
  and which version of Android the app is running on.</p>
 
 <p>Because newer versions of Android require files be stored in app-specific directories, the
- <code class="highlighter-rouge">DefaultScope</code> is set to <code class="highlighter-rouge">App</code>. If you are using an older version of Android and need access to
- the legacy public storage, change the <code class="highlighter-rouge">DefaultScope</code> property to <code class="highlighter-rouge">Legacy</code>. You can also change
- the <code class="highlighter-rouge">Scope</code> using the blocks.</p>
+ <code class="language-plaintext highlighter-rouge">DefaultScope</code> is set to <code class="language-plaintext highlighter-rouge">App</code>. If you are using an older version of Android and need access to
+ the legacy public storage, change the <code class="language-plaintext highlighter-rouge">DefaultScope</code> property to <code class="language-plaintext highlighter-rouge">Legacy</code>. You can also change
+ the <code class="language-plaintext highlighter-rouge">Scope</code> using the blocks.</p>
 
 <p>Below we briefly describe each scope type:</p>
 
@@ -284,25 +284,25 @@ assets as they are contained in read-only storage.</li>
 temporary files that can be recreated as it allows the user to clear temporary files to get
 back storage space.</li>
   <li>Legacy: Files will be read from and written to the file system using the App Inventor rules
-prior to release nb187. That is, file names starting with a single <code class="highlighter-rouge">/</code> will be read from and
-written to the root of the external storage directory, e.g., <code class="highlighter-rouge">/sdcard/</code>. Legacy functionality
+prior to release nb187. That is, file names starting with a single <code class="language-plaintext highlighter-rouge">/</code> will be read from and
+written to the root of the external storage directory, e.g., <code class="language-plaintext highlighter-rouge">/sdcard/</code>. Legacy functionality
 <strong><em>will not work</em></strong> on Android 11 or later.</li>
   <li>Private: Files will be read from and written to the app’s private directory. Use this scope
 to store information that shouldn’t be visible to other applications, such as file
 management apps.</li>
   <li>Shared: Files will be read from and written to the device’s shared media directories, such
-as <code class="highlighter-rouge">Pictures</code>.</li>
+as <code class="language-plaintext highlighter-rouge">Pictures</code>.</li>
 </ul>
 
 <p>Note 1: In Legacy mode, file names can take one of three forms:</p>
 
 <ul>
-  <li>Private files have no leading <code class="highlighter-rouge">/</code> and are written to app private storage (e.g., “file.txt”)</li>
-  <li>External files have a single leading <code class="highlighter-rouge">/</code> and are written to public storage (e.g., “/file.txt”)</li>
-  <li>Bundled app assets have two leading <code class="highlighter-rouge">//</code> and can only be read (e.g., “//file.txt”)</li>
+  <li>Private files have no leading <code class="language-plaintext highlighter-rouge">/</code> and are written to app private storage (e.g., “file.txt”)</li>
+  <li>External files have a single leading <code class="language-plaintext highlighter-rouge">/</code> and are written to public storage (e.g., “/file.txt”)</li>
+  <li>Bundled app assets have two leading <code class="language-plaintext highlighter-rouge">//</code> and can only be read (e.g., “//file.txt”)</li>
 </ul>
 
-<p>Note 2: In all scopes, a file name beginning with two slashes (<code class="highlighter-rouge">//</code>) will be interpreted as an
+<p>Note 2: In all scopes, a file name beginning with two slashes (<code class="language-plaintext highlighter-rouge">//</code>) will be interpreted as an
  asset name.</p>
 
 <h3 id="File-Properties">Properties</h3>
@@ -336,15 +336,15 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 <dl class="methods">
   <dt id="File.AppendToFile" class="method"><i></i> AppendToFile(<em class="text">text</em>,<em class="text">fileName</em>)</dt>
   <dd>Appends text to the end of a file. Creates the file if it does not already exist. See the help
- text under <a href="#File.SaveFile"><code class="highlighter-rouge">SaveFile</code></a> for information about where files are written.
- On success, the <a href="#File.AfterFileSaved"><code class="highlighter-rouge">AfterFileSaved</code></a> event will run.</dd>
+ text under <a href="#File.SaveFile"><code class="language-plaintext highlighter-rouge">SaveFile</code></a> for information about where files are written.
+ On success, the <a href="#File.AfterFileSaved"><code class="language-plaintext highlighter-rouge">AfterFileSaved</code></a> event will run.</dd>
   <dt id="File.CopyFile" class="method returns boolean"><i></i> CopyFile(<em class="com google appinventor components common FileScopeEnum">fromScope</em>,<em class="text">fromFileName</em>,<em class="com google appinventor components common FileScopeEnum">toScope</em>,<em class="text">toFileName</em>)</dt>
   <dd>Copy the contents from the first file to the second file.</dd>
   <dt id="File.Delete" class="method"><i></i> Delete(<em class="text">fileName</em>)</dt>
-  <dd>Deletes a file from storage. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to delete a specific
- file in the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will delete the file <code class="highlighter-rouge">/sdcard/myFile.txt</code>).
- If the <code class="text block highlighter-rouge">fileName</code> does not begin with a <code class="highlighter-rouge">/</code>, then the file located in the
- program’s private storage will be deleted. Starting the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> is
+  <dd>Deletes a file from storage. Prefix the <code class="language-plaintext text block highlighter-rouge">fileName</code> with <code class="language-plaintext highlighter-rouge">/</code> to delete a specific
+ file in the SD card (for example, <code class="language-plaintext highlighter-rouge">/myFile.txt</code> will delete the file <code class="language-plaintext highlighter-rouge">/sdcard/myFile.txt</code>).
+ If the <code class="language-plaintext text block highlighter-rouge">fileName</code> does not begin with a <code class="language-plaintext highlighter-rouge">/</code>, then the file located in the
+ program’s private storage will be deleted. Starting the <code class="language-plaintext text block highlighter-rouge">fileName</code> with <code class="language-plaintext highlighter-rouge">//</code> is
  an error because asset files cannot be deleted.</dd>
   <dt id="File.Exists" class="method returns boolean"><i></i> Exists(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">path</em>)</dt>
   <dd>Tests whether the path exists in the given scope.</dd>
@@ -361,25 +361,25 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dt id="File.MoveFile" class="method returns boolean"><i></i> MoveFile(<em class="com google appinventor components common FileScopeEnum">fromScope</em>,<em class="text">fromFileName</em>,<em class="com google appinventor components common FileScopeEnum">toScope</em>,<em class="text">toFileName</em>)</dt>
   <dd>Move a file from one location to another.</dd>
   <dt id="File.ReadFrom" class="method"><i></i> ReadFrom(<em class="text">fileName</em>)</dt>
-  <dd>Reads text from a file in storage. Prefix the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">/</code> to read from a
- specific file on the SD card (for example, <code class="highlighter-rouge">/myFile.txt</code> will read the file
- <code class="highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
- Companion) start the <code class="text block highlighter-rouge">fileName</code> with <code class="highlighter-rouge">//</code> (two slashes). If a
- <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
- private storage (for packaged apps) and from <code class="highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
+  <dd>Reads text from a file in storage. Prefix the <code class="language-plaintext text block highlighter-rouge">fileName</code> with <code class="language-plaintext highlighter-rouge">/</code> to read from a
+ specific file on the SD card (for example, <code class="language-plaintext highlighter-rouge">/myFile.txt</code> will read the file
+ <code class="language-plaintext highlighter-rouge">/sdcard/myFile.txt</code>). To read assets packaged with an application (also works for the
+ Companion) start the <code class="language-plaintext text block highlighter-rouge">fileName</code> with <code class="language-plaintext highlighter-rouge">//</code> (two slashes). If a
+ <code class="language-plaintext text block highlighter-rouge">fileName</code> does not start with a slash, it will be read from the application’s
+ private storage (for packaged apps) and from <code class="language-plaintext highlighter-rouge">/sdcard/AppInventor/data</code> for the Companion.</dd>
   <dt id="File.RemoveDirectory" class="method returns boolean"><i></i> RemoveDirectory(<em class="com google appinventor components common FileScopeEnum">scope</em>,<em class="text">directoryName</em>,<em class="boolean">recursive</em>)</dt>
   <dd>Remove a directory from the file system. If recursive is true, then everything is removed. If
  recursive is false, only the directory is removed and only if it is empty.</dd>
   <dt id="File.SaveFile" class="method"><i></i> SaveFile(<em class="text">text</em>,<em class="text">fileName</em>)</dt>
-  <dd>Saves text to a file. If the <code class="text block highlighter-rouge">fileName</code> begins with a slash (<code class="highlighter-rouge">/</code>) the file is
- written to the sdcard (for example, writing to <code class="highlighter-rouge">/myFile.txt</code> will write the file to
- <code class="highlighter-rouge">/sdcard/myFile.txt</code>). If the <code class="text block highlighter-rouge">fileName</code> does not start with a slash, it will be
+  <dd>Saves text to a file. If the <code class="language-plaintext text block highlighter-rouge">fileName</code> begins with a slash (<code class="language-plaintext highlighter-rouge">/</code>) the file is
+ written to the sdcard (for example, writing to <code class="language-plaintext highlighter-rouge">/myFile.txt</code> will write the file to
+ <code class="language-plaintext highlighter-rouge">/sdcard/myFile.txt</code>). If the <code class="language-plaintext text block highlighter-rouge">fileName</code> does not start with a slash, it will be
  written in the program’s private data directory where it will not be accessible to other
  programs on the phone. There is a special exception for the AI Companion where these files are
- written to <code class="highlighter-rouge">/sdcard/AppInventor/data</code> to facilitate debugging.
+ written to <code class="language-plaintext highlighter-rouge">/sdcard/AppInventor/data</code> to facilitate debugging.
 
     <p>Note that this block will overwrite a file if it already exists. If you want to add content
- to an existing file use the <a href="#File.AppendToFile"><code class="highlighter-rouge">AppendToFile</code></a> method.</p>
+ to an existing file use the <a href="#File.AppendToFile"><code class="language-plaintext highlighter-rouge">AppendToFile</code></a> method.</p>
   </dd>
 </dl>
 
@@ -414,54 +414,54 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 
 <dl class="events">
   <dt id="Spreadsheet.ErrorOccurred">ErrorOccurred(<em class="text">errorMessage</em>)</dt>
-  <dd>Triggered whenever an API call encounters an error. Details about the error are in <code class="highlighter-rouge">errorMessage</code>.</dd>
+  <dd>Triggered whenever an API call encounters an error. Details about the error are in <code class="language-plaintext highlighter-rouge">errorMessage</code>.</dd>
   <dt id="Spreadsheet.FinishedAddColumn">FinishedAddColumn(<em class="number">columnNumber</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.AddColumn"><code class="highlighter-rouge">AddColumn</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.AddColumn"><code class="language-plaintext highlighter-rouge">AddColumn</code></a> block, called once the
  values on the table have been updated. Additionally, this returns the
  column number for the new column.</dd>
   <dt id="Spreadsheet.FinishedAddRow">FinishedAddRow(<em class="number">rowNumber</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.AddRow"><code class="highlighter-rouge">AddRow</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.AddRow"><code class="language-plaintext highlighter-rouge">AddRow</code></a> block, called once the
  values on the table have been updated. Additionally, this returns the
  row number for the new row.</dd>
   <dt id="Spreadsheet.FinishedAddSheet">FinishedAddSheet(<em class="text">sheetName</em>)</dt>
   <dd>The callback event for the addSheet block, called once the values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedClearRange">FinishedClearRange()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ClearRange"><code class="highlighter-rouge">ClearRange</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.ClearRange"><code class="language-plaintext highlighter-rouge">ClearRange</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedDeleteSheet">FinishedDeleteSheet(<em class="text">sheetName</em>)</dt>
   <dd>The callback event for the DeleteSheet block, called once the values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedRemoveColumn">FinishedRemoveColumn()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.RemoveColumn"><code class="highlighter-rouge">RemoveColumn</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.RemoveColumn"><code class="language-plaintext highlighter-rouge">RemoveColumn</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedRemoveRow">FinishedRemoveRow()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.RemoveRow"><code class="highlighter-rouge">RemoveRow</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.RemoveRow"><code class="language-plaintext highlighter-rouge">RemoveRow</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedWriteCell">FinishedWriteCell()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.WriteCell"><code class="highlighter-rouge">WriteCell</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.WriteCell"><code class="language-plaintext highlighter-rouge">WriteCell</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedWriteColumn">FinishedWriteColumn()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.WriteColumn"><code class="highlighter-rouge">WriteColumn</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.WriteColumn"><code class="language-plaintext highlighter-rouge">WriteColumn</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedWriteRange">FinishedWriteRange()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.WriteRange"><code class="highlighter-rouge">WriteRange</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.WriteRange"><code class="language-plaintext highlighter-rouge">WriteRange</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.FinishedWriteRow">FinishedWriteRow()</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.WriteRow"><code class="highlighter-rouge">WriteRow</code></a> block, called once the
+  <dd>The callback event for the <a href="#Spreadsheet.WriteRow"><code class="language-plaintext highlighter-rouge">WriteRow</code></a> block, called once the
  values on the table have been updated.</dd>
   <dt id="Spreadsheet.GotCellData">GotCellData(<em class="text">cellData</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ReadCell"><code class="highlighter-rouge">ReadCell</code></a> block. The <code class="highlighter-rouge">cellData</code> is
+  <dd>The callback event for the <a href="#Spreadsheet.ReadCell"><code class="language-plaintext highlighter-rouge">ReadCell</code></a> block. The <code class="language-plaintext highlighter-rouge">cellData</code> is
  the text value in the cell.</dd>
   <dt id="Spreadsheet.GotColumnData">GotColumnData(<em class="list">columnData</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ReadColumn"><code class="highlighter-rouge">ReadColumn</code></a> block. The <code class="highlighter-rouge">columnData</code> is a
+  <dd>The callback event for the <a href="#Spreadsheet.ReadColumn"><code class="language-plaintext highlighter-rouge">ReadColumn</code></a> block. The <code class="language-plaintext highlighter-rouge">columnData</code> is a
  list of text cell-values in order of increasing row number.</dd>
   <dt id="Spreadsheet.GotRangeData">GotRangeData(<em class="list">rangeData</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ReadRange"><code class="highlighter-rouge">ReadRange</code></a> block. The <code class="highlighter-rouge">rangeData</code> is
+  <dd>The callback event for the <a href="#Spreadsheet.ReadRange"><code class="language-plaintext highlighter-rouge">ReadRange</code></a> block. The <code class="language-plaintext highlighter-rouge">rangeData</code> is
  a list of rows, where the dimensions are the same as the rangeReference.</dd>
   <dt id="Spreadsheet.GotRowData">GotRowData(<em class="list">rowDataList</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ReadRow"><code class="highlighter-rouge">ReadRow</code></a> block. The <code class="highlighter-rouge">rowDataList</code> is a
+  <dd>The callback event for the <a href="#Spreadsheet.ReadRow"><code class="language-plaintext highlighter-rouge">ReadRow</code></a> block. The <code class="language-plaintext highlighter-rouge">rowDataList</code> is a
  list of text cell-values in order of increasing column number.</dd>
   <dt id="Spreadsheet.GotSheetData">GotSheetData(<em class="list">sheetData</em>)</dt>
-  <dd>The callback event for the <a href="#Spreadsheet.ReadSheet"><code class="highlighter-rouge">ReadSheet</code></a> block. The <code class="highlighter-rouge">sheetData</code> is a
+  <dd>The callback event for the <a href="#Spreadsheet.ReadSheet"><code class="language-plaintext highlighter-rouge">ReadSheet</code></a> block. The <code class="language-plaintext highlighter-rouge">sheetData</code> is a
  list of rows.</dd>
   <dt id="Spreadsheet.GotSheetList">GotSheetList(<em class="list">sheetNames</em>)</dt>
   <dd>The callback event for the ListSheets block, called once the list of sheets has been retrieved.</dd>
@@ -471,20 +471,20 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 
 <dl class="methods">
   <dt id="Spreadsheet.AddColumn" class="method"><i></i> AddColumn(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
-  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, appends the values to the next empty
+  <dd>Given a list of values as <code class="language-plaintext highlighter-rouge">data</code>, appends the values to the next empty
  column of the sheet. It will always start from the top row and continue
- downwards. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddColumn"><code class="highlighter-rouge">FinishedAddColumn</code></a>
+ downwards. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddColumn"><code class="language-plaintext highlighter-rouge">FinishedAddColumn</code></a>
  callback event.</dd>
   <dt id="Spreadsheet.AddRow" class="method"><i></i> AddRow(<em class="text">sheetName</em>,<em class="list">data</em>)</dt>
-  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, appends the values to the next
+  <dd>Given a list of values as <code class="language-plaintext highlighter-rouge">data</code>, appends the values to the next
  empty row of the sheet. It will always start from the left most column and
- continue to the right. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddRow"><code class="highlighter-rouge">FinishedAddRow</code></a>
+ continue to the right. Once complete, it triggers the <a href="#Spreadsheet.FinishedAddRow"><code class="language-plaintext highlighter-rouge">FinishedAddRow</code></a>
  callback event. Additionally, this returns the row number for the new row.</dd>
   <dt id="Spreadsheet.AddSheet" class="method"><i></i> AddSheet(<em class="text">sheetName</em>)</dt>
   <dd>Adds a new sheet inside the Spreadsheet.</dd>
   <dt id="Spreadsheet.ClearRange" class="method"><i></i> ClearRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
   <dd>Empties the cells in the given range. Once complete, this block triggers
- the <a href="#Spreadsheet.FinishedClearRange"><code class="highlighter-rouge">FinishedClearRange</code></a> callback event.</dd>
+ the <a href="#Spreadsheet.FinishedClearRange"><code class="language-plaintext highlighter-rouge">FinishedClearRange</code></a> callback event.</dd>
   <dt id="Spreadsheet.DeleteSheet" class="method"><i></i> DeleteSheet(<em class="text">sheetName</em>)</dt>
   <dd>Deletes the specified sheet inside the Spreadsheet.</dd>
   <dt id="Spreadsheet.GetCellReference" class="method returns text"><i></i> GetCellReference(<em class="number">row</em>,<em class="number">column</em>)</dt>
@@ -499,23 +499,23 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>Lists the names of all sheets in the spreadsheet. Triggers the GotSheetList callback event with a list of sheet names.</dd>
   <dt id="Spreadsheet.ReadCell" class="method"><i></i> ReadCell(<em class="text">sheetName</em>,<em class="text">cellReference</em>)</dt>
   <dd>On the page with the provided sheetName, reads the cell at the given
- cellReference and triggers the <a href="#Spreadsheet.GotCellData"><code class="highlighter-rouge">GotCellData</code></a> callback event. The
+ cellReference and triggers the <a href="#Spreadsheet.GotCellData"><code class="language-plaintext highlighter-rouge">GotCellData</code></a> callback event. The
  cellReference can be either a text block with A1-Notation, or the result of
- the <a href="#Spreadsheet.GetCellReference"><code class="highlighter-rouge">GetCellReference</code></a> block.</dd>
+ the <a href="#Spreadsheet.GetCellReference"><code class="language-plaintext highlighter-rouge">GetCellReference</code></a> block.</dd>
   <dt id="Spreadsheet.ReadColumn" class="method"><i></i> ReadColumn(<em class="text">sheetName</em>,<em class="text">column</em>)</dt>
   <dd>On the page with the provided sheetName, reads the column at the given
- colNumber and triggers the <a href="#Spreadsheet.GotColumnData"><code class="highlighter-rouge">GotColumnData</code></a> callback event.</dd>
+ colNumber and triggers the <a href="#Spreadsheet.GotColumnData"><code class="language-plaintext highlighter-rouge">GotColumnData</code></a> callback event.</dd>
   <dt id="Spreadsheet.ReadRange" class="method"><i></i> ReadRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>)</dt>
   <dd>On the page with the provided sheetName, reads the cells at the given
- rangeReference and triggers the <a href="#Spreadsheet.GotRangeData"><code class="highlighter-rouge">GotRangeData</code></a> callback event. The
+ rangeReference and triggers the <a href="#Spreadsheet.GotRangeData"><code class="language-plaintext highlighter-rouge">GotRangeData</code></a> callback event. The
  rangeReference can be either a text block with A1-Notation, or the result
- of the <a href="#Spreadsheet.GetRangeReference"><code class="highlighter-rouge">GetRangeReference</code></a> block.</dd>
+ of the <a href="#Spreadsheet.GetRangeReference"><code class="language-plaintext highlighter-rouge">GetRangeReference</code></a> block.</dd>
   <dt id="Spreadsheet.ReadRow" class="method"><i></i> ReadRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>)</dt>
   <dd>On the page with the provided sheetName, reads the row at the given
- rowNumber and triggers the <a href="#Spreadsheet.GotRowData"><code class="highlighter-rouge">GotRowData</code></a> callback event.</dd>
+ rowNumber and triggers the <a href="#Spreadsheet.GotRowData"><code class="language-plaintext highlighter-rouge">GotRowData</code></a> callback event.</dd>
   <dt id="Spreadsheet.ReadSheet" class="method"><i></i> ReadSheet(<em class="text">sheetName</em>)</dt>
   <dd>Reads the <b>entire</b> Google Sheets document and triggers the
- <a href="#Spreadsheet.GotSheetData"><code class="highlighter-rouge">GotSheetData</code></a> callback event.</dd>
+ <a href="#Spreadsheet.GotSheetData"><code class="language-plaintext highlighter-rouge">GotSheetData</code></a> callback event.</dd>
   <dt id="Spreadsheet.ReadWithExactFilter" class="method"><i></i> ReadWithExactFilter(<em class="text">sheetName</em>,<em class="number">colID</em>,<em class="text">value</em>)</dt>
   <dd>Filters a Google Sheet for rows where the given column number matches the provided value.</dd>
   <dt id="Spreadsheet.ReadWithPartialFilter" class="method"><i></i> ReadWithPartialFilter(<em class="text">sheetName</em>,<em class="number">colID</em>,<em class="text">value</em>)</dt>
@@ -524,54 +524,54 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dd>Deletes the column with the given column number from the table. This does
  not clear the column, but removes it entirely. The sheet’s grid id can be
  found at the end of the url of the Google Sheets document, right after the
- “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveColumn"><code class="highlighter-rouge">FinishedRemoveColumn</code></a>
+ “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveColumn"><code class="language-plaintext highlighter-rouge">FinishedRemoveColumn</code></a>
  callback event.</dd>
   <dt id="Spreadsheet.RemoveRow" class="method"><i></i> RemoveRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>)</dt>
   <dd>Deletes the row with the given row number (1-indexed) from the table. This
  does not clear the row, but removes it entirely. The sheet’s grid id can be
  found at the end of the url of the Google Sheets document, right after the
- “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveRow"><code class="highlighter-rouge">FinishedRemoveRow</code></a>
+ “gid=”. Once complete, it triggers the <a href="#Spreadsheet.FinishedRemoveRow"><code class="language-plaintext highlighter-rouge">FinishedRemoveRow</code></a>
  callback event.</dd>
   <dt id="Spreadsheet.WriteCell" class="method"><i></i> WriteCell(<em class="text">sheetName</em>,<em class="text">cellReference</em>,<em class="any">data</em>)</dt>
-  <dd>Given text or a number as <code class="highlighter-rouge">data</code>, writes the value to the cell. It will
+  <dd>Given text or a number as <code class="language-plaintext highlighter-rouge">data</code>, writes the value to the cell. It will
  override any existing data in the cell with the one provided. Once complete,
- it triggers the <a href="#Spreadsheet.FinishedWriteCell"><code class="highlighter-rouge">FinishedWriteCell</code></a> callback event.</dd>
+ it triggers the <a href="#Spreadsheet.FinishedWriteCell"><code class="language-plaintext highlighter-rouge">FinishedWriteCell</code></a> callback event.</dd>
   <dt id="Spreadsheet.WriteColumn" class="method"><i></i> WriteColumn(<em class="text">sheetName</em>,<em class="text">column</em>,<em class="list">data</em>)</dt>
-  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, writes the values to the column with the
+  <dd>Given a list of values as <code class="language-plaintext highlighter-rouge">data</code>, writes the values to the column with the
  given column number, overriding existing values from top down. (Note: It
  will not erase the entire column.) Once complete, it triggers the
- <a href="#Spreadsheet.FinishedWriteColumn"><code class="highlighter-rouge">FinishedWriteColumn</code></a> callback event.</dd>
+ <a href="#Spreadsheet.FinishedWriteColumn"><code class="language-plaintext highlighter-rouge">FinishedWriteColumn</code></a> callback event.</dd>
   <dt id="Spreadsheet.WriteRange" class="method"><i></i> WriteRange(<em class="text">sheetName</em>,<em class="text">rangeReference</em>,<em class="list">data</em>)</dt>
-  <dd>Given list of lists as <code class="highlighter-rouge">data</code>, writes the values to cells in the range. The
+  <dd>Given list of lists as <code class="language-plaintext highlighter-rouge">data</code>, writes the values to cells in the range. The
  number of rows and columns in the range must match the dimensions of your
  data. This method will override existing data in the range. Once complete,
- it triggers the <a href="#Spreadsheet.FinishedWriteRange"><code class="highlighter-rouge">FinishedWriteRange</code></a> callback event.</dd>
+ it triggers the <a href="#Spreadsheet.FinishedWriteRange"><code class="language-plaintext highlighter-rouge">FinishedWriteRange</code></a> callback event.</dd>
   <dt id="Spreadsheet.WriteRow" class="method"><i></i> WriteRow(<em class="text">sheetName</em>,<em class="number">rowNumber</em>,<em class="list">data</em>)</dt>
-  <dd>Given a list of values as <code class="highlighter-rouge">data</code>, writes the values to the row  with the
+  <dd>Given a list of values as <code class="language-plaintext highlighter-rouge">data</code>, writes the values to the row  with the
  given row number, overriding existing values from left to right. (Note: It
  will not erase the entire row.) Once complete, it triggers the
- <a href="#Spreadsheet.FinishedWriteRow"><code class="highlighter-rouge">FinishedWriteRow</code></a> callback event.</dd>
+ <a href="#Spreadsheet.FinishedWriteRow"><code class="language-plaintext highlighter-rouge">FinishedWriteRow</code></a> callback event.</dd>
 </dl>
 
 <h2 id="TinyDB">TinyDB</h2>
 
-<p><code class="highlighter-rouge">TinyDB</code> is a non-visible component that stores data for an app.</p>
+<p><code class="language-plaintext highlighter-rouge">TinyDB</code> is a non-visible component that stores data for an app.</p>
 
 <p>Apps created with App Inventor are initialized each time they run. This means that if an app
  sets the value of a variable and the user then quits the app, the value of that variable will
  not be remembered the next time the app is run. In contrast, TinyDB is a persistent data store
- for the app. The data stored in a <code class="highlighter-rouge">TinyDB</code> will be available each time the app is run. An
+ for the app. The data stored in a <code class="language-plaintext highlighter-rouge">TinyDB</code> will be available each time the app is run. An
  example might be a game that saves the high score and retrieves it each time the game is played.</p>
 
 <p>Data items consist of tags and values. To store a data item, you specify the tag it should be
  stored under. The tag must be a text block, giving the data a name. Subsequently, you can
  retrieve the data that was stored under a given tag.</p>
 
-<p>You cannot use the <code class="highlighter-rouge">TinyDB</code> to pass data between two different apps on the phone, although you
- can use the <code class="highlighter-rouge">TinyDB</code> to share data between the different screens of a multi-screen app.</p>
+<p>You cannot use the <code class="language-plaintext highlighter-rouge">TinyDB</code> to pass data between two different apps on the phone, although you
+ can use the <code class="language-plaintext highlighter-rouge">TinyDB</code> to share data between the different screens of a multi-screen app.</p>
 
 <p>When you are developing apps using the AI Companion, all the apps using that Companion will
- share the same <code class="highlighter-rouge">TinyDB</code>. That sharing will disappear once the apps are packaged and installed on
+ share the same <code class="language-plaintext highlighter-rouge">TinyDB</code>. That sharing will disappear once the apps are packaged and installed on
  the phone. During development you should be careful to clear the Companion app’s data each time
  you start working on a new app.</p>
 
@@ -592,22 +592,22 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
   <dt id="TinyDB.ClearAll" class="method"><i></i> ClearAll()</dt>
   <dd>Clear the entire data store.</dd>
   <dt id="TinyDB.ClearTag" class="method"><i></i> ClearTag(<em class="text">tag</em>)</dt>
-  <dd>Clear the entry with the given <code class="text block highlighter-rouge">tag</code>.</dd>
+  <dd>Clear the entry with the given <code class="language-plaintext text block highlighter-rouge">tag</code>.</dd>
   <dt id="TinyDB.GetEntries" class="method returns dictionary"><i></i> GetEntries()</dt>
   <dd>Method to get all data in form of Dictionary</dd>
   <dt id="TinyDB.GetTags" class="method returns any"><i></i> GetTags()</dt>
   <dd>Return a list of all the tags in the data store.</dd>
   <dt id="TinyDB.GetValue" class="method returns any"><i></i> GetValue(<em class="text">tag</em>,<em class="any">valueIfTagNotThere</em>)</dt>
-  <dd>Retrieve the value stored under the given <code class="text block highlighter-rouge">tag</code>.  If there’s no such tag, then
- return <code class="variable block highlighter-rouge">valueIfTagNotThere</code>.</dd>
+  <dd>Retrieve the value stored under the given <code class="language-plaintext text block highlighter-rouge">tag</code>.  If there’s no such tag, then
+ return <code class="language-plaintext variable block highlighter-rouge">valueIfTagNotThere</code>.</dd>
   <dt id="TinyDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
-  <dd>Store the given <code class="variable block highlighter-rouge">valueToStore</code> under the given <code class="text block highlighter-rouge">tag</code>.
+  <dd>Store the given <code class="language-plaintext variable block highlighter-rouge">valueToStore</code> under the given <code class="language-plaintext text block highlighter-rouge">tag</code>.
  The storage persists on the phone when the app is restarted.</dd>
 </dl>
 
 <h2 id="TinyWebDB">TinyWebDB</h2>
 
-<p>The <code class="highlighter-rouge">TinyWebDB</code> component communicates with a Web service to store
+<p>The <code class="language-plaintext highlighter-rouge">TinyWebDB</code> component communicates with a Web service to store
  and retrieve information.  Although this component is usable, it is
  very limited and meant primarily as a demonstration for people who
  would like to create their own components that talk to the Web.
@@ -632,9 +632,9 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 
 <dl class="events">
   <dt id="TinyWebDB.GotValue">GotValue(<em class="text">tagFromWebDB</em>,<em class="any">valueFromWebDB</em>)</dt>
-  <dd>Indicates that a <a href="#TinyWebDB.GetValue"><code class="highlighter-rouge">GetValue</code></a> server request has succeeded.</dd>
+  <dd>Indicates that a <a href="#TinyWebDB.GetValue"><code class="language-plaintext highlighter-rouge">GetValue</code></a> server request has succeeded.</dd>
   <dt id="TinyWebDB.ValueStored">ValueStored()</dt>
-  <dd>Event indicating that a <a href="#TinyWebDB.StoreValue"><code class="highlighter-rouge">StoreValue</code></a>  server request has succeeded.</dd>
+  <dd>Event indicating that a <a href="#TinyWebDB.StoreValue"><code class="language-plaintext highlighter-rouge">StoreValue</code></a>  server request has succeeded.</dd>
   <dt id="TinyWebDB.WebServiceError">WebServiceError(<em class="text">message</em>)</dt>
   <dd>Indicates that the communication with the Web service signaled an error.</dd>
 </dl>
@@ -643,13 +643,13 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 
 <dl class="methods">
   <dt id="TinyWebDB.GetValue" class="method"><i></i> GetValue(<em class="text">tag</em>)</dt>
-  <dd><code class="highlighter-rouge">GetValue</code> asks the Web service to get the value stored under the given <code class="text block highlighter-rouge">tag</code>.
+  <dd><code class="language-plaintext highlighter-rouge">GetValue</code> asks the Web service to get the value stored under the given <code class="language-plaintext text block highlighter-rouge">tag</code>.
  It is up to the Web service what to return if there is no value stored under the
- <code class="text block highlighter-rouge">tag</code>.  This component just accepts whatever is returned. The
- <a href="#TinyWebDB.GotValue"><code class="highlighter-rouge">GotValue</code></a> event will be run on completion.</dd>
+ <code class="language-plaintext text block highlighter-rouge">tag</code>.  This component just accepts whatever is returned. The
+ <a href="#TinyWebDB.GotValue"><code class="language-plaintext highlighter-rouge">GotValue</code></a> event will be run on completion.</dd>
   <dt id="TinyWebDB.StoreValue" class="method"><i></i> StoreValue(<em class="text">tag</em>,<em class="any">valueToStore</em>)</dt>
-  <dd>Sends a request to the Web service to store the given <code class="variable block highlighter-rouge">valueToStore</code> under
- the given <code class="text block highlighter-rouge">tag</code>. The <a href="#TinyWebDB.ValueStored"><code class="highlighter-rouge">ValueStored</code></a> event will be run on completion.</dd>
+  <dd>Sends a request to the Web service to store the given <code class="language-plaintext variable block highlighter-rouge">valueToStore</code> under
+ the given <code class="language-plaintext text block highlighter-rouge">tag</code>. The <a href="#TinyWebDB.ValueStored"><code class="language-plaintext highlighter-rouge">ValueStored</code></a> event will be run on completion.</dd>
 </dl>
 
 </article>
@@ -730,11 +730,11 @@ as <code class="highlighter-rouge">Pictures</code>.</li>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

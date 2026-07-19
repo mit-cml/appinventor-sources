@@ -165,7 +165,7 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
 
-<p>The above example shows that in JSON the keys (quoted text before the <code class="highlighter-rouge">:</code>) can map to different types of values. The allowed types are number, text, other dictionaries, booleans, and lists. In the blocks language, you can bulid this dictionary as follows:</p>
+<p>The above example shows that in JSON the keys (quoted text before the <code class="language-plaintext highlighter-rouge">:</code>) can map to different types of values. The allowed types are number, text, other dictionaries, booleans, and lists. In the blocks language, you can bulid this dictionary as follows:</p>
 
 <p><img src="images/dictionaries/example-dictionary-blocks.png" alt="A blocks representation of the dictionary shown above" /></p>
 
@@ -175,45 +175,45 @@
 
 <p><img src="images/dictionaries/create-with.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">create empty dictionary</code> block creates a dictionary without any key-value pairs. Entries can be added to the empty dictionary using the <code class="dictionary block highlighter-rouge">set value for key</code> block. The <code class="dictionary block highlighter-rouge">create empty dictionary</code> block can also be turned into a <code class="dictionary block highlighter-rouge">make a dictionary</code> block by using the blue mutator button to add <code class="dictionary block highlighter-rouge">pair</code> entries.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">create empty dictionary</code> block creates a dictionary without any key-value pairs. Entries can be added to the empty dictionary using the <code class="language-plaintext dictionary block highlighter-rouge">set value for key</code> block. The <code class="language-plaintext dictionary block highlighter-rouge">create empty dictionary</code> block can also be turned into a <code class="language-plaintext dictionary block highlighter-rouge">make a dictionary</code> block by using the blue mutator button to add <code class="language-plaintext dictionary block highlighter-rouge">pair</code> entries.</p>
 
 <h3 id="make-a-dictionary">make a dictionary</h3>
 
 <p><img src="images/dictionaries/make-a-dictionary.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">make a dictionary</code> is used to create a dictionary with a set of <code class="dictionary block highlighter-rouge">pair</code>s known in advance. Additional entries can be added using <code class="dictionary block highlighter-rouge">set value for key</code>.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">make a dictionary</code> is used to create a dictionary with a set of <code class="language-plaintext dictionary block highlighter-rouge">pair</code>s known in advance. Additional entries can be added using <code class="language-plaintext dictionary block highlighter-rouge">set value for key</code>.</p>
 
 <h3 id="pair">pair</h3>
 
 <p><img src="images/dictionaries/pair.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">pair</code> block is a special purpose block used for constructing dictionaries.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">pair</code> block is a special purpose block used for constructing dictionaries.</p>
 
 <h3 id="get-value-for-key">get value for key</h3>
 
 <p><img src="images/dictionaries/get-value-for-key2.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">get value for key</code> block checks to see if the dictionary contains a corresponding value for the given key. If it does, the value is returned. Otherwise, the value of the <code class="highlighter-rouge">not found</code> parameter is returned. This behavior is similar to the behavior of the <a href="lists.html#lookupinpairs"><code class="list block highlighter-rouge">lookup in pairs</code></a> block.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">get value for key</code> block checks to see if the dictionary contains a corresponding value for the given key. If it does, the value is returned. Otherwise, the value of the <code class="language-plaintext highlighter-rouge">not found</code> parameter is returned. This behavior is similar to the behavior of the <a href="lists.html#lookupinpairs"><code class="language-plaintext list block highlighter-rouge">lookup in pairs</code></a> block.</p>
 
 <h3 id="set-value-for-key">set value for key</h3>
 
 <p><img src="images/dictionaries/set-value-for-key.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">set value for key</code> block sets the corresponding value for the given <code class="highlighter-rouge">key</code> in the <code class="highlighter-rouge">dictionary</code> to <code class="highlighter-rouge">value</code>. If no mapping exists for <code class="highlighter-rouge">key</code>, a new one will be created. Otherwise, the existing value is replaced by the new value.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">set value for key</code> block sets the corresponding value for the given <code class="language-plaintext highlighter-rouge">key</code> in the <code class="language-plaintext highlighter-rouge">dictionary</code> to <code class="language-plaintext highlighter-rouge">value</code>. If no mapping exists for <code class="language-plaintext highlighter-rouge">key</code>, a new one will be created. Otherwise, the existing value is replaced by the new value.</p>
 
 <h3 id="delete-entry-for-key">delete entry for key</h3>
 
 <p><img src="images/dictionaries/delete-value-for-key.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">delete entry for key</code> block removes the key-value mapping in the dictionary for the given key. If no entry for the key exists in the dictionary, the dictionary is not modified.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">delete entry for key</code> block removes the key-value mapping in the dictionary for the given key. If no entry for the key exists in the dictionary, the dictionary is not modified.</p>
 
 <h3 id="get-value-at-key-path">get value at key path</h3>
 
-<p>The <code class="dictionary block highlighter-rouge">get value at key path</code> block is a more advanced version of the <code class="dictionary block highlighter-rouge">get value for key</code> block. Rather than getting the value of a specific key, it instead takes a list of valid keys and numbers representing a path through a data structure. The <code class="dictionary block highlighter-rouge">get value for key</code> block is equivalent to using this block with a key path of length 1 containing the key. For example, the following two blocks would return <code class="text block highlighter-rouge">"Tim the Beaver"</code>:</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">get value at key path</code> block is a more advanced version of the <code class="language-plaintext dictionary block highlighter-rouge">get value for key</code> block. Rather than getting the value of a specific key, it instead takes a list of valid keys and numbers representing a path through a data structure. The <code class="language-plaintext dictionary block highlighter-rouge">get value for key</code> block is equivalent to using this block with a key path of length 1 containing the key. For example, the following two blocks would return <code class="language-plaintext text block highlighter-rouge">"Tim the Beaver"</code>:</p>
 
 <p><img src="images/dictionaries/get-value-for-key.png" alt="" /> <img src="images/dictionaries/get-value-for-key-path.png" alt="" /></p>
 
-<p>It walks the data structure, starting from the initial dictionary, using the <code class="highlighter-rouge">path</code> provided in order to retrieve values nested deeply in complex data structures. It is best used for processing JSON data from web services. Starting from the initial input, it takes the first element in the <code class="highlighter-rouge">key path</code> and checks to see if a key (if the input is a dictionary) or index (if the input is a list) exists at that point. If so, it selects that item as the input and proceeds to check the next element in the <code class="highlighter-rouge">key path</code>, continuing until either the whole path has been followed, at which point it returns what is at that location, or the <code class="highlighter-rouge">"not found"</code> parameter.</p>
+<p>It walks the data structure, starting from the initial dictionary, using the <code class="language-plaintext highlighter-rouge">path</code> provided in order to retrieve values nested deeply in complex data structures. It is best used for processing JSON data from web services. Starting from the initial input, it takes the first element in the <code class="language-plaintext highlighter-rouge">key path</code> and checks to see if a key (if the input is a dictionary) or index (if the input is a list) exists at that point. If so, it selects that item as the input and proceeds to check the next element in the <code class="language-plaintext highlighter-rouge">key path</code>, continuing until either the whole path has been followed, at which point it returns what is at that location, or the <code class="language-plaintext highlighter-rouge">"not found"</code> parameter.</p>
 
 <p><strong>Examples</strong></p>
 
@@ -228,59 +228,59 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
 
-<p>For example, given the JSON dictionary above, the following use of <code class="dictionary block highlighter-rouge">get value at key path</code> will yield the result <code class="text block highlighter-rouge">"Massachusetts Institute of Technology"</code>.</p>
+<p>For example, given the JSON dictionary above, the following use of <code class="language-plaintext dictionary block highlighter-rouge">get value at key path</code> will yield the result <code class="language-plaintext text block highlighter-rouge">"Massachusetts Institute of Technology"</code>.</p>
 
 <p><img src="images/dictionaries/get-value-for-key-path2.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">get value at key path&lt;</code> allows for the path to include numbers representing the index of elements to traverse when dictionaries and lists are mixed. For example, if we wanted to know the second class that Tim was taking, we could do the following:</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">get value at key path&lt;</code> allows for the path to include numbers representing the index of elements to traverse when dictionaries and lists are mixed. For example, if we wanted to know the second class that Tim was taking, we could do the following:</p>
 
 <p><img src="images/dictionaries/get-value-for-key-path-with-index.png" alt="" /></p>
 
-<p>which returns the value <code class="highlighter-rouge">"18.01"</code>.</p>
+<p>which returns the value <code class="language-plaintext highlighter-rouge">"18.01"</code>.</p>
 
 <h3 id="set-value-for-key-path">set value for key path</h3>
 
 <p><img src="images/dictionaries/set-value-for-key-path.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">set value for key path</code> block updates the value at a specific <code class="highlighter-rouge">key path</code> in a data structure. It is the mirror of <code class="dictionary block highlighter-rouge">get value for key path</code>, which retrieves a value at a specific <code class="highlighter-rouge">key path</code>. The path <strong>must be valid</strong>, except for the last key, which if a mapping does not exist will create a mapping to the new value. Otherwise, the existing value is replaced with the new value.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">set value for key path</code> block updates the value at a specific <code class="language-plaintext highlighter-rouge">key path</code> in a data structure. It is the mirror of <code class="language-plaintext dictionary block highlighter-rouge">get value for key path</code>, which retrieves a value at a specific <code class="language-plaintext highlighter-rouge">key path</code>. The path <strong>must be valid</strong>, except for the last key, which if a mapping does not exist will create a mapping to the new value. Otherwise, the existing value is replaced with the new value.</p>
 
 <h3 id="get-keys">get keys</h3>
 
 <p><img src="images/dictionaries/get-keys.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">get keys</code> returns a list of keys in the dictionary.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">get keys</code> returns a list of keys in the dictionary.</p>
 
 <h3 id="get-values">get values</h3>
 
 <p><img src="images/dictionaries/get-values.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">get values</code> returns a list containing the values in the dictionary. Modifying the contents of a value in the list will also modify it in the dictionary.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">get values</code> returns a list containing the values in the dictionary. Modifying the contents of a value in the list will also modify it in the dictionary.</p>
 
 <h3 id="is-key-in-dictionary">is key in dictionary?</h3>
 
 <p><img src="images/dictionaries/is-key-in.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">is key in dictionary?</code> tests whether the key exists in the dictionary and returns <code class="logic block highlighter-rouge">true</code> if it does, otherwise it returns <code class="logic block highlighter-rouge">false</code>.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">is key in dictionary?</code> tests whether the key exists in the dictionary and returns <code class="language-plaintext logic block highlighter-rouge">true</code> if it does, otherwise it returns <code class="language-plaintext logic block highlighter-rouge">false</code>.</p>
 
 <h3 id="size-of-dictionary">size of dictionary</h3>
 
 <p><img src="images/dictionaries/size.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">size of dictionary</code> block returns the number of key-value pairs present in the dictionary.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">size of dictionary</code> block returns the number of key-value pairs present in the dictionary.</p>
 
 <h3 id="list-of-pairs-to-dictionary">list of pairs to dictionary</h3>
 
 <p><img src="images/dictionaries/alist-to-dict.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">list of pairs to dictionary</code> block converts an associative list of the form <code class="highlighter-rouge">((key1 value1) (key2 value2) ...)</code> into a dictionary mapping the keys to their values.
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">list of pairs to dictionary</code> block converts an associative list of the form <code class="language-plaintext highlighter-rouge">((key1 value1) (key2 value2) ...)</code> into a dictionary mapping the keys to their values.
 Because dictionaries provide better lookup performance than associative lists, if you want to perform many operations on a data structure it is advisable to use this block to convert the associative list into a dictionary first.</p>
 
 <h3 id="dictionary-to-list-of-pairs">dictionary to list of pairs</h3>
 
 <p><img src="images/dictionaries/dict-to-alist.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">dictionary to list of pairs</code> converts a dictionary into an associative list.
-This block reverses the conversion performed by the <a href="#list-of-pairs-to-dictionary"><code class="list block highlighter-rouge">list of pairs to dictionary</code></a> block.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">dictionary to list of pairs</code> converts a dictionary into an associative list.
+This block reverses the conversion performed by the <a href="#list-of-pairs-to-dictionary"><code class="language-plaintext list block highlighter-rouge">list of pairs to dictionary</code></a> block.</p>
 
 <p><img src="images/dictionaries/alist-dict-reversability.png" alt="Example of how the dictionary to list of pairs block reverses the list of pairs to dictionary block" /></p>
 
@@ -288,19 +288,19 @@ This block reverses the conversion performed by the <a href="#list-of-pairs-to-d
 
 <p><img src="images/dictionaries/copy-dict.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">copy dictionary</code> makes a deep copy of the given dictionary. This means that all of the values are copied recursively and that changing a value in the copy will not change it in the original.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">copy dictionary</code> makes a deep copy of the given dictionary. This means that all of the values are copied recursively and that changing a value in the copy will not change it in the original.</p>
 
 <h3 id="merge-into-dictionary">merge into dictionary</h3>
 
 <p><img src="images/dictionaries/combine-dicts.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">merge into dictionary from dictionary</code> block ccopies the key-value pairs from one dictionary into another, overwriting any keys in the target dictionary.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">merge into dictionary from dictionary</code> block ccopies the key-value pairs from one dictionary into another, overwriting any keys in the target dictionary.</p>
 
 <h3 id="list-by-walking-key-path">list by walking key path</h3>
 
 <p><img src="images/dictionaries/walk-tree.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">list by walking key path</code> block works similarly to the <code class="dictionary block highlighter-rouge">get value at key path</code>, but creates a list of values rather than returning a single value. It works by starting at the given dictionary and walking down the tree of objects following the given path. Unlike the <code class="dictionary block highlighter-rouge">get value at key path</code> though, its path can be composed of three major types: dictionary keys, list indices, and the <a href="#walk-all-at-level"><code class="dictionary block highlighter-rouge">walk all at level</code></a> block. If a key or index is provided, the specific path is taken at that point in the tree. If the <code class="dictionary block highlighter-rouge">walk all at level</code> is specified, every value at that point is followed in succession (breadth-first), at which point the walk continues from the next element in the path. Any element that matches the whole path is added to the output list.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">list by walking key path</code> block works similarly to the <code class="language-plaintext dictionary block highlighter-rouge">get value at key path</code>, but creates a list of values rather than returning a single value. It works by starting at the given dictionary and walking down the tree of objects following the given path. Unlike the <code class="language-plaintext dictionary block highlighter-rouge">get value at key path</code> though, its path can be composed of three major types: dictionary keys, list indices, and the <a href="#walk-all-at-level"><code class="language-plaintext dictionary block highlighter-rouge">walk all at level</code></a> block. If a key or index is provided, the specific path is taken at that point in the tree. If the <code class="language-plaintext dictionary block highlighter-rouge">walk all at level</code> is specified, every value at that point is followed in succession (breadth-first), at which point the walk continues from the next element in the path. Any element that matches the whole path is added to the output list.</p>
 
 <p><strong>Examples</strong></p>
 
@@ -322,13 +322,13 @@ This block reverses the conversion performed by the <a href="#list-of-pairs-to-d
 
 <p><img src="images/dictionaries/walk-tree-example.png" alt="" /></p>
 
-<p>If <code class="variable block highlighter-rouge">global data</code> contains a dictionary represented by the JSON, then the <code class="dictionary block highlighter-rouge">list by walking key path</code> block will produce the list <code class="list block highlighter-rouge">["Tim", "Beaver"]</code>. First, the value of the <code class="text block highlighter-rouge">"people"</code> tag, that is the list of people, is chosen. Next, the first element in the list is chosen. Lastly, the walk all at level block selects the values in the object at that point, that is, the values <code class="text block highlighter-rouge">"Tim"</code> and <code class="text block highlighter-rouge">"Beaver"</code>.</p>
+<p>If <code class="language-plaintext variable block highlighter-rouge">global data</code> contains a dictionary represented by the JSON, then the <code class="language-plaintext dictionary block highlighter-rouge">list by walking key path</code> block will produce the list <code class="language-plaintext list block highlighter-rouge">["Tim", "Beaver"]</code>. First, the value of the <code class="language-plaintext text block highlighter-rouge">"people"</code> tag, that is the list of people, is chosen. Next, the first element in the list is chosen. Lastly, the walk all at level block selects the values in the object at that point, that is, the values <code class="language-plaintext text block highlighter-rouge">"Tim"</code> and <code class="language-plaintext text block highlighter-rouge">"Beaver"</code>.</p>
 
-<p>You can also use <code class="dictionary block highlighter-rouge">walk all at level</code> at a level containing a list. For example, the following block selects the first names of all of the people in the structure, i.e., <code class="list block highlighter-rouge">["Tim", "John", "Jane"]</code>.</p>
+<p>You can also use <code class="language-plaintext dictionary block highlighter-rouge">walk all at level</code> at a level containing a list. For example, the following block selects the first names of all of the people in the structure, i.e., <code class="language-plaintext list block highlighter-rouge">["Tim", "John", "Jane"]</code>.</p>
 
 <p><img src="images/dictionaries/walk-tree-example2.png" alt="" /></p>
 
-<p>This block can also be used with XML parsed using the <a href="/reference/components/connectivity.html#Web.XMLTextDecodeAsDictionary"><code class="method block highlighter-rouge">Web.XMLTextDecodeAsDictionary</code></a> block. Consider the following XML document:</p>
+<p>This block can also be used with XML parsed using the <a href="/reference/components/connectivity.html#Web.XMLTextDecodeAsDictionary"><code class="language-plaintext method block highlighter-rouge">Web.XMLTextDecodeAsDictionary</code></a> block. Consider the following XML document:</p>
 
 <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;schedule&gt;</span>
   <span class="nt">&lt;day&gt;</span>
@@ -342,7 +342,7 @@ This block reverses the conversion performed by the <a href="#list-of-pairs-to-d
 <span class="nt">&lt;/schedule&gt;</span>
 </code></pre></div></div>
 
-<p>You can use the following blocks to get a list of the names of the rooms on the first day, i.e. <code class="list block highlighter-rouge">["Hewlitt", "Bleil"]</code>.</p>
+<p>You can use the following blocks to get a list of the names of the rooms on the first day, i.e. <code class="language-plaintext list block highlighter-rouge">["Hewlitt", "Bleil"]</code>.</p>
 
 <p><img src="images/dictionaries/walk-tree-xml.png" alt="" /></p>
 
@@ -350,13 +350,13 @@ This block reverses the conversion performed by the <a href="#list-of-pairs-to-d
 
 <p><img src="images/dictionaries/walk-all.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">walk all at level</code> block is a specialized block that can be used in the key path of a <code class="dictionary block highlighter-rouge">list by walking key path</code>. When encountered during a walk, it causes every item at that level to be explored. For dictionaries, this means that every value is visited. For lists, each item in the list is visited. This can be used to aggregate information from a list of items in a dictionary, such as the first name of every person in a database represented by JSON objects. See the <a href="#list-by-walking-key-path"><code class="dictionary block highlighter-rouge">list by walking key path</code></a> block for examples.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">walk all at level</code> block is a specialized block that can be used in the key path of a <code class="language-plaintext dictionary block highlighter-rouge">list by walking key path</code>. When encountered during a walk, it causes every item at that level to be explored. For dictionaries, this means that every value is visited. For lists, each item in the list is visited. This can be used to aggregate information from a list of items in a dictionary, such as the first name of every person in a database represented by JSON objects. See the <a href="#list-by-walking-key-path"><code class="language-plaintext dictionary block highlighter-rouge">list by walking key path</code></a> block for examples.</p>
 
 <h3 id="is-a-dictionary">is a dictionary?</h3>
 
 <p><img src="images/dictionaries/is-dict.png" alt="" /></p>
 
-<p>The <code class="dictionary block highlighter-rouge">is a dictionary?</code> block tests to see whether the <code class="highlighter-rouge">thing</code> given to it is a dictionary or not. It will return <code class="logic block highlighter-rouge">true</code> if the <code class="highlighter-rouge">thing</code> is a dictionary and <code class="logic block highlighter-rouge">false</code> otherwise.</p>
+<p>The <code class="language-plaintext dictionary block highlighter-rouge">is a dictionary?</code> block tests to see whether the <code class="language-plaintext highlighter-rouge">thing</code> given to it is a dictionary or not. It will return <code class="language-plaintext logic block highlighter-rouge">true</code> if the <code class="language-plaintext highlighter-rouge">thing</code> is a dictionary and <code class="language-plaintext logic block highlighter-rouge">false</code> otherwise.</p>
 
 </article>
 <script>
@@ -436,11 +436,11 @@ This block reverses the conversion performed by the <a href="#list-of-pairs-to-d
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"
