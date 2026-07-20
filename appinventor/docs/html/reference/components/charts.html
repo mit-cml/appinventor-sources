@@ -140,9 +140,9 @@
 
 <p>The Chart component plots data originating from it’s attached Data components. Five different
  Chart types are available, including Line, Area, Scatter, Bar and Pie, which can be changed by
- the <a href="#Chart.Type"><code class="highlighter-rouge">Type</code></a> property.
+ the <a href="#Chart.Type"><code class="language-plaintext highlighter-rouge">Type</code></a> property.
  The Chart component itself has various other properties that change the appearance
- of the Chart, such as {<a href="#Chart.Description"><code class="highlighter-rouge">Description</code></a>, <a href="#Chart.GridEnabled"><code class="highlighter-rouge">GridEnabled</code></a>,</p>
+ of the Chart, such as {<a href="#Chart.Description"><code class="language-plaintext highlighter-rouge">Description</code></a>, <a href="#Chart.GridEnabled"><code class="language-plaintext highlighter-rouge">GridEnabled</code></a>,</p>
 
 <h3 id="Chart-Properties">Properties</h3>
 
@@ -161,10 +161,10 @@
  Chart Type is set to a Chart with an Axis (applies for Area, Bar, Line,
  Scatter Chart types).</dd>
   <dt id="Chart.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">Chart</code>’s vertical height, measured in pixels.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">Chart</code>’s vertical height, measured in pixels.</dd>
   <dt id="Chart.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">Chart</code>’s vertical height as a percentage
- of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">Chart</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Height</code></a>.</dd>
   <dt id="Chart.Labels" class="list bo"><em>Labels</em></dt>
   <dd>Changes the Chart’s X axis labels to the specified List,
  if the Chart’s Type is set to a Chart with an Axis.
@@ -178,7 +178,7 @@
   <dt id="Chart.LabelsFromString" class="text wo do"><em>LabelsFromString</em></dt>
   <dd>Specifies the labels to set to the Chart’s X Axis, provided the current
  view is a Chart with an X Axis. The labels are specified as a single comma-separated
- values String (meaning each value is separated by a comma). See <a href="#Chart.Labels"><code class="highlighter-rouge">Labels</code></a>
+ values String (meaning each value is separated by a comma). See <a href="#Chart.Labels"><code class="language-plaintext highlighter-rouge">Labels</code></a>
  for more details on how the Labels are applied to the Chart.</dd>
   <dt id="Chart.Left" class="number"><em>Left</em></dt>
   <dd>Specifies the position of the Left edge of the component relative to an
@@ -196,13 +196,13 @@
   <dt id="Chart.ValueFormat" class="number do"><em>ValueFormat</em></dt>
   <dd>Specifies the format for X axis labels and point values.</dd>
   <dt id="Chart.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">Chart</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
- if the <code class="highlighter-rouge">Chart</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">Chart</code> should be visible on the screen.  Value is <code class="language-plaintext logic block highlighter-rouge">true</code>
+ if the <code class="language-plaintext highlighter-rouge">Chart</code> is showing and <code class="language-plaintext logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="Chart.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code>, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">Chart</code>, measured in pixels.</dd>
   <dt id="Chart.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Chart</code> as a percentage
- of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">Chart</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Width</code></a>.</dd>
   <dt id="Chart.XFromZero" class="boolean"><em>XFromZero</em></dt>
   <dd>Determines whether the X axis origin is set at 0 or the minimum X value
  across all data series.</dd>
@@ -215,7 +215,7 @@
 
 <dl class="events">
   <dt id="Chart.EntryClick">EntryClick(<em class="component">series</em>,<em class="any">x</em>,<em class="number">y</em>)</dt>
-  <dd>Indicates that the user clicked on a data entry in the <code class="highlighter-rouge">Chart</code>. The specific series, along
+  <dd>Indicates that the user clicked on a data entry in the <code class="language-plaintext highlighter-rouge">Chart</code>. The specific series, along
  with its x and y values, are reported.</dd>
 </dl>
 
@@ -257,14 +257,14 @@
  in the order: Red, Blue, Red, Blue, …</p>
   </dd>
   <dt id="ChartData2D.DataFileXColumn" class="text wo do"><em>DataFileXColumn</em></dt>
-  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a>. The
+  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="language-plaintext highlighter-rouge">Source</code></a>. The
  value represents the column to use from the DataFile for the x entries
  of the Data Series. For instance, if a column’s first value is “Time”,
  and a column value of “Time” is specified, that column will be used
  for the x values. If a value here is not specified, default values for the
  x values will be generated instead.</dd>
   <dt id="ChartData2D.DataFileYColumn" class="text wo do"><em>DataFileYColumn</em></dt>
-  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a>. The
+  <dd>Value used when importing data from a DataFile component <a href="#ChartData2D.Source"><code class="language-plaintext highlighter-rouge">Source</code></a>. The
  value represents the column to use from the DataFile for the y entries
  of the Data Series. For instance, if a column’s first value is “Temperature”,
  and a column value of “Temperature” is specified, that column will be used
@@ -324,7 +324,7 @@ numerical values are returned.</li>
  depending on the type of the Source attached (the required properties
  show up in the Properties menu after the Source is changed).
 
-    <p>If the data identified by the <a href="#ChartData2D.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> is updated
+    <p>If the data identified by the <a href="#ChartData2D.DataSourceKey"><code class="language-plaintext highlighter-rouge">DataSourceKey</code></a> is updated
  in the attached Data Source component, then the data is also updated in
  the Chart Data component.</p>
   </dd>
@@ -369,8 +369,8 @@ numerical values are returned.</li>
  For Pie Charts, the x value is a text value.</dd>
   <dt id="ChartData2D.ChangeDataSource" class="method"><i></i> ChangeDataSource(<em class="component">source</em>,<em class="text">keyValue</em>)</dt>
   <dd>Changes the Data Source of the component to the specified component Source with the
- specified key value. See the <a href="#ChartData2D.Source"><code class="highlighter-rouge">Source</code></a> property for
- applicable components. See the <a href="#ChartData2D.DataSourceKey"><code class="highlighter-rouge">DataSourceKey</code></a> property for the interpretation
+ specified key value. See the <a href="#ChartData2D.Source"><code class="language-plaintext highlighter-rouge">Source</code></a> property for
+ applicable components. See the <a href="#ChartData2D.DataSourceKey"><code class="language-plaintext highlighter-rouge">DataSourceKey</code></a> property for the interpretation
  of the keyValue. In the case of the DataFile and Web components, the keyValue is expected to
  be a CSV formatted string, where the first value corresponds to the x column, and the second
  value corresponds to the y value.</dd>
@@ -379,7 +379,7 @@ numerical values are returned.</li>
   <dt id="ChartData2D.DoesEntryExist" class="method returns boolean"><i></i> DoesEntryExist(<em class="text">x</em>,<em class="text">y</em>)</dt>
   <dd>Returns a boolean value specifying whether an entry with the specified x and y
  values exists. The boolean value of true is returned if the value exists,
- and a false value otherwise. See <a href="#ChartData2D.AddEntry"><code class="highlighter-rouge">AddEntry</code></a>
+ and a false value otherwise. See <a href="#ChartData2D.AddEntry"><code class="language-plaintext highlighter-rouge">AddEntry</code></a>
  for an explanation of the valid entry values.</dd>
   <dt id="ChartData2D.GetAllEntries" class="method returns list"><i></i> GetAllEntries()</dt>
   <dd>Returns all entries of the data series.
@@ -387,10 +387,10 @@ numerical values are returned.</li>
  is a list containing the values of the entry in order.</dd>
   <dt id="ChartData2D.GetEntriesWithXValue" class="method returns list"><i></i> GetEntriesWithXValue(<em class="text">x</em>)</dt>
   <dd>Returns all entries of the data series matching the specified x value.
- For a description of the format of the returned List, see <a href="#ChartData2D.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+ For a description of the format of the returned List, see <a href="#ChartData2D.GetAllEntries"><code class="language-plaintext highlighter-rouge">GetAllEntries</code></a></dd>
   <dt id="ChartData2D.GetEntriesWithYValue" class="method returns list"><i></i> GetEntriesWithYValue(<em class="text">y</em>)</dt>
   <dd>Returns all entries of the data series matching the specified y value.
- For a description of the format of the returned List, see <a href="#ChartData2D.GetAllEntries"><code class="highlighter-rouge">GetAllEntries</code></a></dd>
+ For a description of the format of the returned List, see <a href="#ChartData2D.GetAllEntries"><code class="language-plaintext highlighter-rouge">GetAllEntries</code></a></dd>
   <dt id="ChartData2D.HighlightDataPoints" class="method"><i></i> HighlightDataPoints(<em class="list">dataPoints</em>,<em class="number">color</em>)</dt>
   <dd>Highlights all given data points on the Chart in the color of choice.</dd>
   <dt id="ChartData2D.ImportFromCloudDB" class="method"><i></i> ImportFromCloudDB(<em class="component">cloudDB</em>,<em class="text">tag</em>)</dt>
@@ -398,7 +398,7 @@ numerical values are returned.</li>
  identified by the specified tag value.
 
     <p>The expected CloudDB value is a list formatted in the same way as described in
- <a href="#ChartData2D.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+ <a href="#ChartData2D.ImportFromList"><code class="language-plaintext highlighter-rouge">ImportFromList</code></a>.</p>
 
     <p>Does not overwrite any data.</p>
   </dd>
@@ -430,7 +430,7 @@ numerical values are returned.</li>
  identified by the specified tag value.
 
     <p>The expected TinyDB value is a list formatted in the same way as described in
- <a href="#ChartData2D.ImportFromList"><code class="highlighter-rouge">ImportFromList</code></a>.</p>
+ <a href="#ChartData2D.ImportFromList"><code class="language-plaintext highlighter-rouge">ImportFromList</code></a>.</p>
 
     <p>Does not overwrite any data.</p>
   </dd>
@@ -451,7 +451,7 @@ numerical values are returned.</li>
  the current data will not be removed.</dd>
   <dt id="ChartData2D.RemoveEntry" class="method"><i></i> RemoveEntry(<em class="text">x</em>,<em class="text">y</em>)</dt>
   <dd>Removes an entry with the specified x and y value, provided it exists.
- See <a href="#ChartData2D.AddEntry"><code class="highlighter-rouge">AddEntry</code></a> for an explanation of the valid entry values.</dd>
+ See <a href="#ChartData2D.AddEntry"><code class="language-plaintext highlighter-rouge">AddEntry</code></a> for an explanation of the valid entry values.</dd>
 </dl>
 
 <h2 id="Trendline">Trendline</h2>
@@ -617,11 +617,11 @@ ExponentialBase</li>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

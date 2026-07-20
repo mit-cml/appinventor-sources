@@ -5,6 +5,7 @@
 
 package com.google.appinventor.components.scripts;
 
+import com.google.appinventor.common.utils.StringUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -131,7 +132,7 @@ public class SwiftOptionHelperGenerator extends ComponentProcessor {
     pw.print(functionName);
     pw.print("\": ");
     OptionList items = optionLists.get((String) helperKey.getKey());
-    pw.print(items.getTagName());
+    pw.print(StringUtils.getSimpleClassName(items.getClassName()));
     pw.print(".fromUnderlyingValue(_:)");
   }
 

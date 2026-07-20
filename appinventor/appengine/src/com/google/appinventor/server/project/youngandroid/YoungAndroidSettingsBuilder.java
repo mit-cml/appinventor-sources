@@ -10,6 +10,7 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.shared.settings.SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACCENT_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ACTIONBAR;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_APP_NAME;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET;
@@ -33,6 +34,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
 
 import com.google.appinventor.shared.settings.Settings;
@@ -48,7 +50,8 @@ public class YoungAndroidSettingsBuilder {
   private String projectName = "";
   private String qualifiedFormName = "";
   private String icon = "";
-  private String versionCode = "1";
+  private String versionCode = "1"; 
+  private String androidMinSdk;
   private String versionName = "1.0";
   private String usesLocation = "false";
   private String appName = "";
@@ -73,6 +76,7 @@ public class YoungAndroidSettingsBuilder {
   private String nsCameraUsage = "";
   private String nsSpeechRecognitionUsage = "";
   private String nsLocationUsage = "";
+  private String iosMinSdk = "";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -87,6 +91,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_ICON));
     versionCode = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_VERSION_CODE));
+    androidMinSdk = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK));
     versionName = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_VERSION_NAME));
     usesLocation = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -136,6 +142,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE));
     nsLocationUsage = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE));
+    iosMinSdk = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK));
     if (buildNumber.isEmpty()) {
       buildNumber = "1";
     }
@@ -175,6 +183,7 @@ public class YoungAndroidSettingsBuilder {
     nsCameraUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, "");
     nsSpeechRecognitionUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, "");
     nsLocationUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "");
+    iosMinSdk = properties.getProperty(YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, "");
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -206,6 +215,12 @@ public class YoungAndroidSettingsBuilder {
     this.versionName = versionName;
     return this;
   }
+
+  public YoungAndroidSettingsBuilder setAndroidMinSdk(String androidMinSdk) {
+    this.androidMinSdk = androidMinSdk;
+    return this;
+  }
+
 
   public YoungAndroidSettingsBuilder setUsesLocation(String usesLocation) {
     this.usesLocation = usesLocation;
@@ -291,6 +306,7 @@ public class YoungAndroidSettingsBuilder {
     JSONObject object = new JSONObject();
     object.put(YOUNG_ANDROID_SETTINGS_ICON, icon);
     object.put(YOUNG_ANDROID_SETTINGS_VERSION_CODE, versionCode);
+    object.put(YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK, androidMinSdk);
     object.put(YOUNG_ANDROID_SETTINGS_VERSION_NAME, versionName);
     object.put(YOUNG_ANDROID_SETTINGS_USES_LOCATION, usesLocation);
     object.put(YOUNG_ANDROID_SETTINGS_APP_NAME, appName);
@@ -315,6 +331,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
+    object.put(YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, iosMinSdk);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -335,6 +352,7 @@ public class YoungAndroidSettingsBuilder {
     result.put("build", "../build");
     addPropertyIfSet(result, "icon", icon);
     addPropertyIfSet(result, "versioncode", versionCode);
+    addPropertyIfSet(result, "androidminsdk", androidMinSdk);
     addPropertyIfSet(result, "versionname", versionName);
     addPropertyIfSet(result, "useslocation", usesLocation);
     addPropertyIfSet(result, "sizing", sizing);
@@ -357,6 +375,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE, nsCameraUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, iosMinSdk);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -391,6 +410,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.qualifiedFormName.equals(qualifiedFormName);
       result &= other.icon.equals(icon);
       result &= other.versionCode.equals(versionCode);
+      result &= other.androidMinSdk.equals(androidMinSdk);
       result &= other.versionName.equals(versionName);
       result &= other.usesLocation.equals(usesLocation);
       result &= other.sizing.equals(sizing);
@@ -414,6 +434,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.nsCameraUsage.equals(nsCameraUsage);
       result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
       result &= other.nsLocationUsage.equals(nsLocationUsage);
+      result &= other.iosMinSdk.equals(iosMinSdk);
       return result;
     }
     return false;

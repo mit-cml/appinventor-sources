@@ -112,6 +112,7 @@ public final class Project {
   private static final String COLOR_ACCENTTAG = "color.accent";
   private static final String DEFAULT_FILE_SCOPE = "defaultfilescope";
   private static final String BUILD_NUMBER = "buildnumber";
+  private static final String IOS_MIN_SDK_TAG = "IosMinSdk";
 
   // Do not leave it empty because even though it compiles
   // alright but Android OS can't install it!
@@ -365,6 +366,24 @@ public final class Project {
 
   public String getBuildNumber() {
     return properties.getProperty(BUILD_NUMBER, DEFAULT_BUILD_NUMBER);
+  }
+
+  /**
+   * Returns the minimum iOS SDK version for the app. The returned value will
+   * never be lower than {@link ComponentConstants#IOS_MIN_SDK}.
+   *
+   * @return  the minimum iOS SDK version
+   */
+  public String getIosMinSdk() {
+    String value = properties.getProperty(IOS_MIN_SDK_TAG, ComponentConstants.IOS_MIN_SDK);
+    try {
+      if (Double.parseDouble(value) < Double.parseDouble(ComponentConstants.IOS_MIN_SDK)) {
+        return ComponentConstants.IOS_MIN_SDK;
+      }
+    } catch (NumberFormatException e) {
+      return ComponentConstants.IOS_MIN_SDK;
+    }
+    return value;
   }
 
   /**

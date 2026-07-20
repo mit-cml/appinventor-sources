@@ -49,7 +49,6 @@ public class TimePicker extends ButtonBase {
   private int hour = 0;
   private int minute = 0;
   private TimePickerDialog time;
-  private boolean customTime = false;
   private Form form;
   private Calendar instant;
   private Handler androidUIHandler;
@@ -128,7 +127,8 @@ public class TimePicker extends ButtonBase {
     } else {
       time.updateTime(hour, minute);
       instant = Dates.TimeInstant(hour, minute);
-      customTime = true;
+      this.hour = hour;
+      this.minute = minute;
     }
   }
 
@@ -144,8 +144,9 @@ public class TimePicker extends ButtonBase {
     int hour = Dates.Hour(instant);
     int minute = Dates.Minute(instant);
     time.updateTime(hour, minute);
-    instant = Dates.TimeInstant(hour, minute);
-    customTime = true;
+    this.instant = Dates.TimeInstant(hour, minute);
+    this.hour = hour;
+    this.minute = minute;
   }
 
   /**
@@ -158,15 +159,7 @@ public class TimePicker extends ButtonBase {
 
   @Override
   public void click() {
-    if (!customTime) {
-      Calendar c = Calendar.getInstance();
-      int h = c.get(Calendar.HOUR_OF_DAY);
-      int m = c.get(Calendar.MINUTE);
-      time.updateTime(h, m);
-      instant = Dates.TimeInstant(hour, minute);
-    } else {
-      customTime = false;
-    }
+    time.updateTime(hour, minute);
     time.show();
   }
 

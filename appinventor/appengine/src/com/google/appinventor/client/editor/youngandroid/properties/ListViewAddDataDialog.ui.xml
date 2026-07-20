@@ -19,8 +19,8 @@
       </g:FlowPanel>
 
       <g:FlowPanel styleName="lie-foot">
-        <g:Button ui:field="cancel" styleName="lie-btn" addStyleNames="lie-btn-ghost"/>
-        <g:Button ui:field="save" styleName="lie-btn" addStyleNames="lie-btn-primary"/>
+        <g:Button ui:field="cancel" styleName="ode-TextButton"/>
+        <g:Button ui:field="save" styleName="ode-TextButton"/>
       </g:FlowPanel>
 
       <g:Button ui:field="bottomInvisible" styleName="FocusTrap" tabIndex="-1"/>

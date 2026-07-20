@@ -102,7 +102,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
   fileprivate var _showFeedback = true
   fileprivate var _italic = false
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _shape = ButtonShape.normal
+  fileprivate var _shape = ButtonShapeStyle.normal
   fileprivate var _imagePath: String?
   fileprivate var _defaultTextColor: UIColor
   fileprivate var _defaultHighlightColor: UIColor?
@@ -231,7 +231,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
     FontBold = _bold
     FontItalic = _italic
     Image = ""
-    Shape = ButtonShape.normal.rawValue
+    Shape = ButtonShapeStyle.normal.rawValue
     Text = ""
     TextAlignment = Alignment.center.rawValue
     TextColor = Int32(Color.default.rawValue)
@@ -313,7 +313,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
       _view.isEnabled = enabled
     }
   }
-  
+
   @objc open var FontBold: Bool {
     get {
       return _bold
@@ -334,17 +334,15 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
     }
   }
 
-  @objc open var FontTypeface: Int32 {
+  @objc open var FontTypeface: String {
     get {
-      return _fontTypeface.rawValue
+      return String(_fontTypeface.rawValue)
     }
     set(newTypeFace) {
-      if newTypeFace != _fontTypeface.rawValue {
-        if let type = Typeface(rawValue: Int32(newTypeFace)) {
-          _fontTypeface = type
-          _view.titleLabel?.font = getFontTypeface(font: _view.titleLabel?.font, typeFace: type)
-        }
+      if let type = getTypeface(newTypeFace) {
+        _fontTypeface = type
       }
+      _view.titleLabel?.font = getFontTypeface(font: _view.titleLabel?.font, typeFace: newTypeFace)
     }
   }
 
@@ -406,7 +404,7 @@ open class ButtonBase: ViewComponent, AccessibleComponent {
       return _shape.rawValue
     }
     set(shape) {
-      if let shape = ButtonShape(rawValue: shape) {
+      if let shape = ButtonShapeStyle(rawValue: shape) {
         _shape = shape
         setNeedsStyleApplied()
       }

@@ -11,13 +11,16 @@ import android.graphics.PorterDuff;
 import android.widget.TextView;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.TextAlignment;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -197,9 +200,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Whether the text should be left justified, centered, " +
-      "or right justified.  By default, text is left justified.",
-      userVisible = false)
-  public int TextAlignment() {
+      "or right justified.  By default, text is left justified.")
+  public @Options(TextAlignment.class) int TextAlignment() {
     return textAlignment;
   }
 
@@ -215,9 +217,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
       defaultValue = Component.ALIGNMENT_NORMAL + "")
-  @SimpleProperty(
-      userVisible = false)
-  public void TextAlignment(int alignment) {
+  @SimpleProperty
+  public void TextAlignment(@Options(TextAlignment.class) int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, false);
   }
@@ -301,7 +302,6 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      userVisible = false,
       description = "Whether the font for the text should be bold.  By " +
       "default, it is not.")
   public boolean FontBold() {
@@ -316,8 +316,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty
   public void FontBold(boolean bold) {
     this.bold = bold;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
@@ -333,8 +332,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "Whether the text should appear in italics.  By " +
-      "default, it does not.",
-      userVisible = false)
+      "default, it does not.")
   public boolean FontItalic() {
     return italic;
   }
@@ -347,7 +345,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty
   public void FontItalic(boolean italic) {
     this.italic = italic;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
@@ -394,9 +392,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "The font for the text.  The value can be changed in " +
-      "the Designer.",
-      userVisible = false)
-  public String FontTypeface() {
+      "the Designer.")
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 
@@ -411,9 +408,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
-  @SimpleProperty(
-      userVisible = false)
-  public void FontTypeface(String typeface) {
+  @SimpleProperty
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }

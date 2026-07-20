@@ -19,6 +19,7 @@ public class ComponentConstants {
    * App constants
    */
   public static final int APP_INVENTOR_MIN_SDK = 14;
+  public static final String IOS_MIN_SDK = "12.0";
 
   /**
    * Layout constants.

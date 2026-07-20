@@ -5,6 +5,7 @@
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
+	"Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS": "This is a duplicate key - the current value has been overwritten ",
 	"Blockly.Msg.REQUIRED_EXTENSIONS_MISSING": "This image references the following blocks which require extensions that are not present in the project:\n\n",
 	"Blockly.Msg.ERROR_PARSING_XML": "Error: Failed to parse XML from the PNG file. Please try again.",
 	"Blockly.Msg.UNDO": "Undo",
@@ -373,6 +374,8 @@
 	"Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE": "\u201D",
 	"Blockly.Msg.LANG_TEXT_JOIN_TITLE_CREATEWITH": "create text with",
 	"Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP": "Appends all the inputs to form a single text string.\nIf there are no inputs, makes an empty text.",
+	"Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TITLE": "multiline text",
+	"Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TOOLTIP": "A multiline text string.",
 	"Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN": "join",
 	"Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM": "string",
 	"Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP": "",
@@ -760,11 +763,11 @@
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_VALUE": "value",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_MATRIX": "matrix",
 	"Blockly.Msg.LANG_MATRICES_GET_INPUT_DIM": "dim",
-	
+
 	"Blockly.Msg.LANG_MATRICES_GET_ROW": "get matrix row",
 	"Blockly.Msg.LANG_MATRICES_GET_ROW_TOOLTIP": "Returns the row of the matrix",
 	"Blockly.Msg.LANG_MATRICES_GET_ROW_HELPURL": "/reference/blocks/matrices.html#getrow",
-	
+
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN": "get matrix column",
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_TOOLTIP": "Returns the column of the matrix",
 	"Blockly.Msg.LANG_MATRICES_GET_COLUMN_HELPURL": "/reference/blocks/matrices.html#getcolumn",
@@ -1106,6 +1109,7 @@
 	"Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_DEC_TO_BIN": "http://appinventor.mit.edu/explore/ai2/support/blocks/math#convertnumber",
 	"Blockly.Msg.LANG_MATH_CONVERT_NUMBER_HELPURL_BIN_TO_DEC": "http://appinventor.mit.edu/explore/ai2/support/blocks/math#convertnumber",
 	"Blockly.Msg.LANG_TEXT_TEXT_HELPURL": "/reference/blocks/text.html#string",
+	"Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_HELPURL": "/reference/blocks/text.html#multilinetext",
 	"Blockly.Msg.LANG_TEXT_JOIN_HELPURL": "/reference/blocks/text.html#join",
 	"Blockly.Msg.LANG_TEXT_APPEND_HELPURL": "http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html",
 	"Blockly.Msg.LANG_TEXT_LENGTH_HELPURL": "/reference/blocks/text.html#length",

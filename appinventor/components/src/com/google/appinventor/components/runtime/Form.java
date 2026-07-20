@@ -1976,6 +1976,14 @@ public class Form extends AppInventorCompatActivity
   public void NSLocationWhenInUseUsageDescription(String message) {}
 
   /**
+   * Specifies the minimum iOS SDK version required to run the app.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = ComponentConstants.IOS_MIN_SDK)
+  @SimpleProperty(category = PropertyCategory.IOS, userVisible = false)
+  public void IosMinSdk(String version) {}
+
+  /**
    * If set to responsive (the default), screen layouts will use the actual resolution of the
    * device. See the [documentation on responsive design](../other/responsiveDesign.html) in App
    * Inventor for more information.
@@ -2223,6 +2231,20 @@ public class Form extends AppInventorCompatActivity
     // project properties file
   }
 
+  /**
+   * The minimum Android API level required to install this app. The build system may automatically raise this value if selected components require a higher APIlevel.   
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ANDROID_MIN_SDK, 
+    defaultValue = "" + ComponentConstants.APP_INVENTOR_MIN_SDK)
+  @SimpleProperty(userVisible = false, 
+    description = "The minimum Android SDK required to install the app. " +
+        "The system may automatically increase this value if components " +
+        "require a higher SDK.", 
+    category = PropertyCategory.PUBLISHING)
+  public void AndroidMinSdk(String value) {
+    // Stored automatically in project properties
+  }
+  
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
     defaultValue = "")
   @SimpleProperty(userVisible = false,

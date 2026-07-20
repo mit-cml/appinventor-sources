@@ -8,8 +8,23 @@ import Foundation
 
 @objc public class OptionHelper: NSObject {
   private static let STRING_LOOKUP_TABLE: [String: [String: (String) -> AnyObject?]] = [
+    "Button": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "CheckBox": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "ContactPicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
     "DataFile": [
       "DefaultScope": FileScope.fromUnderlyingValue(_:)
+    ],
+    "DatePicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "EmailPicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
     ],
     "Ev3ColorSensor": [
       "Mode": ColorSensorMode.fromUnderlyingValue(_:)
@@ -26,6 +41,7 @@ import Foundation
     ],
     "FilePicker": [
       "Action": FileAction.fromUnderlyingValue(_:),
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:),
       "MimeType": FileType.fromUnderlyingValue(_:)
     ],
     "Form": [
@@ -34,8 +50,42 @@ import Foundation
       "OpenScreenAnimation": ScreenAnimation.fromUnderlyingValue(_:),
       "ScreenOrientation": ScreenOrientation.fromUnderlyingValue(_:)
     ],
+    "Image": [
+      "Animation": ImageAnimation.fromUnderlyingValue(_:)
+    ],
+    "ImagePicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "Label": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "ListPicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "ListView": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:),
+      "FontTypefaceDetail": FontTypeface.fromUnderlyingValue(_:)
+    ],
     "Navigation": [
       "TransportationMethod": TransportMethod.fromUnderlyingValue(_:)
+    ],
+    "PasswordTextBox": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "PhoneNumberPicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "Spinner": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "Switch": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "TextBox": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
+    ],
+    "TimePicker": [
+      "FontTypeface": FontTypeface.fromUnderlyingValue(_:)
     ],
     "Trendline": [
       "Model": BestFitModel.fromUnderlyingValue(_:)
@@ -46,12 +96,34 @@ import Foundation
     "AccelerometerSensor": [
       "Sensitivity": Sensitivity.fromUnderlyingValue(_:)
     ],
+    "Button": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "Canvas": [
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
     "Chart": [
       "Type": ChartType.fromUnderlyingValue(_:)
     ],
     "ChartData2D": [
       "LineType": LineType.fromUnderlyingValue(_:),
       "PointShape": PointStyle.fromUnderlyingValue(_:)
+    ],
+    "ContactPicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "DatePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "EmailPicker": [
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "FilePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Form": [
       "AlignHorizontal": HorizontalAlignment.fromUnderlyingValue(_:),
@@ -65,6 +137,17 @@ import Foundation
       "AlignHorizontal": HorizontalAlignment.fromUnderlyingValue(_:),
       "AlignVertical": VerticalAlignment.fromUnderlyingValue(_:)
     ],
+    "ImagePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "Label": [
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "ListPicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
     "ListView": [
       "ListViewLayout": LayoutType.fromUnderlyingValue(_:),
       "Orientation": ListOrientation.fromUnderlyingValue(_:)
@@ -77,8 +160,28 @@ import Foundation
       "AnchorHorizontal": HorizontalAlignment.fromUnderlyingValue(_:),
       "AnchorVertical": VerticalAlignment.fromUnderlyingValue(_:)
     ],
+    "Notifier": [
+      "NotifierLength": NotifierLength.fromUnderlyingValue(_:)
+    ],
+    "PasswordTextBox": [
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "PhoneNumberPicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "Spinner": [
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
+    "TextBox": [
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
+    ],
     "Texting": [
       "ReceivingEnabled": ReceivingState.fromUnderlyingValue(_:)
+    ],
+    "TimePicker": [
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
+      "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Trendline": [
       "StrokeStyle": StrokeStyle.fromUnderlyingValue(_:)

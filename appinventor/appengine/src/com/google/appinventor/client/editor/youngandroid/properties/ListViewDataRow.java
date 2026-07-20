@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +61,23 @@ public class ListViewDataRow extends Composite {
   /** Sentinel value used by the ListData JSON for "no image". */
   private static final String NO_IMAGE = "None";
 
+  /** Column identifiers used for column-preserving Up/Down navigation between rows. */
+  static final int COL_THUMB = 0;
+  static final int COL_MAIN = 1;
+  static final int COL_DETAIL = 2;
+
+  /** Lets the dialog react to per-row keyboard actions (delete, Enter-to-add, Up/Down navigation). */
+  interface Callbacks {
+    /** The row deleted itself; the dialog should refresh its item count. */
+    void onRowDeleted();
+
+    /** Enter was pressed in a text field: append a new row and focus its first field. */
+    void onEnterAddRow();
+
+    /** Up/Down was pressed: move focus {@code deltaRows} away from {@code from}, same {@code column}. */
+    void onMoveFocus(ListViewDataRow from, int deltaRows, int column);
+  }
+
   @UiField FlowPanel container;
   @UiField FlowPanel thumbColumn;
   @UiField FocusPanel thumbTile;
@@ -72,7 +91,7 @@ public class ListViewDataRow extends Composite {
   private final boolean showImage;
   private final List<String> imageChoices;
   private final Map<String, String> imageUrls;
-  private final Runnable onDelete;
+  private final Callbacks callbacks;
 
   /** The currently selected image asset name (or {@link #NO_IMAGE}). */
   private String selectedImage = NO_IMAGE;
@@ -83,16 +102,16 @@ public class ListViewDataRow extends Composite {
    * @param showImage whether the image picker applies to the current layout
    * @param imageChoices the asset names (including "None") offered by the picker
    * @param imageUrls map from asset name to a previewable URL (no entry for "None")
-   * @param onDelete callback invoked after this row removes itself (lets the dialog update its count)
+   * @param callbacks hooks the dialog uses to react to this row's keyboard actions
    */
   ListViewDataRow(JSONObject item, boolean showDetail, boolean showImage,
-      List<String> imageChoices, Map<String, String> imageUrls, Runnable onDelete) {
+      List<String> imageChoices, Map<String, String> imageUrls, Callbacks callbacks) {
     this.item = item;
     this.showDetail = showDetail;
     this.showImage = showImage;
     this.imageChoices = imageChoices;
     this.imageUrls = imageUrls;
-    this.onDelete = onDelete;
+    this.callbacks = callbacks;
     initWidget(UI_BINDER.createAndBindUi(this));
 
     delete.setText("×");  // multiplication sign, used as a compact close/delete glyph
@@ -101,9 +120,11 @@ public class ListViewDataRow extends Composite {
     delete.setTitle(MESSAGES.deleteButton());
 
     mainText.setText(getString("Text1"));
+    addKeyNav(mainText, COL_MAIN);
 
     if (showDetail) {
       detailText.setText(getString("Text2"));
+      addKeyNav(detailText, COL_DETAIL);
     } else {
       detailText.setVisible(false);
     }
@@ -126,6 +147,12 @@ public class ListViewDataRow extends Composite {
           if (key == KeyCodes.KEY_ENTER || key == KeyCodes.KEY_SPACE) {
             event.preventDefault();
             openImagePicker();
+          } else if (key == KeyCodes.KEY_UP) {
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, -1, COL_THUMB);
+          } else if (key == KeyCodes.KEY_DOWN) {
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, 1, COL_THUMB);
           }
         }
       });
@@ -188,17 +215,63 @@ public class ListViewDataRow extends Composite {
           public void onImageSelected(String name) {
             selectedImage = name;
             updateThumbnail();
+            thumbTile.setFocus(true);  // return focus to the tile after choosing
           }
         });
     picker.showRelativeTo(thumbTile);
+    picker.focusSelected();
   }
 
   @UiHandler("delete")
   void onDeleteClicked(ClickEvent event) {
     removeFromParent();
-    if (onDelete != null) {
-      onDelete.run();
+    if (callbacks != null) {
+      callbacks.onRowDeleted();
     }
+  }
+
+  /**
+   * Wires Enter (append a new row) and Up/Down (column-preserving row navigation) on {@code box}, so
+   * data can be entered without the mouse. Tab/Shift-Tab still move between fields natively.
+   */
+  private void addKeyNav(TextBox box, final int column) {
+    box.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        switch (event.getNativeKeyCode()) {
+          case KeyCodes.KEY_ENTER:
+            event.preventDefault();
+            callbacks.onEnterAddRow();
+            break;
+          case KeyCodes.KEY_UP:
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, -1, column);
+            break;
+          case KeyCodes.KEY_DOWN:
+            event.preventDefault();
+            callbacks.onMoveFocus(ListViewDataRow.this, 1, column);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }
+
+  /** Moves keyboard focus to the given column of this row, falling back to the main text field. */
+  void focusColumn(int column) {
+    if (column == COL_THUMB && showImage) {
+      thumbTile.setFocus(true);
+    } else if (column == COL_DETAIL && showDetail) {
+      detailText.setFocus(true);
+    } else {
+      mainText.setFocus(true);
+    }
+  }
+
+  /** Focuses the first cell of the row: the image tile if the layout has one, else the main text. */
+  void focusFirstCell() {
+    focusColumn(COL_THUMB);  // COL_THUMB falls back to the main text field when there is no image
   }
 
   /**
@@ -212,6 +285,12 @@ public class ListViewDataRow extends Composite {
       void onImageSelected(String name);
     }
 
+    /** The focusable choice tiles, in display order, for arrow-key navigation. */
+    private final List<FocusPanel> items = new ArrayList<FocusPanel>();
+
+    /** Index of the tile to focus when the picker opens (the current selection, else the first). */
+    private int selectedIndex = 0;
+
     AssetImagePicker(List<String> choices, Map<String, String> urls, String current,
         final Callback callback) {
       super(true, false);  // autoHide, non-modal
@@ -221,10 +300,11 @@ public class ListViewDataRow extends Composite {
       list.setStyleName("lie-picker");
 
       for (final String name : choices) {
-        FocusPanel item = new FocusPanel();
+        final FocusPanel item = new FocusPanel();
         item.setStyleName("lie-picker-item");
         if (name.equals(current)) {
           item.addStyleName("lie-picker-selected");
+          selectedIndex = items.size();
         }
         item.getElement().setTabIndex(0);
 
@@ -254,18 +334,54 @@ public class ListViewDataRow extends Composite {
         item.addKeyDownHandler(new KeyDownHandler() {
           @Override
           public void onKeyDown(KeyDownEvent event) {
-            int key = event.getNativeKeyCode();
-            if (key == KeyCodes.KEY_ENTER || key == KeyCodes.KEY_SPACE) {
-              event.preventDefault();
-              callback.onImageSelected(name);
-              hide();
+            switch (event.getNativeKeyCode()) {
+              case KeyCodes.KEY_ENTER:
+              case KeyCodes.KEY_SPACE:
+                event.preventDefault();
+                callback.onImageSelected(name);
+                hide();
+                break;
+              case KeyCodes.KEY_UP:
+                event.preventDefault();
+                focusItem(items.indexOf(item) - 1);
+                break;
+              case KeyCodes.KEY_DOWN:
+                event.preventDefault();
+                focusItem(items.indexOf(item) + 1);
+                break;
+              case KeyCodes.KEY_ESCAPE:
+                event.preventDefault();
+                hide();
+                break;
+              default:
+                break;
             }
           }
         });
+        items.add(item);
         list.add(item);
       }
 
       setWidget(list);
+    }
+
+    /** Focuses the choice tile at {@code index}, clamped to the valid range. */
+    private void focusItem(int index) {
+      if (items.isEmpty()) {
+        return;
+      }
+      int clamped = Math.max(0, Math.min(index, items.size() - 1));
+      items.get(clamped).setFocus(true);
+    }
+
+    /** Moves keyboard focus into the picker (the current selection). Call after showing. */
+    void focusSelected() {
+      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+          focusItem(selectedIndex);
+        }
+      });
     }
   }
 }

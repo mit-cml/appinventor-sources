@@ -27,6 +27,8 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
   fileprivate let _controller: AVPlayerViewController
   fileprivate let _view = UIView()
   fileprivate var _added = false
+  fileprivate var _sourcePath = ""
+  fileprivate var _volume: Int32 = 50
   fileprivate let DefaultWidth: Int32 = 175
   fileprivate let DefaultHeight: Int32 = 150
 
@@ -78,11 +80,23 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc open var Source: String {
     get {
-      return ""
+      return _sourcePath
     }
     set(path) {
-      let url = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(path))
+      _sourcePath = path
+      let url: URL
+      if path.starts(with: "http://") || path.starts(with: "https://") {
+        guard let remoteUrl = URL(string: path) else {
+          _container?.form?.dispatchErrorOccurredEvent(self, "Source",
+              ErrorMessage.ERROR_UNABLE_TO_LOAD_MEDIA, path)
+          return
+        }
+        url = remoteUrl
+      } else {
+        url = URL(fileURLWithPath: AssetManager.shared.pathForPublicAsset(path))
+      }
       _controller.player = AVPlayer(url: url)
+      _controller.player?.volume = Float(_volume) / 100.0
       if !_added {
         _view.addSubview(_controller.view)
         _controller.view.topAnchor.constraint(equalTo: _view.topAnchor).isActive = true
@@ -103,22 +117,17 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc open var Volume: Int32 {
     get {
-      if let player = _controller.player {
-        return Int32(player.volume * 100)
-      } else {
-        return 0
-      }
+      return _volume
     }
     set(newVol) {
-      if let player = _controller.player {
-        var volume = Float(newVol) / 100.0
-        if (volume > 1){
-          volume = 1
-        } else if (volume < 0) {
-          volume = 0
-        }
-        player.volume = volume
+      var volume = newVol
+      if volume > 100 {
+        volume = 100
+      } else if volume < 0 {
+        volume = 0
       }
+      _volume = volume
+      _controller.player?.volume = Float(volume) / 100.0
     }
   }
 
@@ -163,4 +172,3 @@ open class VideoPlayer: ViewComponent, AbstractMethodsForViewComponent {
   // Deprecated
   @objc open func VideoPlayerError(_ message: String) {}
 }
-

@@ -10,6 +10,7 @@ Built-in blocks are available regardless of which components are in your project
 * [Control blocks](control.html)
 * [Logic blocks](logic.html)
 * [Math blocks](math.html)
+* [Matrix blocks](matrices.html)
 * [Text blocks](text.html)
 * [Lists blocks](lists.html)
 * [Dictionaries blocks](dictionaries.html)

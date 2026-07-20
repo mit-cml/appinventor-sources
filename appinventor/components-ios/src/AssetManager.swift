@@ -4,6 +4,93 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 
 import Foundation
+import ImageIO
+import MobileCoreServices
+import UIKit
+
+@objc open class AnimatedGif: NSObject {
+  let images: [UIImage]
+  let cgImages: [CGImage]
+  let frameDurations: [Double]
+  let keyTimes: [NSNumber]
+  let duration: Double
+  let loopCount: Int
+
+  var firstFrame: UIImage? {
+    return images.first
+  }
+
+  init?(data: Data) {
+    guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
+      return nil
+    }
+    guard let type = CGImageSourceGetType(source), UTTypeConformsTo(type, kUTTypeGIF) else {
+      return nil
+    }
+    let count = CGImageSourceGetCount(source)
+    guard count > 1 else {
+      return nil
+    }
+
+    var images = [UIImage]()
+    var cgImages = [CGImage]()
+    var durations = [Double]()
+    for i in 0..<count {
+      guard let cgImage = CGImageSourceCreateImageAtIndex(source, i, nil) else {
+        continue
+      }
+      cgImages.append(cgImage)
+      images.append(UIImage(cgImage: cgImage))
+      durations.append(AnimatedGif.frameDuration(source: source, index: i))
+    }
+    guard images.count > 1 else {
+      return nil
+    }
+
+    self.images = images
+    self.cgImages = cgImages
+    self.frameDurations = durations
+    self.duration = durations.reduce(0.0, +)
+    self.keyTimes = AnimatedGif.makeKeyTimes(durations)
+    self.loopCount = AnimatedGif.loopCount(source: source)
+  }
+
+  private static func frameDuration(source: CGImageSource, index: Int) -> Double {
+    var duration = 0.1
+    if let properties = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString: Any],
+       let gifProperties = properties[kCGImagePropertyGIFDictionary] as? [CFString: Any] {
+      if let unclampedDelay = gifProperties[kCGImagePropertyGIFUnclampedDelayTime] as? Double {
+        duration = unclampedDelay
+      } else if let delay = gifProperties[kCGImagePropertyGIFDelayTime] as? Double {
+        duration = delay
+      }
+    }
+    return duration < 0.02 ? 0.1 : duration
+  }
+
+  private static func loopCount(source: CGImageSource) -> Int {
+    if let properties = CGImageSourceCopyProperties(source, nil) as? [CFString: Any],
+       let gifProperties = properties[kCGImagePropertyGIFDictionary] as? [CFString: Any],
+       let loopCount = gifProperties[kCGImagePropertyGIFLoopCount] as? Int {
+      return loopCount
+    }
+    return 0
+  }
+
+  private static func makeKeyTimes(_ durations: [Double]) -> [NSNumber] {
+    let totalDuration = durations.reduce(0.0, +)
+    guard totalDuration > 0 else {
+      return durations.indices.map { NSNumber(value: Double($0) / Double(durations.count)) }
+    }
+    var elapsed = 0.0
+    var keyTimes = [NSNumber]()
+    for duration in durations {
+      keyTimes.append(NSNumber(value: elapsed / totalDuration))
+      elapsed += duration
+    }
+    return keyTimes
+  }
+}
 
 open class AssetManager: NSObject {
   fileprivate static var manager: AssetManager?
@@ -160,6 +247,33 @@ open class AssetManager: NSObject {
       return image
     } else if path.starts(with: "file://"), let image = UIImage(contentsOfFile: path.chopPrefix(count: 7).removingPercentEncoding ?? "") {
       return image
+    }
+    return nil
+  }
+
+  @objc public func animatedGifFromPath(path: String) -> AnimatedGif? {
+    guard let data = dataFromPath(path: path) else {
+      return nil
+    }
+    return AnimatedGif(data: data)
+  }
+
+  @objc public func dataFromPath(path: String) -> Data? {
+    if path.isEmpty {
+      return nil
+    }
+    let existingPath = pathForExistingFileAsset(path)
+    if !existingPath.isEmpty, let data = try? Data(contentsOf: URL(fileURLWithPath: existingPath)) {
+      return data
+    } else if let assetPath = Bundle.main.path(forResource: path, ofType: nil),
+              let data = try? Data(contentsOf: URL(fileURLWithPath: assetPath)) {
+      return data
+    } else if let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+      return data
+    } else if path.starts(with: "file://"),
+              let filePath = path.chopPrefix(count: 7).removingPercentEncoding,
+              let data = try? Data(contentsOf: URL(fileURLWithPath: filePath)) {
+      return data
     }
     return nil
   }

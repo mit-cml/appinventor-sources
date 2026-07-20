@@ -111,13 +111,26 @@ public class ListViewAddDataDialog {
     updateCount();
   }
 
-  /** Creates a data row wired to refresh the item count when it deletes itself. */
+  /** Creates a data row wired to the dialog's count refresh and keyboard navigation. */
   private ListViewDataRow newRow(JSONObject item) {
     return new ListViewDataRow(item, showDetail, showImage, imageChoices, imageUrls,
-        new Runnable() {
+        new ListViewDataRow.Callbacks() {
           @Override
-          public void run() {
+          public void onRowDeleted() {
             updateCount();
+          }
+
+          @Override
+          public void onEnterAddRow() {
+            addBlankRow().focusFirstCell();
+          }
+
+          @Override
+          public void onMoveFocus(ListViewDataRow from, int deltaRows, int column) {
+            int index = rowsContainer.getWidgetIndex(from) + deltaRows;
+            if (index >= 0 && index < rowsContainer.getWidgetCount()) {
+              ((ListViewDataRow) rowsContainer.getWidget(index)).focusColumn(column);
+            }
           }
         });
   }
@@ -174,6 +187,11 @@ public class ListViewAddDataDialog {
 
   @UiHandler("addRow")
   void onAddRow(ClickEvent event) {
+    addBlankRow().focusFirstCell();
+  }
+
+  /** Appends a blank row for the current layout, refreshes the count, and returns it. */
+  private ListViewDataRow addBlankRow() {
     // creates a row with default data for the corresponding layout type
     JSONObject data = new JSONObject();
     data.put("Text1", new JSONString(""));
@@ -183,8 +201,10 @@ public class ListViewAddDataDialog {
     if (showImage) {
       data.put("Image", new JSONString("None"));
     }
-    rowsContainer.add(newRow(data));
+    ListViewDataRow row = newRow(data);
+    rowsContainer.add(row);
     updateCount();
+    return row;
   }
 
   @UiHandler("save")
