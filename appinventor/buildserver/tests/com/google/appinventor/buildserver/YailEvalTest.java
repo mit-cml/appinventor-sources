@@ -701,6 +701,18 @@ public class YailEvalTest extends TestCase {
     assertEquals("caught", scheme.eval(thunkify(schemeInputString)).toString());
   }
 
+  public void testDictionaryFromJsonTextMalformed() throws Throwable {
+    /* Malformed JSON raises a runtime error rather than leaking a JSONException. */
+    String schemeInputString =
+        " (try-catch " +
+        "  (call-yail-primitive yail-dictionary-from-json-text " +
+        "   (*list-for-runtime* \"{not valid json\") '(text) " +
+        "   \"get dictionary from JSON text\") " +
+        "  (exception com.google.appinventor.components.runtime.errors.YailRuntimeError " +
+        "   \"caught\")) ";
+    assertEquals("caught", scheme.eval(thunkify(schemeInputString)).toString());
+  }
+
   public void testForRange() throws Throwable {
     /* test forrange */
     String schemeInputString = "(begin " +

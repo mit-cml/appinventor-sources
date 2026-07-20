@@ -1703,15 +1703,29 @@ Dictionary implementation.
   (invoke dict 'dictToAlist))
 
 (define (yail-dictionary-from-json-text json-text)
+  ;; decodeJson returns null when the text is not valid JSON, and returns a
+  ;; matrix (not a dictionary) for the internal matrix marker object.
   (let ((result (invoke AIComponentKit.Web 'decodeJson: json-text)))
-    (if (yail-dictionary? result)
-        result
-        (signal-runtime-error
-         "Get dictionary from JSON text: the given JSON does not represent a dictionary. To decode JSON whose top-level value is not an object, use the Web component's JsonTextDecodeWithDictionaries method instead."
-         "Not a JSON Object"))))
+    (cond
+     ((eq? result #!null)
+      (signal-runtime-error
+       "Get dictionary from JSON text: the given text is not valid JSON."
+       "Malformed JSON"))
+     ((yail-dictionary? result) result)
+     (else
+      (signal-runtime-error
+       "Get dictionary from JSON text: the given JSON does not represent a dictionary. To decode JSON whose top-level value is not an object, use the Web component's JsonTextDecodeWithDictionaries method instead."
+       "Not a JSON Object")))))
 
 (define (yail-dictionary-to-json-text yail-dictionary)
-  (invoke AIComponentKit.Web 'encodeJson: yail-dictionary))
+  (let ((result (invoke AIComponentKit.Web 'encodeJson: yail-dictionary)))
+    ;; encodeJson yields the empty string only when serialization fails; a real
+    ;; dictionary always encodes to at least "{}".
+    (if (string=? result "")
+        (signal-runtime-error
+         "Get JSON text from dictionary: the dictionary could not be converted to JSON text."
+         "JSON Encode Error")
+        result)))
 
 (define (yail-dictionary-copy yail-dictionary)
   (invoke yail-dictionary 'mutableCopy))

@@ -3273,7 +3273,15 @@ Dictionary implementation.
   (YailDictionary:dictToAlist dict))
 
 (define (yail-dictionary-from-json-text json-text)
-  (let ((result (com.google.appinventor.components.runtime.util.JsonUtil:getObjectFromJson json-text #t)))
+  ;; getObjectFromJson returns a matrix (not a dictionary) for the internal
+  ;; matrix marker object, so such text is reported as not a dictionary below.
+  (let ((result (try-catch
+                 (com.google.appinventor.components.runtime.util.JsonUtil:getObjectFromJson json-text #t)
+                 (exception org.json.JSONException
+                   (signal-runtime-error
+                    (format #f "Get dictionary from JSON text: the text ~A is not valid JSON."
+                            (get-display-representation json-text))
+                    "Malformed JSON")))))
     (if (yail-dictionary? result)
         result
         (signal-runtime-error

@@ -167,7 +167,7 @@ This block reverses the conversion performed by the [`list of pairs to dictionar
 ### get dictionary from JSON text
 {:#dictionary-from-json}
 
-The `get dictionary from JSON text`{:.dictionary.block} block parses the given JSON text and returns the corresponding dictionary. Nested JSON objects become dictionaries and JSON arrays become lists. If the top-level value of the JSON text is not an object (for example, if it is an array, number, or string), an error is raised. To decode JSON whose top-level value may not be an object, use the [`Web.JsonTextDecodeWithDictionaries`{:.method.block}](/reference/components/connectivity.html#Web.JsonTextDecodeWithDictionaries) method instead.
+The `get dictionary from JSON text`{:.dictionary.block} block parses the given JSON text and returns the corresponding dictionary. Nested JSON objects become dictionaries and JSON arrays become lists. If the text is not valid JSON, or if the top-level value of the JSON text is not an object (for example, if it is an array, number, or string), an error is raised. To decode JSON whose top-level value may not be an object, use the [`Web.JsonTextDecodeWithDictionaries`{:.method.block}](/reference/components/connectivity.html#Web.JsonTextDecodeWithDictionaries) method instead.
 
 ### get JSON text from dictionary
 {:#dictionary-to-json}
