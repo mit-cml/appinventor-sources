@@ -14,6 +14,20 @@ fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
 let VERTICAL_LAYOUT = 0
 let HORIZONTAL_LAYOUT = 1
 
+/**
+ * Owns the ListView's non-visual list data — the ListView's single source of truth for the row
+ * data, mirroring the Android `ListDataModel`. `ListView` reads and mutates the list through this
+ * model instead of holding its own fields.
+ */
+class ListDataModel {
+  /// Simple string items (populated for string lists).
+  var elements = [String]()
+  /// Rich rows: Text1 / Text2 / Image (populated for ListData / image layouts).
+  var items: [[String: AnyObject]] = []
+  /// The current filtered view of `elements` (nil when no filter is active).
+  var results: [String]? = nil
+}
+
   open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -23,8 +37,7 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
     
   fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _elements = [String]()
-  fileprivate var _items: [[String: AnyObject]] = []
+  fileprivate let _model = ListDataModel()
   fileprivate var _selection = ""
   fileprivate var _selectionDetailText = ""
   fileprivate var _selectionColor = Int32(bitPattern: Color.default.rawValue)
@@ -34,7 +47,6 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
   fileprivate var _fontSize = Int32(22)
   fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
-  fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
   //ListData
   fileprivate var _listViewLayoutMode = Int32(0)
@@ -153,15 +165,15 @@ let HORIZONTAL_LAYOUT = 1
 
   @objc open var Elements: [AnyObject] {
     get {
-      if _items.count > 0 {
-        return _items as [AnyObject]
+      if _model.items.count > 0 {
+        return _model.items as [AnyObject]
       } else {
-        return _elements as [AnyObject]
+        return _model.elements as [AnyObject]
       }
     }
     set(elements) {
-      _items = []
-      _elements = []
+      _model.items = []
+      _model.elements = []
       guard !elements.isEmpty else {
         _view.reloadData()
         return
@@ -180,7 +192,7 @@ let HORIZONTAL_LAYOUT = 1
   
     private func addElements(_ elements: [AnyObject]) {
       if !elements.isEmpty {
-        let testItemsForDict = _items.first(where: { $0 is NSDictionary })
+        let testItemsForDict = _model.items.first(where: { $0 is NSDictionary })
         let testElementsForDict = elements.first(where: { $0 is NSDictionary })
         //let filteredListElements = elements.filter { $0 is YailList<AnyObject> }
         
@@ -190,14 +202,14 @@ let HORIZONTAL_LAYOUT = 1
        
         
         if useDictFormat {
-          _items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
+          _model.items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
           
           for item in otherElements {
             // Fall back to simple text item
             if let str = item as? String {
-              _items.append(makeListItem(text1: str))
+              _model.items.append(makeListItem(text1: str))
             } else if let n = item as? NSNumber {
-              _items.append(makeListItem(text1: n.stringValue))
+              _model.items.append(makeListItem(text1: n.stringValue))
               
             }
           }
@@ -211,16 +223,16 @@ let HORIZONTAL_LAYOUT = 1
               }
             }
           }
-          _items.append(dict)
+          _model.items.append(dict)
         }*/
-        _elements.insert(contentsOf: otherElements.toStringArray(), at: 0)
+        _model.elements.insert(contentsOf: otherElements.toStringArray(), at: 0)
         /* don't add to items
          for item in otherElements {
             // Fall back to simple text item
             if let str = item as? String {
-              _items.append(makeListItem(text1: str))
+              _model.items.append(makeListItem(text1: str))
             } else if let n = item as? NSNumber {
-              _items.append(makeListItem(text1: n.stringValue))
+              _model.items.append(makeListItem(text1: n.stringValue))
 
             }
         }*/
@@ -228,8 +240,8 @@ let HORIZONTAL_LAYOUT = 1
       }
     }
   func elementsCount() {
-    //let rows = max(_items.count, _items.count)
-    let rows = max(_elements.count, _items.count)
+    //let rows = max(_model.items.count, _model.items.count)
+    let rows = max(_model.elements.count, _model.items.count)
     _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
     if let searchBar = _view.tableHeaderView as? UISearchBar {
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
@@ -353,7 +365,7 @@ let HORIZONTAL_LAYOUT = 1
   @objc open var ListData: String {
     get {
       do {
-        let jsonString = try getJsonRepresentation(_items as AnyObject)
+        let jsonString = try getJsonRepresentation(_model.items as AnyObject)
         return jsonString
       } catch {
         print("Error serializing JSON: \(error)")
@@ -363,7 +375,7 @@ let HORIZONTAL_LAYOUT = 1
     set(jsonString) {
       do {
         if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
-          _items = dictionaries.compactMap { dictionary in
+          _model.items = dictionaries.compactMap { dictionary in
             var item: [String: String] = [:]
 
             if let text1 = dictionary["Text1"] as? String {
@@ -454,11 +466,11 @@ let HORIZONTAL_LAYOUT = 1
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _elements.firstIndex(of: selection) {
+      if let index = _model.elements.firstIndex(of: selection) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else if let index = _items.firstIndex(where: { $0["Text1"] as? String == selection }) {
+      } else if let index = _model.items.firstIndex(where: { $0["Text1"] as? String == selection }) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
@@ -477,7 +489,7 @@ let HORIZONTAL_LAYOUT = 1
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText as? String }) {
+      if let index = _model.items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText as? String }) {
         _selectionIndex = Int32(index) + 1
         _selectionDetailText = selectionDetailText
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
@@ -503,10 +515,10 @@ let HORIZONTAL_LAYOUT = 1
       return _selectionIndex
     }
     set(selectionIndex) {
-      if selectionIndex > 0 && selectionIndex <= Int32(_elements.count) {
+      if selectionIndex > 0 && selectionIndex <= Int32(_model.elements.count) {
         _selectionIndex = selectionIndex
-        _selection = _elements[Int(selectionIndex) - 1] as? String ?? ""
-        _selectionDetailText = _elements[Int(selectionIndex) - 1] as? String ?? ""
+        _selection = _model.elements[Int(selectionIndex) - 1] as? String ?? ""
+        _selectionDetailText = _model.elements[Int(selectionIndex) - 1] as? String ?? ""
         _view.selectRow(at: IndexPath(row: Int(_selectionIndex) - 1, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       } else {
         _selectionIndex = 0
@@ -639,14 +651,14 @@ let HORIZONTAL_LAYOUT = 1
   // MARK: Methods
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
-    _items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
+    _model.items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
-    guard addIndex > 0 && addIndex <= _items.count + 1 else {
+    guard addIndex > 0 && addIndex <= _model.items.count + 1 else {
       return
     }
-    _items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
+    _model.items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
   }
 
   @objc open func AddItems(_ items: [AnyObject]) {
@@ -661,7 +673,7 @@ let HORIZONTAL_LAYOUT = 1
     if elements.isEmpty {
       return
     }
-    if addIndex < 1 || addIndex - 1 > max(_items.count, _items.count) {
+    if addIndex < 1 || addIndex - 1 > max(_model.items.count, _model.items.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
                                                    ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
@@ -681,7 +693,7 @@ let HORIZONTAL_LAYOUT = 1
                ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM, index)
           return
         }*/
-        _items.insert(contentsOf: newItems, at: index)
+        _model.items.insert(contentsOf: newItems, at: index)
       }
       elementsCount()
     }
@@ -713,16 +725,16 @@ let HORIZONTAL_LAYOUT = 1
   }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
-    if index < 1 || index > max(_items.count, _elements.count) {
+    if index < 1 || index > max(_model.items.count, _model.elements.count) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
     }
-    if _items.count >= index {
-      _items.remove(at: Int(index - 1))
+    if _model.items.count >= index {
+      _model.items.remove(at: Int(index - 1))
     }
-    if _elements.count >= index {
-      _elements.remove(at: Int(index - 1))
+    if _model.elements.count >= index {
+      _model.elements.remove(at: Int(index - 1))
     }
     _view.reloadData()
   }
@@ -738,20 +750,20 @@ let HORIZONTAL_LAYOUT = 1
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
       let cell = tableView.dequeueReusableCell(withIdentifier: kDefaultTableCell) ??
       UITableViewCell(style: .subtitle, reuseIdentifier: kDefaultTableCell)
-      let hasElements = _elements.count > 0
+      let hasElements = _model.elements.count > 0
       
-      let listDataIndex = indexPath.row - _items.count
+      let listDataIndex = indexPath.row - _model.items.count
       if _listViewLayoutMode == 0 { // assume only strings (no dicts]
         if hasElements {
-          let item = _elements[indexPath.row]
+          let item = _model.elements[indexPath.row]
           cell.textLabel?.text = item as? String
         } else{
-          let item = _items[indexPath.row]
+          let item = _model.items[indexPath.row]
           cell.textLabel?.text = item["Text1"] as? String
         }
         
       } else {
-        let item = _items[indexPath.row]
+        let item = _model.items[indexPath.row]
         if _listViewLayoutMode == 1 {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
@@ -964,7 +976,7 @@ let HORIZONTAL_LAYOUT = 1
         } else {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
-          cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
+          cell.textLabel?.text = _model.items[listDataIndex]["Text1"] as? String
         }
     }
 
@@ -1063,21 +1075,21 @@ let HORIZONTAL_LAYOUT = 1
 
   
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return _items.isEmpty ? _elements.count : _items.count
+      return _model.items.isEmpty ? _model.elements.count : _model.items.count
     }
 
     // MARK: UITableViewDelegate
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      if indexPath.row < _elements.count {
+      if indexPath.row < _model.elements.count {
         _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _elements[indexPath.row]
+        _selection = _model.elements[indexPath.row]
         _selectionDetailText = ""
-      } else if indexPath.row < _elements.count + _items.count {
-        let listDataIndex = indexPath.row - _elements.count
+      } else if indexPath.row < _model.elements.count + _model.items.count {
+        let listDataIndex = indexPath.row - _model.elements.count
         _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _items[listDataIndex]["Text1"] as! String
-        _selectionDetailText = _items[listDataIndex]["Text2"] as! String
+        _selection = _model.items[listDataIndex]["Text1"] as! String
+        _selectionDetailText = _model.items[listDataIndex]["Text2"] as! String
       }
       AfterPicking()
     }
@@ -1085,12 +1097,12 @@ let HORIZONTAL_LAYOUT = 1
   // MARK: UISearchBarDelegate
 
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    _results = nil
+    _model.results = nil
     if !searchText.isEmpty  {
-      _results = [String]()
-      for item in _elements {
+      _model.results = [String]()
+      for item in _model.elements {
         if item.starts(with: searchText) {
-          _results?.append(item)
+          _model.results?.append(item)
         }
       }
     }
@@ -1155,24 +1167,24 @@ let HORIZONTAL_LAYOUT = 1
   }
 
   var elements: [String] {
-      return _results ?? _elements
+      return _model.results ?? _model.elements
     }
     
   // UICollectionViewDataSource
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return _items.isEmpty ? _elements.count : _items.count
+    return _model.items.isEmpty ? _model.elements.count : _model.items.count
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
 
-    let isData = !_items.isEmpty
+    let isData = !_model.items.isEmpty
     let mainText: String
     let detailText: String
     var image: UIImage? = nil
 
     if isData {
-      let item = _items[indexPath.item]
+      let item = _model.items[indexPath.item]
       mainText = item["Text1"] as? String ?? ""
       detailText = item["Text2"] as? String ?? ""
       if let path = item["Image"] as? String,
@@ -1181,7 +1193,7 @@ let HORIZONTAL_LAYOUT = 1
         image = AssetManager.shared.imageFromPath(path: path)
       }
     } else {
-      mainText = _elements[indexPath.item] //_items[indexPath.item] as? String ?? ""
+      mainText = _model.elements[indexPath.item] //_model.items[indexPath.item] as? String ?? ""
       detailText = ""
     }
 
@@ -1243,8 +1255,8 @@ let HORIZONTAL_LAYOUT = 1
 
   // UICollectionViewDelegate (selection → AfterPicking)
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if !_items.isEmpty {
-      let item = _items[indexPath.item]
+    if !_model.items.isEmpty {
+      let item = _model.items[indexPath.item]
       _selectionIndex = Int32(indexPath.item) + 1
       _selection = item["Text1"] as? String ?? ""
       _selectionDetailText = item["Text2"] as? String ?? ""
