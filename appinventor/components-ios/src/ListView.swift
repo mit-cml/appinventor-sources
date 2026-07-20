@@ -681,15 +681,38 @@ class ListDataModel {
 
   // MARK: Methods
 
+  /// True when the list currently holds plain string rows rather than Text1/Text2/Image rows.
+  /// For an empty list this falls back to the configured layout, matching the Android behavior.
+  private var usesPlainStrings: Bool {
+    if !_model.items.isEmpty {
+      return false
+    }
+    if !_model.elements.isEmpty {
+      return true
+    }
+    return _listViewLayoutMode == 0
+  }
+
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
-    _model.items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
+    if usesPlainStrings {
+      _model.elements.append(mainText)
+    } else {
+      _model.items.append(makeListItem(text1: mainText, text2: detailText, image: imageName))
+    }
+    elementsCount()
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
-    guard addIndex > 0 && addIndex <= _model.items.count + 1 else {
+    guard addIndex > 0 && addIndex <= Int32(_model.count) + 1 else {
       return
     }
-    _model.items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
+    let index = Int(addIndex - 1)
+    if usesPlainStrings {
+      _model.elements.insert(mainText, at: index)
+    } else {
+      _model.items.insert(makeListItem(text1: mainText, text2: detailText, image: imageName), at: index)
+    }
+    elementsCount()
   }
 
   @objc open func AddItems(_ items: [AnyObject]) {
