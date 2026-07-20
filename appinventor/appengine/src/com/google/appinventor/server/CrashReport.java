@@ -9,8 +9,6 @@ package com.google.appinventor.server;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.server.util.BuildData;
 
-import com.google.appengine.api.utils.SystemProperty;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +47,14 @@ public final class CrashReport {
       new RuntimeException(exception);
   }
 
+  public static RuntimeException createAndLogError(org.apache.log4j.Logger log, HttpServletRequest req,
+    String extraInfo, Throwable exception) {
+    log.error(exception.getMessage() + ": " + extraInfo + "\n" + extraExtraInfo(req));
+    return (exception instanceof RuntimeException) ?
+      (RuntimeException) exception :
+      new RuntimeException(exception);
+  }
+
   /**
    * Gets extra system information to add to logs.
    *
@@ -57,15 +63,6 @@ public final class CrashReport {
   private static String extraExtraInfo(HttpServletRequest req) {
     StringBuilder s = new StringBuilder();
 
-    // If the app is running on App Engine...
-    if (Server.isProductionServer()) {
-      // the version ID of the runtime environment
-      String version = SystemProperty.version.get();
-      s.append("runtime.version").append("=").append(version).append("\n");
-      // the application major version number + deploy timestamp
-      version = SystemProperty.applicationVersion.get();
-      s.append("application.version").append("=").append(version).append("\n");
-    }
     s.append("build.version").append("=").append(buildData).append("\n");
     s.append("git.build.version").append("=").append(GitBuildId.getVersion()).append("\n");
     s.append("git.build.fingerprint").append("=").append(GitBuildId.getFingerprint()).append("\n");

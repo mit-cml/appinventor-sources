@@ -320,6 +320,7 @@ public class AdminUserList extends Composite {
     final PasswordTextBox passwordBox2 = new PasswordTextBox();
     userInfo.setWidget(0, 0, userNameLabel);
     userInfo.setWidget(0, 1, userName);
+//    userInfo.getFlexCellFormatter().setColSpan(0, 0, 2);
     userInfo.setWidget(1, 0, passwordLabel);
     userInfo.setWidget(1, 1, passwordBox);
 

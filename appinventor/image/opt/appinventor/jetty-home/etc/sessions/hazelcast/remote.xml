@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://www.eclipse.org/jetty/configure_10_0.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+  <!-- ===================================================================== -->
+  <!-- Configure a factory for HazelcastSessionDataStore using               -->
+  <!-- an remote Hazelcast Instance                                        -->
+  <!-- ===================================================================== -->
+  <Call name="addBean">
+    <Arg>
+      <New id="sessionDataStoreFactory" class="org.eclipse.jetty.hazelcast.session.HazelcastSessionDataStoreFactory">
+        <Set name="mapName" property="jetty.session.hazelcast.mapName"/>
+        <Set name="hazelcastInstanceName" property="jetty.session.hazelcast.hazelcastInstanceName"/>
+        <Set name="useQueries" property="jetty.session.hazelcast.useQueries"/>
+        <Set name="gracePeriodSec" property="jetty.session.gracePeriod.seconds"/>
+        <Set name="savePeriodSec" property="jetty.session.savePeriod.seconds"/>
+        <Set name="onlyClient">
+          <Property name="jetty.session.hazelcast.onlyClient" default="true" />
+        </Set>
+        <Set name="addresses">
+          <Property name="jetty.session.hazelcast.addresses" default="" />
+        </Set>
+        <Set name="configurationLocation">
+          <Property name="jetty.session.hazelcast.configurationLocation" default="" />
+        </Set>
+      </New>
+    </Arg>
+  </Call>
+</Configure> 

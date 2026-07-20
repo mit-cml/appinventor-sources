@@ -1,0 +1,121 @@
+[main]
+storage = notused
+# If true, we will attempt to use SSL for the login window
+# Note: This requires an SSL certificate and settings
+# port.https to a valid value below
+usessl = false
+[mail]
+# host name of the mail server
+# host =
+# username to login with on the mail server
+# user =
+# password to use (if needed)
+# password =
+# starttls whether or not to use the STARTTLS directive, true or false only
+starttls = true
+# Port to send mail. 25 is the "normal" mail port, 587 is the mail submission port
+# you most likely want to use 587
+port = 587
+# when starttls is used, if you care about certificate validate, point this
+# to a local java keystore file with the trusted root certificates you use.
+# keystore = 
+# mailfrom is used as the SMTP mail from when sending email. If it is
+# blank, then user@host (above) is used.
+mailfrom = noreply@qyv.net
+[other]
+# Permit larger projects to be built
+project.maxsize = 50
+# Gallery Configuration
+gallery.enabled = false
+gallery.location = https://gallery.example.com
+# Gallery Id here is the same as for code.appinventor.mit.edu
+# gallery.id = 21
+# gallery.tokenkey = gallerykey
+# log4j.configuration=file:/opt/appinventor/standalone/log4j.properties
+# storage.backuptime: time in minutes between backups (when changes are
+# active
+# storage.backuptime = 5
+# Whether or not to require the display of the TOS
+require.tos = true
+auth.uselocal = true
+auth.useanon = true
+# Which buildserver to use (default to localhost:9990)
+build.server.host = localhost:9990
+ios.build.server.host = localhost:8890
+# Our address for returning from the buildserver (default localhost:8888)
+build.server.return = localhost:8888
+# Set to true to enforce strict compatiblity with the buildserver
+# (the system and the buildserver must have the same git version number)
+build.send.git.version = false
+# Set auth.usegoogle to true to use Google Authentication. If set to true
+# you must set auth.googleclientid to the Google issues Client ID that you
+# obtain from the Google Cloud Console (via the API section)
+auth.usegoogle = false
+auth.googleclientid = none
+# localauth.mailserver = https://osiris.mit.edu/passmail/
+# Password for the non-direct mail service
+localauth.mailserver.password = changeme
+# How often to check if there is a MOTD (0 = never)
+motd.check.interval.secs = 0
+# memcache locations in the form host:port host2:port
+# memcache.hosts = localhost:11211
+# public non-https port for App Inventor to use for itself
+# This may be different then the port we are actually listening on
+# because there may be a port mapping NAT in front of us
+port.public = 8888
+# https port to use for the LoginServlet. If set to "nossl", https is not used
+# at all. Otherwise we redirect when not logged in to this port using
+# https
+port.https = nossl
+# Location of the keyfile for creating cookies
+# created with the KeyczarTool
+session.keyfile = authkey
+# Location of the keyfile for verifying tokens sent from
+# external portals
+token.key = tokenkey
+
+# Secrets
+translator.secret = changeme
+clouddb.server = clouddb.example.com
+clouddb.uuid.secret = changeme
+clouddb.secret = changeme
+chatbot.secret = changeme
+
+# URLs to display various information
+library.url = http://appinventor.mit.edu/explore/library
+get_started.url = http://appinventor.mit.edu/explore/get-started
+tutorials.url = http://appinventor.mit.edu/explore/ai2/tutorials
+troubleshooting.url = http://appinventor.mit.edu/explore/ai2/support/troubleshooting
+forums.url = https://community.appinventor.mit.edu/
+feedback.url = http://appinv.us/aifeedback
+release.notes.url = http://appinventor.mit.edu/ai2/ReleaseNotes.html
+auth.showlogin = true
+tos.url = /about/termsofservice.html
+logo.url = http://appinventor.mit.edu
+guide.url = http://appinventor.mit.edu/explore/library
+reference.components.url = /reference/components/
+
+jdbc.url = jdbc:postgresql://localhost/appinventor
+jdbc.user = appinventor
+jdbc.password = appinventor
+
+# Database Pool Parameters (defined in PostgreSQLStorageIo.java)
+c3p0.maxpoolsize = 10
+# 600 = 5 minutes
+c3p0.maxconnectionage = 600
+
+# ode.base =
+
+stoken.key = changeme
+
+# google.analytics = changeme
+
+aws.cachesize = 50000000
+# aws.access_key = changeme
+# aws.secret_key = changeme
+# aws.bucket = ai2-assets
+# aws.prefix = assets
+# aws.region = us-east-2
+# aws.replacementpercent = 0
+# assets.cachesize = 10000000
+
