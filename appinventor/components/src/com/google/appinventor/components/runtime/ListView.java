@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Filter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
@@ -194,7 +195,16 @@ public final class ListView extends AndroidViewComponent {
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        listAdapterWithRecyclerView.getFilter().filter(cs);
+        listAdapterWithRecyclerView.getFilter().filter(cs, new Filter.FilterListener() {
+          @Override
+          public void onFilterComplete(int count) {
+            // Keep the selection while the selected item is still on screen, and clear it only
+            // when the filter hides it, so the user never has a selection they cannot see.
+            if (selectionIndex > 0 && !listAdapterWithRecyclerView.isVisible(selectionIndex - 1)) {
+              SelectionIndex(0);
+            }
+          }
+        });
       }
 
       @Override

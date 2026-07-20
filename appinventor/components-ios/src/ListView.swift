@@ -57,6 +57,8 @@ class ListDataModel {
   var displayCount: Int { filteredIndices.count }
   /// Maps a visible row back to its real position in `elements` / `items`.
   func originalIndex(_ displayRow: Int) -> Int { filteredIndices[displayRow] }
+  /// Whether the row at the given real position is currently shown (i.e. survives the filter).
+  func isVisible(_ originalIndex: Int) -> Bool { filteredIndices.contains(originalIndex) }
 }
 
   open class ListView: ViewComponent, AbstractMethodsForViewComponent,
@@ -1153,6 +1155,13 @@ class ListDataModel {
 
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     _model.setFilter(searchText)
+    // Keep the selection while the selected item is still on screen, and clear it only when the
+    // filter hides it, so the user never ends up with a selection they cannot see.
+    if _selectionIndex > 0 && !_model.isVisible(Int(_selectionIndex) - 1) {
+      _selectionIndex = 0
+      _selection = ""
+      _selectionDetailText = ""
+    }
     _view.reloadData()
     _collectionView.reloadData()
   }

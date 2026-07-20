@@ -79,9 +79,12 @@ public abstract class ListAdapterWithRecyclerView
     @Override
     protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
       items = new ArrayList<>((List<Object>) filterResults.values);
-      // Filtering changes what is visible, not what the user picked, so the selection is left
-      // alone here. Selection is stored against original item indexes, so it stays correct
-      // whether or not the selected item is currently shown.
+      // Keep the selection while the selected item is still on screen, and drop it only when the
+      // filter hides it, so the user never ends up with a selection they cannot see. Selection is
+      // stored against original item indexes, so it survives filtering otherwise.
+      if (!lastQuery.isEmpty()) {
+        selectedItems.retainAll(originalPositions);
+      }
       notifyDataSetChanged();
       // We store the original data in the originalItems variable
       // We store the original item indexes in the originalPositions variable
@@ -133,14 +136,22 @@ public abstract class ListAdapterWithRecyclerView
    * currently filtered out.
    */
   protected int toDisplayPosition(int originalPosition) {
-    return originalPositions.isEmpty() ? originalPosition : originalPositions.indexOf(originalPosition);
+    return lastQuery.isEmpty() ? originalPosition : originalPositions.indexOf(originalPosition);
   }
 
   /**
    * Returns the original item index behind the given display row.
    */
   protected int toOriginalPosition(int displayPosition) {
-    return originalPositions.isEmpty() ? displayPosition : originalPositions.get(displayPosition);
+    return lastQuery.isEmpty() ? displayPosition : originalPositions.get(displayPosition);
+  }
+
+  /**
+   * Returns whether the item at the given original index is currently shown, that is, whether it
+   * survives the active filter. With no filter every item is shown.
+   */
+  public boolean isVisible(int originalPosition) {
+    return lastQuery.isEmpty() || originalPositions.contains(originalPosition);
   }
 
   /**
