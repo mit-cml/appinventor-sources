@@ -79,7 +79,9 @@ public abstract class ListAdapterWithRecyclerView
     @Override
     protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
       items = new ArrayList<>((List<Object>) filterResults.values);
-      clearSelections();
+      // Filtering changes what is visible, not what the user picked, so the selection is left
+      // alone here. Selection is stored against original item indexes, so it stays correct
+      // whether or not the selected item is currently shown.
       notifyDataSetChanged();
       // We store the original data in the originalItems variable
       // We store the original item indexes in the originalPositions variable
@@ -126,8 +128,34 @@ public abstract class ListAdapterWithRecyclerView
     return cardView;
   }
 
+  /**
+   * Returns the display row showing the given original item index, or -1 when that item is
+   * currently filtered out.
+   */
+  protected int toDisplayPosition(int originalPosition) {
+    return originalPositions.isEmpty() ? originalPosition : originalPositions.indexOf(originalPosition);
+  }
+
+  /**
+   * Returns the original item index behind the given display row.
+   */
+  protected int toOriginalPosition(int displayPosition) {
+    return originalPositions.isEmpty() ? displayPosition : originalPositions.get(displayPosition);
+  }
+
+  /**
+   * Refreshes the row showing the given original item index, if it is currently visible.
+   */
+  private void notifyOriginalChanged(int originalPosition) {
+    int displayPosition = toDisplayPosition(originalPosition);
+    if (displayPosition >= 0) {
+      notifyItemChanged(displayPosition);
+    }
+  }
+
   protected void updateCardViewColor(CardView cardView, int position) {
-    if (selectedItems.contains(position)) {
+    // Selection is stored against original item indexes, so map the display row first.
+    if (selectedItems.contains(toOriginalPosition(position))) {
       cardView.setCardBackgroundColor(selectionColor);
     } else {
       cardView.setCardBackgroundColor(backgroundColor);
@@ -139,32 +167,32 @@ public abstract class ListAdapterWithRecyclerView
     return items.size();
   }
 
+  /**
+   * Selects the item at the given original index, replacing any previous selection.
+   */
   public void toggleSelection(int position) {
-    if (!originalPositions.isEmpty()) {
-      position = originalPositions.indexOf(position);
-    }
     if (selectedItems.contains(position)) {
       return;
     }
     if (!selectedItems.isEmpty()) {
       int oldPosition = selectedItems.get(0);
       selectedItems.clear();
-      notifyItemChanged(oldPosition);
+      notifyOriginalChanged(oldPosition);
     }
     selectedItems.add(position);
-    notifyItemChanged(position);
+    notifyOriginalChanged(position);
   }
 
+  /**
+   * Toggles the item at the given original index, used when MultiSelect is enabled.
+   */
   public void changeSelections(int position) {
-    if (!originalPositions.isEmpty()) {
-      position = originalPositions.indexOf(position);
-    }
     if (selectedItems.contains(position)) {
       selectedItems.remove(Integer.valueOf(position));
     } else {
       selectedItems.add(position);
     }
-    notifyItemChanged(position);
+    notifyOriginalChanged(position);
   }
 
   public void clearSelections() {
@@ -179,12 +207,7 @@ public abstract class ListAdapterWithRecyclerView
 
     @Override
     public void onClick(View v) {
-      int position = getAdapterPosition();
-      
-      if (!originalPositions.isEmpty()) {
-        position = originalPositions.get(position);
-      }
-      clickListener.onItemClick(position, v);
+      clickListener.onItemClick(toOriginalPosition(getAdapterPosition()), v);
     }
   }
 
