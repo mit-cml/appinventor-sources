@@ -97,7 +97,7 @@ import Foundation
       "Sensitivity": Sensitivity.fromUnderlyingValue(_:)
     ],
     "Button": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Canvas": [
@@ -111,18 +111,18 @@ import Foundation
       "PointShape": PointStyle.fromUnderlyingValue(_:)
     ],
     "ContactPicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "DatePicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "EmailPicker": [
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "FilePicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Form": [
@@ -138,14 +138,14 @@ import Foundation
       "AlignVertical": VerticalAlignment.fromUnderlyingValue(_:)
     ],
     "ImagePicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Label": [
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "ListPicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "ListView": [
@@ -167,7 +167,7 @@ import Foundation
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "PhoneNumberPicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Spinner": [
@@ -180,7 +180,7 @@ import Foundation
       "ReceivingEnabled": ReceivingState.fromUnderlyingValue(_:)
     ],
     "TimePicker": [
-      "Shape": Shape.fromUnderlyingValue(_:),
+      "Shape": ButtonShape.fromUnderlyingValue(_:),
       "TextAlignment": TextAlignment.fromUnderlyingValue(_:)
     ],
     "Trendline": [
