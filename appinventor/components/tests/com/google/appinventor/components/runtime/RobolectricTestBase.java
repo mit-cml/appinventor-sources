@@ -20,6 +20,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.util.Scheduler.IdleState;
 
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 23, manifest="tests/AndroidManifest.xml",
     shadows = {ShadowStorageUtils.class, ShadowEventDispatcher.class, ShadowAsynchUtil.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class RobolectricTestBase {
 
   private Form form;

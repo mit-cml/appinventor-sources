@@ -13,8 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.locationtech.jts.geom.Geometry;
 import org.osmdroid.util.GeoPoint;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -25,10 +24,8 @@ import java.util.List;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isMultiPolygon;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLatitude;
 import static com.google.appinventor.components.runtime.util.GeometryUtil.isValidLongitude;
-import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.*;
 
-@RunWith(PowerMockRunner.class)
 public class GeometryUtilTest {
 
   /** Absolute tolerance allowed in degrees */
@@ -239,29 +236,25 @@ public class GeometryUtilTest {
 
   @Test
   public void testEdgeDistanceBetweenCircumscribedCircles() {
-    MapCircle circle1 = PowerMock.createMock(MapCircle.class);
-    MapCircle circle2 = PowerMock.createMock(MapCircle.class);
-    expect(circle1.getCentroid()).andReturn(new GeoPoint(0.0, 0.0));
-    expect(circle1.Radius()).andReturn(1.0);
-    expect(circle2.getCentroid()).andReturn(new GeoPoint(0.0, 0.0));
-    expect(circle2.Radius()).andReturn(2.0);
-    PowerMock.replayAll();
+    MapCircle circle1 = Mockito.mock(MapCircle.class);
+    MapCircle circle2 = Mockito.mock(MapCircle.class);
+    Mockito.when(circle1.getCentroid()).thenReturn(new GeoPoint(0.0, 0.0));
+    Mockito.when(circle1.Radius()).thenReturn(1.0);
+    Mockito.when(circle2.getCentroid()).thenReturn(new GeoPoint(0.0, 0.0));
+    Mockito.when(circle2.Radius()).thenReturn(2.0);
     assertEquals(0.0, GeometryUtil.distanceBetweenEdges(circle1, circle2), TOLERANCE);
-    PowerMock.verifyAll();
   }
 
   @Test
   public void testEdgeDistanceBetweenCircles() {
-    MapCircle circle1 = PowerMock.createMock(MapCircle.class);
-    MapCircle circle2 = PowerMock.createMock(MapCircle.class);
-    expect(circle1.getCentroid()).andReturn(new GeoPoint(0.0, 0.0));
-    expect(circle1.Radius()).andReturn(1.0 /* meters */);
-    expect(circle2.getCentroid()).andReturn(new GeoPoint(0.0, 1.0));
-    expect(circle2.Radius()).andReturn(1.0 /* meters */);
-    PowerMock.replayAll();
+    MapCircle circle1 = Mockito.mock(MapCircle.class);
+    MapCircle circle2 = Mockito.mock(MapCircle.class);
+    Mockito.when(circle1.getCentroid()).thenReturn(new GeoPoint(0.0, 0.0));
+    Mockito.when(circle1.Radius()).thenReturn(1.0 /* meters */);
+    Mockito.when(circle2.getCentroid()).thenReturn(new GeoPoint(0.0, 1.0));
+    Mockito.when(circle2.Radius()).thenReturn(1.0 /* meters */);
     final double answer = GeometryUtil.EARTH_RADIUS * DEGTORAD - 2.0;
     assertEquals(answer, GeometryUtil.distanceBetweenEdges(circle1, circle2), answer * P_TOLERANCE);
-    PowerMock.verifyAll();
   }
 
   @Test
