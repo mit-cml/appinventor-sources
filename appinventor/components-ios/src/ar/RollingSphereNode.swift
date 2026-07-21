@@ -5,7 +5,7 @@ import Foundation
 import RealityKit
 
 @available(iOS 14.0, *)
-open class SphereNode: ARNodeBase, ARSphere {
+open class RollingSphereNode: ARNodeBase, ARSphere {
   private var _radius: Float = 0.05 // stored in meters
   private var _storedPhysicsSettings: PhysicsSettings?
   private var _behaviorName: String = "default"
