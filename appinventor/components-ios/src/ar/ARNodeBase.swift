@@ -74,6 +74,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var _followingMarker: ARImageMarker? = nil
   public var _fromPropertyPosition = "0.0,0.0,0.0"
   public var _fromPropertyRotation = "0.0,0.0,0.0,1.0"
+  public var _fromGeoCoordinates = ""
   public var _objectModel: String = ""
   public var _geoAnchor: ARGeoAnchor?
   public var _worldOffset: SIMD3<Float>?
@@ -350,6 +351,11 @@ open class ARNodeBase: NSObject, ARNode {
   @objc open var InitialRotation: String {
     get { return _fromPropertyRotation }
     set(rotation) { _fromPropertyRotation = rotation }
+  }
+  
+  @objc open var InitialGeoCoords: String {
+    get { return _fromGeoCoordinates }
+    set(geoCoords) { _fromGeoCoordinates = geoCoords }
   }
   
   @objc open var FillColor: Int32 {

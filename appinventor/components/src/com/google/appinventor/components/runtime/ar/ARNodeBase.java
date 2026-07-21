@@ -34,6 +34,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
   protected float[] fromPropertyRotation = {0f, 0f, 0f, 1f};
+  protected float[] fromGeoCoordinates = {0f, 0f, 0f};
   protected float[] pendingPosition = null;
   protected float[] pendingRotation = {0f, 0f, 0f, 1f};
   protected float scale = 1.0f;
@@ -918,18 +919,40 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       }
     }
     fromPropertyPosition = position;
-
-   /* if (this.trackable != null) {
-      Anchor myAnchor = this.trackable.createAnchor(new Pose(position, fromPropertyRotation)); //CSB check
-      Anchor(myAnchor);
-    } else if (session != null) {
-      Anchor myAnchor = session.createAnchor(new Pose(position, fromPropertyRotation));
-      Anchor(myAnchor);
-    }*/
-
     Log.i("ARNodeBase", "Stored pose with position " + positionFromProperty);
   }
 
+  public float[] InitialGeoCoords() {
+    float[] geoFloatArray = fromGeoCoordinates;
+    float[] geoPosition = {0f, 0f, 0f};
+    for (int i = 0; i < geoFloatArray.length; i++) {
+      try {
+        geoPosition[i] = geoFloatArray[i];
+        Log.i("ARNodeBase", "Initial geo coords: " + geoFloatArray[i]);
+      } catch (NumberFormatException e) {
+        Log.w("ARNodeBase", "Invalid number in geo coords: " + geoFloatArray[i]);
+      }
+    }
+    return geoPosition;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(description = "Set the initial geographical coordinates of the object from property. Format is a comma-separated list of 3 coordinates: lat, long, altitude such that 42.360001, -71.092003, .2 places the object at the location of MIT.Note: only works properly if a location graph exists!",
+      category = PropertyCategory.APPEARANCE)
+  public void InitialGeoCoords(String positionFromProperty) {
+    String[] geoFloatArray = positionFromProperty.split(",");
+    float[] geoPosition = {0f, 0f, 0f};
+
+    for (int i = 0; i < geoFloatArray.length; i++) {
+      try {
+        geoPosition[i] = Float.parseFloat(geoFloatArray[i]);
+        Log.i("ARNodeBase", "Initial position: " + geoPosition[i]);
+      } catch (NumberFormatException e) {
+        Log.w("ARNodeBase", "Invalid number in position: " + geoFloatArray[i]);
+      }
+    }
+    fromGeoCoordinates = geoPosition;
+  }
 // MARK: - Enhanced Material and Texture System
 
   @Override

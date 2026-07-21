@@ -148,6 +148,9 @@ public final class AR3DFactory {
      float[] InitialRotation();
      void InitialRotation(String r);
 
+    float[] InitialGeoCoords();
+    void InitialGeoCoords(String g);
+
      float Scale();
      void Scale(float scalar);
 

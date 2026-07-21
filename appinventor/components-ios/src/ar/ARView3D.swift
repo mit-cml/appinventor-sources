@@ -1358,23 +1358,36 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   private func addGeoAnchoredNode(_ node: ARNodeBase) {
-    guard let geoAnchor = node.getGeoAnchor() else {
-      print("No geo anchor found on node")
-      return
-    }
-    _containsModelNodes = node is ModelNode ? true : _containsModelNodes
-    if _sessionRunning {
-      // Add geo anchor to session first
-      _arView.session.add(anchor: geoAnchor)
+      // ✅ Read geo coordinates from property, same pattern as _fromPropertyPosition
+      if !node._fromGeoCoordinates.isEmpty {
+          let parts = node._fromGeoCoordinates.split(separator: ",")
+              .prefix(3)
+              .map { Double(String($0)) ?? 0.0 }
+          
+          if parts.count == 3 {
+              let coordinate = CLLocationCoordinate2D(latitude: parts[0], longitude: parts[1])
+              if CLLocationCoordinate2DIsValid(coordinate) {
+                  let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: parts[2])
+                  node.setGeoAnchor(geoAnchor)
+                  print("📍 Geo anchor from property: \(coordinate), altitude: \(parts[2])")
+              }
+          }
+      }
+      guard let geoAnchor = node.getGeoAnchor() else {
+          print("No geo anchor found on node")
+          return
+      }
+      
+      _containsModelNodes = node is ModelNode ? true : _containsModelNodes
       _nodeToAnchorDict[node] = _pendingAnchor
-      print("Added geo anchor to session: \(geoAnchor.coordinate)")
-    } else {
-      // set in calling method
-      _nodeToAnchorDict[node] = _pendingAnchor
-      _requiresAddNodes = true
-    }
+      
+      if _sessionRunning {
+          _arView.session.add(anchor: geoAnchor)
+          print("Added geo anchor to session: \(geoAnchor.coordinate)")
+      } else {
+          _requiresAddNodes = true
+      }
   }
-  
   private let _pendingAnchor = AnchorEntity()  // sentinel for unresolved geo anchors
 
   
