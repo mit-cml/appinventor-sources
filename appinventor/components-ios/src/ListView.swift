@@ -57,8 +57,6 @@ class ListDataModel {
   var displayCount: Int { filteredIndices.count }
   /// Maps a visible row back to its real position in `elements` / `items`.
   func originalIndex(_ displayRow: Int) -> Int { filteredIndices[displayRow] }
-  /// Whether the row at the given real position is currently shown (i.e. survives the filter).
-  func isVisible(_ originalIndex: Int) -> Bool { filteredIndices.contains(originalIndex) }
 }
 
   open class ListView: ViewComponent, AbstractMethodsForViewComponent,
@@ -1155,15 +1153,22 @@ class ListDataModel {
 
   open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
     _model.setFilter(searchText)
-    // Keep the selection while the selected item is still on screen, and clear it only when the
-    // filter hides it, so the user never ends up with a selection they cannot see.
-    if _selectionIndex > 0 && !_model.isVisible(Int(_selectionIndex) - 1) {
-      _selectionIndex = 0
-      _selection = ""
-      _selectionDetailText = ""
-    }
     _view.reloadData()
     _collectionView.reloadData()
+    // reloadData drops UIKit's selection state, so the highlight is lost on every filter change.
+    // Selection is stored against the original index, so re-highlight the selected item's new
+    // visible row while it survives the filter, and clear it only when the filter hides it, so the
+    // user never ends up with a selection they cannot see.
+    if _selectionIndex > 0 {
+      if let displayRow = _model.filteredIndices.firstIndex(of: Int(_selectionIndex) - 1) {
+        _view.selectRow(at: IndexPath(row: displayRow, section: 0), animated: false, scrollPosition: .none)
+        _collectionView.selectItem(at: IndexPath(item: displayRow, section: 0), animated: false, scrollPosition: [])
+      } else {
+        _selectionIndex = 0
+        _selection = ""
+        _selectionDetailText = ""
+      }
+    }
   }
 
   open func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
