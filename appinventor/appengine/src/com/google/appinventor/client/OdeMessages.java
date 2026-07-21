@@ -5909,6 +5909,10 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Geo tracking type")
   String arTrackingTypeGeoTracking();
 
+  @DefaultMessage("Rolling")
+  @Description("AR Object behavior rolling")
+  String arBehaviorTypeRolling();
+
   @DefaultMessage("Heavy")
   @Description("AR Object behavior heavy")
   String arBehaviorTypeHeavy();

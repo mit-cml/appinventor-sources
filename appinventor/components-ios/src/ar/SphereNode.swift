@@ -1,16 +1,121 @@
-// Complete Enhanced SphereNode.swift with Fixed Rolling Behavior
-// Includes all original functionality plus smooth rolling fixes
+// SphereNode.swift — Enhanced sphere with OPTIONAL rolling drag behavior.
+//
+// Rolling is now expressed as a protocol (`RollingDraggable`). A node that
+// conforms to the protocol AND reports `isRollingDragEnabled == true` gets the
+// smooth rolling drag pipeline (kinematic follow + physics-accurate rotation +
+// camera-relative release velocity). If either condition fails, every drag
+// call falls straight through to the ARNodeBase superclass implementation
+// (pick up, hover, place-on-surface).
+//
+// This means:
+//   * SphereNode with IsRolling == true  -> rolling drag
+//   * SphereNode with IsRolling == false -> ARNodeBase default drag
+//   * Any future node type can opt in simply by conforming to RollingDraggable
 
 import Foundation
 import RealityKit
+import UIKit
+
+// MARK: - Rolling Protocol
+
+/// Adopt this protocol to opt a node into rolling-style dragging.
+/// Conformance alone is not enough — `isRollingDragEnabled` is consulted at
+/// gesture time, so behavior can be toggled dynamically (e.g. via behavior flags).
+@available(iOS 14.0, *)
+public protocol RollingDraggable: AnyObject {
+  /// Effective (scaled) radius used for ground clearance and roll math, in meters.
+  var rollingRadius: Float { get }
+
+  /// Whether rolling drag should be used *right now*. When false, the node
+  /// should defer to its superclass drag behavior.
+  var isRollingDragEnabled: Bool { get }
+
+  /// Minimum screen-space release speed (pt/s) before a fling is applied.
+  var rollingFlingThreshold: CGFloat { get }
+
+  /// Screen-velocity → world-velocity scale used on release.
+  var rollingReleaseScale: Float { get }
+}
+
+// Default tuning so conformers only need to supply `rollingRadius`
+// and `isRollingDragEnabled`.
+@available(iOS 14.0, *)
+public extension RollingDraggable {
+  var rollingFlingThreshold: CGFloat { return 1200 }
+  var rollingReleaseScale: Float { return 0.002 }
+}
+
+// MARK: - Shared rolling math (available to any ARNodeBase that conforms)
 
 @available(iOS 14.0, *)
-open class SphereNode: ARNodeBase, ARSphere {
+extension RollingDraggable where Self: ARNodeBase {
+
+  /// Clamp a finger position so the ball never sinks below the ground plane.
+  func rollingConstrainedPosition(for fingerWorldPosition: SIMD3<Float>) -> SIMD3<Float> {
+    return SIMD3<Float>(
+      fingerWorldPosition.x,
+      max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + rollingRadius + 0.01),
+      fingerWorldPosition.z
+    )
+  }
+
+  /// Physics-accurate rolling: distance = radius × angle, rotation axis
+  /// perpendicular to the horizontal movement direction.
+  func applyRealisticRolling(movement: SIMD3<Float>) {
+    let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
+    let distance = simd_length(horizontalMovement)
+    guard distance > 0.0001, rollingRadius > 0 else { return }
+
+    let rollAngle = distance / rollingRadius
+    let direction = simd_normalize(horizontalMovement)
+    let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
+
+    let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
+    _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
+  }
+
+  /// Map screen release velocity onto the camera's right/forward plane and
+  /// set (iOS 18+) or force (earlier) the resulting world velocity.
+  func applyRollingReleaseVelocity(releaseVelocity: CGPoint,
+                                   cameraVectors: ARView3D.CameraVectors?) {
+    let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x +
+                            releaseVelocity.y * releaseVelocity.y)
+    guard releaseSpeed > rollingFlingThreshold else { return }
+
+    let right = cameraVectors?.right ?? SIMD3<Float>(1, 0, 0)
+    let forward = cameraVectors?.forward ?? SIMD3<Float>(0, 0, -1)
+
+    // Screen X → camera right, screen Y (flipped) → camera forward.
+    let screenX = Float(releaseVelocity.x) * rollingReleaseScale
+    let screenY = Float(-releaseVelocity.y) * rollingReleaseScale
+    let worldVelocity = (right * screenX) + (forward * screenY)
+
+    if #available(iOS 18.0, *) {
+      if var physicsMotion = _modelEntity.physicsMotion {
+        physicsMotion.linearVelocity = SIMD3<Float>(
+          worldVelocity.x,
+          physicsMotion.linearVelocity.y,
+          worldVelocity.z
+        )
+        _modelEntity.physicsMotion = physicsMotion
+        return
+      }
+    }
+
+    // Pre-iOS 18 fallback: apply as a force (scaled up since force ≠ velocity).
+    let forceScale: Float = 1500.0 // converts the small velocity scale into a usable impulse
+    _modelEntity.addForce(worldVelocity * forceScale, relativeTo: nil as Entity?)
+  }
+}
+
+// MARK: - SphereNode
+
+@available(iOS 14.0, *)
+open class SphereNode: ARNodeBase, ARSphere, RollingDraggable {
   private var _radius: Float = 0.05 // stored in meters
   private var _storedPhysicsSettings: PhysicsSettings?
   private var _behaviorName: String = "default"
 
-  private var _currentDragMode: DragMode = .rolling
   private var _lastFingerPosition: SIMD3<Float>? = nil
 
   private var _dragStartDamping: Float = 0.1
@@ -38,18 +143,11 @@ open class SphereNode: ARNodeBase, ARSphere {
     case object
   }
 
-  enum DragMode {
-    case rolling      // Rolling ball along the floor
-    case pickup       // Ball lifted off the floor
-    case flinging     // Ball thrown with velocity
-  }
-  
   struct PhysicsSettings {
     let mass: Float
     let material: PhysicsMaterialResource
     let mode: PhysicsBodyMode
   }
-  
 
   private var _collisionAnalyzer = CollisionAnalyzer()
 
@@ -144,18 +242,37 @@ open class SphereNode: ARNodeBase, ARSphere {
     public let rawValue: Int
     public init(rawValue: Int) { self.rawValue = rawValue }
     
-    static let rolling = SurfaceBehaviorFlags(rawValue: 1 << 0)    // Rolls when on ground
-    static let bouncy = SurfaceBehaviorFlags(rawValue: 1 << 1)     // High bounce
-    static let floating = SurfaceBehaviorFlags(rawValue: 1 << 2)   // Reduced gravity
-    static let wet = SurfaceBehaviorFlags(rawValue: 1 << 3)        // High friction, low bounce
-    static let sticky = SurfaceBehaviorFlags(rawValue: 1 << 4)     // Extreme adherence
-    static let slippery = SurfaceBehaviorFlags(rawValue: 1 << 5)   // Low friction
-    static let heavy = SurfaceBehaviorFlags(rawValue: 1 << 6)      // High mass
-    static let light = SurfaceBehaviorFlags(rawValue: 1 << 7)      // Low mass
+    static let rolling = SurfaceBehaviorFlags(rawValue: 1 << 1)    // Rolls when on ground
+    static let heavy = SurfaceBehaviorFlags(rawValue: 1 << 2 )    // High mass
+    static let light = SurfaceBehaviorFlags(rawValue: 1 << 3)      // Low mass
+    static let bouncy = SurfaceBehaviorFlags(rawValue: 1 << 4)     // High bounce
+    static let floating = SurfaceBehaviorFlags(rawValue: 1 << 5)   // Reduced gravity
+    static let wet = SurfaceBehaviorFlags(rawValue: 1 << 6)        // High friction, low bounce
+    static let sticky = SurfaceBehaviorFlags(rawValue: 1 << 7)     // Extreme adherence
+    static let slippery = SurfaceBehaviorFlags(rawValue: 1 << 8)   // Low friction
+    static let none = SurfaceBehaviorFlags(rawValue: 1 << 9)
   }
-  
   private var _behaviorFlags: SurfaceBehaviorFlags = [.rolling]  // Default rolling
-  
+
+  // MARK: - RollingDraggable Conformance
+
+  /// Effective radius including current scale.
+  public var rollingRadius: Float {
+    return _radius * Scale
+  }
+
+  /// Rolling drag only runs while the `.rolling` behavior flag is set.
+  /// Flip `IsRolling` off and the sphere drags exactly like any ARNodeBase.
+  public var isRollingDragEnabled: Bool {
+    return _behaviorFlags.contains(.rolling)
+  }
+
+  public var rollingFlingThreshold: CGFloat {
+    return NORMAL_ROLLING_SPEED
+  }
+
+  // MARK: - Init
+
   @objc init(_ container: ARNodeContainer) {
     // Create initial sphere mesh
     let mesh = MeshResource.generateSphere(radius: _radius)
@@ -218,16 +335,23 @@ open class SphereNode: ARNodeBase, ARSphere {
   @objc open var IsBouncy: Bool {
     get { return _behaviorFlags.contains(.bouncy) }
     set {
-        if newValue { _behaviorFlags.insert(.bouncy) }
-        else { _behaviorFlags.remove(.bouncy) }
-        updateBehaviorSettings()
+      if newValue {
+        _behaviorFlags.insert(.bouncy)
+        _behaviorFlags.remove(.rolling)
+      } else {
+        _behaviorFlags.remove(.bouncy)
+      }
+      updateBehaviorSettings()
     }
   }
   
   @objc open var IsFloating: Bool {
     get { return _behaviorFlags.contains(.floating) }
     set {
-        if newValue { _behaviorFlags.insert(.floating) }
+        if newValue {
+          _behaviorFlags.insert(.floating)
+          _behaviorFlags.remove(.rolling)
+        }
         else { _behaviorFlags.remove(.floating) }
         updateBehaviorSettings()
     }
@@ -345,36 +469,16 @@ open class SphereNode: ARNodeBase, ARSphere {
             return physicsMotion.linearVelocity
         }
     }
-    
-    // Fallback: estimate velocity
     return estimateVelocity3D()
   }
-  
-  override open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
-    // Capture pre-collision velocity
-    let preVelocity = getCurrentVelocity()
 
-    //let preSpeed = simd_length(preVelocity)
-    // Your existing collision handling
+  override open func ObjectCollidedWithObject(_ otherNode: ARNodeBase) {
     let speed = getCollisionSpeed()
     if #available(iOS 15.0, *) {
       showCollisionFlash(intensity: speed, collisionType: .object)
     }
-  
+
     EventDispatcher.dispatchEvent(of: self, called: "ObjectCollidedWithObject", arguments: otherNode)
-    
-    // Analyze trajectory after collision response
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-        guard let self = self else { return }
-        //let postVelocity = self.getCurrentVelocity()
-        
-        /* helpful debugging
-         self.analyzeCollisionTrajectory(
-            preVel: preVelocity,
-            postVel: postVelocity,
-            otherNode: otherNode
-        )*/
-    }
   }
 
   private func analyzeCollisionTrajectory(preVel: SIMD3<Float>, postVel: SIMD3<Float>, otherNode: ARNodeBase) {
@@ -814,12 +918,16 @@ private func monitorPostCollisionState() {
       IsBouncy = false  // Heavy, doesn't bounce much
       print("🎳 Configured as bowling ball")
   }
-  // MARK: - iOS Version-Optimized Drag Methods for SphereNode
-  // Optimized for iOS 16+ with iOS 18+ enhancements
 
   override open func startDrag() {
+    guard isRollingDragEnabled else {
+      super.startDrag()
+      return
+    }
+
     _isBeingDragged = true
-    
+    _lastFingerPosition = nil
+
     if #available(iOS 16.0, *) {
         _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = false
     }
@@ -831,154 +939,72 @@ private func monitorPostCollisionState() {
   }
 
   open override func updateDrag(fingerWorldPosition: SIMD3<Float>) {
+    guard isRollingDragEnabled else {
+      super.updateDrag(fingerWorldPosition: fingerWorldPosition)
+      return
+    }
+
     guard _isBeingDragged else { return }
-    let constrainedPosition = SIMD3<Float>(
-      fingerWorldPosition.x,
-      max(fingerWorldPosition.y, Float(ARView3D.SHARED_GROUND_LEVEL) + _radius * Scale + 0.01),
-      fingerWorldPosition.z
-    )
-    // Direct position control
-    _modelEntity.transform.translation = constrainedPosition
-    
-    // Calculate rolling rotation based on movement
+
+    // Direct position control, constrained above the ground
+    _modelEntity.transform.translation = rollingConstrainedPosition(for: fingerWorldPosition)
+
+    // Physics-accurate roll based on horizontal movement
     if let lastPos = _lastFingerPosition {
       let movement = fingerWorldPosition - lastPos
       applyRealisticRolling(movement: movement)
     }
-    
+
     _lastFingerPosition = fingerWorldPosition
   }
-  
+
   override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
+    guard isRollingDragEnabled else {
+      super.endDrag(releaseVelocity: releaseVelocity, camera3DProjection: camera3DProjection)
+      return
+    }
+
     guard _isBeingDragged else { return }
-  
+    defer {
+      _isBeingDragged = false
+      _lastFingerPosition = nil
+    }
+
     let cameraVectors = camera3DProjection as? ARView3D.CameraVectors
-    
-    // 🛠️ CONDITIONAL YAIL RESTORE GATE:
-    // Only restore the dynamic simulation engine if physics was explicitly
-    // flag-enabled in your App Inventor blocks / Yail layout configurations!
+
+    // Only restore the dynamic simulation if physics is enabled for this node
     if self.EnablePhysics == true {
-        
-        // Force-refresh the active dynamic body mapping
+
         if var physicsBody = _modelEntity.physicsBody {
             physicsBody.mode = .dynamic
             _modelEntity.physicsBody = physicsBody
         } else {
-            // Safe fallback: If the tracking reference dropped to nil during dragging,
-            // call your setter to regenerate the component architecture on the spot
+            // Physics component was lost during drag — regenerate it
             self.EnablePhysics = true
         }
-        
-        // Execute your directional throw force math vectors
-        if #available(iOS 18.0, *) {
-            applyReleaseVelocityIOS18(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
-        } else {
-            applyReleaseForceIOS16(releaseVelocity: releaseVelocity, cameraVectors: cameraVectors!)
-        }
-        
-        // Keep tracking hyper-sensitive so fast moving video panels register impacts
+
+        // Camera-relative release velocity (shared protocol implementation
+        // handles iOS 18 velocity vs pre-18 force internally)
+        applyRollingReleaseVelocity(releaseVelocity: releaseVelocity,
+                                    cameraVectors: cameraVectors)
+
+        // Keep tracking sensitive so fast-moving objects register impacts
         if #available(iOS 16.0, *) {
             _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = true
         }
-        
+
     } else {
-        // If physics is false, ensure the body remains fully cleared out / kinematic
+        // Physics disabled — keep the body kinematic
         if var physicsBody = _modelEntity.physicsBody {
             physicsBody.mode = .kinematic
             _modelEntity.physicsBody = physicsBody
         }
         print("🎯 endDrag: Maintained static/kinematic state because physics is disabled for this node.")
     }
-    
-    _isBeingDragged = false
   }
 
-  private func applyRealisticRolling(movement: SIMD3<Float>) {
-    let horizontalMovement = SIMD3<Float>(movement.x, 0, movement.z)
-    let distance = simd_length(horizontalMovement)
-    
-    guard distance > 0.0001 else { return }
-    
-    // Physics-accurate rolling: distance = radius × angle
-    let ballRadius = _radius * Scale
-    let rollAngle = distance / ballRadius
-    
-    // Rotation axis perpendicular to movement
-    let direction = simd_normalize(horizontalMovement)
-    let rollAxis = SIMD3<Float>(direction.z, 0, -direction.x)
-    
-    // Apply incremental rotation
-    let rollRotation = simd_quatf(angle: rollAngle, axis: rollAxis)
-    _modelEntity.transform.rotation = rollRotation * _modelEntity.transform.rotation
-    //print("🎾 Rolling: distance=\(String(format: "%.4f", distance)), angle=\(String(format: "%.4f", rollAngle))")
-  }
-  
-  private func debugReleaseDirection(screenVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors){
-     
-      
-    print("=== RELEASE DEBUG ===")
-    print("Screen velocity: \(screenVelocity)")
-    print("Camera vectors: \(cameraVectors)")
-
-
-    print("Ball position: \(_modelEntity.transform.translation)")
-    print("==================")
-  }
-  
-  @available(iOS 18.0, *)
-  private func applyReleaseVelocityIOS18(releaseVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors?) {
-    let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
-    guard releaseSpeed > NORMAL_ROLLING_SPEED else { return }
-    
-    let right = cameraVectors?.right ?? SIMD3<Float>(1, 0, 0)
-    let forward = cameraVectors?.forward ?? SIMD3<Float>(0, 0, -1)
-    
-    let baseScale: Float = 0.002
-    
-    // CONSISTENT mapping: screen X → camera right, screen Y → camera forward
-    // Screen Y is negative because screen coordinates have Y=0 at top, but we want up=forward
-    let screenX = Float(releaseVelocity.x) * baseScale
-    let screenY = Float(-releaseVelocity.y) * baseScale  // Negative to flip screen Y
-    
-    let worldVelocity = (right * screenX) + (forward * screenY)
-    
-    print("Screen: (\(releaseVelocity.x), \(releaseVelocity.y)) → World: \(worldVelocity)")
-    print("Camera right: \(right), forward: \(forward)")
-    
-    if var physicsMotion = _modelEntity.physicsMotion {
-      physicsMotion.linearVelocity = SIMD3<Float>(
-          worldVelocity.x,
-          physicsMotion.linearVelocity.y,
-          worldVelocity.z
-      )
-      _modelEntity.physicsMotion = physicsMotion
-    }
-  }
-
-  @available(iOS 14.0, *)
-  private func applyReleaseForceIOS16(releaseVelocity: CGPoint, cameraVectors: ARView3D.CameraVectors) {
-    let releaseSpeed = sqrt(releaseVelocity.x * releaseVelocity.x + releaseVelocity.y * releaseVelocity.y)
-    guard releaseSpeed > 100 else { return }
-    
-    let right = cameraVectors.right
-    let forward = cameraVectors.forward
-    
-    let forceScale: Float = 3.0
-    
-    // SAME mapping as iOS 18 version for consistency
-    let screenX = Float(releaseVelocity.x) * forceScale
-    let screenY = Float(-releaseVelocity.y) * forceScale  // Same negative flip
-    
-    let worldForce = (right * screenX) + (forward * screenY)
-    
-    _modelEntity.addForce(worldForce, relativeTo: nil as Entity?)
-    
-    print("Applied transformed force: \(worldForce)")
-    print("Screen velocity: \(releaseVelocity)")
-  }
-  
-  
-  // ✅ Updated gesture handler
+  // Gesture routing is unchanged — the drag overrides above decide whether
+  // rolling or the superclass default runs, so this handler stays generic.
   override open func handleAdvancedGestureUpdate(
       fingerLocation: CGPoint,
       fingerMovement: CGPoint,
@@ -988,7 +1014,6 @@ private func monitorPostCollisionState() {
       gesturePhase: UIGestureRecognizer.State
   ) {
     let groundPos: SIMD3<Float>? = groundProjection as? SIMD3<Float>
-    print("sphereNode, handling drag gesture \(groundPos)")
 
   
     switch gesturePhase {
@@ -1062,39 +1087,9 @@ private func monitorPostCollisionState() {
     return finalResponsiveness
   }
 
+  // MARK: - Physics
 
-
-   
-    @available(iOS 15.0, *)
-    private func showModeEffect() {
-      var material = SimpleMaterial()
-      
-      // Color based on current mode and behavior
-      switch _currentDragMode {
-      case .rolling:
-          if _behaviorFlags.contains(.heavy) {
-              material.color = .init(tint: .blue)
-          } else if _behaviorFlags.contains(.light) {
-              material.color = .init(tint: .orange)
-          } else {
-              material.color = .init(tint: .yellow)  // Rolling = yellow
-          }
-          
-         
-      case .flinging:
-          material.color = .init(tint: .red.withAlphaComponent(0.7))    // Flinging = red
-      
-      default:
-        material.color = .init(tint: .red.withAlphaComponent(0.7))    // Flinging = red
-      }
-      _modelEntity.model?.materials = [material]
-    }
-    
-
-
-
-
-  // 5. ✅ TRUST PHYSICS: Let RealityKit handle everything
+  // ✅ TRUST PHYSICS: Let RealityKit handle everything
   override open func EnablePhysics(_ isDynamic: Bool = true) {
     if (!isDynamic) {
         _enablePhysics = false
@@ -1102,27 +1097,26 @@ private func monitorPostCollisionState() {
         _modelEntity.physicsBody = nil
         return
     }
-      
+
     let currentPos = _modelEntity.transform.translation
     let groundLevel = Float(ARView3D.SHARED_GROUND_LEVEL)
     let bottomY = currentPos.y - _radius
-    
+
     if bottomY < groundLevel {
         print("⚠️ Sphere bottom at \(bottomY) is below ground \(groundLevel)")
         let correctedY = groundLevel + _radius + 0.01
         print("🔧 Correcting Y from \(currentPos.y) to \(correctedY)")
         _modelEntity.transform.translation.y = correctedY
     }
-      // ✅ SPHERE COLLISION: Use precise sphere collision
 
+    // ✅ SPHERE COLLISION: Use precise sphere collision
     let shape = ShapeResource.generateSphere(radius: _radius)
-      
+
     _enablePhysics = isDynamic
     _modelEntity.collision = CollisionComponent(shapes: [shape])
 
-    // ✅ REALISTIC PHYSICS: Let RealityKit handle all collisions
     let massProperties = PhysicsMassProperties(mass: Mass)
-    
+
     let material = PhysicsMaterialResource.generate(
         staticFriction: StaticFriction,
         dynamicFriction: DynamicFriction,
@@ -1134,33 +1128,23 @@ private func monitorPostCollisionState() {
         material: material,
         mode: isDynamic ? .dynamic : .static
     )
-   
-    // Enable continuous collision detection for fast-moving objects
     if #available(iOS 16.0, *) {
       _modelEntity.physicsBody?.isContinuousCollisionDetectionEnabled = true
     }
     _modelEntity.physicsMotion = PhysicsMotionComponent()
-    
     if #available(iOS 15.0, *) {
         updateShadowSettings()
     }
-  
-    //print("🎾 Physics enabled - RealityKit will handle all ground/floor collisions")
-    //debugPhysicsState()
-    //print("🎾 Sphere radius: \(_radius), mass: \(Mass)")
   }
 
-  // 6. ✅ REMOVE ground level constraints entirely
   @objc open func debugPhysicsState() {
     let currentPos = _modelEntity.transform.translation
-    
     print("=== PHYSICS STATE DEBUG ===")
     print("Position: \(currentPos)")
     print("Has physics: \(_modelEntity.physicsBody != nil)")
     print("enabled physics?: \(EnablePhysics)")
-    
-    if let physicsBody = _modelEntity.physicsBody {
 
+    if let physicsBody = _modelEntity.physicsBody {
         print("Mass: \(physicsBody.massProperties.mass)")
     }
     print("Ball radius: \(_radius)")
@@ -1169,5 +1153,4 @@ private func monitorPostCollisionState() {
     print("==========================")
   }
 
-  
 }

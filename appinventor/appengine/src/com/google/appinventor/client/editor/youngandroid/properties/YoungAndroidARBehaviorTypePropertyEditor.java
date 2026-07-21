@@ -17,14 +17,15 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class YoungAndroidARBehaviorTypePropertyEditor extends ChoicePropertyEditor {
 
   private static final Choice[] trackingTypes = new Choice[] {
-      new Choice(MESSAGES.arBehaviorTypeHeavy(), "1"),
-      new Choice(MESSAGES.arBehaviorTypeLight(), "2"),
-      new Choice(MESSAGES.arBehaviorTypeBouncy(), "3"),
-      new Choice(MESSAGES.arBehaviorTypeWet(), "4"),
-      new Choice(MESSAGES.arBehaviorTypeSticky(), "5"),
-      new Choice(MESSAGES.arBehaviorTypeSlippery(), "6"),
-      new Choice(MESSAGES.arBehaviorTypeFloating(), "7"),
-      new Choice(MESSAGES.arBehaviorTypeNone(), "8")
+      new Choice(MESSAGES.arBehaviorTypeRolling(), "1"),
+      new Choice(MESSAGES.arBehaviorTypeHeavy(), "2"),
+      new Choice(MESSAGES.arBehaviorTypeLight(), "3"),
+      new Choice(MESSAGES.arBehaviorTypeBouncy(), "4"),
+      new Choice(MESSAGES.arBehaviorTypeWet(), "5"),
+      new Choice(MESSAGES.arBehaviorTypeSticky(), "6"),
+      new Choice(MESSAGES.arBehaviorTypeSlippery(), "7"),
+      new Choice(MESSAGES.arBehaviorTypeFloating(), "8"),
+      new Choice(MESSAGES.arBehaviorTypeNone(), "9")
   };
 
   public YoungAndroidARBehaviorTypePropertyEditor() {

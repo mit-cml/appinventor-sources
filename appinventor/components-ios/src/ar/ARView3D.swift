@@ -1931,6 +1931,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       } else if let imageAnchor = anchor as? ARImageAnchor,
           let name = imageAnchor.referenceImage.name,
           let marker = _imageMarkers[name] {
+            detachToWorldIfNeeded(for: marker)
             cleanupMarkerPivot(marker)
             marker.Reset()
       }
