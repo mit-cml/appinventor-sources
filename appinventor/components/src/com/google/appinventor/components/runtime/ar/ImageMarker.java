@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime.ar;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.*;
@@ -16,23 +17,25 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.*;
 import com.google.appinventor.components.runtime.util.AR3DFactory.*;
+import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.Frame;
+import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * ARCore-backed implementation of ARImageMarker for App Inventor.
  *
  * Lifecycle:
  *  1. The parent ARView3D collects all ImageMarker instances and calls
- *     {@link #registerWithDatabase(AugmentedImageDatabase, AssetManager)} while
+ *     {@link #registerWithDatabase(AugmentedImageDatabase, Form)} while
  *     building the AugmentedImageDatabase, before session.configure() is called.
  *  2. Each AR frame, the parent calls {@link #onFrameUpdate(Frame)} so this
  *     marker can query its own tracking state and fire the appropriate events.
@@ -46,6 +49,11 @@ import java.util.List;
 public final class ImageMarker implements ARImageMarker {
 
   private static final String TAG = "ImageMarker";
+
+  // Thresholds so PositionChanged / RotationChanged don't fire at 30-60 Hz
+  // from sub-millimeter pose jitter while the printed image sits still.
+  private static final float POSITION_EPSILON_M = 0.01f;   // 1 cm
+  private static final float ROTATION_EPSILON_DEG = 2.0f;  // 2 degrees
 
   // -------------------------------------------------------------------------
   // Component wiring
@@ -62,8 +70,12 @@ public final class ImageMarker implements ARImageMarker {
   private String imageUrl = "";
   private float physicalWidthInCentimeters = 0f;
 
-  /** Nodes that are attached to (following) this marker. */
-  protected List<ARNode> arNodes = new ArrayList<>();
+  /**
+   * Nodes that are attached to (following) this marker.
+   * CopyOnWriteArrayList because it's written from the UI thread
+   * (Follow blocks) and iterated on the GL thread (onFrameUpdate).
+   */
+  protected List<ARNode> arNodes = new CopyOnWriteArrayList<>();
 
   /** When true, attached nodes always face the camera (billboard mode). */
   protected boolean billboardNodes = false;
@@ -80,7 +92,7 @@ public final class ImageMarker implements ARImageMarker {
   private int databaseIndex = -1;
 
   /** The most recently seen ARCore augmented image for this marker. */
-  private AugmentedImage trackedImage = null;
+  private volatile AugmentedImage trackedImage = null;
 
   /** Tracks whether {@link #FirstDetected()} has already been fired this session. */
   private boolean firstDetectionFired = false;
@@ -92,12 +104,21 @@ public final class ImageMarker implements ARImageMarker {
    */
   private AugmentedImage.TrackingMethod lastTrackingMethod = null;
 
+  /** Last pose values that were actually reported to the app's blocks. */
+  private float[] lastReportedPosition = null;
+  private float[] lastReportedEulerDeg = null;
+
   // -------------------------------------------------------------------------
   // Constructor
   // -------------------------------------------------------------------------
 
   public ImageMarker(ARImageMarkerContainer container) {
+    // NOTE: this requires ARView3D.ImageMarkers() to return its live,
+    // persistent list — not a fresh ArrayList per call. See wiring notes.
     container.ImageMarkers().add(this);
+    if (container instanceof ARView3D) {
+      this.arView = (ARView3D) container;
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -110,12 +131,17 @@ public final class ImageMarker implements ARImageMarker {
    * <p>Must be called <em>before</em> {@code session.configure()} is invoked.
    * Returns {@code true} if the image was successfully added.
    *
-   * @param db     The database being built for the AR session.
-   * @param assets The app's {@link AssetManager} used to open the image asset.
-   * @return {@code true} on success; {@code false} if the image could not be loaded
-   *         or if required properties (URL, physical width) are not set.
+   * <p>Loads the bitmap through {@link MediaUtil} first so this works in the
+   * AI2 Companion (where assets live on external storage, and
+   * {@code AssetManager.open()} would throw), then falls back to the APK's
+   * AssetManager for compiled apps if MediaUtil fails.
+   *
+   * @param db   The database being built for the AR session.
+   * @param form The form, used to resolve the image asset.
+   * @return {@code true} on success; {@code false} if the image could not be
+   *         loaded or if required properties (URL, physical width) are not set.
    */
-  public boolean registerWithDatabase(AugmentedImageDatabase db, AssetManager assets) {
+  public boolean registerWithDatabase(AugmentedImageDatabase db, Form form) {
     if (imageUrl == null || imageUrl.isEmpty()) {
       Log.w(TAG, "ImageMarker '" + name + "': Image URL is not set; skipping registration.");
       return false;
@@ -125,29 +151,42 @@ public final class ImageMarker implements ARImageMarker {
       return false;
     }
 
-    InputStream is = null;
+    Bitmap bitmap = loadBitmap(form);
+    if (bitmap == null) {
+      Log.e(TAG, "ImageMarker '" + name + "': could not load '" + imageUrl + "'.");
+      return false;
+    }
+
     try {
-      is = assets.open(imageUrl);
-      Bitmap bitmap = BitmapFactory.decodeStream(is);
-      if (bitmap == null) {
-        Log.e(TAG, "ImageMarker '" + name + "': BitmapFactory returned null for '" + imageUrl + "'.");
-        return false;
-      }
       float widthInMeters = physicalWidthInCentimeters / 100f;
       databaseIndex = db.addImage(name, bitmap, widthInMeters);
       Log.i(TAG, "ImageMarker '" + name + "' registered at database index " + databaseIndex);
       return true;
-    } catch (IOException e) {
-      Log.e(TAG, "ImageMarker '" + name + "': Failed to open asset '" + imageUrl + "'.", e);
-      return false;
     } catch (IllegalArgumentException e) {
-      // ARCore throws this if the bitmap format is unsupported.
-      Log.e(TAG, "ImageMarker '" + name + "': ARCore rejected the image.", e);
+      // ARCore throws this for unsupported bitmap formats AND for images with
+      // too few trackable features (ImageInsufficientQualityException extends it).
+      Log.e(TAG, "ImageMarker '" + name + "': ARCore rejected the image. "
+          + "Check contrast/feature density with the arcoreimg tool.", e);
       return false;
-    } finally {
-      if (is != null) {
-        try { is.close(); } catch (IOException ignored) {}
+    }
+  }
+
+  private Bitmap loadBitmap(Form form) {
+    // Path 1: MediaUtil — resolves assets in both Companion and compiled apps.
+    try {
+      BitmapDrawable drawable = MediaUtil.getBitmapDrawable(form, imageUrl);
+      if (drawable != null && drawable.getBitmap() != null) {
+        return drawable.getBitmap();
       }
+    } catch (IOException e) {
+      Log.w(TAG, "MediaUtil could not load '" + imageUrl + "', trying AssetManager.", e);
+    }
+    // Path 2: raw AssetManager (compiled-app fallback).
+    AssetManager assets = form.getAssets();
+    try (InputStream is = assets.open(imageUrl)) {
+      return BitmapFactory.decodeStream(is);
+    } catch (IOException e) {
+      return null;
     }
   }
 
@@ -155,8 +194,8 @@ public final class ImageMarker implements ARImageMarker {
    * Processes a single AR frame for this marker.
    *
    * <p>The parent {@link ARView3D} must call this once per rendered frame from
-   * the GL/render thread.  Event dispatch is forwarded to the App Inventor
-   * event dispatch delegate, which posts to the UI thread automatically.
+   * the GL/render thread.  Events are posted to the UI thread here — the App
+   * Inventor event dispatcher does NOT do that automatically.
    *
    * @param frame The current {@link Frame} from the AR session.
    */
@@ -175,8 +214,10 @@ public final class ImageMarker implements ARImageMarker {
           break;
 
         case PAUSED:
-          // PAUSED + LAST_KNOWN_POSE means ARCore remembers where the image
-          // was but can no longer see it in the current frame.
+          // PAUSED means ARCore knows the image is in the database but hasn't
+          // located it yet (or overall tracking is interrupted). Note: an
+          // image *leaving the camera view* does NOT go PAUSED — it stays
+          // TRACKING with method LAST_KNOWN_POSE, handled in handleTracking.
           if (lastTrackingMethod == AugmentedImage.TrackingMethod.FULL_TRACKING) {
             NoLongerInView();
           }
@@ -197,28 +238,80 @@ public final class ImageMarker implements ARImageMarker {
    * Handles a frame where this marker's image is actively tracked.
    */
   private void handleTracking(AugmentedImage img, AugmentedImage.TrackingMethod method) {
-    // Fire FirstDetected exactly once per session.
-    if (!firstDetectionFired) {
+    boolean full = method == AugmentedImage.TrackingMethod.FULL_TRACKING;
+
+    // Fire FirstDetected exactly once per session — only on a confident,
+    // in-view detection.
+    if (full && !firstDetectionFired) {
       firstDetectionFired = true;
       FirstDetected();
     }
 
-    // Fire AppearedInView when we transition back to full tracking from lost.
-    if (lastTrackingMethod != null
-        && lastTrackingMethod != AugmentedImage.TrackingMethod.FULL_TRACKING
-        && method == AugmentedImage.TrackingMethod.FULL_TRACKING) {
+    // View transitions. This is where NoLongerInView usually happens:
+    // ARCore keeps state=TRACKING and flips the method to LAST_KNOWN_POSE
+    // when the image leaves the frame.
+    if (lastTrackingMethod == AugmentedImage.TrackingMethod.FULL_TRACKING && !full) {
+      NoLongerInView();
+    } else if (full
+        && lastTrackingMethod != null
+        && lastTrackingMethod != AugmentedImage.TrackingMethod.FULL_TRACKING) {
       AppearedInView();
     }
 
-    // Only emit position/rotation events when we have a confident full-tracking pose.
-    if (method == AugmentedImage.TrackingMethod.FULL_TRACKING) {
-      float[] translation = new float[3];
-      img.getCenterPose().getTranslation(translation, 0);
-      PositionChanged(translation[0], translation[1], translation[2]);
+    // Only emit position/rotation events from a confident full-tracking pose,
+    // and only when the pose has actually moved past the jitter threshold.
+    if (full) {
+      Pose centerPose = img.getCenterPose();
 
-      float[] eulerDegrees = quaternionToEulerDegrees(img.getCenterPose().getRotationQuaternion());
-      RotationChanged(eulerDegrees[0], eulerDegrees[1], eulerDegrees[2]);
+      float[] translation = new float[3];
+      centerPose.getTranslation(translation, 0);
+      if (lastReportedPosition == null
+          || distance(translation, lastReportedPosition) > POSITION_EPSILON_M) {
+        lastReportedPosition = translation.clone();
+        PositionChanged(translation[0], translation[1], translation[2]);
+      }
+
+      float[] eulerDegrees = quaternionToEulerDegrees(centerPose.getRotationQuaternion());
+      if (lastReportedEulerDeg == null
+          || maxAbsDelta(eulerDegrees, lastReportedEulerDeg) > ROTATION_EPSILON_DEG) {
+        lastReportedEulerDeg = eulerDegrees.clone();
+        RotationChanged(eulerDegrees[0], eulerDegrees[1], eulerDegrees[2]);
+      }
+
+      // Move any nodes following this marker to the image's pose.
+      updateAttachedNodes(centerPose);
     }
+  }
+
+  /**
+   * Drives followers from the image's center pose. Runs on the GL thread —
+   * writes go through ARNodeBase's world matrix, same as the drag system,
+   * so no per-frame anchor churn.
+   */
+  private void updateAttachedNodes(Pose centerPose) {
+    for (ARNode node : arNodes) {
+      if (node instanceof ARNodeBase) {
+        ((ARNodeBase) node).updateFromMarkerPose(centerPose);
+      }
+    }
+  }
+
+  /** Called by ARNodeBase.Follow / FollowWithOffset. */
+  public void attachNode(ARNode node) {
+    if (!arNodes.contains(node)) {
+      arNodes.add(node);
+    }
+  }
+
+  /** Called by ARNodeBase.StopFollowingImageMarker. */
+  public void detachNode(ARNode node) {
+    arNodes.remove(node);
+  }
+
+  /** Center pose of the detected image, or null if never tracked. */
+  public Pose trackedPose() {
+    AugmentedImage img = trackedImage;
+    return img != null ? img.getCenterPose() : null;
   }
 
   /**
@@ -229,6 +322,8 @@ public final class ImageMarker implements ARImageMarker {
     firstDetectionFired = false;
     lastTrackingMethod = null;
     trackedImage = null;
+    lastReportedPosition = null;
+    lastReportedEulerDeg = null;
     Reset();
   }
 
@@ -273,6 +368,11 @@ public final class ImageMarker implements ARImageMarker {
   @SimpleProperty(description = "The image asset used for AR image detection.")
   public void Image(String image) {
     this.imageUrl = image;
+    // If the session is already configured, the database must be rebuilt for
+    // this change to take effect. ARView3D handles that via a dirty flag.
+    if (arView != null) {
+      arView.imageMarkerDatabaseChanged();
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -295,6 +395,9 @@ public final class ImageMarker implements ARImageMarker {
   @SimpleProperty(description = "Sets the physical width of the image in centimeters.")
   public void PhysicalWidthInCentimeters(float width) {
     this.physicalWidthInCentimeters = Math.abs(width);
+    if (arView != null) {
+      arView.imageMarkerDatabaseChanged();
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -308,23 +411,18 @@ public final class ImageMarker implements ARImageMarker {
   @SimpleProperty(description = "The estimated physical height of the image in centimeters, "
       + "derived from the image's aspect ratio and PhysicalWidthInCentimeters.")
   public float PhysicalHeightInCentimeters() {
-    if (trackedImage != null) {
+    AugmentedImage img = trackedImage;
+    if (img != null) {
       // extentZ is the height of the detected image in metres.
-      return trackedImage.getExtentZ() * 100f;
+      return img.getExtentZ() * 100f;
     }
     // Fallback: estimate from the asset bitmap's aspect ratio.
     if (arView != null && imageUrl != null && !imageUrl.isEmpty()
         && physicalWidthInCentimeters > 0f) {
-      try (InputStream is = arView.$context().getAssets().open(imageUrl)) {
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        opts.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(is, null, opts);
-        if (opts.outWidth > 0 && opts.outHeight > 0) {
-          float aspectRatio = (float) opts.outHeight / (float) opts.outWidth;
-          return physicalWidthInCentimeters * aspectRatio;
-        }
-      } catch (IOException e) {
-        Log.w(TAG, "Could not read image dimensions for height estimate.", e);
+      Bitmap bmp = loadBitmap(arView.$form());
+      if (bmp != null && bmp.getWidth() > 0) {
+        float aspectRatio = (float) bmp.getHeight() / (float) bmp.getWidth();
+        return physicalWidthInCentimeters * aspectRatio;
       }
     }
     return 0f;
@@ -360,7 +458,7 @@ public final class ImageMarker implements ARImageMarker {
   @Override
   @SimpleProperty(description = "The list of nodes currently following this ImageMarker.")
   public List<ARNode> AttachedNodes() {
-    return new ArrayList<>(arNodes);
+    return new java.util.ArrayList<>(arNodes);
   }
 
   // -------------------------------------------------------------------------
@@ -371,7 +469,7 @@ public final class ImageMarker implements ARImageMarker {
   public void removeAllNodes() {
     Log.i(TAG, "removeAllNodes() called for marker '" + name + "'");
     for (ARNode node : arNodes) {
-      node.StopFollowingImageMarker();
+      node.StopFollowingImageMarker();   // this calls detachNode(node)
     }
     arNodes.clear();
   }
@@ -382,25 +480,40 @@ public final class ImageMarker implements ARImageMarker {
 
   @Override
   public HandlesEventDispatching getDispatchDelegate() {
-    return arView.getDispatchDelegate();
+    return arView != null ? arView.getDispatchDelegate() : null;
   }
 
   // -------------------------------------------------------------------------
-  // Events
+  // Events — onFrameUpdate runs on the GL render thread, so every event is
+  // posted to the UI thread before dispatch. EventDispatcher does NOT do
+  // this automatically (ARView3D wraps its own dispatches the same way).
   // -------------------------------------------------------------------------
+
+  private void dispatch(final String eventName, final Object... args) {
+    if (arView == null) {
+      Log.w(TAG, "Cannot dispatch " + eventName + " — arView not set");
+      return;
+    }
+    arView.$form().runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        EventDispatcher.dispatchEvent(ImageMarker.this, eventName, args);
+      }
+    });
+  }
 
   @Override
   @SimpleEvent(description = "Fired the first time the image is detected. "
       + "Requires PhysicalWidthInCentimeters > 0 and a valid Image asset.")
   public void FirstDetected() {
-    EventDispatcher.dispatchEvent(this, "FirstDetected");
+    dispatch("FirstDetected");
   }
 
   @Override
   @SimpleEvent(description = "Fired when the detected image's position changes to (x, y, z). "
       + "Requires PhysicalWidthInCentimeters > 0 and a valid Image asset.")
   public void PositionChanged(float x, float y, float z) {
-    EventDispatcher.dispatchEvent(this, "PositionChanged", x, y, z);
+    dispatch("PositionChanged", x, y, z);
   }
 
   @Override
@@ -408,28 +521,28 @@ public final class ImageMarker implements ARImageMarker {
       + "Rotation values are Euler angles in degrees. "
       + "Requires PhysicalWidthInCentimeters > 0 and a valid Image asset.")
   public void RotationChanged(float x, float y, float z) {
-    EventDispatcher.dispatchEvent(this, "RotationChanged", x, y, z);
+    dispatch("RotationChanged", x, y, z);
   }
 
   @Override
   @SimpleEvent(description = "Fired when the image leaves the camera's view after having been detected. "
       + "Requires PhysicalWidthInCentimeters > 0 and a valid Image asset.")
   public void NoLongerInView() {
-    EventDispatcher.dispatchEvent(this, "NoLongerInView");
+    dispatch("NoLongerInView");
   }
 
   @Override
   @SimpleEvent(description = "Fired when the image re-enters the camera's view after having been lost. "
       + "Requires PhysicalWidthInCentimeters > 0 and a valid Image asset.")
   public void AppearedInView() {
-    EventDispatcher.dispatchEvent(this, "AppearedInView");
+    dispatch("AppearedInView");
   }
 
   @Override
   @SimpleEvent(description = "Fired when detection is reset, either via ARView3D.ResetDetectedItems() "
       + "or because ARCore discarded the tracking information.")
   public void Reset() {
-    EventDispatcher.dispatchEvent(this, "Reset");
+    dispatch("Reset");
   }
 
   // -------------------------------------------------------------------------
@@ -439,15 +552,7 @@ public final class ImageMarker implements ARImageMarker {
   /**
    * Converts an ARCore rotation quaternion [qx, qy, qz, qw] to Euler angles
    * in degrees [pitch (X), yaw (Y), roll (Z)].
-   *
-   * <p>ARCore's {@code Pose#getRotationQuaternion(float[], int)} fills the
-   * array as [qx, qy, qz, qw].
    */
-  private static float[] quaternionToEulerDegrees() {
-    // Overloaded helper; the real work is below.
-    return new float[]{0f, 0f, 0f};
-  }
-
   private static float[] quaternionToEulerDegrees(float[] q) {
     // q = [qx, qy, qz, qw]
     float qx = q[0], qy = q[1], qz = q[2], qw = q[3];
@@ -476,6 +581,19 @@ public final class ImageMarker implements ARImageMarker {
         (float) Math.toDegrees(yaw),
         (float) Math.toDegrees(roll)
     };
+  }
+
+  private static float distance(float[] a, float[] b) {
+    float dx = a[0] - b[0], dy = a[1] - b[1], dz = a[2] - b[2];
+    return (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+  }
+
+  private static float maxAbsDelta(float[] a, float[] b) {
+    float m = 0f;
+    for (int i = 0; i < 3; i++) {
+      m = Math.max(m, Math.abs(a[i] - b[i]));
+    }
+    return m;
   }
 
   // -------------------------------------------------------------------------

@@ -69,6 +69,7 @@ import java.util.*;
 import android.util.Log;
 import org.osmdroid.views.overlay.gestures.RotationGestureDetector;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 // TODO: update the component version
@@ -172,6 +173,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     private GestureDetector gestureDetector;
     private ScaleGestureDetector scaleGestureDetector;
+
+    private final List<ARImageMarker> imageMarkers = new CopyOnWriteArrayList<>();
+    private volatile boolean imageMarkerDbDirty = false;
 
     private float previousTwoFingerAngle = 0f;
     private enum ActiveGesture { NONE, SCALE, ROTATE }
@@ -317,6 +321,10 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         lastCamera.getViewMatrix(viewMatrix, 0);
 
         return new CameraVectors(viewMatrix);
+    }
+
+    public void imageMarkerDatabaseChanged() {
+        imageMarkerDbDirty = true;
     }
 
     private void setupGestureDetectors(Context context) {
@@ -845,6 +853,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         try {
             // Register camera texture (unchanged)
+
+            if (imageMarkerDbDirty) {
+                try {
+                    Config cfg = session.getConfig();
+                    buildImageMarkerDatabase(cfg);
+                    session.configure(cfg);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Image marker db reconfigure failed: " + e.getMessage());
+                }
+            }
             if (!hasSetTextureNames) {
                 if (backgroundRenderer != null
                     && backgroundRenderer.getCameraColorTexture() != null) {
@@ -967,7 +985,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             setDefaultPositions(arNodes);
             drawPlanesAndPoints(render, lastCamera, lastFrame,
                 viewMatrix, projectionMatrix);
-
+            for (ARImageMarker m : imageMarkers) {
+                if (m instanceof ImageMarker) {
+                    ((ImageMarker) m).onFrameUpdate(lastFrame);
+                }
+            }
 
             updatePhysics();
             updateCollisions();
@@ -1443,6 +1465,25 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             b.getCurrentPosition());
     }
 
+    private void buildImageMarkerDatabase(Config config) {
+        AugmentedImageDatabase db = new AugmentedImageDatabase(session);
+        int added = 0;
+        for (ARImageMarker m : imageMarkers) {
+            if (m instanceof ImageMarker) {
+                ImageMarker marker = (ImageMarker) m;
+                marker.arView = this;   // needed for event dispatch delegate
+                if (marker.registerWithDatabase(db, $form())) {
+                    added++;
+                }
+            }
+        }
+        if (added > 0) {
+            config.setAugmentedImageDatabase(db);
+        }
+        imageMarkerDbDirty = false;
+        Log.i(LOG_TAG, "Image marker database built with " + added + " image(s)");
+    }
+
     // Configure ARCore session
     private void configureSession() {
 
@@ -1471,6 +1512,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
         config.setDepthMode(Config.DepthMode.DISABLED);
+        buildImageMarkerDatabase(config);
         session.configure(config);
 
         configureDepth(config);
@@ -2246,7 +2288,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleProperty(description = "The list of ImageMarkers added to the ARView3D.")
     public List<ARImageMarker> ImageMarkers() {
-        return new ArrayList<ARImageMarker>();
+        return imageMarkers;
     }
 
     @SimpleProperty(description = "The list of Lights added to the ARView3D.")
@@ -2308,6 +2350,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleFunction(description = "Removed DetectedPlanes and resets detection for ImageMarkers.")
     public void ResetDetectedItems() {
+        for (ARImageMarker m : imageMarkers) {
+            if (m instanceof ImageMarker) {
+                ((ImageMarker) m).reset();
+            }
+        }
     }
 
     @SimpleFunction(description = "Sets Visible to false for all Nodes.")

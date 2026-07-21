@@ -85,6 +85,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   // Enhanced Marker and Positioning Properties
   protected ARImageMarker followingMarker = null;
+  protected float[] followOffset = {0f, 0f, 0f};
   protected String worldOffset = "";
   protected Object geoAnchor = null;
   protected float[] previewPlacementSurface = null;
@@ -155,7 +156,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     if (!EnablePhysics() || isBeingDragged) return;
     if (currentWorldMatrix == null) return;
     if (anchor == null) return;
-
+    if (followingMarker != null) return;
+    
     currentVelocity[1] += GRAVITY * deltaTime;
     currentVelocity[1] = Math.max(currentVelocity[1], -50f);
 
@@ -473,7 +475,58 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @SimpleEvent(description = "The node stopped following an ImageMarker. This event will trigger after the StopFollowingImageMarker block is called.")
   public void StoppedFollowingMarker() {
     Log.i("ARNodeBase", name + " stopped following marker");
+  }
     // Event dispatching handled by container
+  @SimpleFunction(description = "Makes the node follow an ImageMarker and sets "
+      + "its position to be the center of the detected image.")
+  public void Follow(ARImageMarker imageMarker) {
+    FollowWithOffset(imageMarker, 0f, 0f, 0f);
+  }
+
+  @Override
+  @SimpleFunction(description = "Makes the node follow an ImageMarker with an "
+      + "offset of (x,y,z) in centimeters, in the image's local space.")
+  public void FollowWithOffset(ARImageMarker imageMarker, float x, float y, float z) {
+    if (followingMarker != null) {
+      StopFollowingImageMarker();
+    }
+    followingMarker = imageMarker;
+    followOffset = new float[]{
+        UnitHelper.centimetersToMeters(x),
+        UnitHelper.centimetersToMeters(y),
+        UnitHelper.centimetersToMeters(z)
+    };
+    if (imageMarker instanceof ImageMarker) {
+      ImageMarker marker = (ImageMarker) imageMarker;
+      marker.attachNode(this);
+      // Snap immediately if the marker is already tracked
+      Pose p = marker.trackedPose();
+      if (p != null) updateFromMarkerPose(p);
+    }
+  }
+
+  @Override
+  @SimpleFunction(description = "Makes the node stop following the ImageMarker "
+      + "and keeps its current position.")
+  public void StopFollowingImageMarker() {
+    if (followingMarker == null) return;
+    if (followingMarker instanceof ImageMarker) {
+      ((ImageMarker) followingMarker).detachNode(this);
+    }
+    followingMarker = null;
+    // Lock the node where it is right now
+    reanchorAtCurrentPosition(planeFinder);
+    StoppedFollowingMarker();
+  }
+
+  /** Called by ImageMarker.onFrameUpdate while the image is fully tracked. */
+  public void updateFromMarkerPose(Pose markerPose) {
+    // transformPoint applies the marker's rotation to the offset, so the
+    // offset stays in the image's local space: +X across the image,
+    // +Z down the image, +Y out of the image surface.
+    float[] worldPos = markerPose.transformPoint(followOffset);
+    setCurrentPosition(worldPos);
+    setCurrentRotation(markerPose.getRotationQuaternion());
   }
 
   @Override
@@ -1971,52 +2024,6 @@ public void updateCollisionShape() {
   }
 // MARK: - Enhanced Image Marker Following
 
-  @Override
-  @SimpleFunction(description = "Makes the node follow an ImageMarker and sets its position to be the center of the detected image.")
-  public void Follow(ARImageMarker imageMarker) {
-    if (followingMarker != null) {
-      Log.w("ARNodeBase", "Node already following a marker");
-      return;
-    }
-
-    followingMarker = imageMarker;
-    // Implementation depends on ARImageMarker interface
-    Log.i("ARNodeBase", "Started following image marker");
-  }
-
-  @Override
-  @SimpleFunction(description = "Makes the node follow an ImageMarker and sets its position to be the center of the detected image with an offset of (x,y,z).")
-  public void FollowWithOffset(ARImageMarker imageMarker, float x, float y, float z) {
-    if (followingMarker != null) {
-      Log.w("ARNodeBase", "Node already following a marker");
-      return;
-    }
-
-    followingMarker = imageMarker;
-
-    // Implementation depends on ARImageMarker interface
-    Log.i("ARNodeBase", "Started following image marker with offset");
-  }
-
-  @Override
-  @SimpleFunction(description = "Makes the node stop following the ImageMarker and sets its position to its current position when this block is called.")
-  public void StopFollowingImageMarker() {
-    if (followingMarker == null) {
-      Log.w("ARNodeBase", "Node not following any marker");
-      return;
-    }
-
-    // Get current world position before stopping
-    if (anchor != null) {
-      fromPropertyPosition = anchor.getPose().getTranslation();
-    }
-
-    followingMarker = null;
-    StoppedFollowingMarker();
-    Log.i("ARNodeBase", "Stopped following image marker");
-  }
-
-// MARK: - Enhanced Look-At Functions
 
   @Override
   @SimpleFunction(description = "Rotates the node to look at the given node.")
