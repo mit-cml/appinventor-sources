@@ -140,6 +140,31 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     return this.pendingPosition;
   }
 
+  // MARK: - Rolling protocol dispatch
+  //
+  // A node opts into "rolling ball" geometry/physics by implementing
+  // RollingDraggable. These helpers are the single place that checks for
+  // that — nothing else in this class should reference a concrete node
+  // subclass by name.
+
+  /** True only when this node implements RollingDraggable AND currently has rolling turned on. */
+  protected boolean isRollingEnabled() {
+    return this instanceof RollingDraggable && ((RollingDraggable) this).isRollingDragEnabled();
+  }
+
+  /**
+   * Effective radius used for ground clearance / bottom-of-object math.
+   * RollingDraggable nodes report their own (e.g. sphere) radius regardless
+   * of whether rolling is currently turned on — a "sticky" sphere is still
+   * round. Everything else falls back to the generic collisionRadius.
+   */
+  protected float getPhysicsRadius() {
+    if (this instanceof RollingDraggable) {
+      return ((RollingDraggable) this).getRollingRadius();
+    }
+    return collisionRadius * Scale();
+  }
+
   // MARK: - Enhanced Basic Properties
   private void clearVelocities(){
     currentVelocity[0] = 0;
@@ -178,20 +203,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     currentPos[2] += currentVelocity[2] * deltaTime;
 
 
-    float objectBottom = currentPos[1];
-    if (this instanceof SphereNode) {
-      // visual radius = 0.5 * Scale() for sphere.obj
-      objectBottom -= SphereNode.SPHERE_OBJ_RADIUS * Scale();
-    } else {
-      objectBottom -= collisionRadius * Scale();
-    }
+    float objectBottom = currentPos[1] - getPhysicsRadius();
 
     if (objectBottom <= GROUND_LEVEL) {
-      if (this instanceof SphereNode) {
-        currentPos[1] = GROUND_LEVEL + (SphereNode.SPHERE_OBJ_RADIUS * Scale());
-      } else {
-        currentPos[1] = GROUND_LEVEL + (collisionRadius * Scale());
-      }
+      currentPos[1] = GROUND_LEVEL + getPhysicsRadius();
 
       if (currentVelocity[1] < 0) {
         currentVelocity[1] = -currentVelocity[1] * Restitution();
@@ -205,12 +220,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
 
     setCurrentPosition(currentPos); // writes to matrix, no ARCore
-// derive sphere rotation from linear velocity — v/r relationship
-    if (this instanceof SphereNode) {
-      float radius = SphereNode.SPHERE_OBJ_RADIUS * Scale();
-      angularVelocity[0] = currentVelocity[2] / radius;
-      angularVelocity[2] = -currentVelocity[0] / radius;
-      angularVelocity[1] = 0;
+// derive sphere rotation from linear velocity — v/r relationship, only for
+// nodes that are currently rolling (RollingDraggable + flag on)
+    if (isRollingEnabled()) {
+      float[] spin = ((RollingDraggable) this).computeRollingAngularVelocity(currentVelocity);
+      angularVelocity[0] = spin[0];
+      angularVelocity[1] = spin[1];
+      angularVelocity[2] = spin[2];
     }
 
 // apply rotation from angular velocity
@@ -230,8 +246,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       float[] current = getCurrentRotation();
       setCurrentRotation(multiplyQuaternions(deltaRot, current));
 
-      // only dampen for non-sphere nodes
-      if (!(this instanceof SphereNode)) {
+      // only dampen for nodes that aren't actively rolling — a rolling
+      // sphere's spin is driven by velocity every frame above, so damping
+      // it here would just fight that; anything else (or a sphere with
+      // rolling turned off) settles naturally.
+      if (!isRollingEnabled()) {
         float angularDamp = 1.0f - (0.5f * deltaTime);
         angularVelocity[0] *= angularDamp;
         angularVelocity[1] *= angularDamp;
@@ -904,8 +923,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       initWorldMatrixFromAnchor();
       // Also set ground level from anchor's plane Y
       GROUND_LEVEL = a.getPose().ty();
-      if (this instanceof SphereNode) {
-        currentWorldMatrix[13] = GROUND_LEVEL + (SphereNode.SPHERE_OBJ_RADIUS * Scale());
+      if (this instanceof RollingDraggable) {
+        currentWorldMatrix[13] = GROUND_LEVEL + ((RollingDraggable) this).getRollingRadius();
       }
       updateCollisionShape();
       Log.d("ARNodeBase", NodeType() + " anchor set, groundLevel=" + GROUND_LEVEL);
@@ -1748,8 +1767,8 @@ public void updateCollisionShape() {
     // Override in subclasses to implement scaling
     Log.d("ARNodeBase", "Scale update requested: " + scale);
     //if (enablePhysics) {
-      updateCollisionShape();
-   // }
+    updateCollisionShape();
+    // }
   }
 
   @Override

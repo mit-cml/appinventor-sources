@@ -32,7 +32,7 @@ import java.util.List;
         "External model files can be uploaded but must be less than 5 MB.",
     category = ComponentCategory.AR, iconName = "images/sphereNode.png")
 @SimpleObject
-public final class SphereNode extends ARNodeBase implements ARSphere {
+public final class SphereNode extends ARNodeBase implements ARSphere, RollingDraggable {
 
   // Core sphere properties
   private String objectModel = Form.ASSETS_PREFIX + "sphere.obj";
@@ -40,6 +40,11 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   private String behaviorName = "rolling";
 
   public static final float SPHERE_OBJ_RADIUS = 0.5f;
+
+  // Tuning for the rolling-specific release fling
+  private static final float BASE_ROLLING_MASS = 0.1f; // mass of the default rolling sphere
+  private static final float MAX_ROLLING_RELEASE_SPEED = 3.0f;
+  private static final float ROLLING_COLLISION_SPIN_SCALE = 0.3f;
 
   private ARNodeContainer _container;
   // Physics constants
@@ -66,14 +71,15 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   }
 
   public enum SurfaceBehaviorFlags {
-    ROLLING(1 << 0),    // Rolls when on ground
-    BOUNCY(1 << 1),     // High bounce
-    FLOATING(1 << 2),   // Reduced gravity
-    WET(1 << 3),        // High friction, low bounce
-    STICKY(1 << 4),     // Extreme adherence
-    SLIPPERY(1 << 5),   // Low friction
-    HEAVY(1 << 6),      // High mass
-    LIGHT(1 << 7);      // Low mass
+    ROLLING(1 << 1),    // Rolls when on ground
+    BOUNCY(1 << 2),     // High bounce
+    FLOATING(1 << 3),   // Reduced gravity
+    WET(1 << 4),        // High friction, low bounce
+    STICKY(1 << 5),     // Extreme adherence
+    SLIPPERY(1 << 6),   // Low friction
+    HEAVY(1 << 7),      // High mass
+    LIGHT(1 << 8),     // Low mass
+    NONE(1 << 9);
 
     private final int value;
 
@@ -100,6 +106,46 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   @Override
   public void Session(Session s) {
     this.session = s;
+  }
+
+  // MARK: - RollingDraggable Conformance
+  //
+  // These accessors are the only bridge between SphereNode's own fields and
+  // the shared rolling math in RollingDraggable's default methods.
+
+  @Override
+  public float getRollingRadius() {
+    // Matches the radius SphereNode itself uses everywhere else — the
+    // collision volume, not a recomputation from Scale().
+    return collisionVolume.getEffectiveRadius();
+  }
+
+  @Override
+  public boolean isRollingDragEnabled() {
+    // Rolling drag/spin only runs while the ROLLING behavior flag is set.
+    // Clear it (e.g. via IsRolling(false), or a sticky-ball style preset)
+    // and the sphere drags/collides exactly like a plain ARNodeBase.
+    return behaviorFlags.contains(SurfaceBehaviorFlags.ROLLING);
+  }
+
+  @Override
+  public float[] getCurrentRotationForRolling() {
+    return getCurrentRotation();
+  }
+
+  @Override
+  public void setCurrentRotationForRolling(float[] quaternion) {
+    setCurrentRotation(quaternion);
+  }
+
+  @Override
+  public float[] getDragVelocityForRolling() {
+    return dragVelocity;
+  }
+
+  @Override
+  public float getMassForRolling() {
+    return Mass();
   }
 
   // MARK: - Enhanced Radius Property
@@ -272,7 +318,10 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   public void startDrag(PointF fingerLocation) {
     super.startDrag(fingerLocation); // handles everything common
 
-    // Sphere-specific only
+    // Rolling-specific only — a non-rolling sphere (sticky, bubble, etc.)
+    // skips this and drags exactly like the ARNodeBase default.
+    if (!isRollingDragEnabled()) return;
+
     if (EnablePhysics()) {
       adjustPhysicsForDrag();
     }
@@ -289,7 +338,7 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
   public void updateDrag(float[] groundProjection) {
     if (!isBeingDragged || groundProjection == null) return;
 
-    if (lastFingerPosition != null) {
+    if (isRollingDragEnabled() && lastFingerPosition != null) {
       float[] movement = this.subtractVectors(groundProjection, lastFingerPosition);
       float distance = vectorLength(movement);
 
@@ -298,6 +347,8 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
         lastFingerPosition = groundProjection.clone();
         return;
       }
+      // Shared rolling math lives in RollingDraggable; no-ops automatically
+      // if rolling is ever disabled mid-drag.
       applyRealisticRolling(movement);
     }
     super.updateDrag(groundProjection); // handles position update
@@ -310,63 +361,38 @@ public final class SphereNode extends ARNodeBase implements ARSphere {
     restoreOriginalAppearance();
   }
 
-  private void applyRealisticRolling(float[] movement) {
-    float[] horizontalMovement = {movement[0], 0, movement[2]};
-    float distance = vectorLength(horizontalMovement);
-    float[] rotation = getCurrentRotation(); //CSB check this
-    Log.d("SphereNode", "Going to roll: " + arrayToString(rotation));
-    if (distance <= 0.0001f) return;
-
-    float ballRadius = collisionVolume.getEffectiveRadius();
-    float rollAngle = distance / ballRadius;
-
-    // Rotation axis perpendicular to movement
-    float[] direction = normalizeVector(horizontalMovement);
-    float[] rollAxis = {direction[2], 0, -direction[0]};
-
-    // Apply incremental rotation
-    float[] rollRotation = createQuaternionFromAxisAngle(rollAxis, rollAngle);
-
-    Log.d("SphereNode", "Before rolling: " + arrayToString(rotation));
-    rotation = multiplyQuaternions(rollRotation, rotation);
-    Log.d("SphereNode", "After rolling: " + arrayToString(rotation));;
-
-    setCurrentRotation(rotation);
-  }
-
   @Override
   protected void receiveCollisionImpulse(ARNodeBase striker, float[] normal, float impulse) {
     // Linear response from base
     super.receiveCollisionImpulse(striker, normal, impulse);
 
-    // Rolling angular response — sphere spins from the hit
-    float radius = collisionVolume.getEffectiveRadius();
-    float angularScale = 0.3f;
-    angularVelocity[0] = currentVelocity[2] / radius * angularScale;
-    angularVelocity[2] = -currentVelocity[0] / radius * angularScale;
+    // Rolling angular response — sphere spins from the hit. Only applies
+    // when rolling is enabled; otherwise the sphere bounces/slides without
+    // picking up spin, same as any other ARNodeBase.
+    if (!isRollingDragEnabled()) return;
+
+    float[] spin = computeRollingAngularVelocity(currentVelocity);
+    angularVelocity[0] = spin[0] * ROLLING_COLLISION_SPIN_SCALE;
+    angularVelocity[2] = spin[2] * ROLLING_COLLISION_SPIN_SCALE;
   }
 
   @Override
   public void applyReleaseVelocity() {
-    float speed = (float) Math.sqrt(
-        dragVelocity[0] * dragVelocity[0] +
-            dragVelocity[2] * dragVelocity[2]);
+    if (!isRollingDragEnabled()) {
+      // No mass-scaled fling for a non-rolling sphere — defer to the base
+      // class, which leaves velocity as-is (no-op).
+      super.applyReleaseVelocity();
+      return;
+    }
 
-    if (speed < 0.1f) return;
-
-    // heavier objects are harder to fling — scale by inverse mass
-    // baseMass = 0.1f is the default rolling sphere
-    float baseMass = 0.1f;
-    float massScale = baseMass / Mass(); // heavy=1.0 → 0.1x velocity, light=0.04 → 2.5x velocity
-
-    float MAX_RELEASE_SPEED = 3.0f;
-    currentVelocity[0] = clamp(dragVelocity[0] * massScale, -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
-    currentVelocity[1] = 0;
-    currentVelocity[2] = clamp(dragVelocity[2] * massScale, -MAX_RELEASE_SPEED, MAX_RELEASE_SPEED);
+    float[] release = computeRollingReleaseVelocity(BASE_ROLLING_MASS, MAX_ROLLING_RELEASE_SPEED);
+    currentVelocity[0] = release[0];
+    currentVelocity[1] = release[1];
+    currentVelocity[2] = release[2];
 
     Log.d("SphereNode", "Release velocity: ("
         + currentVelocity[0] + ", " + currentVelocity[2] + ")"
-        + " speed=" + speed + " mass=" + Mass() + " massScale=" + massScale);
+        + " mass=" + Mass());
   }
 
 

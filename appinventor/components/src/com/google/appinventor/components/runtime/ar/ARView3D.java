@@ -1510,6 +1510,12 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
         Log.i(LOG_TAG, "ARCore: geospatial supported ? " + isGeospatialSupported);
 
+        if (isGeospatialSupported) {
+            config.setGeospatialMode(Config.GeospatialMode.ENABLED);
+        } else {
+            Log.w(LOG_TAG, "Geospatial mode not supported on this device — "
+                + "AtLocation blocks will be unavailable this session.");
+        }
 
         config.setDepthMode(Config.DepthMode.DISABLED);
         buildImageMarkerDatabase(config);
@@ -2954,18 +2960,29 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    public Anchor setupLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates){
-        double[] position = { x, y, z};
-        double[] geoPosition = { lat, lng };
-
-        float[] rotation = {0,0,0, 1};
-        Log.i(LOG_TAG, position + " " + rotation + " geo is " + geoPosition);
+    // setupLocation() — guard against null Earth AND against Earth not yet localized
+    public Anchor setupLocation(float x, float y, float z, double lat, double lng,
+                                double altitude, boolean hasGeoCoordinates) {
         Earth earth = session.getEarth();
-        Anchor geoAnchor  = earth.createAnchor(lat,lng, altitude, rotation);
-        // CSB to do
-        return geoAnchor;
-    }
 
+        if (earth == null) {
+            Log.w(LOG_TAG, "Geospatial not enabled/supported — "
+                + "falling back to local (non-geo) anchor at (" + x + "," + y + "," + z + ")");
+            return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
+        }
+
+        if (earth.getTrackingState() != TrackingState.TRACKING) {
+            // Earth exists but hasn't localized yet (needs a moment outdoors with
+            // network access). createAnchor would throw IllegalStateException here.
+            Log.w(LOG_TAG, "Earth not yet TRACKING (state=" + earth.getTrackingState()
+                + ") — falling back to local anchor");
+            return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
+        }
+
+        float[] rotation = {0, 0, 0, 1};
+        Log.i(LOG_TAG, "geo anchor at lat=" + lat + " lng=" + lng + " alt=" + altitude);
+        return earth.createAnchor(lat, lng, altitude, rotation);
+    }
 
     @SimpleFunction(description = "Create a new webViewNode with geo coords")
     public WebViewNode CreateWebViewNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
