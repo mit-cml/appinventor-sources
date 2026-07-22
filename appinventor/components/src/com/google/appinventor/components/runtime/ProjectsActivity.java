@@ -1,11 +1,13 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2025 MIT, All rights reserved
+// Copyright 2025-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 
@@ -56,11 +58,28 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
     @JavascriptInterface
     public String listProjects() {
       java.io.File projectsDir = ProjectsActivity.this.getApplicationContext().getExternalFilesDir("assets/__projects__");
+      if (projectsDir == null) {
+        Log.w("ProjectsActivity", "projectsDir is null");
+        return "[]";
+      }
       Log.d("ProjectsActivity", "projectsDir = " + projectsDir.getPath());
-      String [] files = projectsDir.list();
+      java.io.File[] files = projectsDir.listFiles();
+      if (files == null) {
+        return "[]";
+      }
       JSONArray retval = new JSONArray();
-      for (String file : files ) {
-        retval.put(file);
+      for (java.io.File file : files) {
+        if (!file.isFile() || file.getName().startsWith(".")) {
+          continue;
+        }
+        try {
+          JSONObject entry = new JSONObject();
+          entry.put("name", file.getName());
+          entry.put("lastModified", file.lastModified());
+          retval.put(entry);
+        } catch (JSONException e) {
+          Log.e("ProjectsActivity", "Error building project entry", e);
+        }
       }
       return retval.toString();
     }
