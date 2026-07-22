@@ -606,6 +606,7 @@ public final class GeoJSONUtil {
 
     private void writePoints(List<GeoPoint> points) {
       boolean first = true;
+      GeoPoint firstpoint=points.get(0);
       for (GeoPoint p : points) {
         if (!first) out.print(',');
         out.print("[");
@@ -619,6 +620,16 @@ public final class GeoJSONUtil {
         out.print("]");
         first = false;
       }
+      out.print(',');
+      out.print("[");
+      out.print(firstpoint.getLongitude());
+      out.print(",");
+      out.print(firstpoint.getLatitude());
+      if (hasAltitude(firstpoint)) {
+        out.print(",");
+        out.print(firstpoint.getAltitude());
+      }
+      out.print("]");
     }
 
     private void writeLineGeometry(MapLineString lineString) {
@@ -650,6 +661,7 @@ public final class GeoJSONUtil {
 
     private void writePolygonGeometryNoHoles(MapPolygon polygon) {
       out.print("\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[");
+      out.print("[");
       writePoints(polygon.getPoints().get(0));
       if (!polygon.getHolePoints().isEmpty()) {
         for (List<GeoPoint> points : polygon.getHolePoints().get(0)) {
@@ -657,6 +669,7 @@ public final class GeoJSONUtil {
           writePoints(points);
         }
       }
+      out.print("]");
       out.print("]}");
     }
 
