@@ -8,10 +8,19 @@ import XCTest
 @testable import AIComponentKit
 
 class SliderTests: XCTestCase {
-  var slider: Slider = Slider(Form())
+  var form: Form!
+  var slider: Slider!
 
   override func setUp() {
-    slider = Slider(Form())
+    form = Form()
+    slider = Slider(form)
+  }
+
+  override func tearDown() {
+    releaseTestResources(form: form, interpreter: nil)
+    form = nil
+    slider = nil
+    super.tearDown()
   }
 
   func testDefaultSliderPosition() {

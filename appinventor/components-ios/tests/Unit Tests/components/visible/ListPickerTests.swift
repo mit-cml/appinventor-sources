@@ -16,6 +16,13 @@ class ListPickerTests: XCTestCase {
     testListPicker = ListPicker(testForm)
   }
 
+  override func tearDown() {
+    releaseTestResources(form: testForm, interpreter: nil)
+    testForm = nil
+    testListPicker = nil
+    super.tearDown()
+  }
+
   func testSelectionIndex() {
     testListPicker.Elements = ["apple", "banana", "cantalope"] as [AnyObject]
 

@@ -168,6 +168,23 @@ class AppInventorTestCase: XCTestCase {
   }
 
   open override func tearDown() {
-    EventDispatcher.unregisterAllEventsForDelegation()
+    expectations.removeAll()
+    form?.checkerMap.removeAll()
+    form?.testComponents.removeAll()
+    releaseTestResources(form: form, interpreter: interpreter)
+    form = nil
+    interpreter = nil
+    super.tearDown()
+  }
+
+  /// Regression guard: dispatch delegates must not accumulate when tests finish.
+  func testDispatchDelegateReleasedAfterTearDown() {
+    let baseline = EventDispatcher.registeredDispatchDelegateCount
+    expectToReceiveEvent(on: form, named: "BackPressed")
+    XCTAssertGreaterThan(EventDispatcher.registeredDispatchDelegateCount, baseline)
+    form.checkerMap.removeAll()
+    expectations.removeAll()
+    releaseTestResources(form: form, interpreter: interpreter)
+    XCTAssertEqual(baseline, EventDispatcher.registeredDispatchDelegateCount)
   }
 }

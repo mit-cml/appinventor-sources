@@ -110,12 +110,20 @@ open class EventDispatcher: NSObject {
     }))
   }
   
+  /// Clears registered event names but does not release dispatch delegates from the registry.
+  /// Production code reuses the same form; unit tests must call `removeDispatchDelegate` when
+  /// discarding a form so the delegate (and its component tree) can be deallocated.
   @objc open class func unregisterAllEventsForDelegation() {
     for er in mapDispatchDelegateToEventRegistry.allValues {
       if er is EventRegistry {
         (er as! EventRegistry).eventClosuresMap.removeAll()
       }
     }
+  }
+
+  /// Number of dispatch delegates currently held in the event registry (for unit tests).
+  internal static var registeredDispatchDelegateCount: Int {
+    return mapDispatchDelegateToEventRegistry.count
   }
   
   @objc open class func removeDispatchDelegate(_ dispatchDelegate: HandlesEventDispatching) {
