@@ -12,11 +12,8 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.runtime.util.AsynchUtil;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.MapFactory;
+import com.google.appinventor.components.runtime.util.*;
 import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
-import com.google.appinventor.components.runtime.util.YailList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static com.google.appinventor.components.runtime.util.GeoJSONUtil.getGeoJSONFeatures;
 import static com.google.appinventor.components.runtime.util.GeoJSONUtil.getGeoJSONType;
 import static com.google.appinventor.components.runtime.util.GeoJSONUtil.processGeoJSONFeature;
+import static com.google.appinventor.components.runtime.util.YailDictionary.alistToDict;
 
 @SimpleObject
 public abstract class MapFeatureContainerBase extends AndroidViewComponent implements MapFactory.MapFeatureContainer {
@@ -260,7 +258,7 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
   @SimpleFunction
   public Object FeatureFromDescription(YailList description) {
     try {
-      Object feature = processGeoJSONFeature(TAG, this, description);
+      Object feature = processGeoJSONFeature(TAG, this, alistToDict(description));
       if (feature == null) {
         return "No valid feature provided";
       }
@@ -273,6 +271,36 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
     }
   }
 
+  /**Converts a feature description into an App Inventor map feature. Points are converted into
+   * {@link Marker} components, LineStrings are converted into {@link LineString} components, and
+   * Polygons (and MultiPolygons) are converted into {@link Polygon} components. If the feature has
+   * properties, they will be mapped into App Inventor properties using the following mapping:
+   *
+   *   * description becomes `Description`
+   *   * draggable becomes `Draggable`
+   *   * infobox becomes `EnableInfobox`
+   *   * fill becomes `FillColor`
+   *   * fill-opacity becomes `FillOpacity`
+   *   * image becomes `ImageAsset`
+   *   * stroke becomes `StrokeColor`
+   *   * stroke-opacity becomes `StrokeOpacity`
+   *   * stroke-width becomes `StrokeWidth`
+   *   * title becomes `Title`
+   *   * visible becomes `Visible`
+   *
+   * @param description The description of a map feature, as a Dictionary
+   * @return A new component representing the feature, or a string indicating an error.
+   */
+  @SimpleFunction
+  public Object FeatureFromDescription(YailDictionary description) {
+    try {
+      return processGeoJSONFeature(TAG, this, description);
+    } catch(IllegalArgumentException e) {
+      $form().dispatchErrorOccurredEvent(this, "FeatureFromDescription",
+              ERROR_CODE_MALFORMED_GEOJSON, e.getMessage());
+      return e.getMessage();
+    }
+  }
   /**
    * The `GotFeatures` event is run when a feature collection is successfully read from the
    * given `url`{:.variable.block}. The `features`{:.variable.block} parameter will be a list of
