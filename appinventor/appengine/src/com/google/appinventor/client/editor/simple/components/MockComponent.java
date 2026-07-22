@@ -1332,6 +1332,18 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   }-*/;
 
   /**
+   * Returns an optional widget to be rendered below the properties list when this
+   * component is selected in the designer. Returns {@code null} by default.
+   *
+   * <p>Storage components (e.g. {@link MockCloudDB}) override this to provide a
+   * "View Data" button that opens the {@link
+   * com.google.appinventor.client.editor.simple.dialogs.DataVisualizerPanel}.
+   */
+  public com.google.gwt.user.client.ui.Widget getPropertiesPanelExtension() {
+    return null;
+  }
+
+  /**
    * Implementation of {@link SourceStructureExplorerItem} for this component. Named (not
    * anonymous) so that its type is accessible for instanceof checks in {@link #moveTo}.
    */

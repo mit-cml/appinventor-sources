@@ -808,6 +808,10 @@ Blockly.WorkspaceSvg.prototype.fireChangeListener = function(event) {
       block = this.blockDB.get(event.blockId);
     oldParent && this.requestErrorChecking(oldParent);
     block && this.requestErrorChecking(block);
+  } else if ((event.type === Blockly.Events.BLOCK_CHANGE ||
+      event.type === Blockly.Events.CHANGE) && event.element === 'field') {
+    var block = this.blockDB.get(event.blockId);
+    block && this.requestErrorChecking(block);
   }
 };
 

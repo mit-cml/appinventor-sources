@@ -102,15 +102,19 @@ public class ProjectListItem extends Composite {
 
   @UiHandler("projectnameFocusPanel")
   protected void openProject(KeyDownEvent e) {
-    if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-      Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+    if (!project.isInTrash()) {
+      if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+        Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+      }
     }
   }
 
   @SuppressWarnings("unused")
   @UiHandler("projectnameFocusPanel")
   protected void itemClicked(ClickEvent e) {
-    Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+    if (!project.isInTrash()) {
+      Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+    }
   }
 
   private static native void configureDraggable(Element el)/*-{

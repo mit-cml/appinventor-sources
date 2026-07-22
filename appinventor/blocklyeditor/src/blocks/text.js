@@ -97,6 +97,25 @@ function maybeBumpBlockOnFinishEdit(block) {
   }
 }
 
+Blockly.Blocks['text_multiline_text'] = {
+  // Multiline text string.
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_HELPURL,
+  init: function () {
+    const multilineInput = new Blockly.FieldMultilineInput('', Blockly.Blocks['text'].inputValidator);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TITLE)
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE)
+        .appendField(multilineInput, 'TEXT')
+        .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    this.setTooltip(Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TOOLTIP);
+  },
+  onchange: Blockly.Blocks['text'].onchange,
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TITLE}]
+};
+
 Blockly.Blocks['text_join'] = {
   // Create a string made up of any number of elements of any type.
   // TODO: (Andrew) Make this handle multiple arguments.

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.os.Looper;
 import android.view.View;
 
 import android.widget.EditText;
@@ -20,6 +21,8 @@ import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import org.junit.Test;
+
+import static org.robolectric.Shadows.shadowOf;
 
 public class ListViewTest extends RobolectricTestBase {
   /**
@@ -119,14 +122,19 @@ public class ListViewTest extends RobolectricTestBase {
   private View getViewForPosition(ListView listView, int position) {
     LinearLayout listLayout = (LinearLayout) ((LinearLayout) listView.getView()).getChildAt(1);
     RecyclerView rv = (RecyclerView) listLayout.getChildAt(0);
+    rv.scrollToPosition(position);
+    shadowOf(Looper.getMainLooper()).idle();
     RecyclerView.ViewHolder vh = rv.findViewHolderForAdapterPosition(position);
     assertNotNull(vh);
     return vh.itemView;
   }
 
   private void initialize(AndroidViewComponent component) {
-    component.getView().invalidate();
-    component.getView().forceLayout();
-    component.getView().measure(0, 0);
+    View v = component.getView();
+    v.measure(
+        View.MeasureSpec.makeMeasureSpec(320, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+    shadowOf(Looper.getMainLooper()).idle();
   }
 }

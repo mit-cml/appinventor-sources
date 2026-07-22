@@ -365,6 +365,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final String PROPERTY_NAME_ICON = "Icon";
   private static final String PROPERTY_NAME_VCODE = "VersionCode";
   private static final String PROPERTY_NAME_VNAME = "VersionName";
+  private static final String PROPERTY_NAME_ANDROID_MIN_SDK = "AndroidMinSdk";
   private static final String PROPERTY_NAME_ANAME = "AppName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   private static final String PROPERTY_NAME_TITLEVISIBLE = "TitleVisible";
@@ -387,6 +388,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final String PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSCAMERAUSAGE;
   private static final String PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
   private static final String PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION = SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
+  private static final String PROPERTY_NAME_IOS_MIN_SDK = SettingsConstants.YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK;
 
   private static final Set<String> IOS_PERMISSION_PROPERTIES = new HashSet<>(
       asList(
@@ -396,7 +398,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
           PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION,
           PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION,
           PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION,
-          PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION
+          PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION,
+          PROPERTY_NAME_IOS_MIN_SDK
       ));
 
   // Form UI components
@@ -825,6 +828,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       case PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION:
+      case PROPERTY_NAME_IOS_MIN_SDK:
       case PROPERTY_NAME_DEFAULTFILESCOPE: {
         return false;
       }
@@ -1130,7 +1134,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
 
   @Override
   protected boolean isPropertyforYail(String propertyName) {
-    if (IOS_PERMISSION_PROPERTIES.contains(propertyName)) {
+    if (IOS_PERMISSION_PROPERTIES.contains(propertyName)
+        || propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)) {
       // These are project-level properties, not per form.
       return false;
     }
@@ -1375,6 +1380,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_BUILD_NUMBER)) {
       setBuildNumber(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)) {
+      if (editor.isScreen1()) {
+        editor.getProjectEditor().changeProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+            newValue);
+      }
     } else if (
         propertyName.equals(PROPERTY_NAME_NSBTALWAYSUSAGEDESCRIPTION)
         || propertyName.equals(PROPERTY_NAME_NSBTPERIPHERALUSAGEDESCRIPTION)
@@ -1382,7 +1394,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
         || propertyName.equals(PROPERTY_NAME_NSMICROPHONEUSAGEDESCRIPTION)
         || propertyName.equals(PROPERTY_NAME_NSCAMERAUSAGEDESCRIPTION)
         || propertyName.equals(PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION)
-        || propertyName.equals(PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION)) {
+        || propertyName.equals(PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION)
+        || propertyName.equals(PROPERTY_NAME_IOS_MIN_SDK)) {
       if (editor.isScreen1()) {
         editor.getProjectEditor().changeProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -1433,6 +1446,10 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_TUTORIAL_URL));
+      properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+          editor.getProjectEditor().getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK));
       properties.changePropertyValue(SettingsConstants.YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET,
           editor.getProjectEditor().getProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,

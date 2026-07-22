@@ -61,7 +61,7 @@ public class CompileLaunchScreen implements IosTask {
         "--target-device",
         "ipad",
         "--minimum-deployment-target",
-        "12.0",
+        context.getProject().getIosMinSdk(),
         "--compilation-directory",
         base.getAbsolutePath(),
         launchScreen.getAbsolutePath()

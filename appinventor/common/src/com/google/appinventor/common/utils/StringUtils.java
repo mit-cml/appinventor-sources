@@ -357,4 +357,15 @@ public final class StringUtils {
     int index = qualifiedName.lastIndexOf('.');
     return index < 0 ? "" : qualifiedName.substring(0, index);
   }
+
+  /**
+   * Gets the simple class name from a given fully qualified class name.
+   *
+   * @param qualifiedName  fully qualified class name
+   * @return  simple class name
+   */
+  public static String getSimpleClassName(String qualifiedName) {
+    int index = qualifiedName.lastIndexOf('.');
+    return index < 0 ? qualifiedName : qualifiedName.substring(index + 1);
+  }
 }

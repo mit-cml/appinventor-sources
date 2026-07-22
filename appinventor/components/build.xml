@@ -291,13 +291,14 @@
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/bouncycastle/bcprov-jdk15on-149.jar" />
 
-    <!-- Powermock and dependencies -->
-    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
+    <!-- Mocking libraries (EasyMock 5, Mockito 5, byte-buddy) -->
+    <fileset dir="${lib.dir}/mocklibs" includes="*.jar" />
 
     <pathelement location="${lib.dir}/android/support/testing-support-R-classes.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
-    <pathelement location="${lib.dir}/robolectric/robolectric-4.0.2-alldeps.jar" />
+    <!-- Exclude bcprov to avoid signing conflict with bouncycastle/bcprov-jdk15on-149.jar above -->
+    <fileset dir="${lib.dir}/robolectric" includes="*.jar" excludes="bcprov-*.jar" />
     <pathelement location="${android.lib}" />
   </path>
 

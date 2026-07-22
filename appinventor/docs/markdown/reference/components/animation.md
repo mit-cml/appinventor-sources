@@ -364,6 +364,9 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 
 {:.properties}
 
+{:id="ImageSprite.Animated" .boolean} *Animated*
+: Controls whether an animated GIF image is playing. Setting to true resumes animation; setting to false pauses at the current frame. Has no effect on non-animated images.
+
 {:id="ImageSprite.Enabled" .boolean} *Enabled*
 : Controls whether the `ImageSprite` moves when its speed is non-zero.
 
@@ -501,3 +504,6 @@ A 'sprite' that can be placed on a [`Canvas`](#Canvas), where it can react to to
 {:id="ImageSprite.PointTowards" class="method"} <i/> PointTowards(*target*{:.component})
 : Turns this `ImageSprite` to point towards a given `target` sprite. The new heading will be parallel
  to the line joining the origins of the two sprites.
+
+{:id="ImageSprite.ResetAnimation" class="method"} <i/> ResetAnimation()
+: Resets the animation of an animated GIF image to the first frame. If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.

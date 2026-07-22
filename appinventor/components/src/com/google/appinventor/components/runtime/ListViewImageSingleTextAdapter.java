@@ -31,11 +31,12 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
   private String textMainFont;
   private int imageWidth;
   private int imageHeight;
+  private int textMainAlignment;
 
   public ListViewImageSingleTextAdapter(ComponentContainer container, List<Object> data,
       int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
       float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight) {
+      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
     super(container, data, backgroundColor, selectionColor, radius);
     this.container = container;
     this.textMainColor = textMainColor;
@@ -43,6 +44,7 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     this.textMainFont = textMainFont;
     this.imageWidth = imageWidth;
     this.imageHeight = imageHeight;
+    this.textMainAlignment = textMainAlignment;
   }  
 
   @Override
@@ -63,11 +65,12 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     TextView textViewFirst = new TextView(container.$context());
     final int idFirst = ViewCompat.generateViewId();
     textViewFirst.setId(idFirst);
-    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
     TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
+    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
 
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

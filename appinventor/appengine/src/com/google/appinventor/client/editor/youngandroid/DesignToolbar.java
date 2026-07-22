@@ -180,7 +180,7 @@ public class DesignToolbar extends Toolbar {
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
-    Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     toggleView();
   }
 
@@ -243,7 +243,7 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
     }
-    Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
     screen.blocksEditor.makeActiveWorkspace();

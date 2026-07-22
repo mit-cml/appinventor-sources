@@ -190,6 +190,7 @@ public class ProjectFolder extends Composite {
     nameLabel.setText(name);
     dateCreatedLabel.setText(DATE_FORMAT.format(new Date(dateCreated)));
     dateModifiedLabel.setText(DATE_FORMAT.format(new Date(dateModified)));
+    setSelected(false);
     childrenContainer.clear();
     List<ProjectFolder> sortedChildren = getChildFolders();
     if (needToSort) {
@@ -287,6 +288,19 @@ public class ProjectFolder extends Composite {
       }
       if (f.isExpanded()) {
         list.addAll(f.getVisibleProjects(onlySelected));
+      }
+    }
+    return list;
+  }
+
+  public List<Project> getLiveProjects() {
+    List<Project> list = new ArrayList<>();
+    for (ProjectListItem item : projectListItems) {
+      list.add(item.getProject());
+    }
+    for (ProjectFolder f : folders.values()) {
+      if (!"*trash*".equals(f.getName())) {
+        list.addAll(f.getLiveProjects());
       }
     }
     return list;

@@ -319,17 +319,15 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
     }
   }
 
-  @objc open var FontTypeface: Int32 {
+  @objc open var FontTypeface: String {
     get {
-      return _fontTypeface.rawValue
+      return String(_fontTypeface.rawValue)
     }
     set(newTypeFace) {
-      if newTypeFace != _fontTypeface.rawValue {
-        if let type = Typeface(rawValue: Int32(newTypeFace)) {
-          _fontTypeface = type
-          _view._text.font = getFontTypeface(font: _view._text.font, typeFace: type)
-        }
+      if let type = getTypeface(newTypeFace) {
+        _fontTypeface = type
       }
+      _view._text.font = getFontTypeface(font: _view._text.font, typeFace: newTypeFace)
     }
   }
 
@@ -375,7 +373,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
   @objc open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
   }
-  
+
   @objc open func LostFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }

@@ -435,7 +435,7 @@ A two-dimensional container that renders map tiles in the background and allows 
 : Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.
 
-{:id="Map.LocationSensor" .component .wo} *LocationSensor*
+{:id="Map.LocationSensor" .component} *LocationSensor*
 : Uses the provided [`LocationSensor`](sensors.html#LocationSensor) for user location data
  rather than the built-in location provider.
 

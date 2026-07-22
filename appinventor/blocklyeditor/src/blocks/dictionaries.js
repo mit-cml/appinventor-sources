@@ -118,6 +118,20 @@ Blockly.Blocks['dictionaries_create_with'] = {
     containerBlock.setFieldValue(Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TITLE_ADD,"CONTAINER_TEXT");
     containerBlock.setTooltip(Blockly.Msg.LANG_DICTIONARIES_CREATE_WITH_CONTAINER_TOOLTIP);
   },
+  onchange: function(event) {
+    if ((event.type !== Blockly.Events.BLOCK_CHANGE &&
+        event.type !== Blockly.Events.CHANGE) || event.element !== 'field') {
+      return;
+    }
+    var block = this.workspace.getBlockById(event.blockId);
+    while (block) {
+      if (block === this) {
+        this.workspace.requestErrorChecking(this);
+        return;
+      }
+      block = block.getParent();
+    }
+  },
   /**
    * Create a human-readable text representation of this block and any children.
    * @param {number=} opt_maxLength Truncate the string to this length.
@@ -159,7 +173,8 @@ Blockly.Blocks['dictionaries_create_with'] = {
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_DICTIONARY_TITLE,
         mutatorAttributes: { items: 2 } },
       { translatedName: Blockly.Msg.LANG_DICTIONARIES_CREATE_EMPTY_TITLE,
-        mutatorAttributes: { items: 0 } }]
+        mutatorAttributes: { items: 0 } }],
+  warnings: [{name: 'buildDuplicateDictKeysMap'}]
 };
 
 Blockly.Blocks['dictionaries_mutator_pair'] = {
@@ -190,7 +205,9 @@ Blockly.Blocks['pair'] = {
     this.setTooltip(Blockly.Msg.LANG_DICTIONARIES_PAIR_TOOLTIP);
     this.setInputsInline(true);
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_DICTIONARIES_MAKE_PAIR_TITLE }],
+  //add a warning here. 
+  warnings: [{name: 'checkIfIAmADuplicateKey'}]
 };
 
 Blockly.Blocks['dictionaries_lookup'] = {

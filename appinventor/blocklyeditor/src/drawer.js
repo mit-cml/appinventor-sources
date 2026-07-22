@@ -48,6 +48,17 @@ Blockly.Drawer = function(parentWorkspace, opt_options) {
 Blockly.Drawer.PREFIX_ = 'cat_';
 
 /**
+ * Blocks shown directly when opening the Procedures drawer.
+ * @private
+ */
+Blockly.Drawer.PROCEDURE_PRIMARY_BLOCKS_ = [
+  'procedures_defnoreturn',
+  'procedures_defreturn',
+  'procedures_callnoreturn',
+  'procedures_callreturn'
+];
+
+/**
  * Build the hierarchical tree of block types.
  * Note: taken from Blockly's toolbox.js
  * @return {!Object} Tree object.
@@ -129,17 +140,11 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   }
   var blockSet = this.options.languageTree[drawerName];
   if (drawerName == "cat_Procedures") {
-    var newBlockSet = [];
-    for (var i = 0; i < blockSet.length; i++) {
-      if(!(blockSet[i] == "procedures_callnoreturn" // Include callnoreturn only if at least one defnoreturn declaration
-           && this.workspace_.getProcedureDatabase().voidProcedures == 0)
-         &&
-         !(blockSet[i] == "procedures_callreturn" // Include callreturn only if at least one defreturn declaration
-           && this.workspace_.getProcedureDatabase().returnProcedures == 0)){
-        newBlockSet.push(blockSet[i]);
-      }
-    }
-    blockSet = newBlockSet;
+    this.showProcedurePrimary_(blockSet);
+    return;
+  } else if (drawerName == "cat_ProceduresMore") {
+    this.showProcedureMore_();
+    return;
   }
 
   if (!blockSet) {
@@ -148,6 +153,66 @@ Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   Blockly.hideChaff();
   var xmlList = this.blockListToXMLArray(blockSet);
   this.flyout_.show(xmlList);
+};
+
+/**
+ * Show the primary Procedures drawer contents.
+ * @param {!Array<string>} blockSet All block types in the Procedures category.
+ * @private
+ */
+Blockly.Drawer.prototype.showProcedurePrimary_ = function(blockSet) {
+  if (!blockSet) {
+    throw "no such drawer: cat_Procedures";
+  }
+  Blockly.hideChaff();
+  var xmlList = this.blockListToXMLArray(
+      this.filterProcedureBlocks_(blockSet, true));
+  this.flyout_.show(xmlList);
+};
+
+/**
+ * Show procedure blocks that are tucked behind the More button.
+ * @private
+ */
+Blockly.Drawer.prototype.showProcedureMore_ = function() {
+  if (!this.options.languageTree) {
+    this.options.languageTree = Blockly.Drawer.buildTree_();
+  }
+  var blockSet = this.options.languageTree['cat_Procedures'];
+  if (!blockSet) {
+    throw "no such drawer: cat_Procedures";
+  }
+  Blockly.hideChaff();
+  this.flyout_.show(this.blockListToXMLArray(
+      this.filterProcedureBlocks_(blockSet, false)));
+};
+
+/**
+ * Filters procedure block types for the primary or More view.
+ * @param {!Array<string>} blockSet All block types in the Procedures category.
+ * @param {boolean} primaryView Whether to return primary procedure blocks.
+ * @return {!Array<string>}
+ * @private
+ */
+Blockly.Drawer.prototype.filterProcedureBlocks_ = function(blockSet, primaryView) {
+  var procDb = this.workspace_.getProcedureDatabase();
+  var primaryBlocks = Blockly.Drawer.PROCEDURE_PRIMARY_BLOCKS_;
+  var filteredBlockSet = [];
+  for (var i = 0; i < blockSet.length; i++) {
+    var blockType = blockSet[i];
+    var isPrimary = primaryBlocks.indexOf(blockType) != -1;
+    if (primaryView != isPrimary) {
+      continue;
+    }
+    if (blockType == "procedures_callnoreturn" && procDb.voidProcedures == 0) {
+      continue;
+    }
+    if (blockType == "procedures_callreturn" && procDb.returnProcedures == 0) {
+      continue;
+    }
+    filteredBlockSet.push(blockType);
+  }
+  return filteredBlockSet;
 };
 
 /**

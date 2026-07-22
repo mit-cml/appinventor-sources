@@ -63,6 +63,8 @@ fileprivate final class ListViewRootView: UIView {
   fileprivate var _elementMarginsWidth = Int32(0)
   fileprivate var _imageHeight = Int32(200)
   fileprivate var _imageWidth = Int32(200)
+  fileprivate var _textAlignmentMain = Alignment.normal.rawValue
+  fileprivate var _textAlignmentDetail = Alignment.normal.rawValue
 
   let COMPANION_CORRECTION = 5
 
@@ -621,6 +623,56 @@ fileprivate final class ListViewRootView: UIView {
     }
   }
 
+  @objc open var TextAlignmentMain: Int32 {
+    get {
+      return _textAlignmentMain
+    }
+    set(alignment) {
+      if Alignment(rawValue: alignment) != nil {
+        _textAlignmentMain = alignment
+        _view.reloadData()
+        _collectionView.reloadData()
+      }
+    }
+  }
+
+  @objc open var TextAlignmentDetail: Int32 {
+    get {
+      return _textAlignmentDetail
+    }
+    set(alignment) {
+      if Alignment(rawValue: alignment) != nil {
+        _textAlignmentDetail = alignment
+        _view.reloadData()
+        _collectionView.reloadData()
+      }
+    }
+  }
+
+  fileprivate func nsTextAlignment(for value: Int32, in view: UIView) -> NSTextAlignment {
+    var rtl = false
+    if #available(iOS 9.0, *) {
+      if UIView.userInterfaceLayoutDirection(for: view.semanticContentAttribute) == .rightToLeft {
+        rtl = true
+      }
+    } else {
+      if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
+        rtl = true
+      }
+    }
+    guard let align = Alignment(rawValue: value) else {
+      return rtl ? .right : .left
+    }
+    switch align {
+      case .normal:
+        return rtl ? .right : .left
+      case .center:
+        return .center
+      case .opposite:
+        return rtl ? .left : .right
+    }
+  }
+
   // MARK: Methods
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
@@ -722,17 +774,78 @@ fileprivate final class ListViewRootView: UIView {
       let item = listItem(at: indexPath.row) ?? makeListItem()
       cell.imageView?.image = nil
       tableView.rowHeight = UITableView.automaticDimension
-      
+
       if _listViewLayoutMode == 0 {
-        cell.textLabel?.text = item["Text1"] as? String ?? ""
+        cell.textLabel?.text = item["Text1"] as? String
         cell.detailTextLabel?.text = ""
-        tableView.estimatedRowHeight = preferredRowHeight
+        tableView.estimatedRowHeight = 44
       } else {
-        if _listViewLayoutMode == 1 || _listViewLayoutMode == 2 {
-          
-          tableView.estimatedRowHeight = preferredRowHeight
-          cell.textLabel?.text = item["Text1"] as? String ?? ""
-          cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
+        if _listViewLayoutMode == 1 {
+          tableView.rowHeight = UITableView.automaticDimension
+          tableView.estimatedRowHeight = 44
+          cell.textLabel?.text = item["Text1"] as? String
+          cell.detailTextLabel?.text = item["Text2"] as? String
+
+          // Wrap system labels in a full-width vertical stack so textAlignment
+          // is visible for short strings. (UIKit's default subtitle layout
+          // sizes labels to content for short text, making centering invisible.)
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
+          let stackView = UIStackView()
+          stackView.axis = .vertical
+          stackView.alignment = .fill
+          stackView.distribution = .fill
+          stackView.spacing = 8.0
+
+          // Add the labels to the stack view
+          stackView.addArrangedSubview(cell.textLabel!)
+          stackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Add the stack view to the cell's content view
+          cell.contentView.addSubview(stackView)
+
+          // Set up constraints
+          stackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
+          ])
+        } else if _listViewLayoutMode == 2 {
+          tableView.rowHeight = UITableView.automaticDimension
+          tableView.estimatedRowHeight = 60
+          cell.textLabel?.text = item["Text1"] as? String
+          cell.detailTextLabel?.text = item["Text2"] as? String
+
+          // Create a stack view to hold the labels horizontally. Align by
+          // first baseline so the labels' first text lines line up visually
+          // regardless of font-size differences (top alignment makes the
+          // smaller detail font appear higher than main due to font metrics;
+          // .fill stretches labels vertically and centers the text inside).
+          let stackView = UIStackView()
+          stackView.axis = .horizontal
+          stackView.alignment = .firstBaseline
+          stackView.distribution = .fillEqually
+          stackView.spacing = 8.0
+
+          // Add the labels to the stack view
+          stackView.addArrangedSubview(cell.textLabel!)
+          stackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Add the stack view to the cell's content view
+          cell.contentView.addSubview(stackView)
+
+          // Set up constraints
+          stackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate([
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
+          ])
         } else if _listViewLayoutMode == 3 {
           tableView.estimatedRowHeight = preferredRowHeight
           cell.textLabel?.text = item["Text1"] as? String ?? ""
@@ -792,11 +905,13 @@ fileprivate final class ListViewRootView: UIView {
             horizontalStackView.alignment = .center
             horizontalStackView.distribution = .fill
             horizontalStackView.spacing = 8.0
-            
-            // Create a vertical stack view to hold the textLabel and detailTextLabel
+
+            // Create a vertical stack view to hold the textLabel and detailTextLabel.
+            // Use .fill so labels span the inner stack width and textAlignment is
+            // visible regardless of text length.
             let verticalStackView = UIStackView()
             verticalStackView.axis = .vertical
-            verticalStackView.alignment = .leading
+            verticalStackView.alignment = .fill
             verticalStackView.distribution = .fill
             verticalStackView.spacing = 8.0
             
@@ -836,22 +951,31 @@ fileprivate final class ListViewRootView: UIView {
             cell.separatorInset = UIEdgeInsets.zero
             cell.preservesSuperviewLayoutMargins = true
             
-            // Create a vertical stack view
+            // Inner stack: labels with .fill so they span the full label-stack
+            // width, making textAlignment visible regardless of text length.
+            let labelsStackView = UIStackView()
+            labelsStackView.axis = .vertical
+            labelsStackView.alignment = .fill
+            labelsStackView.distribution = .fill
+            labelsStackView.spacing = 8.0
+            labelsStackView.addArrangedSubview(cell.textLabel!)
+            labelsStackView.addArrangedSubview(cell.detailTextLabel!)
+
+            // Outer stack: image (centered) + labels stack
             let verticalStackView = UIStackView()
             verticalStackView.axis = .vertical
             verticalStackView.alignment = .center
             verticalStackView.distribution = .fill
             verticalStackView.spacing = 8.0
-            
-            // Add the imageView, textLabel and detailTextLabel to the vertical stack view
             verticalStackView.addArrangedSubview(cell.imageView!)
-            verticalStackView.addArrangedSubview(cell.textLabel!)
-            verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+            verticalStackView.addArrangedSubview(labelsStackView)
             
-            // Add the horizontal stack view to the cell's content view
+            // Add the outer stack to the cell's content view
             cell.contentView.addSubview(verticalStackView)
             
-            // Set up constraints
+            // Set up constraints. The labelsStackView width is pinned to the
+            // outer stack so labels span full row width while the image stays
+            // centered at its intrinsic / explicit size.
             verticalStackView.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
               verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
@@ -859,19 +983,22 @@ fileprivate final class ListViewRootView: UIView {
               verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
               verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
               cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
-              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
+              cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4)),
+              labelsStackView.widthAnchor.constraint(equalTo: verticalStackView.widthAnchor)
             ])
           }
         } else {
-          tableView.estimatedRowHeight = preferredRowHeight
-          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          tableView.estimatedRowHeight = 44
+          cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = ""
         }
       }
 
+    // Both labels wrap inside their 50% half (matches the Designer mock).
     cell.textLabel?.numberOfLines = 0
     cell.textLabel?.lineBreakMode = .byWordWrapping
-    
+    cell.detailTextLabel?.numberOfLines = 0
+    cell.detailTextLabel?.lineBreakMode = .byWordWrapping
 
     cell.textLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSize))
     cell.detailTextLabel?.font = cell.textLabel?.font.withSize(CGFloat(_fontSizeDetail))
@@ -888,23 +1015,43 @@ fileprivate final class ListViewRootView: UIView {
     if _dividerThickness > 0 {
       tableView.separatorStyle = .singleLine
     }
-    tableView.separatorColor = argbToColor(_dividerColor)
-    
-    
-    cell.backgroundColor = argbToColor(_backgroundColor)
-    
-    if _elementColor != Color.none.int32 {
-      // if elementColor at the table cell level, laid over backgroundColor
-      cell.backgroundColor = argbToColor(_elementColor)
+    if _dividerColor == Color.default.int32 {
+      tableView.separatorColor = preferredTextColor(form)
+    } else {
+      tableView.separatorColor =  argbToColor(_dividerColor)
+    }
+
+
+    if _backgroundColor == Color.default.int32 {
+      cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
-    
+
+    (cell.backgroundView as? UIView)?.backgroundColor =
+          (_elementColor != Color.none.int32)
+          ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
+          : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+
+    cell.backgroundColor =
+            ((_elementColor != Color.none.int32) && (_elementColor != Color.default.int32))
+            ? argbToColor(_elementColor)
+            : cell.backgroundColor
+
+
     //maintext
-    cell.textLabel?.textColor = argbToColor(_textColor)
+    if _textColor == Color.default.int32 {
+      cell.textLabel?.textColor = preferredBackgroundColor(form)
+    } else {
+      cell.textLabel?.textColor = argbToColor(_textColor)
+    }
 
     //detailtext
-    cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
+    if _textColorDetail == Color.default.int32 {
+      cell.detailTextLabel?.textColor = preferredBackgroundColor(form)
+    } else {
+      cell.detailTextLabel?.textColor = argbToColor(_textColorDetail)
+    }
 
     if _fontTypeface == "1" {
       cell.textLabel?.font = UIFont(name: "Helvetica", size: CGFloat(_fontSize))
@@ -929,6 +1076,10 @@ fileprivate final class ListViewRootView: UIView {
     let selectedBgView = UIView()
     selectedBgView.backgroundColor = argbToColor(_selectionColor)
     cell.selectedBackgroundView = selectedBgView
+
+    cell.textLabel?.textAlignment = nsTextAlignment(for: _textAlignmentMain, in: cell)
+    cell.detailTextLabel?.textAlignment = nsTextAlignment(for: _textAlignmentDetail, in: cell)
+
     return cell
   }
 
@@ -1165,6 +1316,9 @@ fileprivate final class ListViewRootView: UIView {
     // Image
     cell.imageView.image = image
     cell.imageView.isHidden = (image == nil)
+
+    cell.titleLabel.textAlignment = nsTextAlignment(for: _textAlignmentMain, in: cell)
+    cell.detailLabel.textAlignment = nsTextAlignment(for: _textAlignmentDetail, in: cell)
 
     let selectedBgView = UIView()
     selectedBgView.backgroundColor =
