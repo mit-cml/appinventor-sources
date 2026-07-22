@@ -1529,14 +1529,17 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         if (isGeospatialSupported) {
             config.setGeospatialMode(Config.GeospatialMode.ENABLED);
-        } else {
-            Log.w(LOG_TAG, "Geospatial mode not supported on this device — "
-                + "AtLocation blocks will be unavailable this session.");
         }
 
-        config.setDepthMode(Config.DepthMode.DISABLED);
         buildImageMarkerDatabase(config);
-        session.configure(config);
+        try {
+            session.configure(config);
+        } catch (com.google.ar.core.exceptions.GooglePlayServicesLocationLibraryNotLinkedException e) {
+            Log.w(LOG_TAG, "Geospatial mode requires Play Services Location, which isn't "
+                + "linked in this build — disabling geospatial and retrying.");
+            config.setGeospatialMode(Config.GeospatialMode.DISABLED);
+            session.configure(config);
+        }
 
         configureDepth(config);
 
@@ -1564,7 +1567,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             //TODO: CSB we should inform the user depth is not supported if they have turned on Occlusion
         }
         config.setDepthMode(Config.DepthMode.DISABLED);
-        session.configure(config);
+        try {
+            session.configure(config);
+        } catch (com.google.ar.core.exceptions.GooglePlayServicesLocationLibraryNotLinkedException e) {
+            Log.w(LOG_TAG, "Geospatial unavailable (missing location library) — retrying without it");
+            config.setGeospatialMode(Config.GeospatialMode.DISABLED);
+            session.configure(config);
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Session configure failed: " + e.getMessage());
+            return;
+        }
         isDepthSupported = false;
         depthMode = Config.DepthMode.DISABLED;
         Log.i(LOG_TAG, "Depth not supported");
@@ -2978,27 +2990,27 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
 
     // setupLocation() — guard against null Earth AND against Earth not yet localized
-    public Anchor setupLocation(float x, float y, float z, double lat, double lng,
-                                double altitude, boolean hasGeoCoordinates) {
-        Earth earth = session.getEarth();
+    public Anchor setupLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates) {
+        try {
+            Earth earth = session.getEarth();
 
-        if (earth == null) {
-            Log.w(LOG_TAG, "Geospatial not enabled/supported — "
-                + "falling back to local (non-geo) anchor at (" + x + "," + y + "," + z + ")");
-            return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
+            if (earth == null) {
+                Log.w(LOG_TAG, "Geospatial not enabled/supported — falling back to local anchor");
+                return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
+            }
+
+            if (earth.getTrackingState() != TrackingState.TRACKING) {
+                Log.w(LOG_TAG, "Earth not yet TRACKING (state=" + earth.getTrackingState() + ") — falling back to local anchor");
+                return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
+            }
+
+            float[] rotation = {0, 0, 0, 1};
+            return earth.createAnchor(lat, lng, altitude, rotation);
+
+        } catch (com.google.ar.core.exceptions.SessionPausedException e) {
+            Log.w(LOG_TAG, "Session not yet running — cannot create anchor right now");
+            return null;
         }
-
-        if (earth.getTrackingState() != TrackingState.TRACKING) {
-            // Earth exists but hasn't localized yet (needs a moment outdoors with
-            // network access). createAnchor would throw IllegalStateException here.
-            Log.w(LOG_TAG, "Earth not yet TRACKING (state=" + earth.getTrackingState()
-                + ") — falling back to local anchor");
-            return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
-        }
-
-        float[] rotation = {0, 0, 0, 1};
-        Log.i(LOG_TAG, "geo anchor at lat=" + lat + " lng=" + lng + " alt=" + altitude);
-        return earth.createAnchor(lat, lng, altitude, rotation);
     }
 
     @SimpleFunction(description = "Create a new webViewNode with geo coords")
