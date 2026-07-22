@@ -855,12 +855,16 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             // Register camera texture (unchanged)
 
             if (imageMarkerDbDirty) {
-                try {
-                    Config cfg = session.getConfig();
-                    buildImageMarkerDatabase(cfg);
-                    session.configure(cfg);
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Image marker db reconfigure failed: " + e.getMessage());
+                long now = System.currentTimeMillis();
+                if (now - lastImageMarkerRebuildAttempt >= IMAGE_MARKER_RETRY_INTERVAL_MS) {
+                    lastImageMarkerRebuildAttempt = now;
+                    try {
+                        Config cfg = session.getConfig();
+                        buildImageMarkerDatabase(cfg);
+                        session.configure(cfg);
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Image marker db reconfigure failed: " + e.getMessage());
+                    }
                 }
             }
             if (!hasSetTextureNames) {
@@ -1465,23 +1469,36 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             b.getCurrentPosition());
     }
 
+    // ARView3D.java
+
+    private long lastImageMarkerRebuildAttempt = 0;
+    private static final long IMAGE_MARKER_RETRY_INTERVAL_MS = 1000;
+
     private void buildImageMarkerDatabase(Config config) {
         AugmentedImageDatabase db = new AugmentedImageDatabase(session);
         int added = 0;
+        boolean allSucceeded = true;
+
         for (ARImageMarker m : imageMarkers) {
             if (m instanceof ImageMarker) {
                 ImageMarker marker = (ImageMarker) m;
-                marker.arView = this;   // needed for event dispatch delegate
+                marker.arView = this;
                 if (marker.registerWithDatabase(db, $form())) {
                     added++;
+                } else {
+                    allSucceeded = false;   // asset may just not be cached yet
                 }
             }
         }
         if (added > 0) {
             config.setAugmentedImageDatabase(db);
         }
-        imageMarkerDbDirty = false;
-        Log.i(LOG_TAG, "Image marker database built with " + added + " image(s)");
+        // Keep dirty if anything failed, so we retry once the asset finishes
+        // downloading to the Companion's local cache — don't give up permanently
+        // on what's likely just a startup race, not a missing file.
+        imageMarkerDbDirty = !allSucceeded;
+        Log.i(LOG_TAG, "Image marker database built with " + added + " image(s)"
+            + (imageMarkerDbDirty ? ", will retry failed marker(s)" : ""));
     }
 
     // Configure ARCore session
