@@ -2014,6 +2014,7 @@ path.ode-SimpleMockMapFeature-selected {
   padding-right: 20px;
   outline: none;
   overflow: auto;
+  height: 400px;
 }
 
 .ode-propertyDialogPropertiesScrollPanel {

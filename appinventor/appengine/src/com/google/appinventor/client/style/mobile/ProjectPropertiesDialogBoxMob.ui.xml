@@ -12,15 +12,15 @@
 
   <ui:with type="com.google.appinventor.client.Images" field="res"/>
 
-  <wiz:Dialog ui:field="projectProperties" styleName="ode-DialogBox">
+  <wiz:Dialog ui:field="projectProperties" styleName="ode-DialogBox" width="95%">
     <g:VerticalPanel>
     <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
-      <g:HorizontalPanel styleName='ode-propertyDialogContainer'>
-        <g:ListBox ui:field="categoryList" styleName='ode-projectPropertyCategoryTitlePanel'/>
+      <g:VerticalPanel>
+        <g:ListBox ui:field="categoryList" visibleItemCount="1"/>
         <g:ScrollPanel styleName='ode-propertyDialogPropertiesScrollPanel'>
           <g:DeckPanel ui:field="propertiesDeckPanel"/>
         </g:ScrollPanel>
-      </g:HorizontalPanel>
+      </g:VerticalPanel>
 
       <g:FlowPanel styleName="ode-bottomRow">
         <g:Button ui:field='closeDialogBox' styleName='ode-closeDialogBox'>

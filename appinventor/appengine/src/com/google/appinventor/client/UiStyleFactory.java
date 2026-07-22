@@ -7,8 +7,10 @@ package com.google.appinventor.client;
 
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.YaNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
 import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
+import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -74,6 +76,9 @@ public class UiStyleFactory {
     return new YaVisibleComponentsPanel(editor, nonVisPanel);
   }
 
+  public ProjectPropertiesDialogBox createProjectPropertiesDialog(YaProjectEditor projectEditor) {
+    return new ProjectPropertiesDialogBox(projectEditor);
+  }
 
   /**
    * Creates, visually centers, and optionally displays the dialog box

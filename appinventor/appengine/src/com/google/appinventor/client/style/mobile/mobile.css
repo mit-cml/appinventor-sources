@@ -1574,6 +1574,23 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-800;
 }
 
+.ode-propertyDialogPropertyContainer {
+    display: flex;
+    flex-flow: column;
+    width: 95%;
+}
+
+.ode-propertyDialogPropertiesScrollPanel {
+    height: unset;
+    width: unset;
+    padding-bottom: unset;
+    padding-right: unset;
+}
+
+.ode-propertyDialogPropertyEditor {
+    width: 95%;
+}
+
 /* AI2 Extensions Styles */
 
 a.ode-ExtensionAnchor {
