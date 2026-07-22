@@ -778,6 +778,38 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     }
   }
   
+  private var pendingGeoAnchorTimers: [ObjectIdentifier: DispatchWorkItem] = [:]
+  private static let GEO_ANCHOR_TIMEOUT_SECONDS: TimeInterval = 10.0
+
+  
+  private func armGeoAnchorTimeout(for node: ARNodeBase) {
+      let key = ObjectIdentifier(node)
+      pendingGeoAnchorTimers[key]?.cancel()
+
+      let task = DispatchWorkItem { [weak self, weak node] in
+          guard let self = self, let node = node else { return }
+          // Only fall back if still stuck at the sentinel — a real anchor
+          // may have resolved in the meantime via handleGeoAnchorAdded.
+          guard self._nodeToAnchorDict[node] === self._pendingAnchor else { return }
+
+          print("⏱️ Geo anchor for \(node.Name) did not resolve within "
+              + "\(ARView3D.GEO_ANCHOR_TIMEOUT_SECONDS)s — falling back to x,y,z")
+
+          let position = node._fromPropertyPosition.split(separator: ",")
+              .prefix(3).map { Float(String($0)) ?? 0.0 }
+          let x = position.count > 0 ? position[0] : 0
+          let y = position.count > 1 ? position[1] : 0
+          let z = position.count > 2 ? position[2] : 0
+
+          self.setupNonGeo(x: x, y: y, z: z, node: node)
+          self._nodeToAnchorDict[node] = node._anchorEntity  // clear pending sentinel
+
+          EventDispatcher.dispatchEvent(of: self, called: "GeoAnchorTimedOut",
+                                        arguments: node as AnyObject)
+      }
+      pendingGeoAnchorTimers[key] = task
+      DispatchQueue.main.asyncAfter(deadline: .now() + ARView3D.GEO_ANCHOR_TIMEOUT_SECONDS, execute: task)
+  }
   
   private var relocalizationTimer: DispatchWorkItem?
 
@@ -1384,6 +1416,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       if _sessionRunning {
           _arView.session.add(anchor: geoAnchor)
           print("Added geo anchor to session: \(geoAnchor.coordinate)")
+          armGeoAnchorTimeout(for: node)
       } else {
           _requiresAddNodes = true
       }
@@ -2047,6 +2080,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _nodeToAnchorDict[node] = anchorEntity
         node._anchorEntity = anchorEntity
         
+
+        pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
+        pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
         print("👁️ Node visible: \(node.Visible), modelEntity enabled: \(node._modelEntity.isEnabled)")
         break
       }
