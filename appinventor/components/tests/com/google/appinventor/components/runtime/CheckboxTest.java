@@ -15,7 +15,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test class for Switch component.
+ * Test class for Checkbox component.
  *
  * @author srlane@mit.edu (Susan Rati Lane)
  */
