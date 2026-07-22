@@ -22,8 +22,11 @@ import com.google.appinventor.components.runtime.util.TimerInternal;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * ![Image of the Clock component](images/clock.png)
@@ -80,6 +83,8 @@ public class Clock extends AndroidNonvisibleComponent
   private boolean timerAlwaysFires = true;
   private boolean onScreen = false;
 
+  private static List<String> timezones = null;
+
   /**
    * Creates a new Clock component.
    *
@@ -99,6 +104,8 @@ public class Clock extends AndroidNonvisibleComponent
       // then onScreen would be false, but the REPL app is, in fact, on screen.
       onScreen = true;
     }
+
+    timezones = Arrays.asList(TimeZone.getAvailableIDs());
   }
 
   // Only the above constructor should be used in practice.
@@ -265,13 +272,13 @@ public class Clock extends AndroidNonvisibleComponent
       GregorianCalendar cal = new GregorianCalendar(year, jMonth, day);
       cal.setLenient(false);
 
-      // A non-lenient GregorianCalendar throws an exception upon 
+      // A non-lenient GregorianCalendar throws an exception upon
       // calculating its time or calendar field values if any out-of-range field value has been set.
       cal.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
-    
+
     Calendar instant = Dates.DateInstant(year, month, day);
     return instant;
   }
@@ -320,15 +327,15 @@ public class Clock extends AndroidNonvisibleComponent
       instant = new GregorianCalendar(year, jMonth, day);
       instant.setLenient(false);
 
-      // A non-lenient GregorianCalendar throws an exception upon 
+      // A non-lenient GregorianCalendar throws an exception upon
       // calculating its time or calendar field values if any out-of-range field value has been set.
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
     }
-    
+
     instant = Dates.DateInstant(year, month, day);
-    
+
     try {
       instant.set(Calendar.HOUR_OF_DAY, hour);
       instant.set(Calendar.MINUTE, minute);
@@ -339,7 +346,7 @@ public class Clock extends AndroidNonvisibleComponent
     }
 
     return instant;
-    
+
   }
 
   /**
@@ -649,6 +656,39 @@ public class Clock extends AndroidNonvisibleComponent
   @SimpleFunction (description = "Text representing the time of an instant")
   public static String FormatTime(Calendar instant) {
     return Dates.FormatTime(instant);
+  }
+
+  /**
+   * Changes the timezone of a given instant.
+   *
+   * @param instant  instant to modify
+   * @param timezone  timezone to apply to instant
+   * @return  updated instant
+   */
+  @SimpleFunction(description = "Updates the timezone in which the instant is saved at")
+  public static Calendar ChangeTimezone(Calendar instant, String timezone) {
+    if (timezone == null) throw new YailRuntimeError("No timezones available.", "Runtime Error");
+
+    if (timezones.contains(timezone)) {
+      instant.setTimeZone(TimeZone.getTimeZone(timezone));
+    } else {
+      for (String tz : timezones) {
+        if (tz.equalsIgnoreCase(timezone))
+          return ChangeTimezone(instant, tz);
+      }
+      throw new YailRuntimeError("Your given timezone is not a valid timezone.", "Sorry to be so picky");
+    }
+    return instant;
+  }
+
+  /**
+   * Returns all the available timezones.
+   *
+   * @return  list of timezones
+   */
+  @SimpleProperty(description = "The list of available timezones", category = PropertyCategory.BEHAVIOR)
+  public List<String> Timezones() {
+    return timezones;
   }
 
   @Override
