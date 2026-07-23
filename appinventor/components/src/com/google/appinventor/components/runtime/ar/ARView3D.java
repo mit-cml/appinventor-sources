@@ -103,6 +103,8 @@ import java.util.stream.Collectors;
     "android.permission.ACCESS_COARSE_LOCATION"})
 @UsesApplicationMetadata(metaDataElements = {
         @MetaDataElement(name = "com.google.ar.core", value = "required"),
+        @MetaDataElement(name = "com.google.ar.core.min_apk_version", value = "221930000"),
+        @MetaDataElement(name = "com.google.android.ar.API_KEY", value = "AIzaSyC_tWvLffpP5wfqiG0b97IixcF87rA643c")
 })
 @UsesQueries(packageNames = {"com.google.ar.core"})
 @UsesActivities(activities = {
