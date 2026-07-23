@@ -149,36 +149,36 @@
 application by downloading the source code and using a file explorer or unzip utility to find
 a file named “youngandroidproject/project.properties”. The first line of the file will start
 with “main=” and be followed by the class name; for example,
-<code class="highlighter-rouge">main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>. (The first components indicate that it was
-created by Ben.Bitdiddle@gmail.com.) To make your <code class="highlighter-rouge">ActivityStarter</code> launch this application,
+<code class="language-plaintext highlighter-rouge">main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>. (The first components indicate that it was
+created by Ben.Bitdiddle@gmail.com.) To make your <code class="language-plaintext highlighter-rouge">ActivityStarter</code> launch this application,
 set the following properties:
     <ul>
-      <li><code class="highlighter-rouge">ActivityPackage</code> to the class name, dropping the last component (for example,
-<code class="highlighter-rouge">com.gmail.Bitdiddle.Ben.HelloPurr</code>)</li>
-      <li><code class="highlighter-rouge">ActivityClass</code> to the entire class name (for example,
-<code class="highlighter-rouge">com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>)</li>
+      <li><code class="language-plaintext highlighter-rouge">ActivityPackage</code> to the class name, dropping the last component (for example,
+<code class="language-plaintext highlighter-rouge">com.gmail.Bitdiddle.Ben.HelloPurr</code>)</li>
+      <li><code class="language-plaintext highlighter-rouge">ActivityClass</code> to the entire class name (for example,
+<code class="language-plaintext highlighter-rouge">com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>)</li>
     </ul>
   </li>
   <li>Starting the camera application by setting the following properties:
     <ul>
-      <li><code class="highlighter-rouge">Action</code>: <code class="highlighter-rouge">android.intent.action.MAIN</code></li>
-      <li><code class="highlighter-rouge">ActivityPackage</code>: <code class="highlighter-rouge">com.android.camera</code></li>
-      <li><code class="highlighter-rouge">ActivityClass</code>: <code class="highlighter-rouge">com.android.camera.Camera</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Action</code>: <code class="language-plaintext highlighter-rouge">android.intent.action.MAIN</code></li>
+      <li><code class="language-plaintext highlighter-rouge">ActivityPackage</code>: <code class="language-plaintext highlighter-rouge">com.android.camera</code></li>
+      <li><code class="language-plaintext highlighter-rouge">ActivityClass</code>: <code class="language-plaintext highlighter-rouge">com.android.camera.Camera</code></li>
     </ul>
   </li>
   <li>Performing web search. Assuming the term you want to search for is “vampire” (feel free to substitute your own choice), set the properties to:
     <ul>
-      <li><code class="highlighter-rouge">Action</code>: <code class="highlighter-rouge">android.intent.action.WEB_SEARCH</code></li>
-      <li><code class="highlighter-rouge">ExtraKey</code>: <code class="highlighter-rouge">query</code></li>
-      <li><code class="highlighter-rouge">ExtraValue</code>: <code class="highlighter-rouge">vampire</code></li>
-      <li><code class="highlighter-rouge">ActivityPackage</code>: <code class="highlighter-rouge">com.google.android.providers.enhancedgooglesearch</code></li>
-      <li><code class="highlighter-rouge">ActivityClass</code>: <code class="highlighter-rouge">com.google.android.providers.enhancedgooglesearch.Launcher</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Action</code>: <code class="language-plaintext highlighter-rouge">android.intent.action.WEB_SEARCH</code></li>
+      <li><code class="language-plaintext highlighter-rouge">ExtraKey</code>: <code class="language-plaintext highlighter-rouge">query</code></li>
+      <li><code class="language-plaintext highlighter-rouge">ExtraValue</code>: <code class="language-plaintext highlighter-rouge">vampire</code></li>
+      <li><code class="language-plaintext highlighter-rouge">ActivityPackage</code>: <code class="language-plaintext highlighter-rouge">com.google.android.providers.enhancedgooglesearch</code></li>
+      <li><code class="language-plaintext highlighter-rouge">ActivityClass</code>: <code class="language-plaintext highlighter-rouge">com.google.android.providers.enhancedgooglesearch.Launcher</code></li>
     </ul>
   </li>
   <li>Opening a browser to a specified web page. Assuming the page you want to go to is “www.facebook.com” (feel free to substitute your own choice), set the properties to:
     <ul>
-      <li><code class="highlighter-rouge">Action</code>: <code class="highlighter-rouge">android.intent.action.VIEW</code></li>
-      <li><code class="highlighter-rouge">DataUri</code>: <code class="highlighter-rouge">http://www.facebook.com</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Action</code>: <code class="language-plaintext highlighter-rouge">android.intent.action.VIEW</code></li>
+      <li><code class="language-plaintext highlighter-rouge">DataUri</code>: <code class="language-plaintext highlighter-rouge">http://www.facebook.com</code></li>
     </ul>
   </li>
 </ul>
@@ -221,22 +221,22 @@ set the following properties:
   <dt id="ActivityStarter.ActivityCanceled">ActivityCanceled()</dt>
   <dd>Event raised if this `ActivityStarter returns because the activity was canceled.</dd>
   <dt id="ActivityStarter.AfterActivity">AfterActivity(<em class="text">result</em>)</dt>
-  <dd>Event raised after this <code class="highlighter-rouge">ActivityStarter</code> returns.</dd>
+  <dd>Event raised after this <code class="language-plaintext highlighter-rouge">ActivityStarter</code> returns.</dd>
 </dl>
 
 <h3 id="ActivityStarter-Methods">Methods</h3>
 
 <dl class="methods">
   <dt id="ActivityStarter.ResolveActivity" class="method returns text"><i></i> ResolveActivity()</dt>
-  <dd>Returns the name of the activity that corresponds to this <code class="highlighter-rouge">ActivityStarter</code>,
+  <dd>Returns the name of the activity that corresponds to this <code class="language-plaintext highlighter-rouge">ActivityStarter</code>,
  or an empty string if no corresponding activity can be found.</dd>
   <dt id="ActivityStarter.StartActivity" class="method"><i></i> StartActivity()</dt>
-  <dd>Start the activity corresponding to this <code class="highlighter-rouge">ActivityStarter</code>.</dd>
+  <dd>Start the activity corresponding to this <code class="language-plaintext highlighter-rouge">ActivityStarter</code>.</dd>
 </dl>
 
 <h2 id="BluetoothClient">BluetoothClient</h2>
 
-<p>Use <code class="highlighter-rouge">BluetoothClient</code> to connect your device to other devices using Bluetooth. This component
+<p>Use <code class="language-plaintext highlighter-rouge">BluetoothClient</code> to connect your device to other devices using Bluetooth. This component
  uses the Serial Port Profile (SPP) for communication. If you are interested in using Bluetooth
  low energy, please see the
  <a href="http://iot.appinventor.mit.edu/#/bluetoothle/bluetoothleintro">BluetoothLE</a> extension.</p>
@@ -251,8 +251,8 @@ set the following properties:
  and BLUETOOTH_SCAN have not been granted to the app, the block will raise
  an error via the Screen’s PermissionDenied event.</dd>
   <dt id="BluetoothClient.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
- <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
+ <code class="language-plaintext logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothClient.CharacterEncoding" class="text"><em>CharacterEncoding</em></dt>
   <dd>Returns the character encoding to use when sending and receiving text.</dd>
   <dt id="BluetoothClient.DelimiterByte" class="number"><em>DelimiterByte</em></dt>
@@ -263,12 +263,12 @@ set the following properties:
   <dd>Specifies whether BluetoothClient should be disconnected
  automatically when an error occurs.</dd>
   <dt id="BluetoothClient.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="language-plaintext logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothClient.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
   <dd>Specifies whether numbers are sent and received with the most significant
  byte first.</dd>
   <dt id="BluetoothClient.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
   <dt id="BluetoothClient.NoLocationNeeded" class="boolean do"><em>NoLocationNeeded</em></dt>
   <dd>On Android 12 and later, indicates that Bluetooth is not used to determine the user’s location.</dd>
   <dt id="BluetoothClient.PollingRate" class="number"><em>PollingRate</em></dt>
@@ -363,15 +363,15 @@ set the following properties:
 
 <h2 id="BluetoothServer">BluetoothServer</h2>
 
-<p>Use the <code class="highlighter-rouge">BluetoothServer</code> component to turn your device into a server that receive connections
- from other apps that use the <code class="highlighter-rouge">BluetoothClient</code> component.</p>
+<p>Use the <code class="language-plaintext highlighter-rouge">BluetoothServer</code> component to turn your device into a server that receive connections
+ from other apps that use the <code class="language-plaintext highlighter-rouge">BluetoothClient</code> component.</p>
 
 <h3 id="BluetoothServer-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="BluetoothServer.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
- <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if Bluetooth is available on the device,
+ <code class="language-plaintext logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothServer.CharacterEncoding" class="text"><em>CharacterEncoding</em></dt>
   <dd>Returns the character encoding to use when sending and receiving text.</dd>
   <dt id="BluetoothServer.DelimiterByte" class="number"><em>DelimiterByte</em></dt>
@@ -379,7 +379,7 @@ set the following properties:
  numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
  ReceiveUnsignedBytes.</dd>
   <dt id="BluetoothServer.Enabled" class="boolean ro bo"><em>Enabled</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="logic block highlighter-rouge">false</code> otherwise.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if Bluetooth is enabled, <code class="language-plaintext logic block highlighter-rouge">false</code> otherwise.</dd>
   <dt id="BluetoothServer.HighByteFirst" class="boolean"><em>HighByteFirst</em></dt>
   <dd>Specifies whether numbers are sent and received with the most significant
  byte first.</dd>
@@ -387,7 +387,7 @@ set the following properties:
   <dd>Returns true if this BluetoothServer component is accepting an
  incoming connection.</dd>
   <dt id="BluetoothServer.IsConnected" class="boolean ro bo"><em>IsConnected</em></dt>
-  <dd>Returns <code class="logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
+  <dd>Returns <code class="language-plaintext logic block highlighter-rouge">true</code> if a connection to a Bluetooth device has been made.</dd>
   <dt id="BluetoothServer.Secure" class="boolean"><em>Secure</em></dt>
   <dd>Specifies whether a secure connection should be used.</dd>
 </dl>
@@ -588,9 +588,9 @@ set the following properties:
   <dt id="Web.HtmlTextDecode" class="method returns text"><i></i> HtmlTextDecode(<em class="text">htmlText</em>)</dt>
   <dd>Decodes the given HTML text value.
 
-    <p>HTML Character Entities such as <code class="highlighter-rouge">&amp;amp;</code>, <code class="highlighter-rouge">&amp;lt;</code>, <code class="highlighter-rouge">&amp;gt;</code>, <code class="highlighter-rouge">&amp;apos;</code>, and <code class="highlighter-rouge">&amp;quot;</code> are
- changed to <code class="highlighter-rouge">&amp;</code>, <code class="highlighter-rouge">&lt;</code>, <code class="highlighter-rouge">&gt;</code>, <code class="highlighter-rouge">'</code>, and <code class="highlighter-rouge">"</code>.
- Entities such as <code class="highlighter-rouge">&amp;#xhhhh;</code>, and <code class="highlighter-rouge">&amp;#nnnn;</code> are changed to the appropriate characters.</p>
+    <p>HTML Character Entities such as <code class="language-plaintext highlighter-rouge">&amp;amp;</code>, <code class="language-plaintext highlighter-rouge">&amp;lt;</code>, <code class="language-plaintext highlighter-rouge">&amp;gt;</code>, <code class="language-plaintext highlighter-rouge">&amp;apos;</code>, and <code class="language-plaintext highlighter-rouge">&amp;quot;</code> are
+ changed to <code class="language-plaintext highlighter-rouge">&amp;</code>, <code class="language-plaintext highlighter-rouge">&lt;</code>, <code class="language-plaintext highlighter-rouge">&gt;</code>, <code class="language-plaintext highlighter-rouge">'</code>, and <code class="language-plaintext highlighter-rouge">"</code>.
+ Entities such as <code class="language-plaintext highlighter-rouge">&amp;#xhhhh;</code>, and <code class="language-plaintext highlighter-rouge">&amp;#nnnn;</code> are changed to the appropriate characters.</p>
   </dd>
   <dt id="Web.JsonObjectEncode" class="method returns text"><i></i> JsonObjectEncode(<em class="any">jsonObject</em>)</dt>
   <dd>Returns the value of a built-in type (i.e., boolean, number, text, list, dictionary)
@@ -599,9 +599,9 @@ set the following properties:
  and the Web component will return the empty string.</dd>
   <dt id="Web.JsonTextDecode" class="method returns any"><i></i> JsonTextDecode(<em class="text">jsonText</em>)</dt>
   <dd>Decodes the given JSON encoded value to produce a corresponding AppInventor value.
- A JSON list <code class="highlighter-rouge">[x, y, z]</code> decodes to a list <code class="highlighter-rouge">(x y z)</code>,  A JSON object with key A and value B,
- (denoted as <code class="highlighter-rouge">{A:B}</code>) decodes to a list <code class="highlighter-rouge">((A B))</code>, that is, a list containing the two-element
- list <code class="highlighter-rouge">(A B)</code>.
+ A JSON list <code class="language-plaintext highlighter-rouge">[x, y, z]</code> decodes to a list <code class="language-plaintext highlighter-rouge">(x y z)</code>,  A JSON object with key A and value B,
+ (denoted as <code class="language-plaintext highlighter-rouge">{A:B}</code>) decodes to a list <code class="language-plaintext highlighter-rouge">((A B))</code>, that is, a list containing the two-element
+ list <code class="language-plaintext highlighter-rouge">(A B)</code>.
 
     <p>Use the method <a href="#Web.JsonTextDecodeWithDictionaries">JsonTextDecodeWithDictionaries</a> if you
  would prefer to get back dictionary objects rather than lists-of-lists in the result.</p>
@@ -708,38 +708,38 @@ set the following properties:
   <dt id="Web.UriEncode" class="method returns text"><i></i> UriEncode(<em class="text">text</em>)</dt>
   <dd>Encodes the given text value so that it can be used in a URL.</dd>
   <dt id="Web.XMLTextDecode" class="method returns any"><i></i> XMLTextDecode(<em class="text">XmlText</em>)</dt>
-  <dd>Decodes the given XML string to produce a list structure. <code class="highlighter-rouge">&lt;tag&gt;string&lt;/tag&gt;</code> decodes to
+  <dd>Decodes the given XML string to produce a list structure. <code class="language-plaintext highlighter-rouge">&lt;tag&gt;string&lt;/tag&gt;</code> decodes to
  a list that contains a pair of tag and string.  More generally, if obj1, obj2, …
- are tag-delimited XML strings, then <code class="highlighter-rouge">&lt;tag&gt;obj1 obj2 ...&lt;/tag&gt;</code> decodes to a list
+ are tag-delimited XML strings, then <code class="language-plaintext highlighter-rouge">&lt;tag&gt;obj1 obj2 ...&lt;/tag&gt;</code> decodes to a list
  that contains a pair whose first element is tag and whose second element is the
  list of the decoded obj’s, ordered alphabetically by tags.
 
     <p>Examples:</p>
     <ul>
-      <li><code class="highlighter-rouge">&lt;foo&gt;&lt;123/foo&gt;</code> decodes to a one-item list containing the pair <code class="highlighter-rouge">(foo 123)</code></li>
-      <li><code class="highlighter-rouge">&lt;foo&gt;1 2 3&lt;/foo&gt;</code> decodes to a one-item list containing the pair <code class="highlighter-rouge">(foo "1 2 3")</code></li>
-      <li><code class="highlighter-rouge">&lt;a&gt;&lt;foo&gt;1 2 3&lt;/foo&gt;&lt;bar&gt;456&lt;/bar&gt;&lt;/a&gt;</code> decodes to a list containing the pair <code class="highlighter-rouge">(a X)</code>
-where X is a 2-item list that contains the pair <code class="highlighter-rouge">(bar 123)</code> and the pair <code class="highlighter-rouge">(foo "1 2 3")</code>.</li>
+      <li><code class="language-plaintext highlighter-rouge">&lt;foo&gt;&lt;123/foo&gt;</code> decodes to a one-item list containing the pair <code class="language-plaintext highlighter-rouge">(foo 123)</code></li>
+      <li><code class="language-plaintext highlighter-rouge">&lt;foo&gt;1 2 3&lt;/foo&gt;</code> decodes to a one-item list containing the pair <code class="language-plaintext highlighter-rouge">(foo "1 2 3")</code></li>
+      <li><code class="language-plaintext highlighter-rouge">&lt;a&gt;&lt;foo&gt;1 2 3&lt;/foo&gt;&lt;bar&gt;456&lt;/bar&gt;&lt;/a&gt;</code> decodes to a list containing the pair <code class="language-plaintext highlighter-rouge">(a X)</code>
+where X is a 2-item list that contains the pair <code class="language-plaintext highlighter-rouge">(bar 123)</code> and the pair <code class="language-plaintext highlighter-rouge">(foo "1 2 3")</code>.</li>
     </ul>
 
     <p>If the sequence of obj’s mixes tag-delimited and non-tag-delimited items, then the
  non-tag-delimited items are pulled out of the sequence and wrapped with a “content” tag.
- For example, decoding <code class="highlighter-rouge">&lt;a&gt;&lt;bar&gt;456&lt;/bar&gt;many&lt;foo&gt;1 2 3&lt;/foo&gt;apples&lt;a&gt;&lt;/code&gt;</code>
+ For example, decoding <code class="language-plaintext highlighter-rouge">&lt;a&gt;&lt;bar&gt;456&lt;/bar&gt;many&lt;foo&gt;1 2 3&lt;/foo&gt;apples&lt;a&gt;&lt;/code&gt;</code>
  is similar to above, except that the list X is a 3-item list that contains the additional pair
  whose first item is the string “content”, and whose second item is the list (many, apples).
  This method signals an error and returns the empty list if the result is not well-formed XML.</p>
   </dd>
   <dt id="Web.XMLTextDecodeAsDictionary" class="method returns any"><i></i> XMLTextDecodeAsDictionary(<em class="text">XmlText</em>)</dt>
   <dd>Decodes the given XML string to produce a dictionary structure. The dictionary includes the
- special keys <code class="highlighter-rouge">$tag</code>, <code class="highlighter-rouge">$localName</code>, <code class="highlighter-rouge">$namespace</code>, <code class="highlighter-rouge">$namespaceUri</code>, <code class="highlighter-rouge">$attributes</code>, and <code class="highlighter-rouge">$content</code>,
+ special keys <code class="language-plaintext highlighter-rouge">$tag</code>, <code class="language-plaintext highlighter-rouge">$localName</code>, <code class="language-plaintext highlighter-rouge">$namespace</code>, <code class="language-plaintext highlighter-rouge">$namespaceUri</code>, <code class="language-plaintext highlighter-rouge">$attributes</code>, and <code class="language-plaintext highlighter-rouge">$content</code>,
  as well as a key for each unique tag for every node, which points to a list of elements of
  the same structure as described here.
 
-    <p>The <code class="highlighter-rouge">$tag</code> key is the full tag name, e.g., foo:bar. The <code class="highlighter-rouge">$localName</code> is the local portion of
- the name (everything after the colon <code class="highlighter-rouge">:</code> character). If a namespace is given (everything before
- the colon <code class="highlighter-rouge">:</code> character), it is provided in <code class="highlighter-rouge">$namespace</code> and the corresponding URI is given
- in <code class="highlighter-rouge">$namespaceUri</code>. The attributes are stored in a dictionary in <code class="highlighter-rouge">$attributes</code> and the
- child nodes are given as a list under <code class="highlighter-rouge">$content</code>.</p>
+    <p>The <code class="language-plaintext highlighter-rouge">$tag</code> key is the full tag name, e.g., foo:bar. The <code class="language-plaintext highlighter-rouge">$localName</code> is the local portion of
+ the name (everything after the colon <code class="language-plaintext highlighter-rouge">:</code> character). If a namespace is given (everything before
+ the colon <code class="language-plaintext highlighter-rouge">:</code> character), it is provided in <code class="language-plaintext highlighter-rouge">$namespace</code> and the corresponding URI is given
+ in <code class="language-plaintext highlighter-rouge">$namespaceUri</code>. The attributes are stored in a dictionary in <code class="language-plaintext highlighter-rouge">$attributes</code> and the
+ child nodes are given as a list under <code class="language-plaintext highlighter-rouge">$content</code>.</p>
 
     <p><strong>More Information on Special Keys</strong></p>
 
@@ -751,15 +751,15 @@ where X is a 2-item list that contains the pair <code class="highlighter-rouge">
    <span class="nt">&lt;/ex:Book&gt;</span>
 </code></pre></div>    </div>
 
-    <p>When parsed, the <code class="highlighter-rouge">$tag</code> key will be <code class="highlighter-rouge">"ex:Book"</code>, the <code class="highlighter-rouge">$localName</code> key will be <code class="highlighter-rouge">"Book"</code>, the
- <code class="highlighter-rouge">$namespace</code> key will be <code class="highlighter-rouge">"ex"</code>, <code class="highlighter-rouge">$namespaceUri</code> will be <code class="highlighter-rouge">"http://example.com/"</code>, the
- <code class="highlighter-rouge">$attributes</code> key will be a dictionary <code class="highlighter-rouge">{}</code> (xmlns is removed for the namespace), and the
- <code class="highlighter-rouge">$content</code> will be a list of two items representing the decoded <code class="highlighter-rouge">&lt;ex:title&gt;</code> and <code class="highlighter-rouge">&lt;ex:author&gt;</code>
- elements. The first item, which corresponds to the <code class="highlighter-rouge">&lt;ex:title&gt;</code> element, will have an
- <code class="highlighter-rouge">$attributes</code> key containing the dictionary <code class="highlighter-rouge">{"xml:lang": "en"}</code>. For each <code class="highlighter-rouge">name=value</code>
- attribute on an element, a key-value pair mapping <code class="highlighter-rouge">name</code> to <code class="highlighter-rouge">value</code> will exist in the
- <code class="highlighter-rouge">$attributes</code> dictionary. In addition to these special keys, there will also be <code class="highlighter-rouge">"ex:title"</code>
- and <code class="highlighter-rouge">"ex:author"</code> to allow lookups faster than having to traverse the <code class="highlighter-rouge">$content</code> list.</p>
+    <p>When parsed, the <code class="language-plaintext highlighter-rouge">$tag</code> key will be <code class="language-plaintext highlighter-rouge">"ex:Book"</code>, the <code class="language-plaintext highlighter-rouge">$localName</code> key will be <code class="language-plaintext highlighter-rouge">"Book"</code>, the
+ <code class="language-plaintext highlighter-rouge">$namespace</code> key will be <code class="language-plaintext highlighter-rouge">"ex"</code>, <code class="language-plaintext highlighter-rouge">$namespaceUri</code> will be <code class="language-plaintext highlighter-rouge">"http://example.com/"</code>, the
+ <code class="language-plaintext highlighter-rouge">$attributes</code> key will be a dictionary <code class="language-plaintext highlighter-rouge">{}</code> (xmlns is removed for the namespace), and the
+ <code class="language-plaintext highlighter-rouge">$content</code> will be a list of two items representing the decoded <code class="language-plaintext highlighter-rouge">&lt;ex:title&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;ex:author&gt;</code>
+ elements. The first item, which corresponds to the <code class="language-plaintext highlighter-rouge">&lt;ex:title&gt;</code> element, will have an
+ <code class="language-plaintext highlighter-rouge">$attributes</code> key containing the dictionary <code class="language-plaintext highlighter-rouge">{"xml:lang": "en"}</code>. For each <code class="language-plaintext highlighter-rouge">name=value</code>
+ attribute on an element, a key-value pair mapping <code class="language-plaintext highlighter-rouge">name</code> to <code class="language-plaintext highlighter-rouge">value</code> will exist in the
+ <code class="language-plaintext highlighter-rouge">$attributes</code> dictionary. In addition to these special keys, there will also be <code class="language-plaintext highlighter-rouge">"ex:title"</code>
+ and <code class="language-plaintext highlighter-rouge">"ex:author"</code> to allow lookups faster than having to traverse the <code class="language-plaintext highlighter-rouge">$content</code> list.</p>
   </dd>
 </dl>
 
@@ -841,11 +841,11 @@ where X is a 2-item list that contains the pair <code class="highlighter-rouge">
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

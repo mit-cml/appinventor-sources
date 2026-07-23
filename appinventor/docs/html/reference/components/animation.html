@@ -138,52 +138,52 @@
 
 <h2 id="Ball">Ball</h2>
 
-<p>A round ‘sprite’ that can be placed on a <a href="#Canvas"><code class="highlighter-rouge">Canvas</code></a>, where it can react to touches and drags,
- interact with other sprites (<a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a>s and other <code class="highlighter-rouge">Ball</code>s) and the edge of the
- <code class="highlighter-rouge">Canvas</code>, and move according to its property values.</p>
+<p>A round ‘sprite’ that can be placed on a <a href="#Canvas"><code class="language-plaintext highlighter-rouge">Canvas</code></a>, where it can react to touches and drags,
+ interact with other sprites (<a href="#ImageSprite"><code class="language-plaintext highlighter-rouge">ImageSprite</code></a>s and other <code class="language-plaintext highlighter-rouge">Ball</code>s) and the edge of the
+ <code class="language-plaintext highlighter-rouge">Canvas</code>, and move according to its property values.</p>
 
-<p>For example, to have a <code class="highlighter-rouge">Ball</code> move 4 pixels toward the top of a <code class="highlighter-rouge">Canvas</code> every 500 milliseconds
- (half second), you would set the <a href="#Ball.Speed"><code class="highlighter-rouge">Speed</code></a> property to 4 [pixels], the
- <a href="#Ball.Interval"><code class="highlighter-rouge">Interval</code></a> property to 500 [milliseconds], the <a href="#Ball.Heading"><code class="highlighter-rouge">Heading</code></a> property to
- 90 [degrees], and the <a href="#Ball.Enabled"><code class="highlighter-rouge">Enabled</code></a> property to <code class="logic block highlighter-rouge">true</code>. These and its
+<p>For example, to have a <code class="language-plaintext highlighter-rouge">Ball</code> move 4 pixels toward the top of a <code class="language-plaintext highlighter-rouge">Canvas</code> every 500 milliseconds
+ (half second), you would set the <a href="#Ball.Speed"><code class="language-plaintext highlighter-rouge">Speed</code></a> property to 4 [pixels], the
+ <a href="#Ball.Interval"><code class="language-plaintext highlighter-rouge">Interval</code></a> property to 500 [milliseconds], the <a href="#Ball.Heading"><code class="language-plaintext highlighter-rouge">Heading</code></a> property to
+ 90 [degrees], and the <a href="#Ball.Enabled"><code class="language-plaintext highlighter-rouge">Enabled</code></a> property to <code class="language-plaintext logic block highlighter-rouge">true</code>. These and its
  other properties can be changed at any time.</p>
 
-<p>The difference between a <code class="highlighter-rouge">Ball</code> and an <code class="highlighter-rouge">ImageSprite</code> is that the latter can get its appearance
- from an image file, while a <code class="highlighter-rouge">Ball</code>’s appearance can only be changed by varying its
- <a href="#Ball.PaintColor"><code class="highlighter-rouge">PaintColor</code></a> and <a href="#Ball.Radius"><code class="highlighter-rouge">Radius</code></a> properties.</p>
+<p>The difference between a <code class="language-plaintext highlighter-rouge">Ball</code> and an <code class="language-plaintext highlighter-rouge">ImageSprite</code> is that the latter can get its appearance
+ from an image file, while a <code class="language-plaintext highlighter-rouge">Ball</code>’s appearance can only be changed by varying its
+ <a href="#Ball.PaintColor"><code class="language-plaintext highlighter-rouge">PaintColor</code></a> and <a href="#Ball.Radius"><code class="language-plaintext highlighter-rouge">Radius</code></a> properties.</p>
 
 <h3 id="Ball-Properties">Properties</h3>
 
 <dl class="properties">
   <dt id="Ball.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Controls whether the <code class="highlighter-rouge">Ball</code> moves when its speed is non-zero.</dd>
+  <dd>Controls whether the <code class="language-plaintext highlighter-rouge">Ball</code> moves when its speed is non-zero.</dd>
   <dt id="Ball.Heading" class="number"><em>Heading</em></dt>
-  <dd>The <code class="highlighter-rouge">Ball</code>’s heading in degrees above the positive x-axis. Zero degrees is toward the right
+  <dd>The <code class="language-plaintext highlighter-rouge">Ball</code>’s heading in degrees above the positive x-axis. Zero degrees is toward the right
  of the screen; 90 degrees is toward the top of the screen.</dd>
   <dt id="Ball.Interval" class="number"><em>Interval</em></dt>
-  <dd>The interval in milliseconds at which the <code class="highlighter-rouge">Ball</code>’s position is updated. For example, if the
- <code class="highlighter-rouge">Interval</code> is 50 and the <a href="#Ball.Speed"><code class="highlighter-rouge">Speed</code></a> is 10, then the <code class="highlighter-rouge">Ball</code> will move 10 pixels
+  <dd>The interval in milliseconds at which the <code class="language-plaintext highlighter-rouge">Ball</code>’s position is updated. For example, if the
+ <code class="language-plaintext highlighter-rouge">Interval</code> is 50 and the <a href="#Ball.Speed"><code class="language-plaintext highlighter-rouge">Speed</code></a> is 10, then the <code class="language-plaintext highlighter-rouge">Ball</code> will move 10 pixels
  every 50 milliseconds.</dd>
   <dt id="Ball.OriginAtCenter" class="boolean wo do"><em>OriginAtCenter</em></dt>
-  <dd>Whether the x- and y-coordinates should represent the center of the <code class="highlighter-rouge">Ball</code>
- (<code class="logic block highlighter-rouge">true</code>) or its left and top edges (<code class="logic block highlighter-rouge">false</code>).</dd>
+  <dd>Whether the x- and y-coordinates should represent the center of the <code class="language-plaintext highlighter-rouge">Ball</code>
+ (<code class="language-plaintext logic block highlighter-rouge">true</code>) or its left and top edges (<code class="language-plaintext logic block highlighter-rouge">false</code>).</dd>
   <dt id="Ball.PaintColor" class="color"><em>PaintColor</em></dt>
-  <dd>The color of the <code class="highlighter-rouge">Ball</code>.</dd>
+  <dd>The color of the <code class="language-plaintext highlighter-rouge">Ball</code>.</dd>
   <dt id="Ball.Radius" class="number"><em>Radius</em></dt>
-  <dd>The distance from the center of the <code class="highlighter-rouge">Ball</code> to its edge.</dd>
+  <dd>The distance from the center of the <code class="language-plaintext highlighter-rouge">Ball</code> to its edge.</dd>
   <dt id="Ball.Speed" class="number"><em>Speed</em></dt>
-  <dd>The speed at which the <code class="highlighter-rouge">Ball</code> moves. The <code class="highlighter-rouge">Ball</code> moves this many pixels every
- <a href="#Ball.Interval"><code class="highlighter-rouge">Interval</code></a> milliseconds if <a href="#Ball.Enabled"><code class="highlighter-rouge">Enabled</code></a> is <code class="logic block highlighter-rouge">true</code>.</dd>
+  <dd>The speed at which the <code class="language-plaintext highlighter-rouge">Ball</code> moves. The <code class="language-plaintext highlighter-rouge">Ball</code> moves this many pixels every
+ <a href="#Ball.Interval"><code class="language-plaintext highlighter-rouge">Interval</code></a> milliseconds if <a href="#Ball.Enabled"><code class="language-plaintext highlighter-rouge">Enabled</code></a> is <code class="language-plaintext logic block highlighter-rouge">true</code>.</dd>
   <dt id="Ball.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Sets whether sprite should be visible.</dd>
   <dt id="Ball.X" class="number"><em>X</em></dt>
-  <dd>The horizontal coordinate of the <code class="highlighter-rouge">Ball</code>, increasing as the <code class="highlighter-rouge">Ball</code> moves right. If the property
- <a href="#Ball.OriginAtCenter"><code class="highlighter-rouge">OriginAtCenter</code></a> is true, the coordinate is for the center of the <code class="highlighter-rouge">Ball</code>;
- otherwise, it is for the leftmost point of the <code class="highlighter-rouge">Ball</code>.</dd>
+  <dd>The horizontal coordinate of the <code class="language-plaintext highlighter-rouge">Ball</code>, increasing as the <code class="language-plaintext highlighter-rouge">Ball</code> moves right. If the property
+ <a href="#Ball.OriginAtCenter"><code class="language-plaintext highlighter-rouge">OriginAtCenter</code></a> is true, the coordinate is for the center of the <code class="language-plaintext highlighter-rouge">Ball</code>;
+ otherwise, it is for the leftmost point of the <code class="language-plaintext highlighter-rouge">Ball</code>.</dd>
   <dt id="Ball.Y" class="number"><em>Y</em></dt>
-  <dd>The vertical coordinate of the <code class="highlighter-rouge">Ball</code>, increasing as the <code class="highlighter-rouge">Ball</code> moves down. If the property
- <a href="#Ball.OriginAtCenter"><code class="highlighter-rouge">OriginAtCenter</code></a> is true, the coordinate is for the center of the <code class="highlighter-rouge">Ball</code>
- otherwise, it is for the uppermost point of the <code class="highlighter-rouge">Ball</code>.</dd>
+  <dd>The vertical coordinate of the <code class="language-plaintext highlighter-rouge">Ball</code>, increasing as the <code class="language-plaintext highlighter-rouge">Ball</code> moves down. If the property
+ <a href="#Ball.OriginAtCenter"><code class="language-plaintext highlighter-rouge">OriginAtCenter</code></a> is true, the coordinate is for the center of the <code class="language-plaintext highlighter-rouge">Ball</code>
+ otherwise, it is for the uppermost point of the <code class="language-plaintext highlighter-rouge">Ball</code>.</dd>
   <dt id="Ball.Z" class="number"><em>Z</em></dt>
   <dd>How the Ball should be layered relative to other Balls and ImageSprites, with higher-numbered layers in front of lower-numbered layers.</dd>
 </dl>
@@ -192,8 +192,8 @@
 
 <dl class="events">
   <dt id="Ball.CollidedWith">CollidedWith(<em class="component">other</em>)</dt>
-  <dd>Event handler called when two enabled sprites (<a href="#Ball"><code class="highlighter-rouge">Ball</code></a>s or <a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a>s)
- collide. Note that checking for collisions with a rotated <code class="highlighter-rouge">ImageSprite</code> currently
+  <dd>Event handler called when two enabled sprites (<a href="#Ball"><code class="language-plaintext highlighter-rouge">Ball</code></a>s or <a href="#ImageSprite"><code class="language-plaintext highlighter-rouge">ImageSprite</code></a>s)
+ collide. Note that checking for collisions with a rotated <code class="language-plaintext highlighter-rouge">ImageSprite</code> currently
  checks against its unrotated position. Therefore, collision
  checking will be inaccurate for tall narrow or short wide sprites that are
  rotated.</dd>
@@ -203,12 +203,12 @@
  describe the endpoint of the current line segment.  On the first call
  within a given drag, the “previous” coordinates are the same as the
  starting coordinates; subsequently, they are the “current” coordinates
- from the prior call. Note that the <code class="highlighter-rouge">Ball</code> won’t actually move
+ from the prior call. Note that the <code class="language-plaintext highlighter-rouge">Ball</code> won’t actually move
  anywhere in response to the Dragged event unless
- <a href="#Ball.MoveTo"><code class="highlighter-rouge">MoveTo</code></a> is specifically called.</dd>
+ <a href="#Ball.MoveTo"><code class="language-plaintext highlighter-rouge">MoveTo</code></a> is specifically called.</dd>
   <dt id="Ball.EdgeReached">EdgeReached(<em class="number">edge</em>)</dt>
-  <dd>Event handler called when the <code class="highlighter-rouge">Ball</code> reaches an <code class="variable block highlighter-rouge">edge</code> of the screen.
- If <a href="#Ball.Bounce"><code class="highlighter-rouge">Bounce</code></a> is then called with that edge, the sprite will appear to bounce off
+  <dd>Event handler called when the <code class="language-plaintext highlighter-rouge">Ball</code> reaches an <code class="language-plaintext variable block highlighter-rouge">edge</code> of the screen.
+ If <a href="#Ball.Bounce"><code class="language-plaintext highlighter-rouge">Bounce</code></a> is then called with that edge, the sprite will appear to bounce off
  of the edge it reached. Edge here is represented as an integer that indicates one of eight
  directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3),
  and northwest(-4).</dd>
@@ -237,11 +237,11 @@
 
 <dl class="methods">
   <dt id="Ball.Bounce" class="method"><i></i> Bounce(<em class="number">edge</em>)</dt>
-  <dd>Makes this <code class="highlighter-rouge">Ball</code> bounce, as if off a wall. For normal bouncing, the <code class="highlighter-rouge">edge</code> argument should
- be the one returned by <a href="#Ball.EdgeReached"><code class="highlighter-rouge">EdgeReached</code></a>.</dd>
+  <dd>Makes this <code class="language-plaintext highlighter-rouge">Ball</code> bounce, as if off a wall. For normal bouncing, the <code class="language-plaintext highlighter-rouge">edge</code> argument should
+ be the one returned by <a href="#Ball.EdgeReached"><code class="language-plaintext highlighter-rouge">EdgeReached</code></a>.</dd>
   <dt id="Ball.CollidingWith" class="method returns boolean"><i></i> CollidingWith(<em class="component">other</em>)</dt>
-  <dd>Indicates whether a collision has been registered between this <code class="highlighter-rouge">Ball</code>
- and the passed <code class="highlighter-rouge">other</code> sprite.</dd>
+  <dd>Indicates whether a collision has been registered between this <code class="language-plaintext highlighter-rouge">Ball</code>
+ and the passed <code class="language-plaintext highlighter-rouge">other</code> sprite.</dd>
   <dt id="Ball.MoveIntoBounds" class="method"><i></i> MoveIntoBounds()</dt>
   <dd>Moves the sprite back in bounds if part of it extends out of bounds,
  having no effect otherwise. If the sprite is too wide to fit on the
@@ -249,15 +249,15 @@
  canvas. If the sprite is too tall to fit on the canvas, this aligns the
  top side of the sprite with the top side of the canvas.</dd>
   <dt id="Ball.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>)</dt>
-  <dd>Sets the <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> coordinates of the <code class="highlighter-rouge">Ball</code>. If <a href="#Ball.OriginAtCenter"><code class="highlighter-rouge">OriginAtCenter</code></a> is true,
- the center of the <code class="highlighter-rouge">Ball</code> will be placed here. Otherwise, the top left edge of the <code class="highlighter-rouge">Ball</code> will
+  <dd>Sets the <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code> coordinates of the <code class="language-plaintext highlighter-rouge">Ball</code>. If <a href="#Ball.OriginAtCenter"><code class="language-plaintext highlighter-rouge">OriginAtCenter</code></a> is true,
+ the center of the <code class="language-plaintext highlighter-rouge">Ball</code> will be placed here. Otherwise, the top left edge of the <code class="language-plaintext highlighter-rouge">Ball</code> will
  be placed at the specified coordinates.</dd>
   <dt id="Ball.MoveToPoint" class="method"><i></i> MoveToPoint(<em class="list">coordinates</em>)</dt>
   <dd>Moves the Ball so that its origin is at the specified x and y coordinates.</dd>
   <dt id="Ball.PointInDirection" class="method"><i></i> PointInDirection(<em class="number">x</em>,<em class="number">y</em>)</dt>
-  <dd>Turns this <code class="highlighter-rouge">Ball</code> to point toward the point with the coordinates <code class="highlighter-rouge">(x, y)</code>.</dd>
+  <dd>Turns this <code class="language-plaintext highlighter-rouge">Ball</code> to point toward the point with the coordinates <code class="language-plaintext highlighter-rouge">(x, y)</code>.</dd>
   <dt id="Ball.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
-  <dd>Turns this <code class="highlighter-rouge">Ball</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
+  <dd>Turns this <code class="language-plaintext highlighter-rouge">Ball</code> to point towards a given <code class="language-plaintext highlighter-rouge">target</code> sprite. The new heading will be parallel
  to the line joining the origins of the two sprites.</dd>
 </dl>
 
@@ -266,19 +266,19 @@
 <p>A two-dimensional touch-sensitive rectangular panel on which drawing can
  be done and sprites can be moved.</p>
 
-<p>The <a href="#Canvas.BackgroundColor"><code class="highlighter-rouge">BackgroundColor</code></a>, <a href="#Canvas.PaintColor"><code class="highlighter-rouge">PaintColor</code></a>, <a href="#Canvas.BackgroundImage"><code class="highlighter-rouge">BackgroundImage</code></a>,
- <a href="#Canvas.Width"><code class="highlighter-rouge">Width</code></a>, and <a href="#Canvas.Height"><code class="highlighter-rouge">Height</code></a> of the <code class="highlighter-rouge">Canvas</code> can be set in either the Designer or in
- the Blocks Editor. The <code class="highlighter-rouge">Width</code> and <code class="highlighter-rouge">Height</code> are measured in pixels and must be positive.</p>
+<p>The <a href="#Canvas.BackgroundColor"><code class="language-plaintext highlighter-rouge">BackgroundColor</code></a>, <a href="#Canvas.PaintColor"><code class="language-plaintext highlighter-rouge">PaintColor</code></a>, <a href="#Canvas.BackgroundImage"><code class="language-plaintext highlighter-rouge">BackgroundImage</code></a>,
+ <a href="#Canvas.Width"><code class="language-plaintext highlighter-rouge">Width</code></a>, and <a href="#Canvas.Height"><code class="language-plaintext highlighter-rouge">Height</code></a> of the <code class="language-plaintext highlighter-rouge">Canvas</code> can be set in either the Designer or in
+ the Blocks Editor. The <code class="language-plaintext highlighter-rouge">Width</code> and <code class="language-plaintext highlighter-rouge">Height</code> are measured in pixels and must be positive.</p>
 
-<p>Any location on the <code class="highlighter-rouge">Canvas</code> can be specified as a pair of <code class="highlighter-rouge">(X, Y)</code> values, where</p>
+<p>Any location on the <code class="language-plaintext highlighter-rouge">Canvas</code> can be specified as a pair of <code class="language-plaintext highlighter-rouge">(X, Y)</code> values, where</p>
 
 <ul>
-  <li>X is the number of pixels away from the left edge of the <code class="highlighter-rouge">Canvas</code></li>
-  <li>Y is the number of pixels away from the top edge of the <code class="highlighter-rouge">Canvas</code></li>
+  <li>X is the number of pixels away from the left edge of the <code class="language-plaintext highlighter-rouge">Canvas</code></li>
+  <li>Y is the number of pixels away from the top edge of the <code class="language-plaintext highlighter-rouge">Canvas</code></li>
 </ul>
 
-<p>There are events to tell when and where a <code class="highlighter-rouge">Canvas</code> has been touched or a Sprite
- (<a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a> or <a href="#Ball"><code class="highlighter-rouge">Ball</code></a>) has been dragged. There are also methods for drawing
+<p>There are events to tell when and where a <code class="language-plaintext highlighter-rouge">Canvas</code> has been touched or a Sprite
+ (<a href="#ImageSprite"><code class="language-plaintext highlighter-rouge">ImageSprite</code></a> or <a href="#Ball"><code class="language-plaintext highlighter-rouge">Ball</code></a>) has been dragged. There are also methods for drawing
  points, lines, circles, shapes, arcs, and text.</p>
 
 <h3 id="Canvas-Properties">Properties</h3>
@@ -286,11 +286,11 @@
 <dl class="properties">
   <dt id="Canvas.BackgroundColor" class="color"><em>BackgroundColor</em></dt>
   <dd>Specifies the Canvas’s background color as an alpha-red-green-blue
- integer, i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code>
- indicates fully transparent and <code class="highlighter-rouge">FF</code> means opaque.
+ integer, i.e., <code class="language-plaintext highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="language-plaintext highlighter-rouge">00</code>
+ indicates fully transparent and <code class="language-plaintext highlighter-rouge">FF</code> means opaque.
  The background color only shows if there is no background image.</dd>
   <dt id="Canvas.BackgroundImage" class="text"><em>BackgroundImage</em></dt>
-  <dd>Specifies the name of a file containing the background image for the <code class="highlighter-rouge">Canvas</code>.</dd>
+  <dd>Specifies the name of a file containing the background image for the <code class="language-plaintext highlighter-rouge">Canvas</code>.</dd>
   <dt id="Canvas.BackgroundImageinBase64" class="text wo bo"><em>BackgroundImageinBase64</em></dt>
   <dd>Set the background image in Base64 format. This requires API level &gt;= 8. For devices with API level less than 8, setting this will end up with an empty background.</dd>
   <dt id="Canvas.ExtendMovesOutsideCanvas" class="boolean"><em>ExtendMovesOutsideCanvas</em></dt>
@@ -298,10 +298,10 @@
   <dt id="Canvas.FontSize" class="number"><em>FontSize</em></dt>
   <dd>Specifies the font size of text drawn on the Canvas.</dd>
   <dt id="Canvas.Height" class="number bo"><em>Height</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">Canvas</code>’s vertical height, measured in pixels.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">Canvas</code>’s vertical height, measured in pixels.</dd>
   <dt id="Canvas.HeightPercent" class="number wo bo"><em>HeightPercent</em></dt>
-  <dd>Specifies the <code class="highlighter-rouge">Canvas</code>’s vertical height as a percentage
- of the <a href="userinterface.html#Screen.Height"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Height</code></a>.</dd>
+  <dd>Specifies the <code class="language-plaintext highlighter-rouge">Canvas</code>’s vertical height as a percentage
+ of the <a href="userinterface.html#Screen.Height"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Height</code></a>.</dd>
   <dt id="Canvas.Left" class="number"><em>Left</em></dt>
   <dd>Specifies the position of the Left edge of the component relative to an
  AbsoluteArrangement.</dd>
@@ -309,28 +309,28 @@
   <dd>Specifies the width of lines drawn on the Canvas.</dd>
   <dt id="Canvas.PaintColor" class="color"><em>PaintColor</em></dt>
   <dd>Specifies the paint color as an alpha-red-green-blue integer,
- i.e., <code class="highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="highlighter-rouge">00</code> indicates fully
- transparent and <code class="highlighter-rouge">FF</code> means opaque.</dd>
+ i.e., <code class="language-plaintext highlighter-rouge">0xAARRGGBB</code>.  An alpha of <code class="language-plaintext highlighter-rouge">00</code> indicates fully
+ transparent and <code class="language-plaintext highlighter-rouge">FF</code> means opaque.</dd>
   <dt id="Canvas.TapThreshold" class="number"><em>TapThreshold</em></dt>
   <dd>Specifies the movement threshold to differentiate a drag from a tap.</dd>
   <dt id="Canvas.TextAlignment" class="number"><em>TextAlignment</em></dt>
   <dd>Specifies the alignment of the canvas’s text: center, normal
- (starting at the specified point in <a href="#Canvas.DrawText"><code class="highlighter-rouge">DrawText</code></a> or
- <a href="#Canvas.DrawTextAtAngle"><code class="highlighter-rouge">DrawTextAtAngle</code></a>),
+ (starting at the specified point in <a href="#Canvas.DrawText"><code class="language-plaintext highlighter-rouge">DrawText</code></a> or
+ <a href="#Canvas.DrawTextAtAngle"><code class="language-plaintext highlighter-rouge">DrawTextAtAngle</code></a>),
  or opposite (ending at the specified point in
- <a href="#Canvas.DrawText"><code class="highlighter-rouge">DrawText</code></a> or
- <a href="#Canvas.DrawTextAtAngle"><code class="highlighter-rouge">DrawTextAtAngle</code></a>).</dd>
+ <a href="#Canvas.DrawText"><code class="language-plaintext highlighter-rouge">DrawText</code></a> or
+ <a href="#Canvas.DrawTextAtAngle"><code class="language-plaintext highlighter-rouge">DrawTextAtAngle</code></a>).</dd>
   <dt id="Canvas.Top" class="number"><em>Top</em></dt>
   <dd>Specifies the position of the Top edge of the component relative to an
  AbsoluteArrangement.</dd>
   <dt id="Canvas.Visible" class="boolean"><em>Visible</em></dt>
-  <dd>Specifies whether the <code class="highlighter-rouge">Canvas</code> should be visible on the screen.  Value is <code class="logic block highlighter-rouge">true</code>
- if the <code class="highlighter-rouge">Canvas</code> is showing and <code class="logic block highlighter-rouge">false</code> if hidden.</dd>
+  <dd>Specifies whether the <code class="language-plaintext highlighter-rouge">Canvas</code> should be visible on the screen.  Value is <code class="language-plaintext logic block highlighter-rouge">true</code>
+ if the <code class="language-plaintext highlighter-rouge">Canvas</code> is showing and <code class="language-plaintext logic block highlighter-rouge">false</code> if hidden.</dd>
   <dt id="Canvas.Width" class="number bo"><em>Width</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Canvas</code>, measured in pixels.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">Canvas</code>, measured in pixels.</dd>
   <dt id="Canvas.WidthPercent" class="number wo bo"><em>WidthPercent</em></dt>
-  <dd>Specifies the horizontal width of the <code class="highlighter-rouge">Canvas</code> as a percentage
- of the <a href="userinterface.html#Screen.Width"><code class="highlighter-rouge">Screen</code>’s <code class="highlighter-rouge">Width</code></a>.</dd>
+  <dd>Specifies the horizontal width of the <code class="language-plaintext highlighter-rouge">Canvas</code> as a percentage
+ of the <a href="userinterface.html#Screen.Width"><code class="language-plaintext highlighter-rouge">Screen</code>’s <code class="language-plaintext highlighter-rouge">Width</code></a>.</dd>
 </dl>
 
 <h3 id="Canvas-Events">Events</h3>
@@ -387,12 +387,12 @@
  When fill is true, the shape will be filled.</dd>
   <dt id="Canvas.DrawText" class="method"><i></i> DrawText(<em class="text">text</em>,<em class="number">x</em>,<em class="number">y</em>)</dt>
   <dd>Draws the specified text relative to the specified coordinates
- using the values of the <a href="#Canvas.FontSize"><code class="highlighter-rouge">FontSize</code></a> and
- <a href="#Canvas.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a> properties.</dd>
+ using the values of the <a href="#Canvas.FontSize"><code class="language-plaintext highlighter-rouge">FontSize</code></a> and
+ <a href="#Canvas.TextAlignment"><code class="language-plaintext highlighter-rouge">TextAlignment</code></a> properties.</dd>
   <dt id="Canvas.DrawTextAtAngle" class="method"><i></i> DrawTextAtAngle(<em class="text">text</em>,<em class="number">x</em>,<em class="number">y</em>,<em class="number">angle</em>)</dt>
   <dd>Draws the specified text starting at the specified coordinates
- at the specified angle using the values of the <a href="#Canvas.FontSize"><code class="highlighter-rouge">FontSize</code></a> and
- <a href="#Canvas.TextAlignment"><code class="highlighter-rouge">TextAlignment</code></a> properties.</dd>
+ at the specified angle using the values of the <a href="#Canvas.FontSize"><code class="language-plaintext highlighter-rouge">FontSize</code></a> and
+ <a href="#Canvas.TextAlignment"><code class="language-plaintext highlighter-rouge">TextAlignment</code></a> properties.</dd>
   <dt id="Canvas.GetBackgroundPixelColor" class="method returns color"><i></i> GetBackgroundPixelColor(<em class="number">x</em>,<em class="number">y</em>)</dt>
   <dd>Gets the color of the given pixel, ignoring sprites.</dd>
   <dt id="Canvas.GetPixelColor" class="method returns color"><i></i> GetPixelColor(<em class="number">x</em>,<em class="number">y</em>)</dt>
@@ -411,17 +411,17 @@
 
 <h2 id="ImageSprite">ImageSprite</h2>
 
-<p>A ‘sprite’ that can be placed on a <a href="#Canvas"><code class="highlighter-rouge">Canvas</code></a>, where it can react to touches and drags,
- interact with other sprites (<a href="#Ball"><code class="highlighter-rouge">Ball</code></a>s and other <code class="highlighter-rouge">ImageSprite</code>s) and the edge of the
- <code class="highlighter-rouge">Canvas</code>, and move according to its property values. Its appearance is that of the image
- specified in its <a href="#ImageSprite.Picture"><code class="highlighter-rouge">Picture</code></a> property (unless its <a href="#ImageSprite.Visible"><code class="highlighter-rouge">Visible</code></a> property is
- <code class="logic block highlighter-rouge">false</code>.</p>
+<p>A ‘sprite’ that can be placed on a <a href="#Canvas"><code class="language-plaintext highlighter-rouge">Canvas</code></a>, where it can react to touches and drags,
+ interact with other sprites (<a href="#Ball"><code class="language-plaintext highlighter-rouge">Ball</code></a>s and other <code class="language-plaintext highlighter-rouge">ImageSprite</code>s) and the edge of the
+ <code class="language-plaintext highlighter-rouge">Canvas</code>, and move according to its property values. Its appearance is that of the image
+ specified in its <a href="#ImageSprite.Picture"><code class="language-plaintext highlighter-rouge">Picture</code></a> property (unless its <a href="#ImageSprite.Visible"><code class="language-plaintext highlighter-rouge">Visible</code></a> property is
+ <code class="language-plaintext logic block highlighter-rouge">false</code>.</p>
 
-<p>To have an <code class="highlighter-rouge">ImageSprite</code> move 10 pixels to the left every 1000 milliseconds (one second), for
- example, you would set the <a href="#ImageSprite.Speed"><code class="highlighter-rouge">Speed</code></a> property to 10 [pixels], the <a href="#ImageSprite.Interval"><code class="highlighter-rouge">Interval</code></a>
- property to 1000 [milliseconds], the <a href="#ImageSprite.Heading"><code class="highlighter-rouge">Heading</code></a> property to 180 [degrees], and the
- <a href="#ImageSprite.Enabled"><code class="highlighter-rouge">Enabled</code></a> property to <code class="logic block highlighter-rouge">true</code>. A sprite whose <a href="#ImageSprite.Rotates"><code class="highlighter-rouge">Rotates</code></a>
- property is <code class="logic block highlighter-rouge">true</code> will rotate its image as the sprite’s heading changes.
+<p>To have an <code class="language-plaintext highlighter-rouge">ImageSprite</code> move 10 pixels to the left every 1000 milliseconds (one second), for
+ example, you would set the <a href="#ImageSprite.Speed"><code class="language-plaintext highlighter-rouge">Speed</code></a> property to 10 [pixels], the <a href="#ImageSprite.Interval"><code class="language-plaintext highlighter-rouge">Interval</code></a>
+ property to 1000 [milliseconds], the <a href="#ImageSprite.Heading"><code class="language-plaintext highlighter-rouge">Heading</code></a> property to 180 [degrees], and the
+ <a href="#ImageSprite.Enabled"><code class="language-plaintext highlighter-rouge">Enabled</code></a> property to <code class="language-plaintext logic block highlighter-rouge">true</code>. A sprite whose <a href="#ImageSprite.Rotates"><code class="language-plaintext highlighter-rouge">Rotates</code></a>
+ property is <code class="language-plaintext logic block highlighter-rouge">true</code> will rotate its image as the sprite’s heading changes.
  <em>Checking for collisions with a rotated sprite currently checks the sprite’s unrotated position
  so that collision checking will be inaccurate for tall narrow or short wide sprites that are
  rotated.</em> Any of the sprite properties can be changed at any time under program control.</p>
@@ -429,16 +429,18 @@
 <h3 id="ImageSprite-Properties">Properties</h3>
 
 <dl class="properties">
+  <dt id="ImageSprite.Animated" class="boolean"><em>Animated</em></dt>
+  <dd>Controls whether an animated GIF image is playing. Setting to true resumes animation; setting to false pauses at the current frame. Has no effect on non-animated images.</dd>
   <dt id="ImageSprite.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Controls whether the <code class="highlighter-rouge">ImageSprite</code> moves when its speed is non-zero.</dd>
+  <dd>Controls whether the <code class="language-plaintext highlighter-rouge">ImageSprite</code> moves when its speed is non-zero.</dd>
   <dt id="ImageSprite.Heading" class="number"><em>Heading</em></dt>
-  <dd>The <code class="highlighter-rouge">ImageSprite</code>’s heading in degrees above the positive x-axis. Zero degrees is toward the right
+  <dd>The <code class="language-plaintext highlighter-rouge">ImageSprite</code>’s heading in degrees above the positive x-axis. Zero degrees is toward the right
  of the screen; 90 degrees is toward the top of the screen.</dd>
   <dt id="ImageSprite.Height" class="number bo"><em>Height</em></dt>
   <dd>The height of the ImageSprite in pixels.</dd>
   <dt id="ImageSprite.Interval" class="number"><em>Interval</em></dt>
-  <dd>The interval in milliseconds at which the <code class="highlighter-rouge">ImageSprite</code>’s position is updated. For example, if the
- <code class="highlighter-rouge">Interval</code> is 50 and the <a href="#ImageSprite.Speed"><code class="highlighter-rouge">Speed</code></a> is 10, then the <code class="highlighter-rouge">ImageSprite</code> will move 10 pixels
+  <dd>The interval in milliseconds at which the <code class="language-plaintext highlighter-rouge">ImageSprite</code>’s position is updated. For example, if the
+ <code class="language-plaintext highlighter-rouge">Interval</code> is 50 and the <a href="#ImageSprite.Speed"><code class="language-plaintext highlighter-rouge">Speed</code></a> is 10, then the <code class="language-plaintext highlighter-rouge">ImageSprite</code> will move 10 pixels
  every 50 milliseconds.</dd>
   <dt id="ImageSprite.MarkOrigin" class="text wo"><em>MarkOrigin</em></dt>
   <dd>Mark the origin of ImageSprite using a draggable marker.</dd>
@@ -456,8 +458,8 @@
   <dd>If true, the sprite image rotates to match the sprite’s heading. If false, the sprite image
  does not rotate when the sprite changes heading. The sprite rotates around its origin.</dd>
   <dt id="ImageSprite.Speed" class="number"><em>Speed</em></dt>
-  <dd>The speed at which the <code class="highlighter-rouge">ImageSprite</code> moves. The <code class="highlighter-rouge">ImageSprite</code> moves this many pixels every
- <a href="#ImageSprite.Interval"><code class="highlighter-rouge">Interval</code></a> milliseconds if <a href="#ImageSprite.Enabled"><code class="highlighter-rouge">Enabled</code></a> is <code class="logic block highlighter-rouge">true</code>.</dd>
+  <dd>The speed at which the <code class="language-plaintext highlighter-rouge">ImageSprite</code> moves. The <code class="language-plaintext highlighter-rouge">ImageSprite</code> moves this many pixels every
+ <a href="#ImageSprite.Interval"><code class="language-plaintext highlighter-rouge">Interval</code></a> milliseconds if <a href="#ImageSprite.Enabled"><code class="language-plaintext highlighter-rouge">Enabled</code></a> is <code class="language-plaintext logic block highlighter-rouge">true</code>.</dd>
   <dt id="ImageSprite.Visible" class="boolean"><em>Visible</em></dt>
   <dd>Sets whether sprite should be visible.</dd>
   <dt id="ImageSprite.Width" class="number bo"><em>Width</em></dt>
@@ -474,8 +476,8 @@
 
 <dl class="events">
   <dt id="ImageSprite.CollidedWith">CollidedWith(<em class="component">other</em>)</dt>
-  <dd>Event handler called when two enabled sprites (<a href="#Ball"><code class="highlighter-rouge">Ball</code></a>s or <a href="#ImageSprite"><code class="highlighter-rouge">ImageSprite</code></a>s)
- collide. Note that checking for collisions with a rotated <code class="highlighter-rouge">ImageSprite</code> currently
+  <dd>Event handler called when two enabled sprites (<a href="#Ball"><code class="language-plaintext highlighter-rouge">Ball</code></a>s or <a href="#ImageSprite"><code class="language-plaintext highlighter-rouge">ImageSprite</code></a>s)
+ collide. Note that checking for collisions with a rotated <code class="language-plaintext highlighter-rouge">ImageSprite</code> currently
  checks against its unrotated position. Therefore, collision
  checking will be inaccurate for tall narrow or short wide sprites that are
  rotated.</dd>
@@ -485,12 +487,12 @@
  describe the endpoint of the current line segment.  On the first call
  within a given drag, the “previous” coordinates are the same as the
  starting coordinates; subsequently, they are the “current” coordinates
- from the prior call. Note that the <code class="highlighter-rouge">ImageSprite</code> won’t actually move
+ from the prior call. Note that the <code class="language-plaintext highlighter-rouge">ImageSprite</code> won’t actually move
  anywhere in response to the Dragged event unless
- <a href="#ImageSprite.MoveTo"><code class="highlighter-rouge">MoveTo</code></a> is specifically called.</dd>
+ <a href="#ImageSprite.MoveTo"><code class="language-plaintext highlighter-rouge">MoveTo</code></a> is specifically called.</dd>
   <dt id="ImageSprite.EdgeReached">EdgeReached(<em class="number">edge</em>)</dt>
-  <dd>Event handler called when the <code class="highlighter-rouge">ImageSprite</code> reaches an <code class="variable block highlighter-rouge">edge</code> of the screen.
- If <a href="#ImageSprite.Bounce"><code class="highlighter-rouge">Bounce</code></a> is then called with that edge, the sprite will appear to bounce off
+  <dd>Event handler called when the <code class="language-plaintext highlighter-rouge">ImageSprite</code> reaches an <code class="language-plaintext variable block highlighter-rouge">edge</code> of the screen.
+ If <a href="#ImageSprite.Bounce"><code class="language-plaintext highlighter-rouge">Bounce</code></a> is then called with that edge, the sprite will appear to bounce off
  of the edge it reached. Edge here is represented as an integer that indicates one of eight
  directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3),
  and northwest(-4).</dd>
@@ -519,11 +521,11 @@
 
 <dl class="methods">
   <dt id="ImageSprite.Bounce" class="method"><i></i> Bounce(<em class="number">edge</em>)</dt>
-  <dd>Makes this <code class="highlighter-rouge">ImageSprite</code> bounce, as if off a wall. For normal bouncing, the <code class="highlighter-rouge">edge</code> argument should
- be the one returned by <a href="#ImageSprite.EdgeReached"><code class="highlighter-rouge">EdgeReached</code></a>.</dd>
+  <dd>Makes this <code class="language-plaintext highlighter-rouge">ImageSprite</code> bounce, as if off a wall. For normal bouncing, the <code class="language-plaintext highlighter-rouge">edge</code> argument should
+ be the one returned by <a href="#ImageSprite.EdgeReached"><code class="language-plaintext highlighter-rouge">EdgeReached</code></a>.</dd>
   <dt id="ImageSprite.CollidingWith" class="method returns boolean"><i></i> CollidingWith(<em class="component">other</em>)</dt>
-  <dd>Indicates whether a collision has been registered between this <code class="highlighter-rouge">ImageSprite</code>
- and the passed <code class="highlighter-rouge">other</code> sprite.</dd>
+  <dd>Indicates whether a collision has been registered between this <code class="language-plaintext highlighter-rouge">ImageSprite</code>
+ and the passed <code class="language-plaintext highlighter-rouge">other</code> sprite.</dd>
   <dt id="ImageSprite.MoveIntoBounds" class="method"><i></i> MoveIntoBounds()</dt>
   <dd>Moves the sprite back in bounds if part of it extends out of bounds,
  having no effect otherwise. If the sprite is too wide to fit on the
@@ -531,14 +533,16 @@
  canvas. If the sprite is too tall to fit on the canvas, this aligns the
  top side of the sprite with the top side of the canvas.</dd>
   <dt id="ImageSprite.MoveTo" class="method"><i></i> MoveTo(<em class="number">x</em>,<em class="number">y</em>)</dt>
-  <dd>Moves the ImageSprite so that its origin is at the specified <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> coordinates.</dd>
+  <dd>Moves the ImageSprite so that its origin is at the specified <code class="language-plaintext highlighter-rouge">x</code> and <code class="language-plaintext highlighter-rouge">y</code> coordinates.</dd>
   <dt id="ImageSprite.MoveToPoint" class="method"><i></i> MoveToPoint(<em class="list">coordinates</em>)</dt>
   <dd>Moves the ImageSprite so that its origin is at the specified x and y coordinates.</dd>
   <dt id="ImageSprite.PointInDirection" class="method"><i></i> PointInDirection(<em class="number">x</em>,<em class="number">y</em>)</dt>
-  <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point toward the point with the coordinates <code class="highlighter-rouge">(x, y)</code>.</dd>
+  <dd>Turns this <code class="language-plaintext highlighter-rouge">ImageSprite</code> to point toward the point with the coordinates <code class="language-plaintext highlighter-rouge">(x, y)</code>.</dd>
   <dt id="ImageSprite.PointTowards" class="method"><i></i> PointTowards(<em class="component">target</em>)</dt>
-  <dd>Turns this <code class="highlighter-rouge">ImageSprite</code> to point towards a given <code class="highlighter-rouge">target</code> sprite. The new heading will be parallel
+  <dd>Turns this <code class="language-plaintext highlighter-rouge">ImageSprite</code> to point towards a given <code class="language-plaintext highlighter-rouge">target</code> sprite. The new heading will be parallel
  to the line joining the origins of the two sprites.</dd>
+  <dt id="ImageSprite.ResetAnimation" class="method"><i></i> ResetAnimation()</dt>
+  <dd>Resets the animation of an animated GIF image to the first frame. If the animation is playing it continues playing from the beginning; if paused it remains paused on the first frame.</dd>
 </dl>
 
 </article>
@@ -619,11 +623,11 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

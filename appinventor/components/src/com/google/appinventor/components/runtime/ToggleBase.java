@@ -8,10 +8,12 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.IsColor;
+import com.google.appinventor.components.annotations.Options;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.FontTypeface;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
@@ -198,7 +200,6 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
-      userVisible = false,
       description = "Set to true if the text of the %type% should be bold.")
   public void FontBold(boolean bold) {
     this.bold = bold;
@@ -214,8 +215,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
    * @return  {@code true} indicates bold, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontBold() {
     return bold;
   }
@@ -229,7 +229,6 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
-      userVisible = false,
       description = "Set to true if the text of the %type% should be italic.")
   public void FontItalic(boolean italic) {
     this.italic = italic;
@@ -245,8 +244,7 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
    * @return  {@code true} indicates italic, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontItalic() {
     return italic;
   }
@@ -298,9 +296,8 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
-      description = "Specifies the text font face of the %type%.",
-      userVisible = false)
-  public void FontTypeface(String typeface) {
+      description = "Specifies the text font face of the %type%.")
+  public void FontTypeface(@Options(FontTypeface.class) String typeface) {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(container.$form(), view, fontTypeface, bold, italic);
   }
@@ -316,9 +313,8 @@ public abstract class ToggleBase<T extends CompoundButton> extends AndroidViewCo
    *          {@link Component#TYPEFACE_MONOSPACE}
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
-  public String FontTypeface() {
+      category = PropertyCategory.APPEARANCE)
+  public @Options(FontTypeface.class) String FontTypeface() {
     return fontTypeface;
   }
 

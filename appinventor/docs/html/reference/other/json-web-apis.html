@@ -128,11 +128,11 @@
 <p>The JavaScript Object Notation (JSON) is widely used for interacting with application programming interfaces (APIs) on the web. JSON provides different types that are used to compose messages. App Inventor supports these values as well.</p>
 
 <ul>
-  <li>JSON values <code class="highlighter-rouge">true</code> and <code class="highlighter-rouge">false</code> become App Inventor <code class="logic block highlighter-rouge">true</code> and <code class="logic block highlighter-rouge">false</code></li>
-  <li>JSON numbers (both integers and decimal numbers) become App Inventor <code class="math block highlighter-rouge">number</code></li>
-  <li>JSON strings become App Inventor <code class="text block highlighter-rouge">text</code></li>
-  <li>JSON arrays become App Inventor <code class="list block highlighter-rouge">list</code></li>
-  <li>JSON objects become App Inventor <code class="dictionary block highlighter-rouge">dictionary</code></li>
+  <li>JSON values <code class="language-plaintext highlighter-rouge">true</code> and <code class="language-plaintext highlighter-rouge">false</code> become App Inventor <code class="language-plaintext logic block highlighter-rouge">true</code> and <code class="language-plaintext logic block highlighter-rouge">false</code></li>
+  <li>JSON numbers (both integers and decimal numbers) become App Inventor <code class="language-plaintext math block highlighter-rouge">number</code></li>
+  <li>JSON strings become App Inventor <code class="language-plaintext text block highlighter-rouge">text</code></li>
+  <li>JSON arrays become App Inventor <code class="language-plaintext list block highlighter-rouge">list</code></li>
+  <li>JSON objects become App Inventor <code class="language-plaintext dictionary block highlighter-rouge">dictionary</code></li>
 </ul>
 
 <p>An example message in JSON might look like:</p>
@@ -145,7 +145,7 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
 
-<p>This JSON declares an object (indicated by the <code class="highlighter-rouge">{</code> and <code class="highlighter-rouge">}</code>). The keys are the quoted strings (e.g., <code class="highlighter-rouge">"name"</code>) before the colons (<code class="highlighter-rouge">:</code>). We see that there are different values, including arrays (comma-separated values between square brackets <code class="highlighter-rouge">[...]</code>), numbers (e.g., <code class="highlighter-rouge">42</code>), and Booleans (e.g., <code class="highlighter-rouge">true</code>).</p>
+<p>This JSON declares an object (indicated by the <code class="language-plaintext highlighter-rouge">{</code> and <code class="language-plaintext highlighter-rouge">}</code>). The keys are the quoted strings (e.g., <code class="language-plaintext highlighter-rouge">"name"</code>) before the colons (<code class="language-plaintext highlighter-rouge">:</code>). We see that there are different values, including arrays (comma-separated values between square brackets <code class="language-plaintext highlighter-rouge">[...]</code>), numbers (e.g., <code class="language-plaintext highlighter-rouge">42</code>), and Booleans (e.g., <code class="language-plaintext highlighter-rouge">true</code>).</p>
 
 <p>For the remainder of this document, we will be using a service called <a href="https://jsonplaceholder.typicode.com">JSONPlaceholder</a>, which is intended for use in examples. It produces sample JSON responses in the style of Lorem Ipsum and does not actually store any data.</p>
 
@@ -162,22 +162,22 @@
 
 <h2 id="retrieving-data">Retrieving Data</h2>
 
-<p>The Web component provides a <code class="method block highlighter-rouge">Get</code>. When the request completes, the Web’s <code class="event block highlighter-rouge">GotText</code> event block will run. The event has two important parameters:</p>
+<p>The Web component provides a <code class="language-plaintext method block highlighter-rouge">Get</code>. When the request completes, the Web’s <code class="language-plaintext event block highlighter-rouge">GotText</code> event block will run. The event has two important parameters:</p>
 
 <ul>
-  <li><code class="variable block highlighter-rouge">responseCode</code>: The HTTP status code provided by the server. Usually this will be <code class="math block highlighter-rouge">200</code> (OK) or <code class="math block highlighter-rouge">201</code> (Created), but you may also get values such as <code class="math block highlighter-rouge">400</code> (Bad Request), <code class="math block highlighter-rouge">403</code> (Forbidden), and <code class="math block highlighter-rouge">404</code> (Not Found). Depending on the API you use in your app, you should check the status code to know whether your request was successful.</li>
-  <li><code class="variable block highlighter-rouge">responseContent</code>: The content of the response returned by the server as a <code class="text block highlighter-rouge">text</code>. Let’s look at how it can be processed as JSON:</li>
+  <li><code class="language-plaintext variable block highlighter-rouge">responseCode</code>: The HTTP status code provided by the server. Usually this will be <code class="language-plaintext math block highlighter-rouge">200</code> (OK) or <code class="language-plaintext math block highlighter-rouge">201</code> (Created), but you may also get values such as <code class="language-plaintext math block highlighter-rouge">400</code> (Bad Request), <code class="language-plaintext math block highlighter-rouge">403</code> (Forbidden), and <code class="language-plaintext math block highlighter-rouge">404</code> (Not Found). Depending on the API you use in your app, you should check the status code to know whether your request was successful.</li>
+  <li><code class="language-plaintext variable block highlighter-rouge">responseContent</code>: The content of the response returned by the server as a <code class="language-plaintext text block highlighter-rouge">text</code>. Let’s look at how it can be processed as JSON:</li>
 </ul>
 
-<p>The Web component provides the method <a href="../components/connectivity.html#Web.JsonTextDecodeWithDictionaries"><code class="method block highlighter-rouge">JsonTextDecodeWithDictionaries</code></a> that takes <code class="text block highlighter-rouge">text</code>, such as the contents of the <code class="variable block highlighter-rouge">responseContent</code> parameter, and converts it into the appropriate App Inventor type. Depending on the returned content, the output of the <code class="method block highlighter-rouge">JsonTextDecodeWithDictionaries</code> may return different types, such as <code class="list block highlighter-rouge">list</code> or <code class="dictionary block highlighter-rouge">dictionary</code>. App Inventor provides blocks such as <code class="list block highlighter-rouge">is a list?</code> and <code class="dictionary block highlighter-rouge">is a dictionary?</code> that you can use to test the value if the API allows for more than one type of thing to be returned.</p>
+<p>The Web component provides the method <a href="../components/connectivity.html#Web.JsonTextDecodeWithDictionaries"><code class="language-plaintext method block highlighter-rouge">JsonTextDecodeWithDictionaries</code></a> that takes <code class="language-plaintext text block highlighter-rouge">text</code>, such as the contents of the <code class="language-plaintext variable block highlighter-rouge">responseContent</code> parameter, and converts it into the appropriate App Inventor type. Depending on the returned content, the output of the <code class="language-plaintext method block highlighter-rouge">JsonTextDecodeWithDictionaries</code> may return different types, such as <code class="language-plaintext list block highlighter-rouge">list</code> or <code class="language-plaintext dictionary block highlighter-rouge">dictionary</code>. App Inventor provides blocks such as <code class="language-plaintext list block highlighter-rouge">is a list?</code> and <code class="language-plaintext dictionary block highlighter-rouge">is a dictionary?</code> that you can use to test the value if the API allows for more than one type of thing to be returned.</p>
 
 <h3 id="example---successful-get">Example - Successful Get</h3>
 
-<p>Request the first post by setting the <code class="setter block highlighter-rouge">Url</code> property accordingly and calling <code class="method block highlighter-rouge">Get</code></p>
+<p>Request the first post by setting the <code class="language-plaintext setter block highlighter-rouge">Url</code> property accordingly and calling <code class="language-plaintext method block highlighter-rouge">Get</code></p>
 
 <p><img src="images/webapis-get-button.png" alt="" /></p>
 
-<p>On success, the <code class="event block highlighter-rouge">GotText</code> event will have a <code class="variable block highlighter-rouge">responseCode</code> of <code class="math block highlighter-rouge">200</code>. We can parse the contents of the <code class="variable block highlighter-rouge">responseText}</code> using the <code class="method block highlighter-rouge">JsonTextDecodeWithDictionaries</code> method. Once we have our dictionary with the result, we can access its <code class="text block highlighter-rouge">title</code> and <code class="text block highlighter-rouge">body</code> properties.</p>
+<p>On success, the <code class="language-plaintext event block highlighter-rouge">GotText</code> event will have a <code class="language-plaintext variable block highlighter-rouge">responseCode</code> of <code class="language-plaintext math block highlighter-rouge">200</code>. We can parse the contents of the <code class="language-plaintext variable block highlighter-rouge">responseText}</code> using the <code class="language-plaintext method block highlighter-rouge">JsonTextDecodeWithDictionaries</code> method. Once we have our dictionary with the result, we can access its <code class="language-plaintext text block highlighter-rouge">title</code> and <code class="language-plaintext text block highlighter-rouge">body</code> properties.</p>
 
 <p><strong>Sample JSON</strong></p>
 
@@ -193,7 +193,7 @@
 
 <p><img src="images/webapis-get-success.png" alt="" /></p>
 
-<p>After running the blocks above, Label1 will contain the title from the JSON (i.e., <code class="highlighter-rouge">"sunt aut facere..."</code>) and Label2 will contain the body from the JSON (i.e., <code class="highlighter-rouge">"quia et sucipit..."</code>).</p>
+<p>After running the blocks above, Label1 will contain the title from the JSON (i.e., <code class="language-plaintext highlighter-rouge">"sunt aut facere..."</code>) and Label2 will contain the body from the JSON (i.e., <code class="language-plaintext highlighter-rouge">"quia et sucipit..."</code>).</p>
 
 <h3 id="example---failed-get">Example - Failed Get</h3>
 
@@ -201,21 +201,21 @@
 
 <p><img src="images/webapis-get-button-fail.png" alt="" /></p>
 
-<p>HTTP uses the error code <code class="math block highlighter-rouge">404</code> to indicate that a resource cannot be found by the server. We test for this and report an error to the user.</p>
+<p>HTTP uses the error code <code class="language-plaintext math block highlighter-rouge">404</code> to indicate that a resource cannot be found by the server. We test for this and report an error to the user.</p>
 
 <p><img src="images/webapis-get-failure.png" alt="" /></p>
 
 <h3 id="example---walking-a-response">Example - Walking a Response</h3>
 
-<p>If you call <code class="method block highlighter-rouge">Get</code> with <code class="setter block highlighter-rouge">Url</code> set to <code class="text block highlighter-rouge">https://jsonplaceholder.typicode.com/posts</code>, then you will get a list of 100 entries back.</p>
+<p>If you call <code class="language-plaintext method block highlighter-rouge">Get</code> with <code class="language-plaintext setter block highlighter-rouge">Url</code> set to <code class="language-plaintext text block highlighter-rouge">https://jsonplaceholder.typicode.com/posts</code>, then you will get a list of 100 entries back.</p>
 
 <p><img src="images/webapis-get-all-posts.png" alt="" /></p>
 
-<p>If you wanted to display some information about these items in a ListView, one way to do it would be to use a <code class="control block highlighter-rouge">for each item</code> block to loop over the list.</p>
+<p>If you wanted to display some information about these items in a ListView, one way to do it would be to use a <code class="language-plaintext control block highlighter-rouge">for each item</code> block to loop over the list.</p>
 
 <p><img src="images/webapis-get-foreach.png" alt="" /></p>
 
-<p>However, the <a href="../blocks/dictionaries.html#list-by-walking-key-path"><code class="dictionary block highlighter-rouge">list by walking key path</code></a> makes this easier. This block works by starting at the object it is given and following a sequence of steps provided to it in the form of a <code class="list block highlighter-rouge">list</code>. In the following example, we give it the key path of <code class="dictionary block highlighter-rouge">walk all at level</code> and <code class="text block highlighter-rouge">title</code> to get the title of every post in the list (in order of appearance). This code is functionally equivalent to the code above using the <code class="control block highlighter-rouge">for each</code> block but it is more concise.</p>
+<p>However, the <a href="../blocks/dictionaries.html#list-by-walking-key-path"><code class="language-plaintext dictionary block highlighter-rouge">list by walking key path</code></a> makes this easier. This block works by starting at the object it is given and following a sequence of steps provided to it in the form of a <code class="language-plaintext list block highlighter-rouge">list</code>. In the following example, we give it the key path of <code class="language-plaintext dictionary block highlighter-rouge">walk all at level</code> and <code class="language-plaintext text block highlighter-rouge">title</code> to get the title of every post in the list (in order of appearance). This code is functionally equivalent to the code above using the <code class="language-plaintext control block highlighter-rouge">for each</code> block but it is more concise.</p>
 
 <p><img src="images/webapis-get-walk.png" alt="" /></p>
 
@@ -227,11 +227,11 @@
 
 <h3 id="example">Example</h3>
 
-<p>We can use the Web component’s <a href="../components/connectivity.html#Web.PostText"><code class="method block highlighter-rouge">PostText</code></a> method to send content to a JSON-baed Web API. For JSONPlaceholder, posts should contain 3 keys: <code class="highlighter-rouge">"userId"</code>, <code class="highlighter-rouge">"title"</code>, and <code class="highlighter-rouge">"body"</code>.</p>
+<p>We can use the Web component’s <a href="../components/connectivity.html#Web.PostText"><code class="language-plaintext method block highlighter-rouge">PostText</code></a> method to send content to a JSON-baed Web API. For JSONPlaceholder, posts should contain 3 keys: <code class="language-plaintext highlighter-rouge">"userId"</code>, <code class="language-plaintext highlighter-rouge">"title"</code>, and <code class="language-plaintext highlighter-rouge">"body"</code>.</p>
 
 <p><img src="images/webapis-post.png" alt="" /></p>
 
-<p>On success, the <code class="variable block highlighter-rouge">responseCode</code> in <code class="event block highlighter-rouge">GotText</code> will be <code class="math block highlighter-rouge">201</code>, which means “Created”.</p>
+<p>On success, the <code class="language-plaintext variable block highlighter-rouge">responseCode</code> in <code class="language-plaintext event block highlighter-rouge">GotText</code> will be <code class="language-plaintext math block highlighter-rouge">201</code>, which means “Created”.</p>
 
 <p><img src="images/webapis-post-success.png" alt="" /></p>
 
@@ -317,11 +317,11 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

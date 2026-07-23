@@ -324,7 +324,7 @@ public class TopToolbar extends Composite {
     // TODO: This code will work only so long as these menu items stay located in the file/build
     // menus as expected. It should be refactored.
     int projectCount = ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount();
-    if (view == 0) {  // We are in the Projects view
+    if (view == Ode.PROJECTS) {  // We are in the Projects view
       if ("ProjectDesignOnly".equals(fileDropDown.getName())) {
         fileDropDown.setVisible(false);
       }

@@ -55,7 +55,7 @@ class SyncArray<T> {
 
 class NotifierArray: NSObject {
   fileprivate weak var form: Form? = nil
-  private var requests: SyncArray<(String, TimeInterval)>
+  private var requests: SyncArray<(String, TimeInterval, UIColor, UIColor)>
   private var paused = false
   private let syncQueue = DispatchQueue(label: "SyncPauseNotifierQueue", attributes: .concurrent)
 
@@ -64,8 +64,9 @@ class NotifierArray: NSObject {
     super.init()
   }
 
-  open func addAlert(_ message: String, for duration: TimeInterval) {
-    let notice = (message, duration)
+  open func addAlert(_ message: String, for duration: TimeInterval, backgroundColor: UIColor,
+      textColor: UIColor) {
+    let notice = (message, duration, backgroundColor, textColor)
     requests.append(notice)
     syncQueue.sync {
       if !self.paused, self.requests.count == 1 {
@@ -95,8 +96,11 @@ class NotifierArray: NSObject {
     requests.clear()
   }
 
-  private func startAlert(_ notice: (String, TimeInterval)) {
-    form?.view.makeToast(notice.0, duration: notice.1, position: ToastPosition.center)
+  private func startAlert(_ notice: (String, TimeInterval, UIColor, UIColor)) {
+    var style = ToastStyle()
+    style.backgroundColor = notice.2
+    style.messageColor = notice.3
+    form?.view.makeToast(notice.0, duration: notice.1, position: ToastPosition.center, style: style)
     DispatchQueue.main.asyncAfter(deadline: .now() + notice.1) {
       self.requests.removeFirst()
       self.syncQueue.sync {
@@ -398,7 +402,8 @@ open class Notifier: NonvisibleComponent {
 
   @objc open func ShowAlert(_ notice: String) {
     let duration = TimeInterval(_notifierLength == 1 ? 3.5 : 2.0)
-    Notifier.notices.addAlert(notice, for: duration)
+    Notifier.notices.addAlert(notice, for: duration, backgroundColor: argbToColor(_backgroundColor),
+        textColor: argbToColor(_textColor))
   }
 
   @objc open func ShowChooseDialog(_ message: String, _ title: String, _ button1text: String, _ button2text: String, _ cancelable: Bool) {

@@ -231,22 +231,6 @@ public final class Project {
     fireProjectNodeRemoved(node);
   }
 
-  public void moveToTrash() {
-    Tracking.trackEvent(Tracking.PROJECT_EVENT,
-        Tracking.PROJECT_ACTION_MOVE_TO_TRASH_PROJECT_YA, getProjectName());
-    Ode.getInstance().getProjectService().moveToTrash(getProjectId(),
-        new OdeAsyncCallback<UserProject>(
-            // failure message
-            MESSAGES.moveToTrashProjectError()) {
-          @Override
-          public void onSuccess(UserProject project) {
-            if (project.getProjectId() == projectInfo.getProjectId()) {
-              projectInfo.moveToTrash();
-            }
-          }
-        });
-  }
-
   public void deleteFromTrash() {
     Tracking.trackEvent(Tracking.PROJECT_EVENT,
         Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, getProjectName());
@@ -257,6 +241,16 @@ public final class Project {
       }
     };
     Ode.getInstance().getProjectService().deleteProject(getProjectId(), deleteCallback);
+    // Remove the project from its home folder and clear the cache of the home folder and all of its parent folders.
+    if (homeFolder != null) {
+      homeFolder.removeProject(Project.this);
+      homeFolder.clearCache();
+      ProjectFolder parentFolder = homeFolder.getParentFolder();
+      while (parentFolder != null) {
+        parentFolder.clearCache();
+        parentFolder = parentFolder.getParentFolder();
+      }
+    }
   }
 
   public boolean isInTrash() {

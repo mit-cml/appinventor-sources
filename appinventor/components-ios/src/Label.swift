@@ -19,7 +19,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
   fileprivate var _backgroundColor = Color.none.int32
   fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
   public var HighContrast: Bool = false
-  
+
   public override init(_ parent: ComponentContainer) {
     _view = UILabel()
     _view.translatesAutoresizingMaskIntoConstraints = false
@@ -54,7 +54,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
     _view.sizeToFit()
     updateFormattedContent()
   }
-  
+
   public override var view: UIView {
     get {
       return _view
@@ -89,7 +89,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       }
     }
   }
-  
+
   @objc public var BackgroundColor: Int32 {
     get {
       return _backgroundColor
@@ -99,7 +99,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       _view.backgroundColor = argbToColor(argb == Color.default.int32 ? Color.none.int32 : argb)
     }
   }
-  
+
   @objc public var FontBold: Bool {
     get {
       return _bold
@@ -112,7 +112,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       }
     }
   }
-  
+
   @objc public var FontItalic: Bool {
     get {
       return _italic
@@ -125,7 +125,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       }
     }
   }
-  
+
   @objc public var HasMargins: Bool {
     get {
       return _hasMargins
@@ -137,7 +137,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
         UIEdgeInsets()
     }
   }
-  
+
   @objc public var FontSize: Float {
     get {
       return Float(_view.font.pointSize)
@@ -147,24 +147,22 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       updateFontSize()
     }
   }
-  
-  @objc public var FontTypeface: Int32 {
+
+  @objc public var FontTypeface: String {
     get {
-      return _typeface.rawValue
+      return String(_typeface.rawValue)
     }
     set(typeface) {
-      if typeface != _typeface.rawValue {
-        if let type = Typeface(rawValue: Int32(typeface)) {
-          _typeface = type
-          _view.font = getFontTypeface(font: _view.font, typeFace: type)
-        }
-        if _htmlFormat {
-          updateFormattedContent()
-        }
+      if let type = getTypeface(typeface) {
+        _typeface = type
+      }
+      _view.font = getFontTypeface(font: _view.font, typeFace: typeface)
+      if _htmlFormat {
+        updateFormattedContent()
       }
     }
   }
-  
+
   @objc public var LargeFont: Bool {
     get {
       return _isBigText
@@ -203,7 +201,7 @@ public final class Label: ViewComponent, AbstractMethodsForViewComponent, Access
       updateFormattedContent()
     }
   }
-  
+
   @objc public var TextColor: Int32 {
     get {
       return _textColor

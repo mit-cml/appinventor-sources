@@ -24,11 +24,13 @@ public class ListViewTwoTextLinearAdapter extends ListAdapterWithRecyclerView {
   private int textDetailColor;
   private float textDetailSize;
   private String textDetailFont;
+  private int textMainAlignment;
+  private int textDetailAlignment;
 
   public ListViewTwoTextLinearAdapter(ComponentContainer container, List<Object> data,
       int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
       float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight) {
+      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
     super(container, data, backgroundColor, selectionColor, radius);
     this.container = container;
     this.textMainColor = textMainColor;
@@ -37,6 +39,8 @@ public class ListViewTwoTextLinearAdapter extends ListAdapterWithRecyclerView {
     this.textDetailColor = textDetailColor;
     this.textDetailSize = textDetailSize;
     this.textDetailFont = textDetailFont;
+    this.textMainAlignment = textMainAlignment;
+    this.textDetailAlignment = textDetailAlignment;
   }
 
   @Override
@@ -44,31 +48,27 @@ public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     CardView cardView = createCardView(parent);
     final int idCard = cardView.getId();
 
-    // MainText
+    // MainText — weight=1 gives it 50% of the row, enabling center/right alignment
     TextView textViewFirst = new TextView(container.$context());
     final int idFirst = ViewCompat.generateViewId();
     textViewFirst.setId(idFirst);
-    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
     textViewFirst.setLayoutParams(layoutParams1);
     textViewFirst.setTextSize(textMainSize);
     textViewFirst.setTextColor(textMainColor);
     TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
+    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
 
-    // DetailText
+    // DetailText — weight=1 gives it the remaining 50%, so it can never be pushed off-screen
     TextView textViewSecond = new TextView(container.$context());
     final int idSecond = ViewCompat.generateViewId();
     textViewSecond.setId(idSecond);
-    LinearLayout.LayoutParams layoutParams2 =
-            new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
     textViewSecond.setTextSize(textDetailSize);
     TextViewUtil.setFontTypeface(container.$form(), textViewSecond, textDetailFont, false, false);
     textViewSecond.setTextColor(textDetailColor);
-    
-    layoutParams2.setMargins(50, 0, 0, 0);
     textViewSecond.setLayoutParams(layoutParams2);
-    textViewSecond.setMaxLines(1);
-    textViewSecond.setEllipsize(null);
+    TextViewUtil.setAlignment(textViewSecond, textDetailAlignment, false);
 
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

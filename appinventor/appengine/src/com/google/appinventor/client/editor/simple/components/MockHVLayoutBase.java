@@ -258,8 +258,8 @@ abstract class MockHVLayoutBase extends MockLayout {
         layoutHorizontal(containerLayoutInfo);
       }
     } else {
-      layoutWidth = EMPTY_WIDTH;
-      layoutHeight = EMPTY_HEIGHT;
+      layoutWidth = containerLayoutInfo.width;
+      layoutHeight = containerLayoutInfo.height;
     }
   }
 
@@ -422,6 +422,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
 
       container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
+      layoutWidth = Math.max(layoutWidth, leftX + childWidthWithBorder);
       childMidpoints[index] = topY + (childHeightWithBorder / 2);
       topY += childHeightWithBorder;
       index++;

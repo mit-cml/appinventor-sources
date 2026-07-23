@@ -35,7 +35,7 @@ extension AbstractMethodsForTextBox {
 
 open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   fileprivate weak var _delegate: AbstractMethodsForTextBox!
-  
+
   fileprivate var _textAlignment: Int32 = 0
   fileprivate var _backgroundColor: Int32 = 0
   fileprivate var _fontTypeface = Typeface.normal
@@ -136,7 +136,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       }
     }
   }
-  
+
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
@@ -147,7 +147,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       updateColor()
     }
   }
-  
+
   @objc open var Enabled: Bool {
     get {
       return (_delegate?.view.isUserInteractionEnabled)!
@@ -166,7 +166,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       _delegate.font = getFontTrait(font: _delegate.font, trait: .traitBold, shouldSet: bold)!
     }
   }
-  
+
   @objc open var FontItalic: Bool {
     get {
       return _italic
@@ -190,23 +190,21 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       updateFontSize()
     }
   }
-  
-  @objc open var FontTypeface: Int32 {
+
+  @objc open var FontTypeface: String {
     get {
-      return _fontTypeface.rawValue
+      return String(_fontTypeface.rawValue)
     }
     set(typeface) {
-      if typeface != _fontTypeface.rawValue {
-        if let type = Typeface(rawValue: typeface) {
-          _fontTypeface = type
-          if let delegate = _delegate {
-            delegate.font = getFontTypeface(font: delegate.font, typeFace: type) ?? delegate.font
-          }
-        }
+      if let type = getTypeface(typeface) {
+        _fontTypeface = type
+      }
+      if let delegate = _delegate {
+        delegate.font = getFontTypeface(font: delegate.font, typeFace: typeface) ?? delegate.font
       }
     }
   }
-  
+
   @objc open var HighContrast: Bool {
     get {
       return _isHighContrast
@@ -261,7 +259,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       _delegate?.readOnly = ro
     }
   }
-  
+
   @objc open var Text: String {
     get {
       if let delegate = _delegate {
@@ -276,7 +274,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       _delegate?.text = text
     }
   }
-  
+
   @objc open var TextColor: Int32 {
     get {
       return _textColor
@@ -286,7 +284,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
       updateColor()
     }
   }
-  
+
   // MARK: TextboxBase Methods
 
   @objc open func MoveCursorTo(_ position: Int32) {
@@ -320,7 +318,7 @@ open class TextBoxBase: ViewComponent, UITextViewDelegate, AccessibleComponent {
   @objc open func GotFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "GotFocus")
   }
-  
+
   @objc open func LostFocus() {
     EventDispatcher.dispatchEvent(of: self, called: "LostFocus")
   }

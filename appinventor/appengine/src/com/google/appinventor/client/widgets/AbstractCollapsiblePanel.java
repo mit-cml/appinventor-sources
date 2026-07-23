@@ -95,6 +95,13 @@ public abstract class AbstractCollapsiblePanel extends FlowPanel {
   }
 
   /**
+   * Focuses the header element of this panel (which has tabindex="0").
+   */
+  public void focus() {
+    header.getElement().focus();
+  }
+
+  /**
    * Adds a widget to the content area.
    *
    * @param widget the widget to add

@@ -527,6 +527,72 @@ div.StatusPanel {
 }
 
 /*
+ * CloudDB Visualizer dark mode
+ */
+.cdbviz-dark {
+  background-color: #1a1a1a;
+  color: #ddd;
+}
+
+.cdbviz-dark .dialogMiddleCenter {
+  background-color: #1a1a1a;
+}
+
+.cdbviz-dark .Caption {
+  background-color: #252525;
+  color: #ccc;
+  border-bottom: 1px solid #444;
+}
+
+.cdbviz-dark .dialogContent {
+  background-color: #1a1a1a;
+  color: #ddd;
+}
+
+.cdbviz-dark .ode-ComponentTable td {
+  color: #ddd;
+}
+
+.cdbviz-dark .ode-ComponentHeaderRow {
+  background: #252525;
+  border-bottom: 1px solid #444;
+}
+
+.cdbviz-dark .ode-ComponentHeaderLabel {
+  color: #99bbff;
+}
+
+.cdbviz-dark .ode-ComponentRowHighlighted {
+  background-color: #2d1a2a;
+  border-bottom: 1px solid #333;
+}
+
+.cdbviz-dark .ode-ComponentRowUnHighlighted {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+.cdbviz-dark .ode-Android-footer {
+  background-color: #252525;
+  border-top: 1px solid #444;
+  color: #bbb;
+}
+
+.cdbviz-dark .ode-InfoMessage {
+  color: #aaa;
+}
+
+.cdbviz-dark input[type="text"],
+.cdbviz-dark input[type="search"],
+.cdbviz-dark input[type="number"],
+.cdbviz-dark textarea,
+.cdbviz-dark select {
+  background-color: #2a2a2a;
+  color: #ddd;
+  border-color: #555;
+}
+
+/*
  * TopPanel
  */
 
@@ -1793,6 +1859,13 @@ path.ode-SimpleMockMapFeature-selected {
   margin: 8px 16px;
 }
 
+.ode-WarningMessage {
+  color: #b45309;
+  font-weight: bold;
+  font-size: 13px;
+  margin: 4px 0;
+}
+
 .ode-InfoMessage {
   font-weight: bold;
   font-size: 13px;
@@ -2125,15 +2198,6 @@ path.ode-SimpleMockMapFeature-selected {
    text-shadow: none;
  }
 
- .ode-DialogBox .ExtendedText {
-   padding-left: 10px;
-   font-weight: normal;
-   font-size: 14px;
-   color: #555;
-   padding-bottom: 20px;
-   padding-top: 10px;
- }
-
 .ode-DialogRow .gwt-RadioButton input[type="radio"] {
   margin-right: 5px;
 }
@@ -2170,6 +2234,16 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
   padding: 5px 10px;
+}
+
+.ode-DialogBox .settings-labeled-textbox td:first-child {
+  width: 60%;
+}
+
+.ode-DialogBox .uploadDialogContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .ode-DialogBox .buttonRow {
@@ -3653,4 +3727,233 @@ div.dropdiv p {
 #aiConsolePanel .Error {
   color: red;
   font-weight: bolder;
+}
+
+/* ===================================================================
+   ListView "List Item Editor" (ListData property editor) redesign.
+   "Thumbnail-Forward" direction. Plain CSS so it works for both the
+   UiBinder widgets and the Java-built image-picker popup. The accessible
+   dialog chrome (ARIA/Esc/focus) is provided by wizards/Dialog and is
+   left untouched -- only the visible caption bar is hidden so the custom
+   header below can take its place (the accessible name still comes from
+   the dialog's aria-label).
+   =================================================================== */
+
+/* Center the title in the standard (draggable) caption bar; the count sits to its right. */
+.ode-DialogBox.lie-dialog .Caption {
+  display: flex;
+  align-items: center;
+}
+.lie-cap-title {
+  flex: 1;
+  text-align: center;
+}
+.lie-cap-count {
+  flex-shrink: 0;
+  padding-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: .75;
+}
+
+/* ---- Body / rows ------------------------------------------------- */
+.lie-body {
+  padding: 8px 16px 12px;
+}
+.lie-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 11px 0;
+  border-top: 1px solid #f0f0f0;
+}
+.lie-row:first-child {
+  border-top: none;
+}
+
+/* Image cell -- the signature of this direction */
+.lie-thumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 64px;
+}
+.lie-thumb-tile {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: repeating-linear-gradient(45deg, #efefef, #efefef 4px, #f7f7f7 4px, #f7f7f7 8px);
+  color: #b4b4b4;
+  font: 500 9px 'Roboto Mono', monospace;
+  text-align: center;
+  line-height: 56px;
+  cursor: pointer;
+  outline: none;
+  overflow: hidden;
+}
+.lie-thumb-tile:hover {
+  border-color: #70b3d8;
+}
+.lie-thumb-tile:focus {
+  border-color: #70b3d8;
+  box-shadow: 0 0 0 2px #d6e9f8;
+}
+/* When an image is chosen the tile shows the asset, not the placeholder pattern. */
+.lie-thumb-tile.lie-thumb-filled {
+  background: #ffffff;
+  line-height: 0;
+}
+.lie-thumb-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.lie-thumb-name {
+  margin-top: 4px;
+  max-width: 60px;
+  font: 400 9px 'Roboto Mono', monospace;
+  color: #9a9a9a;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Text fields */
+.lie-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.lie-input {
+  width: 100%;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #333333;
+  outline: none;
+}
+.lie-input-main {
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid #d6d6d6;
+  font: 500 14px 'Roboto', sans-serif;
+}
+.lie-input-detail {
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid #e2e2e2;
+  background: #fafafa;
+  color: #777777;
+  font: 400 12px 'Roboto', sans-serif;
+}
+.lie-input:focus {
+  border-color: #70b3d8;
+  box-shadow: 0 0 0 2px #d6e9f8;
+}
+.lie-input-detail:focus {
+  background: #ffffff;
+}
+
+/* Delete control -- neutral until hovered, then (and only then) red */
+.lie-del {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: #c4c4c4;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+.lie-del:hover {
+  color: #d9534f;
+  background: #fbe9e9;
+}
+
+/* ---- Add row ----------------------------------------------------- */
+.lie-add {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1.5px dashed #c4c4c4;
+  background: none;
+  color: #777777;
+  font: 500 13px 'Roboto', sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.lie-add:hover {
+  border-color: #a5cf47;
+  color: #6f9e1f;
+  background: #fbfdf5;
+}
+
+/* ---- Footer ------------------------------------------------------ */
+.lie-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 13px 18px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+/* ---- Image picker popup (Susan's click-the-thumbnail option) ------ */
+.lie-picker {
+  max-height: 280px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #d2d2d2;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+  padding: 4px;
+}
+.lie-picker-item {
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+}
+.lie-picker-item:hover,
+.lie-picker-item:focus {
+  background: #d6e9f8;
+}
+.lie-picker-item.lie-picker-selected {
+  background: #eef2e0;
+}
+/* The focusable item holds a single child, so the row layout sits here. */
+.lie-picker-itemrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lie-picker-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: repeating-linear-gradient(45deg, #efefef, #efefef 4px, #f7f7f7 4px, #f7f7f7 8px);
+  overflow: hidden;
+  flex-shrink: 0;
+  line-height: 0;
+}
+.lie-picker-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.lie-picker-name {
+  font: 400 13px 'Roboto', sans-serif;
+  color: #333333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

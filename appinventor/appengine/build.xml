@@ -155,6 +155,8 @@
         <exclude name="media/*.css"/>
         <exclude name="demo/**"/>
       </fileset>
+    </copy>
+    <copy todir="${build.static.dir}/media" flatten="true" overwrite="true">
       <fileset dir="${appinventor.dir}/blocklyeditor">
         <include name="media/*"/>
         <exclude name="media/*.css"/>
@@ -319,6 +321,9 @@
     <!-- Add any additional server libs that need to be copied -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/appengine-api-1.0-sdk-2.0.19.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${appengine.sdk}/geronimo-jpa_3.0_spec-1.1.1.jar" />
+    <!-- Jedis (Redis client) — used by CloudDBDataServiceImpl for the designer data visualizer -->
+    <copy todir="${build.war.dir}/WEB-INF/lib"
+          file="${lib.dir}/jedis/jedis-3.0.0-SNAPSHOT-jar-with-dependencies.jar" />
   </target>
 
   <!-- =====================================================================
@@ -438,8 +443,8 @@
     <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
     <pathelement location="${lib.dir}/objectify-3.1/objectify-3.1.jar" />
 
-    <!-- Powermock and dependencies -->
-    <fileset dir="${lib.dir}/powermock" includes="*.jar" />
+    <!-- Mocking libraries (EasyMock 5, Mockito 5, byte-buddy) -->
+    <fileset dir="${lib.dir}/mocklibs" includes="*.jar" />
 
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
     <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.6.jar" />

@@ -17,11 +17,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.uibinder.client.ElementParserToUse;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.UIObject;
@@ -140,6 +143,13 @@ public class DropDownButton extends TextButton {
           menu.moveSelectionDown();
           menu.focus();
         }
+      }
+    });
+
+    menu.addCloseHandler(new CloseHandler<PopupPanel>() {
+      @Override
+      public void onClose(CloseEvent<PopupPanel> event) {
+        updateAriaExpanded(false);
       }
     });
 

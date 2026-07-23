@@ -130,23 +130,23 @@
 <dl>
   <dt>Application assets</dt>
   <dd>
-    <p>The sources labeled <em>Media</em> shown in the designer — part of the application’s <em>assets</em> — are packaged with the application. Anyone who installs your application will have them, as part of the application. You also specify them in the designer, which is convenient. You can also specify these in programs by their file name: just use the file name without any special prefix. For example, if you have an image asset named <em>kitty.png</em>, you can use it as an image: just set the <code class="highlighter-rouge">Picture</code> property of an image component to the text <em>kitty.png</em>. You can similarly use files names for sound (Sound or Player) or video (VideoPlayer).</p>
+    <p>The sources labeled <em>Media</em> shown in the designer — part of the application’s <em>assets</em> — are packaged with the application. Anyone who installs your application will have them, as part of the application. You also specify them in the designer, which is convenient. You can also specify these in programs by their file name: just use the file name without any special prefix. For example, if you have an image asset named <em>kitty.png</em>, you can use it as an image: just set the <code class="language-plaintext highlighter-rouge">Picture</code> property of an image component to the text <em>kitty.png</em>. You can similarly use files names for sound (Sound or Player) or video (VideoPlayer).</p>
 
     <p>Assets are the most convenient to use, but the space for them is limited to a few megabytes, because they must be packaged with the application. They are good for small images and short audio selections. Bit you would probably not use them for complete songs or videos.</p>
   </dd>
   <dt>The device storage</dt>
   <dd>
-    <p>You can access files on your phone’s SD (secure digital) card using file names that begin with <em>/sdcard</em>. You could play a song on your SDCard by setting the source of a <code class="highlighter-rouge">Player</code> component to</p>
+    <p>You can access files on your phone’s SD (secure digital) card using file names that begin with <em>/sdcard</em>. You could play a song on your SDCard by setting the source of a <code class="language-plaintext highlighter-rouge">Player</code> component to</p>
 
     <p>/sdcard/Music/Blondie/The Best of Blondie/Heart of Glass.mp3</p>
 
-    <p>and starting the <code class="highlighter-rouge">Player</code> (assuming of course, that the song file is on the SDCard). Make sure to specify the complete file name, including the “mp3”.</p>
+    <p>and starting the <code class="language-plaintext highlighter-rouge">Player</code> (assuming of course, that the song file is on the SDCard). Make sure to specify the complete file name, including the “mp3”.</p>
 
     <p>The Android system also includes an alternative way to designe SDCard files as URLs. Here you prefix the file name with <em>file:///sdcard</em> and use “URL encoding” for special characters. For example, a space is “%20”. So you could designate the same file by setting the player source to</p>
 
     <p>file:///sdcard/Music/Blondie/The%20Best%20of%20Blondie/Heart%20of%20Glass.mp3</p>
 
-    <p>Note that you’ll want to use a <code class="highlighter-rouge">Player</code> component for this, not <code class="highlighter-rouge">Sound</code>. A complete song like this is too large for <code class="highlighter-rouge">Sound</code> to handle.</p>
+    <p>Note that you’ll want to use a <code class="language-plaintext highlighter-rouge">Player</code> component for this, not <code class="language-plaintext highlighter-rouge">Sound</code>. A complete song like this is too large for <code class="language-plaintext highlighter-rouge">Sound</code> to handle.</p>
 
     <p>Images and videos can be designated similarly.</p>
 
@@ -164,7 +164,7 @@
   </dd>
   <dt>Other content URLs</dt>
   <dd>
-    <p>The Android system also uses URLs to access various places that media is stored on the phone. For example, the images in the photo gallery can be accessed with file names beginning <em>content://media/external/images/media</em>, as you can see by using the <code class="highlighter-rouge">ImagePicker</code> and examining the resulting image path.</p>
+    <p>The Android system also uses URLs to access various places that media is stored on the phone. For example, the images in the photo gallery can be accessed with file names beginning <em>content://media/external/images/media</em>, as you can see by using the <code class="language-plaintext highlighter-rouge">ImagePicker</code> and examining the resulting image path.</p>
   </dd>
 </dl>
 
@@ -246,11 +246,11 @@
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

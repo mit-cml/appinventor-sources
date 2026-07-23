@@ -168,21 +168,21 @@ gravity.</li>
 
 <dl class="properties">
   <dt id="AccelerometerSensor.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Returns whether the <code class="highlighter-rouge">AccelerometerSensor</code> hardware is available on the device.</dd>
+  <dd>Returns whether the <code class="language-plaintext highlighter-rouge">AccelerometerSensor</code> hardware is available on the device.</dd>
   <dt id="AccelerometerSensor.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the sensor should generate events.  If <code class="logic block highlighter-rouge">true</code>,
+  <dd>Specifies whether the sensor should generate events.  If <code class="language-plaintext logic block highlighter-rouge">true</code>,
  the sensor will generate events.  Otherwise, no events are
  generated even if the device is accelerated or shaken.</dd>
-  <dt id="AccelerometerSensor.LegacyMode" class="boolean wo do"><em>LegacyMode</em></dt>
+  <dt id="AccelerometerSensor.LegacyMode" class="boolean do"><em>LegacyMode</em></dt>
   <dd>Prior to the release that added this property the AccelerometerSensor component passed through sensor values directly as received from the Android system. However these values do not compensate for tablets that default to Landscape mode, requiring the MIT App Inventor programmer to compensate. However compensating would result in incorrect results in Portrait mode devices such as phones. We now detect Landscape mode tablets and perform the compensation. However if your project is already compensating for the change, you will now get incorrect results. Although our preferred solution is for you to update your project, you can also just set this property to “true” and our compensation code will be deactivated. Note: We recommend that you update your project as we may remove this property in a future release.</dd>
   <dt id="AccelerometerSensor.MinimumInterval" class="number"><em>MinimumInterval</em></dt>
-  <dd>Specifies the minimum interval required between back-to-back <a href="#AccelerometerSensor.Shaking"><code class="highlighter-rouge">Shaking</code></a> events,
+  <dd>Specifies the minimum interval required between back-to-back <a href="#AccelerometerSensor.Shaking"><code class="language-plaintext highlighter-rouge">Shaking</code></a> events,
  in milliseconds.
- Once the phone starts being shaken, all further <a href="#AccelerometerSensor.Shaking"><code class="highlighter-rouge">Shaking</code></a> events will be ignored
+ Once the phone starts being shaken, all further <a href="#AccelerometerSensor.Shaking"><code class="language-plaintext highlighter-rouge">Shaking</code></a> events will be ignored
  until the interval has elapsed.</dd>
   <dt id="AccelerometerSensor.Sensitivity" class="number"><em>Sensitivity</em></dt>
-  <dd>Specifies the sensitivity of the accelerometer. Valid values are: <code class="highlighter-rouge">1</code> (weak), <code class="highlighter-rouge">2</code> (moderate),
- and <code class="highlighter-rouge">3</code> (strong).</dd>
+  <dd>Specifies the sensitivity of the accelerometer. Valid values are: <code class="language-plaintext highlighter-rouge">1</code> (weak), <code class="language-plaintext highlighter-rouge">2</code> (moderate),
+ and <code class="language-plaintext highlighter-rouge">3</code> (strong).</dd>
   <dt id="AccelerometerSensor.XAccel" class="number ro bo"><em>XAccel</em></dt>
   <dd>Returns the acceleration in the X-dimension in SI units (m/s²).
  The sensor must be enabled to return meaningful values.</dd>
@@ -249,9 +249,9 @@ gravity.</li>
   <dd>The atmospheric pressure in hPa (millibar), if the sensor is available 
  and enabled.</dd>
   <dt id="Barometer.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Specifies whether or not the device has the hardware to support the <code class="highlighter-rouge">Barometer</code> component.</dd>
+  <dd>Specifies whether or not the device has the hardware to support the <code class="language-plaintext highlighter-rouge">Barometer</code> component.</dd>
   <dt id="Barometer.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the sensor should generate events.  If <code class="logic block highlighter-rouge">true</code>,
+  <dd>Specifies whether the sensor should generate events.  If <code class="language-plaintext logic block highlighter-rouge">true</code>,
  the sensor will generate events.  Otherwise, no events are
  generated.</dd>
   <dt id="Barometer.RefreshTime" class="number"><em>RefreshTime</em></dt>
@@ -277,16 +277,16 @@ gravity.</li>
  It can fire a timer at regularly set intervals and perform time calculations, manipulations,
  and conversions.</p>
 
-<p>Operations on dates and times, such as from <a href="userinterface.html#DatePicker"><code class="highlighter-rouge">DatePicker</code></a> and
- <a href="userinterface.html#TimePicker"><code class="highlighter-rouge">TimePicker</code></a>, are accomplished through methods in Clock. Date
+<p>Operations on dates and times, such as from <a href="userinterface.html#DatePicker"><code class="language-plaintext highlighter-rouge">DatePicker</code></a> and
+ <a href="userinterface.html#TimePicker"><code class="language-plaintext highlighter-rouge">TimePicker</code></a>, are accomplished through methods in Clock. Date
  and Time are represented as InstantInTime and Duration.</p>
 
 <ul>
   <li><strong>Instant</strong>: consists of Year, Month, DayOfMnoth, Hour, Minute, and SEcond. An instant can be
-created using the <a href="#Clock.MakeInstant"><code class="highlighter-rouge">MakeInstant</code></a>, <a href="#Clock.MakeInstantFromMillis"><code class="highlighter-rouge">MakeInstantFromMillis</code></a> and
-<a href="#Clock.MakeInstantFromParts"><code class="highlighter-rouge">MakeInstantFromParts</code></a> methods.</li>
+created using the <a href="#Clock.MakeInstant"><code class="language-plaintext highlighter-rouge">MakeInstant</code></a>, <a href="#Clock.MakeInstantFromMillis"><code class="language-plaintext highlighter-rouge">MakeInstantFromMillis</code></a> and
+<a href="#Clock.MakeInstantFromParts"><code class="language-plaintext highlighter-rouge">MakeInstantFromParts</code></a> methods.</li>
   <li><strong>Duration</strong>: time in milliseconds elapsed between instants. Duration can be obtained by the
-<a href="#Clock.Duration"><code class="highlighter-rouge">Duration</code></a> method.</li>
+<a href="#Clock.Duration"><code class="language-plaintext highlighter-rouge">Duration</code></a> method.</li>
 </ul>
 
 <p>Instants are assumed to be in the device’s local time zone. When they are converted to or from
@@ -294,14 +294,14 @@ created using the <a href="#Clock.MakeInstant"><code class="highlighter-rouge">M
  (Greenwich Mean Time).</p>
 
 <p>Methods to convert an Instant to text are also available. Acceptable patterns are empty string,
- <code class="highlighter-rouge">MM/dd/YYYY HH:mm:ss a</code>, or <code class="highlighter-rouge">MMM d, yyyy HH:mm</code>. The empty string will provide the default
- format, which is <code class="highlighter-rouge">"MMM d, yyyy HH:mm:ss a"</code> for <a href="#Clock.FormatDateTime"><code class="highlighter-rouge">FormatDateTime</code></a>,
- <code class="highlighter-rouge">"MMM d, yyyy"</code> for <a href="#Clock.FormatDate"><code class="highlighter-rouge">FormatDate</code></a>. To see all possible formats, please
+ <code class="language-plaintext highlighter-rouge">MM/dd/YYYY HH:mm:ss a</code>, or <code class="language-plaintext highlighter-rouge">MMM d, yyyy HH:mm</code>. The empty string will provide the default
+ format, which is <code class="language-plaintext highlighter-rouge">"MMM d, yyyy HH:mm:ss a"</code> for <a href="#Clock.FormatDateTime"><code class="language-plaintext highlighter-rouge">FormatDateTime</code></a>,
+ <code class="language-plaintext highlighter-rouge">"MMM d, yyyy"</code> for <a href="#Clock.FormatDate"><code class="language-plaintext highlighter-rouge">FormatDate</code></a>. To see all possible formats, please
  see <a href="https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">here</a>.</p>
 
 <p>A note on combining date and time: In order to combine the date from one Instant and the time
- from another, for example from a <a href="userinterface.html#DatePicker"><code class="highlighter-rouge">DatePicker</code></a> and
- <a href="userinterface.html#TimePicker"><code class="highlighter-rouge">TimePicker</code></a>, extract the parts as text and use the text to
+ from another, for example from a <a href="userinterface.html#DatePicker"><code class="language-plaintext highlighter-rouge">DatePicker</code></a> and
+ <a href="userinterface.html#TimePicker"><code class="language-plaintext highlighter-rouge">TimePicker</code></a>, extract the parts as text and use the text to
  create a new Instant. For example:</p>
 
 <p><img src="images/date_and_time_instant.png" alt="Example code blocks to combine date and time picker data" /></p>
@@ -312,9 +312,9 @@ created using the <a href="#Clock.MakeInstant"><code class="highlighter-rouge">M
   <dt id="Clock.TimerAlwaysFires" class="boolean"><em>TimerAlwaysFires</em></dt>
   <dd>Will fire even when application is not showing on the screen if true</dd>
   <dt id="Clock.TimerEnabled" class="boolean"><em>TimerEnabled</em></dt>
-  <dd>Specifies whether the <a href="#Clock.Timer"><code class="highlighter-rouge">Timer</code></a> event should run.</dd>
+  <dd>Specifies whether the <a href="#Clock.Timer"><code class="language-plaintext highlighter-rouge">Timer</code></a> event should run.</dd>
   <dt id="Clock.TimerInterval" class="number"><em>TimerInterval</em></dt>
-  <dd>Specifies the interval between subsequent <a href="#Clock.Timer"><code class="highlighter-rouge">Timer</code></a> events.
+  <dd>Specifies the interval between subsequent <a href="#Clock.Timer"><code class="language-plaintext highlighter-rouge">Timer</code></a> events.
 
     <p><strong>Note</strong>: Drift may occur over time and that the system may not honor the
  timing specified here if the app or another process on the phone is busy.</p>
@@ -447,9 +447,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <dl class="properties">
   <dt id="Hygrometer.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Specifies whether or not the device has the hardware to support the <code class="highlighter-rouge">Hygrometer</code> component.</dd>
+  <dd>Specifies whether or not the device has the hardware to support the <code class="language-plaintext highlighter-rouge">Hygrometer</code> component.</dd>
   <dt id="Hygrometer.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the sensor should generate events.  If <code class="logic block highlighter-rouge">true</code>,
+  <dd>Specifies whether the sensor should generate events.  If <code class="language-plaintext logic block highlighter-rouge">true</code>,
  the sensor will generate events.  Otherwise, no events are
  generated.</dd>
   <dt id="Hygrometer.Humidity" class="number ro bo"><em>Humidity</em></dt>
@@ -479,12 +479,12 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <dl class="properties">
   <dt id="LightSensor.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Specifies whether or not the device has the hardware to support the <code class="highlighter-rouge">LightSensor</code> component.</dd>
+  <dd>Specifies whether or not the device has the hardware to support the <code class="language-plaintext highlighter-rouge">LightSensor</code> component.</dd>
   <dt id="LightSensor.AverageLux" class="number ro bo"><em>AverageLux</em></dt>
   <dd>Returns the brightness in lux by averaging the previous 10 measured values.
  The sensor must be enabled and available to return meaningful values.</dd>
   <dt id="LightSensor.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the sensor should generate events.  If <code class="logic block highlighter-rouge">true</code>,
+  <dd>Specifies whether the sensor should generate events.  If <code class="language-plaintext logic block highlighter-rouge">true</code>,
  the sensor will generate events.  Otherwise, no events are
  generated.</dd>
   <dt id="LightSensor.Lux" class="number ro bo"><em>Lux</em></dt>
@@ -507,19 +507,19 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
-<p>Non-visible component providing location information, including <a href="#LocationSensor.Latitude"><code class="highlighter-rouge">Latitude</code></a>,
- <a href="#LocationSensor.Longitude"><code class="highlighter-rouge">Longitude</code></a>, <a href="#LocationSensor.Altitude"><code class="highlighter-rouge">Altitude</code></a> (if supported by the device), speed (if supported by
+<p>Non-visible component providing location information, including <a href="#LocationSensor.Latitude"><code class="language-plaintext highlighter-rouge">Latitude</code></a>,
+ <a href="#LocationSensor.Longitude"><code class="language-plaintext highlighter-rouge">Longitude</code></a>, <a href="#LocationSensor.Altitude"><code class="language-plaintext highlighter-rouge">Altitude</code></a> (if supported by the device), speed (if supported by
  the device), and address. This can also perform “geocoding”, converting a given address (not
- necessarily the current one) to a latitude (with the <a href="#LocationSensor.LatitudeFromAddress"><code class="highlighter-rouge">LatitudeFromAddress</code></a>
- method) and a longitude (with the <a href="#LocationSensor.LongitudeFromAddress"><code class="highlighter-rouge">LongitudeFromAddress</code></a> method).</p>
+ necessarily the current one) to a latitude (with the <a href="#LocationSensor.LatitudeFromAddress"><code class="language-plaintext highlighter-rouge">LatitudeFromAddress</code></a>
+ method) and a longitude (with the <a href="#LocationSensor.LongitudeFromAddress"><code class="language-plaintext highlighter-rouge">LongitudeFromAddress</code></a> method).</p>
 
-<p>In order to function, the component must have its <a href="#LocationSensor.Enabled"><code class="highlighter-rouge">Enabled</code></a> property set to
- <code class="logic block highlighter-rouge">true</code>, and the device must have location sensing enabled through wireless
+<p>In order to function, the component must have its <a href="#LocationSensor.Enabled"><code class="language-plaintext highlighter-rouge">Enabled</code></a> property set to
+ <code class="language-plaintext logic block highlighter-rouge">true</code>, and the device must have location sensing enabled through wireless
  networks or GPS satellites (if outdoors).</p>
 
 <p>Location information might not be immediately available when an app starts. You’ll have to wait
  a short time for a location provider to be found and used, or wait for the
- <a href="#LocationSensor.LocationChanged"><code class="highlighter-rouge">LocationChanged</code></a> event.</p>
+ <a href="#LocationSensor.LocationChanged"><code class="language-plaintext highlighter-rouge">LocationChanged</code></a> event.</p>
 
 <p>The emulator does not emulate sensors on all devices. Code should be tested on a physical device.</p>
 
@@ -527,9 +527,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 
 <dl class="properties">
   <dt id="LocationSensor.Accuracy" class="number ro bo"><em>Accuracy</em></dt>
-  <dd>The <code class="highlighter-rouge">LocationSensor</code> will be able to locate the device with a varying degree of confidence,
+  <dd>The <code class="language-plaintext highlighter-rouge">LocationSensor</code> will be able to locate the device with a varying degree of confidence,
  based on the quality of satellite, cell towers, and other data used to estimate location.
- The <code class="highlighter-rouge">Accuracy</code> value is the radius in meters around the sensor’s detected location. The device
+ The <code class="language-plaintext highlighter-rouge">Accuracy</code> value is the radius in meters around the sensor’s detected location. The device
  has a 68% chance to be located within this radius. More precise location detection will result
  in a smaller accuracy number, which allows the app to have more confidence where the device
  is actually located.
@@ -556,29 +556,29 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  always be of the building where the device is located.</p>
 
     <p>If Google has no address information available for a particular location, this will return
- <code class="highlighter-rouge">No address available</code>.</p>
+ <code class="language-plaintext highlighter-rouge">No address available</code>.</p>
   </dd>
   <dt id="LocationSensor.DistanceInterval" class="number"><em>DistanceInterval</em></dt>
   <dd>Determines the minimum distance interval, in meters, that the sensor will try to use for
  sending out location updates. For example, if this is set to 50, then the sensor will fire a
- <a href="#LocationSensor.LocationChanged"><code class="highlighter-rouge">LocationChanged</code></a> event only after 50 meters have been
+ <a href="#LocationSensor.LocationChanged"><code class="language-plaintext highlighter-rouge">LocationChanged</code></a> event only after 50 meters have been
  traversed. However, the sensor does not guarantee that an update will be received at exactly
  the distance interval. It may take more than 5 meters to fire an event, for instance.
 
-    <p>It is also useful to check against <a href="#LocationSensor.Accuracy"><code class="highlighter-rouge">Accuracy</code></a> when using this property. When your
+    <p>It is also useful to check against <a href="#LocationSensor.Accuracy"><code class="language-plaintext highlighter-rouge">Accuracy</code></a> when using this property. When your
  device is moving, the accuracy of the detected location is constantly changing.</p>
   </dd>
   <dt id="LocationSensor.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>If <code class="logic block highlighter-rouge">true</code>, the <code class="highlighter-rouge">LocationSensor</code> will attempt to read location information from
+  <dd>If <code class="language-plaintext logic block highlighter-rouge">true</code>, the <code class="language-plaintext highlighter-rouge">LocationSensor</code> will attempt to read location information from
  GPS, WiFi location, or other means available on the device. This setting does not control
  whether location information is actually available. Device location must be enabled or
  disabled in the device settings.</dd>
   <dt id="LocationSensor.HasAccuracy" class="boolean ro bo"><em>HasAccuracy</em></dt>
-  <dd>If <code class="logic block highlighter-rouge">true</code>, the device can report its accuracy level.</dd>
+  <dd>If <code class="language-plaintext logic block highlighter-rouge">true</code>, the device can report its accuracy level.</dd>
   <dt id="LocationSensor.HasAltitude" class="boolean ro bo"><em>HasAltitude</em></dt>
-  <dd>If <code class="logic block highlighter-rouge">true</code>, the device can report its altitude.</dd>
+  <dd>If <code class="language-plaintext logic block highlighter-rouge">true</code>, the device can report its altitude.</dd>
   <dt id="LocationSensor.HasLongitudeLatitude" class="boolean ro bo"><em>HasLongitudeLatitude</em></dt>
-  <dd>If <code class="logic block highlighter-rouge">true</code>, the device can report longitude and latitude.  It is
+  <dd>If <code class="language-plaintext logic block highlighter-rouge">true</code>, the device can report longitude and latitude.  It is
  always the case that either both or neither are.</dd>
   <dt id="LocationSensor.Latitude" class="number ro bo"><em>Latitude</em></dt>
   <dd>The most recently available latitude value in degrees reported to 5 decimal places.
@@ -592,8 +592,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>The device will not change the service provider.
 
     <p>It is possible for a device to switch service providers when the current provider is unable
- to provide adequate location information. <code class="highlighter-rouge">ProviderLocked</code> is a Boolean value: true/false.
- Set to <code class="logic block highlighter-rouge">true</code> to prevent providers from changing. Set to <code class="logic block highlighter-rouge">false</code>
+ to provide adequate location information. <code class="language-plaintext highlighter-rouge">ProviderLocked</code> is a Boolean value: true/false.
+ Set to <code class="language-plaintext logic block highlighter-rouge">true</code> to prevent providers from changing. Set to <code class="language-plaintext logic block highlighter-rouge">false</code>
  to allow for automatic switching when necessary.</p>
   </dd>
   <dt id="LocationSensor.ProviderName" class="text bo"><em>ProviderName</em></dt>
@@ -631,9 +631,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="LocationSensor.Geocode" class="method"><i></i> Geocode(<em class="text">address</em>)</dt>
   <dd>Converts an address into a latitude and longitude through the GotLocationFromAddress event.</dd>
   <dt id="LocationSensor.LatitudeFromAddress" class="method returns number"><i></i> LatitudeFromAddress(<em class="text">locationName</em>)</dt>
-  <dd>Derives latitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
+  <dd>Derives latitude from the given <code class="language-plaintext highlighter-rouge">locationName</code>.</dd>
   <dt id="LocationSensor.LongitudeFromAddress" class="method returns number"><i></i> LongitudeFromAddress(<em class="text">locationName</em>)</dt>
-  <dd>Derives longitude from the given <code class="highlighter-rouge">locationName</code>.</dd>
+  <dd>Derives longitude from the given <code class="language-plaintext highlighter-rouge">locationName</code>.</dd>
   <dt id="LocationSensor.ReverseGeocode" class="method"><i></i> ReverseGeocode(<em class="number">latitude</em>,<em class="number">longitude</em>)</dt>
   <dd>Determines the address associated with the given latitude and  and reports it through the GotAddress event.</dd>
 </dl>
@@ -677,8 +677,8 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
 <p>Non-visible component to provide NFC capabilities. For now this component supports the reading
  and writing of text tags only (if supported by the device).</p>
 
-<p>In order to read and write text tags, the component must have its <a href="#NearField.ReadMode"><code class="highlighter-rouge">ReadMode</code></a>
- property set to <code class="logic block highlighter-rouge">true</code> or <code class="logic block highlighter-rouge">false</code> respectively.</p>
+<p>In order to read and write text tags, the component must have its <a href="#NearField.ReadMode"><code class="language-plaintext highlighter-rouge">ReadMode</code></a>
+ property set to <code class="language-plaintext logic block highlighter-rouge">true</code> or <code class="language-plaintext logic block highlighter-rouge">false</code> respectively.</p>
 
 <p><strong>Note:</strong> This component will only work on Screen1 of any App Inventor app.</p>
 
@@ -688,14 +688,14 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="NearField.LastMessage" class="text ro bo"><em>LastMessage</em></dt>
   <dd>Returns the content of the most recently received tag.</dd>
   <dt id="NearField.ReadMode" class="boolean"><em>ReadMode</em></dt>
-  <dd>Specifies whether the NFC hardware should operate in read mode (<code class="logic block highlighter-rouge">true</code>) or
- write mode (<code class="logic block highlighter-rouge">false</code>).</dd>
+  <dd>Specifies whether the NFC hardware should operate in read mode (<code class="language-plaintext logic block highlighter-rouge">true</code>) or
+ write mode (<code class="language-plaintext logic block highlighter-rouge">false</code>).</dd>
   <dt id="NearField.TextToWrite" class="text bo"><em>TextToWrite</em></dt>
   <dd>Specifies the content that will be written to the tag when in write mode. This method has no
- effect if <a href="#NearField.ReadMode"><code class="highlighter-rouge">ReadMode</code></a> is <code class="logic block highlighter-rouge">true</code>.</dd>
+ effect if <a href="#NearField.ReadMode"><code class="language-plaintext highlighter-rouge">ReadMode</code></a> is <code class="language-plaintext logic block highlighter-rouge">true</code>.</dd>
   <dt id="NearField.WriteType" class="number ro bo"><em>WriteType</em></dt>
   <dd>Returns the write type for the NFC component. For this version of the component, it is always
- <code class="highlighter-rouge">1</code>.</dd>
+ <code class="language-plaintext highlighter-rouge">1</code>.</dd>
 </dl>
 
 <h3 id="NearField-Events">Events</h3>
@@ -754,7 +754,7 @@ etc.</li>
   <dd>Returns a number between 0 and 1 indicating how much the device
  is tilted. It gives the magnitude of the force that would be felt
  by a ball rolling on the surface of the device. For the angle of
- tilt, use <a href="#OrientationSensor.Angle"><code class="highlighter-rouge">Angle</code></a>.</dd>
+ tilt, use <a href="#OrientationSensor.Angle"><code class="language-plaintext highlighter-rouge">Angle</code></a>.</dd>
   <dt id="OrientationSensor.Pitch" class="number ro bo"><em>Pitch</em></dt>
   <dd>Returns the pitch angle of the device.
  To return meaningful values the sensor must be enabled.</dd>
@@ -767,7 +767,7 @@ etc.</li>
 
 <dl class="events">
   <dt id="OrientationSensor.OrientationChanged">OrientationChanged(<em class="number">azimuth</em>,<em class="number">pitch</em>,<em class="number">roll</em>)</dt>
-  <dd>The <code class="highlighter-rouge">OrientationChanged</code> event handler is run when the orientation has changed.</dd>
+  <dd>The <code class="language-plaintext highlighter-rouge">OrientationChanged</code> event handler is run when the orientation has changed.</dd>
 </dl>
 
 <h3 id="OrientationSensor-Methods">Methods</h3>
@@ -871,9 +871,9 @@ etc.</li>
 
 <dl class="properties">
   <dt id="Thermometer.Available" class="boolean ro bo"><em>Available</em></dt>
-  <dd>Specifies whether or not the device has the hardware to support the <code class="highlighter-rouge">Thermometer</code> component.</dd>
+  <dd>Specifies whether or not the device has the hardware to support the <code class="language-plaintext highlighter-rouge">Thermometer</code> component.</dd>
   <dt id="Thermometer.Enabled" class="boolean"><em>Enabled</em></dt>
-  <dd>Specifies whether the sensor should generate events.  If <code class="logic block highlighter-rouge">true</code>,
+  <dd>Specifies whether the sensor should generate events.  If <code class="language-plaintext logic block highlighter-rouge">true</code>,
  the sensor will generate events.  Otherwise, no events are
  generated.</dd>
   <dt id="Thermometer.RefreshTime" class="number"><em>RefreshTime</em></dt>
@@ -974,11 +974,11 @@ etc.</li>
 	    <ul>
 		<li>
 		    <a href="http://web.mit.edu" class="btn btn-link" role="button"
-                       target="_blank">© 2012-2024 Massachusetts Institute of Technology</a>
+                       target="_blank">© 2012-2026 Massachusetts Institute of Technology</a>
 		</li>
 		<li>
-		    <a href="http://creativecommons.org/licenses/by-sa/3.0/"
-                       target="_blank" class="btn btn-link" role="button">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0</a>
+                  <a href="http://creativecommons.org/licenses/by-sa/4.0/"
+                     target="_blank" class="btn btn-link" role="button">Creative Commons Attribution-ShareAlike 4.0 International License</a>
 		</li>
 		<li>
 		    <a href="http://appinventor.mit.edu/about/termsofservice"

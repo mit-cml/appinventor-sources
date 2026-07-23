@@ -6,9 +6,12 @@
 import UIKit
 
 open class ImageSprite: Sprite {
+  private let gifAnimationKey = "AppInventorGifAnimation"
   fileprivate var _picturePath = ""
   fileprivate var _rotates = true
   fileprivate var _image = UIImage()
+  fileprivate var _gif: AnimatedGif? = nil
+  fileprivate var _animated = true
   fileprivate var _width = kLengthPreferred
   fileprivate var _height = kLengthPreferred
 
@@ -25,7 +28,22 @@ open class ImageSprite: Sprite {
       return _picturePath
     }
     set(path) {
-      if let image = AssetManager.shared.imageFromPath(path: path) {
+      if let gif = AssetManager.shared.animatedGifFromPath(path: path), let image = gif.firstFrame {
+        _gif = gif
+        _image = image
+        _picturePath = path
+        self.DisplayLayer.contents = image.cgImage
+        applyGifAnimation()
+        if _lastSetHeight == kLengthPreferred {
+          updateHeight()
+        }
+        if _lastSetWidth == kLengthPreferred {
+          updateWidth()
+        }
+        registerChanges()
+      } else if let image = AssetManager.shared.imageFromPath(path: path) {
+        stopGifAnimation()
+        _gif = nil
         _image = image
         _picturePath = path
         self.DisplayLayer.contents = image.cgImage
@@ -88,6 +106,35 @@ open class ImageSprite: Sprite {
         updateDisplayLayer()
         registerChanges()
       }
+    }
+  }
+
+  @objc open var Animated: Bool {
+    get {
+      return _gif != nil && DisplayLayer.animation(forKey: gifAnimationKey) != nil && DisplayLayer.speed != 0
+    }
+    set(animated) {
+      _animated = animated
+      guard _gif != nil else {
+        return
+      }
+      if animated {
+        resumeGifAnimation()
+      } else {
+        pauseGifAnimation()
+      }
+    }
+  }
+
+  @objc open func ResetAnimation() {
+    guard _gif != nil else {
+      return
+    }
+    let wasAnimating = Animated
+    stopGifAnimation()
+    self.DisplayLayer.contents = _image.cgImage
+    if wasAnimating {
+      applyGifAnimation()
     }
   }
 
@@ -227,5 +274,52 @@ open class ImageSprite: Sprite {
     } else {
       return vector
     }
+  }
+
+  private func applyGifAnimation() {
+    guard let gif = _gif else {
+      return
+    }
+    stopGifAnimation()
+    let animation = CAKeyframeAnimation(keyPath: "contents")
+    animation.values = gif.cgImages
+    animation.keyTimes = gif.keyTimes
+    animation.duration = gif.duration
+    animation.calculationMode = .discrete
+    animation.repeatCount = gif.loopCount == 0 ? .infinity : Float(gif.loopCount)
+    animation.isRemovedOnCompletion = false
+    DisplayLayer.add(animation, forKey: gifAnimationKey)
+    if !_animated {
+      pauseGifAnimation()
+    }
+  }
+
+  private func pauseGifAnimation() {
+    guard DisplayLayer.animation(forKey: gifAnimationKey) != nil, DisplayLayer.speed != 0 else {
+      return
+    }
+    let pausedTime = DisplayLayer.convertTime(CACurrentMediaTime(), from: nil)
+    DisplayLayer.speed = 0
+    DisplayLayer.timeOffset = pausedTime
+  }
+
+  private func resumeGifAnimation() {
+    guard DisplayLayer.animation(forKey: gifAnimationKey) != nil else {
+      applyGifAnimation()
+      return
+    }
+    let pausedTime = DisplayLayer.timeOffset
+    DisplayLayer.speed = 1
+    DisplayLayer.timeOffset = 0
+    DisplayLayer.beginTime = 0
+    let timeSincePause = DisplayLayer.convertTime(CACurrentMediaTime(), from: nil) - pausedTime
+    DisplayLayer.beginTime = timeSincePause
+  }
+
+  private func stopGifAnimation() {
+    DisplayLayer.removeAnimation(forKey: gifAnimationKey)
+    DisplayLayer.speed = 1
+    DisplayLayer.timeOffset = 0
+    DisplayLayer.beginTime = 0
   }
 }

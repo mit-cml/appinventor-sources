@@ -64,6 +64,11 @@
 		0641606B2EA75C0400FF5BD7 /* LayoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606A2EA75C0100FF5BD7 /* LayoutType.swift */; };
 		0641606D2EA75CC600FF5BD7 /* ListOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */; };
 		0641606F2EA75D3600FF5BD7 /* ScaleUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0641606E2EA75D3200FF5BD7 /* ScaleUnits.swift */; };
+		064160712EA75E0000FF5BD7 /* ButtonShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160702EA75E0000FF5BD7 /* ButtonShape.swift */; };
+		064160732EA7600000FF5BD7 /* TextAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160722EA7600000FF5BD7 /* TextAlignment.swift */; };
+		064160752EA7600100FF5BD7 /* FontTypeface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160742EA7600100FF5BD7 /* FontTypeface.swift */; };
+		064160772EA7600200FF5BD7 /* NotifierLength.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160762EA7600200FF5BD7 /* NotifierLength.swift */; };
+		064160792EA7600300FF5BD7 /* ImageAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064160782EA7600300FF5BD7 /* ImageAnimation.swift */; };
 		064218BC2C776D7100F10FBD /* Vector2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064218BB2C776D7100F10FBD /* Vector2D.swift */; };
 		064326B9289602770001297F /* Spreadsheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 064326B8289602770001297F /* Spreadsheet.swift */; };
 		0644F6C01F37CAD800642E4D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0644F6BF1F37CAD800642E4D /* Player.swift */; };
@@ -299,6 +304,8 @@
 		08AB5804201AF2BA00F38C88 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AB5803201AF2BA00F38C88 /* Canvas.swift */; };
 		0AE0AA8744D14E11695CF2E0 /* Pods_AIComponentKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB4FA20345A0AEA4E0CB60F2 /* Pods_AIComponentKit.framework */; };
 		151EB7E2298853E400315044 /* AccessibleComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151EB7E1298853E400315044 /* AccessibleComponent.swift */; };
+		15551DBE2F72DB5400091545 /* DataFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15551DBD2F72DB4E00091545 /* DataFile.swift */; };
+		15551DC02F72E06900091545 /* DataFileUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15551DBF2F72E05F00091545 /* DataFileUtils.swift */; };
 		1556D4E82C99B7EF003C9DBA /* ScatterWithTrendlineRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1556D4E72C99B7EF003C9DBA /* ScatterWithTrendlineRenderer.swift */; };
 		155C87002EAAAF21006D4DAE /* YailProcedure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155C86FF2EAAAF1F006D4DAE /* YailProcedure.swift */; };
 		156726252BB6063D00AECCEA /* DataCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156726242BB6063D00AECCEA /* DataCollection.swift */; };
@@ -480,6 +487,11 @@
 		0641606A2EA75C0100FF5BD7 /* LayoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutType.swift; sourceTree = "<group>"; };
 		0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListOrientation.swift; sourceTree = "<group>"; };
 		0641606E2EA75D3200FF5BD7 /* ScaleUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScaleUnits.swift; sourceTree = "<group>"; };
+		064160702EA75E0000FF5BD7 /* ButtonShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonShape.swift; sourceTree = "<group>"; };
+		064160722EA7600000FF5BD7 /* TextAlignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAlignment.swift; sourceTree = "<group>"; };
+		064160742EA7600100FF5BD7 /* FontTypeface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontTypeface.swift; sourceTree = "<group>"; };
+		064160762EA7600200FF5BD7 /* NotifierLength.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotifierLength.swift; sourceTree = "<group>"; };
+		064160782EA7600300FF5BD7 /* ImageAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAnimation.swift; sourceTree = "<group>"; };
 		064218BB2C776D7100F10FBD /* Vector2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vector2D.swift; sourceTree = "<group>"; };
 		064326B8289602770001297F /* Spreadsheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spreadsheet.swift; sourceTree = "<group>"; };
 		0644F6BF1F37CAD800642E4D /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
@@ -710,6 +722,8 @@
 		088CAFCF20DABB2E002B1B67 /* Ball.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ball.swift; sourceTree = "<group>"; };
 		08AB5803201AF2BA00F38C88 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		151EB7E1298853E400315044 /* AccessibleComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccessibleComponent.swift; sourceTree = "<group>"; };
+		15551DBD2F72DB4E00091545 /* DataFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFile.swift; sourceTree = "<group>"; };
+		15551DBF2F72E05F00091545 /* DataFileUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFileUtils.swift; sourceTree = "<group>"; };
 		1556D4E72C99B7EF003C9DBA /* ScatterWithTrendlineRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScatterWithTrendlineRenderer.swift; sourceTree = "<group>"; };
 		155C86FF2EAAAF1F006D4DAE /* YailProcedure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YailProcedure.swift; sourceTree = "<group>"; };
 		156726242BB6063D00AECCEA /* DataCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCollection.swift; sourceTree = "<group>"; };
@@ -1351,7 +1365,9 @@
 				06EC0A1D1D959CD4001CD8DC /* BarcodeScanner.swift */,
 				DE3F6B082080F72400A0BA69 /* Camera.swift */,
 				06C8CE952A3B5EFA00C39EBC /* ChatBot.swift */,
+				15551DBF2F72E05F00091545 /* DataFileUtils.swift */,
 				068E0EB01DC251240086FFDA /* Clock.swift */,
+				15551DBD2F72DB4E00091545 /* DataFile.swift */,
 				0417585420098566007D2C31 /* File.swift */,
 				062217F32A37798E00B89562 /* ImageBot.swift */,
 				065E429C2866BC5500479153 /* Navigation.swift */,
@@ -1495,15 +1511,19 @@
 		681D59032A84137D007B5DB5 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				064160702EA75E0000FF5BD7 /* ButtonShape.swift */,
 				0641605B2EA7529F00FF5BD7 /* ColorSensorMode.swift */,
 				06C43B332D44699100BEF000 /* FileAction.swift */,
 				681D59042A84138A007B5DB5 /* FileScope.swift */,
 				06C43B342D44699100BEF000 /* FileType.swift */,
+				064160742EA7600100FF5BD7 /* FontTypeface.swift */,
 				0641605D2EA7556F00FF5BD7 /* GyroSensorMode.swift */,
 				064160642EA759C300FF5BD7 /* HorizontalAlignment.swift */,
+				064160782EA7600300FF5BD7 /* ImageAnimation.swift */,
 				0641606A2EA75C0100FF5BD7 /* LayoutType.swift */,
 				0641606C2EA75CC400FF5BD7 /* ListOrientation.swift */,
 				06E91E112D2B236800377845 /* LOBFValues.swift */,
+				064160762EA7600200FF5BD7 /* NotifierLength.swift */,
 				06B204422EA6A70C004FAC09 /* OptionHelper.swift */,
 				681D59062A84139E007B5DB5 /* OptionList.swift */,
 				060F4AED2D35B583005D01BA /* ReceivingState.swift */,
@@ -1511,6 +1531,7 @@
 				064160622EA758B000FF5BD7 /* ScreenAnimation.swift */,
 				06208B512BD9D7380097EF43 /* ScreenOrientation.swift */,
 				064160682EA75B5D00FF5BD7 /* Sensitivity.swift */,
+				064160722EA7600000FF5BD7 /* TextAlignment.swift */,
 				0641605F2EA7574C00FF5BD7 /* UltrasonicSensorUnit.swift */,
 				064160662EA75A8500FF5BD7 /* VerticalAlignment.swift */,
 			);
@@ -2045,6 +2066,7 @@
 				DE97528D2034808A008CEBB9 /* FusiontablesControl.swift in Sources */,
 				067EFDDD2B9B727D001C852C /* AreaChartDataModel.swift in Sources */,
 				06C70BAF2A8BB73600C6C78D /* TokenProvider.swift in Sources */,
+				15551DBE2F72DB5400091545 /* DataFile.swift in Sources */,
 				067D1B221D9B9DFE00A6190E /* BarcodeScanner.swift in Sources */,
 				DEB9C54E21010F2D0069BAD7 /* Overlays.swift in Sources */,
 				06DA9F521D8CFBA200389B04 /* HandlesEventDispatching.swift in Sources */,
@@ -2053,6 +2075,8 @@
 				06604B732034EFE70066C459 /* CsvUtil.swift in Sources */,
 				22843757284F89DF00EC3133 /* AssetFetcher.swift in Sources */,
 				06941F402603B4A900F8E1B2 /* StringUtil.swift in Sources */,
+				064160712EA75E0000FF5BD7 /* ButtonShape.swift in Sources */,
+				064160752EA7600100FF5BD7 /* FontTypeface.swift in Sources */,
 				064160652EA759C700FF5BD7 /* HorizontalAlignment.swift in Sources */,
 				061DC7B82241574D00539213 /* UIImage+Tint.swift in Sources */,
 				067D1B181D9B398E00A6190E /* RetValManager.m in Sources */,
@@ -2124,6 +2148,9 @@
 				068E0EB11DC251240086FFDA /* Clock.swift in Sources */,
 				0644F6C01F37CAD800642E4D /* Player.swift in Sources */,
 				064160632EA758B400FF5BD7 /* ScreenAnimation.swift in Sources */,
+				064160772EA7600200FF5BD7 /* NotifierLength.swift in Sources */,
+				064160732EA7600000FF5BD7 /* TextAlignment.swift in Sources */,
+				064160792EA7600300FF5BD7 /* ImageAnimation.swift in Sources */,
 				067BBF312C480CEF0058B1BD /* BaseAiComponent.swift in Sources */,
 				06B216081DB954A5000B3366 /* ColorUtil.swift in Sources */,
 				068E0EB71DC251BA0086FFDA /* Slider.swift in Sources */,
@@ -2142,6 +2169,7 @@
 				068F985E289A33AA00E2883F /* DataSourceChangeListener.swift in Sources */,
 				06A47CD323F12EF400668126 /* PermissionException.swift in Sources */,
 				06B216001DB95122000B3366 /* TinyDB.swift in Sources */,
+				15551DC02F72E06900091545 /* DataFileUtils.swift in Sources */,
 				067EFDDF2B9B787A001C852C /* AreaChartView.swift in Sources */,
 				06DA9F541D8CFBA200389B04 /* ComponentConstants.swift in Sources */,
 				DECA138720D85D8F001C6273 /* Circle.swift in Sources */,

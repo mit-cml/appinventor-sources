@@ -1,0 +1,29 @@
+<!-- Copyright 2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:wiz="urn:import:com.google.appinventor.client.wizards">
+
+  <!-- The standard (draggable) caption bar is kept as the header; "lie-dialog" only lets Ya.css
+       right-align the item count inside it. -->
+  <wiz:Dialog ui:field="dialogBox" role="dialog" ariaModal="true"
+              styleName="ode-DialogBox" addStyleNames="lie-dialog">
+    <g:FlowPanel>
+      <g:Button ui:field="topInvisible" styleName="FocusTrap" tabIndex="-1"/>
+
+      <g:FlowPanel styleName="lie-body">
+        <g:FlowPanel ui:field="rowsContainer"/>
+        <g:Button ui:field="addRow" styleName="lie-add"/>
+      </g:FlowPanel>
+
+      <g:FlowPanel styleName="lie-foot">
+        <g:Button ui:field="cancel" styleName="ode-TextButton"/>
+        <g:Button ui:field="save" styleName="ode-TextButton"/>
+      </g:FlowPanel>
+
+      <g:Button ui:field="bottomInvisible" styleName="FocusTrap" tabIndex="-1"/>
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>
