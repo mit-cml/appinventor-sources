@@ -43,13 +43,8 @@ open class ListPicker: Picker, AbstractMethodsForPicker, UITableViewDataSource, 
   fileprivate var _results: [String]? = nil
 
   public override init(_ parent: ComponentContainer) {
-    if #available(iOS 13.0, *) {
-      _itemBackgroundColor = UIColor.systemBackground
-      _itemTextColor = UIColor.label
-    } else {
-      _itemBackgroundColor = UIColor.white
-      _itemTextColor = UIColor.black
-    }
+    _itemBackgroundColor = Color.black.uiColor
+    _itemTextColor = Color.white.uiColor
     super.init(parent)
     _searchBar.autocapitalizationType = .none
     _searchBar.searchBarStyle = .minimal

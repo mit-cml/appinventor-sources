@@ -5,35 +5,46 @@
 
 import Foundation
 
-fileprivate let kListViewDefaultBackgroundColor = Color.black
-fileprivate let kListViewDefaultSelectionColor = Color.lightGray
-fileprivate let kListViewDefaultTextColor = Color.white
+fileprivate let kListViewDefaultBackgroundColor = Color.black.int32
+fileprivate let kListViewDefaultElementColor = Color.none.int32
+fileprivate let kListViewDefaultSelectionColor = Color.lightGray.int32
+fileprivate let kListViewDefaultTextColor = Color.white.int32
+fileprivate let kListViewDefaultDividerColor = Color.none.int32
 fileprivate let kDefaultTableCell = "UITableViewCell"
 fileprivate let kDefaultTableCellHeight = CGFloat(44.0)
+fileprivate let kDefaultTableCellVerticalPadding = CGFloat(30.0)
 
 let VERTICAL_LAYOUT = 0
 let HORIZONTAL_LAYOUT = 1
+
+fileprivate final class ListViewRootView: UIView {
+  var preferredSizeProvider: (() -> CGSize)?
+
+  override var intrinsicContentSize: CGSize {
+    return preferredSizeProvider?() ?? super.intrinsicContentSize
+  }
+}
 
   open class ListView: ViewComponent, AbstractMethodsForViewComponent,
     UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate,
     UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
   fileprivate final var _view: UITableView
-  fileprivate let _rootView = UIView()
+  fileprivate let _rootView = ListViewRootView()
   fileprivate var _collectionView: UICollectionView
   fileprivate let kDefaultItemSize = CGSize(width: 160, height: 56)
     
-  fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _backgroundColor = kListViewDefaultBackgroundColor
   fileprivate var _elements = [String]()
   fileprivate var _items: [[String: AnyObject]] = []
   fileprivate var _selection = ""
   fileprivate var _selectionDetailText = ""
-  fileprivate var _selectionColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _selectionColor = kListViewDefaultSelectionColor
   fileprivate var _selectionIndex = Int32(0)
   fileprivate var _showFilter = false
-  fileprivate var _textColor = Int32(bitPattern: Color.default.rawValue)
-  fileprivate var _textColorDetail = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _textColor = kListViewDefaultTextColor
+  fileprivate var _textColorDetail = kListViewDefaultTextColor
   fileprivate var _fontSize = Int32(22)
-  fileprivate var _automaticHeightConstraint: NSLayoutConstraint!
+  fileprivate var _automaticHeightConstraint: NSLayoutConstraint?
   fileprivate var _results: [String]? = nil
   fileprivate var _fontSizeDetail = Int32(16)
   //ListData
@@ -45,9 +56,9 @@ let HORIZONTAL_LAYOUT = 1
   fileprivate let _horizontalLayout = UICollectionViewFlowLayout()
   fileprivate let filter = UISearchBar()
   fileprivate var _hint = "Search list..."
-  fileprivate var _dividerColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _dividerColor = kListViewDefaultDividerColor
   fileprivate var _dividerThickness = Int32(0)
-  fileprivate var _elementColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _elementColor = kListViewDefaultElementColor
   fileprivate var _elementCornerRadius = Int32(0)
   fileprivate var _elementMarginsWidth = Int32(0)
   fileprivate var _imageHeight = Int32(200)
@@ -74,12 +85,15 @@ let HORIZONTAL_LAYOUT = 1
     Width = kLengthFillParent
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
-    _view.backgroundColor = preferredTextColor(parent.form)
+    _view.backgroundColor = argbToColor(_backgroundColor)
 
     // Auto height for the table (existing)
     _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
-    _automaticHeightConstraint.priority = UILayoutPriority(1.0)
-    _automaticHeightConstraint.isActive = true
+    _automaticHeightConstraint?.priority = UILayoutPriority(1.0)
+    _automaticHeightConstraint?.isActive = true
+    _rootView.preferredSizeProvider = { [weak self] in
+      return self?.preferredListViewSize ?? CGSize(width: 320, height: kDefaultTableCellHeight)
+    }
 
     // Create horizontal collection view
     let layout = UICollectionViewFlowLayout()
@@ -127,18 +141,24 @@ let HORIZONTAL_LAYOUT = 1
  
   open override var view: UIView { _rootView }
 
+  @objc open override var Width: Int32 {
+    get {
+      return super.Width
+    }
+    set(width) {
+      super.Width = width == kLengthPreferred ? kLengthFillParent : width
+    }
+  }
+
   // MARK: Properties
   @objc open var BackgroundColor: Int32 {
     get {
       return _backgroundColor
     }
     set(backgroundColor) {
-      if (backgroundColor == Int32(bitPattern: Color.default.rawValue)) {
-        _backgroundColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
-      } else {
-        _backgroundColor = backgroundColor
-      }
+      _backgroundColor = backgroundColor
       _view.backgroundColor = argbToColor(_backgroundColor)
+      _collectionView.backgroundColor = argbToColor(_backgroundColor)
     }
   }
 
@@ -163,7 +183,7 @@ let HORIZONTAL_LAYOUT = 1
       _items = []
       _elements = []
       guard !elements.isEmpty else {
-        _view.reloadData()
+        elementsCount()
         return
       }
       addElements(elements)
@@ -177,60 +197,65 @@ let HORIZONTAL_LAYOUT = 1
       "Image": image as AnyObject
     ]
   }
+
+  private func listItem(at index: Int) -> [String: AnyObject]? {
+    if !_items.isEmpty {
+      guard index >= 0 && index < _items.count else {
+        return nil
+      }
+      return _items[index]
+    }
+    let source = _results ?? _elements
+    guard index >= 0 && index < source.count else {
+      return nil
+    }
+    return makeListItem(text1: source[index])
+  }
+
+  private func promoteElementsToItemsIfNeeded() {
+    if _items.isEmpty && !_elements.isEmpty {
+      _items = _elements.map { makeListItem(text1: $0) }
+      _elements.removeAll()
+    }
+  }
+
+  private func normalizedListItem(from item: AnyObject) -> [String: AnyObject] {
+    if let dictionary = item as? [String: AnyObject] {
+      return dictionary
+    }
+    if let dictionary = item as? NSDictionary {
+      return [
+        "Text1": (dictionary["Text1"] as? String ?? "") as AnyObject,
+        "Text2": (dictionary["Text2"] as? String ?? "") as AnyObject,
+        "Image": (dictionary["Image"] as? String ?? "") as AnyObject
+      ]
+    }
+    return makeListItem(text1: toString(item))
+  }
+
+  private func normalizedElements(_ elements: [AnyObject]) -> [AnyObject] {
+    if elements.first is SCMSymbol {
+      return Array(elements.dropFirst())
+    }
+    return elements
+  }
   
     private func addElements(_ elements: [AnyObject]) {
-      if !elements.isEmpty {
-        let testItemsForDict = _items.first(where: { $0 is NSDictionary })
-        let testElementsForDict = elements.first(where: { $0 is NSDictionary })
-        //let filteredListElements = elements.filter { $0 is YailList<AnyObject> }
-        
-        let otherElements = elements.filter { !($0 is NSDictionary) }
-        
-        let useDictFormat = testItemsForDict?["Text1"] != nil || testElementsForDict?["Text1"] != nil
-       
-        
-        if useDictFormat {
-          _items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
-          
-          for item in otherElements {
-            // Fall back to simple text item
-            if let str = item as? String {
-              _items.append(makeListItem(text1: str))
-            } else if let n = item as? NSNumber {
-              _items.append(makeListItem(text1: n.stringValue))
-              
-            }
-          }
-        }/*a else if filteredListElements.count > 0 {
-          var dict: [String: AnyObject] = [:]
-          print("item type is YailList \(dict)")
-          for kvPair in filteredListElements {
-            if let pair = kvPair as? YailList<AnyObject>, pair.count >= 3 {
-              if let key = pair[1] as? String {
-                dict[key] = pair[2] as AnyObject
-              }
-            }
-          }
-          _items.append(dict)
-        }*/
-        _elements.insert(contentsOf: otherElements.toStringArray(), at: 0)
-        /* don't add to items
-         for item in otherElements {
-            // Fall back to simple text item
-            if let str = item as? String {
-              _items.append(makeListItem(text1: str))
-            } else if let n = item as? NSNumber {
-              _items.append(makeListItem(text1: n.stringValue))
-
-            }
-        }*/
-        elementsCount()
+      let elements = normalizedElements(elements)
+      guard !elements.isEmpty else {
+        return
       }
+      let useDictFormat = !_items.isEmpty || elements.contains { $0 is NSDictionary }
+      if useDictFormat {
+        promoteElementsToItemsIfNeeded()
+        _items.append(contentsOf: elements.map { normalizedListItem(from: $0) })
+      } else {
+        _elements.append(contentsOf: elements.toStringArray())
+      }
+      elementsCount()
     }
   func elementsCount() {
-    //let rows = max(_items.count, _items.count)
-    let rows = max(_elements.count, _items.count)
-    _automaticHeightConstraint.constant = rows == 0 ? kDefaultTableCellHeight : kDefaultTableCellHeight * CGFloat(rows)
+    _automaticHeightConstraint?.constant = preferredTableHeight
     if let searchBar = _view.tableHeaderView as? UISearchBar {
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
     } else {
@@ -238,6 +263,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     _collectionView.reloadData()
     _collectionView.collectionViewLayout.invalidateLayout()
+    invalidateListViewSize()
   }
 
   @objc open var FontTypeface: String {
@@ -246,17 +272,17 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(fontTypeface) {
       _fontTypeface = fontTypeface
-      _view.reloadData()
+      elementsCount()
     }
   }
 
   @objc open var FontTypefaceDetail: String {
     get {
-      return _fontTypeface
+      return _fontTypefaceDetail
     }
     set(FontTypefaceDetail) {
       _fontTypefaceDetail = FontTypefaceDetail
-      _view.reloadData()
+      elementsCount()
     }
   }
 
@@ -275,11 +301,7 @@ let HORIZONTAL_LAYOUT = 1
       return _dividerColor
     }
     set(dividerColor) {
-      if (dividerColor == Int32(bitPattern: Color.default.rawValue)) {
-        _dividerColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
-      } else {
-        _dividerColor = dividerColor
-      }
+      _dividerColor = dividerColor
     }
   }
 
@@ -299,11 +321,7 @@ let HORIZONTAL_LAYOUT = 1
       return _elementColor
     }
     set(elementColor) {
-      if (elementColor == Int32(bitPattern: Color.default.rawValue)) {
-        _elementColor = Int32(bitPattern: kListViewDefaultBackgroundColor.rawValue)
-      } else {
-        _elementColor = elementColor
-      }
+      _elementColor = elementColor
     }
   }
 
@@ -363,6 +381,7 @@ let HORIZONTAL_LAYOUT = 1
     set(jsonString) {
       do {
         if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
+          _elements.removeAll()
           _items = dictionaries.compactMap { dictionary in
             var item: [String: String] = [:]
 
@@ -385,7 +404,7 @@ let HORIZONTAL_LAYOUT = 1
 
             return nil
           }
-          _view.reloadData()
+          elementsCount()
         }
       } catch {
         print("Error parsing JSON: \(error)")
@@ -401,6 +420,7 @@ let HORIZONTAL_LAYOUT = 1
     set(listViewLayoutMode) {
       _listViewLayoutMode = listViewLayoutMode
       _view.reloadData()
+      invalidateListViewSize()
     }
   }
 
@@ -409,6 +429,17 @@ let HORIZONTAL_LAYOUT = 1
     set(orientation) {
       _orientation = orientation
       updateOrientationUI()
+    }
+  }
+
+  @objc open override var Height: Int32 {
+    get {
+      return super.Height
+    }
+    set(height) {
+      super.Height = height
+      _automaticHeightConstraint?.constant = preferredTableHeight
+      invalidateListViewSize()
     }
   }
     
@@ -430,9 +461,7 @@ let HORIZONTAL_LAYOUT = 1
       }
 
       _collectionView.backgroundColor =
-        (_backgroundColor == Int32(bitPattern: Color.default.rawValue))
-        ? preferredTextColor(_container?.form)
-        : argbToColor(_backgroundColor)
+        argbToColor(_backgroundColor)
 
       // ✅ Correct update order:
       _collectionView.reloadData()
@@ -442,6 +471,7 @@ let HORIZONTAL_LAYOUT = 1
       _automaticHeightConstraint?.isActive = true
       _view.reloadData()
     }
+    invalidateListViewSize()
 
   }
 
@@ -454,17 +484,20 @@ let HORIZONTAL_LAYOUT = 1
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _elements.firstIndex(of: selection) {
+      if let index = _items.firstIndex(where: { $0["Text1"] as? String == selection }) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
+        _selectionDetailText = _items[index]["Text2"] as? String ?? ""
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else if let index = _items.firstIndex(where: { $0["Text1"] as? String == selection }) {
+      } else if let index = _elements.firstIndex(of: selection) {
         _selectionIndex = Int32(index) + 1
         _selection = selection
+        _selectionDetailText = ""
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
       } else {
         _selectionIndex = 0
         _selection = ""
+        _selectionDetailText = ""
       }
     }
   }
@@ -477,12 +510,14 @@ let HORIZONTAL_LAYOUT = 1
       if let selectedRow = _view.indexPathForSelectedRow {
         _view.deselectRow(at: selectedRow, animated: false)
       }
-      if let index = _items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText as? String }) {
+      if let index = _items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText }) {
         _selectionIndex = Int32(index) + 1
+        _selection = _items[index]["Text1"] as? String ?? ""
         _selectionDetailText = selectionDetailText
         _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
       } else {
         _selectionIndex = 0
+        _selection = ""
         _selectionDetailText = ""
       }
     }
@@ -503,10 +538,11 @@ let HORIZONTAL_LAYOUT = 1
       return _selectionIndex
     }
     set(selectionIndex) {
-      if selectionIndex > 0 && selectionIndex <= Int32(_elements.count) {
+      if selectionIndex > 0 && selectionIndex <= Int32(listItemCount),
+         let item = listItem(at: Int(selectionIndex) - 1) {
         _selectionIndex = selectionIndex
-        _selection = _elements[Int(selectionIndex) - 1] as? String ?? ""
-        _selectionDetailText = _elements[Int(selectionIndex) - 1] as? String ?? ""
+        _selection = item["Text1"] as? String ?? ""
+        _selectionDetailText = item["Text2"] as? String ?? ""
         _view.selectRow(at: IndexPath(row: Int(_selectionIndex) - 1, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
       } else {
         _selectionIndex = 0
@@ -532,6 +568,7 @@ let HORIZONTAL_LAYOUT = 1
       } else if !_showFilter && _view.tableHeaderView != nil {
         _view.tableHeaderView = nil
       }
+      invalidateListViewSize()
     }
   }
 
@@ -571,7 +608,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(fontSize) {
       _fontSize = fontSize < 0 ? Int32(7) : fontSize
-      _view.reloadData()
+      elementsCount()
     }
   }
 
@@ -582,7 +619,7 @@ let HORIZONTAL_LAYOUT = 1
     }
     set(fontSizeDetail) {
       _fontSizeDetail = fontSizeDetail < 0 ? Int32(7) : fontSizeDetail
-      _view.reloadData()
+      elementsCount()
     }
   }
 
@@ -639,15 +676,19 @@ let HORIZONTAL_LAYOUT = 1
   // MARK: Methods
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
-    _items.append(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject])
+    promoteElementsToItemsIfNeeded()
+    _items.append(makeListItem(text1: mainText, text2: detailText, image: imageName))
     elementsCount()
   }
 
   @objc open func AddItemAtIndex(_ addIndex: Int32, _ mainText: String, _ detailText: String, _ imageName: String) {
-    guard addIndex > 0 && addIndex <= _items.count + 1 else {
+    guard addIndex > 0 && addIndex <= Int32(listItemCount + 1) else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "AddItemAtIndex",
+                                                   ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
-    _items.insert(["Text1": mainText as AnyObject, "Text2": detailText as AnyObject, "Image": imageName as AnyObject], at: Int(addIndex - 1))
+    promoteElementsToItemsIfNeeded()
+    _items.insert(makeListItem(text1: mainText, text2: detailText, image: imageName), at: Int(addIndex - 1))
     elementsCount()
   }
 
@@ -660,33 +701,21 @@ let HORIZONTAL_LAYOUT = 1
 
   /* insert element to ListView as Dictionary or as String */
   @objc open func AddItemsAtIndex(_ addIndex: Int32, _ elements: [AnyObject]) {
+    let elements = normalizedElements(elements)
     if elements.isEmpty {
       return
     }
-    if addIndex < 1 || addIndex - 1 > max(_items.count, _items.count) {
+    if addIndex < 1 || addIndex > Int32(listItemCount + 1) {
       _container?.form?.dispatchErrorOccurredEvent(self, "AddItemsAtIndex",
                                                    ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, addIndex)
       return
     }
     
-    if !elements.isEmpty {
-      let index = Int(addIndex - 1)
-      var newItems: [[String: AnyObject]] = []
-      for item in elements {
-        if let rowDict = item as? NSDictionary,
-           let stoDict = rowDict as? [String: AnyObject] {
-          newItems.append(stoDict)
-        } else if let row = item as Optional {
-          newItems.append(["Text1": row as AnyObject])
-        } /*else {
-          _container?.form?.dispatchErrorOccurredEvent(self, "AddItemAtIndex",
-               ErrorMessage.ERROR_LISTVIEW_MISSING_REQUIRED_ITEM, index)
-          return
-        }*/
-        _items.insert(contentsOf: newItems, at: index)
-      }
-      elementsCount()
-    }
+    promoteElementsToItemsIfNeeded()
+    let index = Int(addIndex - 1)
+    let newItems = elements.map { normalizedListItem(from: $0) }
+    _items.insert(contentsOf: newItems, at: index)
+    elementsCount()
   }
 
 
@@ -712,21 +741,23 @@ let HORIZONTAL_LAYOUT = 1
 
   @objc open func Refresh() {
     _view.reloadData()
+    _collectionView.reloadData()
+    _collectionView.collectionViewLayout.invalidateLayout()
+    invalidateListViewSize()
   }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
-    if index < 1 || index > max(_items.count, _elements.count) {
+    if index < 1 || index > Int32(listItemCount) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
     }
-    if _items.count >= index {
+    if !_items.isEmpty {
       _items.remove(at: Int(index - 1))
-    }
-    if _elements.count >= index {
+    } else {
       _elements.remove(at: Int(index - 1))
     }
-    _view.reloadData()
+    elementsCount()
   }
 
   // MARK: Events
@@ -741,22 +772,15 @@ let HORIZONTAL_LAYOUT = 1
       let layoutReuseIdentifier = "\(kDefaultTableCell)\(_listViewLayoutMode)"
       let cell = tableView.dequeueReusableCell(withIdentifier: layoutReuseIdentifier) ??
         UITableViewCell(style: .subtitle, reuseIdentifier: layoutReuseIdentifier)
-      let hasElements = _elements.count > 0
-      if _listViewLayoutMode == 0 { // assume only strings (no dicts]
-        if hasElements {
-          let item = _elements[indexPath.row]
-          cell.textLabel?.text = item
-          cell.detailTextLabel?.text = ""
-          // Simple text-only layout
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
-        } else {
-          let item = _items[indexPath.row]
-          cell.textLabel?.text = item["Text1"] as? String
-        }
+      let item = listItem(at: indexPath.row) ?? makeListItem()
+      cell.imageView?.image = nil
+      tableView.rowHeight = UITableView.automaticDimension
+
+      if _listViewLayoutMode == 0 {
+        cell.textLabel?.text = item["Text1"] as? String
+        cell.detailTextLabel?.text = ""
+        tableView.estimatedRowHeight = 44
       } else {
-        let item = _items[indexPath.row]
-        let listDataIndex = indexPath.row - _items.count
         if _listViewLayoutMode == 1 {
           tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
@@ -829,9 +853,9 @@ let HORIZONTAL_LAYOUT = 1
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
           ])
         } else if _listViewLayoutMode == 3 {
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 60
-          cell.textLabel?.text = item["Text1"] as? String
+          tableView.estimatedRowHeight = preferredRowHeight
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
@@ -869,10 +893,9 @@ let HORIZONTAL_LAYOUT = 1
             ])
           }
         } else if _listViewLayoutMode == 4 {
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 60
-          cell.textLabel?.text = item["Text1"] as? String
-          cell.detailTextLabel?.text = item["Text2"] as? String
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
@@ -922,10 +945,9 @@ let HORIZONTAL_LAYOUT = 1
             ])
           }
         } else if _listViewLayoutMode == 5 {
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 120
-          cell.textLabel?.text = item["Text1"] as? String
-          cell.detailTextLabel?.text = item["Text2"] as? String
+          cell.textLabel?.text = item["Text1"] as? String ?? ""
+          cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
@@ -972,11 +994,11 @@ let HORIZONTAL_LAYOUT = 1
             ])
           }
         } else {
-          tableView.rowHeight = UITableView.automaticDimension
           tableView.estimatedRowHeight = 44
-          cell.textLabel?.text = _items[listDataIndex]["Text1"] as? String
+          cell.textLabel?.text = item["Text1"] as? String
+          cell.detailTextLabel?.text = ""
         }
-    }
+      }
 
     // Both labels wrap inside their 50% half (matches the Designer mock).
     cell.textLabel?.numberOfLines = 0
@@ -1004,28 +1026,25 @@ let HORIZONTAL_LAYOUT = 1
     } else {
       tableView.separatorColor =  argbToColor(_dividerColor)
     }
-    
-    
+
+
     if _backgroundColor == Color.default.int32 {
       cell.backgroundColor = preferredTextColor(form)
     } else {
       cell.backgroundColor = argbToColor(_backgroundColor)
     }
 
-    if _elementColor != Color.none.int32 {
-      // if elementColor at the table cell level, laid over backgroundColor
-      if _elementColor == Color.default.int32 {
-        cell.backgroundColor = preferredTextColor(form)
-        cell.backgroundView?.backgroundColor = preferredBackgroundColor(form)
-      } else {
-        cell.backgroundColor = argbToColor(_elementColor)
-        cell.backgroundView?.backgroundColor = argbToColor(_elementColor)
-      }
-    } else {
-      cell.backgroundColor = argbToColor(_backgroundColor)
-      cell.backgroundView?.backgroundColor = argbToColor(_backgroundColor)
-    }
-    
+    (cell.backgroundView as? UIView)?.backgroundColor =
+          (_elementColor != Color.none.int32)
+          ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
+          : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+
+    cell.backgroundColor =
+            ((_elementColor != Color.none.int32) && (_elementColor != Color.default.int32))
+            ? argbToColor(_elementColor)
+            : cell.backgroundColor
+
+
     //maintext
     if _textColor == Color.default.int32 {
       cell.textLabel?.textColor = preferredBackgroundColor(form)
@@ -1057,11 +1076,7 @@ let HORIZONTAL_LAYOUT = 1
     }
 
     let selectedBgView = UIView()
-    selectedBgView.backgroundColor =
-    (_selectionColor != Color.none.int32) ?
-      (_selectionColor == Color.default.int32 ? (argbToColor(kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor))
-      :argbToColor(_selectionColor)
+    selectedBgView.backgroundColor = argbToColor(_selectionColor)
     cell.selectedBackgroundView = selectedBgView
 
     cell.textLabel?.textAlignment = nsTextAlignment(for: _textAlignmentMain, in: cell)
@@ -1072,21 +1087,24 @@ let HORIZONTAL_LAYOUT = 1
 
   
     open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return _items.isEmpty ? _elements.count : _items.count
+      return listItemCount
     }
 
     // MARK: UITableViewDelegate
 
+    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+      return preferredRowHeight
+    }
+
+    open func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+      return preferredRowHeight
+    }
+
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      if indexPath.row < _elements.count {
+      if let item = listItem(at: indexPath.row) {
         _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _elements[indexPath.row]
-        _selectionDetailText = ""
-      } else if indexPath.row < _elements.count + _items.count {
-        let listDataIndex = indexPath.row - _elements.count
-        _selectionIndex = Int32(indexPath.row) + 1
-        _selection = _items[listDataIndex]["Text1"] as! String
-        _selectionDetailText = _items[listDataIndex]["Text2"] as! String
+        _selection = item["Text1"] as? String ?? ""
+        _selectionDetailText = item["Text2"] as? String ?? ""
       }
       AfterPicking()
     }
@@ -1111,6 +1129,76 @@ let HORIZONTAL_LAYOUT = 1
   }
 
   // MARK: Private implementation
+
+  private var preferredListViewSize: CGSize {
+    let width = preferredListViewWidth()
+    if _orientation == HORIZONTAL_LAYOUT {
+      return CGSize(width: width, height: max(kDefaultItemSize.height, 60.0))
+    }
+
+    return CGSize(width: width, height: preferredTableHeight)
+  }
+
+  private var preferredTableHeight: CGFloat {
+    if _lastSetHeight != kLengthPreferred {
+      return max(kDefaultTableCellHeight, _rootView.bounds.height)
+    }
+    let rows = listItemCount
+    let rowHeight = rows == 0 ? kDefaultTableCellHeight : preferredRowHeight * CGFloat(rows)
+    let headerHeight = _view.tableHeaderView?.bounds.height ?? 0
+    return max(kDefaultTableCellHeight, rowHeight + headerHeight)
+  }
+
+  private var preferredRowHeight: CGFloat {
+    let mainTextHeight = ceil(listFont(typeface: _fontTypeface, size: _fontSize).lineHeight)
+    let detailTextHeight = ceil(listFont(typeface: _fontTypefaceDetail, size: _fontSizeDetail).lineHeight)
+    let singleTextHeight = mainTextHeight + kDefaultTableCellVerticalPadding
+    let twoTextVerticalHeight = mainTextHeight + detailTextHeight + kDefaultTableCellVerticalPadding
+    let twoTextHorizontalHeight = max(mainTextHeight, detailTextHeight) + kDefaultTableCellVerticalPadding
+
+    switch _listViewLayoutMode {
+    case 1:
+      return max(kDefaultTableCellHeight, twoTextVerticalHeight)
+    case 2:
+      return max(kDefaultTableCellHeight, twoTextHorizontalHeight)
+    case 3:
+      return max(60.0, singleTextHeight)
+    case 4:
+      return max(60.0, twoTextVerticalHeight)
+    case 5:
+      return max(120.0, twoTextVerticalHeight)
+    default:
+      return max(kDefaultTableCellHeight, singleTextHeight)
+    }
+  }
+
+  private func listFont(typeface: String, size: Int32) -> UIFont {
+    let pointSize = CGFloat(size)
+    if typeface == "1" {
+      return UIFont(name: "Helvetica", size: pointSize) ?? UIFont.systemFont(ofSize: pointSize)
+    } else if typeface == "2" {
+      return UIFont(name: "Times New Roman", size: pointSize) ?? UIFont.systemFont(ofSize: pointSize)
+    } else if typeface == "3" {
+      return UIFont(name: "Courier", size: pointSize) ?? UIFont.systemFont(ofSize: pointSize)
+    }
+    return UIFont.systemFont(ofSize: pointSize)
+  }
+
+  private func preferredListViewWidth() -> CGFloat {
+    if let formWidth = form?.scaleFrameLayout.bounds.width, formWidth > 0 {
+      return formWidth
+    }
+    if let formWidth = form?.view.bounds.width, formWidth > 0 {
+      return formWidth
+    }
+    return 320
+  }
+
+  private func invalidateListViewSize() {
+    _rootView.invalidateIntrinsicContentSize()
+    _rootView.setNeedsLayout()
+    _rootView.superview?.setNeedsLayout()
+  }
 
   private final class HListCell: UICollectionViewCell {
   static let reuseId = "HListCell"
@@ -1166,32 +1254,30 @@ let HORIZONTAL_LAYOUT = 1
   var elements: [String] {
       return _results ?? _elements
     }
+
+  private var listItemCount: Int {
+    if !_items.isEmpty {
+      return _items.count
+    }
+    return elements.count
+  }
     
   // UICollectionViewDataSource
   public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return _items.isEmpty ? _elements.count : _items.count
+    return listItemCount
   }
 
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
 
-    let isData = !_items.isEmpty
-    let mainText: String
-    let detailText: String
+    let item = listItem(at: indexPath.item) ?? makeListItem()
+    let mainText = item["Text1"] as? String ?? ""
+    let detailText = item["Text2"] as? String ?? ""
     var image: UIImage? = nil
 
-    if isData {
-      let item = _items[indexPath.item]
-      mainText = item["Text1"] as? String ?? ""
-      detailText = item["Text2"] as? String ?? ""
-      if let path = item["Image"] as? String,
-         !path.isEmpty {
-        print("image path: \(path)")
-        image = AssetManager.shared.imageFromPath(path: path)
-      }
-    } else {
-      mainText = _elements[indexPath.item] //_items[indexPath.item] as? String ?? ""
-      detailText = ""
+    if let path = item["Image"] as? String,
+       !path.isEmpty {
+      image = AssetManager.shared.imageFromPath(path: path)
     }
 
     
@@ -1202,18 +1288,14 @@ let HORIZONTAL_LAYOUT = 1
     
     (cell.backgroundView as? UIView)?.backgroundColor =
         (_elementColor != Color.none.int32)
-        ? ((_elementColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_elementColor))
-        : ((_backgroundColor == Color.default.int32) ? preferredTextColor(_container?.form) : argbToColor(_backgroundColor))
+        ? argbToColor(_elementColor)
+        : argbToColor(_backgroundColor)
 
     (cell.selectedBackgroundView as? UIView)?.backgroundColor =
-        (_selectionColor == Color.default.int32)
-        ? argbToColor(Int32(bitPattern: kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor)
+        argbToColor(_selectionColor)
     
     _collectionView.backgroundColor =
-        (_backgroundColor == Color.default.int32)
-    ? preferredTextColor(_container?.form)
-        : argbToColor(_backgroundColor)
+        argbToColor(_backgroundColor)
 
     cell.titleLabel.text = mainText
     cell.detailLabel.text = detailText
@@ -1230,8 +1312,8 @@ let HORIZONTAL_LAYOUT = 1
     else if _fontTypefaceDetail == "3" { cell.detailLabel.font = UIFont(name: "Courier", size: CGFloat(_fontSizeDetail)) ?? cell.detailLabel.font }
 
     // Text colors
-    cell.titleLabel.textColor = (_textColor == Color.default.int32) ? preferredBackgroundColor(_container?.form) : argbToColor(_textColor)
-    cell.detailLabel.textColor = (_textColorDetail == Color.default.int32) ? preferredBackgroundColor(_container?.form) : argbToColor(_textColorDetail)
+    cell.titleLabel.textColor = argbToColor(_textColor)
+    cell.detailLabel.textColor = argbToColor(_textColorDetail)
 
     // Image
     cell.imageView.image = image
@@ -1242,26 +1324,18 @@ let HORIZONTAL_LAYOUT = 1
 
     let selectedBgView = UIView()
     selectedBgView.backgroundColor =
-    (_selectionColor != Color.none.int32) ?
-      (_selectionColor == Color.default.int32 ? (argbToColor(kListViewDefaultSelectionColor.rawValue))
-        : argbToColor(_selectionColor))
-      :argbToColor(_selectionColor)
+      argbToColor(_selectionColor)
     cell.selectedBackgroundView = selectedBgView
     return cell
   }
 
   // UICollectionViewDelegate (selection → AfterPicking)
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if !_items.isEmpty {
-      let item = _items[indexPath.item]
+    if let item = listItem(at: indexPath.item) {
       _selectionIndex = Int32(indexPath.item) + 1
       _selection = item["Text1"] as? String ?? ""
       _selectionDetailText = item["Text2"] as? String ?? ""
-    } /*else {
-      _selectionIndex = Int32(indexPath.item) + 1
-      _selection = elements[indexPath.item] as? String ?? ""
-      _selectionDetailText = ""
-    } */
+    }
     AfterPicking()
   }
 

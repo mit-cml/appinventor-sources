@@ -77,18 +77,16 @@ fileprivate enum ConstraintUpdate {
    */
   fileprivate func updateComponentConstraints(for change: ConstraintUpdate) {
     if change == .height, let constraint = _heightConstraint {
-      component?.view.removeConstraint(constraint)
-      component?.form?.view.removeConstraint(constraint)
+      constraint.isActive = false
     }
     if change == .width, let constraint = _widthConstraint {
-      component?.view.removeConstraint(constraint)
-      component?.form?.view.removeConstraint(constraint)
+      constraint.isActive = false
     }
     if change == .height || change == .initialize {
-      addWidthConstraint()
+      addHeightConstraint()
     }
     if change == .width || change == .initialize {
-      addHeightConstraint()
+      addWidthConstraint()
     }
   }
 
@@ -98,15 +96,17 @@ fileprivate enum ConstraintUpdate {
     if let child = component {
       if child._lastSetHeight >= 0 {
         _heightConstraint = child.view.heightAnchor.constraint(equalToConstant: CGFloat(child._lastSetHeight))
-        child.view.addConstraint(_heightConstraint!)
+      } else if child._lastSetHeight == kLengthFillParent {
+        _heightConstraint = child.view.heightAnchor.constraint(equalTo: heightAnchor)
       } else if child._lastSetHeight <= kLengthPercentTag {
-        if let formView = child.form?.view, child.attachedToWindow {
+        if let scaleFrame = child.form?.scaleFrameLayout, sharesViewHierarchy(child.view, scaleFrame) {
           let height = -(child._lastSetHeight + 1000)
           let pHeight = CGFloat(height) / 100
-          _heightConstraint = child.view.heightAnchor.constraint(equalTo: formView.heightAnchor, multiplier: pHeight)
-          formView.addConstraint(_heightConstraint!)
+          _heightConstraint = child.view.heightAnchor.constraint(equalTo: scaleFrame.heightAnchor,
+                                                                 multiplier: pHeight)
         }
       }
+      _heightConstraint?.isActive = true
     }
   }
 
@@ -115,16 +115,35 @@ fileprivate enum ConstraintUpdate {
     if let child = component {
       if child._lastSetWidth >= 0 {
         _widthConstraint = child.view.widthAnchor.constraint(equalToConstant: CGFloat(child._lastSetWidth))
-        child.view.addConstraint(_widthConstraint!)
+      } else if child._lastSetWidth == kLengthFillParent {
+        _widthConstraint = child.view.widthAnchor.constraint(equalTo: widthAnchor)
       } else if child._lastSetWidth <= kLengthPercentTag {
-        if let formView = child.form?.view, child.attachedToWindow {
+        if let scaleFrame = child.form?.scaleFrameLayout, sharesViewHierarchy(child.view, scaleFrame) {
           let width = -(child._lastSetWidth + 1000)
           let pWidth = CGFloat(width) / 100
-          _widthConstraint = child.view.widthAnchor.constraint(equalTo: formView.widthAnchor, multiplier: pWidth)
-          formView.addConstraint(_widthConstraint!)
+          _widthConstraint = child.view.widthAnchor.constraint(equalTo: scaleFrame.widthAnchor,
+                                                               multiplier: pWidth)
         }
       }
+      _widthConstraint?.isActive = true
     }
+  }
+
+  private func sharesViewHierarchy(_ first: UIView, _ second: UIView) -> Bool {
+    var ancestors = Set<ObjectIdentifier>()
+    var current: UIView? = first
+    while let view = current {
+      ancestors.insert(ObjectIdentifier(view))
+      current = view.superview
+    }
+    current = second
+    while let view = current {
+      if ancestors.contains(ObjectIdentifier(view)) {
+        return true
+      }
+      current = view.superview
+    }
+    return false
   }
 }
 

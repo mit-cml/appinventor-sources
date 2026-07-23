@@ -85,7 +85,7 @@ class CircularProgressView: UIView {
     
     backgroundLayer.path = backgroundPath.cgPath
     backgroundLayer.lineWidth = lineWidth
-    backgroundLayer.strokeColor = UIColor.lightGray.cgColor
+    backgroundLayer.strokeColor = Color.lightGray.uiColor.cgColor
     backgroundLayer.fillColor = UIColor.clear.cgColor
     
     let progressPath = UIBezierPath(arcCenter: center,
@@ -96,7 +96,7 @@ class CircularProgressView: UIView {
     
     progressLayer.path = progressPath.cgPath
     progressLayer.lineWidth = lineWidth
-    progressLayer.strokeColor = UIColor.blue.cgColor
+    progressLayer.strokeColor = Color.blue.uiColor.cgColor
     progressLayer.fillColor = UIColor.clear.cgColor
     progressLayer.strokeEnd = 0
     

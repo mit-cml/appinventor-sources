@@ -12,11 +12,12 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
   fileprivate var _switch = UISwitch()
   fileprivate var _alignment: Int32 = Alignment.normal.rawValue
   fileprivate var _typeface: Int32 = Typeface.normal.rawValue
-  fileprivate var _backgroundColor = Color.default.int32
-  fileprivate var _trackColorActive = Color.default.int32
-  fileprivate var _thumbColorActive = Color.default.int32
-  fileprivate var _trackColorInactive = Color.default.int32
-  fileprivate var _thumbColorInactive = Color.default.int32
+  fileprivate var _backgroundColor = Color.none.int32
+  fileprivate var _trackColorActive = Color.green.int32
+  fileprivate var _thumbColorActive = Color.white.int32
+  fileprivate var _trackColorInactive = Color.gray.int32
+  fileprivate var _thumbColorInactive = Color.lightGray.int32
+  fileprivate var _textColor = Color.default.int32
   fileprivate var _fontTypeface = Typeface.normal
   fileprivate var _bold = false
   fileprivate var _italic = false
@@ -36,6 +37,12 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
     parent.add(self)
 
     setupViews()
+    BackgroundColor = Color.none.int32
+    ThumbColorActive = Color.white.int32
+    ThumbColorInactive = Color.lightGray.int32
+    TrackColorActive = Color.green.int32
+    TrackColorInactive = Color.gray.int32
+    TextColor = Color.default.int32
   }
 
   private func setupViews() {
@@ -82,7 +89,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
     }
     set(argb) {
       _backgroundColor = argb
-      _view.backgroundColor = argbToColor(argb)
+      _view.backgroundColor = argbToColor(argb == Color.default.int32 ? Color.none.int32 : argb)
     }
   }
 
@@ -215,10 +222,11 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
 
   @objc open var TextColor: Int32 {
     get {
-      return colorToArgb(_text.textColor)
+      return _textColor
     }
     set(color) {
-      _text.textColor = argbToColor(color)
+      _textColor = color
+      _text.textColor = color == Color.default.int32 ? preferredTextColor(form) : argbToColor(color)
     }
   }
 
@@ -228,7 +236,7 @@ public class Switch: ViewComponent, AbstractMethodsForViewComponent, AccessibleC
       if _switch.isOn {
         _switch.thumbTintColor = _thumbColorActive == Color.default.int32 ? nil : argbToColor(_thumbColorActive)
       } else {
-        _switch.thumbTintColor = _thumbColorActive == Color.default.int32 ? nil : argbToColor(_thumbColorInactive)
+        _switch.thumbTintColor = _thumbColorInactive == Color.default.int32 ? nil : argbToColor(_thumbColorInactive)
       }
     }
   }
