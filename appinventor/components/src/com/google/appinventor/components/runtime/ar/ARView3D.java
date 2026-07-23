@@ -89,16 +89,20 @@ import java.util.stream.Collectors;
 @SimpleObject
 @UsesLibraries({"ar-core.jar", "ar-core.aar", "obj-0.3.0.jar",
         "filament-v1.9.20-android.jar",
-        "gltfio-v1.9.20-android.jar"})
+        "gltfio-v1.9.20-android.jar",
+        "play-services-base-18.0.0.aar",
+        "play-services-basement-18.0.0.aar",
+        "play-services-location-18.0.0.aar",
+        "play-services-tasks-18.0.0.aar"})
 @UsesNativeLibraries(
         v7aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
         v8aLibraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so",
         x86_64Libraries = "libarcore_sdk_c.so,libarcore_sdk_jni.so, libfilament-jni.so, libgltfio-jni.so"
 )
-@UsesPermissions({CAMERA})
+@UsesPermissions({CAMERA, "android.permission.ACCESS_FINE_LOCATION",
+    "android.permission.ACCESS_COARSE_LOCATION"})
 @UsesApplicationMetadata(metaDataElements = {
         @MetaDataElement(name = "com.google.ar.core", value = "required"),
-        @MetaDataElement(name = "com.google.ar.core.min_apk_version", value = "221930000")
 })
 @UsesQueries(packageNames = {"com.google.ar.core"})
 @UsesActivities(activities = {
@@ -945,7 +949,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 }
             }
 
-
             if (lastCamera.getTrackingState() == TrackingState.PAUSED) return;
 
             // Depth (unchanged)
@@ -1049,7 +1052,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 objRenderer.setPlaneFinder(this::findOccludingPlane);
                 arFilamentRenderer.setPlaneFinder(this::findOccludingPlane);
             }
-// Surface may have already fired before renderer was created
+
             if (pendingFilamentSurface != null) {
                 Log.d(LOG_TAG, "Applying pending surface to SwapChain");
                 arFilamentRenderer.initializeSwapChain(
@@ -1098,31 +1101,43 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Trackable mostRecentTrackable = hit.getTrackable();
                 Anchor a = hit.createAnchor();
 
+                float[] hitPos = a.getPose().getTranslation();
+                double lat = 0, lng = 0, alt = 0;
+                boolean hasGeo = false;
 
-                /*Pose worldPose = hit.getHitPose();
-                float[] worldPosition = worldPose.getTranslation();
-
-                // Convert to geospatial coordinates
-               Earth earth = session.getEarth();
-                GeospatialPose geospatialPose = earth.getCameraGeospatialPose();
-                //earth.getPose()
-                Log.i("tap is, pose is, trackable is ", tap.toString() + " " + a.getPose() + " " + mostRecentTrackable);
-                if (mostRecentTrackable instanceof Plane) {
-
-                */
-
+                try {
+                    Earth earth = session.getEarth();
+                    Log.w(LOG_TAG, "earth=" + (earth == null ? "null" : "non-null, trackingState=" + earth.getTrackingState()
+                        + ", earthState=" + earth.getEarthState()));
+                    if (earth != null && earth.getTrackingState() == TrackingState.TRACKING) {
+                        GeospatialPose geoPose = earth.getCameraGeospatialPose(); // earth.getGeospatialPose(a.getPose());
+                        lat = geoPose.getLatitude();
+                        lng = geoPose.getLongitude();
+                        alt = geoPose.getAltitude();
+                        hasGeo = true;
+                        Log.w(LOG_TAG, "has geo?" + lat + "lng" + lng);
+                    }
+                } catch (Exception e) {
+                    // Earth not ready / geospatial unsupported this session — fall through with hasGeo=false
+                    Log.w(LOG_TAG, "Could not resolve geospatial pose for tap: " + e.getMessage());
+                }
                 Log.i("hit is, pose is, trackable is ", hit.toString() + " " + a.getPose() + " " + mostRecentTrackable);
+                /* send a TapAtLocation for either a detected plane or a hit, plus respective calls */
                 if (mostRecentTrackable instanceof Plane) { //most reliably tracked
-
-                    Log.i("detectedplane hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
+                    Log.i("detectedplane hit, issuing clickOnDetectedPlan", a.getPose().getTranslation()[0] + " "
+                        + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
-
                     ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
+                    Log.w(LOG_TAG, "also issuing a tap at location");
+                    TapAtLocation(hitPos[0], hitPos[1], hitPos[2], lat, lng, alt, hasGeo, true);
                     a.detach(); // detach the temporary anchor — node creates its own
                     break; // ← only create one node per tap
+
                 } else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
-                    Log.i("point hit", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
+                    Log.i("point hit, issuing tap at point", a.getPose().getTranslation()[0] + " " + a.getPose().getTranslation()[1] + " " + a.getPose().getTranslation()[2]);
                     TapAtPoint(a.getPose().getTranslation()[0], a.getPose().getTranslation()[1], a.getPose().getTranslation()[2], true);
+                    Log.w(LOG_TAG, "also issuing a tap at location");
+                    TapAtLocation(hitPos[0], hitPos[1], hitPos[2], lat, lng, alt, hasGeo, true);
                     a.detach(); // detach the temporary anchor — node creates its own
                     break; // ← only create one node per tap
                 } else if (mostRecentTrackable instanceof Point && useSimulatedDepth) {
@@ -1132,20 +1147,8 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     break; // ← only create one node per tap
                 } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
                     || (mostRecentTrackable instanceof DepthPoint)) {
-
                     Log.i("instantplacement","instantplacement");
-                    //ARDetectedPlane arplane = new DetectedPlane((Plane) mostRecentTrackable);
-                    //ClickOnDetectedPlaneAt(arplane, a.getPose(), true);
-                } /*else if ((mostRecentTrackable instanceof Point && ((Point) mostRecentTrackable).getOrientationMode() == Point.OrientationMode.ESTIMATED_SURFACE_NORMAL)) {
-                    //send everything, will sort out if we have it or not
-                    // TBD update isGeo
-                    //earth or camera, get coord?
-                    Anchor geoA = earth.createAnchor(a.getPose());
-                    TapAtLocation(geoA.getPose().getTranslation()[0], geoA.getPose().getTranslation()[1], geoA.getPose().getTranslation()[2], 0, 0, 0, false, true);
-                } else if ((mostRecentTrackable instanceof InstantPlacementPoint)
-                    || (mostRecentTrackable instanceof DepthPoint)) {
-                    // are there hooks for this?
-                }*/
+                }
             }
             return true;
         } catch (Exception e) {
@@ -1153,9 +1156,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
            // throw new RuntimeException(e);
         }
         return false;
-
     }
-
 
     private ARNode findClosestNode(float screenX, float screenY) {
         Log.i(LOG_TAG, "=== findClosestNode START ===");
@@ -1176,8 +1177,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         for (ARNode node : arNodes) {
             Log.i(LOG_TAG, "--- Checking node: " + node.NodeType() + " ---");
-
-
             if (node.Anchor() == null) {
                 Log.i(LOG_TAG, "Skipping - no anchor");
                 continue;
@@ -1535,8 +1534,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         try {
             session.configure(config);
         } catch (com.google.ar.core.exceptions.GooglePlayServicesLocationLibraryNotLinkedException e) {
-            Log.w(LOG_TAG, "Geospatial mode requires Play Services Location, which isn't "
-                + "linked in this build — disabling geospatial and retrying.");
+            Log.w(LOG_TAG, "Geospatial requires Play Services Location, not linked — disabling and retrying.");
+            config.setGeospatialMode(Config.GeospatialMode.DISABLED);
+            session.configure(config);
+        } catch (com.google.ar.core.exceptions.FineLocationPermissionNotGrantedException e) {
+            Log.w(LOG_TAG, "Geospatial requires ACCESS_FINE_LOCATION, not granted — disabling and retrying.");
             config.setGeospatialMode(Config.GeospatialMode.DISABLED);
             session.configure(config);
         }
@@ -1693,7 +1695,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         if (session == null) {
             Log.d(LOG_TAG, "onResume() ");
             try {
-                // Request ARCore installation if needed
                 switch (ArCoreApk.getInstance().requestInstall($form(), !installRequested)) {
                     case INSTALL_REQUESTED:
                         installRequested = true;
@@ -1702,7 +1703,6 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                         break;
                 }
 
-                // Check camera permission
                 if ($form().isDeniedPermission(CAMERA)) {
                     $form().askPermission(CAMERA, new PermissionResultHandler() {
                         @Override
@@ -1716,7 +1716,23 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     return;
                 }
 
-                // Create and configure ARCore session
+                // NEW: location permission, needed only for Geospatial mode
+                if ($form().isDeniedPermission("android.permission.ACCESS_FINE_LOCATION")) {
+                    $form().askPermission("android.permission.ACCESS_FINE_LOCATION",
+                        new PermissionResultHandler() {
+                            @Override
+                            public void HandlePermissionResponse(String permission, boolean granted) {
+                                if (!granted) {
+                                    Log.w(LOG_TAG, "Fine location permission denied — "
+                                        + "Geospatial mode will be unavailable");
+                                }
+                                // Either way, continue session creation now
+                                onResume();
+                            }
+                        });
+                    return;
+                }
+
                 session = new Session($context());
                 activeSession = session;
                 configureSession();
@@ -2597,6 +2613,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
         node.Anchor(geoAnchor);
 
+        if (geoAnchor == null) {
+            Log.w(LOG_TAG, "CreatePlaneNodeAtLocation: AR session not ready yet — "
+                + "plane node created without a placement");
+            return node;
+        }
         Log.i("created Capsule node, geo anchor is", node.Anchor().toString());
         return node;
     }
@@ -2611,7 +2632,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
 
         node.Anchor(geoAnchor);
-
+        if (geoAnchor == null) {
+            Log.w(LOG_TAG, "CreatesphereNodeAtLocation: AR session not ready yet — "
+                + "nodesphere created without a placement");
+            return node;
+        }
         Log.i("created Capsule node, geo anchor is", node.Anchor().toString());
         return node;
     }
@@ -2818,6 +2843,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
         modelNode.Anchor(geoAnchor);
 
+        if (geoAnchor == null) {
+            Log.w(LOG_TAG, "CreatemodelNodeAtLocation: AR session not ready yet — "
+                + "modelNode created without a placement");
+            return modelNode;
+        }
         Log.i("created Capsule node, geo anchor is", modelNode.Anchor().toString());
         return modelNode;
     }
@@ -2874,6 +2904,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
 
         textNode.Anchor(geoAnchor);
+        if (geoAnchor == null) {
+            Log.w(LOG_TAG, "CreateTextoNodeAtLocation: AR session not ready yet — "
+                + "TextNode created without a placement");
+            return textNode;
+        }
 
         Log.i("created text node, geo anchor is", textNode.Anchor().toString());
         return textNode;
@@ -2971,15 +3006,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleFunction(description = "Create a new VideoNode with geo coords, if available")
     public VideoNode CreateVideoNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint) {
-        Log.i("creating text node", "with geo location");
+        Log.i("creating video node", "with geo location");
 
         VideoNode vNode = new VideoNode(this);
 
         Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
 
-        vNode.Anchor(geoAnchor);
+        if (geoAnchor == null) {
+            Log.w(LOG_TAG, "CreateVideoNodeAtLocation: AR session not ready yet — "
+                + "VideoNode created without a placement");
+            return vNode;
+        }
 
-        Log.i("created text node, geo anchor is", vNode.Anchor().toString());
+        vNode.Anchor(geoAnchor);
+        Log.i("created video node, geo anchor is", vNode.Anchor().toString());
         return vNode;
     }
 
