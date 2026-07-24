@@ -71,6 +71,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
     panel = new VerticalPanel();
     panel.setWidth("100%");
+    // Enable horizontal scrolling for long filenames instead of truncating them
+    panel.getElement().getStyle().setOverflowX(com.google.gwt.dom.client.Style.Overflow.AUTO);
 
     panel.add(assetList);
 
@@ -138,12 +140,9 @@ public class AssetList extends Composite implements ProjectChangeListener {
         // Add the name to the tree. We need to enclose it in a span
         // because the CSS style for selection specifies a span.
         String nodeName = node.getName();
-        if (nodeName.length() > 20)
-          nodeName = nodeName.substring(0, 8) + "..." + nodeName.substring(nodeName.length() - 9,
-              nodeName.length());
 
         String fileSuffix = node.getProjectId() + "/" + node.getFileId();
-        String treeItemText = "<span style='cursor: pointer'>";
+        String treeItemText = "<span style='cursor: pointer; white-space: nowrap;'>";
         if (StorageUtil.isImageFile(fileSuffix)) {
           treeItemText += new Image(images.mediaIconImg());
         } else if (StorageUtil.isAudioFile(fileSuffix )) {
