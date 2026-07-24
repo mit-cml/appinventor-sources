@@ -16,7 +16,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
 import android.util.Log;
 
-import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
@@ -106,7 +105,7 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     }
     imageSingleTextHolder.textViewFirst.setText(first);
     try {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
+      Drawable drawable = getImageDrawable(imageName);
       ViewUtil.setImage(imageSingleTextHolder.imageView, drawable);
     } catch (IOException ioe) {
       Log.e(LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());

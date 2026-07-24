@@ -5,6 +5,12 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
+import android.util.LruCache;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,7 +23,10 @@ import androidx.core.view.ViewCompat;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
+
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +46,12 @@ public abstract class ListAdapterWithRecyclerView
   protected ComponentContainer container;
   protected List<Integer> selectedItems = new ArrayList<>();
   protected String lastQuery = "";
+
+  // Cache of decoded image drawables keyed by image name. Lazily created the first time an image is
+  // loaded, so text-only list layouts never allocate it. Without it, onBindViewHolder re-decodes
+  // (and re-scales) each image from disk on the UI thread every time a row scrolls into view, which
+  // makes image lists scroll jerkily. Sized to a fraction of the app's available memory.
+  private LruCache<String, Drawable> imageCache;
 
   protected final Filter filter = new Filter() {
     @Override
@@ -100,6 +115,47 @@ public abstract class ListAdapterWithRecyclerView
     this.selectionColor = selectionColor;
     updateData(data);
 }
+
+  /**
+   * Returns the drawable for the given image name, decoding it via MediaUtil on first use and
+   * caching the result. Subsequent binds while scrolling reuse the cached drawable instead of
+   * re-decoding the image from disk on the UI thread, which is what made image lists scroll
+   * jerkily.
+   *
+   * @param imageName the asset/image name from the list item, or empty when there is no image
+   * @return the cached or freshly decoded drawable, or null when imageName is empty
+   * @throws IOException if the image cannot be loaded
+   */
+  protected Drawable getImageDrawable(String imageName) throws IOException {
+    if (imageName == null || imageName.isEmpty()) {
+      return null;
+    }
+    if (imageCache == null) {
+      // Use up to 1/8 of the available memory for the decoded-image cache.
+      final int cacheSizeKb = (int) (Runtime.getRuntime().maxMemory() / 1024 / 8);
+      imageCache = new LruCache<String, Drawable>(cacheSizeKb) {
+        @Override
+        protected int sizeOf(String key, Drawable drawable) {
+          if (drawable instanceof BitmapDrawable) {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            if (bitmap != null) {
+              return bitmap.getByteCount() / 1024;
+            }
+          }
+          return 1;
+        }
+      };
+    }
+    Drawable cached = imageCache.get(imageName);
+    if (cached != null) {
+      return cached;
+    }
+    Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
+    if (drawable != null) {
+      imageCache.put(imageName, drawable);
+    }
+    return drawable;
+  }
 
   public void updateData(List<Object> newItems) {
     this.originalItems = newItems;
