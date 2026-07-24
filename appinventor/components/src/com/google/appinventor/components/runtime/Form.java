@@ -84,6 +84,7 @@ import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
+import com.google.appinventor.components.runtime.util.I18nUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -168,6 +169,9 @@ public class Form extends AppInventorCompatActivity
 
   private float deviceDensity;
   private float compatScalingFactor;
+
+  // Internationalization utility
+  private I18nUtil i18nUtil;
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
@@ -427,6 +431,9 @@ public class Form extends AppInventorCompatActivity
     int softInputMode = params.softInputMode;
     getWindow().setSoftInputMode(
         softInputMode | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+    i18nUtil = new I18nUtil(this);
+    i18nUtil.load();
 
     // Add application components to the form
     $define();
@@ -1175,6 +1182,44 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  /**
+   * Resolve a translation key using the active locale.
+   *
+   * This method is intentionally not exposed as a user-visible block in the MVP.
+   * Blockly integration should add a proper translated-text block later.
+   */
+  public String getText(String key) {
+    return getText(key, key);
+  }
+
+  /**
+   * Resolve a translation key using the active locale, falling back safely.
+   */
+  public String getText(String key, String fallback) {
+    if (i18nUtil == null) {
+      i18nUtil = new I18nUtil(this);
+      i18nUtil.load();
+    }
+    return i18nUtil.resolveKey(key, fallback);
+  }
+
+  /**
+   * Resolve text only when it is explicitly marked as an i18n key.
+   *
+   * Example:
+   * 
+   * @i18n:screen1_button1_text
+   *
+   *                            Normal strings are returned unchanged, preserving
+   *                            backward compatibility.
+   */
+  public String getTextIfKey(String text) {
+    if (i18nUtil == null) {
+      i18nUtil = new I18nUtil(this);
+      i18nUtil.load();
+    }
+    return i18nUtil.resolveText(text);
+  }
 
   /**
    * BigDefaultText property getter method.

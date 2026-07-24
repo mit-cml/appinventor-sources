@@ -551,7 +551,7 @@ public abstract class ButtonBase extends TouchComponent<android.widget.Button>
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
-    TextViewUtil.setText(view, text);
+    TextViewUtil.setText(view, container.$form().getTextIfKey(text));
   }
 
   /**
