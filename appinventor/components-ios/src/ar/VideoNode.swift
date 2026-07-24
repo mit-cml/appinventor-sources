@@ -38,10 +38,20 @@ open class VideoNode: ARNodeBase, ARVideo {
   private var _displayLink: CADisplayLink?
   private var _textureCache: CVMetalTextureCache?
   private var _metalDevice: MTLDevice?
+  private var _commandQueue: MTLCommandQueue?
   
   private var _sourceRetryCount = 0
   private let _maxSourceRetries = 20  // 10 seconds total
 
+  // Chroma key: default ON with pure green; "None" (alpha byte 0) disables
+  // keying and shows the video opaque — same contract as Android.
+  private var _chromaKeyColor: Int32 = Int32(bitPattern: 0xFF00FF00)
+  private var _chromaKeySensitivity: Int32 = 65
+
+  private var isChromaKeyEnabled: Bool {
+    return (UInt32(bitPattern: _chromaKeyColor) >> 24) != 0
+  }
+  
   // Boxed so these can also stay outside the class's iOS 14 stored-property minimum.
   private var _drawableQueueBox: Any? = nil
   @available(iOS 15.0, *)
@@ -56,18 +66,57 @@ open class VideoNode: ARNodeBase, ARVideo {
     get { _videoTextureResourceBox as? TextureResource }
     set { _videoTextureResourceBox = newValue }
   }
+  
+  @available(iOS 15.0, *)
+  private func pushChromaKeyUniforms() {
+    guard var mat = (_modelEntity.model?.materials.first as? CustomMaterial)
+                    ?? _customMaterial else { return }
+
+    let c = UInt32(bitPattern: _chromaKeyColor)
+    let r = Float((c >> 16) & 0xFF) / 255.0
+    let g = Float((c >> 8)  & 0xFF) / 255.0
+    let b = Float(c         & 0xFF) / 255.0
+    // Disabled -> negative sentinel; enabled -> Android's sensitivity/250 mapping
+    let threshold: Float = isChromaKeyEnabled ? Float(_chromaKeySensitivity) / 250.0 : -1.0
+
+    mat.custom.value = SIMD4<Float>(r, g, b, threshold)
+    print("🔑 threshold=\(threshold) textureBound=\(mat.custom.texture != nil)")
+
+    // Re-attach the video texture only if missing — never clobber it.
+    if mat.custom.texture == nil, let resource = _videoTextureResource {
+      mat.custom.texture = CustomMaterial.Texture(resource)
+    }
+
+    _customMaterial = mat
+    _modelEntity.model?.materials = [mat]
+    print("🔑 pushed key=(\(r), \(g), \(b)) threshold=\(threshold)")
+  }
+  
+  @objc open var ChromaKeyColor: Int32 {
+    get { return _chromaKeyColor }
+    set(color) {
+      _chromaKeyColor = color
+      print("🎨 ChromaKeyColor set to: 0x\(String(UInt32(bitPattern: color), radix: 16)) enabled=\(isChromaKeyEnabled)")
+        
+      if #available(iOS 15.0, *) { pushChromaKeyUniforms() }
+    }
+  }
+
+  @objc open var ChromaKeySensitivity: Int32 {
+    get { return _chromaKeySensitivity }
+    set(s) {
+      _chromaKeySensitivity = min(max(s, 0), 100)
+      print("🎨 ChromaKeySensitivity set to: \(ChromaKeySensitivity)")
+        
+      if #available(iOS 15.0, *) { pushChromaKeyUniforms() }
+    }
+  }
 
   @objc init(_ container: ARNodeContainer) {
     _player = AVPlayer()
     super.init(container: container)
     setupVideoNode()
     self.Name = "video"
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(playerItemDidPlayToEndTime(notification:)),
-      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-      object: _videoItem
-    )
     try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
   }
 
@@ -259,6 +308,7 @@ open class VideoNode: ARNodeBase, ARVideo {
         return
       }
       _metalDevice = device
+      _commandQueue = device.makeCommandQueue()   // ← add this line
       var cache: CVMetalTextureCache?
       CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &cache)
       _textureCache = cache
@@ -286,7 +336,7 @@ open class VideoNode: ARNodeBase, ARVideo {
       if #available(iOS 18.0, *) {
         let resource = try TextureResource(
           image: placeholder,
-          withName: "videoFrame",
+          withName: "videoFrame-\(ObjectIdentifier(self).hashValue)",
           options: .init(semantic: .color)
         )
         resource.replace(withDrawables: queue)
@@ -296,6 +346,7 @@ open class VideoNode: ARNodeBase, ARVideo {
           mat.custom.texture = CustomMaterial.Texture(resource)
           _customMaterial = mat
           _modelEntity.model?.materials = [mat]
+          pushChromaKeyUniforms()
         }
       } else {
         print("❌ Isn't ios18, fallback")
@@ -313,8 +364,8 @@ open class VideoNode: ARNodeBase, ARVideo {
       data: nil, width: width, height: height,
       bitsPerComponent: 8, bytesPerRow: width * 4,
       space: colorSpace,
-      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-    )!
+      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+    context.clear(CGRect(x: 0, y: 0, width: width, height: height))  // ← zero it: transparent black
     return context.makeImage()!
   }
 
@@ -354,8 +405,7 @@ open class VideoNode: ARNodeBase, ARVideo {
       let drawable = try queue.nextDrawable()
       let destTexture = drawable.texture
 
-      guard let device = _metalDevice,
-            let commandQueue = device.makeCommandQueue(),
+      guard let commandQueue = _commandQueue,               // ← changed
             let commandBuffer = commandQueue.makeCommandBuffer(),
             let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
         return
@@ -367,10 +417,7 @@ open class VideoNode: ARNodeBase, ARVideo {
         drawable.present()
       }
       commandBuffer.commit()
-
-    } catch {
-      // nextDrawable() can legitimately fail/timeout under load; not fatal.
-    }
+    } catch { }
   }
 
   private func isYouTubeURL(_ urlString: String) -> Bool {
@@ -472,6 +519,7 @@ open class VideoNode: ARNodeBase, ARVideo {
         _customMaterial = customMat
         _modelEntity.model?.materials = [customMat]
 
+        pushChromaKeyUniforms()
         if let item = _videoItem {
           setupVideoOutput(for: item)
         }
