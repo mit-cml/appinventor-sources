@@ -232,6 +232,10 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
 
   private volatile CloudDBJedisListener currentListener;
   private volatile boolean listenerRunning = false;
+  // The Jedis connection used by the listener (subscribe). We keep a
+  // reference so we can close it when the listener is stopped to avoid
+  // leaking connections on screen changes or when the app is done.
+  private volatile Jedis listenerJedis = null;
 
   // To avoid blocking the UI thread, we do most Jedis operations in the background.
   // Rather then spawning a new thread for each request, we use an ExcutorService with
@@ -313,10 +317,23 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
       Log.d(LOG_TAG, "Listener stopping!");
     }
     if (currentListener != null) {
-      currentListener.terminate();
+      try {
+        // Unsubscribe will cause the blocking subscribe call to return.
+        currentListener.unsubscribe();
+      } catch (Exception e) {
+        // ignore
+      }
       currentListener = null;
-      listenerRunning = false;
     }
+    if (listenerJedis != null) {
+      try {
+        listenerJedis.close();
+      } catch (Exception e) {
+        // ignore
+      }
+      listenerJedis = null;
+    }
+    listenerRunning = false;
   }
 
   /*
@@ -359,15 +376,21 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
           Jedis jedis = getJedis(true);
           if (jedis != null) {
             try {
+              // Record the jedis instance used for the listener so we can
+              // explicitly close it later to avoid leaking connections.
+              listenerJedis = jedis;
               currentListener = new CloudDBJedisListener(CloudDB.this);
               jedis.subscribe(currentListener, projectID);
             } catch (Exception e) {
               Log.e(LOG_TAG, "Error in listener thread", e);
               try {
-                jedis.close();
+                if (jedis != null) {
+                  jedis.close();
+                }
               } catch (Exception ee) {
-                // XXX
+                // ignore
               }
+              listenerJedis = null;
               if (DEBUG) {
                 Log.d(LOG_TAG, "Listener: connection to Redis failed, sleeping 3 seconds.");
               }
@@ -378,6 +401,9 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
               if (DEBUG) {
                 Log.d(LOG_TAG, "Woke up!");
               }
+            } finally {
+              // Clear reference if subscribe returned normally
+              listenerJedis = null;
             }
           } else {
             if (DEBUG) {
@@ -847,6 +873,22 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
     NetworkInfo networkInfo = cm.getActiveNetworkInfo();
     boolean isConnected = networkInfo != null && networkInfo.isConnected();
     return isConnected;
+  }
+
+  /**
+   * CloseConnection explicitly closes any open connections to the Redis server
+   * and stops the listener. Use this when you want to release connections to
+   * a private/self-hosted Redis instance (for example to avoid hitting
+   * connection limits when switching screens or when the app is done).
+   */
+  @SimpleFunction(description = "Close open Redis connections and stop the CloudDB listener.")
+  public void CloseConnection() {
+    // Prevent automatic restart
+    shutdown = true;
+    // Stop the listener (will unsubscribe and close listenerJedis)
+    stopListener();
+    // Flush the shared INSTANCE but do not restart the listener
+    flushJedis(false);
   }
 
   /**
