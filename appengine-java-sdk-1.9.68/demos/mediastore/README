@@ -1,0 +1,5 @@
+Google App Engine Java Runtime SDK - Media Store Demo
+
+This application demonstrates how to build a data model using the Datastore
+which also includes references to Blobs in the Blobstore.  It also shows how to
+upload and serve blobs, and apply affects to them using the Image API.
