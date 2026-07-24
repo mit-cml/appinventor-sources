@@ -92,6 +92,7 @@ public class MarkdownDocumentationGenerator extends ComponentProcessor {
     return (isFeatureHidden(info, property) && !info.designerProperties.containsKey(property.name))
         || (info.displayName.equals("Screen") && property.name.equals("ActionBar"))
         || (info.displayName.equals("FirebaseDB") && property.name.equals("DefaultURL"))
+        || (info.displayName.equals("FirebaseDB") && property.name.equals("DeveloperBucket"))
         || (info.displayName.equals("CloudDB") && property.name.equals("DefaultRedisServer"));
   }
 
