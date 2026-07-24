@@ -1,0 +1,34 @@
+# Upright unit quad for TextNode / VideoNode
+# 1x1, centered at origin, standing in the XY plane, facing +Z.
+# Double-sided (front + back faces) so it is visible from both sides
+# regardless of culling state.
+#
+# UV convention: plain v=0 at the BOTTOM. The fragment shaders in this
+# project (ar_object.frag / ar_text.frag / ar_video.frag) flip V with
+# `1.0 - v_TexCoord.y`, which compensates for Android bitmap row order.
+# The mesh therefore uses unflipped UVs — do not pre-flip here or text
+# and video will render upside down (double flip).
+
+# Vertices (x, y, z) — width along X, height along Y
+v -0.5 -0.5 0.0
+v  0.5 -0.5 0.0
+v  0.5  0.5 0.0
+v -0.5  0.5 0.0
+
+# Texture coordinates (u, v) — v=0 at bottom
+vt 0.0 0.0
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+
+# Normals
+vn 0.0 0.0 1.0
+vn 0.0 0.0 -1.0
+
+# Front face (+Z), counter-clockwise winding viewed from +Z
+f 1/1/1 2/2/1 3/3/1
+f 1/1/1 3/3/1 4/4/1
+
+# Back face (-Z), counter-clockwise winding viewed from -Z (mirrored)
+f 1/1/2 4/4/2 3/3/2
+f 1/1/2 3/3/2 2/2/2

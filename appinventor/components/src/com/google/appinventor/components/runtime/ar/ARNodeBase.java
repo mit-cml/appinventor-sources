@@ -399,11 +399,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     if (Anchor() != null || pendingPosition == null) return;
     Log.w("Node", this.name + "has pending position " + pendingPosition[0] + " " + pendingPosition[1] + " " + pendingPosition[2] + " " );
     Plane bestDetectedPlane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
-    if (bestDetectedPlane == null) return;
+    if (session == null || bestDetectedPlane == null) {
+      return;   // not ready — retry next frame
+    }
 
     try {
         Pose newPose = new Pose(pendingPosition, pendingRotation);
         Anchor(bestDetectedPlane.createAnchor(newPose));
+        pendingPosition = null;
 
     } catch (com.google.ar.core.exceptions.NotTrackingException e) {
       // Normal during VIO reset — silent, no log
@@ -989,6 +992,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + positionArray[i]);
       }
+    }
+    if (Anchor() == null) {
+      setPendingPosition(position.clone());
     }
     fromPropertyPosition = position;
     Log.i("ARNodeBase", "Stored pose with position " + positionFromProperty);
@@ -1745,6 +1751,9 @@ public void updateCollisionShape() {
       } catch (NumberFormatException e) {
         Log.w("ARNodeBase", "Invalid number in position: " + rotationAray[i]);
       }
+    }
+    if (Anchor() == null) {
+      pendingRotation = rotation.clone();     // same bridge, same bug
     }
     fromPropertyRotation = rotation; // Ensure positive scale
   }
