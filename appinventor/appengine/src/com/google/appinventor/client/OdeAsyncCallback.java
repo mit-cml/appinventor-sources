@@ -9,12 +9,11 @@ package com.google.appinventor.client;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
-
 import com.google.gwt.http.client.Response;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.StatusCodeException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,6 +80,7 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
       Ode.getInstance().sessionDead();
       return;
     }
+
     String errorMessage =
         (failureMessage == null) ? caught.getMessage() : failureMessage;
     ErrorReporter.reportError(errorMessage);

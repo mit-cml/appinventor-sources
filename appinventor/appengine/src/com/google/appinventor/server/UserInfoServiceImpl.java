@@ -13,6 +13,8 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.ios.CredentialsEncryptor;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.util.LicenseUtil;
+import com.google.appinventor.server.util.LicenseConfig;
 import com.google.appinventor.server.survey.Survey;
 import com.google.appinventor.server.tokens.Token;
 import com.google.appinventor.shared.rpc.user.Config;
@@ -64,6 +66,9 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
       config.setRendezvousServer(rendezvousFlag.get());
     }
     config.setUser(user);
+    config.setSysUID(LicenseUtil.getSysUID());
+    config.setAuthCode(LicenseUtil.getAuthCode()); // Do this second because getSysUID will fetch and
+                                               // and cache the authCode value (KLUDGE)
 
     String surveyUrl;
     if (AppInventorFeatures.doingSurvey()) {
@@ -181,6 +186,13 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @Override
   public void deleteUserFile(String fileName) {
     storageIo.deleteUserFile(userInfoProvider.getUserId(), fileName);
+  }
+
+  @Override
+  public void setAuthCode(String authCode) {
+    LicenseConfig conf = storageIo.getLicenseConfig();
+    conf.setAuthCode(authCode);
+    storageIo.setLicenseConfig(conf);
   }
 
   /**

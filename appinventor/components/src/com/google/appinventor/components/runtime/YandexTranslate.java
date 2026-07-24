@@ -135,5 +135,4 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
       category = PropertyCategory.BEHAVIOR)
   public void ApiKey(String apiKey) {
   }
-
 }

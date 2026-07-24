@@ -51,6 +51,8 @@ public interface UserInfoServiceAsync {
    */
   void deleteUserFile(String fileName, AsyncCallback<Void> callback);
 
+  void setAuthCode(String authCode, AsyncCallback<Void> callback);
+
   /**
    * @see UserInfoService#noop(String)
    */

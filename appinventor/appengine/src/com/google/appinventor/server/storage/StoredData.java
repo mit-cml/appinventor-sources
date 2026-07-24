@@ -12,9 +12,9 @@ import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.io.IOException;
 
 import javax.persistence.Id;
 
@@ -94,11 +94,12 @@ public class StoredData {
     // TODO(): Make required
     long dateModified;
 
-    // Date project last built/exported as a runnable binary
-    long dateBuilt;
-
     // The specially formatted project history
     String history;
+
+    long galleryId;  // this is the galleryId of this project (if published)
+    long attributionId;  // if this project was initiated from the gallery, this is
+       // the id of the gallery app that was copied for remix
   }
 
   // Project properties specific to the user
@@ -148,9 +149,9 @@ public class StoredData {
   //       memcache.
   @Cached
   @Unindexed
-  static final class FileData implements Serializable {
+  public static final class FileData implements Serializable {
     // The role that file play: source code, build target or temporary file
-    enum RoleEnum {
+    public enum RoleEnum {
       SOURCE,
       TARGET,
       TEMPORARY
@@ -288,41 +289,6 @@ public class StoredData {
     @Id public String id;              // "Secret" URL part
     @Indexed public Date timestamp; // So we know when to expire this objects
     public String email;            // Email of account in question
-  }
-
-  // A Shared backpack. Shared backpacks are not associated with
-  // any one user. Instead they are stored independent of projects
-  // and users. At login time a shared backpack may be specified.
-  // This requires an SSO Login from an external system to provide
-  // it.
-  @Cached(expirationSeconds=120)
-  @Unindexed
-  public static final class Backpack {
-    @Id public String id;
-    public String content;
-  }
-
-  @Cached(expirationSeconds=120)
-  @Unindexed
-  static final class AllowedTutorialUrls {
-    // Unique Id - for now we expect there to be only 1 MotdData object.
-    @Id Long id;
-
-    // list of allowed Urls as JSON
-    // we use JSON here to make it easier to hand edit via
-    // datastore editing tools
-    String allowedUrls;
-
-  }
-
-  @Cached(expirationSeconds = 120)
-  @Unindexed
-  public static final class AllowedIosExtensions {
-    // Unique Id - for now we expect there to be only 1 AllowedIosExtensions object.
-    @Id Long id;
-
-    // list of allowed extension packages as JSON
-    String allowedExtensions;
   }
 
   public static final class ProjectNotFoundException extends IOException {

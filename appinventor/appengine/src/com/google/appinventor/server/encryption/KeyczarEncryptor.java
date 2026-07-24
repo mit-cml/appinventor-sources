@@ -42,6 +42,7 @@ public class KeyczarEncryptor implements Encryptor {
   public static final Flag<String> rootPath = Flag.createFlag("root.path", "");
 
   private Crypter crypter = null;  // accessed through getCrypter only
+  private String keyPath = null;
   private static final Object crypterSync = new Object();
 
   /**
@@ -87,12 +88,16 @@ public class KeyczarEncryptor implements Encryptor {
       }
       try {
         // TODO(user): Should we use a different key for development vs deployment?
-        String pathToKeys = rootPath.get() + "WEB-INF/keystore";
-        crypter = new Crypter(pathToKeys);
+        crypter = new Crypter(keyPath);
         return crypter;
       } catch (KeyczarException e) {
         throw new EncryptionException(e);
       }
     }
   }
+
+  public void setKeyPath(String keyPath) {
+    this.keyPath = keyPath;
+  }
+
 }

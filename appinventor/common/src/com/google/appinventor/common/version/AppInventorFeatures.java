@@ -106,7 +106,7 @@ public final class AppInventorFeatures {
    * @return true to limit account use to one session at a time
    */
   public static boolean requireOneLogin() {
-    return false;
+    return true;
   }
 
   /**
@@ -141,7 +141,7 @@ public final class AppInventorFeatures {
    */
 
   public static boolean enableHttpRedirect() {
-    return true;
+    return false;
   }
 
   public static String chatBotHost() {

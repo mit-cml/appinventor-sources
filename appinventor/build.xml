@@ -78,6 +78,15 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
   </target>
 
+  <target name="image" depends="noplay">
+    <ant inheritAll="false" useNativeBasedir="true" dir="image"/>
+  </target>
+
+  <target name="devserver" depends="noplay">
+    <ant inheritAll="false" useNativeBasedir="true" dir="image"
+         target="dev" />
+  </target>
+
   <target name="installplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
   </target>
@@ -113,6 +122,30 @@
   <!-- Convenient target for just running the blockly related tests -->
   <target name="BlocklyTest">
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
+  </target>
+
+  <target name="package">
+    <mkdir dir="package"/>
+    <jar destfile="package/appinventor.war">
+      <fileset dir="appengine/build/war">
+        <include name="**"/>
+      </fileset>
+    </jar>
+    <mkdir dir="package/buildserver"/>
+    <copy todir="package/buildserver">
+      <fileset dir="buildserver/build/run/lib">
+        <include name="**"/>
+      </fileset>
+    </copy>
+    <copy tofile="package/appinventor.tpl" file="../jettybase/appinventor.tpl" />
+    <copy tofile="package/appinventor.ini.sample" file="../jettybase/appinventor.ini.sample"/>
+    <copy tofile="package/starter.jar" file="build/starter.jar" />
+    <copy tofile="package/README.txt" file="starter/README.txt" />
+    <jar destfile="standalone.zip">
+      <fileset dir="package">
+        <include name="**"/>
+      </fileset>
+    </jar>
   </target>
 
   <target name="tests">
@@ -197,6 +230,8 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="image" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="starter" target="clean"/>
     <ant inheritAll="false" antfile="ios-build.xml" target="clean"/>
     <delete dir="build"/>
     <delete dir="reports"/>
