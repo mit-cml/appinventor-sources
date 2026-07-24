@@ -132,15 +132,13 @@ public class ObjectRenderer {
     }
   }
 
-  /** Lazily builds the external-OES shader used by VideoNode. */
+  /** Lazily builds the external-OES shader used by VideoNode. Blend/depth
+   *  state is set per-draw in renderVideoNode based on the node's Opacity. */
   private Shader getOrCreateVideoShader() {
     if (videoShader == null) {
       try {
         videoShader = Shader.createFromAssets(
             render, VIDEO_VERTEX_SHADER_NAME, VIDEO_FRAGMENT_SHADER_NAME, null);
-        videoShader.setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA)
-            .setDepthTest(true)
-            .setDepthWrite(false);
       } catch (IOException e) {
         Log.e(TAG, "Failed to create video shader — VideoNodes will not render", e);
       }
@@ -153,8 +151,18 @@ public class ObjectRenderer {
     if (textShader == null) {
       try {
         textShader = Shader.createFromAssets(
-            render, TEXT_VERTEX_SHADER_NAME, TEXT_FRAGMENT_SHADER_NAME, null);
-        textShader.setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA)
+                render, TEXT_VERTEX_SHADER_NAME, TEXT_FRAGMENT_SHADER_NAME, null)
+            // Shader.lowLevelUse() applies these on every draw, overriding any
+            // raw GLES30 state set outside — so blend/depth MUST be configured
+            // here, not via glBlendFunc in the render branch.
+            //
+            // ONE / ONE_MINUS_SRC_ALPHA (premultiplied alpha): Android
+            // ARGB_8888 bitmaps are premultiplied and GLUtils.texImage2D
+            // uploads them as-is, so premultiplied blending gives clean
+            // antialiased glyph edges with no dark fringing.
+            .setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ONE_MINUS_SRC_ALPHA)
+            // Depth TEST on so real geometry occludes text; depth WRITE off so
+            // transparent pixels don't punch holes in later transparent draws.
             .setDepthTest(true)
             .setDepthWrite(false);
       } catch (IOException e) {
@@ -508,17 +516,13 @@ public class ObjectRenderer {
       tShader.setTexture("u_Texture", textTexture);
       setMinimalTransformUniforms(tShader, modelMatrix, viewMatrix, cameraProjection);
 
-      // Text quads have alpha (transparent backgrounds, antialiased glyph
-      // edges): blend on, depth TEST on so scene occludes text, depth WRITE
-      // off so text doesn't punch holes for other transparent nodes.
+      // Blend factors and depth state are configured ON the shader (see
+      // getOrCreateTextShader) because Shader.lowLevelUse() re-applies its
+      // stored state on every draw, overriding raw GLES30 calls made here.
+      // The only state Shader does NOT manage is the GL_BLEND enable itself:
       GLES30.glEnable(GLES30.GL_BLEND);
-      GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
-      GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-      GLES30.glDepthMask(false);
 
       render.draw(mesh, tShader);
-
-      GLES30.glDepthMask(true);
     } catch (Exception e) {
       Log.e(TAG, "Error rendering TextNode: " + e, e);
     }
@@ -532,7 +536,6 @@ public class ObjectRenderer {
                                float[] viewMatrix, float[] cameraProjection) {
     try {
       if (!videoNode.isReadyToRender()) {
-        Log.e(TAG, "VideoNode not ready to render ");
         return; // GL not initialized or no decoded frame yet
       }
       float[] anchorMatrix = resolveAnchorMatrix(videoNode);
@@ -550,6 +553,37 @@ public class ObjectRenderer {
           videoNode.getGeometryScale());
 
       setMinimalTransformUniforms(vShader, modelMatrix, viewMatrix, cameraProjection);
+      vShader.setFloat("u_Opacity", videoNode.getOpacityFloat());
+
+      // Chroma key uniforms — set every frame (Shader consumes non-texture
+      // uniforms after each draw)
+      boolean keyed = videoNode.isChromaKeyEnabled();
+      vShader.setFloat("u_KeyEnabled", keyed ? 1.0f : 0.0f);
+      if (keyed) {
+        vShader.setVec3("u_KeyColor", videoNode.getChromaKeyRgb());
+        vShader.setFloat("u_KeyThreshold", videoNode.getChromaKeyThreshold());
+        vShader.setFloat("u_KeySmooth", 0.08f);
+      } else {
+        vShader.setVec3("u_KeyColor", new float[]{0f, 0f, 0f});
+        vShader.setFloat("u_KeyThreshold", 0f);
+        vShader.setFloat("u_KeySmooth", 0.001f);
+      }
+
+      // Blend/depth per translucency. Shader stores this state and
+      // lowLevelUse() applies it at draw, so setting it here each frame is
+      // the supported way to vary it per node.
+      if (videoNode.isTranslucent()) {
+        // Straight alpha (u_Opacity is not premultiplied into rgb)
+        vShader.setBlend(Shader.BlendFactor.SRC_ALPHA,
+                Shader.BlendFactor.ONE_MINUS_SRC_ALPHA)
+            .setDepthTest(true)
+            .setDepthWrite(false);
+        GLES30.glEnable(GLES30.GL_BLEND);
+      } else {
+        vShader.setBlend(Shader.BlendFactor.ONE, Shader.BlendFactor.ZERO)
+            .setDepthTest(true)
+            .setDepthWrite(true);
+      }
 
       // Bind the external OES texture manually on a known unit. If the Shader/
       // Texture classes support Target.TEXTURE_EXTERNAL_OES, prefer wrapping it
@@ -559,15 +593,11 @@ public class ObjectRenderer {
           videoNode.getVideoTextureId());
       vShader.setInt("u_Texture", 0);
 
-      // Opaque video: no blend, full depth participation.
-      GLES30.glDisable(GLES30.GL_BLEND);
-      GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-      GLES30.glDepthMask(true);
-      Log.e(TAG, "drawing video node");
+      // Blend (ONE/ZERO = opaque replace) and depth state are configured ON
+      // the shader (see getOrCreateVideoShader) — lowLevelUse() applies them.
       render.draw(mesh, vShader);
 
       GLES30.glBindTexture(android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-      GLES30.glEnable(GLES30.GL_BLEND);
     } catch (Exception e) {
       Log.e(TAG, "Error rendering VideoNode: " + e, e);
     }
@@ -663,14 +693,20 @@ public class ObjectRenderer {
     Log.i("Object renderer", "number of ar nodes is " + allObjectNodes.size());
 
     ArrayList<TextNode> textNodes = new ArrayList<>();
+    ArrayList<VideoNode> translucentVideos = new ArrayList<>();
 
-    // Pass 1: opaque — primitives and video
+    // Pass 1: opaque — primitives and opaque video
     for (ARNode arNode : allObjectNodes) {
       try {
         if (arNode instanceof TextNode) {
           textNodes.add((TextNode) arNode);       // defer to pass 2
         } else if (arNode instanceof VideoNode) {
-          renderVideoNode(render, (VideoNode) arNode, viewMatrix, cameraProjection);
+          VideoNode vn = (VideoNode) arNode;
+          if (vn.isTranslucent()) {
+            translucentVideos.add(vn);            // defer to pass 2
+          } else {
+            renderVideoNode(render, vn, viewMatrix, cameraProjection);
+          }
         } else {
           renderSingleObject(render, arNode, viewMatrix, cameraProjection);
         }
@@ -679,7 +715,14 @@ public class ObjectRenderer {
       }
     }
 
-    // Pass 2: transparent — text quads/boxes over the opaque scene
+    // Pass 2: transparent — over the completed opaque scene
+    for (VideoNode vn : translucentVideos) {
+      try {
+        renderVideoNode(render, vn, viewMatrix, cameraProjection);
+      } catch (Exception e) {
+        Log.e(TAG, "Error rendering translucent video node: " + e.toString(), e);
+      }
+    }
     for (TextNode textNode : textNodes) {
       try {
         renderTextNode(render, textNode, viewMatrix, cameraProjection);

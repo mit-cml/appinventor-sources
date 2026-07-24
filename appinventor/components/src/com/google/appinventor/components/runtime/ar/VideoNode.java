@@ -77,6 +77,15 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
   private String pendingSource = null;        // Source() called before init
   private int volume = 100;
   private int opacity = 100;           // 0..100, see Opacity property
+  private int chromaKeyColor = COLOR_GREEN;  // default ON — matches iOS behavior
+  private int chromaKeySensitivity = 65;
+  // Default 65: the default key is idealized pure green (0,255,0), but real
+  // compressed green-screen footage is far less saturated, so the default
+  // net must be wide to catch it. Users keying on an exact sampled color
+  // can lower this for precision.
+
+  /** App Inventor green (0xFF00FF00). */
+  private static final int COLOR_GREEN = 0xFF00FF00;
   private boolean shouldAutoPlay = false;
   private boolean looping = false;
   private volatile boolean isInitialized = false;   // MediaPlayer prepared
@@ -322,11 +331,64 @@ public final class VideoNode extends ARNodeBase implements ARVideo {
     Log.i(LOG_TAG, "Opacity set to: " + opacity);
   }
 
+  @SimpleProperty(description = "The green-screen (chroma key) color. Pixels " +
+      "matching this color become transparent, letting green-screen footage " +
+      "float in AR. Defaults to green. Set to None to disable and show the " +
+      "video opaque.")
+  public int ChromaKeyColor() { return chromaKeyColor; }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_GREEN)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public void ChromaKeyColor(int color) {
+    chromaKeyColor = color;
+    Log.i(LOG_TAG, "ChromaKeyColor set to: " + Integer.toHexString(color));
+  }
+
+  @SimpleProperty(description = "How aggressively pixels near the chroma key " +
+      "color are made transparent, 0-100. Higher values key out a wider range " +
+      "of shades. Default 65, tuned for the default pure-green key against " +
+      "typical footage; lower it when keying on an exact sampled color.")
+  public int ChromaKeySensitivity() { return chromaKeySensitivity; }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "65")
+  @SimpleProperty(category = PropertyCategory.ADVANCED)
+  public void ChromaKeySensitivity(int s) {
+    chromaKeySensitivity = Math.max(0, Math.min(100, s));
+  }
+
+  /**
+   * True when chroma keying is active. App Inventor's "None" color is
+   * 0x00FFFFFF (alpha 0), and 0 is also treated as unset — so "enabled"
+   * means a color with a nonzero alpha byte was chosen. Checking != 0
+   * alone would misread None as "key on white".
+   */
+  public boolean isChromaKeyEnabled() {
+    return (chromaKeyColor >>> 24) != 0;
+  }
+
+  /** Key color as RGB floats 0..1 for the shader. */
+  public float[] getChromaKeyRgb() {
+    return new float[]{
+        ((chromaKeyColor >> 16) & 0xFF) / 255f,
+        ((chromaKeyColor >> 8) & 0xFF) / 255f,
+        (chromaKeyColor & 0xFF) / 255f
+    };
+  }
+
+  /** Chroma distance threshold for the shader, derived from sensitivity. */
+  public float getChromaKeyThreshold() {
+    // Sensitivity 0..100 -> CbCr distance 0..0.4 (0.4 is a very wide net;
+    // typical green screens key well around 0.10-0.15, i.e. sensitivity ~30)
+    return chromaKeySensitivity / 250f;
+  }
+
   /** Opacity as 0..1 float for the renderer. */
   public float getOpacityFloat() { return opacity / 100f; }
 
   /** True when this node needs alpha blending (drawn in the transparent pass). */
-  public boolean isTranslucent() { return opacity < 100; }
+  public boolean isTranslucent() { return opacity < 100 || isChromaKeyEnabled(); }
 
   @SimpleProperty(description = "Whether the video restarts from the beginning " +
       "when it reaches the end.")
