@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -40,7 +40,8 @@ public class RunApkBuilder implements AndroidTask {
           }
         }
       }
-      if (!context.getComponentInfo().getNativeLibsNeeded().isEmpty()) {
+      if (!context.getComponentInfo().getNativeLibsNeeded().isEmpty()
+          || hasPackageableNativeLibraries(context.getPaths().getLibsDir())) {
         // Need to add native libraries...
         apkBuilder.addNativeLibraries(context.getPaths().getLibsDir());
       }
@@ -50,5 +51,43 @@ public class RunApkBuilder implements AndroidTask {
       return TaskResult.generateError(e);
     }
     return TaskResult.generateSuccess();
+  }
+
+  private boolean hasPackageableNativeLibraries(File libsDir) {
+    if (libsDir == null || !libsDir.isDirectory()) {
+      return false;
+    }
+
+    File[] abiDirs = libsDir.listFiles();
+    if (abiDirs == null) {
+      return false;
+    }
+
+    for (File abiDir : abiDirs) {
+      if (hasNativeLibraryInDir(abiDir)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean hasNativeLibraryInDir(File abiDir) {
+    if (abiDir == null || !abiDir.isDirectory()) {
+      return false;
+    }
+
+    File[] files = abiDir.listFiles();
+    if (files == null) {
+      return false;
+    }
+
+    for (File file : files) {
+      if (file.getName().endsWith(".so")) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
