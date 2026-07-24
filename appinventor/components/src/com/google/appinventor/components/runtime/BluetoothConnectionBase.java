@@ -35,6 +35,13 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 /**
  * An abstract base class for the BluetoothClient and BluetoothServer
  * component.
@@ -59,6 +66,63 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   private BluetoothSocket socket;
   private InputStream inputStream;
   private OutputStream outputStream;
+
+  // -----------------------------
+  // Timeout fields (NEW - minimal additions)
+  // -----------------------------
+  // connection timeout is used by callers that will implement a connect wrapper (client/server).
+  // For this base class we expose the properties for consistency; client/server will use them.
+  private int connectionTimeoutMillis = 15000; // default 15s
+  private int readTimeoutMillis = 10000; // default 10s
+  private int writeTimeoutMillis = 5000; // default 5s
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Connection timeout in milliseconds. Default 15000.")
+  public int ConnectionTimeout() {
+    return connectionTimeoutMillis;
+  }
+
+  @SimpleProperty
+  public void ConnectionTimeout(int millis) {
+    if (millis < 1000) {
+      connectionTimeoutMillis = 1000;
+    } else {
+      connectionTimeoutMillis = millis;
+    }
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Read timeout in milliseconds. Default 10000.")
+  public int ReadTimeout() {
+    return readTimeoutMillis;
+  }
+
+  @SimpleProperty
+  public void ReadTimeout(int millis) {
+    if (millis < 100) {
+      readTimeoutMillis = 100;
+    } else {
+      readTimeoutMillis = millis;
+    }
+  }
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Write timeout in milliseconds. Default 5000.")
+  public int WriteTimeout() {
+    return writeTimeoutMillis;
+  }
+
+  @SimpleProperty
+  public void WriteTimeout(int millis) {
+    if (millis < 100) {
+      writeTimeoutMillis = 100;
+    } else {
+      writeTimeoutMillis = millis;
+    }
+  }
+  // -----------------------------
+  // End timeout fields
+  // -----------------------------
 
   /**
    * Creates a new BluetoothConnectionBase.
@@ -512,17 +576,9 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
       return;
     }
 
-    try {
-      outputStream.write(b);
-      outputStream.flush();
-    } catch (IOException e) {
-      Log.e(logTag, "IO Exception during Writing" + e.getMessage());
-      if (disconnectOnError) {
-        Disconnect();
-      }
-      bluetoothError(functionName,
-          ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_WRITE, e.getMessage());
-    }
+    // Wrap single byte write in timed write
+    byte[] arr = new byte[] { b };
+    write(functionName, arr);
   }
 
   /**
@@ -538,16 +594,49 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
       return;
     }
 
+    // Implement write with timeout wrapper
+    ExecutorService exec = Executors.newSingleThreadExecutor();
+    Future<?> future = exec.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          outputStream.write(bytes);
+          outputStream.flush();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    });
+
     try {
-      outputStream.write(bytes);
-      outputStream.flush();
-    } catch (IOException e) {
-      Log.e(logTag, "IO Exception during Writing" + e.getMessage());
+      future.get(writeTimeoutMillis, TimeUnit.MILLISECONDS);
+    } catch (TimeoutException te) {
+      future.cancel(true);
+      Log.e(logTag, "Write timed out.");
       if (disconnectOnError) {
         Disconnect();
       }
-      bluetoothError(functionName,
-          ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_WRITE, e.getMessage());
+      bluetoothError(functionName, ErrorMessages.ERROR_BLUETOOTH_TIMEOUT);
+    } catch (Exception e) {
+      // unwrap IOException wrapped in RuntimeException
+      Throwable cause = e.getCause();
+      if (cause instanceof IOException) {
+        Log.e(logTag, "IO Exception during Writing" + cause.getMessage());
+        if (disconnectOnError) {
+          Disconnect();
+        }
+        bluetoothError(functionName,
+            ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_WRITE, cause.getMessage());
+      } else {
+        Log.e(logTag, "Exception during Writing" + e.getMessage());
+        if (disconnectOnError) {
+          Disconnect();
+        }
+        bluetoothError(functionName,
+            ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_WRITE, e.getMessage());
+      }
+    } finally {
+      exec.shutdownNow();
     }
   }
 
@@ -785,7 +874,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
       int totalBytesRead = 0;
       while (totalBytesRead < numberOfBytes) {
         try {
-          int numBytesRead = inputStream.read(bytes, totalBytesRead, bytes.length - totalBytesRead);
+          int numBytesRead = timedRead(bytes, totalBytesRead, bytes.length - totalBytesRead);
           if (numBytesRead == -1) {
             bluetoothError(functionName,
                 ErrorMessages.ERROR_BLUETOOTH_END_OF_STREAM);
@@ -800,6 +889,13 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
           bluetoothError(functionName,
               ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_READ, e.getMessage());
           break;
+        } catch (TimeoutException te) {
+          Log.e(logTag, "Read timed out.");
+          if (disconnectOnError) {
+            Disconnect();
+          }
+          bluetoothError(functionName, ErrorMessages.ERROR_BLUETOOTH_TIMEOUT);
+          break;
         }
       }
       buffer.write(bytes, 0, totalBytesRead);
@@ -807,7 +903,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
       // Read one byte at a time until a delimiter byte is read.
       while (true) {
         try {
-          int value = inputStream.read();
+          int value = timedReadSingle();
           if (value == -1) {
             bluetoothError(functionName,
                 ErrorMessages.ERROR_BLUETOOTH_END_OF_STREAM);
@@ -825,11 +921,93 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
           bluetoothError(functionName,
               ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_READ, e.getMessage());
           break;
+        } catch (TimeoutException te) {
+          Log.e(logTag, "Read timed out.");
+          if (disconnectOnError) {
+            Disconnect();
+          }
+          bluetoothError(functionName, ErrorMessages.ERROR_BLUETOOTH_TIMEOUT);
+          break;
         }
       }
     }
 
     return buffer.toByteArray();
+  }
+
+  /**
+   * Helper that reads into buffer with read timeout applied.
+   * Returns number of bytes read or -1 on end of stream.
+   */
+  private int timedRead(final byte[] b, final int off, final int len)
+      throws IOException, TimeoutException {
+    ExecutorService exec = Executors.newSingleThreadExecutor();
+    Future<Integer> future = exec.submit(new Callable<Integer>() {
+      @Override
+      public Integer call() throws Exception {
+        try {
+          return inputStream.read(b, off, len);
+        } catch (IOException ioe) {
+          throw ioe;
+        } catch (Throwable t) {
+          throw new IOException("Read failed: " + t.getMessage());
+        }
+      }
+    });
+
+    try {
+      Integer result = future.get(readTimeoutMillis, TimeUnit.MILLISECONDS);
+      return result == null ? -1 : result.intValue();
+    } catch (TimeoutException te) {
+      future.cancel(true);
+      throw te;
+    } catch (Exception e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof IOException) {
+        throw (IOException) cause;
+      } else {
+        throw new IOException(e.getMessage());
+      }
+    } finally {
+      exec.shutdownNow();
+    }
+  }
+
+  /**
+   * Helper that reads a single byte with read timeout.
+   * Returns byte value (0-255) or -1 on end of stream.
+   */
+  private int timedReadSingle() throws IOException, TimeoutException {
+    ExecutorService exec = Executors.newSingleThreadExecutor();
+    Future<Integer> future = exec.submit(new Callable<Integer>() {
+      @Override
+      public Integer call() throws Exception {
+        try {
+          return inputStream.read();
+        } catch (IOException ioe) {
+          throw ioe;
+        } catch (Throwable t) {
+          throw new IOException("Read failed: " + t.getMessage());
+        }
+      }
+    });
+
+    try {
+      Integer result = future.get(readTimeoutMillis, TimeUnit.MILLISECONDS);
+      return result == null ? -1 : result.intValue();
+    } catch (TimeoutException te) {
+      future.cancel(true);
+      throw te;
+    } catch (Exception e) {
+      Throwable cause = e.getCause();
+      if (cause instanceof IOException) {
+        throw (IOException) cause;
+      } else {
+        throw new IOException(e.getMessage());
+      }
+    } finally {
+      exec.shutdownNow();
+    }
   }
 
   // OnDestroyListener implementation

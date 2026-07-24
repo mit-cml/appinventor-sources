@@ -57,6 +57,24 @@ public final class BluetoothServer extends BluetoothConnectionBase {
   private final Handler androidUIHandler;
 
   private final AtomicReference<BluetoothServerSocket> arBluetoothServerSocket;
+  // Added Timeout Property 
+  // ----------------------------------
+  private int acceptTimeout = 15000; // 15 seconds default
+
+  @SimpleProperty(description = "Timeout (in ms) for accepting a Bluetooth connection. Default = 15000.")
+  public int AcceptTimeout() {
+    return acceptTimeout;
+  }
+
+  @SimpleProperty
+  public void AcceptTimeout(int timeout) {
+    if (timeout < 1000) {
+      acceptTimeout = 1000;  // minimum 1s
+    } else {
+      acceptTimeout = timeout;
+    }
+  }
+  // ----------------------------------
 
   /**
    * Creates a new BluetoothServer.
@@ -118,7 +136,7 @@ public final class BluetoothServer extends BluetoothConnectionBase {
     try {
       BluetoothServerSocket socket;
       if (!secure && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-        // listenUsingInsecureRfcommWithServiceRecord was introduced in level 10
+
         socket = adapter.listenUsingInsecureRfcommWithServiceRecord(name, uuid);
       } else {
         socket = adapter.listenUsingRfcommWithServiceRecord(name, uuid);
@@ -137,24 +155,56 @@ public final class BluetoothServer extends BluetoothConnectionBase {
         BluetoothServerSocket serverSocket = arBluetoothServerSocket.get();
         if (serverSocket != null) {
           try {
+            // START OF NEW TIMEOUT WRAPPER (replaces blocking accept)
+            // -------------------------------------------------------
+            java.util.concurrent.ExecutorService exec =
+                java.util.concurrent.Executors.newSingleThreadExecutor();
+
+            java.util.concurrent.Future<BluetoothSocket> future =
+                exec.submit(serverSocket::accept);
+
             try {
-              acceptedSocket = serverSocket.accept();
-            } catch (IOException e) {
-              androidUIHandler.post(new Runnable() {
-                public void run() {
-                  form.dispatchErrorOccurredEvent(BluetoothServer.this, functionName,
-                      ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_ACCEPT);
-                }
-              });
+              acceptedSocket = future.get(acceptTimeout,
+                  java.util.concurrent.TimeUnit.MILLISECONDS);
+
+            } catch (java.util.concurrent.TimeoutException te) {
+
+              future.cancel(true);
+
+              androidUIHandler.post(() -> form.dispatchErrorOccurredEvent(
+                  BluetoothServer.this,
+                  functionName,
+                  ErrorMessages.ERROR_BLUETOOTH_TIMEOUT
+              ));
+
+              StopAccepting();
+              exec.shutdownNow();
               return;
+
+            } catch (Exception e) {
+
+              androidUIHandler.post(() -> form.dispatchErrorOccurredEvent(
+                  BluetoothServer.this,
+                  functionName,
+                  ErrorMessages.ERROR_BLUETOOTH_UNABLE_TO_ACCEPT
+              ));
+
+              StopAccepting();
+              exec.shutdownNow();
+              return;
+            
+            } finally {
+              exec.shutdownNow();
             }
+            // -------------------------------------------------------
+            // END OF NEW TIMEOUT WRAPPER
           } finally {
             StopAccepting();
           }
         }
 
         if (acceptedSocket != null) {
-          // Call setConnection and signal the event on the main thread.
+
           final BluetoothSocket bluetoothSocket = acceptedSocket;
           androidUIHandler.post(new Runnable() {
             public void run() {
