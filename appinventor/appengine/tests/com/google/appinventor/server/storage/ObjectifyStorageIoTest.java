@@ -127,6 +127,60 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(USER_EMAIL_NEW, user4.getUserEmail());
   }
 
+  public void testGetUserFromEmailRefusesReservedLtiNamespace() {
+    // The @lti.invalid domain is reserved for accounts provisioned by the verified LTI launch.
+    // getUserFromEmail is reachable unauthenticated (the local login form), so it must refuse
+    // to create or resolve a row there; otherwise a pre-seeded row with a different id would
+    // let a launch alias onto it by email and hijack the real user's identity.
+    try {
+      storage.getUserFromEmail("lti-0123456789abcdef0123456789abcdef@lti.invalid");
+      fail("expected getUserFromEmail to refuse the reserved LTI namespace");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    // A mixed case domain must be refused too, since a launch would still match by emaillower.
+    try {
+      storage.getUserFromEmail("lti-0123456789abcdef0123456789abcdef@LTI.Invalid");
+      fail("expected getUserFromEmail to refuse the reserved namespace regardless of case");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    // An ordinary email is unaffected and still resolves.
+    User user = storage.getUserFromEmail("real.person@example.com");
+    assertNotNull(user);
+    assertEquals("real.person@example.com", user.getUserEmail());
+  }
+
+  public void testDeleteAccountCascadesLtiRows() {
+    final String USER_ID = "700";
+    final String USER_EMAIL = "user700@test.com";
+    final String ISSUER = "https://platform.example.org";
+    final String SUBJECT = "platform-subject-700";
+    final String DEPLOYMENT = "deployment-1";
+    final String RESOURCE_LINK = "resource-link-1";
+    storage.getUser(USER_ID, USER_EMAIL);
+
+    // A forked assignment project, plus the identity link, resource link, and grade context that
+    // the LTI launch and submit paths write for it.
+    long projectId = storage.createProject(USER_ID, project, SETTINGS);
+    storage.storeLtiUserLink(ISSUER, SUBJECT, USER_ID);
+    storage.storeLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
+    storage.storeLtiGradeContext(projectId, USER_ID, ISSUER, "https://platform/lineitem/1", SUBJECT);
+    assertEquals(USER_ID, storage.getLtiUserId(ISSUER, SUBJECT));
+    assertEquals(projectId, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
+    assertNotNull(storage.getLtiGradeContext(projectId));
+
+    // Deletion only proceeds once every project is trashed.
+    storage.setMoveToTrashFlag(USER_ID, projectId, true);
+    assertTrue(storage.deleteAccount(USER_ID));
+
+    // Identity link, resource link, and grade context are all gone, so a later launch of the same
+    // subject provisions a fresh account rather than resurrecting the deleted one.
+    assertNull(storage.getLtiUserId(ISSUER, SUBJECT));
+    assertEquals(0, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
+    assertNull(storage.getLtiGradeContext(projectId));
+  }
+
   public void testSetTosAccepted() {
     final String USER_ID = "100";
     final String USER_EMAIL = "newuser100@test.com";
@@ -570,6 +624,90 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     sourcesFiles = storage.getProjectSourceFiles(USER_ID, projectId);
     assertFalse(sourcesFiles.contains(YAIL_FILE_NAME2));
   }
+
+  public void testLtiPlatformRegistry() {
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiPlatform(issuer));
+    storage.storeLtiPlatform(issuer, "client-1", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-1", true);
+    StoredData.LtiPlatformData platform = storage.getLtiPlatform(issuer);
+    assertNotNull(platform);
+    assertEquals("client-1", platform.clientId);
+    assertEquals(issuer + "/token", platform.tokenEndpoint);
+    assertEquals("dep-1", platform.deploymentId);
+    assertEquals(1, storage.getLtiPlatforms().size());
+    // Storing the same issuer again updates in place rather than adding a row.
+    storage.storeLtiPlatform(issuer, "client-2", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-2", true);
+    assertEquals(1, storage.getLtiPlatforms().size());
+    assertEquals("client-2", storage.getLtiPlatform(issuer).clientId);
+    // A disabled platform is not returned for launch resolution.
+    storage.storeLtiPlatform(issuer, "client-2", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-2", false);
+    assertNull(storage.getLtiPlatform(issuer));
+  }
+
+  public void testLtiUserLink() {
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiUserId(issuer, "subject-1"));
+    storage.storeLtiUserLink(issuer, "subject-1", "user-100");
+    assertEquals("user-100", storage.getLtiUserId(issuer, "subject-1"));
+    // A different subject, or a different issuer, is a different account.
+    assertNull(storage.getLtiUserId(issuer, "subject-2"));
+    assertNull(storage.getLtiUserId("https://other.example.org", "subject-1"));
+  }
+
+  public void testLtiNonceReplay() {
+    assertTrue(storage.useLtiNonce("nonce-aaa"));
+    // The same nonce a second time is a replay and must be rejected.
+    assertFalse(storage.useLtiNonce("nonce-aaa"));
+    // A fresh nonce is still accepted.
+    assertTrue(storage.useLtiNonce("nonce-bbb"));
+  }
+
+  public void testLtiForkProjectIdempotency() {
+    final String userId = "user-200";
+    final String issuer = "https://moodle.example.org";
+    assertEquals(0, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-1"));
+    storage.storeLtiForkProject(userId, issuer, "dep-1", "rl-1", 4242L);
+    assertEquals(4242L, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-1"));
+    // A different resource link, or a different user, is a separate fork.
+    assertEquals(0, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-2"));
+    assertEquals(0, storage.getLtiForkProject("user-201", issuer, "dep-1", "rl-1"));
+  }
+
+  public void testLtiGradeContext() {
+    final long projectId = 5066549580791808L;
+    final String userId = "user-300";
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiGradeContext(projectId));
+    storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/9", "sub-9");
+    StoredData.LtiGradeContextData ctx = storage.getLtiGradeContext(projectId);
+    assertNotNull(ctx);
+    assertEquals(userId, ctx.userId);
+    assertEquals(issuer, ctx.issuer);
+    assertEquals(issuer + "/lineitem/9", ctx.lineItemUrl);
+    assertEquals("sub-9", ctx.ltiUserSub);
+    // A relaunch of the assignment replaces its own context, and a different
+    // project keeps a separate one.
+    storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/10", "sub-10");
+    assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(projectId).lineItemUrl);
+    assertNull(storage.getLtiGradeContext(projectId + 1));
+  }
+
+  public void testLtiKeys() {
+    assertTrue(storage.getLtiKeys().isEmpty());
+    storage.storeLtiKey("kid-1", new byte[] {1, 2, 3}, new byte[] {4, 5, 6});
+    java.util.List<StoredData.LtiKeyData> keys = storage.getLtiKeys();
+    assertEquals(1, keys.size());
+    assertEquals("kid-1", keys.get(0).kid);
+    assertTrue(java.util.Arrays.equals(new byte[] {1, 2, 3}, keys.get(0).privateKey));
+    assertTrue(java.util.Arrays.equals(new byte[] {4, 5, 6}, keys.get(0).publicKey));
+    // A second key coexists, which is what makes key rotation possible.
+    storage.storeLtiKey("kid-2", new byte[] {7}, new byte[] {8});
+    assertEquals(2, storage.getLtiKeys().size());
+  }
+
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the
    * failingRun argument to the constructor. Also allows counting

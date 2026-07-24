@@ -1,0 +1,164 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2026 MIT, All rights reserved
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
+
+package com.google.appinventor.server.lti;
+
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.StoredData;
+import com.google.appinventor.shared.rpc.project.UserProject;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/**
+ * Receives the teacher's template choice from the Deep Linking picker and
+ * returns a signed LTI 1.3 Deep Linking Response to the platform, carrying the
+ * chosen template project id so a student who later launches the assignment is
+ * given a copy of that project.
+ *
+ * <p>The platform return context is held server side under a one time token
+ * minted when the picker was rendered, so the form carries nothing that could be
+ * tampered with. The token also records the teacher, so the chosen project is
+ * checked to belong to them before it is used.
+ *
+ * @author zikun@stanford.edu (Zikun Zhu)
+ */
+public class LtiDeepLinkingSelectServlet extends HttpServlet {
+
+  private static final Logger LOG = Logger.getLogger(LtiDeepLinkingSelectServlet.class.getName());
+  private static final String LTI = "https://purl.imsglobal.org/spec/lti/claim/";
+  private static final String LTI_DL = "https://purl.imsglobal.org/spec/lti-dl/claim/";
+  private static final long RESPONSE_TTL_SECONDS = 300;
+
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    try {
+      String templateId = req.getParameter("template_project_id");
+      LtiState.DeepLink dl = LtiState.consumeDeepLink(req.getParameter("dl"));
+      if (templateId == null || templateId.isEmpty() || dl == null || !isHttpUrl(dl.returnUrl)
+          || !LtiHttp.browserUrlAllowed(dl.returnUrl, LtiConfig.allowInsecure())) {
+        // The signed response is auto posted to returnUrl, so it must use an allowed transport
+        // (https outside development) in addition to being a well formed http(s) URL.
+        invalidSelection(resp);
+        return;
+      }
+      StoredData.LtiPlatformData platform = LtiConfig.platform(dl.issuer);
+      if (platform == null) {
+        invalidSelection(resp);
+        return;
+      }
+
+      // The chosen project must belong to the teacher who opened the picker. The
+      // picker only lists that teacher's own projects, but the posted id is
+      // editable, so the owner is verified here before it is signed into a
+      // response that would copy the project to students.
+      String title;
+      try {
+        long pid = Long.parseLong(templateId);
+        String owner = storageIo.getProjectUserId(pid);
+        if (owner == null || !owner.equals(dl.teacherUserId)) {
+          invalidSelection(resp);
+          return;
+        }
+        UserProject selected = storageIo.getUserProject(owner, pid);
+        if (selected == null || selected.isInTrash()) {
+          // A template trashed or purged after the picker was rendered must not be signed as the
+          // assignment, since a student launch could not open it.
+          invalidSelection(resp);
+          return;
+        }
+        title = "App Inventor " + storageIo.getProjectName(owner, pid);
+      } catch (NumberFormatException e) {
+        invalidSelection(resp);
+        return;
+      }
+
+      long now = System.currentTimeMillis() / 1000L;
+      LtiKeys.SigningKey signing = LtiKeys.signingKey();
+
+      // A template reference the tool signs for itself, so that only a template
+      // the teacher was verified to own can reach a student, even if a custom
+      // parameter were set outside this flow.
+      String templateRef = LtiJwt.sign(
+          LtiJwt.rs256Header(signing.kid),
+          new JSONObject().put("template_project_id", templateId).put("iat", now)
+              .put("iss", dl.issuer),
+          signing.privateKey);
+
+      JSONObject contentItem = new JSONObject()
+          .put("type", "ltiResourceLink")
+          .put("title", title)
+          .put("url", LtiConfig.launchUrl())
+          .put("custom", new JSONObject().put("template", templateRef));
+      JSONArray contentItems = new JSONArray().put(contentItem);
+
+      JSONObject header = LtiJwt.rs256Header(signing.kid);
+      JSONObject payload = new JSONObject()
+          .put("iss", platform.clientId)
+          .put("aud", platform.issuer)
+          .put("iat", now)
+          .put("exp", now + RESPONSE_TTL_SECONDS)
+          .put("nonce", LtiState.random())
+          .put(LTI + "deployment_id", dl.deploymentId)
+          .put(LTI + "message_type", "LtiDeepLinkingResponse")
+          .put(LTI + "version", "1.3.0")
+          .put(LTI_DL + "content_items", contentItems);
+      if (dl.data != null) {
+        // Echo data whenever it was present in the request, including an empty string, per
+        // Deep Linking 4.5 (null means it was absent).
+        payload.put(LTI_DL + "data", dl.data);
+      }
+
+      String jwt = LtiJwt.sign(header, payload, signing.privateKey);
+
+      // Auto POST the signed response back to the platform return url.
+      resp.setContentType("text/html; charset=utf-8");
+      StringBuilder html = new StringBuilder()
+          .append(LtiHtml.pageHead("Returning your selection",
+              "onload='document.forms[0].submit()'"))
+          .append("<h1>Returning your selection</h1>")
+          .append("<p>Sending your template choice back to your course.</p>")
+          .append("<form method='post' action='")
+          .append(LtiHtml.escape(dl.returnUrl)).append("'>")
+          .append("<input type='hidden' name='JWT' value='")
+          .append(LtiHtml.escape(jwt)).append("'>")
+          .append("<noscript><button class='btn' type='submit'>Continue</button></noscript>")
+          .append("</form>").append(LtiHtml.pageFoot());
+      resp.getWriter().write(html.toString());
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "LTI deep linking selection failed", e);
+      resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      resp.setContentType("text/html; charset=utf-8");
+      resp.getWriter().write(LtiHtml.pageHead("Deep linking failed")
+          + "<h1>Something went wrong</h1>"
+          + "<p>App Inventor could not return your selection. Close this window, then try adding "
+          + "the assignment again.</p>" + LtiHtml.closeButton() + LtiHtml.pageFoot());
+    }
+  }
+
+  private static boolean isHttpUrl(String url) {
+    return url != null && (url.startsWith("http://") || url.startsWith("https://"));
+  }
+
+  private static void invalidSelection(HttpServletResponse resp) throws IOException {
+    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    resp.setContentType("text/html; charset=utf-8");
+    resp.getWriter().write(LtiHtml.pageHead("Selection expired")
+        + "<h1>This selection is no longer valid</h1>"
+        + "<p>Close this window, then choose <strong>Select content</strong> again from your "
+        + "course to pick a template.</p>" + LtiHtml.closeButton() + LtiHtml.pageFoot());
+  }
+}

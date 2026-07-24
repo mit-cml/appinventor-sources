@@ -593,6 +593,41 @@ public interface StorageIo {
   StoredData.PWData findPWData(String uid);
   void cleanuppwdata();
 
+  // LTI 1.3 integration. The platform registry, the account link, the launch
+  // nonce, the per assignment fork, and the per project grade context.
+
+  StoredData.LtiPlatformData getLtiPlatform(String issuer);
+
+  List<StoredData.LtiPlatformData> getLtiPlatforms();
+
+  void storeLtiPlatform(String issuer, String clientId, String authEndpoint,
+      String tokenEndpoint, String jwksEndpoint, String deploymentId, boolean enabled);
+
+  String getLtiUserId(String issuer, String subject);
+
+  void storeLtiUserLink(String issuer, String subject, String userId);
+
+  // Marks a launch nonce used, returning true only the first time it is seen.
+  boolean useLtiNonce(String nonce);
+
+  void cleanupLtiNonces();
+
+  // The project a user forked for one assignment, or 0 when there is none yet.
+  long getLtiForkProject(String userId, String issuer, String deploymentId,
+      String resourceLinkId);
+
+  void storeLtiForkProject(String userId, String issuer, String deploymentId,
+      String resourceLinkId, long projectId);
+
+  StoredData.LtiGradeContextData getLtiGradeContext(long projectId);
+
+  void storeLtiGradeContext(long projectId, String userId, String issuer, String lineItemUrl,
+      String ltiUserSub);
+
+  List<StoredData.LtiKeyData> getLtiKeys();
+
+  void storeLtiKey(String kid, byte[] privateKey, byte[] publicKey);
+
   // Routines for user admin interface
 
   List<AdminUser> searchUsers(String partialEmail);
