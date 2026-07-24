@@ -7,7 +7,10 @@ package com.google.appinventor.client;
 
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.YaNonVisibleComponentsPanel;
+import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.YaVisibleComponentsPanel;
+import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
+import com.google.appinventor.client.explorer.dialogs.ProjectPropertiesDialogBox;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -15,23 +18,38 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 
+import java.util.logging.Logger;
+
 public class UiStyleFactory {
+
+  private static final Logger LOG = Logger.getLogger(UiStyleFactory.class.getName());
 
   @UiTemplate("Ode.ui.xml")
   interface OdeUiBinder extends UiBinder<FlowPanel, Ode> {}
   @UiTemplate("style/neo/Ode.ui.xml")
   interface OdeUiBinderNeo extends UiBinder<FlowPanel, Ode> {}
+  @UiTemplate("style/mobile/Ode.ui.xml")
+  interface OdeUiBinderMobile extends UiBinder<FlowPanel, Ode> {}
 
   public FlowPanel createOde(Ode target, String style) {
-    if (style.equals("modern")) {
-      OdeUiBinderNeo uibinder = GWT.create(OdeUiBinderNeo.class);
-      return uibinder.createAndBindUi(target);
+    switch (style) {
+      case "modern":
+        OdeUiBinderNeo uibinderNeo = GWT.create(OdeUiBinderNeo.class);
+        return uibinderNeo.createAndBindUi(target);
+
+      case "mobile":
+          OdeUiBinderMobile uibinderMobile = GWT.create(OdeUiBinderMobile.class);
+          return uibinderMobile.createAndBindUi(target);
+
+      default:
+        OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);
+        return uibinder.createAndBindUi(target);
     }
-    OdeUiBinder uibinder = GWT.create(OdeUiBinder.class);
-    return uibinder.createAndBindUi(target);
   }
+
 
   public ProjectList createProjectList() {
     return new ProjectList();
@@ -57,4 +75,26 @@ public class UiStyleFactory {
       (ProjectEditor editor, YaNonVisibleComponentsPanel nonVisPanel) {
     return new YaVisibleComponentsPanel(editor, nonVisPanel);
   }
+
+  public ProjectPropertiesDialogBox createProjectPropertiesDialog(YaProjectEditor projectEditor) {
+    return new ProjectPropertiesDialogBox(projectEditor);
+  }
+
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  public DialogBox createNoProjectsDialog(boolean showDialog) {
+    final NoProjectDialogBox dialogBox = new NoProjectDialogBox();
+
+    if (showDialog) {
+      dialogBox.show();
+    }
+
+    return dialogBox;
+  }
+
 }

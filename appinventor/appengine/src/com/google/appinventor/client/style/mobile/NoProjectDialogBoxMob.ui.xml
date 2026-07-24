@@ -1,0 +1,55 @@
+<!-- Copyright 2009-2011 Google, All Rights reserved -->
+<!-- Copyright 2011-2023 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<!--NewYoungAndroidProjectWizard.ui.xml -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:wiz="urn:import:com.google.appinventor.client.wizards"
+             ui:generateFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generateKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.explorer.dialogs.NoProjectDialogBoxMessages"/>
+  <ui:with type="com.google.appinventor.client.Images" field="res"/>
+
+  <wiz:Dialog ui:field="addDialog" styleName="ode-DialogBox">
+
+    <g:FlowPanel>
+      <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
+      <g:FlowPanel styleName="ode-noDialogDivHeader">
+        <g:FlowPanel styleName="ode-noDialogDivInnerHeader">
+          <g:Label styleName="ode-headerTitle" text="{messages.welcome}" />
+          <g:Image resource="{res.logo}" altText="MIT App Inventor" height="64px" width="120px"/>
+        </g:FlowPanel>
+      </g:FlowPanel>
+      <g:Label text="{messages.getStarted}" styleName="ode-tutorialsTitle" />
+      <g:FlowPanel styleName="ode-noDialogExampleDivs">
+        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv">
+          <g:Label styleName="ode-noDialogExampleTitle" text="{messages.helloPurrTitle}" />
+          <g:Image resource="{res.wilson}" altText="Wilson Logo"/>
+          <g:Label styleName="ode-noDialogExampleAbout" text="{messages.helloPurrDescription}" />
+          <g:Button ui:field='goToPurr' styleName="ode-tutorialButton" text="{messages.startTutorialButton}" />
+        </g:FlowPanel>
+
+        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv" visible="false">
+          <g:Label styleName="ode-noDialogExampleTitle" text="{messages.talkToMeTitle}" />
+          <g:Image resource="{res.talkToMeLogo}" altText="Talk to Me Logo"/>
+          <g:Label styleName="ode-noDialogExampleAbout" text="{messages.talkToMeDescription}" />
+          <g:Button ui:field='goToChat' text='{messages.startTutorialButton}' styleName="ode-tutorialButton"/>
+        </g:FlowPanel>
+
+        <g:FlowPanel styleName="ode-noDialogExampleDiv ode-noDialogUpperDiv" visible="false">
+          <g:Label styleName="ode-noDialogExampleTitle" text="{messages.translateAppTitle}" />
+          <g:Image resource="{res.YRLogo}" altText="YR Media Logo"/>
+          <g:Label styleName="ode-noDialogExampleAbout" text="{messages.translateAppDescription}" />
+          <g:Button ui:field='goToYR' text='{messages.startTutorialButton}' styleName="ode-tutorialButton"/>
+        </g:FlowPanel>
+      </g:FlowPanel>
+      <g:FlowPanel styleName="buttonRow">
+        <g:Button ui:field='closeDialogBox' text='{messages.closeButton}' styleName="ode-tutorialButton"/>
+        <g:Button ui:field='noDialogNewProject' text='{messages.startProjectButton}' styleName="ode-tutorialButton"/>
+      </g:FlowPanel>
+      <g:Button ui:field='bottomInvisible' styleName="FocusTrap" />
+    </g:FlowPanel>
+  </wiz:Dialog>
+</ui:UiBinder>

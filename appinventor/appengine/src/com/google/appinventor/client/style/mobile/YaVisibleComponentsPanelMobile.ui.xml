@@ -1,0 +1,32 @@
+<!-- Copyright 2023-2024 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:ed="urn:import:com.google.appinventor.client.editor.youngandroid"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.components"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+  <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
+  <g:VerticalPanel styleName="ode-SimpleFormDesigner">
+    <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner"  horizontalAlignment="ALIGN_CENTER">
+      <g:FlowPanel  stylePrimaryName="ode-SimpleFormDesignerToolbar">
+        <ai:Icon ui:field="size_icon" icon="aspect_ratio" tooltip="{messages.previewDeviceSize}" />
+        <g:ListBox ui:field="listboxPhoneTablet">
+          <g:item value="320, 650"><ui:text from="{messages.previewPhone}" /> (320 x 650)</g:item>
+          <g:item value="480, 675"><ui:text from="{messages.previewTablet}" /> (480 x 675)</g:item>
+          <g:item value="768, 1024"><ui:text from="{messages.previewMonitor}" /> (768 x 1024)</g:item>
+        </g:ListBox>
+        <ai:Icon ui:field="os_icon" icon="smartphone" tooltip="{messages.previewOperatingSystem}" />
+        <g:ListBox ui:field="listboxPhonePreview">
+          <g:item value="0"><ui:text from="{messages.previewAndroidMaterial}" /></g:item>
+          <g:item value="1"><ui:text from="{messages.previewAndroidHolo}" /></g:item>
+          <g:item value="2"><ui:text from="{messages.previewIOS13}" /></g:item>
+        </g:ListBox>
+        <ai:Icon icon="visibility_off" tooltip="{messages.showInvisiblePropertyComponents}"/>
+        <g:CheckBox ui:field="HiddenComponentsCheckbox" />
+      </g:FlowPanel>
+    </g:VerticalPanel>
+  </g:VerticalPanel>
+</ui:UiBinder>
