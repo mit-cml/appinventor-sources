@@ -56,10 +56,6 @@ Configuring a remote pointing to this repository is also a good idea if you are 
     $ cd appinventor-sources
     $ git remote add upstream https://github.com/mit-cml/appinventor-sources.git
 
-Finally, you will also have to make sure that you are ignoring files that need ignoring:
-
-    $ cp sample-.gitignore .gitignore
-
 ### Checkout dependencies
 
 App Inventor uses the [Picrin](https://picrin.readthedocs.io/en/latest/) Scheme implementation. It is unlikely that most contributors will need to make changes to this dependency, but it is necessary for local compilation, so you must initialize and track this library as a submodule. The first time after forking or cloning the repository, you can perform the following command:
