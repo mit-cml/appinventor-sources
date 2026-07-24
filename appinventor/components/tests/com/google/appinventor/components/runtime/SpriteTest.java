@@ -13,20 +13,14 @@ import static org.junit.Assert.assertTrue;
 import android.os.Handler;
 import android.view.View;
 
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
 
 /**
  * Tests Sprite.java.
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Canvas.class, Handler.class, Form.class, View.class })
 public class SpriteTest {
   static class TestSprite extends Sprite {
     private int height;
@@ -108,16 +102,19 @@ public class SpriteTest {
 
   private static final double DELTA = .0001;  // for floating-point comparisons
 
-  private final Form formMock = PowerMock.createNiceMock(Form.class);
-  private final View canvasViewMock = PowerMock.createNiceMock(View.class);
-  private final Canvas canvasMock = PowerMock.createNiceMock(Canvas.class);
-  private final Handler handlerMock = PowerMock.createNiceMock(Handler.class);
+  private Form formMock;
+  private View canvasViewMock;
+  private Canvas canvasMock;
+  private Handler handlerMock;
 
   @Before
   public void setUp() throws Exception {
-    EasyMock.expect(canvasMock.getView()).andReturn(canvasViewMock).anyTimes();
-    EasyMock.expect(canvasMock.$form()).andReturn(formMock).anyTimes();
-    EasyMock.replay(canvasViewMock, canvasMock, handlerMock);
+    formMock = Mockito.mock(Form.class);
+    canvasViewMock = Mockito.mock(View.class);
+    canvasMock = Mockito.mock(Canvas.class);
+    handlerMock = Mockito.mock(Handler.class);
+    Mockito.when(canvasMock.getView()).thenReturn(canvasViewMock);
+    Mockito.when(canvasMock.$form()).thenReturn(formMock);
   }
 
   protected double normalizeRadians(double r) {

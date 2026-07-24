@@ -105,3 +105,39 @@ class SliderTests: XCTestCase {
 
   }
 }
+
+class LinearProgressTests: XCTestCase {
+  var progress: LinearProgress!
+
+  override func setUp() {
+    progress = LinearProgress(Form())
+    progress.Indeterminate = false
+  }
+
+  func testProgressColorDefaultsToBlue() {
+    let progressView = progress.view as! UIProgressView
+
+    XCTAssertEqual(Color.blue.int32, progress.ProgressColor)
+    XCTAssertEqual(Color.blue.int32, colorToArgb(progressView.progressTintColor!))
+  }
+
+  func testIndeterminateColorDoesNotChangeProgressColor() {
+    let progressView = progress.view as! UIProgressView
+
+    progress.ProgressColor = Color.red.int32
+    progress.IndeterminateColor = Color.green.int32
+
+    XCTAssertEqual(Color.green.int32, progress.IndeterminateColor)
+    XCTAssertEqual(Color.red.int32, progress.ProgressColor)
+    XCTAssertEqual(Color.red.int32, colorToArgb(progressView.progressTintColor!))
+  }
+
+  func testProgressColorDefaultUsesComponentDefaultColor() {
+    let progressView = progress.view as! UIProgressView
+
+    progress.ProgressColor = Color.default.int32
+
+    XCTAssertEqual(Color.default.int32, progress.ProgressColor)
+    XCTAssertEqual(Color.blue.int32, colorToArgb(progressView.progressTintColor!))
+  }
+}

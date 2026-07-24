@@ -13,17 +13,10 @@ import java.util.Calendar;
 import kawa.standard.Scheme;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
 
-@PowerMockIgnore({"gnu.*", "kawa.*"})
-@PrepareForTest({Clock.class})
-@RunWith(PowerMockRunner.class)
 public class YailAndroidTest {
   private Scheme scheme;
 
@@ -52,7 +45,7 @@ public class YailAndroidTest {
     // Unfortunately, call-component-method requires an actual component, even though
     // FormatDateTime method is static. This means we have to mock out a Clock component so that
     // method lookup can be performed by Kawa.
-    Clock c = PowerMock.createMock(Clock.class);
+    Clock c = Mockito.mock(Clock.class);
     scheme.define("*test-clock*", c);
     String output = scheme.eval("(begin (add-to-current-form-environment 'Clock1 *test-clock*)"
         + "(call-component-method 'Clock1 'FormatDateTime"

@@ -146,14 +146,67 @@ open class RelativeLayout: Layout {
     }
     
     override var intrinsicContentSize: CGSize {
-      // If there are no subviews, return preferred empty size
-      if subviews.isEmpty {
-        return CGSize(width: Int(preferredEmptyWidth), height: Int(preferredEmptyHeight))
+      var maxX = CGFloat(0)
+      var maxY = CGFloat(0)
+      var hasPositionedSubview = false
+      for subview in subviews where !subview.isHidden {
+        guard let origin = originForSubview(subview) else {
+          continue
+        }
+        let size = preferredSize(of: subview)
+        maxX = max(maxX, origin.x + size.width)
+        maxY = max(maxY, origin.y + size.height)
+        hasPositionedSubview = true
       }
-      return UIView.layoutFittingExpandedSize
+      if !hasPositionedSubview {
+        return CGSize(width: CGFloat(preferredEmptyWidth), height: CGFloat(preferredEmptyHeight))
+      }
+      return CGSize(width: maxX, height: maxY)
     }
+
+    private func originForSubview(_ subview: UIView) -> CGPoint? {
+      var x: CGFloat?
+      var y: CGFloat?
+      for constraint in constraints {
+        if (constraint.firstItem as? UIView) == subview && (constraint.secondItem as? UIView) == self {
+          if constraint.firstAttribute == .left && constraint.secondAttribute == .left {
+            x = constraint.constant
+          } else if constraint.firstAttribute == .top && constraint.secondAttribute == .top {
+            y = constraint.constant
+          }
+        } else if (constraint.firstItem as? UIView) == self && (constraint.secondItem as? UIView) == subview {
+          if constraint.firstAttribute == .left && constraint.secondAttribute == .left {
+            x = -constraint.constant
+          } else if constraint.firstAttribute == .top && constraint.secondAttribute == .top {
+            y = -constraint.constant
+          }
+        }
+      }
+      if let x = x, let y = y {
+        return CGPoint(x: x, y: y)
+      }
+      return nil
+    }
+
+    private func preferredSize(of view: UIView) -> CGSize {
+      let fitting = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+      let intrinsic = view.intrinsicContentSize
+      return CGSize(width: preferredDimension(fitting.width, intrinsic.width, view.bounds.width),
+                    height: preferredDimension(fitting.height, intrinsic.height, view.bounds.height))
+    }
+
+    private func preferredDimension(_ values: CGFloat...) -> CGFloat {
+      return values.reduce(CGFloat(0)) { result, value in
+        if value.isFinite && value >= 0 && value < CGFloat.greatestFiniteMagnitude {
+          return max(result, value)
+        }
+        return result
+      }
+    }
+
     override func layoutSubviews() {
       super.layoutSubviews()
+      invalidateIntrinsicContentSize()
     }
   
 }

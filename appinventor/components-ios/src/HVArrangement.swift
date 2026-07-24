@@ -17,7 +17,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
   fileprivate var _orientation = HVOrientation.vertical
   fileprivate var _horizontalAlign = HorizontalGravity.left
   fileprivate var _verticalAlign = VerticalGravity.top
-  fileprivate var _backgroundColor = UIColor.white
+  fileprivate var _backgroundColor = Color.default.int32
   fileprivate var _imagePath = ""
   fileprivate var _lastConstraint: NSLayoutConstraint! = nil
   private var _dimensions = [Int:NSLayoutConstraint]()
@@ -146,12 +146,12 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
 
   @objc open var BackgroundColor: Int32 {
     get {
-      return colorToArgb(_backgroundColor)
+      return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argbToColor(argb)
+      _backgroundColor = argb
       if _imagePath == "" {
-        _view.backgroundColor = _backgroundColor
+        _view.backgroundColor = argb == Color.default.int32 ? nil : argbToColor(argb)
       }
     }
   }
@@ -173,7 +173,7 @@ open class HVArrangement: ViewComponent, ComponentContainer, AbstractMethodsForV
       }
       _imagePath = ""
       _view.image = nil
-      _view.backgroundColor = _backgroundColor
+      _view.backgroundColor = _backgroundColor == Color.default.int32 ? nil : argbToColor(_backgroundColor)
     }
   }
 }

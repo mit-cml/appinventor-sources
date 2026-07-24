@@ -13,9 +13,9 @@ public class Slider: ViewComponent, AbstractMethodsForViewComponent {
   private var _numberOfSteps: Float32 = 100.0
   private var _notice: Bool = true
   private var _thumbPosition: Float32 = kSliderThumbValue
-  private var _leftColor: UIColor = UIColor.orange
-  private var _rightColor: UIColor = UIColor.gray
-  private var _thumbColor: UIColor = UIColor.darkGray
+  private var _leftColor: UIColor = Color.orange.uiColor
+  private var _rightColor: UIColor = Color.gray.uiColor
+  private var _thumbColor: UIColor = Color.darkGray.uiColor
   
   public override init(_ parent: ComponentContainer) {
     _view = UISlider()

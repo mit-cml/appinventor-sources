@@ -6,6 +6,24 @@
 import XCTest
 @testable import AIComponentKit
 
+private class IntrinsicTestView: UIView {
+  private let size: CGSize
+
+  init(width: CGFloat, height: CGFloat) {
+    size = CGSize(width: width, height: height)
+    super.init(frame: .zero)
+    translatesAutoresizingMaskIntoConstraints = false
+  }
+
+  required init?(coder: NSCoder) {
+    return nil
+  }
+
+  override var intrinsicContentSize: CGSize {
+    return size
+  }
+}
+
 class LinearViewTests: XCTestCase {
 
   var testForm = ReplForm()
@@ -16,6 +34,19 @@ class LinearViewTests: XCTestCase {
     let window = UIWindow()
     window.rootViewController = testForm
     window.addSubview(testForm.view)
+  }
+
+  private func rootLayoutConstraintCount(for form: Form) -> Int {
+    return form.view.constraints.filter { constraint in
+      return isRootLayoutItem(constraint.firstItem) || isRootLayoutItem(constraint.secondItem)
+    }.count
+  }
+
+  private func isRootLayoutItem(_ item: Any?) -> Bool {
+    if item is ScaleFrameLayout {
+      return true
+    }
+    return (item as? UIView)?.accessibilityIdentifier == "Form root view"
   }
 
   func testAddItem() {
@@ -58,6 +89,174 @@ class LinearViewTests: XCTestCase {
     XCTAssertEqual([Button1.view, Button3.view], testView.arrangedSubviews)
     testView.setVisibility(of: Button2.view, to: true)
     XCTAssertEqual([Button1.view, Button2.view, Button3.view], testView.arrangedSubviews)
+  }
+
+  func testAutomaticSizingIgnoresInvisibleItems() {
+    let view1 = IntrinsicTestView(width: 30, height: 20)
+    let view2 = IntrinsicTestView(width: 70, height: 40)
+    testView.addItem(LinearViewItem(view1))
+    testView.addItem(LinearViewItem(view2))
+
+    XCTAssertEqual(CGSize(width: 70, height: 60), testView.intrinsicContentSize)
+
+    testView.setVisibility(of: view1, to: false)
+    testView.setVisibility(of: view2, to: false)
+
+    XCTAssertEqual(CGSize(width: 100, height: 100), testView.intrinsicContentSize)
+  }
+
+  func testAutomaticSizingHonorsFixedChildSize() {
+    let imageSizedView = IntrinsicTestView(width: 1790, height: 1228)
+    testView.addItem(LinearViewItem(imageSizedView))
+    testView.setWidth(of: imageSizedView, to: Length(pixels: 200))
+    testView.setHeight(of: imageSizedView, to: Length(pixels: 200))
+
+    XCTAssertEqual(CGSize(width: 200, height: 200), testView.intrinsicContentSize)
+  }
+
+  func testAutomaticHorizontalArrangementIsCenteredAfterLabelTextChanges() {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+
+    let fillParentLine = HorizontalArrangement(testForm)
+    fillParentLine.Width = kLengthFillParent
+    fillParentLine.Height = 10
+
+    let dataCleaningChart = Chart(testForm)
+    dataCleaningChart.Width = kLengthFillParent
+    dataCleaningChart.Height = kLengthFillParent
+
+    let secondFillParentLine = HorizontalArrangement(testForm)
+    secondFillParentLine.Width = kLengthFillParent
+    secondFillParentLine.Height = 10
+
+    let cleanedDataChart = Chart(testForm)
+    cleanedDataChart.Width = kLengthFillParent
+    cleanedDataChart.Height = kLengthFillParent
+
+    let trendlineValuesRow = HorizontalArrangement(testForm)
+    let slopeLabel = Label(trendlineValuesRow)
+    slopeLabel.Text = "M ="
+    let slopeValueLabel = Label(trendlineValuesRow)
+    let yInterceptLabel = Label(trendlineValuesRow)
+    yInterceptLabel.Text = "    B ="
+    let yInterceptValueLabel = Label(trendlineValuesRow)
+    let correlationCoefficientLabel = Label(trendlineValuesRow)
+    correlationCoefficientLabel.Text = "    R ="
+    let correlationCoefficientValueLabel = Label(trendlineValuesRow)
+    let xInterceptLabel = Label(trendlineValuesRow)
+    xInterceptLabel.Text = "    X-Int ="
+    let xInterceptValueLabel = Label(trendlineValuesRow)
+
+    testForm.AlignHorizontal = HorizontalGravity.center.rawValue
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    let trendlineFrame = trendlineValuesRow.view.convert(trendlineValuesRow.view.bounds, to: testForm.view)
+    XCTAssertLessThan(trendlineValuesRow.view.frame.width, testForm.view.frame.width)
+    XCTAssertEqual(trendlineFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+
+    slopeValueLabel.Text = "-0.123456789012345"
+    yInterceptValueLabel.Text = "1234.56789012345"
+    correlationCoefficientValueLabel.Text = "-0.987654321"
+    xInterceptValueLabel.Text = "[-12345.6789012345]"
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    let updatedTrendlineFrame = trendlineValuesRow.view.convert(trendlineValuesRow.view.bounds, to: testForm.view)
+    XCTAssertEqual(updatedTrendlineFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+  }
+
+  func testScrollableFormDoesNotLeakIntoClearedCenteredForm() {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+    testForm.Scrollable = true
+    testForm.AlignHorizontal = HorizontalGravity.center.rawValue
+
+    let scrollableLabel = Label(testForm)
+    scrollableLabel.Width = kLengthFillParent
+    scrollableLabel.Text = "Scrollable screen"
+
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+    testForm.AlignHorizontal = HorizontalGravity.center.rawValue
+    testForm.AlignVertical = VerticalGravity.center.rawValue
+
+    let Button1 = Button(testForm)
+    Button1.Text = "Text for Button1"
+    let Label1 = Label(testForm)
+    Label1.Text = "Hi Pikachu!"
+
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    let buttonFrame = Button1.view.convert(Button1.view.bounds, to: testForm.view)
+    let labelFrame = Label1.view.convert(Label1.view.bounds, to: testForm.view)
+    XCTAssertEqual(buttonFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+    XCTAssertEqual(labelFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
+    XCTAssertGreaterThan(buttonFrame.minY, testForm.view.frame.height / 3)
+  }
+
+  func testFormRecomputeDoesNotAccumulateRootConstraints() {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+    let initialConstraintCount = rootLayoutConstraintCount(for: testForm)
+
+    for _ in 0..<3 {
+      testForm.Scrollable = true
+      testForm.Scrollable = false
+      testForm.Sizing = "Fixed"
+      testForm.Sizing = "Responsive"
+    }
+
+    XCTAssertEqual(initialConstraintCount, rootLayoutConstraintCount(for: testForm))
+  }
+
+  func testHiddenComponentCanReplayAutomaticSizing() {
+    testForm.clear()
+    let row = HorizontalArrangement(testForm)
+    let Button1 = Button(row)
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    Button1.Visible = false
+    Button1.Width = kLengthPreferred
+    Button1.Height = kLengthPreferred
+    Button1.Visible = true
+
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+    XCTAssertGreaterThan(Button1.view.frame.width, 0)
+    XCTAssertGreaterThan(Button1.view.frame.height, 0)
+  }
+
+  func testAbsoluteArrangementAutomaticSizeUsesPositionedChildren() {
+    testForm.clear()
+    let arrangement = AbsoluteArrangement(testForm)
+    let Button1 = Button(arrangement)
+
+    Button1.Left = 10
+    Button1.Top = 20
+    Button1.Width = 50
+    Button1.Height = 30
+
+    RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    XCTAssertEqual(CGSize(width: 60, height: 50), arrangement.view.intrinsicContentSize)
   }
 
   func testInvisibleComponents() {

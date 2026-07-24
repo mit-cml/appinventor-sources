@@ -16,6 +16,23 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertTrue(addComponent(testList, named: "ListView1"))
   }
 
+  private func visibleTableView(for listView: ListView,
+                                file: StaticString = #filePath,
+                                line: UInt = #line) -> UITableView {
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView else {
+      XCTFail("Expected UITableView to be visible", file: file, line: line)
+      return UITableView()
+    }
+    return tableView
+  }
+
+  private func renderedMainTexts(for listView: ListView) -> [String] {
+    let tableView = visibleTableView(for: listView)
+    return (0..<listView.tableView(tableView, numberOfRowsInSection: 0)).map { row in
+      listView.tableView(tableView, cellForRowAt: IndexPath(row: row, section: 0)).textLabel?.text ?? ""
+    }
+  }
+
   func testSelectionIndex() {
     testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
     testList.Selection = "apple"
@@ -35,6 +52,50 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual("MainText", testList.GetMainText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
     XCTAssertEqual("DetailText", testList.GetDetailText(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
     XCTAssertEqual("Image", testList.GetImageName(YailDictionary(dictionary: testList.Elements[0] as! Dictionary)))
+  }
+
+  func testListViewInsideHorizontalArrangementHasSize() {
+    form.clear()
+    let row = HorizontalArrangement(form)
+    row.Width = kLengthFillParent
+    row.Height = kLengthPreferred
+    let listView = ListView(row)
+    listView.Height = kLengthPreferred
+    listView.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+    row.view.setNeedsLayout()
+    row.view.layoutIfNeeded()
+
+    XCTAssertGreaterThan(row.view.frame.height, 0)
+    XCTAssertGreaterThan(listView.view.frame.height, 0)
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView }) as? UITableView else {
+      XCTFail("Expected ListView to contain a table view")
+      return
+    }
+    XCTAssertEqual(3, listView.tableView(tableView, numberOfRowsInSection: 0))
+    XCTAssertGreaterThan(tableView.frame.height, 0)
+  }
+
+  func testAutomaticVerticalHeightUsesRows() {
+    form.clear()
+    let listView = ListView(form)
+    listView.FontSize = 22
+    listView.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    form.onAttach()
+
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+
+    let oldCutoff = 44.0 * 3.0
+    XCTAssertGreaterThan(listView.view.intrinsicContentSize.height, oldCutoff)
+    XCTAssertGreaterThan(listView.view.frame.height, oldCutoff)
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView }) as? UITableView else {
+      XCTFail("Expected ListView to contain a table view")
+      return
+    }
+    XCTAssertGreaterThan(listView.tableView(tableView, heightForRowAt: IndexPath(row: 0, section: 0)), 44.0)
   }
   
   func testElementAsDictItems() {
@@ -86,7 +147,7 @@ class ListViewTests: AppInventorTestCase {
       XCTAssertEqual(Color.blue.uiColor, cell.backgroundColor)
       
       // Change back to the default (black)
-      testList.BackgroundColor = Color.default.int32
+      testList.BackgroundColor = Color.black.int32
       XCTAssertEqual(Color.black.int32, testList.BackgroundColor)
       
       let cell2 = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
@@ -160,10 +221,8 @@ class ListViewTests: AppInventorTestCase {
       
       testList.SelectionColor = Color.default.int32
       cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
-      let expectedColor = preferredTextColor(form)
       XCTAssertNotNil(cell)
-      // Compare resolved colors to handle dynamic colors
-
+      XCTAssertEqual(Color.default.uiColor, cell.selectedBackgroundView?.backgroundColor)
 
     } else {
       XCTFail("Expected UITableView to be visible")
@@ -171,6 +230,7 @@ class ListViewTests: AppInventorTestCase {
   }
   
   func testDividerColor() {
+    XCTAssertEqual(Color.none.int32, testList.DividerColor)
     testList.Elements = [testList.CreateElement("MainText", "", ""), "Plain String"] as [AnyObject]
     
     if let tableView = testList.view.subviews.first(where: { $0 is UITableView && !$0.isHidden }) as? UITableView {
@@ -275,6 +335,71 @@ class ListViewTests: AppInventorTestCase {
     testList.ListData = "[{\"Text1\": \"apple\", \"Text2\": \"2.99\", \"Image\": \"apple.jpg\"}]"
     XCTAssertEqual(1, testList.Elements.count)
     XCTAssertEqual([["Text1": "apple", "Text2": "2.99", "Image": "apple.jpg"]], testList.Elements as? [[String:String]])
+  }
+
+  func testListDataRendersDefaultLayout() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    XCTAssertEqual(["77", "hello"], renderedMainTexts(for: testList))
+  }
+
+  func testListDataMutationMethodsRefreshRows() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    testList.AddItemAtIndex(2, "I'm here", "", "")
+    testList.AddItem("typed", "", "")
+    testList.AddItems([
+      testList.CreateElement("1", "", ""),
+      testList.CreateElement("is this working?", "", ""),
+      57 as NSNumber
+    ] as [AnyObject])
+    testList.AddItemAtIndex(100, "out of bounds", "", "")
+
+    XCTAssertEqual(["77", "I'm here", "hello", "typed", "1", "is this working?", "57"],
+                   renderedMainTexts(for: testList))
+  }
+
+  func testAddItemsSkipsYailListHeader() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    testList.AddItems([
+      interpreter.makeSymbol("*list*"),
+      testList.CreateElement("1", "", ""),
+      testList.CreateElement("is this working?", "", ""),
+      57 as NSNumber
+    ] as [AnyObject])
+
+    XCTAssertEqual(["77", "hello", "1", "is this working?", "57"],
+                   renderedMainTexts(for: testList))
+  }
+
+  func testExplicitHeightListViewCanScrollOverflowRows() {
+    testList.Height = 88
+    testList.Elements = (1...20).map { "\($0)" } as [AnyObject]
+
+    XCTAssertEqual(44, testList.view.intrinsicContentSize.height)
+
+    form.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    form.onAttach()
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+
+    let tableView = visibleTableView(for: testList)
+    tableView.reloadData()
+    tableView.layoutIfNeeded()
+
+    XCTAssertTrue(tableView.isScrollEnabled)
+    XCTAssertGreaterThan(tableView.contentSize.height, tableView.bounds.height)
+  }
+
+  func testSelectionIndexUsesListDataRowsWithoutDetailText() {
+    testList.ListData = "[{\"Text1\":\"77\", \"$H\":9947},{\"Text1\":\"hello\", \"$H\":9948}]"
+
+    testList.SelectionIndex = 2
+
+    XCTAssertEqual(2, testList.SelectionIndex)
+    XCTAssertEqual("hello", testList.Selection)
+    XCTAssertEqual("", testList.SelectionDetailText)
   }
 
   func testBadListData() {
