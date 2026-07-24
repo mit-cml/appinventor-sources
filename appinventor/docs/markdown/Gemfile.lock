@@ -67,9 +67,9 @@ GEM
     rexml (3.4.4)
     rouge (4.7.0)
     safe_yaml (1.0.5)
-    sass-embedded (1.101.0)
-      google-protobuf (~> 4.31)
-      rake (>= 13)
+    sass-embedded (1.75.0)
+      google-protobuf (>= 3.25, < 5.0)
+      rake (>= 13.0.0)
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     unicode-display_width (2.6.0)
@@ -82,6 +82,7 @@ DEPENDENCIES
   jekyll (~> 4.3.3)
   minima (~> 2.0)
   rexml
+  sass-embedded (= 1.75)
   tzinfo-data
 
 BUNDLED WITH

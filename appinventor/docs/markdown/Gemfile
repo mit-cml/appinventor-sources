@@ -11,6 +11,7 @@ source "https://rubygems.org"
 
 if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.0.0")
    gem "jekyll", "~> 4.3.3"
+   gem "sass-embedded", "1.75"
 else
    gem "jekyll", "~> 3.8.5"
 end
