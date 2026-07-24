@@ -290,6 +290,8 @@ let kMinimumToastWait = 10.0
   }
 
   @objc open func clear() {
+    NSLayoutConstraint.deactivate(_constraints)
+    _constraints.removeAll()
     let subviews = view.subviews
     for subview in subviews {
       subview.removeFromSuperview()
@@ -298,6 +300,8 @@ let kMinimumToastWait = 10.0
     _linearView.removeAllItems()
     initThunks.removeAllObjects()
     clearComponents()
+    _linearView = LinearView()
+    _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
     defaultPropertyValues()
   }
 
@@ -320,7 +324,7 @@ let kMinimumToastWait = 10.0
   }
 
   private func resetConstraints() {
-    _scaleFrameLayout.removeConstraints(_constraints)
+    NSLayoutConstraint.deactivate(_constraints)
     _constraints.removeAll()
     if ShowStatusBar && !TitleVisible {
       _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height))
@@ -334,7 +338,7 @@ let kMinimumToastWait = 10.0
     _constraints.append(_linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
     _constraints.append(_linearView.widthAnchor.constraint(equalTo: _scaleFrameLayout.widthAnchor))
     _constraints.append(_linearView.heightAnchor.constraint(equalTo: _scaleFrameLayout.heightAnchor))
-    view.addConstraints(_constraints)
+    NSLayoutConstraint.activate(_constraints)
   }
 
   @objc func clearComponents() {

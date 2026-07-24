@@ -222,7 +222,7 @@ public class CheckBoxView: UIView {
 public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, AccessibleComponent, CheckBoxViewDelegate {
   public var HighContrast: Bool = false
   fileprivate var _view = CheckBoxView()
-  fileprivate var _backgroundColor = Int32(bitPattern: Color.default.rawValue)
+  fileprivate var _backgroundColor = Color.none.int32
   fileprivate var _bold = false
   fileprivate var _fontTypeface = Typeface.normal
   fileprivate var _italic = false
@@ -236,9 +236,11 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
     _view.delegate = self
     _view._text.textColor = preferredTextColor(parent.form)
     parent.add(self)
+    BackgroundColor = Color.none.int32
     Checked = false
     Enabled = true
     FontSize = 14.0
+    TextColor = Color.default.int32
   }
 
   @objc func updateFontSize() {
@@ -265,7 +267,7 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
     }
     set(argb) {
       _backgroundColor = argb
-      _view.backgroundColor = argbToColor(argb)
+      _view.backgroundColor = argbToColor(argb == Color.default.int32 ? Color.none.int32 : argb)
     }
   }
 
@@ -350,10 +352,11 @@ public class CheckBox: ViewComponent, AbstractMethodsForViewComponent, Accessibl
 
   @objc open var TextColor: Int32 {
     get {
-      return colorToArgb(_view._text.textColor)
+      return _textColor
     }
     set(color) {
-      _view._text.textColor = argbToColor(color)
+      _textColor = color
+      _view._text.textColor = color == Color.default.int32 ? preferredTextColor(form) : argbToColor(color)
     }
   }
 

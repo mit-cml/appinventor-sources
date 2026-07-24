@@ -5,6 +5,9 @@
 
 import Foundation
 
+fileprivate let kLinearProgressDefaultColor = Color.blue.int32
+fileprivate let kLinearProgressDefaultTrackColor = Color.lightGray.int32
+
 public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
   private var _view: UIProgressView
   private var _progress: Int32 = 0
@@ -12,6 +15,9 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
   private var _animationTimer: Timer?
   private var _maximum: Int32 = 100
   private var _minimum: Int32 = 0
+  private var _progressColor = kLinearProgressDefaultColor
+  private var _indeterminateColor = kLinearProgressDefaultColor
+
   public override init(_ parent: ComponentContainer) {
     _view = UIProgressView(progressViewStyle: .bar)
     super.init(parent)
@@ -25,8 +31,8 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
   
   private func setupProgressView() {
     _view.translatesAutoresizingMaskIntoConstraints = false
-    _view.progressTintColor = UIColor.blue
-    _view.trackTintColor = UIColor.lightGray
+    _view.progressTintColor = progressTintColor(for: _progressColor)
+    _view.trackTintColor = argbToColor(kLinearProgressDefaultTrackColor)
     _view.setProgress(0.0, animated: false)
     _isAnimating = false
   }
@@ -47,21 +53,20 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
 
   @objc open var IndeterminateColor: Int32 {
     get {
-      return _view.progressTintColor?.cgColor as! Int32
+      return _indeterminateColor
     }
     set(argb) {
-      
-      _view.progressTintColor = argbToColor(argb)
+      _indeterminateColor = argb
     }
   }
   
   @objc open var ProgressColor: Int32 {
     get {
-      return _view.progressTintColor?.cgColor as! Int32
+      return _progressColor
     }
     set(argb) {
-      
-      _view.progressTintColor = argbToColor(argb)
+      _progressColor = argb
+      _view.progressTintColor = progressTintColor(for: argb)
     }
   }
   
@@ -168,5 +173,9 @@ public class LinearProgress: ViewComponent, AbstractMethodsForViewComponent {
 
   private func setProgressValue() {
     _view.setProgress(Float(_progress - _minimum) / Float(_maximum - _minimum), animated: true)
+  }
+
+  private func progressTintColor(for argb: Int32) -> UIColor {
+    return argb == Color.default.int32 ? argbToColor(kLinearProgressDefaultColor) : argbToColor(argb)
   }
 }

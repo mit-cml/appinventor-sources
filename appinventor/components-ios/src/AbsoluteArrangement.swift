@@ -20,17 +20,21 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
   private var _components: [ViewComponent] = []
   private var _view: AbsoluteView
-  private var _backgroundColor = UIColor.white
+  private var _backgroundColor = Color.default.int32
   private var _imagePath = ""
 
   // Layout
   private var viewLayout: RelativeLayout
+  private var _widthConstraints = [ObjectIdentifier: NSLayoutConstraint]()
+  private var _heightConstraints = [ObjectIdentifier: NSLayoutConstraint]()
   
   // MARK: - Constants
   private let NOT_VALID: Int = -1
   
   // MARK: - Custom View for Absolute Layout
   private class AbsoluteView: UIView {
+    weak var contentView: UIView?
+
     override init(frame: CGRect) {
       super.init(frame: frame)
       translatesAutoresizingMaskIntoConstraints = false
@@ -47,15 +51,16 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     }
     
     override var intrinsicContentSize: CGSize {
-      // Let parent layout determine size
-      return UIView.layoutFittingExpandedSize
+      return contentView?.intrinsicContentSize ?? CGSize(width: CGFloat(kEmptyHVArrangementWidth),
+                                                         height: CGFloat(kEmptyHVArrangementHeight))
     }
   }
   
   // MARK: - Initialization
   public override init(_ parent: ComponentContainer) {
     _view = AbsoluteView(frame: .zero)
-    viewLayout = RelativeLayout(preferredEmptyWidth: kEmptyHVArrangementWidth,preferredEmptyHeight: kEmptyHVArrangementWidth)
+    viewLayout = RelativeLayout(preferredEmptyWidth: kEmptyHVArrangementWidth,
+                                preferredEmptyHeight: kEmptyHVArrangementHeight)
     
     super.init(parent)
     super.setDelegate(self)
@@ -63,6 +68,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
     // Add the layout view to our view
     _view.addSubview(viewLayout.getLayoutManager())
+    _view.contentView = viewLayout.getLayoutManager()
     viewLayout.getLayoutManager().translatesAutoresizingMaskIntoConstraints = false
     
     // Make the layout view fill our view
@@ -74,6 +80,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     ])
     
     parent.add(self)
+    BackgroundColor = Color.default.int32
   }
   
 
@@ -126,6 +133,8 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     
     if x != NOT_VALID && y != NOT_VALID {
       viewLayout.updateComponentPosition(component: component)
+      setChildWidth(of: component, to: component._lastSetWidth)
+      setChildHeight(of: component, to: component._lastSetHeight)
     }
   }
   
@@ -134,73 +143,93 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     guard let form = form else {
       return
     }
-    
+
+    replaceConstraint(&_widthConstraints, for: component, with: nil)
+    let constraint: NSLayoutConstraint?
     if width <= kLengthPercentTag {
-      let parentWidth = form.Width
-      let childWidth = parentWidth * Int32(-(width - kLengthPercentTag)) / 100
-      component._lastSetWidth = width
-      
-      NSLayoutConstraint.activate([
-        component.view.widthAnchor.constraint(equalToConstant: CGFloat(childWidth))
-      ])
+      let percent = CGFloat(-(width - kLengthPercentTag)) / 100.0
+      constraint = component.view.widthAnchor.constraint(equalTo: form.scaleFrameLayout.widthAnchor,
+                                                         multiplier: percent)
     } else if width == kLengthPreferred {
-      // Let view size itself
-      component._lastSetWidth = width
-      // Remove width constraints
-      component.view.constraints.filter { $0.firstAttribute == .width }.forEach { $0.isActive = false }
+      constraint = nil
     } else if width == kLengthFillParent {
-      component._lastSetWidth = width
-      NSLayoutConstraint.activate([
-        component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
-      ])
+      constraint = component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
     } else {
-      component._lastSetWidth = width
-      NSLayoutConstraint.activate([
-        component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
-      ])
+      constraint = component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
     }
+    component._lastSetWidth = width
+    replaceConstraint(&_widthConstraints, for: component, with: constraint)
+    _view.invalidateIntrinsicContentSize()
   }
   
   open func setChildHeight(of component: ViewComponent, to height: Int32) {
     guard let form = form else {
       return
     }
-    
+
+    replaceConstraint(&_heightConstraints, for: component, with: nil)
+    let constraint: NSLayoutConstraint?
     if height <= kLengthPercentTag {
-      let parentHeight = form.Height
-      let childHeight = parentHeight * Int32(-(height - kLengthPercentTag)) / 100
-      component._lastSetHeight = height
-      
-      NSLayoutConstraint.activate([
-        component.view.heightAnchor.constraint(equalToConstant: CGFloat(childHeight))
-      ])
+      let percent = CGFloat(-(height - kLengthPercentTag)) / 100.0
+      constraint = component.view.heightAnchor.constraint(equalTo: form.scaleFrameLayout.heightAnchor,
+                                                          multiplier: percent)
     } else if height == kLengthPreferred {
-      // Let view size itself
-      component._lastSetHeight = height
-      // Remove height constraints
-      component.view.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
+      constraint = nil
     } else if height == kLengthFillParent {
-      component._lastSetHeight = height
-      NSLayoutConstraint.activate([
-        component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
-      ])
+      constraint = component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
     } else {
-      component._lastSetHeight = height
-      NSLayoutConstraint.activate([
-        component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
-      ])
+      constraint = component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
     }
+    component._lastSetHeight = height
+    replaceConstraint(&_heightConstraints, for: component, with: constraint)
+    _view.invalidateIntrinsicContentSize()
+  }
+
+  private func replaceConstraint(_ constraints: inout [ObjectIdentifier: NSLayoutConstraint],
+                                 for component: ViewComponent,
+                                 with constraint: NSLayoutConstraint?) {
+    let key = ObjectIdentifier(component)
+    constraints[key]?.isActive = false
+    constraints[key] = constraint
+    if let constraint = constraint, canActivate(constraint) {
+      constraint.isActive = true
+    }
+  }
+
+  private func canActivate(_ constraint: NSLayoutConstraint) -> Bool {
+    guard let first = constraint.firstItem as? UIView,
+          let second = constraint.secondItem as? UIView else {
+      return true
+    }
+    return sharesViewHierarchy(first, second)
+  }
+
+  private func sharesViewHierarchy(_ first: UIView, _ second: UIView) -> Bool {
+    var ancestors = Set<ObjectIdentifier>()
+    var current: UIView? = first
+    while let view = current {
+      ancestors.insert(ObjectIdentifier(view))
+      current = view.superview
+    }
+    current = second
+    while let view = current {
+      if ancestors.contains(ObjectIdentifier(view)) {
+        return true
+      }
+      current = view.superview
+    }
+    return false
   }
   
   // MARK: - Properties
   @objc open var BackgroundColor: Int32 {
     get {
-      return colorToArgb(_backgroundColor)
+      return _backgroundColor
     }
     set(argb) {
-      _backgroundColor = argbToColor(argb)
+      _backgroundColor = argb
       if _imagePath.isEmpty {
-        _view.backgroundColor = _backgroundColor
+        _view.backgroundColor = defaultedBackgroundColor(argb)
       }
     }
   }
@@ -220,7 +249,14 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
         }
       }
       _imagePath = ""
-      _view.backgroundColor = _backgroundColor
+      _view.backgroundColor = defaultedBackgroundColor(_backgroundColor)
     }
+  }
+
+  private func defaultedBackgroundColor(_ argb: Int32) -> UIColor {
+    if argb == Color.default.int32 {
+      return form?.isDarkTheme == true ? Color.black.uiColor : Color.white.uiColor
+    }
+    return argbToColor(argb)
   }
 }

@@ -32,6 +32,10 @@ class ChartDataModelTests: AppInventorTestCase {
     testModel.addEntryFromTuple([10.0, 5.0] as YailList<AnyObject>)
   }
 
+  func testChartWrapperUsesAutoLayout() {
+    XCTAssertFalse(testChart.view.translatesAutoresizingMaskIntoConstraints)
+  }
+
   func testHighlightPoints() {
     populate()
     XCTAssertTrue(testModel.highlightPoints([[6.0, 0.0] as YailList<AnyObject>], Color.red.int32))

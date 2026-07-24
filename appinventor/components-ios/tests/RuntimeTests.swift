@@ -48,6 +48,57 @@ public func getInterpreterForTesting() throws -> SCMInterpreter {
 
 class RuntimeTests: XCTestCase {
 
+  func testAndroidCompatibleDefaultColors() {
+    let form = Form()
+
+    let label = Label(form)
+    XCTAssertEqual(Color.none.int32, label.BackgroundColor)
+    XCTAssertEqual(Color.default.int32, label.TextColor)
+    XCTAssertEqual(Color.none.uiColor, label.view.backgroundColor)
+    label.BackgroundColor = Color.default.int32
+    XCTAssertEqual(Color.none.uiColor, label.view.backgroundColor)
+
+    let checkBox = CheckBox(form)
+    XCTAssertEqual(Color.none.int32, checkBox.BackgroundColor)
+    XCTAssertEqual(Color.default.int32, checkBox.TextColor)
+
+    let toggle = Switch(form)
+    XCTAssertEqual(Color.none.int32, toggle.BackgroundColor)
+    XCTAssertEqual(Color.white.int32, toggle.ThumbColorActive)
+    XCTAssertEqual(Color.lightGray.int32, toggle.ThumbColorInactive)
+    XCTAssertEqual(Color.green.int32, toggle.TrackColorActive)
+    XCTAssertEqual(Color.gray.int32, toggle.TrackColorInactive)
+    XCTAssertEqual(Color.default.int32, toggle.TextColor)
+
+    let listPicker = ListPicker(form)
+    XCTAssertEqual(Color.black.int32, listPicker.ItemBackgroundColor)
+    XCTAssertEqual(Color.white.int32, listPicker.ItemTextColor)
+
+    let slider = Slider(form)
+    XCTAssertEqual(Color.orange.int32, slider.ColorLeft)
+    XCTAssertEqual(Color.gray.int32, slider.ColorRight)
+    XCTAssertEqual(Color.darkGray.int32, slider.ThumbColor)
+
+    let chart = Chart(form)
+    XCTAssertEqual(Color.white.int32, chart.BackgroundColor)
+    XCTAssertEqual(Color.black.int32, chart.AxesTextColor)
+    chart.BackgroundColor = Color.default.int32
+    chart.AxesTextColor = Color.default.int32
+    XCTAssertEqual(Color.white.int32, chart.BackgroundColor)
+    XCTAssertEqual(Color.black.int32, chart.AxesTextColor)
+
+    let canvas = Canvas(form)
+    XCTAssertEqual(Color.white.int32, canvas.BackgroundColor)
+
+    let arrangement = HorizontalArrangement(form)
+    XCTAssertEqual(Color.default.int32, arrangement.BackgroundColor)
+    XCTAssertNil(arrangement.view.backgroundColor)
+
+    let absoluteArrangement = AbsoluteArrangement(form)
+    XCTAssertEqual(Color.default.int32, absoluteArrangement.BackgroundColor)
+    XCTAssertEqual(Color.white.uiColor, absoluteArrangement.view.backgroundColor)
+  }
+
   func testYailEqualBool() throws {
     let interpreter = try getInterpreterForTesting()
     XCTAssertEqual("#t", interpreter.evalForm("(yail-equal? #t #t)"))
