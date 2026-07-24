@@ -42,6 +42,7 @@ public class Config implements IsSerializable, Serializable {
   private boolean galleryEnabled;
   private String galleryLocation;
   private boolean galleryReadOnly;
+  private boolean lmsEnabled;
   private List<String> tutorialUrlAllowed;
   private boolean serverExpired;
   private boolean deleteAccountAllowed;
@@ -226,6 +227,14 @@ public class Config implements IsSerializable, Serializable {
 
   public void setGalleryReadOnly(boolean value) {
     galleryReadOnly = value;
+  }
+
+  public boolean getLmsEnabled() {
+    return lmsEnabled;
+  }
+
+  public void setLmsEnabled(boolean value) {
+    lmsEnabled = value;
   }
 
   public void setTutorialUrlAllowed(List<String> value) {

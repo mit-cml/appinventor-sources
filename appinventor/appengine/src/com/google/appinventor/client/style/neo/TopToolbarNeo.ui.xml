@@ -47,6 +47,9 @@
       <ai:DropDownItem name="ExportProject" caption="{messages.exportButton}">
         <actions:ExportProjectAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="SubmitToGoogleClassroom" caption="{messages.submitToGoogleClassroomMenuItem}">
+        <actions:SubmitToGoogleClassroomAction/>
+      </ai:DropDownItem>
       <ai:DropDownItem name="ExportAllProjects" caption="{messages.exportAllProjectsMenuItem}"
                        visible="false">
         <actions:ExportAllProjectsAction/>
@@ -87,6 +90,9 @@
       </ai:DropDownItem>
       <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}">
         <actions:CompanionUpdateAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="ConnectGoogleClassroom" caption="{messages.connectGoogleClassroomMenuItem}">
+        <actions:ConnectGoogleClassroomAction/>
       </ai:DropDownItem>
     </ai:DropDownButton>
 

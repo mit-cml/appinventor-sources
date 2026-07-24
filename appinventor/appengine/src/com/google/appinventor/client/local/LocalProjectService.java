@@ -275,6 +275,11 @@ public class LocalProjectService implements ProjectServiceAsync {
   }
 
   @Override
+  public void exportProjectToDrive(long projectId, AsyncCallback<RpcResult> callback) {
+
+  }
+
+  @Override
   public void loadFromGallery(String galleryId, AsyncCallback<UserProject> callback) {
 
   }
