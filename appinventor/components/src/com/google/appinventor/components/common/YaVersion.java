@@ -745,7 +745,9 @@ public class YaVersion {
   // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
   // For BLOCKS_LANGUAGE_VERSION 39
   // - The Multiline Text block was added.
-  public static final int BLOCKS_LANGUAGE_VERSION = 39;
+  // For BLOCKS_LANGUAGE_VERSION 40
+  // - Dictionaries: "get dictionary from JSON text" and "get JSON text from dictionary" blocks were added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 40;
 
   // ................................. Target SDK Version Number ..................................
 
