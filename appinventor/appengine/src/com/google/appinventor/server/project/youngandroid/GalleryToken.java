@@ -35,7 +35,7 @@ public class GalleryToken {
   private static long JANONE2020 = 1577836800L; // January 1, 2020 00:00 UTC
   private static final Flag<String> galleryKeyFile = Flag.createFlag("gallery.tokenkey", "WEB-INF/gallerykey");
   private static final Logger LOG = Logger.getLogger(GalleryToken.class);
-  private static Crypter crypter = null; // accessed through getCrypter only
+  private static volatile Crypter crypter = null; // accessed through getCrypter only
   private static final Object crypterSync = new Object();
 
   private GalleryToken() {      // No instantiation
@@ -59,13 +59,16 @@ public class GalleryToken {
 
 
   private static Crypter getCrypter() throws KeyczarException {
+    if (crypter != null) {
+      return crypter;
+    }
+
     synchronized(crypterSync) {
-      if (crypter != null) {
-        return crypter;
-      } else {
+      if (crypter == null) {
         crypter = new Crypter(galleryKeyFile.get());
-        return crypter;
       }
+
+      return crypter;
     }
   }
 }
