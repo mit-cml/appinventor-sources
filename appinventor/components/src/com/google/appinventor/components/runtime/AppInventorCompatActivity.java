@@ -402,7 +402,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
 
   public I18nTranslationManager getI18nTranslationManager() {
     if (i18nTranslationManager == null) {
-      i18nTranslationManager = new I18nTranslationManager(this);
+      i18nTranslationManager = new I18nTranslationManager();
     }
     return i18nTranslationManager;
   }

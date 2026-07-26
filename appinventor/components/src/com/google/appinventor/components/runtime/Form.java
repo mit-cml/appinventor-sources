@@ -84,13 +84,13 @@ import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
-import com.google.appinventor.components.runtime.util.I18nTranslationManager;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.PermissionRegistry;
 import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.TranslationProvider;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 
@@ -140,7 +140,7 @@ import org.json.JSONException;
 @UsesPermissions({INTERNET})
 public class Form extends AppInventorCompatActivity
     implements Component, ComponentContainer, HandlesEventDispatching,
-    OnGlobalLayoutListener {
+    OnGlobalLayoutListener, TranslationProvider {
 
   private static final String LOG_TAG = "Form";
 
@@ -435,7 +435,7 @@ public class Form extends AppInventorCompatActivity
     $define();
 
     // Load bundled translation data before the user Initialize event runs.
-    getI18nTranslationManager().load();
+    getI18nTranslationManager().load(this);
 
     // Special case for Event.Initialize(): all other initialize events are triggered after
     // completing the constructor. This doesn't work for Android apps though because this method
@@ -3094,6 +3094,7 @@ public class Form extends AppInventorCompatActivity
    * @return An open InputStream to the asset
    * @throws IOException if the asset cannot be opened, e.g., if it is not bundled in the app
    */
+  @Override
   @SuppressWarnings({"WeakerAccess"})  // May be called by extensions
   public InputStream openAsset(String asset) throws IOException {
     return openAssetInternal(getAssetPath(asset));
@@ -3147,6 +3148,7 @@ public class Form extends AppInventorCompatActivity
     }
   }
 
+  @Override
   public Component lookupComponent(String componentName) {
     if (componentName == null) {
       return null;
@@ -3163,6 +3165,7 @@ public class Form extends AppInventorCompatActivity
     componentsByName.clear();
   }
 
+  @Override
   public String getFormName() {
     return formName;
   }
