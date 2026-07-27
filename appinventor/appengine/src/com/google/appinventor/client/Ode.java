@@ -2555,7 +2555,6 @@ public class Ode implements EntryPoint {
     tutorialVisible = visible;
     if (visible) {
       tutorialPanel.setVisible(true);
-      tutorialPanel.setWidth("300px");
     } else {
       tutorialPanel.setVisible(false);
     }

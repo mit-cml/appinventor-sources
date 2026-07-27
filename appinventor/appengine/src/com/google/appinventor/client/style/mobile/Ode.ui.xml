@@ -13,7 +13,7 @@
     <g:FlowPanel ui:field="rootPanel" styleName="ode-MobileRoot">
         <mob:TopPanelMob ui:field="topPanel" />
         <g:FlowPanel styleName="ode-TutorialWrapper ode-MainContent" ui:field="overDeckPanel">
-            <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
+            <ed:TutorialPanel ui:field="tutorialPanel" width="0" height="100%" visible="false" />
             <g:DeckPanel ui:field="deckPanel" animationEnabled="true" styleName="ode-DeckPanel">
                 <g:FlowPanel width="100%" >
                     <box:ProjectListBox width="100%" ui:field="projectListbox" styleName="ode-MobileProjectList" />
