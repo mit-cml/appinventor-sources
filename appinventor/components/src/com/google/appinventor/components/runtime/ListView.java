@@ -200,7 +200,7 @@ public final class ListView extends AndroidViewComponent {
           public void onFilterComplete(int count) {
             // Keep the selection while the selected item is still on screen, and clear it only
             // when the filter hides it, so the user never has a selection they cannot see.
-            if (selectionIndex > 0 && !listAdapterWithRecyclerView.isVisible(selectionIndex - 1)) {
+            if (selectionIndex > 0 && !dataModel.isVisible(selectionIndex - 1)) {
               SelectionIndex(0);
             }
           }
@@ -1339,37 +1339,37 @@ public final class ListView extends AndroidViewComponent {
   public void setAdapterData() {
     switch (layout) {
       case LISTVIEW_LAYOUT_SINGLE_TEXT:
-        setListAdapter(new ListViewSingleTextAdapter(container, dataModel.getItems(),
+        setListAdapter(new ListViewSingleTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT:
-        setListAdapter(new ListViewTwoTextAdapter(container, dataModel.getItems(),
+        setListAdapter(new ListViewTwoTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT_LINEAR:
-        setListAdapter(new ListViewTwoTextLinearAdapter(container, dataModel.getItems(),
+        setListAdapter(new ListViewTwoTextLinearAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT:
-        setListAdapter(new ListViewImageSingleTextAdapter(container, dataModel.getItems(),
+        setListAdapter(new ListViewImageSingleTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
-        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, dataModel.getItems(),
+        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
-        setListAdapter(new ListViewImageTopTwoTextAdapter(container, dataModel.getItems(),
+        setListAdapter(new ListViewImageTopTwoTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
@@ -1382,7 +1382,9 @@ public final class ListView extends AndroidViewComponent {
    */
   public void updateAdapterData() {
     SelectionIndex(0);
-    listAdapterWithRecyclerView.updateData(dataModel.getItems());
+    // Data changed, so rebuild the filtered view (a no-op when unfiltered) and refresh.
+    dataModel.refreshFilter();
+    listAdapterWithRecyclerView.notifyDataSetChanged();
   }
 
   /**
