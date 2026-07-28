@@ -45,7 +45,6 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
   private static final String PROPERTY_NAME_FIREBASE_TOKEN = "FirebaseToken";
   private static final String PROPERTY_NAME_FIREBASE_URL = "FirebaseURL";
   private static final String PROPERTY_NAME_DEFAULT_URL = "DefaultURL";
-  private static final FirebaseAuthServiceAsync AUTH_SVC = GWT.create(FirebaseAuthService.class);
   private static boolean warningGiven = false; // Whether or not we have given experimental warning
 
   private boolean persistToken = false;
@@ -60,7 +59,6 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
    */
   public MockFirebaseDB(SimpleEditor editor, String type, Image iconImage) {
     super(editor, type, iconImage);
-    Ode.setupOrigin(AUTH_SVC);
   }
 
   /**
@@ -132,7 +130,7 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
       }
     };
 
-    AUTH_SVC.getToken(projectName, callback);
+    Ode.getInstance().getFirebaseAuthService().getToken(projectName, callback);
   }
 
   /**

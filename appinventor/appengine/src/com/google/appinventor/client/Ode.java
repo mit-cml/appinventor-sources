@@ -65,6 +65,8 @@ import com.google.appinventor.shared.rpc.admin.AdminInfoService;
 import com.google.appinventor.shared.rpc.admin.AdminInfoServiceAsync;
 import com.google.appinventor.shared.rpc.component.ComponentService;
 import com.google.appinventor.shared.rpc.component.ComponentServiceAsync;
+import com.google.appinventor.shared.rpc.components.FirebaseAuthService;
+import com.google.appinventor.shared.rpc.components.FirebaseAuthServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
@@ -281,6 +283,9 @@ public class Ode implements EntryPoint {
 
   // Web service for reading CloudDB data from the designer visualizer.
   private final CloudDBDataServiceAsync cloudDBDataService = GWT.create(CloudDBDataService.class);
+
+  // Firebase token service
+  private final FirebaseAuthServiceAsync firebaseAuthService = GWT.create(FirebaseAuthService.class);
 
   //Web service for Token authentication operations
   private final TokenAuthServiceAsync tokenAuthService = GWT.create(TokenAuthService.class);
@@ -771,6 +776,7 @@ public class Ode implements EntryPoint {
     setupOrigin(adminInfoService);
     setupOrigin(tokenAuthService);
     setupOrigin(cloudDBDataService);
+    setupOrigin(firebaseAuthService);
 
     Promise.<Config>call(MESSAGES.serverUnavailable(),
         c -> userInfoService.getSystemConfig(sessionId, c))
@@ -1265,6 +1271,15 @@ public class Ode implements EntryPoint {
    */
   public CloudDBDataServiceAsync getCloudDBDataService() {
     return cloudDBDataService;
+  }
+
+  /**
+   * Returns the Firebase token service used to authenticate to Firebase
+   *
+   * @return Firebase token auth service instance
+   */
+  public FirebaseAuthServiceAsync getFirebaseAuthService() {
+    return firebaseAuthService;
   }
 
   /**
