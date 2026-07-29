@@ -1,6 +1,23 @@
 // -*- mode: swift; swift-mode:basic-offset: 2; -*-
 // Copyright © 2019 Massachusetts Institute of Technology, All rights reserved.
 
+/* the full deferred initialization chain is:
+ 
+ StartTracking()
+   → session.run(config)
+   → ARKit/RealityKit starts mapping
+   → session(_:didAdd:) fires for plane anchors
+   → floor detected → createInvisibleFloor()
+   → hasInvisibleFloor = true
+   → parseNodes() runs (already called, but physics deferred)
+     → SLAM nodes: anchor added, position set
+     → Geo nodes: session.add(geoAnchor), wait for handleGeoAnchorAdded
+   → handleGeoAnchorAdded fires
+     → geo anchor resolved
+     → node added to scene
+     → EnablePhysics() ← floor exists now
+ */
+
 import Foundation
 import AVFoundation
 import RealityKit
@@ -86,6 +103,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   fileprivate var _lightingEstimationEnabled: Bool = false
   
   fileprivate var _isStarting: Bool = false
+  private var _designerNodesReady = false
+  private var _sceneReady = false
   
   private var _lastLightingUpdate: TimeInterval = 0
   private let _lightingUpdateInterval: TimeInterval = 0.1
@@ -95,8 +114,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   private var _planeDetectionSet: Bool = false
   private var _lightingEstimationSet: Bool = false
   
-  // Needed that way nodes are only added when the session is running and nodes are disabled when session stopped
-  private var _requiresAddNodes = false
+
   private var startOptions: ARSession.RunOptions = []
   private var _reenableWebViewNodes: Bool = false
   
@@ -236,6 +254,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       sessionStartLocation = location
       sessionStartTime = Date()
       print("AR session anchored to GPS: \(location.coordinate.latitude), \(location.coordinate.longitude), altitude: \(location.altitude)")
+      
+      if _configuration is ARGeoTrackingConfiguration {
+          checkGeoAvailabilityForCurrentLocation()
+      }
     }
   }
   
@@ -531,6 +553,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         _arView.renderOptions.insert(.disableGroundingShadows)
         worldTrackingConfiguration.maximumNumberOfTrackedImages = 4
         worldTrackingConfiguration.detectionImages = getReferenceImages()
+      
+        _arView.renderOptions.insert(.disableGroundingShadows)
+      
         _configuration = worldTrackingConfiguration
         
       case .geoTracking:
@@ -629,9 +654,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   @objc func ensureFloorExists() {
-    if !hasInvisibleFloor {
-        createInvisibleFloor()
-    }
+      if !hasInvisibleFloor {
+          createInvisibleFloor()
+          if _sessionRunning {
+              _sceneReady = true
+              realizeNodesIfReady()
+          }
+      }
   }
   
   
@@ -719,9 +748,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
   @objc open func StartTracking() {
       print("▶️ Starting AR tracking")
+      _designerNodesReady = true
       startTrackingWithOptions(startOptions)
   }
 
+  private func realizeNodesIfReady() {
+      guard _designerNodesReady && _sceneReady else {
+          print("⏳ Not ready — designerReady=\(_designerNodesReady), sceneReady=\(_sceneReady)")
+          return
+      }
+      
+      // ✅ If geo tracking requested but availability not yet known, wait for it
+      if _trackingType == .geoTracking && _geoAvailableAtLocation == nil {
+          print("⏳ Waiting for geo availability check...")
+          checkGeoAvailabilityForCurrentLocation()
+          return  // will be called again when availability is known
+      }
+      
+      parseNodes()
+  }
 
   func requestRestart(_ opts: ARSession.RunOptions = [.resetTracking, .removeExistingAnchors]) {
     guard !restartPending else { return }
@@ -733,49 +778,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   private func parseNodes() {
-    for (node, anchorEntity) in self._nodeToAnchorDict {
-      node.EnablePhysics(node.EnablePhysics)
-      
-      if node.IsGeoAnchored {
-        if let geoAnchor = node.getGeoAnchor() {
-          _nodeToAnchorDict[node] = _pendingAnchor
-          addGeoAnchoredNode(node)
-        }
-      } else {
-        if !node.IsFollowingImageMarker {
-          self._arView.scene.addAnchor(anchorEntity)
-        }
-        
-        if node._fromPropertyPosition != nil {
-          let position = node._fromPropertyPosition.split(separator: ",")
-            .prefix(3)
-            .map { Float(String($0)) ?? 0.0 }
-          
-          node._modelEntity.transform.translation = SIMD3<Float>(
-            position[0],
-            position[1],
-            position[2]
-          )
-        }
-        if !node._fromPropertyRotation.isEmpty {
-          let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
-            .prefix(3)
-            .map { Float(String($0)) ?? 0.0 }
-          
-          let xRadians = eulerDegrees[0] * .pi / 180.0
-          let yRadians = eulerDegrees[1] * .pi / 180.0
-          let zRadians = eulerDegrees[2] * .pi / 180.0
-          
-          node._modelEntity.transform.rotation = simd_quatf(
-            angle: yRadians, axis: [0, 1, 0]
-          ) * simd_quatf(
-            angle: xRadians, axis: [1, 0, 0]
-          ) * simd_quatf(
-            angle: zRadians, axis: [0, 0, 1]
-          )
-        }
+      print("🔍 parseNodes: \(_nodeToAnchorDict.count) nodes")
+      for (node, anchorEntity) in _nodeToAnchorDict {
+          guard anchorEntity === _pendingAnchor else {
+              print("  ⏭️ \(node.Name) already resolved — skipping")
+              continue
+          }
+          print("  🔄 Realizing \(node.Name), _fromGeoCoordinates='\(node._fromGeoCoordinates)'")
+          realizeNode(node)
       }
-    }
   }
   
   private var pendingGeoAnchorTimers: [ObjectIdentifier: DispatchWorkItem] = [:]
@@ -792,9 +803,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           // may have resolved in the meantime via handleGeoAnchorAdded.
           guard self._nodeToAnchorDict[node] === self._pendingAnchor else { return }
 
-          print("⏱️ Geo anchor for \(node.Name) did not resolve within "
-              + "\(ARView3D.GEO_ANCHOR_TIMEOUT_SECONDS)s — falling back to x,y,z")
-
+          print("⏱️ Geo anchor for \(node.Name) timed out — falling back to x,y,z")
+        
+          // ✅ Notify timeout fallback separately — user may want different messaging
+          EventDispatcher.dispatchEvent(of: self, called: "GeoAnchorTimedOut",
+                                      arguments: node as AnyObject)
           let position = node._fromPropertyPosition.split(separator: ",")
               .prefix(3).map { Float(String($0)) ?? 0.0 }
           let x = position.count > 0 ? position[0] : 0
@@ -816,7 +829,8 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   /* returning to same place or not ? */
   private func armRelocalizationWatchdog(enabled: Bool) {
       relocalizationTimer?.cancel()
-      guard enabled else { return }
+    guard enabled && !(_configuration is ARGeoTrackingConfiguration) else { return }
+     
 
       let task = DispatchWorkItem { [weak self] in
           guard let self = self else { return }
@@ -881,6 +895,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       self._didReportVisualLocalizationFailed = false
       self._lastGeoTrackingState = .notAvailable
       self._lastGeoTrackingReason = .none
+      self._geoAvailableAtLocation = nil
       
       let config = self.setupConfiguration()
       
@@ -931,16 +946,13 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
         self._reenableWebViewNodes = false
       }
       
-      if self._requiresAddNodes {
-        
-        self.parseNodes()
-        //self.refreshWireframeAndSU()
 
-        for (anchorEntity, light) in self._lights {
+
+      for (anchorEntity, light) in self._lights {
           self._arView.scene.addAnchor(anchorEntity)
-        }
-        self._requiresAddNodes = false
       }
+
+      
     }
     
     print("▶️ AR session started successfully")
@@ -969,49 +981,34 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
     print("⏸️ AR session paused")
   }
   
- @objc open func ResetTracking() {
-    print("----RESET TRACKING----")
-     
-    let wasRunning = _sessionRunning
-    
-    // Stop session
-    _arView.session.pause()
-    _sessionRunning = false
-    
-    _hasSetGroundLevel = false
-    removeInvisibleFloor()
-    //_detectedPlanesDict.removeAll()
-    
-    for (node, anchor) in _nodeToAnchorDict {
-        node.EnablePhysics(false)
-      // Remove the entity from the RealityKit scene
-      if let entity = _nodeToAnchorDict[node] {
-          entity.removeFromParent()
-          _nodeToAnchorDict.removeValue(forKey: node)
-          node.removeFromAnchor()
-        _arView.scene.removeAnchor(entity)
-      }
+  @objc open func ResetTracking() {
+      print("----RESET TRACKING----")
+      let wasRunning = _sessionRunning
       
-      self._imageMarkers.removeAll()
+      _arView.session.pause()
+      _sessionRunning = false
+      _hasSetGroundLevel = false
+      _sceneReady = false  // ✅ floor needs re-detection
+      removeInvisibleFloor()
       
-
-    }
-    
-    // Pause and prepare for reset
-    pauseTracking(!wasRunning)
-      
-    if wasRunning {
-      print("🔄 Restarting with clean slate...")
-      requestRestart([])
-      
-      // Re-enable physics after restart
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-          for (node, _) in self._nodeToAnchorDict {
-              node.EnablePhysics(node.EnablePhysics)
+      for (node, anchor) in _nodeToAnchorDict {
+          node.EnablePhysics(false)
+          if anchor !== _pendingAnchor {
+              _arView.scene.removeAnchor(anchor)
           }
+          node._modelEntity.removeFromParent()
+          node._geoAnchor = nil  // ✅ clear — will be re-read from _fromGeoCoordinates
+          _nodeToAnchorDict[node] = _pendingAnchor  // ✅ reset to pending
       }
-    }
-    print("🔄 Complete resetTracking finished")
+      
+      _imageMarkers.removeAll()
+      pauseTracking(!wasRunning)
+      
+      if wasRunning {
+          print("🔄 Restarting with clean slate...")
+          requestRestart([])
+      }
+      print("🔄 Complete resetTracking finished")
   }
   
   private func setupLifecycleObservers() {
@@ -1028,15 +1025,11 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
 
   @objc func onAppDidBecomeActive() {
-    print("📱 ===== APP BECAME ACTIVE =====")
-      
-    let hasFrame = autoreleasepool { () -> Bool in
-        return _arView.session.currentFrame != nil
-    }
-    
-    if !_sessionRunning || !hasFrame {
-        requestRestart([.resetTracking, .removeExistingAnchors])
-    }
+      print("📱 ===== APP BECAME ACTIVE =====")
+      let hasFrame = autoreleasepool { _arView.session.currentFrame != nil }
+      if !_sessionRunning || !hasFrame {
+          requestRestart([.resetTracking, .removeExistingAnchors])
+      }
   }
   
   @objc open func ResetDetectedItems() {
@@ -1390,100 +1383,90 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   }
   
   private func addGeoAnchoredNode(_ node: ARNodeBase) {
-      // ✅ Read geo coordinates from property, same pattern as _fromPropertyPosition
-      if !node._fromGeoCoordinates.isEmpty {
-          let parts = node._fromGeoCoordinates.split(separator: ",")
+      // Called from realizeNode only — session always running at this point
+      guard let geoAnchor = node.getGeoAnchor(),
+            (geoAnchor.coordinate.latitude != 0.0 ||
+             geoAnchor.coordinate.longitude != 0.0) else {
+          print("⚠️ No valid geo anchor for \(node.Name)")
+          return
+      }
+      _arView.session.add(anchor: geoAnchor)
+      armGeoAnchorTimeout(for: node)
+      print("Added geo anchor to session: \(geoAnchor.coordinate)")
+  }
+  
+  
+  private let _pendingAnchor = AnchorEntity()  // sentinel for unresolved geo anchors
+
+  private func realizeNode(_ node: ARNodeBase) {
+      // ✅ Read geo coordinates first — before shouldUseGeoCoordinates check
+      if !node._fromGeoCoordinates.isEmpty && node.getGeoAnchor() == nil {
+          let parts = node._fromGeoCoordinates
+              .split(separator: ",")
               .prefix(3)
-              .map { Double(String($0)) ?? 0.0 }
-          
+              .map { Double(String($0).trimmingCharacters(in: .whitespaces)) ?? 0.0 }
           if parts.count == 3 {
               let coordinate = CLLocationCoordinate2D(latitude: parts[0], longitude: parts[1])
-              if CLLocationCoordinate2DIsValid(coordinate) {
-                  let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: parts[2])
-                  node.setGeoAnchor(geoAnchor)
-                  print("📍 Geo anchor from property: \(coordinate), altitude: \(parts[2])")
+              if CLLocationCoordinate2DIsValid(coordinate) &&
+                 (coordinate.latitude != 0.0 || coordinate.longitude != 0.0) {
+                  let altitude: Double? = parts[2] == 0.0 ? nil : parts[2]
+                  node.setGeoAnchor(ARGeoAnchor(coordinate: coordinate, altitude: altitude))
+                  print("📍 \(node.Name) geo anchor set from _fromGeoCoordinates: \(coordinate)")
               }
           }
       }
-      guard let geoAnchor = node.getGeoAnchor() else {
-          print("No geo anchor found on node")
-          return
-      }
       
-      _containsModelNodes = node is ModelNode ? true : _containsModelNodes
-      _nodeToAnchorDict[node] = _pendingAnchor
-      
-      if _sessionRunning {
-          _arView.session.add(anchor: geoAnchor)
-          print("Added geo anchor to session: \(geoAnchor.coordinate)")
-          armGeoAnchorTimeout(for: node)
+      if shouldUseGeoCoordinates(node.IsGeoAnchored) {
+          if let geoAnchor = node.getGeoAnchor() {
+              _arView.session.add(anchor: geoAnchor)
+              armGeoAnchorTimeout(for: node)
+              print("🌍 \(node.Name) → geo anchor: \(geoAnchor.coordinate)")
+          }
       } else {
-          _requiresAddNodes = true
+          if node.IsGeoAnchored || !node._fromGeoCoordinates.isEmpty {
+              print("⬇️ \(node.Name) falling back to SLAM — geo not available")
+              EventDispatcher.dispatchEvent(of: self, called: "NodeFellBackToSLAM",
+                                            arguments: node as AnyObject)
+          }
+          
+          let anchorEntity = node.Anchor ?? node.createAnchor()
+          _nodeToAnchorDict[node] = anchorEntity
+          if !node.IsFollowingImageMarker {
+              _arView.scene.addAnchor(anchorEntity)
+          }
+          if !node._fromPropertyPosition.isEmpty {
+              let position = node._fromPropertyPosition.split(separator: ",")
+                  .prefix(3)
+                  .map { Float(String($0)) ?? 0.0 }
+              node._modelEntity.transform.translation = SIMD3<Float>(
+                  position[0], position[1], position[2]
+              )
+          }
+          if !node._fromPropertyRotation.isEmpty {
+              let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
+                  .prefix(3)
+                  .map { Float(String($0)) ?? 0.0 }
+              let xRad = eulerDegrees[0] * .pi / 180.0
+              let yRad = eulerDegrees[1] * .pi / 180.0
+              let zRad = eulerDegrees[2] * .pi / 180.0
+              node._modelEntity.transform.rotation =
+                  simd_quatf(angle: yRad, axis: [0,1,0])
+                  * simd_quatf(angle: xRad, axis: [1,0,0])
+                  * simd_quatf(angle: zRad, axis: [0,0,1])
+          }
+          if hasInvisibleFloor {
+              node.EnablePhysics(node.EnablePhysics)
+          }
+          print("🏠 \(node.Name) → SLAM anchor")
       }
   }
-  private let _pendingAnchor = AnchorEntity()  // sentinel for unresolved geo anchors
-
   
-  // called after LoadScene and during node init
   @objc open func addNode(_ node: ARNodeBase) {
-    
-    ensureFloorExists()
-   
-    
-    if shouldUseGeoCoordinates(node.IsGeoAnchored) {
-      addGeoAnchoredNode(node)
-    } else {
-      
-      
-      var anchorEntity = node.Anchor
-      if (anchorEntity == nil){
-        anchorEntity = node.createAnchor()
-      }
-
-      _nodeToAnchorDict[node] = anchorEntity
       _containsModelNodes = node is ModelNode ? true : _containsModelNodes
-      if _sessionRunning {
-        _arView.scene.addAnchor(anchorEntity!)
-        
-        if !node._fromPropertyPosition.isEmpty {
-          let position = node._fromPropertyPosition.split(separator: ",")
-            .prefix(3)
-            .map { Float(String($0)) ?? 0.0 }
-          
-          node._modelEntity.transform.translation = SIMD3<Float>(
-            position[0],
-            position[1],
-            position[2]
-          )
-        }
-        
-        if !node._fromPropertyRotation.isEmpty {
-          let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
-            .prefix(3)
-            .map { Float(String($0)) ?? 0.0 }
-          
-          // Convert degrees to radians
-          let xRadians = eulerDegrees[0] * .pi / 180.0
-          let yRadians = eulerDegrees[1] * .pi / 180.0
-          let zRadians = eulerDegrees[2] * .pi / 180.0
-          
-          // Create quaternion from Euler angles (ZYX order - standard)
-          node._modelEntity.transform.rotation = simd_quatf(
-            angle: yRadians, axis: [0, 1, 0]  // Y rotation (yaw)
-          ) * simd_quatf(
-            angle: xRadians, axis: [1, 0, 0]  // X rotation (pitch)
-          ) * simd_quatf(
-            angle: zRadians, axis: [0, 0, 1]  // Z rotation (roll)
-          )
-        }
-        
-        if (hasInvisibleFloor){
-          node.EnablePhysics(node.EnablePhysics)
-        }
-      } else {
-        _requiresAddNodes = true
+      _nodeToAnchorDict[node] = _pendingAnchor
+      if !_sessionRunning {
+         print("⏳ \(node.Name) deferred — session not running")
       }
-    }
   }
   
   @objc open func removeNode(_ node: ARNodeBase) {
@@ -1881,7 +1864,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           guard let nodeGeoAnchor = node.getGeoAnchor(),
                 nodeGeoAnchor.identifier == geoAnchor.identifier,
                 anchorEntity != nil else { continue }
-          print("📍 Geo anchor updated: \(geoAnchor.coordinate), tracked by RealityKit automatically")
           break
       }
   }
@@ -2026,66 +2008,100 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return status.state == .localized && status.accuracy == .high
   }
   
-  private func shouldUseGeoCoordinates(_ hasGeoCoordinates: Bool) -> Bool{
-    if hasGeoCoordinates &&
-        _configuration is ARGeoTrackingConfiguration &&
-        ARGeoTrackingConfiguration.isSupported {
+  private var _geoAvailableAtLocation: Bool? = nil  // nil = unknown, true/false = checked
+
+  private func checkGeoAvailabilityForCurrentLocation() {
+      guard let location = sessionStartLocation else { return }
+      
+      ARGeoTrackingConfiguration.checkAvailability(at: location.coordinate) { [weak self] available, error in
+          DispatchQueue.main.async {
+              self?._geoAvailableAtLocation = available
+              print("🌍 Geo available at current location: \(available)")
+              if !available {
+                  self?._geoAvailableAtLocation = false
+              }
+              self?.realizeNodesIfReady()
+          }
+      }
+  }
+
+  private func shouldUseGeoCoordinates(_ hasGeoCoordinates: Bool) -> Bool {
+      guard hasGeoCoordinates else {
+          print("  shouldUseGeoCoordinates: false — no geo coordinates")
+          return false
+      }
+      guard _trackingType == .geoTracking else {
+          print("  shouldUseGeoCoordinates: false — trackingType is \(_trackingType)")
+          return false
+      }
+      guard ARGeoTrackingConfiguration.isSupported else {
+          print("  shouldUseGeoCoordinates: false — not supported on device")
+          return false
+      }
+      if let available = _geoAvailableAtLocation {
+          print("  shouldUseGeoCoordinates: \(available) — from availability cache")
+          return available
+      }
+      checkGeoAvailabilityForCurrentLocation()
+      print("  shouldUseGeoCoordinates: true — availability not yet checked")
       return true
-    }
-    return false
   }
   
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
-      for (node, existingAnchor) in _nodeToAnchorDict {
-        guard let nodeGeoAnchor = node.getGeoAnchor() else { continue }
-        
-        print("  checking node \(node.Name): geoAnchor.id=\(nodeGeoAnchor.identifier) vs \(geoAnchor.identifier), isPending=\(existingAnchor === _pendingAnchor)")
-        
-        guard nodeGeoAnchor.identifier == geoAnchor.identifier else { continue }
-        
-        if existingAnchor !== _pendingAnchor {
-            print("⚠️ Already resolved, skipping")
-            break
-        }
-
-        let anchorEntity: AnchorEntity
-        if shouldUseGeoCoordinates(true) {
-            anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
-            print("🌍 Geo tracking: ARKit resolves \(geoAnchor.coordinate)")
-        } else {
-            anchorEntity = AnchorEntity(world: geoAnchor.transform)
-            print("⬇️ Geo config inactive — SLAM fallback: \(geoAnchor.coordinate)")
-        }
+      print("🌍 handleGeoAnchorAdded: \(geoAnchor.coordinate)")
       
-        if let staleAnchor = node._modelEntity.parent as? AnchorEntity {
-            node._modelEntity.removeFromParent()
-            _arView.scene.removeAnchor(staleAnchor)
-            print("🔀 Removed from stale SLAM anchor")
-        }
-
-
-        print("📦 Adding child \(node.Name) to anchor, modelEntity parent before: \(String(describing: node._modelEntity.parent))")
-        anchorEntity.addChild(node._modelEntity)
-        print("📦 modelEntity parent after: \(String(describing: node._modelEntity.parent))")
-        
-        if node.needsCameraFacingOrientationOnPlacement,
-           let cameraTransform = _arView.cameraTransform as Optional {
-            print("📐 Applying camera facing to \(node.Name)")
-            node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
-        }
-        
-        _arView.scene.addAnchor(anchorEntity)
-        print("✅ Anchor added to scene: \(anchorEntity.anchoring)")
-        
-        _nodeToAnchorDict[node] = anchorEntity
-        node._anchorEntity = anchorEntity
-        
-
-        pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
-        pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
-        print("👁️ Node visible: \(node.Visible), modelEntity enabled: \(node._modelEntity.isEnabled)")
-        break
+      guard let node = _nodeToAnchorDict.first(where: {
+          $0.key.getGeoAnchor()?.identifier == geoAnchor.identifier &&
+          $0.value === _pendingAnchor
+      })?.key else {
+          print("⚠️ No pending node for geo anchor: \(geoAnchor.coordinate)")
+          return
       }
+      
+      let geoState = _arView.session.currentFrame?.geoTrackingStatus?.state
+      
+      let anchorEntity: AnchorEntity
+      if geoState == .localized {
+          anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
+          print("🌍 Geo localized — ARKit resolves \(geoAnchor.coordinate)")
+      }  else {
+        // ✅ Not localized — use stored tap x,y,z not geoAnchor.transform
+        let position = node._fromPropertyPosition.split(separator: ",")
+            .prefix(3)
+            .map { Float(String($0)) ?? 0.0 }
+        let worldPosition = SIMD3<Float>(
+            position.count > 0 ? position[0] : 0,
+            position.count > 1 ? position[1] : 0,
+            position.count > 2 ? position[2] : 0
+        )
+        anchorEntity = AnchorEntity(world: worldPosition)
+        print("⬇️ Geo not localized — SLAM fallback at tap position: \(worldPosition)")
+    }
+      
+      if let staleAnchor = node._modelEntity.parent as? AnchorEntity {
+          node._modelEntity.removeFromParent()
+          _arView.scene.removeAnchor(staleAnchor)
+          print("🔀 Removed stale anchor for \(node.Name)")
+      }
+      
+      anchorEntity.addChild(node._modelEntity)
+      _arView.scene.addAnchor(anchorEntity)
+      _nodeToAnchorDict[node] = anchorEntity
+      node._anchorEntity = anchorEntity
+      
+      pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
+      pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
+      
+      if node.needsCameraFacingOrientationOnPlacement,
+         let cameraTransform = _arView.cameraTransform as Optional {
+          node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+      }
+      
+      if hasInvisibleFloor {
+          node.EnablePhysics(node.EnablePhysics)
+      }
+      
+      print("✅ \(node.Name) placed, visible: \(node.Visible), enabled: \(node._modelEntity.isEnabled)")
   }
   
   
@@ -2106,6 +2122,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
   
       print("tapped at location \(x), \(y), \(z)")
       if hasGeoCoordinates {
+        print("has geo coordinates \(lat), \(lng) \(alt)")
         // Dispatch with both world and geo coordinates
         EventDispatcher.dispatchEvent(of: self, called: "TapAtLocation",
                                       arguments: x as NSNumber, y as NSNumber, z as NSNumber,
@@ -2208,22 +2225,24 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
     }
     
-    private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double, node: ARNodeBase, hasGeoCoordinates: Bool) {
-      if shouldUseGeoCoordinates(hasGeoCoordinates) {
+    private func setupLocation(x: Float, y: Float, z: Float, latitude: Double, longitude: Double, altitude: Double?, node: ARNodeBase, hasGeoCoordinates: Bool) {
+      
+      // ✅ Always store x,y,z as fallback
+      node._fromPropertyPosition = "\(x),\(y),\(z)"
+      
+      if hasGeoCoordinates &&
+          _trackingType == .geoTracking &&
+          ARGeoTrackingConfiguration.isSupported {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        if CLLocationCoordinate2DIsValid(coordinate) {
+        if CLLocationCoordinate2DIsValid(coordinate) &&
+            (coordinate.latitude != 0.0 || coordinate.longitude != 0.0) {
+          // ✅ Just store the geo anchor intent — addNode/realizeNode handles the rest
           let geoAnchor = ARGeoAnchor(coordinate: coordinate, altitude: altitude)
           node.setGeoAnchor(geoAnchor)
-          print("1️⃣ After setgeoAnchor, parent: \(String(describing: node._modelEntity.parent))")
-          addGeoAnchoredNode(node)
-          print("1️⃣ After addGeoAnchorNode, parent: \(String(describing: node._modelEntity.parent))")
-          print("📍 Geo anchor set: \(coordinate), altitude: \(altitude)")
+          print("📍 Geo anchor stored: \(coordinate), altitude: \(String(describing: altitude))")
         } else {
-          print("⚠️ Invalid coordinates — falling back to x,y,z placement")
-          setupNonGeo(x: x, y: y, z: z, node: node)
+          print("⚠️ Invalid coordinates — x,y,z stored as fallback")
         }
-      } else {
-        setupNonGeo(x: x, y: y, z: z, node: node)
       }
     }
     
@@ -2347,8 +2366,12 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
       print("1️⃣ After init, parent: \(String(describing: node._modelEntity.parent))")
 
-      setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+      setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: nil, // let ARAnchor figure out vertical placement 
+        node: node, hasGeoCoordinates: hasGeoCoordinates)
       
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -3278,8 +3301,6 @@ extension ARView3D: ARLightContainer {
     
     if _sessionRunning {
       _arView.scene.addAnchor(lightAnchor)
-    } else {
-      _requiresAddNodes = true
     }
   }
   
@@ -3311,8 +3332,10 @@ extension ARView3D: LifecycleDelegate {
   }
   
   @objc public func onResume() {
-    print("RESUMING view")
-    ResetTracking()
+      print("RESUMING view")
+      if _sessionRunning {
+          requestRestart([.resetTracking, .removeExistingAnchors])
+      }
   }
   
   @objc public func onDelete() {
@@ -3478,57 +3501,64 @@ extension ARView3D {
   
   
   @objc private func handlePanComplete(_ gesture: UIPanGestureRecognizer) {
-    let targetNode: ARNodeBase?
-    let hitResult: HitTestResult = performHitTest(at: gesture.location(in: _arView))
-    if gesture.state == .began {
+      let targetNode: ARNodeBase?
+      let hitResult: HitTestResult = performHitTest(at: gesture.location(in: _arView))
       
-      if case .node(let node, _, _) = hitResult {
-        _currentDraggedObject = node
-        node.isBeingDragged = true
-        targetNode = node
-        print("BEGAN dragging: \(node.Name)")
+      if gesture.state == .began {
+          if case .node(let node, _, _) = hitResult {
+              _currentDraggedObject = node
+              node.isBeingDragged = true
+              targetNode = node
+          } else {
+              targetNode = nil
+          }
       } else {
-        targetNode = nil
+          targetNode = _currentDraggedObject
       }
       
-    } else {
-      targetNode = _currentDraggedObject
-    }
-    
-    guard let node = targetNode, node.moveByPan != nil else { return }
-    
-    let fingerLocation = gesture.location(in: _arView)
-    let fingerMovement = gesture.translation(in: _arView)
-    let fingerVelocity = gesture.velocity(in: _arView)
-    
-    let groundProjection = getProjectionForNode(
-      node: node,
-      fingerLocation: fingerLocation,
-      fingerMovement: fingerMovement,
-      gesturePhase: gesture.state,
-      hitResult: hitResult
-    )
-    
-    let cameraVectors = getCurrentCameraVectors()
-    
-    node.handleAdvancedGestureUpdate(
-      fingerLocation: fingerLocation,
-      fingerMovement: fingerMovement,
-      fingerVelocity: fingerVelocity,
-      groundProjection: groundProjection,
-      camera3DProjection: cameraVectors,
-      gesturePhase: gesture.state
-    )
-    
-    if gesture.state == .changed {
-      gesture.setTranslation(.zero, in: _arView)
-    }
-    
-    if gesture.state == .ended || gesture.state == .cancelled {
-      _currentDraggedObject?.isBeingDragged = false
-      _currentDraggedObject = nil
-      hidePlacementPreview()
-    }
+      // ✅ If no node being dragged, clean up and return safely
+      guard let node = targetNode else {
+          if gesture.state == .ended || gesture.state == .cancelled {
+              _currentDraggedObject?.isBeingDragged = false
+              _currentDraggedObject = nil
+              hidePlacementPreview()
+          }
+          return
+      }
+      
+      // ✅ node.moveByPan check was causing issues — remove it
+      let fingerLocation = gesture.location(in: _arView)
+      let fingerMovement = gesture.translation(in: _arView)
+      let fingerVelocity = gesture.velocity(in: _arView)
+      
+      let groundProjection = getProjectionForNode(
+          node: node,
+          fingerLocation: fingerLocation,
+          fingerMovement: fingerMovement,
+          gesturePhase: gesture.state,
+          hitResult: hitResult
+      )
+      
+      let cameraVectors = getCurrentCameraVectors()
+      
+      node.handleAdvancedGestureUpdate(
+          fingerLocation: fingerLocation,
+          fingerMovement: fingerMovement,
+          fingerVelocity: fingerVelocity,
+          groundProjection: groundProjection,
+          camera3DProjection: cameraVectors,  // ✅ already optional, no force unwrap
+          gesturePhase: gesture.state
+      )
+      
+      if gesture.state == .changed {
+          gesture.setTranslation(.zero, in: _arView)
+      }
+      
+      if gesture.state == .ended || gesture.state == .cancelled {
+          _currentDraggedObject?.isBeingDragged = false
+          _currentDraggedObject = nil
+          hidePlacementPreview()
+      }
   }
   
   func getProjectionForNode(node: ARNodeBase, fingerLocation: CGPoint, fingerMovement: CGPoint, gesturePhase: UIGestureRecognizer.State, hitResult: HitTestResult) -> SIMD3<Float>? {
