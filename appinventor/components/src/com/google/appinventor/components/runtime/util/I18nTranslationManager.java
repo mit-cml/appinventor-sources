@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.util.Log;
+import com.google.common.annotations.VisibleForTesting;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,13 +51,7 @@ public final class I18nTranslationManager {
     } catch (JSONException e) {
       Log.w(LOG_TAG, "Invalid i18n translations JSON.", e);
     } finally {
-      if (inputStream != null) {
-        try {
-          inputStream.close();
-        } catch (IOException e) {
-          Log.w(LOG_TAG, "Unable to close i18n translations asset.", e);
-        }
-      }
+      IOUtils.closeQuietly(LOG_TAG, inputStream);
     }
   }
 
@@ -145,6 +140,7 @@ public final class I18nTranslationManager {
     previewLanguageOverride = "";
   }
 
+  @VisibleForTesting
   void putTranslationsForTesting(JSONObject root) {
     translationsRoot = root;
   }
