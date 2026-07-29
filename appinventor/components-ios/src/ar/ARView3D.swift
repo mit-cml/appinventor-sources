@@ -117,6 +117,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 
   private var startOptions: ARSession.RunOptions = []
   private var _reenableWebViewNodes: Bool = false
+  private var _startRotation: simd_quatf = simd_quatf(angle: 0, axis: [0, 1, 0])
   
   private var locationManager: CLLocationManager?
   private var deviceLocation: CLLocation?
@@ -1442,18 +1443,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                   position[0], position[1], position[2]
               )
           }
-          if !node._fromPropertyRotation.isEmpty {
-              let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
-                  .prefix(3)
-                  .map { Float(String($0)) ?? 0.0 }
-              let xRad = eulerDegrees[0] * .pi / 180.0
-              let yRad = eulerDegrees[1] * .pi / 180.0
-              let zRad = eulerDegrees[2] * .pi / 180.0
-              node._modelEntity.transform.rotation =
-                  simd_quatf(angle: yRad, axis: [0,1,0])
-                  * simd_quatf(angle: xRad, axis: [1,0,0])
-                  * simd_quatf(angle: zRad, axis: [0,0,1])
-          }
+          applyPropertyRotation(node)
           if hasInvisibleFloor {
               node.EnablePhysics(node.EnablePhysics)
           }
@@ -2047,6 +2037,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       return true
   }
   
+  private func applyPropertyRotation(_ node: ARNodeBase) {
+      guard !node._fromPropertyRotation.isEmpty else { return }
+      let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
+          .prefix(3)
+          .map { Float(String($0)) ?? 0.0 }
+      let xRad = eulerDegrees[0] * .pi / 180.0
+      let yRad = eulerDegrees[1] * .pi / 180.0
+      let zRad = eulerDegrees[2] * .pi / 180.0
+      node._modelEntity.transform.rotation =
+          simd_quatf(angle: yRad, axis: [0,1,0])
+          * simd_quatf(angle: xRad, axis: [1,0,0])
+          * simd_quatf(angle: zRad, axis: [0,0,1])
+  }
+  
+  
   private func handleGeoAnchorAdded(_ geoAnchor: ARGeoAnchor) {
       print("🌍 handleGeoAnchorAdded: \(geoAnchor.coordinate)")
       
@@ -2088,8 +2093,6 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       _arView.scene.addAnchor(anchorEntity)
       _nodeToAnchorDict[node] = anchorEntity
       node._anchorEntity = anchorEntity
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
         let worldPos = anchorEntity.position(relativeTo: nil)
         print("📍 \(node.Name) world position: \(worldPos)")
         
@@ -2105,11 +2108,23 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
       pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
       
-      if node.needsCameraFacingOrientationOnPlacement,
-         let cameraTransform = _arView.cameraTransform as Optional {
-          node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+    
+        let cameraTransform = _arView.cameraTransform
+        print("🔍 calling applyCameraFacingOrientation")
+        node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+        node.didApplyCameraFacingOrientation()
+       // applyPropertyRotation(node)
+    } else {
+        applyPropertyRotation(node)
+    }
+      // Always apply delta last, regardless of camera facing
+      if node._pendingRotationDelta != 0 {
+          let deltaY = simd_quatf(angle: node._pendingRotationDelta * .pi / 180.0, axis: [0, 1, 0])
+          node._modelEntity.transform.rotation = node._modelEntity.transform.rotation * deltaY
+          node._pendingRotationDelta = 0
       }
-      
+    
+    
       if hasInvisibleFloor {
           node.EnablePhysics(node.EnablePhysics)
       }
@@ -3159,22 +3174,20 @@ extension ARView3D: UIGestureRecognizerDelegate {
     
     switch sender.state {
     case .began:
-      let tapLocation = sender.location(in: _arView)
-      
-      if let closestNode = findClosestNode(tapLocation: tapLocation) {
-        trackingNode = closestNode
-        // Store the starting rotation
-        let euler = closestNode.quaternionToEulerAngles(closestNode._modelEntity.transform.rotation)
-        _rotation = euler.y
-        print("Started rotating node: \(closestNode.Name)")
-      }
-      
+        let tapLocation = sender.location(in: _arView)
+        if let closestNode = findClosestNode(tapLocation: tapLocation) {
+            trackingNode = closestNode
+            // Store full starting rotation, not just euler Y
+            _startRotation = closestNode._modelEntity.transform.rotation
+            print("Started rotating node: \(closestNode.Name)")
+        }
+
     case .changed:
-      if let node = trackingNode {
-        // Add the gesture rotation to the starting rotation
-        let newRotation = _rotation + Float(sender.rotation)
-        node.rotateByGesture(radians: newRotation)
-      }
+        if let node = trackingNode as? ARNodeBase {
+            // Apply gesture delta on top of starting rotation
+            let deltaY = simd_quatf(angle: Float(sender.rotation), axis: [0, 1, 0])
+            node._modelEntity.transform.rotation = deltaY * _startRotation
+        }
       
     case .ended, .cancelled, .failed:
       trackingNode = nil

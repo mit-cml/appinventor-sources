@@ -74,6 +74,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var _followingMarker: ARImageMarker? = nil
   public var _fromPropertyPosition = "0.0,0.0,0.0"
   public var _fromPropertyRotation = "0.0,0.0,0.0,1.0"
+  public var _pendingRotationDelta: Float = 0.0
   public var _fromGeoCoordinates = ""
   public var _objectModel: String = ""
   public var _geoAnchor: ARGeoAnchor?
@@ -309,14 +310,27 @@ open class ARNodeBase: NSObject, ARNode {
     }
   }
   
+  private func applyRotateY(_ degrees: Float) {
+      let radians = GLKMathDegreesToRadians(degrees)
+      let deltaY = simd_quatf(angle: radians, axis: [0, 1, 0])
+      // Pre-multiply = world space Y rotation, preserves pitch
+      _modelEntity.transform.rotation = deltaY * _modelEntity.transform.rotation
+  }
+  
   @objc open var RotateYBy: Float {
     get {
       return _rotateByDelta.y
     }
     set(degrees) {
-      _rotateByDelta.y = degrees
-      YRotation = degrees
+     
+      guard _modelEntity.parent != nil else {
+          _pendingRotationDelta += degrees  // accumulate delta separately
+          return
+      }
+      applyRotateY(degrees)
+      
     }
+
   }
   
   @objc open var RotateZBy: Float {
@@ -540,7 +554,10 @@ open class ARNodeBase: NSObject, ARNode {
     let radians = GLKMathDegreesToRadians(degrees)
     var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
     euler.y += radians
+    
     _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+    
+    
   }
   //TODO CSB remove
   @objc open func RotateZBy(_ degrees: Float) {
@@ -759,16 +776,10 @@ open class ARNodeBase: NSObject, ARNode {
   
   open func rotateByGesture(radians: Float) {
       if RotateWithGesture {
-          // Decompose current rotation into swing (X&Z) and twist (Y)
-          let (swing, _) = swingTwist(_modelEntity.transform.rotation, whichAxis: "y")
-          
-          // Create new Y rotation
-          let newTwist = simd_quatf(angle: radians, axis: [0, 1, 0])
-          
-          // Recombine: swing * twist
-          _modelEntity.transform.rotation = swing * newTwist
+          // Delta rotation around world Y, preserving current orientation
+          let deltaY = simd_quatf(angle: radians, axis: [0, 1, 0])
+          _modelEntity.transform.rotation = deltaY * _modelEntity.transform.rotation
       }
-    
   }
   
   // MARK: - Serialization Methods
@@ -1156,10 +1167,8 @@ open class ARNodeBase: NSObject, ARNode {
     print("   ✅ Attached! node is at \(_nodeWorldTransform)")
   }
   
-  //not being using currently
-  @objc open func defaultCameraFacingOrientation() -> simd_quatf {
-      // Default: just yaw (for 3D objects)
-      return simd_quatf(angle: 0, axis: [1, 0, 0])
+  open func didApplyCameraFacingOrientation() {
+      // subclasses override to apply additional rotation after camera facing
   }
 
   /* csb will use at some point */
@@ -1197,14 +1206,13 @@ open class ARNodeBase: NSObject, ARNode {
       print("📐 plane's +X points toward world: \(worldRight)")
       print("📐 plane's +Z points toward world: \(worldForward)")
   }
-  func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
 
+  
+  func applyCameraFacingOrientation(cameraPosition: SIMD3<Float>) {
       let modelPosition = _modelEntity.position(relativeTo: nil)
-      
       let dx = cameraPosition.x - modelPosition.x
       let dz = cameraPosition.z - modelPosition.z
       let distance = sqrt(dx * dx + dz * dz)
-      
       guard distance > 0.001 else { return }
 
       let forward = normalize(SIMD3<Float>(dx, 0, dz))
@@ -1216,11 +1224,27 @@ open class ARNodeBase: NSObject, ARNode {
       if self is TextNode {
           let matrix = simd_float3x3(right, forward, -up)
           desiredWorldOrientation = simd_quatf(matrix)
-      } else {
-          let matrix = simd_float3x3(right, up, -forward)
-          desiredWorldOrientation = simd_quatf(matrix)
-      }
-      
+      }else if self is VideoNode {
+        let pitch = simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])
+        let yawAngle = atan2(dx, dz) + .pi  // +.pi because face is at -Z not +Z
+        let yaw = simd_quatf(angle: yawAngle, axis: [0, 1, 0])
+        let desiredOrientation = yaw * pitch
+    
+           
+           if let parent = _modelEntity.parent {
+               let parentWorldQuat = parent.orientation(relativeTo: nil)
+               _modelEntity.orientation = parentWorldQuat.inverse * desiredOrientation
+           } else {
+               _modelEntity.setOrientation(desiredOrientation, relativeTo: nil)
+           }
+
+            print("🎬 dx=\(dx) dz=\(dz) yaw=\(yawAngle * 180 / .pi)°")
+          return
+    }else {
+            let matrix = simd_float3x3(right, up, -forward)
+            desiredWorldOrientation = simd_quatf(matrix)
+        }
+
       if let parent = _modelEntity.parent {
           let parentWorldQuat = parent.orientation(relativeTo: nil)
           let localOrientation = parentWorldQuat.inverse * desiredWorldOrientation
@@ -1228,8 +1252,9 @@ open class ARNodeBase: NSObject, ARNode {
       } else {
           _modelEntity.setOrientation(desiredWorldOrientation, relativeTo: nil)
       }
-    print("📐applyCameraFacingOrientation forward: \(forward), right: \(right), up: \(up), parent: \(String(describing: _modelEntity.parent))")
+      
       print("🎯 applyCameraFacing result world orientation: \(desiredWorldOrientation)")
+      // NO didApplyCameraFacingOrientation() here — caller controls order
   }
   
   

@@ -42,7 +42,7 @@ void chromaKeyModifier(realitykit::surface_parameters params) {
     auto tex      = params.textures();
 
     float2 uv = geometry.uv0();
-    uv.y = 1.0 - uv.y;  // flip vertically
+    //uv.y = 1.0 - uv.y;  // flip vertically
     float3 rgb = float3(tex.custom().sample(videoSampler, uv).rgb);
 
     float4 keyParams = params.uniforms().custom_parameter();

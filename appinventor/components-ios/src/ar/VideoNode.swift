@@ -124,22 +124,21 @@ open class VideoNode: ARNodeBase, ARVideo {
     fatalError("init(coder:) has not been implemented")
   }
 
-  override open func defaultCameraFacingOrientation() -> simd_quatf {
-    return simd_quatf(angle: .pi, axis: [1, 0, 0])  // Pitch -90°
-  }
-
   @objc private func setupVideoNode() {
-    let mesh = MeshResource.generatePlane(width: _videoWidth, height: _videoHeight)
+    // Use depth: instead of height: so the plane face points +Z (no baked-in UV flip)
+    let mesh = MeshResource.generatePlane(width: _videoWidth, depth: _videoHeight)
     _modelEntity.model = ModelComponent(mesh: mesh, materials: [])
   }
-  
-  override open func orientationForMarkerAttachment() -> simd_quatf {
-      let standUpright = simd_quatf(angle: +.pi/2, axis: [1, 0, 0])
-      let cancelYFlip = simd_quatf(angle: .pi, axis: [0, 1, 0])
-      return standUpright * cancelYFlip
-  }
-  
+
+  // Face points +Z at identity — just yaw to face camera, no pitch or flip needed
   override open var needsCameraFacingOrientationOnPlacement: Bool { return true }
+
+  // didApplyCameraFacingOrientation not needed — depth plane handles orientation cleanly
+  // orientationForMarkerAttachment uses +Z facing plane, stand upright with X pitch only
+  override open func orientationForMarkerAttachment() -> simd_quatf {
+    // Plane face points +Z, stand upright: no Y flip needed anymore
+    return simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
+  }
 
   // MARK: Properties
   @objc open var WidthInCentimeters: Float {
@@ -161,8 +160,12 @@ open class VideoNode: ARNodeBase, ARVideo {
       updateVideoPlaneSize()
     }
   }
-  
 
+  private func updateVideoPlaneSize() {
+    // Keep depth: consistent with setupVideoNode
+    let mesh = MeshResource.generatePlane(width: _videoWidth, depth: _videoHeight)
+    _modelEntity.model?.mesh = mesh
+  }
 
   private func retryLoadingSource(path: String, delay: TimeInterval = 0.5) {
       guard _sourceRetryCount < _maxSourceRetries else {
@@ -181,12 +184,6 @@ open class VideoNode: ARNodeBase, ARVideo {
       DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
           self?.loadVideoSource(path: path)
       }
-  }
-
-  private func updateVideoPlaneSize() {
-    let mesh = MeshResource.generatePlane(width: _videoWidth, height: _videoHeight)
-    // Materials persist across mesh swaps automatically; no need to reassign them here.
-    _modelEntity.model?.mesh = mesh
   }
 
   @objc open var Source: String {
@@ -212,7 +209,6 @@ open class VideoNode: ARNodeBase, ARVideo {
   }
 
   private func loadVideoSource(path: String) {
-    
     print("🔍 loadVideoSource — isHTTP: \(path.hasPrefix("http")), path: \(path)")
     if _isObservingStatus, let oldItem = _videoItem {
       oldItem.removeObserver(self, forKeyPath: "status")
@@ -293,8 +289,6 @@ open class VideoNode: ARNodeBase, ARVideo {
 
   @available(iOS 15.0, *)
   private func setupVideoOutput(for item: AVPlayerItem) {
-    // BGRA is the simplest format to map straight into a Metal texture,
-    // no YCbCr plane conversion needed.
     let attrs: [String: Any] = [
       kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
     ]
@@ -308,7 +302,7 @@ open class VideoNode: ARNodeBase, ARVideo {
         return
       }
       _metalDevice = device
-      _commandQueue = device.makeCommandQueue()   // ← add this line
+      _commandQueue = device.makeCommandQueue()
       var cache: CVMetalTextureCache?
       CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &cache)
       _textureCache = cache
@@ -350,7 +344,6 @@ open class VideoNode: ARNodeBase, ARVideo {
         }
       } else {
         print("❌ Isn't ios18, fallback")
-        
       }
      
     } catch {
@@ -365,7 +358,7 @@ open class VideoNode: ARNodeBase, ARVideo {
       bitsPerComponent: 8, bytesPerRow: width * 4,
       space: colorSpace,
       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
-    context.clear(CGRect(x: 0, y: 0, width: width, height: height))  // ← zero it: transparent black
+    context.clear(CGRect(x: 0, y: 0, width: width, height: height))
     return context.makeImage()!
   }
 
@@ -394,7 +387,6 @@ open class VideoNode: ARNodeBase, ARVideo {
 
     guard let mtlTexture = makeTexture(from: pixelBuffer, cache: cache) else { return }
 
-    // Lazily create the drawable queue once we know the real frame dimensions.
     if _drawableQueue == nil {
       setupDrawableQueue(width: mtlTexture.width, height: mtlTexture.height)
     }
@@ -542,7 +534,6 @@ open class VideoNode: ARNodeBase, ARVideo {
     }
   }
 
-  // Stop the display link / detach the video output when the source changes or node is torn down
   private func teardownVideoOutput() {
     stopDisplayLink()
     if #available(iOS 15.0, *) {
@@ -601,11 +592,7 @@ open class VideoNode: ARNodeBase, ARVideo {
       _isObservingStatus = false
       print("🔧 Removed observer in deinit")
     }
-
-    // Remove notification observer
     NotificationCenter.default.removeObserver(self)
-
-    // Clean up
     cancellables.removeAll()
   }
 
@@ -614,11 +601,11 @@ open class VideoNode: ARNodeBase, ARVideo {
     let hadPhysics = _modelEntity.physicsBody != nil
 
     let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let halfHeight = (bounds.max.y - bounds.min.y) / 2.0  // Use Y for height
+    let halfHeight = (bounds.max.y - bounds.min.y) / 2.0
     let newScale = oldScale * abs(scalar)
 
     if hadPhysics {
-      let previousSize = halfHeight * oldScale  // Use oldScale for clarity
+      let previousSize = halfHeight * oldScale
       _modelEntity.position.y = _modelEntity.position.y - previousSize + (halfHeight * newScale)
     }
 
@@ -630,7 +617,6 @@ open class VideoNode: ARNodeBase, ARVideo {
     let newScale = oldScale * abs(scalar)
 
     let hadPhysics = _modelEntity.physicsBody != nil
-    // Use internal _height like SphereNode uses _radius
     let halfHeight = _videoHeight / 2.0
     let previousSize = halfHeight * oldScale
     if hadPhysics {
