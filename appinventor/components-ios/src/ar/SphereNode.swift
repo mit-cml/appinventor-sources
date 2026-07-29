@@ -1028,7 +1028,11 @@ private func monitorPostCollisionState() {
       }
         
     case .ended, .cancelled:
-      endDrag(releaseVelocity: fingerVelocity, camera3DProjection: camera3DProjection!)
+      endDrag(releaseVelocity: fingerVelocity,
+              camera3DProjection: camera3DProjection ?? ARView3D.CameraVectors(
+                  right: SIMD3<Float>(1, 0, 0),
+                  forward: SIMD3<Float>(0, 0, -1)
+              ))
         
     default:
       break

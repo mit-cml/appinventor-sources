@@ -1649,7 +1649,12 @@ extension ARNodeBase {
       }
         
     case .ended, .cancelled:
-      endDrag(releaseVelocity: fingerVelocity, camera3DProjection: camera3DProjection!)
+      guard let cameraProjection = camera3DProjection else {
+          _isBeingDragged = false
+          print("⚠️ No camera projection on drag end")
+          return
+      }
+      endDrag(releaseVelocity: fingerVelocity, camera3DProjection: cameraProjection)
         
     default:
         break
