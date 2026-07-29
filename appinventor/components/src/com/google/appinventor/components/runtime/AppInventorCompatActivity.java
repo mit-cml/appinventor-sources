@@ -29,6 +29,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.util.I18nTranslationManager;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.theme.ClassicThemeHelper;
@@ -61,6 +62,7 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
   private static Theme currentTheme = Theme.PACKAGED;
   private static int primaryColor;
   private AppCompatDelegate appCompatDelegate;
+  private I18nTranslationManager i18nTranslationManager;
   android.widget.LinearLayout frameWithTitle;
   TextView titleBar;
   private static boolean didSetClassicModeFromYail = false;
@@ -397,4 +399,19 @@ public class AppInventorCompatActivity extends Activity implements AppCompatCall
       didSetClassicModeFromYail = true;
     }
   }
+
+  public I18nTranslationManager getI18nTranslationManager() {
+    if (i18nTranslationManager == null) {
+      i18nTranslationManager = new I18nTranslationManager();
+    }
+    return i18nTranslationManager;
+  }
+
+  protected void clearI18nTranslationManager() {
+    if (i18nTranslationManager != null) {
+      i18nTranslationManager.clear();
+      i18nTranslationManager = null;
+    }
+  }
+
 }
