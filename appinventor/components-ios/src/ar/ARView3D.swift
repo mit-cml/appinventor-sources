@@ -2088,6 +2088,19 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       _arView.scene.addAnchor(anchorEntity)
       _nodeToAnchorDict[node] = anchorEntity
       node._anchorEntity = anchorEntity
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        let worldPos = anchorEntity.position(relativeTo: nil)
+        print("📍 \(node.Name) world position: \(worldPos)")
+        
+        if let frame = self._arView.session.currentFrame {
+            let camPos = frame.camera.transform.columns.3
+            let cameraPosition = SIMD3<Float>(camPos.x, camPos.y, camPos.z)
+            let distance = simd_distance(worldPos, cameraPosition)
+            print("📍 Distance from camera: \(distance)m")
+            print("📍 Camera position: \(cameraPosition)")
+        }
+    }
       
       pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
       pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
@@ -2253,7 +2266,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
-
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2262,8 +2277,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Name = "BoxNode"
 
       node.Initialize()
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2272,8 +2295,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Name = "BoxNode"
 
       node.Initialize()
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2320,8 +2351,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let correctedModelObjString = replaceExtension(modelObjString, with: "usdz")
       node.Model = correctedModelObjString
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2334,6 +2373,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2353,8 +2395,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node:SphereNode = SphereNode(self)
       node.Name = "SphereNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2383,6 +2433,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
       
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2391,8 +2444,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node:TextNode = TextNode(self)
       node.Name = "TextNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2401,8 +2462,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node:VideoNode = VideoNode(self)
       node.Name = "VideoNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2413,7 +2482,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
       
       setupLocation(x: x, y: y, z: z, latitude: lat, longitude: lng, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
-      
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2612,8 +2683,16 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let node:WebViewNode = WebViewNode(self)
       node.Name = "WebViewNode"
       node.Initialize()  // order is important as we need to set geoanchor first b/c init overrides it - or fix that
-      node._modelEntity.setPosition(targetPlane.getPosition(), relativeTo: nil)
-      setupNonGeo(x: point["x"] as! Float, y: point["y"] as! Float, z: point["z"] as! Float, node: node)
+      let planePos = targetPlane.getPosition()
+      setupNonGeo(
+          x: planePos.x + (point["x"] as! Float),
+          y: planePos.y + (point["y"] as! Float),
+          z: planePos.z + (point["z"] as! Float),
+          node: node
+      )
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2624,7 +2703,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
       
       setupLocation(x: x, y: y, z: z, latitude: latitude, longitude: longitude, altitude: altitude, node: node, hasGeoCoordinates: hasGeoCoordinates)
-      
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
