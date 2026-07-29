@@ -60,10 +60,7 @@ open class TextNode: ARNodeBase, ARText {
    return simd_quatf(angle: .pi/2, axis: [1, 0, 0])
 }*/
   
-  override open func defaultCameraFacingOrientation() -> simd_quatf {
-      return simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // Pitch -90°
-  }
-  
+
   override open var needsCameraFacingOrientationOnPlacement: Bool { return true }
   
   public func calculateTextBoundsNoScale() -> (width: Float, height: Float) {

@@ -55,9 +55,7 @@ open class PlaneNode: ARNodeBase, ARPlane {
   }
 
   
-  override open func defaultCameraFacingOrientation() -> simd_quatf {
-      return simd_quatf(angle: -.pi / 2, axis: [1, 0, 0])  // Pitch -90°
-  }
+
   
   @objc open var WidthInCentimeters: Float {
     get {
