@@ -2103,7 +2103,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
             print("📍 Distance from camera: \(distance)m")
             print("📍 Camera position: \(cameraPosition)")
         }
-    }
+    
       
       pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
       pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
@@ -3181,14 +3181,14 @@ extension ARView3D: UIGestureRecognizerDelegate {
             _startRotation = closestNode._modelEntity.transform.rotation
             print("Started rotating node: \(closestNode.Name)")
         }
-
+      break
     case .changed:
         if let node = trackingNode as? ARNodeBase {
             // Apply gesture delta on top of starting rotation
             let deltaY = simd_quatf(angle: Float(sender.rotation), axis: [0, 1, 0])
             node._modelEntity.transform.rotation = deltaY * _startRotation
         }
-      
+      break
     case .ended, .cancelled, .failed:
       trackingNode = nil
       print("Ended rotating node: \(_rotation)")
