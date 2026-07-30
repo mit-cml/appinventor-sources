@@ -74,7 +74,9 @@ open class ARNodeBase: NSObject, ARNode {
   public var _followingMarker: ARImageMarker? = nil
   public var _fromPropertyPosition = "0.0,0.0,0.0"
   public var _fromPropertyRotation = "0.0,0.0,0.0,1.0"
-  public var _pendingRotationDelta: Float = 0.0
+  public var _pendingYRotationDelta: Float = 0.0
+  public var _pendingXRotationDelta: Float = 0.0
+  public var _pendingZRotationDelta: Float = 0.0
   public var _fromGeoCoordinates = ""
   public var _objectModel: String = ""
   public var _geoAnchor: ARGeoAnchor?
@@ -306,43 +308,6 @@ open class ARNodeBase: NSObject, ARNode {
       // Pre-multiply = world space Y rotation, preserves pitch
       _modelEntity.transform.rotation = deltaY * _modelEntity.transform.rotation
   }
-  
-  
-  
-  @objc open var RotateYBy: Float {
-    get {
-      return _rotateByDelta.y
-    }
-    set(degrees) {
-     
-      guard _modelEntity.parent != nil else {
-          _pendingRotationDelta += degrees  // accumulate delta separately
-          return
-      }
-      applyRotateY(degrees)
-      
-    }
-
-  }
-  
-  @objc open var RotateXBy: Float {
-      get { return _rotateByDelta.x }
-      set(degrees) {
-          let radians = degrees * .pi / 180.0
-          let deltaX = simd_quatf(angle: radians, axis: [1, 0, 0])
-          _modelEntity.transform.rotation = deltaX * _modelEntity.transform.rotation
-      }
-  }
-
-  @objc open var RotateZBy: Float {
-      get { return _rotateByDelta.z }
-      set(degrees) {
-          let radians = degrees * .pi / 180.0
-          let deltaZ = simd_quatf(angle: radians, axis: [0, 0, 1])
-          _modelEntity.transform.rotation = deltaZ * _modelEntity.transform.rotation
-      }
-  }
-
 
   
   @objc open var ModelUrl: String {
@@ -542,32 +507,46 @@ open class ARNodeBase: NSObject, ARNode {
   public func setWidthPercent(_ toPercent: Int32) {}
   public func setHeightPercent(_ toPercent: Int32) {}
   
+  @objc(setRotateXBy:) open func setRotateXBy(_ degrees: Float) {
+      RotateXBy(degrees)
+  }
+  @objc(setRotateYBy:) open func setRotateYBy(_ degrees: Float) {
+      RotateYBy(degrees)
+  }
+  @objc(setRotateZBy:) open func setRotateZBy(_ degrees: Float) {
+      RotateZBy(degrees)
+  }
   // MARK: - Movement Methods
-  //TODO CSB remove
   @objc open func RotateXBy(_ degrees: Float) {
-    let radians = GLKMathDegreesToRadians(degrees)
-    var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-    euler.x += radians
-    _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+      guard _modelEntity.parent != nil else {
+          _pendingXRotationDelta += degrees
+          return
+      }
+      print("rotateXBy \(degrees)")
+      let radians = GLKMathDegreesToRadians(degrees)
+      let deltaX = simd_quatf(angle: radians, axis: [1, 0, 0])
+      _modelEntity.transform.rotation = _modelEntity.transform.rotation * deltaX
   }
-  //TODO CSB remove
   @objc open func RotateYBy(_ degrees: Float) {
-    let radians = GLKMathDegreesToRadians(degrees)
-    var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-    euler.y += radians
-    
-    _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
-    
-    
-  }
-  //TODO CSB remove
-  @objc open func RotateZBy(_ degrees: Float) {
-    let radians = GLKMathDegreesToRadians(degrees)
-    var euler = quaternionToEulerAngles(_modelEntity.transform.rotation)
-    euler.z += radians
-    _modelEntity.transform.rotation = eulerAnglesToQuaternion(euler)
+      guard _modelEntity.parent != nil else {
+          _pendingYRotationDelta += degrees
+          return
+      }
+      let radians = GLKMathDegreesToRadians(degrees)
+      let deltaY = simd_quatf(angle: radians, axis: [0, 1, 0])
+      _modelEntity.transform.rotation = deltaY * _modelEntity.transform.rotation
   }
 
+  @objc open func RotateZBy(_ degrees: Float) {
+      guard _modelEntity.parent != nil else {
+          _pendingZRotationDelta += degrees
+          return
+      }
+      print("rotateZBy \(degrees)")
+      let radians = GLKMathDegreesToRadians(degrees)
+      let deltaZ = simd_quatf(angle: radians, axis: [0, 0, 1])
+      _modelEntity.transform.rotation = _modelEntity.transform.rotation * deltaZ
+  }
   
   @objc open func MoveBy(_ x: Float, _ y: Float, _ z: Float) {
     let xMeters: Float = UnitHelper.centimetersToMeters(x)

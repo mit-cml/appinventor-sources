@@ -397,7 +397,7 @@ open class VideoNode: ARNodeBase, ARVideo {
       let drawable = try queue.nextDrawable()
       let destTexture = drawable.texture
 
-      guard let commandQueue = _commandQueue,               // ← changed
+      guard let commandQueue = _commandQueue,
             let commandBuffer = commandQueue.makeCommandBuffer(),
             let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
         return

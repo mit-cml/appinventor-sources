@@ -2042,13 +2042,25 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let eulerDegrees = node._fromPropertyRotation.split(separator: ",")
           .prefix(3)
           .map { Float(String($0)) ?? 0.0 }
+      
       let xRad = eulerDegrees[0] * .pi / 180.0
       let yRad = eulerDegrees[1] * .pi / 180.0
       let zRad = eulerDegrees[2] * .pi / 180.0
-      node._modelEntity.transform.rotation =
-          simd_quatf(angle: yRad, axis: [0,1,0])
-          * simd_quatf(angle: xRad, axis: [1,0,0])
-          * simd_quatf(angle: zRad, axis: [0,0,1])
+      
+      if node.needsCameraFacingOrientationOnPlacement {
+          guard xRad != 0 || yRad != 0 || zRad != 0 else { return }
+          let deltaX = simd_quatf(angle: xRad, axis: [1, 0, 0])
+          let deltaY = simd_quatf(angle: yRad, axis: [0, 1, 0])
+          let deltaZ = simd_quatf(angle: zRad, axis: [0, 0, 1])
+          let delta = deltaY * deltaX * deltaZ
+          node._modelEntity.transform.rotation = delta * node._modelEntity.transform.rotation
+      } else {
+          guard xRad != 0 || yRad != 0 || zRad != 0 else { return }
+          node._modelEntity.transform.rotation =
+              simd_quatf(angle: yRad, axis: [0, 1, 0])
+              * simd_quatf(angle: xRad, axis: [1, 0, 0])
+              * simd_quatf(angle: zRad, axis: [0, 0, 1])
+      }
   }
   
   
@@ -2067,21 +2079,21 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       let anchorEntity: AnchorEntity
       if geoState == .localized {
-          anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
-          print("🌍 Geo localized — ARKit resolves \(geoAnchor.coordinate)")
+            anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
+            print("🌍 Geo localized — ARKit resolves \(geoAnchor.coordinate)")
       }  else {
-        // ✅ Not localized — use stored tap x,y,z not geoAnchor.transform
-        let position = node._fromPropertyPosition.split(separator: ",")
-            .prefix(3)
-            .map { Float(String($0)) ?? 0.0 }
-        let worldPosition = SIMD3<Float>(
-            position.count > 0 ? position[0] : 0,
-            position.count > 1 ? position[1] : 0,
-            position.count > 2 ? position[2] : 0
-        )
-        anchorEntity = AnchorEntity(world: worldPosition)
-        print("⬇️ Geo not localized — SLAM fallback at tap position: \(worldPosition)")
-    }
+          // ✅ Not localized — use stored tap x,y,z not geoAnchor.transform
+          let position = node._fromPropertyPosition.split(separator: ",")
+              .prefix(3)
+              .map { Float(String($0)) ?? 0.0 }
+          let worldPosition = SIMD3<Float>(
+              position.count > 0 ? position[0] : 0,
+              position.count > 1 ? position[1] : 0,
+              position.count > 2 ? position[2] : 0
+          )
+          anchorEntity = AnchorEntity(world: worldPosition)
+          print("⬇️ Geo not localized — SLAM fallback at tap position: \(worldPosition)")
+      }
       
       if let staleAnchor = node._modelEntity.parent as? AnchorEntity {
           node._modelEntity.removeFromParent()
@@ -2093,35 +2105,47 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       _arView.scene.addAnchor(anchorEntity)
       _nodeToAnchorDict[node] = anchorEntity
       node._anchorEntity = anchorEntity
-        let worldPos = anchorEntity.position(relativeTo: nil)
-        print("📍 \(node.Name) world position: \(worldPos)")
-        
-        if let frame = self._arView.session.currentFrame {
-            let camPos = frame.camera.transform.columns.3
-            let cameraPosition = SIMD3<Float>(camPos.x, camPos.y, camPos.z)
-            let distance = simd_distance(worldPos, cameraPosition)
-            print("📍 Distance from camera: \(distance)m")
-            print("📍 Camera position: \(cameraPosition)")
-        }
+      let worldPos = anchorEntity.position(relativeTo: nil)
+      print("📍 \(node.Name) world position: \(worldPos)")
+      
+      if let frame = self._arView.session.currentFrame {
+          let camPos = frame.camera.transform.columns.3
+          let cameraPosition = SIMD3<Float>(camPos.x, camPos.y, camPos.z)
+          let distance = simd_distance(worldPos, cameraPosition)
+          print("📍 Distance from camera: \(distance)m")
+          print("📍 Camera position: \(cameraPosition)")
+      }
     
       
       pendingGeoAnchorTimers[ObjectIdentifier(node)]?.cancel()
       pendingGeoAnchorTimers.removeValue(forKey: ObjectIdentifier(node))
       
-    
-        let cameraTransform = _arView.cameraTransform
-        print("🔍 calling applyCameraFacingOrientation")
-        node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
-        node.didApplyCameraFacingOrientation()
-       // applyPropertyRotation(node)
-    } else {
-        applyPropertyRotation(node)
-    }
+      if node.needsCameraFacingOrientationOnPlacement {
+          let cameraTransform = _arView.cameraTransform
+          print("🔍 calling applyCameraFacingOrientation")
+          node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+          node.didApplyCameraFacingOrientation()
+          applyPropertyRotation(node)
+      } else {
+          applyPropertyRotation(node)
+      }
       // Always apply delta last, regardless of camera facing
-      if node._pendingRotationDelta != 0 {
-          let deltaY = simd_quatf(angle: node._pendingRotationDelta * .pi / 180.0, axis: [0, 1, 0])
-          node._modelEntity.transform.rotation = node._modelEntity.transform.rotation * deltaY
-          node._pendingRotationDelta = 0
+      if node._pendingYRotationDelta != 0 {
+          let deltaY = simd_quatf(angle: node._pendingYRotationDelta * .pi / 180.0, axis: [0, 1, 0])
+          node._modelEntity.transform.rotation = deltaY * node._modelEntity.transform.rotation
+          node._pendingYRotationDelta = 0
+      }
+
+      if node._pendingXRotationDelta != 0 {
+          let deltaX = simd_quatf(angle: node._pendingXRotationDelta * .pi / 180.0, axis: [1, 0, 0])
+          node._modelEntity.transform.rotation = node._modelEntity.transform.rotation * deltaX
+          node._pendingXRotationDelta = 0
+      }
+
+      if node._pendingZRotationDelta != 0 {
+          let deltaZ = simd_quatf(angle: node._pendingZRotationDelta * .pi / 180.0, axis: [0, 0, 1])
+          node._modelEntity.transform.rotation = node._modelEntity.transform.rotation * deltaZ
+          node._pendingZRotationDelta = 0
       }
     
     
@@ -2130,7 +2154,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       }
       
       print("✅ \(node.Name) placed, visible: \(node.Visible), enabled: \(node._modelEntity.isEnabled)")
-  }
+    }
   
   
     // MARK: Events
