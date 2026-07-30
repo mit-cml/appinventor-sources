@@ -1415,6 +1415,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                   print("📍 \(node.Name) geo anchor set from _fromGeoCoordinates: \(coordinate)")
               }
           }
+        
       }
       
       if shouldUseGeoCoordinates(node.IsGeoAnchored) {
@@ -1435,6 +1436,7 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
           if !node.IsFollowingImageMarker {
               _arView.scene.addAnchor(anchorEntity)
           }
+        
           if !node._fromPropertyPosition.isEmpty {
               let position = node._fromPropertyPosition.split(separator: ",")
                   .prefix(3)
@@ -1443,7 +1445,32 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
                   position[0], position[1], position[2]
               )
           }
-          applyPropertyRotation(node)
+        
+          if node.needsCameraFacingOrientationOnPlacement {
+              let cameraTransform = _arView.cameraTransform
+              node.applyCameraFacingOrientation(cameraPosition: cameraTransform.translation)
+              node.didApplyCameraFacingOrientation()
+              applyPropertyRotation(node)
+          } else {
+              applyPropertyRotation(node)
+          }
+        
+          if node._pendingYRotationDelta != 0 {
+               let deltaY = simd_quatf(angle: node._pendingYRotationDelta * .pi / 180.0, axis: [0, 1, 0])
+               node._modelEntity.transform.rotation = deltaY * node._modelEntity.transform.rotation
+               node._pendingYRotationDelta = 0
+           }
+           if node._pendingXRotationDelta != 0 {
+               let deltaX = simd_quatf(angle: node._pendingXRotationDelta * .pi / 180.0, axis: [1, 0, 0])
+               node._modelEntity.transform.rotation = node._modelEntity.transform.rotation * deltaX
+               node._pendingXRotationDelta = 0
+           }
+           if node._pendingZRotationDelta != 0 {
+               let deltaZ = simd_quatf(angle: node._pendingZRotationDelta * .pi / 180.0, axis: [0, 0, 1])
+               node._modelEntity.transform.rotation = node._modelEntity.transform.rotation * deltaZ
+               node._pendingZRotationDelta = 0
+           }
+        
           if hasInvisibleFloor {
               node.EnablePhysics(node.EnablePhysics)
           }
@@ -2215,6 +2242,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
 
       node.setPosition(x: x, y: y, z: z)
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2223,6 +2253,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
 
       node.setPosition(x: x, y: y, z: z)
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
 
@@ -2232,6 +2265,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
 
       node.setPosition(x: x, y: y, z: z)
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     /*
@@ -2260,6 +2296,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       node.Initialize()
       
       node.setPosition(x: x, y: y, z: z)
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2370,7 +2409,9 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       let safeY = max(y, groundLevel + ARView3D.VERTICAL_OFFSET) // At least 1cm above ground
       
       node.setPosition(x: x, y: safeY, z: z)
-      
+      if _sessionRunning {
+          realizeNode(node)
+      }
       return node
     }
     
@@ -2558,12 +2599,15 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
 */
      
      @objc open func CreateVideoNode(_ x: Float, _ y: Float, _ z: Float) -> VideoNode {
-     let node = VideoNode(self)
-     node.Name = "CreatedVideoNode"
-     node.Initialize()
-     
-     node.setPosition(x: x, y: y, z: z)
-     return node
+       let node = VideoNode(self)
+       node.Name = "CreatedVideoNode"
+       node.Initialize()
+       
+       node.setPosition(x: x, y: y, z: z)
+       if _sessionRunning {
+           realizeNode(node)
+       }
+       return node
      }
      
     
