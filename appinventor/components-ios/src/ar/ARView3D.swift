@@ -2106,8 +2106,10 @@ open class ARView3D: ViewComponent, ARSessionDelegate, ARNodeContainer, CLLocati
       
       let anchorEntity: AnchorEntity
       if geoState == .localized {
-            anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
-            print("🌍 Geo localized — ARKit resolves \(geoAnchor.coordinate)")
+          anchorEntity = AnchorEntity(.anchor(identifier: geoAnchor.identifier))
+          print("🌍 Geo localized — ARKit resolves \(geoAnchor.coordinate) for node \(node)")
+        node.IsGeoLocalized = true
+        EventDispatcher.dispatchEvent(of: self, called: "GeoAnchorLocalized", arguments: node as AnyObject)
       }  else {
           // ✅ Not localized — use stored tap x,y,z not geoAnchor.transform
           let position = node._fromPropertyPosition.split(separator: ",")

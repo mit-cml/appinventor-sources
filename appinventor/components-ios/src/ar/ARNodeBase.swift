@@ -80,6 +80,7 @@ open class ARNodeBase: NSObject, ARNode {
   public var _fromGeoCoordinates = ""
   public var _objectModel: String = ""
   public var _geoAnchor: ARGeoAnchor?
+  public var _geoAnchorLocalized: Bool = false
   public var _worldOffset: SIMD3<Float>?
   public var _creatorSessionStart: CLLocation?
   
@@ -158,10 +159,16 @@ open class ARNodeBase: NSObject, ARNode {
       return _geoAnchor
   }
   
+
   @objc open var IsGeoAnchored: Bool {
       return getGeoAnchor() != nil
   }
   
+  @objc open var IsGeoLocalized: Bool {
+      get { return _geoAnchorLocalized }
+      set { _geoAnchorLocalized = newValue }
+  }
+
   @objc open var GeoCoordinates: [Double] {
       guard let geoAnchor = getGeoAnchor() else {
           return []
