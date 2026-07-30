@@ -299,23 +299,15 @@ open class ARNodeBase: NSObject, ARNode {
       _modelEntity.transform.rotation = swing * newTwist
     }
   }
-  
-  @objc open var RotateXBy: Float {
-    get {
-      return _rotateByDelta.x
-    }
-    set(degrees) {
-      _rotateByDelta.x = degrees
-      XRotation = degrees
-    }
-  }
-  
+
   private func applyRotateY(_ degrees: Float) {
       let radians = GLKMathDegreesToRadians(degrees)
       let deltaY = simd_quatf(angle: radians, axis: [0, 1, 0])
       // Pre-multiply = world space Y rotation, preserves pitch
       _modelEntity.transform.rotation = deltaY * _modelEntity.transform.rotation
   }
+  
+  
   
   @objc open var RotateYBy: Float {
     get {
@@ -333,15 +325,24 @@ open class ARNodeBase: NSObject, ARNode {
 
   }
   
-  @objc open var RotateZBy: Float {
-    get {
-      return _rotateByDelta.z
-    }
-    set(degrees) {
-      _rotateByDelta.z = degrees
-      ZRotation = degrees
-    }
+  @objc open var RotateXBy: Float {
+      get { return _rotateByDelta.x }
+      set(degrees) {
+          let radians = degrees * .pi / 180.0
+          let deltaX = simd_quatf(angle: radians, axis: [1, 0, 0])
+          _modelEntity.transform.rotation = deltaX * _modelEntity.transform.rotation
+      }
   }
+
+  @objc open var RotateZBy: Float {
+      get { return _rotateByDelta.z }
+      set(degrees) {
+          let radians = degrees * .pi / 180.0
+          let deltaZ = simd_quatf(angle: radians, axis: [0, 0, 1])
+          _modelEntity.transform.rotation = deltaZ * _modelEntity.transform.rotation
+      }
+  }
+
 
   
   @objc open var ModelUrl: String {
