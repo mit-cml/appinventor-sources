@@ -3084,9 +3084,12 @@ extension ARView3D: UIGestureRecognizerDelegate {
                 node._modelEntity.model != nil,
                 !node.Name.isEmpty else { continue }
 
-          // WORLD space position for everything
-          let worldPos = node._modelEntity.position(relativeTo: nil)
-
+          let vb = node._modelEntity.visualBounds(relativeTo: nil)
+          let worldPos = SIMD3<Float>(
+              (vb.min.x + vb.max.x) / 2.0,
+              (vb.min.y + vb.max.y) / 2.0,
+              (vb.min.z + vb.max.z) / 2.0
+          )
           // Discard things behind the camera
           let toNode = worldPos - origin
           let depthAlongRay = simd_dot(toNode, screenRayDir)
@@ -3113,7 +3116,7 @@ extension ARView3D: UIGestureRecognizerDelegate {
           let distToRay = simd_length(crossVec)
 
           // Use a size-aware radius based on visual bounds in WORLD space
-          let vb = node._modelEntity.visualBounds(relativeTo: nil)
+          
           let size = vb.max - vb.min
           let radius = max(max(size.x, size.y), size.z) * 0.5
 
@@ -3125,6 +3128,12 @@ extension ARView3D: UIGestureRecognizerDelegate {
           if best == nil || score < best!.score {
               best = (node, depthAlongRay, score)
           }
+        
+        if let result = best {
+            print("✅ findClosestNode: found via ray — \(result.node.Name)")
+        } else {
+            print("❌ findClosestNode: nothing found")
+        }
       }
 
       return best?.node
@@ -3697,8 +3706,7 @@ extension ARView3D {
           node: node,
           fingerLocation: fingerLocation,
           fingerMovement: fingerMovement,
-          gesturePhase: gesture.state,
-          hitResult: hitResult
+          gesturePhase: gesture.state
       )
       
       let cameraVectors = getCurrentCameraVectors()
@@ -3722,19 +3730,7 @@ extension ARView3D {
           hidePlacementPreview()
       }
   }
-  
-  func getProjectionForNode(node: ARNodeBase, fingerLocation: CGPoint, fingerMovement: CGPoint, gesturePhase: UIGestureRecognizer.State, hitResult: HitTestResult) -> SIMD3<Float>? {
-    
-    if node is SphereNode {
-      // Spheres use ground projection for rolling behavior
-      return projectFingerToGround(fingerLocation: fingerLocation, fingerMovement: fingerMovement)
-      
-    } else { //if let modelNode = node as? ModelNode {
-      return projectFingerTo3DSpace(fingerLocation: fingerLocation, fingerMovement: fingerMovement, hitResult: hitResult)
-    }
-  }
-  
-  
+
   
   // ✅ NEW: Project finger to smooth 3D space for Pokemon GO style dragging
   private func projectFingerTo3DSpace(fingerLocation: CGPoint, fingerMovement: CGPoint, hitResult: HitTestResult) -> SIMD3<Float>? {

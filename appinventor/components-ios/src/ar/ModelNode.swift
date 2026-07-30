@@ -21,17 +21,10 @@ open class ModelNode: ARNodeBase, ARModel {
   private var _numberToUseForNode: String = "1"
   
   // Pokemon GO Style Dragging Variables
-  private var _isDragging: Bool = false
+  private var _grabOffset: SIMD3<Float> = .zero
   private var _isFlying: Bool = false
-  private var _dragStartTime: Date?
-  private var _fingerPositions: [SIMD3<Float>] = []
-  private var _fingerTimestamps: [Date] = []
-  private var _originalPosition: SIMD3<Float>?
-  private var _throwVelocity: SIMD3<Float> = SIMD3<Float>(0, 0, 0)
 
-  
-  // Physics and trajectory constants
-  private let VELOCITY_HISTORY_COUNT = 5
+
   private let MIN_THROW_SPEED: Float = 0.5  // m/s
   private let MAX_THROW_SPEED: Float = 4.0  // m/s
   private let VELOCITY_SCALE: Float = 1.0   // Amplify finger velocity
@@ -81,8 +74,9 @@ open class ModelNode: ARNodeBase, ARModel {
       return _rootNodeName
     }
     set(name) {
+      guard name != _rootNodeName else { return }
       _rootNodeName = name
-      setupEntity()
+      //setupEntity()
     }
   }
   
@@ -153,6 +147,7 @@ open class ModelNode: ARNodeBase, ARModel {
   }
   
   private func setupEntity() {
+    print("⚠️ setupEntity called from: \(Thread.callStackSymbols[1])")
     if _addedEntity != nil {
       DispatchQueue.main.async {
         self._container?.removeNode(self)
@@ -168,11 +163,57 @@ open class ModelNode: ARNodeBase, ARModel {
     } else {
       _addedEntity = modelEntity
     }
+    let bounds = _modelEntity.visualBounds(relativeTo: nil)
+    print("🔍 ModelNode bounds after setup: min=\(bounds.min) max=\(bounds.max)")
+    print("🔍 Size: \(bounds.max - bounds.min)")
     
     if let entity = _addedEntity {
       self._modelEntity = modelEntity
       entity.name = entity.name.isEmpty ? Name : entity.name
     }
+  }
+  
+  // In ModelNode, override EnablePhysics to correct for off-center bounds
+  override open func EnablePhysics(_ isDynamic: Bool = true) {
+    print("🔍 EnablePhysics called from: \(Thread.callStackSymbols[1])")
+    let bounds = _modelEntity.visualBounds(relativeTo: _modelEntity)
+      let size = bounds.max - bounds.min
+      let center = (bounds.max + bounds.min) / 2.0
+      
+      let safeSize = SIMD3<Float>(
+          max(size.x, 0.05),
+          max(size.y, 0.05),
+          max(size.z, 0.05)
+      )
+      
+      let shape = ShapeResource.generateBox(size: safeSize)
+          .offsetBy(translation: center)  // shift shape to match visual center
+      
+      _modelEntity.collision = CollisionComponent(
+          shapes: [shape],
+          filter: CollisionFilter(
+              group: ARView3D.CollisionGroups.arObjects,
+              mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
+          )
+      )
+      
+      _enablePhysics = isDynamic
+      _modelEntity.physicsBody = PhysicsBodyComponent(
+          massProperties: PhysicsMassProperties(mass: Mass),
+          material: PhysicsMaterialResource.generate(
+              staticFriction: StaticFriction,
+              dynamicFriction: DynamicFriction,
+              restitution: Restitution
+          ),
+          mode: isDynamic ? .dynamic : .static
+      )
+      _modelEntity.physicsMotion = PhysicsMotionComponent()
+      
+      if #available(iOS 15.0, *) {
+          updateShadowSettings()
+      }
+      
+      print("🎯 ModelNode collision offset by center: \(center), size: \(safeSize)")
   }
   
   private func findEntity(in entity: Entity, withName name: String) -> Entity? {
@@ -215,379 +256,42 @@ open class ModelNode: ARNodeBase, ARModel {
     }
   }
 
-  /// Starts the Pokémon GO style drag interaction
-  override open func startDrag() {
-    print("🎯 Starting Pokémon GO style drag for \(Name)")
-    
-    _isDragging = true
-    _isFlying = false
-    _dragStartTime = Date()
-    _originalPosition = _modelEntity.transform.translation
-    
-    // Clear velocity tracking arrays
-    _fingerPositions.removeAll()
-    _fingerTimestamps.removeAll()
-    
-    // Disable physics during drag
-    _modelEntity.physicsBody = nil
-    _modelEntity.collision = nil
-    
-    // Visual feedback - slight glow effect
-    showDragVisualFeedback()
-    
-    print("🎯 Drag started at position: \(_originalPosition!)")
-  }
-
-  /// Updates the model position during drag with Pokémon GO style behavior
-  override open func updateDrag(fingerWorldPosition: SIMD3<Float>) {
-    guard _isDragging && !_isFlying else { return }
-    
-    let currentTime = Date()
-    
-    // Store finger position for velocity calculation
-    _fingerPositions.append(fingerWorldPosition)
-    _fingerTimestamps.append(currentTime)
-    
-    // Keep only recent positions for velocity calculation
-    if _fingerPositions.count > VELOCITY_HISTORY_COUNT {
-      _fingerPositions.removeFirst()
-      _fingerTimestamps.removeFirst()
-    }
-
-    // Update model position with slight upward offset during drag
-    let dragPosition = SIMD3<Float>(
-      fingerWorldPosition.x,
-      //fingerWorldPosition.y,
-      max(fingerWorldPosition.y + DRAG_HEIGHT_OFFSET, ARView3D.SHARED_GROUND_LEVEL + 0.005),
-      fingerWorldPosition.z
-    )
-    
-    _modelEntity.transform.translation = dragPosition
-    
-    print("🎯 Dragging to position: \(dragPosition)")
-  }
-
-  /// Ends the drag with Pokémon GO style throwing or placement
-
-  override open func endDrag(releaseVelocity: CGPoint, camera3DProjection worldDirection: Any) {
-    guard _isDragging else { return }
-    
-    print("🎯 Ending drag with release velocity: \(releaseVelocity)")
-    
-    _isDragging = false
-    
-    // Calculate 3D throw velocity from finger movement history
-    let throwVel = calculateThrowVelocity()
-    let throwSpeed = simd_length(throwVel)
-    
-    print("🎯 Calculated throw velocity: \(throwVel), speed: \(throwSpeed)")
-    
-    // Decide between throwing or gentle placement
-    if throwSpeed >= MIN_THROW_SPEED {
-      // THROW: Launch with trajectory physics
-      if #available(iOS 15.0, *) {
-        startTrajectoryThrow(velocity: throwVel)
-      }
-    } else {
-      // GENTLE PLACEMENT: Find nearest surface
-      if #available(iOS 15.0, *) {
-        placeOnNearestSurface()
-      }
-    }
-    
-    // Clear tracking data
-    _fingerPositions.removeAll()
-    _fingerTimestamps.removeAll()
-  }
-
-  /// Calculates the 3D throw velocity from finger movement history
-  private func calculateThrowVelocity() -> SIMD3<Float> {
-    guard _fingerPositions.count >= 2, _fingerTimestamps.count >= 2 else {
-      return SIMD3<Float>(0, 0, 0)
-    }
-    
-    // Use the most recent positions for velocity calculation
-    let recentPositions = Array(_fingerPositions.suffix(3))
-    let recentTimestamps = Array(_fingerTimestamps.suffix(3))
-    
-    var totalVelocity = SIMD3<Float>(0, 0, 0)
-    var validSamples = 0
-    
-    // Calculate velocity between consecutive points
-    for i in 1..<recentPositions.count {
-      let deltaPos = recentPositions[i] - recentPositions[i-1]
-      let deltaTime = Float(recentTimestamps[i].timeIntervalSince(recentTimestamps[i-1]))
+  override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
+      // Let the base class handle placement preview and surface detection
+      super.endDrag(releaseVelocity: releaseVelocity, camera3DProjection: camera3DProjection)
       
-      if deltaTime > 0.001 { // Avoid division by very small numbers
-        let velocity = deltaPos / deltaTime
-        totalVelocity += velocity
-        validSamples += 1
-      }
-    }
-    
-    if validSamples > 0 {
-      let avgVelocity = totalVelocity / Float(validSamples)
+      // Calculate throw speed from release velocity
+      let speed = sqrt(releaseVelocity.x * releaseVelocity.x +
+                       releaseVelocity.y * releaseVelocity.y)
       
-      // Apply velocity scaling and clamping
-      let scaledVelocity = avgVelocity * VELOCITY_SCALE
-      let speed = simd_length(scaledVelocity)
+      guard Float(speed) >= MIN_THROW_SPEED,
+            let cameraVectors = camera3DProjection as? ARView3D.CameraVectors else { return }
       
-      if speed > MAX_THROW_SPEED {
-        // Clamp to max speed while preserving direction
-        let clampedVelocity = simd_normalize(scaledVelocity) * MAX_THROW_SPEED
-        return clampedVelocity
-      }
-      
-      return scaledVelocity
-    }
-    
-    return SIMD3<Float>(0, 0, 0)
-  }
-
-  /// Starts a physics-based trajectory throw
-  @available(iOS 15.0, *)
-  private func startTrajectoryThrow(velocity: SIMD3<Float>) {
-    print("🚀 Starting trajectory throw with velocity: \(velocity)")
-    
-    _isFlying = true
-    _throwVelocity = velocity
-    
-    // Enable physics for realistic trajectory
-    setupTrajectoryPhysics()
-    
-    // Apply initial velocity
-    if #available(iOS 18.0, *), var physicsMotion = _modelEntity.physicsMotion {
-      physicsMotion.linearVelocity = velocity
-      _modelEntity.physicsMotion = physicsMotion
-    } else {
-      // Fallback for older iOS versions
-      _modelEntity.addForce(velocity * Mass * 10, relativeTo: nil as Entity?)
-    }
-    
-    // Start monitoring trajectory for placement
-    monitorTrajectoryForPlacement()
-  }
-  
-  @available(iOS 15.0, *)
-  private func placeOnNearestSurface() {
-    print("Placing on nearest surface")
-    
-    // Use the cached preview surface if available
-    if let cachedSurface = getPreviewPlacementSurface() {
-      print("Using cached preview surface: \(cachedSurface)")
-      
-      // Disable physics completely during placement
-      _modelEntity.physicsBody = nil
-      
-      animateToPosition(cachedSurface) {
-          self.finalizeModelPlacement()
-          self.clearPreviewPlacementSurface()
-      }
-      return
-    }
-    
-    // Fallback: find surface from current position
-    let currentPos = _modelEntity.transform.translation
-    if let placementPosition = findNearestHorizontalSurface(from: currentPos) {
-      animateToPosition(placementPosition) {
-        super.finalizeModelPlacement()
-      }
-    } else {
-      // Final fallback to ground level
-      let groundPosition = SIMD3<Float>(currentPos.x, ARView3D.SHARED_GROUND_LEVEL, currentPos.z)
-      animateToPosition(groundPosition) {
-        super.finalizeModelPlacement()
-      }
-    }
-  }
-  
-  //csb TODO move to parent
-  private func findNearestHorizontalSurface(from position: SIMD3<Float>) -> SIMD3<Float>? {
-    guard let container = _container else { return nil }
-    //get the surface that the container has determined is the closest
-    // or just the placement anchor, right?
-    return container.getARView().findBestSurfaceForPlacement()
-  }
-
-
-  /// Sets up physics for trajectory throwing
-  private func setupTrajectoryPhysics() {
-    let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let size = bounds.max - bounds.min
-    let avgSize = (size.x + size.y + size.z) / 3.0
-    
-    // Create appropriate collision shape
-    let collisionShape = ShapeResource.generateSphere(radius: max(avgSize / 2, 0.03))
-    
-    _modelEntity.collision = CollisionComponent(
-      shapes: [collisionShape],
-      filter: CollisionFilter(
-        group: ARView3D.CollisionGroups.arObjects,
-        mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
-      )
-    )
-    
-    // Create physics body with realistic properties
-    let mass = max(Mass, 0.1) // Minimum mass for stability
-    _modelEntity.physicsBody = PhysicsBodyComponent(
-      massProperties: PhysicsMassProperties(mass: mass),
-      mode: .dynamic
-    )
-    
-    // Apply realistic physics material
-    if var physicsBody = _modelEntity.physicsBody {
-      physicsBody.material = PhysicsMaterialResource.generate(
-        staticFriction: StaticFriction,
-        dynamicFriction: DynamicFriction,
-        restitution: Restitution
-      )
-      _modelEntity.physicsBody = physicsBody
-    }
-    
-    print("🎾 Physics setup complete for trajectory - mass: \(mass)kg")
-  }
-
-  /// Monitors the trajectory and triggers placement when appropriate
-  @available(iOS 15.0, *)
-  private func monitorTrajectoryForPlacement() {
-    // Use a timer to check trajectory status
-    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-      guard self._isFlying else {
-        timer.invalidate()
-        return
-      }
-      
-      let currentPos = self._modelEntity.transform.translation
-      let currentVel = self._modelEntity.physicsMotion?.linearVelocity ?? SIMD3<Float>(0, 0, 0)
-      let speed = simd_length(currentVel)
-      
-      // Check if the model has slowed down significantly or is moving upward (bounced)
-      if speed < 0.5 || (currentVel.y > 0 && speed < 2.0) {
-        print("Trajectory complete - placing on surface")
-        timer.invalidate()
-        self._isFlying = false
-        
-        // Find surface from where the object currently is (after trajectory)
-        if let placementPos = self.findNearestHorizontalSurface(from: currentPos) {
-          self.animateToPosition(placementPos) {
-            self.finalizeModelPlacement()
+      // Apply velocity after finalizeModelPlacement restores physics (0.5s delay + buffer)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+          guard let self = self, let physicsBody = self._modelEntity.physicsBody else { return }
+          
+          let right = cameraVectors.right
+          let forward = cameraVectors.forward
+          
+          let screenX = Float(releaseVelocity.x) * 0.002
+          let screenY = Float(-releaseVelocity.y) * 0.002
+          let worldVelocity = (right * screenX) + (forward * screenY)
+          
+          let clampedSpeed = min(simd_length(worldVelocity), MAX_THROW_SPEED)
+          let finalVelocity = simd_length(worldVelocity) > 0
+              ? simd_normalize(worldVelocity) * clampedSpeed
+              : worldVelocity
+          
+          if #available(iOS 18.0, *), var motion = self._modelEntity.physicsMotion {
+              motion.linearVelocity = finalVelocity
+              self._modelEntity.physicsMotion = motion
+          } else {
+              self._modelEntity.addForce(finalVelocity * self.Mass * 10, relativeTo: nil as Entity?)
           }
-        } else {
-          self.finalizeModelPlacement()
-        }
       }
-      
-      // Safety timeout - stop flying after 10 seconds
-      if let startTime = self._dragStartTime,
-         Date().timeIntervalSince(startTime) > 10.0 {
-        print("⚠️ Trajectory timeout - finalizing placement")
-        timer.invalidate()
-        self._isFlying = false
-        self.finalizeModelPlacement()
-      }
-    }
   }
-
-  /// Animates the model to a target position smoothly
-  @available(iOS 15.0, *)
-  private func animateToPosition(_ targetPosition: SIMD3<Float>, completion: @escaping () -> Void) {
-    print("📍 Animating to position: \(targetPosition)")
-    
-    // Disable physics during animation
-    _modelEntity.physicsBody = nil
-    
-    // Create smooth animation to target position
-    let currentTransform = _modelEntity.transform
-    var targetTransform = currentTransform
-    targetTransform.translation = targetPosition
-    
-    // Use RealityKit's animation system
-    let animation = FromToByAnimation<Transform>(
-      name: "placeAnimation",
-      from: currentTransform,
-      to: targetTransform,
-      duration: 0.3,
-      timing: .easeOut,
-      bindTarget: .transform
-    )
-    
-    if let animationResource = try? AnimationResource.generate(with: animation) {
-      _modelEntity.playAnimation(animationResource, transitionDuration: 0.1, startsPaused: false)
-      
-      // Completion handler
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-        completion()
-      }
-    } else {
-      // Fallback - direct position set
-      _modelEntity.transform.translation = targetPosition
-      completion()
-    }
-  }
-
-  /// Finalizes the model placement with physics restoration
-  override public func finalizeModelPlacement() {
-    print("Finalizing model placement")
-    
-    _isFlying = false
-    
-    self.EnablePhysics(self._enablePhysics)
-
-    if let container = _container {
-      container.hidePlacementPreview()
-    }
-    
-    if let container = self._container as? ARView3D,
-       let cameraTransform = container._arView.cameraTransform as Optional {
-
-    }
-    let newWorldPosition = self._modelEntity.position(relativeTo: nil)
-    self._nodeWorldTransform = Transform(
-                scale: self._modelEntity.scale(relativeTo: nil),
-                rotation: self._modelEntity.transform.rotation,
-                translation: newWorldPosition
-            )
-    print("   📍 Updated cached world position after drag: \(newWorldPosition)")
-    self._nodeLocalTransform = Transform(
-                    scale: self._modelEntity.scale,
-                    rotation: self._modelEntity.transform.rotation,
-                    translation: self._modelEntity.position  // Local position relative to tempAnchor
-                )
-    // Clear local preview data
-    _previewPlacementSurface = nil
-    
-    // Remove visual drag feedback
-    removeDragVisualFeedback()
-    
-    print("Model placement complete at: \(_modelEntity.transform.translation)")
-  }
-
-  /// Shows visual feedback during dragging
-  private func showDragVisualFeedback() {
-    guard #available(iOS 15.0, *) else { return }
-    
-    // Store original material
-    OriginalMaterial = _modelEntity.model?.materials.first
-    
-    // Apply glow effect
-    var dragMaterial = SimpleMaterial()
-    dragMaterial.color = .init(tint: UIColor.systemBlue.withAlphaComponent(0.8))
-    dragMaterial.baseColor = MaterialColorParameter.color(UIColor.systemBlue.withAlphaComponent(0.8))
-    
-    _modelEntity.model?.materials = [dragMaterial]
-  }
-
-  /// Removes visual feedback after dragging
-  private func removeDragVisualFeedback() {
-    guard #available(iOS 15.0, *) else { return }
-    
-    // Restore original material
-    if let original = OriginalMaterial {
-      _modelEntity.model?.materials = [original]
-      OriginalMaterial = nil
-    }
-  }
-
+   
   // MARK: - Enhanced Gesture Handler
 
   override open func handleAdvancedGestureUpdate(
