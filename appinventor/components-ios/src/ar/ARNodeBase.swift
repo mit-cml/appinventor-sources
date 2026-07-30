@@ -1520,7 +1520,7 @@ open class ARNodeBase: NSObject, ARNode {
   
 
   /// Animates the node to a target position smoothly
-  @available(iOS 15.0, *)
+
   @available(iOS 15.0, *)
   private func animateToPosition(_ targetWorld: SIMD3<Float>, completion: @escaping () -> Void) {
       print("📍 Animating to WORLD position: \(targetWorld)")

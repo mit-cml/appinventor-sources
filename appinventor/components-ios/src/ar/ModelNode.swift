@@ -8,7 +8,7 @@ import os.log
 
 @available(iOS 14.0, *)
 open class ModelNode: ARNodeBase, ARModel {
-
+  
   private var _addedEntity: Entity? {
     didSet {
       if _addedEntity != nil {
@@ -23,15 +23,15 @@ open class ModelNode: ARNodeBase, ARModel {
   // Pokemon GO Style Dragging Variables
   private var _grabOffset: SIMD3<Float> = .zero
   private var _isFlying: Bool = false
-
-
+  
+  
   private let MIN_THROW_SPEED: Float = 0.5  // m/s
   private let MAX_THROW_SPEED: Float = 4.0  // m/s
   private let VELOCITY_SCALE: Float = 1.0   // Amplify finger velocity
   private let GRAVITY: Float = -9.81        // Earth gravity
- 
+  
   private let PLACEMENT_RAYCAST_DISTANCE: Float = 50.0
-
+  
   @objc init(_ container: ARNodeContainer) {
     super.init(container: container)
     self.Name="model"
@@ -104,7 +104,7 @@ open class ModelNode: ARNodeBase, ARModel {
     }
     set(color) {}
   }
-
+  
   // TextureOpacity is not user accessible
   @objc open override var TextureOpacity: Int32 {
     get {
@@ -112,37 +112,37 @@ open class ModelNode: ARNodeBase, ARModel {
     }
     set(opacity) {}
   }
-
+  
   
   private func loadModel(_ modelStr: String) {
-  
-      let path = AssetManager.shared.pathForExistingFileAsset(modelStr)
-      _objectModel = modelStr
-      
-      guard !path.isEmpty else { return }
-      
-      let url = URL(fileURLWithPath: path)
-      
-      // Load using RealityKit's Entity.load for USDZ and other supported formats
-      do {
-        let entity = try Entity.load(contentsOf: url)
-        // If the loaded entity is a ModelEntity, use it directly
-        if let modelEntity = entity as? ModelEntity {
-          self._modelEntity = modelEntity
-        } else {
-          // If not, create a ModelEntity and add the loaded entity as a child
-          let modelEntity = ModelEntity()
-          modelEntity.addChild(entity)
-          self._modelEntity = modelEntity
-        }
-        
-        self.setupEntity()
-        print("success loading model")
-        PlayAnimationsForAllNodes()
-      } catch {
-        print("Failed to load model at \(url.path) \(error.localizedDescription)")
-        NodeNotFound(path)
+    
+    let path = AssetManager.shared.pathForExistingFileAsset(modelStr)
+    _objectModel = modelStr
+    
+    guard !path.isEmpty else { return }
+    
+    let url = URL(fileURLWithPath: path)
+    
+    // Load using RealityKit's Entity.load for USDZ and other supported formats
+    do {
+      let entity = try Entity.load(contentsOf: url)
+      // If the loaded entity is a ModelEntity, use it directly
+      if let modelEntity = entity as? ModelEntity {
+        self._modelEntity = modelEntity
+      } else {
+        // If not, create a ModelEntity and add the loaded entity as a child
+        let modelEntity = ModelEntity()
+        modelEntity.addChild(entity)
+        self._modelEntity = modelEntity
       }
+      
+      self.setupEntity()
+      print("success loading model")
+      PlayAnimationsForAllNodes()
+    } catch {
+      print("Failed to load model at \(url.path) \(error.localizedDescription)")
+      NodeNotFound(path)
+    }
     
   }
   
@@ -173,48 +173,49 @@ open class ModelNode: ARNodeBase, ARModel {
     }
   }
   
-  // In ModelNode, override EnablePhysics to correct for off-center bounds
   override open func EnablePhysics(_ isDynamic: Bool = true) {
-    print("🔍 EnablePhysics called from: \(Thread.callStackSymbols[1])")
+    // relativeTo: _modelEntity gives bounds in local space
+    // so the center offset is relative to entity origin, not world origin
     let bounds = _modelEntity.visualBounds(relativeTo: _modelEntity)
-      let size = bounds.max - bounds.min
-      let center = (bounds.max + bounds.min) / 2.0
-      
-      let safeSize = SIMD3<Float>(
-          max(size.x, 0.05),
-          max(size.y, 0.05),
-          max(size.z, 0.05)
+    let size = bounds.max - bounds.min
+    let center = (bounds.max + bounds.min) / 2.0
+    
+    let safeSize = SIMD3<Float>(
+      max(size.x, 0.05),
+      max(size.y, 0.05),
+      max(size.z, 0.05)
+    )
+    
+    let shape = ShapeResource.generateBox(size: safeSize)
+      .offsetBy(translation: center)
+    
+    _modelEntity.collision = CollisionComponent(
+      shapes: [shape],
+      filter: CollisionFilter(
+        group: ARView3D.CollisionGroups.arObjects,
+        mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
       )
-      
-      let shape = ShapeResource.generateBox(size: safeSize)
-          .offsetBy(translation: center)  // shift shape to match visual center
-      
-      _modelEntity.collision = CollisionComponent(
-          shapes: [shape],
-          filter: CollisionFilter(
-              group: ARView3D.CollisionGroups.arObjects,
-              mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
-          )
-      )
-      
-      _enablePhysics = isDynamic
-      _modelEntity.physicsBody = PhysicsBodyComponent(
-          massProperties: PhysicsMassProperties(mass: Mass),
-          material: PhysicsMaterialResource.generate(
-              staticFriction: StaticFriction,
-              dynamicFriction: DynamicFriction,
-              restitution: Restitution
-          ),
-          mode: isDynamic ? .dynamic : .static
-      )
-      _modelEntity.physicsMotion = PhysicsMotionComponent()
-      
-      if #available(iOS 15.0, *) {
-          updateShadowSettings()
-      }
-      
-      print("🎯 ModelNode collision offset by center: \(center), size: \(safeSize)")
+    )
+    
+    _enablePhysics = isDynamic
+    _modelEntity.physicsBody = PhysicsBodyComponent(
+      massProperties: PhysicsMassProperties(mass: Mass),
+      material: PhysicsMaterialResource.generate(
+        staticFriction: StaticFriction,
+        dynamicFriction: DynamicFriction,
+        restitution: Restitution
+      ),
+      mode: isDynamic ? .dynamic : .static
+    )
+    _modelEntity.physicsMotion = PhysicsMotionComponent()
+    
+    if #available(iOS 15.0, *) {
+      updateShadowSettings()
+    }
+    
+    print("🎯 ModelNode collision center (local): \(center), size: \(safeSize)")
   }
+  
   
   private func findEntity(in entity: Entity, withName name: String) -> Entity? {
     if entity.name == name {
@@ -255,45 +256,45 @@ open class ModelNode: ARNodeBase, ARModel {
       getNames(entity: child, list: &list)
     }
   }
-
+  
   override open func endDrag(releaseVelocity: CGPoint, camera3DProjection: Any) {
-      // Let the base class handle placement preview and surface detection
-      super.endDrag(releaseVelocity: releaseVelocity, camera3DProjection: camera3DProjection)
+    // Let the base class handle placement preview and surface detection
+    super.endDrag(releaseVelocity: releaseVelocity, camera3DProjection: camera3DProjection)
+    
+    // Calculate throw speed from release velocity
+    let speed = sqrt(releaseVelocity.x * releaseVelocity.x +
+                     releaseVelocity.y * releaseVelocity.y)
+    
+    guard Float(speed) >= MIN_THROW_SPEED,
+          let cameraVectors = camera3DProjection as? ARView3D.CameraVectors else { return }
+    
+    // Apply velocity after finalizeModelPlacement restores physics (0.5s delay + buffer)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+      guard let self = self, let physicsBody = self._modelEntity.physicsBody else { return }
       
-      // Calculate throw speed from release velocity
-      let speed = sqrt(releaseVelocity.x * releaseVelocity.x +
-                       releaseVelocity.y * releaseVelocity.y)
+      let right = cameraVectors.right
+      let forward = cameraVectors.forward
       
-      guard Float(speed) >= MIN_THROW_SPEED,
-            let cameraVectors = camera3DProjection as? ARView3D.CameraVectors else { return }
+      let screenX = Float(releaseVelocity.x) * 0.002
+      let screenY = Float(-releaseVelocity.y) * 0.002
+      let worldVelocity = (right * screenX) + (forward * screenY)
       
-      // Apply velocity after finalizeModelPlacement restores physics (0.5s delay + buffer)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
-          guard let self = self, let physicsBody = self._modelEntity.physicsBody else { return }
-          
-          let right = cameraVectors.right
-          let forward = cameraVectors.forward
-          
-          let screenX = Float(releaseVelocity.x) * 0.002
-          let screenY = Float(-releaseVelocity.y) * 0.002
-          let worldVelocity = (right * screenX) + (forward * screenY)
-          
-          let clampedSpeed = min(simd_length(worldVelocity), MAX_THROW_SPEED)
-          let finalVelocity = simd_length(worldVelocity) > 0
-              ? simd_normalize(worldVelocity) * clampedSpeed
-              : worldVelocity
-          
-          if #available(iOS 18.0, *), var motion = self._modelEntity.physicsMotion {
-              motion.linearVelocity = finalVelocity
-              self._modelEntity.physicsMotion = motion
-          } else {
-              self._modelEntity.addForce(finalVelocity * self.Mass * 10, relativeTo: nil as Entity?)
-          }
+      let clampedSpeed = min(simd_length(worldVelocity), MAX_THROW_SPEED)
+      let finalVelocity = simd_length(worldVelocity) > 0
+      ? simd_normalize(worldVelocity) * clampedSpeed
+      : worldVelocity
+      
+      if #available(iOS 18.0, *), var motion = self._modelEntity.physicsMotion {
+        motion.linearVelocity = finalVelocity
+        self._modelEntity.physicsMotion = motion
+      } else {
+        self._modelEntity.addForce(finalVelocity * self.Mass * 10, relativeTo: nil as Entity?)
       }
+    }
   }
-   
+  
   // MARK: - Enhanced Gesture Handler
-
+  
   override open func handleAdvancedGestureUpdate(
     fingerLocation: CGPoint,
     fingerMovement: CGPoint,
@@ -322,7 +323,7 @@ open class ModelNode: ARNodeBase, ARModel {
       break
     }
   }
-
+  
   // MARK: - Scaling Methods (Preserved from original)
   
   override open func ScaleBy(_ scalar: Float) {
@@ -350,13 +351,13 @@ open class ModelNode: ARNodeBase, ARModel {
     // Apply new position
     let newPosition = SIMD3<Float>(currentPos.x, newCenterY, currentPos.z)
     _modelEntity.transform.translation = newPosition
-
+    
     // Update physics collision shape if it was enabled
     if hadPhysics {
-      updatePhysicsCollisionShape()
+      EnablePhysics()
     }
   }
-
+  
   override open func scaleByPinch(scalar: Float) {
     let oldScale = Scale
     let newScale = oldScale * scalar
@@ -375,40 +376,29 @@ open class ModelNode: ARNodeBase, ARModel {
     _modelEntity.transform.scale = SIMD3<Float>(newScale, newScale, newScale)
     
     if _modelEntity.physicsBody != nil {
-      updatePhysicsCollisionShape()
+      EnablePhysics()
     }
   }
-
   private func updatePhysicsCollisionShape() {
     guard _modelEntity.physicsBody != nil else { return }
-    
-    let currentScale = _modelEntity.transform.scale.x
-    let bounds = _modelEntity.visualBounds(relativeTo: nil)
-    let scaledSize = (bounds.max - bounds.min) * currentScale
-    
-    let safeSize = SIMD3<Float>(
-      max(scaledSize.x, 0.05) * 1.1,
-      max(scaledSize.y, 0.05) * 1.1,
-      max(scaledSize.z, 0.05) * 1.1
-    )
-    
-    let newShape = ShapeResource.generateBox(size: safeSize)
-    
-    _modelEntity.collision = CollisionComponent(
-      shapes: [newShape],
-      filter: _modelEntity.collision?.filter ?? CollisionFilter(
-        group: ARView3D.CollisionGroups.arObjects,
-        mask: [ARView3D.CollisionGroups.arObjects, ARView3D.CollisionGroups.environment]
-      )
-    )
-    
-    if var physicsBody = _modelEntity.physicsBody {
-      physicsBody.massProperties = PhysicsMassProperties(mass: Mass)
-      _modelEntity.physicsBody = physicsBody
-    }
+    EnablePhysics(_enablePhysics)
+  }
+  
+  override open func RotateXBy(_ degrees: Float) {
+      super.RotateXBy(degrees)
+      updatePhysicsCollisionShape()
+  }
+
+  override open func RotateYBy(_ degrees: Float) {
+      super.RotateYBy(degrees)
+      updatePhysicsCollisionShape()
+  }
+
+  override open func RotateZBy(_ degrees: Float) {
+      super.RotateZBy(degrees)
+      updatePhysicsCollisionShape()
   }
 }
-
 // MARK: - Extensions (Preserved from original)
 
 // MARK: FillColor Functions
