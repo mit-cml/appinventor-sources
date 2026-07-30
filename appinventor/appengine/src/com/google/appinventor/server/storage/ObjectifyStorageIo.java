@@ -37,6 +37,7 @@ import com.google.appinventor.server.storage.StoredData.LtiKeyData;
 import com.google.appinventor.server.storage.StoredData.LtiNonceData;
 import com.google.appinventor.server.storage.StoredData.LtiPlatformData;
 import com.google.appinventor.server.storage.StoredData.LtiResourceLinkData;
+import com.google.appinventor.server.storage.StoredData.LtiSubmissionData;
 import com.google.appinventor.server.storage.StoredData.LtiUserLinkData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.NonceData;
@@ -223,6 +224,7 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(LtiNonceData.class);
     ObjectifyService.register(LtiResourceLinkData.class);
     ObjectifyService.register(LtiGradeContextData.class);
+    ObjectifyService.register(LtiSubmissionData.class);
     ObjectifyService.register(LtiKeyData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
@@ -2554,6 +2556,54 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
+  public LtiSubmissionData getLtiSubmission(final long sourceProjectId) {
+    final Result<LtiSubmissionData> result = new Result<LtiSubmissionData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiSubmissionData data = datastore.find(ltiSubmissionKey(sourceProjectId));
+            if (data != null) {
+              result.t = data;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return result.t;
+  }
+
+  @Override
+  public void storeLtiSubmission(final long sourceProjectId, final String userId,
+      final long snapshotProjectId, final String snapshotOwnerId, final Date submittedAt) {
+    final Date effectiveSubmittedAt =
+        submittedAt == null ? new Date() : new Date(submittedAt.getTime());
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiSubmissionData existing = datastore.find(ltiSubmissionKey(sourceProjectId));
+            if (existing != null && existing.submittedAt != null
+                && existing.submittedAt.after(effectiveSubmittedAt)) {
+              return;
+            }
+            LtiSubmissionData data = new LtiSubmissionData();
+            data.id = Long.toString(sourceProjectId);
+            data.userId = userId;
+            data.sourceProjectId = sourceProjectId;
+            data.snapshotProjectId = snapshotProjectId;
+            data.snapshotOwnerId = snapshotOwnerId;
+            data.submittedAt = new Date(effectiveSubmittedAt.getTime());
+            datastore.put(data);
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  @Override
   public List<LtiKeyData> getLtiKeys() {
     Objectify datastore = ObjectifyService.begin();
     List<LtiKeyData> keys = new ArrayList<LtiKeyData>();
@@ -2620,6 +2670,11 @@ public class ObjectifyStorageIo implements StorageIo {
   private Key<StoredData.LtiGradeContextData> ltiGradeContextKey(long projectId) {
     return new Key<StoredData.LtiGradeContextData>(
         LtiGradeContextData.class, Long.toString(projectId));
+  }
+
+  private Key<StoredData.LtiSubmissionData> ltiSubmissionKey(long sourceProjectId) {
+    return new Key<StoredData.LtiSubmissionData>(
+        LtiSubmissionData.class, Long.toString(sourceProjectId));
   }
 
   // Create a name for a blob from a project id and file name. This is mostly
@@ -3140,9 +3195,18 @@ public class ObjectifyStorageIo implements StorageIo {
           resourceKeys.add(new Key<LtiResourceLinkData>(LtiResourceLinkData.class, resource.id));
         }
       }
+      List<Key<LtiSubmissionData>> submissionKeys = new ArrayList<Key<LtiSubmissionData>>();
+      for (LtiSubmissionData submission : ltiDatastore.query(LtiSubmissionData.class)) {
+        if (userId.equals(submission.userId)
+            || projectIds.contains(submission.sourceProjectId)) {
+          submissionKeys.add(new Key<LtiSubmissionData>(
+              LtiSubmissionData.class, submission.id));
+        }
+      }
       ltiDatastore.delete(linkKeys);
       ltiDatastore.delete(gradeKeys);
       ltiDatastore.delete(resourceKeys);
+      ltiDatastore.delete(submissionKeys);
     } catch (Exception e) {
       LOG.log(Level.WARNING, "Exception cascading LTI rows on account deletion", e);
     }

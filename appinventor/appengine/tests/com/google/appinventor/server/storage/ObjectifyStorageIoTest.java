@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -166,9 +167,12 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     storage.storeLtiUserLink(ISSUER, SUBJECT, USER_ID);
     storage.storeLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
     storage.storeLtiGradeContext(projectId, USER_ID, ISSUER, "https://platform/lineitem/1", SUBJECT);
+    storage.storeLtiSubmission(projectId, USER_ID, 9001L, "snapshot-owner",
+        new Date(1_700_000_000_000L));
     assertEquals(USER_ID, storage.getLtiUserId(ISSUER, SUBJECT));
     assertEquals(projectId, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
     assertNotNull(storage.getLtiGradeContext(projectId));
+    assertNotNull(storage.getLtiSubmission(projectId));
 
     // Deletion only proceeds once every project is trashed.
     storage.setMoveToTrashFlag(USER_ID, projectId, true);
@@ -179,6 +183,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertNull(storage.getLtiUserId(ISSUER, SUBJECT));
     assertEquals(0, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
     assertNull(storage.getLtiGradeContext(projectId));
+    assertNull(storage.getLtiSubmission(projectId));
   }
 
   public void testSetTosAccepted() {
@@ -693,6 +698,71 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/10", "sub-10");
     assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(projectId).lineItemUrl);
     assertNull(storage.getLtiGradeContext(projectId + 1));
+  }
+
+  /** A source project stores one current submission and ignores an older completion. */
+  public void testLtiSubmissionSnapshot() {
+    final long sourceProjectId = 5066549580791810L;
+    final Date submittedAt = new Date(1_700_000_123_456L);
+    assertNull(storage.getLtiSubmission(sourceProjectId));
+
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791810L,
+        "snapshot-owner-310", submittedAt);
+    StoredData.LtiSubmissionData submission = storage.getLtiSubmission(sourceProjectId);
+    assertNotNull(submission);
+    assertEquals("user-310", submission.userId);
+    assertEquals(sourceProjectId, submission.sourceProjectId);
+    assertEquals(6066549580791810L, submission.snapshotProjectId);
+    assertEquals("snapshot-owner-310", submission.snapshotOwnerId);
+    assertEquals(submittedAt.getTime(), submission.submittedAt.getTime());
+
+    Date resubmittedAt = new Date(submittedAt.getTime() + 1000);
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791811L,
+        "snapshot-owner-310", resubmittedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(6066549580791811L, submission.snapshotProjectId);
+    assertEquals(resubmittedAt.getTime(), submission.submittedAt.getTime());
+
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791812L,
+        "snapshot-owner-310", submittedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(6066549580791811L, submission.snapshotProjectId);
+    assertEquals(resubmittedAt.getTime(), submission.submittedAt.getTime());
+
+    Date failedAt = new Date(submittedAt.getTime() + 2000);
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 0, "", failedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(0, submission.snapshotProjectId);
+    assertEquals("", submission.snapshotOwnerId);
+    assertEquals(failedAt.getTime(), submission.submittedAt.getTime());
+
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791813L,
+        "snapshot-owner-310", resubmittedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(0, submission.snapshotProjectId);
+    assertEquals(failedAt.getTime(), submission.submittedAt.getTime());
+
+    Date recoveredAt = new Date(submittedAt.getTime() + 3000);
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791814L,
+        "snapshot-owner-310", recoveredAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(6066549580791814L, submission.snapshotProjectId);
+    assertEquals(recoveredAt.getTime(), submission.submittedAt.getTime());
+    assertNull(storage.getLtiSubmission(sourceProjectId + 1));
+  }
+
+  /** Submission pointers are isolated by source project across learners and activities. */
+  public void testLtiSubmissionSnapshotsAreIndependent() {
+    Date submittedAt = new Date(1_700_000_222_000L);
+    storage.storeLtiSubmission(7101L, "student-a", 8101L, "snapshot-a1", submittedAt);
+    storage.storeLtiSubmission(7102L, "student-a", 8102L, "snapshot-a2", submittedAt);
+    storage.storeLtiSubmission(7201L, "student-b", 8201L, "snapshot-b1", submittedAt);
+
+    assertEquals(8101L, storage.getLtiSubmission(7101L).snapshotProjectId);
+    assertEquals(8102L, storage.getLtiSubmission(7102L).snapshotProjectId);
+    assertEquals(8201L, storage.getLtiSubmission(7201L).snapshotProjectId);
+    assertEquals("student-a", storage.getLtiSubmission(7102L).userId);
+    assertEquals("student-b", storage.getLtiSubmission(7201L).userId);
   }
 
   public void testLtiKeys() {

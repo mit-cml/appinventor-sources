@@ -6,14 +6,23 @@
 package com.google.appinventor.server.lti;
 
 import com.google.appinventor.server.OdeAuthFilter;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.SettingsConstants;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
 
 /**
  * Marks the signed in student's work as submitted in the LMS, served at
@@ -34,6 +43,10 @@ public class LtiSubmitServlet extends HttpServlet {
 
   private static final Logger LOG = Logger.getLogger(LtiSubmitServlet.class.getName());
   private static final String REQUEST_HEADER = "X-AppInventor-LTI";
+
+  private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
+  private final transient YoungAndroidProjectService projectService =
+      new YoungAndroidProjectService(storageIo);
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -86,6 +99,15 @@ public class LtiSubmitServlet extends HttpServlet {
       return;
     }
     try {
+      try {
+        snapshotSubmission(projectId, ctx);
+      } catch (Exception e) {
+        // A fixed artifact is preferred for review, but losing the learner's
+        // submission notification would be worse than falling back to the live
+        // project for this attempt.
+        LOG.log(Level.WARNING,
+            "LTI submission snapshot failed for source project " + projectId, e);
+      }
       LtiAgs.postSubmission(ctx.issuer, ctx.lineItemUrl, ctx.ltiUserSub);
       resp.getWriter().println(
           "Submitted to your LMS. Your teacher will grade it, and the grade will then "
@@ -95,5 +117,88 @@ public class LtiSubmitServlet extends HttpServlet {
       resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       resp.getWriter().println("Grade passback failed.");
     }
+  }
+
+  /** Copies the submitted project into an account no interactive login can reach. */
+  private void snapshotSubmission(long sourceProjectId, LtiGradeContext.Context ctx)
+      throws Exception {
+    Date submittedAt = new Date();
+    try {
+      String sourceOwnerId = storageIo.getProjectUserId(sourceProjectId);
+      if (!ctx.userId.equals(sourceOwnerId)) {
+        throw new SecurityException("LTI snapshot source owner mismatch");
+      }
+      String snapshotOwnerId = snapshotOwnerId(sourceOwnerId, sourceProjectId);
+      User snapshotOwner =
+          storageIo.getUser(snapshotOwnerId, snapshotOwnerId + "@lti.invalid");
+      if (!snapshotOwnerId.equals(snapshotOwner.getUserId())) {
+        throw new SecurityException("LTI snapshot owner account mismatch");
+      }
+      long snapshotProjectId = projectService.copyProject(sourceOwnerId, sourceProjectId,
+          snapshotProjectName(sourceProjectId, submittedAt.getTime()), snapshotOwnerId);
+      if (snapshotProjectId <= 0 || snapshotProjectId == sourceProjectId) {
+        throw new IllegalStateException("LTI snapshot copy returned an invalid project");
+      }
+      if (!snapshotOwnerId.equals(storageIo.getProjectUserId(snapshotProjectId))) {
+        throw new SecurityException("LTI snapshot project owner mismatch");
+      }
+      removeLaunchMarker(snapshotOwnerId, snapshotProjectId);
+      LtiSubmission.put(sourceProjectId, sourceOwnerId, snapshotProjectId,
+          snapshotOwnerId, submittedAt);
+      LOG.info("LTI submission snapshot copied source project " + sourceProjectId
+          + " to project " + snapshotProjectId);
+    } catch (Exception e) {
+      try {
+        // A failed resubmission must not leave an older artifact looking current.
+        LtiSubmission.markUnavailable(sourceProjectId, ctx.userId, submittedAt);
+      } catch (Exception recordFailure) {
+        e.addSuppressed(recordFailure);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * The snapshot is never a submit-capable learner project, even though project
+   * copying carries settings across.
+   */
+  private void removeLaunchMarker(String snapshotOwnerId, long snapshotProjectId) {
+    try {
+      String raw = storageIo.loadProjectSettings(snapshotOwnerId, snapshotProjectId);
+      if (raw == null || raw.trim().isEmpty()) {
+        return;
+      }
+      JSONObject settings = new JSONObject(raw);
+      JSONObject youngAndroid =
+          settings.optJSONObject(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS);
+      if (youngAndroid != null
+          && youngAndroid.has(SettingsConstants.YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED)) {
+        youngAndroid.remove(SettingsConstants.YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED);
+        storageIo.storeProjectSettings(snapshotOwnerId, snapshotProjectId,
+            settings.toString());
+      }
+    } catch (Exception e) {
+      // The read-only session and submit endpoint still enforce immutability;
+      // a settings cleanup failure must not discard an otherwise valid copy.
+      LOG.log(Level.WARNING,
+          "Could not remove the LTI launch marker from snapshot " + snapshotProjectId, e);
+    }
+  }
+
+  /** A stable shadow account for all snapshots of one learner project. */
+  private static String snapshotOwnerId(String sourceOwnerId, long sourceProjectId) {
+    try {
+      String material = sourceOwnerId.length() + ":" + sourceOwnerId + sourceProjectId;
+      return "lti-snapshot-" + LtiJwt.hex(LtiJwt.sha256(material)).substring(0, 32);
+    } catch (Exception e) {
+      throw new IllegalStateException("SHA-256 is unavailable", e);
+    }
+  }
+
+  /** A legal, collision-resistant project name kept below the forty-character limit. */
+  private static String snapshotProjectName(long sourceProjectId, long submittedAt) {
+    String unique = UUID.randomUUID().toString().substring(0, 6);
+    return "Snapshot_" + Long.toString(sourceProjectId, 36) + "_"
+        + Long.toString(submittedAt, 36) + "_" + unique;
   }
 }

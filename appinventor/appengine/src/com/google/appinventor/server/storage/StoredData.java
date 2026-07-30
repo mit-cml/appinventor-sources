@@ -386,6 +386,22 @@ public class StoredData {
     public String ltiUserSub;
   }
 
+  // The current snapshot state for one submitted assignment project. A zero
+  // snapshot project id records that the newest copy failed, so an older artifact
+  // is not mistaken for the newest submission. The source project id is both the
+  // lookup key and a stored field for audit clarity. The snapshot owner is a
+  // reserved account that the learner cannot launch into, and userId ties the row
+  // to account deletion.
+  @Unindexed
+  public static final class LtiSubmissionData {
+    @Id public String id;
+    public String userId;
+    public long sourceProjectId;
+    public long snapshotProjectId;
+    public String snapshotOwnerId;
+    public Date submittedAt;
+  }
+
   // The tool RSA key pair, generated on first use and kept in the datastore so
   // it is not part of the deployed artifact. The kid identifies the key in the
   // published JWK set. The newest key signs, so adding a key rotates in a new

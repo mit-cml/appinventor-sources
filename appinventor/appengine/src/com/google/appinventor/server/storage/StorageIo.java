@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -624,6 +625,11 @@ public interface StorageIo {
   void storeLtiGradeContext(long projectId, String userId, String issuer, String lineItemUrl,
       String ltiUserSub);
 
+  StoredData.LtiSubmissionData getLtiSubmission(long sourceProjectId);
+
+  void storeLtiSubmission(long sourceProjectId, String userId, long snapshotProjectId,
+      String snapshotOwnerId, Date submittedAt);
+
   List<StoredData.LtiKeyData> getLtiKeys();
 
   void storeLtiKey(String kid, byte[] privateKey, byte[] publicKey);
@@ -715,5 +721,4 @@ public interface StorageIo {
   String getIosExtensionsConfig();
 
 }
-
 

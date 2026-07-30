@@ -173,6 +173,10 @@ public class LtiLaunchServlet extends HttpServlet {
         renderTemplatePicker(resp, claims, userForLaunch(claims));
         return;
       }
+      if ("LtiSubmissionReviewRequest".equals(messageType)) {
+        handleSubmissionReview(resp, claims, deploymentId);
+        return;
+      }
       if (!"LtiResourceLinkRequest".equals(messageType)) {
         fail(resp, "Unsupported message type");
         return;
@@ -186,15 +190,11 @@ public class LtiLaunchServlet extends HttpServlet {
       User user = userForLaunch(claims);
       OdeAuthFilter.UserInfo userInfo = new OdeAuthFilter.UserInfo();
       userInfo.setUserId(user.getUserId());
-      String cookie = userInfo.buildCookie(false);
-      if (cookie != null) {
-        Cookie cook = new Cookie("AppInventor", cookie);
-        cook.setPath("/");
-        resp.addCookie(cook);
-      }
+      addSessionCookie(resp, userInfo);
 
       long projectId = maybeForkStarterProject(user, claims);
       if (projectId > 0) {
+        markLtiLaunched(user.getUserId(), projectId);
         pointIdeAtProject(user.getUserId(), projectId);
         JSONObject ags = claims.optJSONObject(AGS);
         if (gradableAgs(ags)) {
@@ -210,6 +210,100 @@ public class LtiLaunchServlet extends HttpServlet {
       LOG.log(Level.WARNING, "LTI launch failed", e);
       failServer(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  /**
+   * Opens the selected learner artifact in the same one-project, read-only
+   * session used by other server-side review integrations.
+   */
+  private void handleSubmissionReview(HttpServletResponse resp, JSONObject claims,
+      String deploymentId) throws IOException {
+    if (!isInstructor(claims)) {
+      fail(resp, "Only an instructor can review an App Inventor submission");
+      return;
+    }
+    String studentSub = reviewStudentSubject(claims);
+    if (!isUsableSubject(studentSub)) {
+      fail(resp, "Missing or invalid for_user user_id");
+      return;
+    }
+    String resourceLinkId = resourceLinkId(claims);
+    if (resourceLinkId.isEmpty()) {
+      fail(resp, "Missing resource link id");
+      return;
+    }
+
+    String issuer = claims.optString("iss", "");
+    String studentAccountId = reviewStudentAccountId(issuer, studentSub);
+    long projectId =
+        reviewProjectId(studentAccountId, issuer, deploymentId, resourceLinkId);
+    if (projectId <= 0) {
+      renderStudentHasNotStarted(resp);
+      return;
+    }
+
+    User student =
+        storageIo.getUser(studentAccountId, ltiAccountKey(issuer, studentSub));
+    if (!studentAccountId.equals(student.getUserId())) {
+      throw new SecurityException("LTI review student account mismatch");
+    }
+    OdeAuthFilter.UserInfo userInfo = new OdeAuthFilter.UserInfo();
+    userInfo.setUserId(student.getUserId());
+    userInfo.setReadOnly(true);
+    userInfo.setUserId(storageIo.getProjectUserId(projectId));
+    userInfo.setOneProjectId(projectId);
+    userInfo.setFauxProjectName(reviewActivityTitle(claims));
+    userInfo.setFauxAccountName(reviewStudentName(claims));
+    addSessionCookie(resp, userInfo);
+    resp.sendRedirect("/");
+  }
+
+  /**
+   * Resolves the learner's live activity project and prefers its latest frozen
+   * submission. Every owner relationship is checked before a project is exposed.
+   */
+  long reviewProjectId(String studentAccountId, String issuer, String deploymentId,
+      String resourceLinkId) throws StoredData.ProjectNotFoundException {
+    long sourceProjectId =
+        LtiResourceLinks.get(studentAccountId, issuer, deploymentId, resourceLinkId);
+    if (sourceProjectId <= 0) {
+      return 0;
+    }
+    if (!studentAccountId.equals(storageIo.getProjectUserId(sourceProjectId))) {
+      throw new SecurityException("LTI review source project owner mismatch");
+    }
+    LtiSubmission.Submission submission = LtiSubmission.get(sourceProjectId);
+    if (submission == null) {
+      return sourceProjectId;
+    }
+    if (submission.sourceProjectId != sourceProjectId
+        || !studentAccountId.equals(submission.userId)) {
+      throw new SecurityException("LTI review submission source mismatch");
+    }
+    String snapshotOwnerId = storageIo.getProjectUserId(submission.snapshotProjectId);
+    if (!submission.snapshotOwnerId.equals(snapshotOwnerId)) {
+      throw new SecurityException("LTI review snapshot owner mismatch");
+    }
+    return submission.snapshotProjectId;
+  }
+
+  private static void addSessionCookie(HttpServletResponse resp,
+      OdeAuthFilter.UserInfo userInfo) {
+    String cookie = userInfo.buildCookie(false);
+    if (cookie != null) {
+      Cookie cook = new Cookie("AppInventor", cookie);
+      cook.setPath("/");
+      resp.addCookie(cook);
+    }
+  }
+
+  private static void renderStudentHasNotStarted(HttpServletResponse resp)
+      throws IOException {
+    resp.setContentType("text/html; charset=utf-8");
+    resp.getWriter().write(LtiHtml.pageHead("Submission not available")
+        + "<h1>This student has not opened the assignment yet</h1>"
+        + "<p>There is no App Inventor project to review for this activity yet.</p>"
+        + LtiHtml.closeButton() + LtiHtml.pageFoot());
   }
 
   /**
@@ -259,6 +353,52 @@ public class LtiLaunchServlet extends HttpServlet {
   @VisibleForTesting
   static String ltiAccountKey(String issuer, String sub) {
     return ltiUserId(issuer, sub) + "@lti.invalid";
+  }
+
+  /** The learner subject named by a submission-review launch, or empty if absent. */
+  @VisibleForTesting
+  static String reviewStudentSubject(JSONObject claims) {
+    return nonBlankString(claims.optJSONObject(LTI + "for_user"), "user_id");
+  }
+
+  /** Uses the ordinary launch identity mapping for the learner under review. */
+  @VisibleForTesting
+  static String reviewStudentAccountId(String issuer, String studentSub) {
+    return ltiUserId(issuer, studentSub);
+  }
+
+  /** A display-only learner name suitable for the encrypted review session. */
+  @VisibleForTesting
+  static String reviewStudentName(JSONObject claims) {
+    JSONObject forUser = claims.optJSONObject(LTI + "for_user");
+    String name = nonBlankString(forUser, "name");
+    if (!name.isEmpty()) {
+      return name;
+    }
+    String givenName = nonBlankString(forUser, "given_name").trim();
+    String familyName = nonBlankString(forUser, "family_name").trim();
+    String combined = (givenName + " " + familyName).trim();
+    return combined.isEmpty() ? "Student" : combined;
+  }
+
+  /** The unsanitized activity title for display, with a readable fallback. */
+  @VisibleForTesting
+  static String reviewActivityTitle(JSONObject claims) {
+    JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
+    String title = nonBlankString(resourceLink, "title");
+    return title.isEmpty() ? "App Inventor assignment" : title;
+  }
+
+  private static String nonBlankString(JSONObject object, String key) {
+    if (object == null) {
+      return "";
+    }
+    Object value = object.opt(key);
+    if (!(value instanceof String)) {
+      return "";
+    }
+    String string = (String) value;
+    return string.trim().isEmpty() ? "" : string;
   }
 
   /**
@@ -445,6 +585,32 @@ public class LtiLaunchServlet extends HttpServlet {
   private static String resourceLinkId(JSONObject claims) {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
     return (resourceLink == null) ? "" : resourceLink.optString("id", "");
+  }
+
+  /**
+   * Marks a learner project without replacing settings written by the IDE.
+   * Relaunches repeat this safely so projects created before the marker existed
+   * are repaired when next opened.
+   */
+  private void markLtiLaunched(String userId, long projectId) {
+    try {
+      String raw = storageIo.loadProjectSettings(userId, projectId);
+      JSONObject settings =
+          (raw == null || raw.trim().isEmpty()) ? new JSONObject() : new JSONObject(raw);
+      JSONObject youngAndroid =
+          settings.optJSONObject(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS);
+      if (youngAndroid == null) {
+        youngAndroid = new JSONObject();
+        settings.put(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, youngAndroid);
+      }
+      youngAndroid.put(SettingsConstants.YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED, "true");
+      storageIo.storeProjectSettings(userId, projectId, settings.toString());
+    } catch (Exception e) {
+      // Menu gating is an affordance, not part of launch authorization. A
+      // settings failure must not keep the learner out of the assignment.
+      LOG.log(Level.WARNING,
+          "LTI launch: could not mark project " + projectId + " as LTI launched", e);
+    }
   }
 
   /**

@@ -22,6 +22,8 @@ public class LtiLaunchServletTest extends TestCase {
 
   private static final String RESOURCE_LINK =
       "https://purl.imsglobal.org/spec/lti/claim/resource_link";
+  private static final String FOR_USER =
+      "https://purl.imsglobal.org/spec/lti/claim/for_user";
   private static final String ROLES = "https://purl.imsglobal.org/spec/lti/claim/roles";
 
   private static JSONObject claimsWith(String title, String id) {
@@ -78,6 +80,53 @@ public class LtiLaunchServletTest extends TestCase {
   public void testMissingResourceLinkUsesDefault() {
     assertEquals("AppInventorAssignment",
         LtiLaunchServlet.forkProjectName(new JSONObject()));
+  }
+
+  /** A review launch reads the learner subject from the for_user claim. */
+  public void testReviewStudentSubject() {
+    JSONObject claims = new JSONObject().put(FOR_USER,
+        new JSONObject().put("user_id", "student-subject-42"));
+    assertEquals("student-subject-42",
+        LtiLaunchServlet.reviewStudentSubject(claims));
+  }
+
+  /** Every absent form of the required review subject is reported as empty. */
+  public void testReviewStudentSubjectMustBePresent() {
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(new JSONObject()));
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(
+        new JSONObject().put(FOR_USER, new JSONObject())));
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(
+        new JSONObject().put(FOR_USER, new JSONObject().put("user_id", ""))));
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(
+        new JSONObject().put(FOR_USER, new JSONObject().put("user_id", " \t "))));
+  }
+
+  /** Review and ordinary launch use one identity derivation and cannot drift. */
+  public void testReviewStudentAccountUsesLaunchIdentityMapping() {
+    String issuer = "https://moodle.example.org";
+    String subject = "student-42";
+    assertEquals(LtiLaunchServlet.ltiUserId(issuer, subject),
+        LtiLaunchServlet.reviewStudentAccountId(issuer, subject));
+  }
+
+  /** The review cookie displays a raw title and a readable fallback. */
+  public void testReviewActivityTitleFallback() {
+    assertEquals("Build a quiz: part 2!",
+        LtiLaunchServlet.reviewActivityTitle(
+            claimsWith("Build a quiz: part 2!", "resource-1")));
+    assertEquals("App Inventor assignment",
+        LtiLaunchServlet.reviewActivityTitle(claimsWith(null, "resource-1")));
+  }
+
+  /** The review cookie prefers a full learner name without requiring one. */
+  public void testReviewStudentNameFallback() {
+    JSONObject named = new JSONObject().put(FOR_USER,
+        new JSONObject().put("name", "Display Name"));
+    assertEquals("Display Name", LtiLaunchServlet.reviewStudentName(named));
+    JSONObject parts = new JSONObject().put(FOR_USER,
+        new JSONObject().put("given_name", "Given").put("family_name", "Family"));
+    assertEquals("Given Family", LtiLaunchServlet.reviewStudentName(parts));
+    assertEquals("Student", LtiLaunchServlet.reviewStudentName(new JSONObject()));
   }
 
   /** An LTI account lands in the reserved space and never looks like a real email. */
