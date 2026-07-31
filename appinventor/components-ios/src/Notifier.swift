@@ -169,6 +169,7 @@ fileprivate class CustomAlertView: UIView {
     let titleLabel = makeLabel()
     titleLabel.font = UIFont.boldSystemFont(ofSize: UIFont.labelFontSize)
     titleLabel.text = title
+    titleLabel.textColor = .black
     stack.spacing = kDefaultSpacing
     stack.alignment = .fill
     stack.axis = .vertical
