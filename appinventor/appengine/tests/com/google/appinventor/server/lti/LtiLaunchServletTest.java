@@ -101,6 +101,35 @@ public class LtiLaunchServletTest extends TestCase {
         new JSONObject().put(FOR_USER, new JSONObject().put("user_id", " \t "))));
   }
 
+  /**
+   * A platform may send the review subject as a JSON number. Reading it must
+   * agree with the subject the ordinary launch used, or a review would resolve a
+   * different account than the one the launch provisioned.
+   */
+  public void testReviewStudentSubjectAcceptsANumericIdentifier() {
+    JSONObject claims = new JSONObject(
+        "{\"" + FOR_USER + "\":{\"user_id\":5},\"sub\":5}");
+    assertEquals("5", LtiLaunchServlet.reviewStudentSubject(claims));
+    assertEquals(claims.optString("sub", ""),
+        LtiLaunchServlet.reviewStudentSubject(claims));
+    assertEquals(LtiLaunchServlet.ltiUserId("https://moodle.example.org",
+            claims.optString("sub", "")),
+        LtiLaunchServlet.reviewStudentAccountId("https://moodle.example.org",
+            LtiLaunchServlet.reviewStudentSubject(claims)));
+    assertTrue(LtiLaunchServlet.isUsableSubject(
+        LtiLaunchServlet.reviewStudentSubject(claims)));
+  }
+
+  /** A structured or boolean member is not an identifier and stays absent. */
+  public void testReviewStudentSubjectRefusesNonScalarValues() {
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(
+        new JSONObject("{\"" + FOR_USER + "\":{\"user_id\":{\"id\":5}}}")));
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(
+        new JSONObject("{\"" + FOR_USER + "\":{\"user_id\":[5]}}")));
+    assertEquals("", LtiLaunchServlet.reviewStudentSubject(
+        new JSONObject("{\"" + FOR_USER + "\":{\"user_id\":true}}")));
+  }
+
   /** Review and ordinary launch use one identity derivation and cannot drift. */
   public void testReviewStudentAccountUsesLaunchIdentityMapping() {
     String issuer = "https://moodle.example.org";

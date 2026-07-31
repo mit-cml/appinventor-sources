@@ -389,15 +389,26 @@ public class LtiLaunchServlet extends HttpServlet {
     return title.isEmpty() ? "App Inventor assignment" : title;
   }
 
+  /**
+   * A present scalar claim member, read as a string. A platform may encode an
+   * identifier as a JSON number rather than a string, so a number is read the
+   * same way the launch already reads the subject claim, which keeps the account
+   * a review resolves identical to the account the launch provisioned. A
+   * structured or boolean member is not an identifier and is refused.
+   */
   private static String nonBlankString(JSONObject object, String key) {
     if (object == null) {
       return "";
     }
     Object value = object.opt(key);
-    if (!(value instanceof String)) {
+    String string;
+    if (value instanceof String) {
+      string = (String) value;
+    } else if (value instanceof Number) {
+      string = value.toString();
+    } else {
       return "";
     }
-    String string = (String) value;
     return string.trim().isEmpty() ? "" : string;
   }
 
