@@ -823,18 +823,31 @@ Blockly.WarningHandler.SPECIAL_KEY_MAP = {
   'text': 'TEXT',
   'math_number': 'NUM',
   'component_component_block': 'COMPONENT_SETTING',
-  'helpers_dropdown': 'OPTION'
+  'helpers_dropdown': 'OPTION',
+  'lexical_variable_get': 'VAR'
 };
 
 Blockly.WarningHandler.keyCacheHelper = function(block) {
-  var prefix = {'text':'str:','math_number':'num:','component_component_block':'com:','helpers_dropdown':'dropdown:'};
-  var value = prefix[block.type] + block.getFieldValue(Blockly.WarningHandler.SPECIAL_KEY_MAP[block.type]);
-  return value;
+  var prefix = {
+    'text': 'str:',
+    'math_number': 'num:',
+    'component_component_block': 'com:',
+    'helpers_dropdown': 'dropdown:',
+    'lexical_variable_get': 'var:'
+  };
+
+  var fieldName = Blockly.WarningHandler.SPECIAL_KEY_MAP[block.type];
+
+  if (!fieldName) {
+    return null;
+  }
+
+  return prefix[block.type] + block.getFieldValue(fieldName);
 };
 
 Blockly.WarningHandler.prototype.getDictionaryKeyBlocks_ = function(block) {
   return block.inputList.map(function(input) {
-    var pair = input.connection.targetBlock();
+    var pair = input.connection && input.connection.targetBlock();
     if (pair) {
       return {
         pair: pair,
