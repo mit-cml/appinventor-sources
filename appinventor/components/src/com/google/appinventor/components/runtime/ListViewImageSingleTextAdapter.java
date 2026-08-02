@@ -17,7 +17,6 @@ import androidx.core.view.ViewCompat;
 import android.util.Log;
 
 import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 
@@ -25,26 +24,10 @@ import java.io.IOException;
 
 public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView {
 
-  private int textMainColor;
-  private float textMainSize;
-  private String textMainFont;
-  private int imageWidth;
-  private int imageHeight;
-  private int textMainAlignment;
-
   public ListViewImageSingleTextAdapter(ComponentContainer container, ListDataModel model,
-      int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
-      float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
-    super(container, model, backgroundColor, selectionColor, radius);
-    this.container = container;
-    this.textMainColor = textMainColor;
-    this.textMainSize = textMainSize;
-    this.textMainFont = textMainFont;
-    this.imageWidth = imageWidth;
-    this.imageHeight = imageHeight;
-    this.textMainAlignment = textMainAlignment;
-  }  
+      ListViewStyle style) {
+    super(container, model, style);
+  }
 
   @Override
   public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -56,7 +39,7 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     final int idImage = ViewCompat.generateViewId();
     imageView.setId(idImage);
     LinearLayout.LayoutParams layoutParamsImage =
-            new LinearLayout.LayoutParams(imageWidth, imageHeight);
+            new LinearLayout.LayoutParams(style.imageWidth, style.imageHeight);
     layoutParamsImage.setMargins(0, 0, 15, 0);
     imageView.setLayoutParams(layoutParamsImage);
 
@@ -66,10 +49,6 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     textViewFirst.setId(idFirst);
     LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
     textViewFirst.setLayoutParams(layoutParams1);
-    textViewFirst.setTextSize(textMainSize);
-    textViewFirst.setTextColor(textMainColor);
-    TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
-    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
 
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -110,7 +89,10 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     } catch (IOException ioe) {
       Log.e(LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());
     }
-    updateCardViewColor(imageSingleTextHolder.cardView, position);
+
+    styleMainText(imageSingleTextHolder.textViewFirst);
+    styleImage(imageSingleTextHolder.imageView);
+    styleCardView(imageSingleTextHolder.cardView, position);
   }
  
   public class ImageSingleTextRvViewHolder extends RvViewHolder {
