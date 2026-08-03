@@ -88,6 +88,8 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] followOffset = {0f, 0f, 0f};
   protected String worldOffset = "";
   protected Object geoAnchor = null;
+  protected Boolean isGeoAnchorLocalized = false;
+
   protected float[] previewPlacementSurface = null;
   protected boolean hasPreviewSurface = false;
 
@@ -396,6 +398,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder) {
+    Log.d("arnodebase", name + " tryCreateAnchor: anchor=" + (Anchor() != null)
+        + " pendingPosition=" + (pendingPosition == null ? "null" : arrayToString(pendingPosition)));
+
     if (Anchor() != null || pendingPosition == null) return;
     Log.w("Node", this.name + "has pending position " + pendingPosition[0] + " " + pendingPosition[1] + " " + pendingPosition[2] + " " );
     Plane bestDetectedPlane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
@@ -1047,6 +1052,25 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     Log.d("ARNodeBase", "Set texture on node: " + texture);
     this.texture = texture;
     updateMaterial();
+  }
+
+  // Property getter
+
+  @SimpleProperty(description = "Whether the geo anchor has been localized by ARKit")
+  public boolean IsGeoLocalized() {
+    return this.isGeoAnchorLocalized;
+  }
+
+  // Property setter (called from iOS side to update state)
+  @SimpleProperty
+  public void IsGeoLocalized(boolean localized) {
+    this.isGeoAnchorLocalized = localized;
+  }
+
+  // Event fired when localization is confirmed
+  @SimpleEvent(description = "Fired when ARKit successfully resolves this node's geo anchor in world space")
+  public void GeoAnchorLocalized() {
+    EventDispatcher.dispatchEvent(this, "GeoAnchorLocalized");
   }
 
   protected void updateMaterial() {

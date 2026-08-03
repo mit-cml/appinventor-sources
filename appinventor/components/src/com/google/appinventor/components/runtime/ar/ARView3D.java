@@ -118,11 +118,12 @@ import java.util.stream.Collectors;
         )
 })
 @UsesAssets(fileNames = "ar_object.vert, ar_unlit_object.frag, ar_unlit_object.vert, ar_object.frag, plane.vert, plane.frag, point_cloud.vert, point_cloud.frag," +
-        "cube.obj, plane.obj, sphere.obj, torus.obj, trigrid.png," +
+        "cube.obj, plane.obj, sphere.obj, torus.obj, quad.obj, trigrid.png," +
         "background_show_camera.frag, background_show_camera.vert," +
         "basic.filamat, material_background.filamat, material_basic.filamat, occlusion2.filamat," +
         "background.frag, background.vert," +
         "basic.frag, basic.vert," +
+        "ar_video.vert, ar_video.frag, ar_text.frag," +
         "background_show_depth_color_visualization.frag, background_show_depth_color_visualization.vert," +
         "occlusion.frag, occlusion.vert, depth_color_palette.png"
 )
@@ -145,6 +146,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     private final TapHelper tapHelper;
     private final DisplayRotationHelper displayRotationHelper;
     private final TrackingStateHelper trackingStateHelper;
+    private int trackingType;
+
+    private static final int TRACKING_WORLD       = 1;  // SLAM only — no geo
+    private static final int TRACKING_ORIENTATION = 2;
+    private static final int TRACKING_IMAGE       = 3;
+    private static final int TRACKING_GEO         = 4;  // WorldTracking + GeospatialMode.ENABLED
+
     private boolean hasSetTextureNames = false;
     private final DepthSettings depthSettings = new DepthSettings();
     private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
@@ -1011,11 +1019,19 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 // Anchor creation
                 for (ARNode node : arNodes) {
                     node.tryCreateAnchorIfNeeded(this::getNearestPlane);
+                    if (node instanceof TextNode) {
+                        ((TextNode) node).updateTextTextureIfNeeded();
+                    } else if (node instanceof VideoNode) {
+                       VideoNode vn = (VideoNode) node;
+                       vn.initializeGlResources();
+                       vn.updateVideoFrameIfAvailable();
+                    }
                 }
 
                 // GL objects (spheres, boxes, capsules)
                 List<ARNode> objectNodes = sort(arNodes,
-                    new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode"});
+                    new String[]{"CapsuleNode", "SphereNode", "BoxNode", "WebViewNode", "TextNode", "VideoNode"});
+
                 if (objRenderer != null && !objectNodes.isEmpty()) {
                     drawObjects(render, objectNodes, viewMatrix, projectionMatrix);
                 }
@@ -1111,13 +1127,13 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     Earth earth = session.getEarth();
                     Log.w(LOG_TAG, "earth=" + (earth == null ? "null" : "non-null, trackingState=" + earth.getTrackingState()
                         + ", earthState=" + earth.getEarthState()));
-                    if (earth != null && earth.getTrackingState() == TrackingState.TRACKING) {
+                    if (earth != null && earth.getTrackingState() == TrackingState.TRACKING && this.trackingType == TRACKING_GEO) {
                         GeospatialPose geoPose = earth.getCameraGeospatialPose(); // earth.getGeospatialPose(a.getPose());
                         lat = geoPose.getLatitude();
                         lng = geoPose.getLongitude();
                         alt = geoPose.getAltitude();
                         hasGeo = true;
-                        Log.w(LOG_TAG, "has geo?" + lat + "lng" + lng);
+                        Log.w(LOG_TAG, "has geo?" + lat +  "lng" + lng + " alt" + alt);
                     }
                 } catch (Exception e) {
                     // Earth not ready / geospatial unsupported this session — fall through with hasGeo=false
@@ -1528,7 +1544,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
             session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
         Log.i(LOG_TAG, "ARCore: geospatial supported ? " + isGeospatialSupported);
 
-        if (isGeospatialSupported) {
+        if (isGeospatialSupported && trackingType == TRACKING_GEO) {
             config.setGeospatialMode(Config.GeospatialMode.ENABLED);
         }
 
@@ -2233,11 +2249,20 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_AR_TRACKING_TYPE, defaultValue = "1")
     public void TrackingType(int trackingType) {
+        this.trackingType = trackingType;
+        if (session == null) return;
+        Config config = session.getConfig();
+        if (trackingType == TRACKING_GEO) {
+            config.setGeospatialMode(Config.GeospatialMode.ENABLED);
+        } else {
+            config.setGeospatialMode(Config.GeospatialMode.DISABLED);
+        }
+        session.configure(config);
     }
 
     @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "<p>The tracking type for the AR session.  WorldTracking allows for plane detection, " + "image detection with ImageMarkers, and the placement of nodes in the world.  The devices's position " + "and orientation are used to track the placemet of the world.  Nodes will remain where you place them " + "in the world, even if you move.  OrientationTracking allows for placing a nodes but using the devices's " + "orientation to determine location.  If you move, the items will move too.  They do not stay in place. " + "ImageTracking allows for using ImageMarkers and placing items relative to the images." + "Valid values are: 1 (WorldTracking), 2 (OrientationTracking), 3 (ImageTracking)")
     public int TrackingType() {
-        return 1;
+        return this.trackingType;
     }
 
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
@@ -2639,7 +2664,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 + "nodesphere created without a placement");
             return node;
         }
-        Log.i("created Capsule node, geo anchor is", node.Anchor().toString());
+        Log.i("created Sphere node, geo anchor is", node.Anchor().toString());
         return node;
     }
 
@@ -2839,18 +2864,22 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     @SimpleFunction(description = "Create a new ModelNode with geo coords, if available. ModelObjectString should refer to either the GLB (android) or USDZ (ios) pair of assets. System will determine platform specificity\"")
     public ModelNode CreateModelNodeAtLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates, boolean isANodeAtPoint, String modelObjectString) {
         if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
+        Log.i("creating model node", "with geo or SLAM location");
+
         ModelNode modelNode = new ModelNode(this);
+
         modelObjectString = replaceExtension(modelObjectString, "glb");
         modelNode.Model(modelObjectString);
-        Anchor geoAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
-        modelNode.Anchor(geoAnchor);
 
-        if (geoAnchor == null) {
+        Anchor geoOrSlamAnchor = setupLocation(x, y, z, lat, lng, altitude, hasGeoCoordinates);
+        modelNode.Anchor(geoOrSlamAnchor);
+
+        if (geoOrSlamAnchor == null) {
             Log.w(LOG_TAG, "CreatemodelNodeAtLocation: AR session not ready yet — "
                 + "modelNode created without a placement");
             return modelNode;
         }
-        Log.i("created Capsule node, geo anchor is", modelNode.Anchor().toString());
+        Log.i(LOG_TAG, "created Model node, anchor is" + " x" + x + "y" + y + "z" + z + " and lat " + lat);
         return modelNode;
     }
 
@@ -2865,7 +2894,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
 
     @SimpleFunction(description = "Create a new ModelNode with default properties at the plane position. ModelObjectString should refer to either the GLB (android) or USDZ (ios) pair of assets. System will determine platform specificity")
     public ModelNode CreateModelNodeAtPlane(ARDetectedPlane targetPlane, Object point, String modelObjectString) {
-        Log.i("creating Capsule node", "with detected plane and pose");
+        if (modelObjectString == null) throw new RuntimeException("You must specify a model asset that has been uploaded to your project");
+        Log.i("creating model node", "with detected plane and pose");
+
         Pose pose = (Pose) point;
         ModelNode mNode = new ModelNode(this);
 
@@ -2876,7 +2907,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         mNode.Anchor(trackable.createAnchor(pose));
         mNode.Trackable(trackable);
 
-        Log.i("creating Capsule node, anchor is", mNode.Anchor().toString());
+        Log.i("creating Model node, anchor is", mNode.Anchor().toString());
         return mNode;
     }
 
@@ -3031,22 +3062,18 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
 
-    // setupLocation() — guard against null Earth AND against Earth not yet localized
+    // setupLocation() — guard against null Earth AND against Earth not yet localized, fallback to SLAM if no geo
     public Anchor setupLocation(float x, float y, float z, double lat, double lng, double altitude, boolean hasGeoCoordinates) {
         try {
             Earth earth = session.getEarth();
-
-            if (earth == null) {
-                Log.w(LOG_TAG, "Geospatial not enabled/supported — falling back to local anchor");
-                return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
-            }
-
-            if (earth.getTrackingState() != TrackingState.TRACKING) {
-                Log.w(LOG_TAG, "Earth not yet TRACKING (state=" + earth.getTrackingState() + ") — falling back to local anchor");
-                return session.createAnchor(new Pose(new float[]{x, y, z}, new float[]{0, 0, 0, 1}));
-            }
-
+            float[] position = {x, y, z};
             float[] rotation = {0, 0, 0, 1};
+
+            if (earth == null || earth.getTrackingState() != TrackingState.TRACKING && trackingType != TRACKING_GEO) {
+                Log.w(LOG_TAG, "Geospatial not enabled/supported — falling back to local anchor");
+                return session.createAnchor(new Pose(position, rotation));
+            }
+
             return earth.createAnchor(lat, lng, altitude, rotation);
 
         } catch (com.google.ar.core.exceptions.SessionPausedException e) {
