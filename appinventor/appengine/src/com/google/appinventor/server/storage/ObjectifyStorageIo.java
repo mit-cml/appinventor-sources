@@ -3271,37 +3271,44 @@ public class ObjectifyStorageIo implements StorageIo {
 
   @Override
   public List<Long> getTrashProjectIds(String userId) {
+    // An account that has never opened the IDE has no folder tree at all, and an LTI launch
+    // creates exactly that kind of account, so an absent tree has to read as an empty trash
+    // rather than as a failure. A tree that is present but unreadable is reported and read the
+    // same way, because an empty answer is the safe one for every caller. The launch and the
+    // template picker would otherwise fail the whole request, and account deletion would refuse
+    // to delete rather than delete the wrong thing.
     List<Long> trashProjectIds = new ArrayList<>();
-
-    // An account that has never opened the IDE has no folder tree, and therefore nothing in the
-    // trash. Read the tree defensively so such an account returns an empty list instead of
-    // failing to parse settings that were never written.
     String settings = loadSettings(userId);
     if (settings == null || settings.isEmpty()) {
       return trashProjectIds;
     }
-    JSONObject general = new JSONObject(settings).optJSONObject("GeneralSettings");
-    String foldersStr = general == null ? "" : general.optString("Folders", "");
-    if (foldersStr.isEmpty()) {
-      return trashProjectIds;
-    }
-    org.json.JSONArray foldersList = new JSONObject(foldersStr).optJSONArray("folders");
-    if (foldersList == null) {
-      return trashProjectIds;
-    }
+    try {
+      JSONObject general = new JSONObject(settings).optJSONObject("GeneralSettings");
+      String foldersStr = general == null ? "" : general.optString("Folders", "");
+      if (foldersStr.isEmpty()) {
+        return trashProjectIds;
+      }
+      org.json.JSONArray foldersList = new JSONObject(foldersStr).optJSONArray("folders");
+      if (foldersList == null) {
+        return trashProjectIds;
+      }
 
-    for (int i = 0; i < foldersList.length(); i++) {
-      JSONObject folder = foldersList.getJSONObject(i);
+      for (int i = 0; i < foldersList.length(); i++) {
+        JSONObject folder = foldersList.getJSONObject(i);
 
-      if (folder.getString("name").equals("*trash*")) {
-        org.json.JSONArray projects = folder.getJSONArray("projects");
-        for (int j = 0; j < projects.length(); j++) {
-          trashProjectIds.add(Long.parseLong(projects.getString(j)));
+        if (folder.getString("name").equals("*trash*")) {
+          org.json.JSONArray projects = folder.getJSONArray("projects");
+          for (int j = 0; j < projects.length(); j++) {
+            trashProjectIds.add(Long.parseLong(projects.getString(j)));
+          }
+
+          collectProjects(folder.getJSONArray("folders"), trashProjectIds);
         }
-
-        collectProjects(folder.getJSONArray("folders"), trashProjectIds);
-      };
-    };
+      }
+    } catch (JSONException | NumberFormatException e) {
+      LOG.log(Level.WARNING, "Could not read the folder tree of user " + userId, e);
+      trashProjectIds.clear();
+    }
 
     return trashProjectIds;
 }

@@ -208,6 +208,30 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(Arrays.asList(projectId), storage.getTrashProjectIds(USER_ID));
   }
 
+  public void testUnreadableFolderTreeReadsAsAnEmptyTrash() {
+    final String USER_ID = "720";
+    storage.getUser(USER_ID, "user720@test.com");
+
+    // The folder tree is a settings string a client writes, so a shape the reader does not
+    // recognise has to answer with an empty trash. The launch, the template picker, and account
+    // deletion all ask for it, and none of them should fail the whole request over it.
+    String[] unreadable = {
+      "not json at all",
+      "[]",
+      "{}",
+      "{\"folders\":[{}]}",
+      "{\"folders\":[null]}",
+      "{\"folders\":[{\"name\":\"*trash*\"}]}",
+      "{\"folders\":[{\"name\":\"*trash*\",\"projects\":[7],\"folders\":[]}]}",
+      "{\"folders\":[{\"name\":\"*trash*\",\"projects\":[\"seven\"],\"folders\":[]}]}",
+    };
+    for (String folders : unreadable) {
+      storage.storeSettings(USER_ID, settingsWithFolders(folders));
+      assertTrue("should read as empty: " + folders,
+          storage.getTrashProjectIds(USER_ID).isEmpty());
+    }
+  }
+
   public void testSetTosAccepted() {
     final String USER_ID = "100";
     final String USER_EMAIL = "newuser100@test.com";
@@ -855,16 +879,27 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
    * the trash is a child folder named *trash* whose projects are ids written as strings.
    */
   private static String settingsWithTrashedProject(long projectId) {
-    JSONObject trash = new JSONObject();
-    trash.put("name", "*trash*");
+    JSONObject trash = folderJson("*trash*");
     trash.put("projects", new JSONArray().put(Long.toString(projectId)));
-    trash.put("folders", new JSONArray());
-    JSONObject global = new JSONObject();
-    global.put("name", "*global*");
-    global.put("projects", new JSONArray());
+    JSONObject global = folderJson("*global*");
     global.put("folders", new JSONArray().put(trash));
+    return settingsWithFolders(global.toString());
+  }
+
+  /** One folder the way the client serialises it, with every field it always writes. */
+  private static JSONObject folderJson(String name) {
+    return new JSONObject()
+        .put("name", name)
+        .put("dateCreated", "0")
+        .put("dateModified", "0")
+        .put("projects", new JSONArray())
+        .put("folders", new JSONArray());
+  }
+
+  /** The settings blob holding a given folder tree, which is stored as a string. */
+  private static String settingsWithFolders(String foldersValue) {
     JSONObject general = new JSONObject();
-    general.put(SettingsConstants.FOLDERS, global.toString());
+    general.put(SettingsConstants.FOLDERS, foldersValue);
     return new JSONObject()
         .put(SettingsConstants.USER_GENERAL_SETTINGS, general)
         .toString();
