@@ -247,10 +247,12 @@ public class LtiLaunchServlet extends HttpServlet {
     if (!studentAccountId.equals(student.getUserId())) {
       throw new SecurityException("LTI review student account mismatch");
     }
+    // The session has to belong to whoever owns the project it opens, which is the
+    // reserved snapshot account once the learner has submitted and the learner
+    // themselves before that, so it is read from the project rather than assumed.
     OdeAuthFilter.UserInfo userInfo = new OdeAuthFilter.UserInfo();
-    userInfo.setUserId(student.getUserId());
-    userInfo.setReadOnly(true);
     userInfo.setUserId(storageIo.getProjectUserId(projectId));
+    userInfo.setReadOnly(true);
     userInfo.setOneProjectId(projectId);
     userInfo.setFauxProjectName(reviewActivityTitle(claims));
     userInfo.setFauxAccountName(reviewStudentName(claims));
