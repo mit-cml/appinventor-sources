@@ -74,7 +74,7 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
           return;
         }
         UserProject selected = storageIo.getUserProject(owner, pid);
-        if (selected == null || selected.isInTrash()) {
+        if (selected == null || storageIo.getTrashProjectIds(owner).contains(pid)) {
           // A template trashed or purged after the picker was rendered must not be signed as the
           // assignment, since a student launch could not open it.
           invalidSelection(resp);

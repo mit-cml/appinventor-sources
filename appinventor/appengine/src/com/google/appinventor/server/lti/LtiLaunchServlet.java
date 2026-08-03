@@ -538,7 +538,7 @@ public class LtiLaunchServlet extends HttpServlet {
         long linked = LtiResourceLinks.get(userId, issuer, deploymentId, resourceLinkId);
         if (linked > 0 && storageIo.getProjects(userId).contains(linked)) {
           UserProject linkedProject = storageIo.getUserProject(userId, linked);
-          if (linkedProject != null && !linkedProject.isInTrash()) {
+          if (linkedProject != null && !storageIo.getTrashProjectIds(userId).contains(linked)) {
             LOG.info("LTI fork: " + user.getUserEmail() + " already has project " + linked
                 + " for this assignment");
             return linked;
@@ -815,10 +815,13 @@ public class LtiLaunchServlet extends HttpServlet {
     resp.setContentType("text/html; charset=utf-8");
     StringBuilder html = new StringBuilder(LtiHtml.pageHead("Choose a template"))
         .append("<h1 id='pick'>Choose a template for this assignment</h1>");
+    // Read the trash once rather than per project, since it is derived from the user's settings.
+    String teacherId = teacher.getUserId();
+    List<Long> trashed = storageIo.getTrashProjectIds(teacherId);
     List<UserProject> live = new ArrayList<>();
-    for (UserProject up : storageIo.getUserProjects(teacher.getUserId(),
-        storageIo.getProjects(teacher.getUserId()))) {
-      if (!up.isInTrash() && up.getProjectName() != null && !up.getProjectName().isEmpty()) {
+    for (UserProject up : storageIo.getUserProjects(teacherId, storageIo.getProjects(teacherId))) {
+      if (!trashed.contains(up.getProjectId()) && up.getProjectName() != null
+          && !up.getProjectName().isEmpty()) {
         live.add(up);
       }
     }

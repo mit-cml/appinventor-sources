@@ -17,9 +17,13 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.base.Charsets;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -174,8 +178,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertNotNull(storage.getLtiGradeContext(projectId));
     assertNotNull(storage.getLtiSubmission(projectId));
 
-    // Deletion only proceeds once every project is trashed.
-    storage.setMoveToTrashFlag(USER_ID, projectId, true);
+    // Deletion only proceeds once every project is trashed. The trash is a folder in the user's
+    // folder tree rather than a flag on the project, so the project is put there the way the
+    // client does it, by storing the tree in the user's settings.
+    storage.storeSettings(USER_ID, settingsWithTrashedProject(projectId));
     assertTrue(storage.deleteAccount(USER_ID));
 
     // Identity link, resource link, and grade context are all gone, so a later launch of the same
@@ -184,6 +190,22 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(0, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
     assertNull(storage.getLtiGradeContext(projectId));
     assertNull(storage.getLtiSubmission(projectId));
+  }
+
+  public void testGetTrashProjectIds() {
+    final String USER_ID = "710";
+    storage.getUser(USER_ID, "user710@test.com");
+
+    // An LTI launch creates an account that has never opened the IDE, so it has no folder tree at
+    // all, and later it has one without a Folders entry. Neither has anything in the trash, and
+    // neither may fail to read, since the launch and the template picker ask on every request.
+    assertTrue(storage.getTrashProjectIds(USER_ID).isEmpty());
+    storage.storeSettings(USER_ID, "{\"GeneralSettings\":{\"CurrentProjectId\":\"1\"}}");
+    assertTrue(storage.getTrashProjectIds(USER_ID).isEmpty());
+
+    long projectId = storage.createProject(USER_ID, project, SETTINGS);
+    storage.storeSettings(USER_ID, settingsWithTrashedProject(projectId));
+    assertEquals(Arrays.asList(projectId), storage.getTrashProjectIds(USER_ID));
   }
 
   public void testSetTosAccepted() {
@@ -825,5 +847,26 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     project.setProjectType(type);
     project.addTextFile(new TextFile(fileName, ""));
     return storageIo.createProject(userId, project, SETTINGS);
+  }
+
+  /**
+   * Builds the settings the client stores once the given project has been moved to the trash. The
+   * folder tree is held as a string under GeneralSettings.Folders, it is the global folder, and
+   * the trash is a child folder named *trash* whose projects are ids written as strings.
+   */
+  private static String settingsWithTrashedProject(long projectId) {
+    JSONObject trash = new JSONObject();
+    trash.put("name", "*trash*");
+    trash.put("projects", new JSONArray().put(Long.toString(projectId)));
+    trash.put("folders", new JSONArray());
+    JSONObject global = new JSONObject();
+    global.put("name", "*global*");
+    global.put("projects", new JSONArray());
+    global.put("folders", new JSONArray().put(trash));
+    JSONObject general = new JSONObject();
+    general.put(SettingsConstants.FOLDERS, global.toString());
+    return new JSONObject()
+        .put(SettingsConstants.USER_GENERAL_SETTINGS, general)
+        .toString();
   }
 }

@@ -150,6 +150,16 @@ public interface StorageIo {
   List<Long> getProjects(String userId);
 
   /**
+   * Returns the ids of the projects the user has moved to the trash. The trash is a folder in the
+   * user's folder tree rather than a flag on the project, so a caller that needs to skip trashed
+   * projects has to ask for them separately from {@link #getProjects(String)}.
+   *
+   * @param userId  user ID
+   * @return  list of project ids in the trash, empty if the user has no folder tree yet
+   */
+  List<Long> getTrashProjectIds(String userId);
+
+  /**
    * Returns an array with the user's project's names
    *
    * @param userId  user ID

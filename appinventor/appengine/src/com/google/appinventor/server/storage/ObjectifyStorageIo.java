@@ -3269,15 +3269,26 @@ public class ObjectifyStorageIo implements StorageIo {
     }
   }
 
-  private final List<Long> getTrashProjectIds(String userId) {
-    String settings = loadSettings(userId);
-
-    JSONObject root = new JSONObject(settings);
-    String foldersStr = root.getJSONObject("GeneralSettings").getString("Folders");
-    JSONObject folders = new JSONObject(foldersStr);
-
+  @Override
+  public List<Long> getTrashProjectIds(String userId) {
     List<Long> trashProjectIds = new ArrayList<>();
-    org.json.JSONArray foldersList = folders.getJSONArray("folders");
+
+    // An account that has never opened the IDE has no folder tree, and therefore nothing in the
+    // trash. Read the tree defensively so such an account returns an empty list instead of
+    // failing to parse settings that were never written.
+    String settings = loadSettings(userId);
+    if (settings == null || settings.isEmpty()) {
+      return trashProjectIds;
+    }
+    JSONObject general = new JSONObject(settings).optJSONObject("GeneralSettings");
+    String foldersStr = general == null ? "" : general.optString("Folders", "");
+    if (foldersStr.isEmpty()) {
+      return trashProjectIds;
+    }
+    org.json.JSONArray foldersList = new JSONObject(foldersStr).optJSONArray("folders");
+    if (foldersList == null) {
+      return trashProjectIds;
+    }
 
     for (int i = 0; i < foldersList.length(); i++) {
       JSONObject folder = foldersList.getJSONObject(i);

@@ -44,7 +44,7 @@ public class ProjectSettingsTest extends GWTTestCase {
   }
 
   private static ProjectSettings settingsForType(String projectType) {
-    UserProject projectInfo = new UserProject(1, "TestProject", projectType, 0, false);
+    UserProject projectInfo = new UserProject(1, "TestProject", projectType, 0);
     return new ProjectSettings(new Project(projectInfo));
   }
 
