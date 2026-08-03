@@ -12,11 +12,11 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.riq.MockHttpServletRequest;
 import com.riq.MockHttpServletResponse;
 
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 /**
  * Drives the submit endpoint over a request rather than through its helpers, so

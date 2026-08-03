@@ -544,7 +544,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String exportProjectMenuItem();
 
   @DefaultMessage("Submit to LMS")
-  @Description("Menu item for submitting the current work to the LMS that launched App Inventor over LTI.")
+  @Description("Menu item for submitting the current work to the LMS that launched it over LTI.")
   String submitToLmsMenuItem();
 
   @DefaultMessage("Submitting to your LMS...")
