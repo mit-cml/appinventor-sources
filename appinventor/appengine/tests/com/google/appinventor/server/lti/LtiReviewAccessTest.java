@@ -32,6 +32,7 @@ public class LtiReviewAccessTest extends LocalDatastoreTestCase {
   private static final String LEARNER = "learner-1";
   private static final String OTHER_LEARNER = "learner-2";
   private static final String SNAPSHOT_OWNER = "lti-snapshot-account";
+  private static final String OTHER_SNAPSHOT_OWNER = "lti-snapshot-account-2";
 
   private StorageIo storageIo;
   private LtiLaunchServlet servlet;
@@ -43,6 +44,7 @@ public class LtiReviewAccessTest extends LocalDatastoreTestCase {
     storageIo.getUser(LEARNER, "learner1@example.com");
     storageIo.getUser(OTHER_LEARNER, "learner2@example.com");
     storageIo.getUser(SNAPSHOT_OWNER, "snapshot@example.com");
+    storageIo.getUser(OTHER_SNAPSHOT_OWNER, "snapshot2@example.com");
     servlet = new LtiLaunchServlet();
   }
 
@@ -69,11 +71,17 @@ public class LtiReviewAccessTest extends LocalDatastoreTestCase {
     assertEquals(0, review(LEARNER));
   }
 
-  /** Before a submission the review reaches the learner's own assignment project. */
-  public void testBeforeSubmitTheLearnerProjectIsOpened() throws Exception {
+  /**
+   * Before a submission there is nothing to open. The learner's own project is deliberately not
+   * exposed, because a session for it would run as the learner's account, which holds their work
+   * for every course on the platform, and App Inventor enforces neither the read only flag nor
+   * the one project limit on the server.
+   */
+  public void testBeforeSubmitNothingIsOpened() throws Exception {
     long projectId = createProject(LEARNER, "Exercise_1");
     LtiResourceLinks.put(LEARNER, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
-    assertEquals(projectId, review(LEARNER));
+    assertEquals("the learner's live project must never be opened for a teacher",
+        0, review(LEARNER));
   }
 
   /** After a submission the review reaches the frozen copy, never the live project. */
@@ -85,14 +93,19 @@ public class LtiReviewAccessTest extends LocalDatastoreTestCase {
     assertEquals(snapshotId, review(LEARNER));
   }
 
-  /** A later attempt whose copy failed supersedes the older one and shows the live project. */
+  /**
+   * A later attempt whose copy failed supersedes the older one, and there is then nothing to
+   * open, rather than an older copy passing for the newest submission.
+   */
   public void testFailedLaterCopySupersedesTheOlderOne() throws Exception {
     long projectId = createProject(LEARNER, "Exercise_1");
     long snapshotId = createProject(SNAPSHOT_OWNER, "Snapshot_1");
     LtiResourceLinks.put(LEARNER, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
     LtiSubmission.put(projectId, LEARNER, snapshotId, SNAPSHOT_OWNER, new Date(1000L));
+    assertEquals(snapshotId, review(LEARNER));
     LtiSubmission.markUnavailable(projectId, LEARNER, new Date(2000L));
-    assertEquals(projectId, review(LEARNER));
+    assertEquals("a failed newer copy must not fall back to the live project",
+        0, review(LEARNER));
   }
 
   /** An assignment link that resolves to another learner's project is refused. */
@@ -138,11 +151,17 @@ public class LtiReviewAccessTest extends LocalDatastoreTestCase {
   /** Two learners on the same assignment reach only their own work. */
   public void testEachLearnerReachesOnlyTheirOwnProject() throws Exception {
     long mine = createProject(LEARNER, "Exercise_1");
-    long theirs = createProject(OTHER_LEARNER, "Exercise_1_other");
+    long mineFrozen = createProject(SNAPSHOT_OWNER, "Snapshot_mine");
     LtiResourceLinks.put(LEARNER, ISSUER, DEPLOYMENT, RESOURCE_LINK, mine);
+    LtiSubmission.put(mine, LEARNER, mineFrozen, SNAPSHOT_OWNER, new Date(1000L));
+
+    long theirs = createProject(OTHER_LEARNER, "Exercise_1_other");
+    long theirsFrozen = createProject(OTHER_SNAPSHOT_OWNER, "Snapshot_theirs");
     LtiResourceLinks.put(OTHER_LEARNER, ISSUER, DEPLOYMENT, RESOURCE_LINK, theirs);
-    assertEquals(mine, review(LEARNER));
-    assertEquals(theirs, review(OTHER_LEARNER));
+    LtiSubmission.put(theirs, OTHER_LEARNER, theirsFrozen, OTHER_SNAPSHOT_OWNER, new Date(1000L));
+
+    assertEquals(mineFrozen, review(LEARNER));
+    assertEquals(theirsFrozen, review(OTHER_LEARNER));
   }
 
   /** An assignment the learner never joined stays out of reach even after they submit elsewhere. */

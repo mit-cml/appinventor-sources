@@ -238,7 +238,9 @@ public class LtiLaunchServlet extends HttpServlet {
     long projectId =
         reviewProjectId(studentAccountId, issuer, deploymentId, resourceLinkId);
     if (projectId <= 0) {
-      renderStudentHasNotStarted(resp);
+      boolean opened =
+          LtiResourceLinks.get(studentAccountId, issuer, deploymentId, resourceLinkId) > 0;
+      renderNothingToReview(resp, opened);
       return;
     }
 
@@ -247,9 +249,8 @@ public class LtiLaunchServlet extends HttpServlet {
     if (!studentAccountId.equals(student.getUserId())) {
       throw new SecurityException("LTI review student account mismatch");
     }
-    // The session has to belong to whoever owns the project it opens, which is the
-    // reserved snapshot account once the learner has submitted and the learner
-    // themselves before that, so it is read from the project rather than assumed.
+    // The session belongs to whoever owns the project it opens, which is always the reserved
+    // account holding the frozen copy, so a review never runs as the learner's own account.
     OdeAuthFilter.UserInfo userInfo = new OdeAuthFilter.UserInfo();
     userInfo.setUserId(storageIo.getProjectUserId(projectId));
     userInfo.setReadOnly(true);
@@ -261,8 +262,15 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /**
-   * Resolves the learner's live activity project and prefers its latest frozen
-   * submission. Every owner relationship is checked before a project is exposed.
+   * Resolves the frozen copy the learner submitted for this assignment, or 0 when there is none.
+   * Every owner relationship is checked before anything is exposed.
+   *
+   * <p>Only a frozen copy is ever opened. The learner's own project is deliberately not opened
+   * for a teacher, because the session would have to run as the learner's own account, which
+   * holds their work for every course on the platform, and App Inventor enforces neither the
+   * read only flag nor the one project limit on the server. The frozen copy instead belongs to
+   * a reserved account holding only that learner's copies of this one assignment. The classroom
+   * portal likewise offers a submission and never the live project.
    */
   long reviewProjectId(String studentAccountId, String issuer, String deploymentId,
       String resourceLinkId) throws StoredData.ProjectNotFoundException {
@@ -276,7 +284,7 @@ public class LtiLaunchServlet extends HttpServlet {
     }
     LtiSubmission.Submission submission = LtiSubmission.get(sourceProjectId);
     if (submission == null) {
-      return sourceProjectId;
+      return 0;
     }
     if (submission.sourceProjectId != sourceProjectId
         || !studentAccountId.equals(submission.userId)) {
@@ -299,12 +307,20 @@ public class LtiLaunchServlet extends HttpServlet {
     }
   }
 
-  private static void renderStudentHasNotStarted(HttpServletResponse resp)
+  /**
+   * Explains that there is no frozen copy to open, telling apart a learner who has never opened
+   * the activity from one who is working on it but has not submitted.
+   */
+  private static void renderNothingToReview(HttpServletResponse resp, boolean opened)
       throws IOException {
     resp.setContentType("text/html; charset=utf-8");
-    resp.getWriter().write(LtiHtml.pageHead("Submission not available")
-        + "<h1>This student has not opened the assignment yet</h1>"
-        + "<p>There is no App Inventor project to review for this activity yet.</p>"
+    resp.getWriter().write(LtiHtml.pageHead("Nothing to review yet")
+        + (opened
+            ? "<h1>This student has not submitted yet</h1>"
+              + "<p>They have started the assignment. A copy of their work is kept for you to "
+              + "review as soon as they use Submit to LMS in App Inventor.</p>"
+            : "<h1>This student has not opened the assignment yet</h1>"
+              + "<p>There is no App Inventor project to review for this activity yet.</p>")
         + LtiHtml.closeButton() + LtiHtml.pageFoot());
   }
 
