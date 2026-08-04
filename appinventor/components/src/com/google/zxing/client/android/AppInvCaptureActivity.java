@@ -37,6 +37,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -59,6 +60,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -90,10 +93,10 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private static final String RAW_PARAM = "raw";
 
   private static final Set<ResultMetadataType> DISPLAYABLE_METADATA_TYPES =
-      EnumSet.of(ResultMetadataType.ISSUE_NUMBER,
-                 ResultMetadataType.SUGGESTED_PRICE,
-                 ResultMetadataType.ERROR_CORRECTION_LEVEL,
-                 ResultMetadataType.POSSIBLE_COUNTRY);
+    EnumSet.of(ResultMetadataType.ISSUE_NUMBER,
+      ResultMetadataType.SUGGESTED_PRICE,
+      ResultMetadataType.ERROR_CORRECTION_LEVEL,
+      ResultMetadataType.POSSIBLE_COUNTRY);
 
   private CameraManager cameraManager;
   private CaptureActivityHandler handler;
@@ -113,6 +116,16 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private FrameLayout frameLayout;
   private SurfaceView surfaceView;
 
+  // Holds the android.window.OnBackInvokedCallback registered on API 33 and above, so that it can
+  // be unregistered in onDestroy. Declared as Object so that this field does not name an API 33
+  // class in a class that also runs on older devices.
+  private Object backInvokedCallback = null;
+
+  // Set once back has been acted on in a way that ends the activity. finish() does not take effect
+  // immediately, so without this a second delivery of back before teardown completes would run the
+  // whole sequence again.
+  private boolean backHandled = false;
+
   ViewfinderView getViewfinderView() {
     return viewfinderView;
   }
@@ -129,13 +142,23 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
 
+    // Starting with Android 13 (API 33) the system dispatches back through
+    // OnBackInvokedDispatcher, and KEYCODE_BACK stops arriving in onKeyDown. Apps targeting SDK 36
+    // have predictive back enabled by default, so without this the back button would always exit
+    // the scanner instead of restarting the preview after a decode. The onKeyDown handler further
+    // down still covers API levels below 33, and continues to handle the focus, camera, and volume
+    // keys on every API level.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      registerOnBackInvokedCallback();
+    }
+
     Window window = getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     viewLayout = new LinearLayout(this);
     viewLayout.setOrientation(LinearLayout.HORIZONTAL);
     frameLayout = new FrameLayout(this);
     frameLayout.addView(viewLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-	ViewGroup.LayoutParams.FILL_PARENT));
+      ViewGroup.LayoutParams.FILL_PARENT));
     frameLayout.setBackgroundColor(0xFFFFFFFF); // COLOR_WHITE XXX
 
     setContentView(frameLayout);
@@ -154,9 +177,15 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     // off screen.
     cameraManager = new CameraManager(getApplication());
 
-    viewfinderView =  new ViewfinderView(this, null);
+    // The ViewfinderView is created once and kept, rather than being rebuilt here. onResume runs
+    // again every time the activity comes back to the foreground, so constructing and adding a
+    // fresh view each time stacked them on top of each other inside frameLayout and leaked the
+    // previous ones. It must stay added after viewLayout so that it draws over the preview.
+    if (viewfinderView == null) {
+      viewfinderView = new ViewfinderView(this, null);
+      frameLayout.addView(viewfinderView);
+    }
     viewfinderView.setCameraManager(cameraManager);
-    frameLayout.addView(viewfinderView);
 
     handler = null;
     lastResult = null;
@@ -217,34 +246,96 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       handler.quitSynchronously();
       handler = null;
     }
-    cameraManager.closeDriver();
-    if (!hasSurface) {
-      surfaceView = new SurfaceView(this);
-      SurfaceHolder surfaceHolder = surfaceView.getHolder();
-      surfaceHolder.removeCallback(this);
+    if (cameraManager != null) {
+      cameraManager.closeDriver();
+    }
+    // This previously constructed a brand new SurfaceView and removed the callback from that
+    // object's holder, which had never had a callback registered on it. Worse, it overwrote the
+    // surfaceView field with a view that was never added to viewLayout, so the next onResume found
+    // a non-null surfaceView, skipped adding it, and left the user with a blank preview.
+    if (!hasSurface && surfaceView != null) {
+      surfaceView.getHolder().removeCallback(this);
     }
     super.onPause();
   }
 
   @Override
   protected void onDestroy() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      unregisterOnBackInvokedCallback();
+    }
     super.onDestroy();
   }
 
+  /**
+   * The single owner of back handling for this activity, used by both the API 33 and later
+   * OnBackInvokedDispatcher callback and, below 33, the KEYCODE_BACK arm of {@link #onKeyDown}.
+   *
+   * <p>Only one of those two paths is live on any given device, but the actions that end the
+   * activity are guarded so that back can never take effect more than once. Unlike onKeyDown there
+   * is no "fall through to the default handling" option once a dispatcher callback is registered,
+   * so the case that previously broke out of the switch finishes here instead, which is what the
+   * platform would have done.
+   */
+  private void handleBackInvoked() {
+    if (backHandled || isFinishing()) {
+      return;
+    }
+    if (source == IntentSource.NATIVE_APP_INTENT) {
+      backHandled = true;
+      setResult(RESULT_CANCELED);
+      finish();
+      return;
+    }
+    if ((source == IntentSource.NONE || source == IntentSource.ZXING_LINK) && lastResult != null) {
+      // Restarting the preview leaves the activity open, so this arm is repeatable and must not
+      // set backHandled.
+      restartPreviewAfterDelay(0L);
+      return;
+    }
+    backHandled = true;
+    finish();
+  }
+
+  // Callers must guard on Build.VERSION.SDK_INT >= TIRAMISU. This would normally carry
+  // @RequiresApi, but the Barcode target compiles against only android.jar and the ZXing core, so
+  // androidx.annotation is not on its classpath.
+  private void registerOnBackInvokedCallback() {
+    if (backInvokedCallback != null) {
+      return;
+    }
+    OnBackInvokedCallback callback = new OnBackInvokedCallback() {
+      @Override
+      public void onBackInvoked() {
+        handleBackInvoked();
+      }
+    };
+    getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+      OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+    backInvokedCallback = callback;
+  }
+
+  // Callers must guard on Build.VERSION.SDK_INT >= TIRAMISU. See registerOnBackInvokedCallback.
+  private void unregisterOnBackInvokedCallback() {
+    if (backInvokedCallback instanceof OnBackInvokedCallback) {
+      getOnBackInvokedDispatcher()
+        .unregisterOnBackInvokedCallback((OnBackInvokedCallback) backInvokedCallback);
+      backInvokedCallback = null;
+    }
+  }
+
   @Override
+  @SuppressWarnings("deprecation")  // KEYCODE_BACK only arrives here below API 33; see onCreate.
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     switch (keyCode) {
       case KeyEvent.KEYCODE_BACK:
-        if (source == IntentSource.NATIVE_APP_INTENT) {
-          setResult(RESULT_CANCELED);
-          finish();
-          return true;
+        // When a dispatcher callback is registered it is the sole owner of back, so this arm must
+        // not act as well. Below API 33 nothing is registered and this is the only path.
+        if (backInvokedCallback != null) {
+          break;
         }
-        if ((source == IntentSource.NONE || source == IntentSource.ZXING_LINK) && lastResult != null) {
-          restartPreviewAfterDelay(0L);
-          return true;
-        }
-        break;
+        handleBackInvoked();
+        return true;
       case KeyEvent.KEYCODE_FOCUS:
       case KeyEvent.KEYCODE_CAMERA:
         // Handle these events so they don't launch the Camera app
@@ -268,10 +359,10 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       if (result != null) {
         savedResultToShow = result;
       }
-//      if (savedResultToShow != null) {
-//        Message message = Message.obtain(handler, R.id.decode_succeeded, savedResultToShow);
-//        handler.sendMessage(message);
-//      }
+      //      if (savedResultToShow != null) {
+      //        Message message = Message.obtain(handler, R.id.decode_succeeded, savedResultToShow);
+      //        handler.sendMessage(message);
+      //      }
       savedResultToShow = null;
     }
   }
@@ -450,7 +541,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       resultDurationMS = DEFAULT_INTENT_RESULT_DURATION_MS;
     } else {
       resultDurationMS = getIntent().getLongExtra(Intents.Scan.RESULT_DISPLAY_DURATION_MS,
-                                                  DEFAULT_INTENT_RESULT_DURATION_MS);
+        DEFAULT_INTENT_RESULT_DURATION_MS);
     }
 
     if (copyToClipboard && !resultHandler.areContentsSecure()) {
@@ -462,7 +553,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     }
 
     if (source == IntentSource.NATIVE_APP_INTENT) {
-      
+
       // Hand back whatever action they requested - this can be changed to Intents.Scan.ACTION when
       // the deprecated intent is retired.
       Intent intent = new Intent(getIntent().getAction());
@@ -477,7 +568,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       if (metadata != null) {
         if (metadata.containsKey(ResultMetadataType.UPC_EAN_EXTENSION)) {
           intent.putExtra(Intents.Scan.RESULT_UPC_EAN_EXTENSION,
-                          metadata.get(ResultMetadataType.UPC_EAN_EXTENSION).toString());
+            metadata.get(ResultMetadataType.UPC_EAN_EXTENSION).toString());
         }
         Integer orientation = (Integer) metadata.get(ResultMetadataType.ORIENTATION);
         if (orientation != null) {
@@ -499,7 +590,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       sendReplyMessage(Constants.return_scan_result, intent, resultDurationMS);
     }
   }
-  
+
   private void sendReplyMessage(int id, Object arg, long delayMS) {
     Message message = Message.obtain(handler, id, arg);
     if (delayMS > 0L) {
@@ -540,8 +631,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("Scanner");
     builder.setMessage("Camera Framework Bug");
-//    builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
-//    builder.setOnCancelListener(new FinishListener(this));
+    //    builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
+    //    builder.setOnCancelListener(new FinishListener(this));
     builder.show();
   }
 
