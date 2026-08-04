@@ -630,7 +630,8 @@ public class LtiLaunchServlet extends HttpServlet {
    * Relaunches repeat this safely so projects created before the marker existed
    * are repaired when next opened.
    */
-  private void markLtiLaunched(String userId, long projectId) {
+  @VisibleForTesting
+  void markLtiLaunched(String userId, long projectId) {
     try {
       String raw = storageIo.loadProjectSettings(userId, projectId);
       JSONObject settings =

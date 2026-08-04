@@ -11,6 +11,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.util.Date;
@@ -102,9 +103,11 @@ public class LtiSubmitServlet extends HttpServlet {
       try {
         snapshotSubmission(projectId, ctx);
       } catch (Exception e) {
-        // A fixed artifact is preferred for review, but losing the learner's
-        // submission notification would be worse than falling back to the live
-        // project for this attempt.
+        // The submission still reaches the LMS, so the learner is not left thinking their
+        // work was never handed in. The review then has nothing to open for this attempt,
+        // because the learner's own project is deliberately never offered as a substitute,
+        // and snapshotSubmission marked the record unavailable before rethrowing, so an
+        // older copy cannot pass for this one.
         LOG.log(Level.WARNING,
             "LTI submission snapshot failed for source project " + projectId, e);
       }
@@ -162,7 +165,8 @@ public class LtiSubmitServlet extends HttpServlet {
    * The snapshot is never a submit-capable learner project, even though project
    * copying carries settings across.
    */
-  private void removeLaunchMarker(String snapshotOwnerId, long snapshotProjectId) {
+  @VisibleForTesting
+  void removeLaunchMarker(String snapshotOwnerId, long snapshotProjectId) {
     try {
       String raw = storageIo.loadProjectSettings(snapshotOwnerId, snapshotProjectId);
       if (raw == null || raw.trim().isEmpty()) {
