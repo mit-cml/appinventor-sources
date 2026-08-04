@@ -17,37 +17,19 @@
 
 package com.google.zxing.client.android;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.Result;
-import com.google.zxing.ResultMetadataType;
-import com.google.zxing.ResultPoint;
-import com.google.zxing.client.android.camera.CameraManager;
-import com.google.zxing.client.android.result.ResultButtonListener;
-import com.google.zxing.client.android.result.ResultHandler;
-import com.google.zxing.client.android.result.ResultHandlerFactory;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -55,17 +37,19 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.Result;
+import com.google.zxing.ResultMetadataType;
+import com.google.zxing.ResultPoint;
+import com.google.zxing.client.android.camera.CameraManager;
+import com.google.zxing.client.android.result.ResultHandler;
+import com.google.zxing.client.android.result.ResultHandlerFactory;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -90,10 +74,11 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private static final String RAW_PARAM = "raw";
 
   private static final Set<ResultMetadataType> DISPLAYABLE_METADATA_TYPES =
-      EnumSet.of(ResultMetadataType.ISSUE_NUMBER,
-                 ResultMetadataType.SUGGESTED_PRICE,
-                 ResultMetadataType.ERROR_CORRECTION_LEVEL,
-                 ResultMetadataType.POSSIBLE_COUNTRY);
+      EnumSet.of(
+          ResultMetadataType.ISSUE_NUMBER,
+          ResultMetadataType.SUGGESTED_PRICE,
+          ResultMetadataType.ERROR_CORRECTION_LEVEL,
+          ResultMetadataType.POSSIBLE_COUNTRY);
 
   private CameraManager cameraManager;
   private CaptureActivityHandler handler;
@@ -113,6 +98,16 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private FrameLayout frameLayout;
   private SurfaceView surfaceView;
 
+  // Holds the android.window.OnBackInvokedCallback registered on API 33 and above, so that it can
+  // be unregistered in onDestroy. Declared as Object so that this field does not name an API 33
+  // class in a class that also runs on older devices.
+  private Object backInvokedCallback = null;
+
+  // Set once back has been acted on in a way that ends the activity. finish() does not take effect
+  // immediately, so without this a second delivery of back before teardown completes would run the
+  // whole sequence again.
+  private boolean backHandled = false;
+
   ViewfinderView getViewfinderView() {
     return viewfinderView;
   }
@@ -129,13 +124,25 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
 
+    // Starting with Android 13 (API 33) the system dispatches back through
+    // OnBackInvokedDispatcher, and KEYCODE_BACK stops arriving in onKeyDown. Apps targeting SDK 36
+    // have predictive back enabled by default, so without this the back button would always exit
+    // the scanner instead of restarting the preview after a decode. The onKeyDown handler further
+    // down still covers API levels below 33, and continues to handle the focus, camera, and volume
+    // keys on every API level.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      registerOnBackInvokedCallback();
+    }
+
     Window window = getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     viewLayout = new LinearLayout(this);
     viewLayout.setOrientation(LinearLayout.HORIZONTAL);
     frameLayout = new FrameLayout(this);
-    frameLayout.addView(viewLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-	ViewGroup.LayoutParams.FILL_PARENT));
+    frameLayout.addView(
+        viewLayout,
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
     frameLayout.setBackgroundColor(0xFFFFFFFF); // COLOR_WHITE XXX
 
     setContentView(frameLayout);
@@ -154,9 +161,15 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     // off screen.
     cameraManager = new CameraManager(getApplication());
 
-    viewfinderView =  new ViewfinderView(this, null);
+    // The ViewfinderView is created once and kept, rather than being rebuilt here. onResume runs
+    // again every time the activity comes back to the foreground, so constructing and adding a
+    // fresh view each time stacked them on top of each other inside frameLayout and leaked the
+    // previous ones. It must stay added after viewLayout so that it draws over the preview.
+    if (viewfinderView == null) {
+      viewfinderView = new ViewfinderView(this, null);
+      frameLayout.addView(viewfinderView);
+    }
     viewfinderView.setCameraManager(cameraManager);
-    frameLayout.addView(viewfinderView);
 
     handler = null;
     lastResult = null;
@@ -207,7 +220,6 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       }
 
       characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
-
     }
   }
 
@@ -217,34 +229,97 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       handler.quitSynchronously();
       handler = null;
     }
-    cameraManager.closeDriver();
-    if (!hasSurface) {
-      surfaceView = new SurfaceView(this);
-      SurfaceHolder surfaceHolder = surfaceView.getHolder();
-      surfaceHolder.removeCallback(this);
+    if (cameraManager != null) {
+      cameraManager.closeDriver();
+    }
+    // This previously constructed a brand new SurfaceView and removed the callback from that
+    // object's holder, which had never had a callback registered on it. Worse, it overwrote the
+    // surfaceView field with a view that was never added to viewLayout, so the next onResume found
+    // a non-null surfaceView, skipped adding it, and left the user with a blank preview.
+    if (!hasSurface && surfaceView != null) {
+      surfaceView.getHolder().removeCallback(this);
     }
     super.onPause();
   }
 
   @Override
   protected void onDestroy() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      unregisterOnBackInvokedCallback();
+    }
     super.onDestroy();
   }
 
+  /**
+   * The single owner of back handling for this activity, used by both the API 33 and later
+   * OnBackInvokedDispatcher callback and, below 33, the KEYCODE_BACK arm of {@link #onKeyDown}.
+   *
+   * <p>Only one of those two paths is live on any given device, but the actions that end the
+   * activity are guarded so that back can never take effect more than once. Unlike onKeyDown there
+   * is no "fall through to the default handling" option once a dispatcher callback is registered,
+   * so the case that previously broke out of the switch finishes here instead, which is what the
+   * platform would have done.
+   */
+  private void handleBackInvoked() {
+    if (backHandled || isFinishing()) {
+      return;
+    }
+    if (source == IntentSource.NATIVE_APP_INTENT) {
+      backHandled = true;
+      setResult(RESULT_CANCELED);
+      finish();
+      return;
+    }
+    if ((source == IntentSource.NONE || source == IntentSource.ZXING_LINK) && lastResult != null) {
+      // Restarting the preview leaves the activity open, so this arm is repeatable and must not
+      // set backHandled.
+      restartPreviewAfterDelay(0L);
+      return;
+    }
+    backHandled = true;
+    finish();
+  }
+
+  // Callers must guard on Build.VERSION.SDK_INT >= TIRAMISU. This would normally carry
+  // @RequiresApi, but the Barcode target compiles against only android.jar and the ZXing core, so
+  // androidx.annotation is not on its classpath.
+  private void registerOnBackInvokedCallback() {
+    if (backInvokedCallback != null) {
+      return;
+    }
+    OnBackInvokedCallback callback =
+        new OnBackInvokedCallback() {
+          @Override
+          public void onBackInvoked() {
+            handleBackInvoked();
+          }
+        };
+    getOnBackInvokedDispatcher()
+        .registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+    backInvokedCallback = callback;
+  }
+
+  // Callers must guard on Build.VERSION.SDK_INT >= TIRAMISU. See registerOnBackInvokedCallback.
+  private void unregisterOnBackInvokedCallback() {
+    if (backInvokedCallback instanceof OnBackInvokedCallback) {
+      getOnBackInvokedDispatcher()
+          .unregisterOnBackInvokedCallback((OnBackInvokedCallback) backInvokedCallback);
+      backInvokedCallback = null;
+    }
+  }
+
   @Override
+  @SuppressWarnings("deprecation") // KEYCODE_BACK only arrives here below API 33; see onCreate.
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     switch (keyCode) {
       case KeyEvent.KEYCODE_BACK:
-        if (source == IntentSource.NATIVE_APP_INTENT) {
-          setResult(RESULT_CANCELED);
-          finish();
-          return true;
+        // When a dispatcher callback is registered it is the sole owner of back, so this arm must
+        // not act as well. Below API 33 nothing is registered and this is the only path.
+        if (backInvokedCallback != null) {
+          break;
         }
-        if ((source == IntentSource.NONE || source == IntentSource.ZXING_LINK) && lastResult != null) {
-          restartPreviewAfterDelay(0L);
-          return true;
-        }
-        break;
+        handleBackInvoked();
+        return true;
       case KeyEvent.KEYCODE_FOCUS:
       case KeyEvent.KEYCODE_CAMERA:
         // Handle these events so they don't launch the Camera app
@@ -268,10 +343,10 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       if (result != null) {
         savedResultToShow = result;
       }
-//      if (savedResultToShow != null) {
-//        Message message = Message.obtain(handler, R.id.decode_succeeded, savedResultToShow);
-//        handler.sendMessage(message);
-//      }
+      //      if (savedResultToShow != null) {
+      //        Message message = Message.obtain(handler, R.id.decode_succeeded, savedResultToShow);
+      //        handler.sendMessage(message);
+      //      }
       savedResultToShow = null;
     }
   }
@@ -293,15 +368,13 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   }
 
   @Override
-  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-  }
+  public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
   /**
    * A valid barcode has been found, so give an indication of success and show the results.
    *
    * @param rawResult The contents of the barcode.
-   * @param barcode   A greyscale bitmap of the camera data which was decoded.
+   * @param barcode A greyscale bitmap of the camera data which was decoded.
    */
   public void handleDecode(Result rawResult, Bitmap barcode) {
     lastResult = rawResult;
@@ -332,7 +405,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   /**
    * Superimpose a line for 1D or dots for 2D to highlight the key features of the barcode.
    *
-   * @param barcode   A bitmap of the captured image.
+   * @param barcode A bitmap of the captured image.
    * @param rawResult The decoded results which contains the points to draw.
    */
   private void drawResultPoints(Bitmap barcode, Result rawResult) {
@@ -344,9 +417,9 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       if (points.length == 2) {
         paint.setStrokeWidth(4.0f);
         drawLine(canvas, paint, points[0], points[1]);
-      } else if (points.length == 4 &&
-                 (rawResult.getBarcodeFormat() == BarcodeFormat.UPC_A ||
-                  rawResult.getBarcodeFormat() == BarcodeFormat.EAN_13)) {
+      } else if (points.length == 4
+          && (rawResult.getBarcodeFormat() == BarcodeFormat.UPC_A
+              || rawResult.getBarcodeFormat() == BarcodeFormat.EAN_13)) {
         // Hacky special case -- draw two lines, for the barcode and metadata
         drawLine(canvas, paint, points[0], points[1]);
         drawLine(canvas, paint, points[2], points[3]);
@@ -364,7 +437,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   }
 
   // Put up our own UI for how to handle the decoded contents.
-  // private void handleDecodeInternally(Result rawResult, ResultHandler resultHandler, Bitmap barcode) {
+  // private void handleDecodeInternally(Result rawResult, ResultHandler resultHandler, Bitmap
+  // barcode) {
   //   statusView.setVisibility(View.GONE);
   //   viewfinderView.setVisibility(View.GONE);
   //   resultView.setVisibility(View.VISIBLE);
@@ -387,7 +461,6 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   //   String formattedTime = formatter.format(new Date(rawResult.getTimestamp()));
   //   TextView timeTextView = (TextView) findViewById(R.id.time_text_view);
   //   timeTextView.setText(formattedTime);
-
 
   //   TextView metaTextView = (TextView) findViewById(R.id.meta_text_view);
   //   View metaTextViewLabel = findViewById(R.id.meta_text_view_label);
@@ -439,7 +512,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   // }
 
   // Briefly show the contents of the barcode, then handle the result outside Barcode Scanner.
-  private void handleDecodeExternally(Result rawResult, ResultHandler resultHandler, Bitmap barcode) {
+  private void handleDecodeExternally(
+      Result rawResult, ResultHandler resultHandler, Bitmap barcode) {
 
     if (barcode != null) {
       viewfinderView.drawResultBitmap(barcode);
@@ -449,8 +523,10 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     if (getIntent() == null) {
       resultDurationMS = DEFAULT_INTENT_RESULT_DURATION_MS;
     } else {
-      resultDurationMS = getIntent().getLongExtra(Intents.Scan.RESULT_DISPLAY_DURATION_MS,
-                                                  DEFAULT_INTENT_RESULT_DURATION_MS);
+      resultDurationMS =
+          getIntent()
+              .getLongExtra(
+                  Intents.Scan.RESULT_DISPLAY_DURATION_MS, DEFAULT_INTENT_RESULT_DURATION_MS);
     }
 
     if (copyToClipboard && !resultHandler.areContentsSecure()) {
@@ -462,7 +538,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     }
 
     if (source == IntentSource.NATIVE_APP_INTENT) {
-      
+
       // Hand back whatever action they requested - this can be changed to Intents.Scan.ACTION when
       // the deprecated intent is retired.
       Intent intent = new Intent(getIntent().getAction());
@@ -473,11 +549,12 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       if (rawBytes != null && rawBytes.length > 0) {
         intent.putExtra(Intents.Scan.RESULT_BYTES, rawBytes);
       }
-      Map<ResultMetadataType,?> metadata = rawResult.getResultMetadata();
+      Map<ResultMetadataType, ?> metadata = rawResult.getResultMetadata();
       if (metadata != null) {
         if (metadata.containsKey(ResultMetadataType.UPC_EAN_EXTENSION)) {
-          intent.putExtra(Intents.Scan.RESULT_UPC_EAN_EXTENSION,
-                          metadata.get(ResultMetadataType.UPC_EAN_EXTENSION).toString());
+          intent.putExtra(
+              Intents.Scan.RESULT_UPC_EAN_EXTENSION,
+              metadata.get(ResultMetadataType.UPC_EAN_EXTENSION).toString());
         }
         Integer orientation = (Integer) metadata.get(ResultMetadataType.ORIENTATION);
         if (orientation != null) {
@@ -487,7 +564,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
         if (ecLevel != null) {
           intent.putExtra(Intents.Scan.RESULT_ERROR_CORRECTION_LEVEL, ecLevel);
         }
-        Iterable<byte[]> byteSegments = (Iterable<byte[]>) metadata.get(ResultMetadataType.BYTE_SEGMENTS);
+        Iterable<byte[]> byteSegments =
+            (Iterable<byte[]>) metadata.get(ResultMetadataType.BYTE_SEGMENTS);
         if (byteSegments != null) {
           int i = 0;
           for (byte[] byteSegment : byteSegments) {
@@ -499,7 +577,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       sendReplyMessage(Constants.return_scan_result, intent, resultDurationMS);
     }
   }
-  
+
   private void sendReplyMessage(int id, Object arg, long delayMS) {
     Message message = Message.obtain(handler, id, arg);
     if (delayMS > 0L) {
@@ -540,8 +618,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("Scanner");
     builder.setMessage("Camera Framework Bug");
-//    builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
-//    builder.setOnCancelListener(new FinishListener(this));
+    //    builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
+    //    builder.setOnCancelListener(new FinishListener(this));
     builder.show();
   }
 
