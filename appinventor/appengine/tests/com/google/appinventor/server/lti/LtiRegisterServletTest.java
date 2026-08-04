@@ -45,17 +45,30 @@ public class LtiRegisterServletTest extends TestCase {
         toolConfig.getJSONArray("messages").getJSONObject(1).getString("type"));
   }
 
-  /** The configuration URL must share the issuer's origin, per Dynamic Registration 3.5.1. */
+  /** A configuration URL must sit at or under the issuer, per Dynamic Registration 3.4. */
   public void testConfigUrlMustMatchIssuer() {
-    assertTrue(LtiRegisterServlet.sameOrigin(
+    assertTrue(LtiRegisterServlet.configBelongsToIssuer(
         "https://lms.example.org/.well-known/openid-configuration", "https://lms.example.org"));
-    assertTrue(LtiRegisterServlet.sameOrigin(
+    assertTrue(LtiRegisterServlet.configBelongsToIssuer(
         "https://lms.example.org/lti/config/849", "https://lms.example.org"));
-    assertFalse("a different host is a different issuer", LtiRegisterServlet.sameOrigin(
-        "https://attacker.example/openid.json", "https://lms.example.org"));
-    assertFalse("a subdomain is not the issuer", LtiRegisterServlet.sameOrigin(
-        "https://lti.lms.example.org/config", "https://lms.example.org"));
-    assertFalse("a different scheme does not match", LtiRegisterServlet.sameOrigin(
-        "http://lms.example.org/config", "https://lms.example.org"));
+    assertFalse("a different host is a different issuer",
+        LtiRegisterServlet.configBelongsToIssuer(
+            "https://attacker.example/openid.json", "https://lms.example.org"));
+    assertFalse("a subdomain is not the issuer",
+        LtiRegisterServlet.configBelongsToIssuer(
+            "https://lti.lms.example.org/config", "https://lms.example.org"));
+    assertFalse("a different scheme does not match",
+        LtiRegisterServlet.configBelongsToIssuer(
+            "http://lms.example.org/config", "https://lms.example.org"));
+    // A path scoped issuer, the configuration must sit at or under the issuer path.
+    assertTrue(LtiRegisterServlet.configBelongsToIssuer(
+        "https://lms.example.org/tenant-a/.well-known/openid-configuration",
+        "https://lms.example.org/tenant-a"));
+    assertFalse("a sibling path on the shared origin is not the issuer",
+        LtiRegisterServlet.configBelongsToIssuer(
+            "https://lms.example.org/attacker/config", "https://lms.example.org/tenant-a"));
+    assertFalse("a path sharing only a segment prefix is not the issuer",
+        LtiRegisterServlet.configBelongsToIssuer(
+            "https://lms.example.org/tenant-abc/config", "https://lms.example.org/tenant-a"));
   }
 }

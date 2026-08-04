@@ -40,12 +40,16 @@ public class LtiHttpTest extends TestCase {
     assertFalse(LtiHttp.isForbiddenHost(InetAddress.getByName("2001:4860:4860::8888")));
   }
 
-  /** Private, link local, and wildcard hosts are refused. */
+  /** Private, link local, wildcard, and this-network hosts are refused. */
   public void testPrivateAndLinkLocalAreRefused() throws Exception {
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("10.0.0.1")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("192.168.1.1")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("169.254.169.254")));
     assertTrue(LtiHttp.isForbiddenHost(InetAddress.getByName("0.0.0.0")));
+    assertTrue("0.0.0.0/8 is this network, not a routable destination",
+        LtiHttp.isForbiddenHost(InetAddress.getByName("0.1.2.3")));
+    assertTrue("240.0.0.0/4 is reserved, not a routable destination",
+        LtiHttp.isForbiddenHost(InetAddress.getByName("240.0.0.1")));
   }
 
   /** Carrier grade NAT and IPv6 unique local space are refused. */

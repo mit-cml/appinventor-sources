@@ -163,7 +163,11 @@ final class LtiHttp {
       return true;   // RFC 8215 local use NAT64 64:ff9b:1::/48, not globally routable
     }
     if (raw.length == 4) {
-      return (raw[0] & 0xff) == 100 && (raw[1] & 0xc0) == 0x40;   // carrier grade NAT
+      int first = raw[0] & 0xff;
+      if (first == 0 || first >= 240) {
+        return true;   // 0.0.0.0/8 this network and 240.0.0.0/4 reserved, not routable
+      }
+      return first == 100 && (raw[1] & 0xc0) == 0x40;   // carrier grade NAT
     }
     return (raw[0] & 0xfe) == 0xfc;   // unique local
   }

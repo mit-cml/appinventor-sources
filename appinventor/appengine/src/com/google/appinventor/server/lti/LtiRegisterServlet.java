@@ -64,10 +64,11 @@ public class LtiRegisterServlet extends HttpServlet {
     try {
       JSONObject config = new JSONObject(LtiHttp.get(configUrl));
       String issuer = config.getString("issuer");
-      if (!sameOrigin(configUrl, issuer)) {
-        // Dynamic Registration 3.5.1 requires the configuration URL to belong to
-        // the issuer, so an attacker hosted configuration cannot register a
-        // platform under another issuer's name.
+      if (!configBelongsToIssuer(configUrl, issuer)) {
+        // Dynamic Registration 3.4 defines the configuration URL as the issuer
+        // with a path concatenated, and 3.5.1 requires this check, so a
+        // configuration hosted on the issuer origin but under a different path
+        // cannot register a platform under another issuer's name.
         resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
             "The openid_configuration URL does not match the issuer");
         return;
@@ -139,15 +140,29 @@ public class LtiRegisterServlet extends HttpServlet {
         .put(TOOL_CONFIG, toolConfig);
   }
 
-  /** Whether two URLs share a scheme, host, and effective port, per Dynamic Registration 3.4. */
+  /**
+   * Whether a configuration URL belongs to the issuer, sharing its scheme, host,
+   * and effective port and sitting at or under the issuer path. Dynamic
+   * Registration 3.4 defines the configuration URL as the issuer with a path
+   * concatenated, so an origin match alone would let a configuration hosted
+   * elsewhere on a path shared issuer origin register under another issuer.
+   */
   @VisibleForTesting
-  static boolean sameOrigin(String a, String b) {
+  static boolean configBelongsToIssuer(String configUrl, String issuer) {
     try {
-      URL ua = new URL(a);
-      URL ub = new URL(b);
-      return ua.getProtocol().equalsIgnoreCase(ub.getProtocol())
-          && ua.getHost().equalsIgnoreCase(ub.getHost())
-          && effectivePort(ua) == effectivePort(ub);
+      URL uc = new URL(configUrl);
+      URL ui = new URL(issuer);
+      if (!(uc.getProtocol().equalsIgnoreCase(ui.getProtocol())
+          && uc.getHost().equalsIgnoreCase(ui.getHost())
+          && effectivePort(uc) == effectivePort(ui))) {
+        return false;
+      }
+      String issuerPath = ui.getPath();
+      String configPath = uc.getPath();
+      if (configPath.equals(issuerPath)) {
+        return true;
+      }
+      return configPath.startsWith(issuerPath.endsWith("/") ? issuerPath : issuerPath + "/");
     } catch (Exception e) {
       return false;
     }
