@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,7 +8,6 @@ package com.google.appinventor.components.runtime;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +18,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.RequiresApi;
 
 
 /**
@@ -49,11 +53,25 @@ public class ListPickerActivity extends AppInventorCompatActivity implements Ada
   static int itemColor;
   static int backgroundColor;
 
+  // Holds the android.window.OnBackInvokedCallback registered on API 33 and above, so that it can
+  // be unregistered in onDestroy. Declared as Object so that this field does not name an API 33
+  // class in a class that also runs on older devices.
+  private Object backInvokedCallback;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     styleTitleBar();
+
+    // Starting with Android 13 (API 33) the system dispatches back through
+    // OnBackInvokedDispatcher instead of calling onBackPressed(), and apps targeting SDK 36 have
+    // predictive back enabled by default. Without this the close animation below would be skipped
+    // when the user backs out of the picker. The onBackPressed() override further down still
+    // covers API levels below 33.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      registerOnBackInvokedCallback();
+    }
 
     LinearLayout viewLayout = new LinearLayout(this);
     viewLayout.setOrientation(LinearLayout.VERTICAL);
@@ -64,6 +82,9 @@ public class ListPickerActivity extends AppInventorCompatActivity implements Ada
     }
     if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_ORIENTATION_TYPE)) {
       String orientation = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_ORIENTATION_TYPE).toLowerCase();
+      // NOTE: for apps targeting SDK 36, Android ignores setRequestedOrientation on displays whose
+      // smallest width is at least 600dp, so the ListPicker will open in whatever orientation the
+      // device is already in on tablets, unfolded foldables, and desktop windowing.
       if (orientation.equals("portrait")) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
       }
@@ -122,7 +143,7 @@ public class ListPickerActivity extends AppInventorCompatActivity implements Ada
 
         @Override
         public void afterTextChanged(Editable arg0) {
-            // no-op. Required method
+          // no-op. Required method
         }
       });
 
@@ -131,6 +152,9 @@ public class ListPickerActivity extends AppInventorCompatActivity implements Ada
       setResult(RESULT_CANCELED);
       finish();
       AnimationUtil.ApplyCloseScreenAnimation(this, closeAnim);
+      // finish() does not stop this method, and listView and txtSearchBox are both still null on
+      // this path, so without returning the addView calls below throw.
+      return;
     }
     viewLayout.addView(txtSearchBox);
     viewLayout.addView(listView);
@@ -159,9 +183,41 @@ public class ListPickerActivity extends AppInventorCompatActivity implements Ada
   // Capture the hardware back button to make sure the screen animation
   // still applies.
   @Override
+  @SuppressWarnings("deprecation")  // Only reached on API levels below 33; see onCreate.
   public void onBackPressed() {
     AnimationUtil.ApplyCloseScreenAnimation(this, closeAnim);
     super.onBackPressed();
+  }
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private void registerOnBackInvokedCallback() {
+    OnBackInvokedCallback callback = new OnBackInvokedCallback() {
+      @Override
+      public void onBackInvoked() {
+        AnimationUtil.ApplyCloseScreenAnimation(ListPickerActivity.this, closeAnim);
+        finish();
+      }
+    };
+    getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+      OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+    backInvokedCallback = callback;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private void unregisterOnBackInvokedCallback() {
+    if (backInvokedCallback instanceof OnBackInvokedCallback) {
+      getOnBackInvokedDispatcher()
+        .unregisterOnBackInvokedCallback((OnBackInvokedCallback) backInvokedCallback);
+      backInvokedCallback = null;
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      unregisterOnBackInvokedCallback();
+    }
+    super.onDestroy();
   }
 
 
