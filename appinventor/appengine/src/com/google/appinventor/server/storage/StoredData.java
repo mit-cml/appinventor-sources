@@ -402,6 +402,19 @@ public class StoredData {
     public Date submittedAt;
   }
 
+  // The template one assignment copies from, fixed the first time a learner opens
+  // that assignment and read on every launch after it, so all the learners on an
+  // assignment start from the same project even when the teacher selects a
+  // different template later. The id is the platform issuer, the deployment, and
+  // the resource link id, each length prefixed then joined (see
+  // ObjectifyStorageIo.ltiKey).
+  @Unindexed
+  public static final class LtiAssignmentTemplateData {
+    @Id public String id;
+    public long templateProjectId;
+    public Date pinnedAt;
+  }
+
   // The tool RSA key pair, generated on first use and kept in the datastore so
   // it is not part of the deployed artifact. The kid identifies the key in the
   // published JWK set. The newest key signs, so adding a key rotates in a new

@@ -640,6 +640,31 @@ public interface StorageIo {
   void storeLtiSubmission(long sourceProjectId, String userId, long snapshotProjectId,
       String snapshotOwnerId, Date submittedAt);
 
+  /**
+   * Returns the template project an assignment is fixed to, or 0 if no learner has opened it yet.
+   *
+   * @param issuer  platform issuer
+   * @param deploymentId  platform deployment
+   * @param resourceLinkId  the assignment within that deployment
+   * @return  the fixed template project id, or 0
+   */
+  long getLtiAssignmentTemplate(String issuer, String deploymentId, String resourceLinkId);
+
+  /**
+   * Fixes the template an assignment copies from, so every learner on it starts from the same
+   * project. The first call for an assignment stores the given project and returns it, and every
+   * call after that returns the stored one and leaves it alone, which is what stops a template
+   * selected later from reaching learners who join an assignment already under way.
+   *
+   * @param issuer  platform issuer
+   * @param deploymentId  platform deployment
+   * @param resourceLinkId  the assignment within that deployment
+   * @param templateProjectId  the project to fix the assignment to if it has none yet
+   * @return  the project the assignment is fixed to, which is the argument only on the first call
+   */
+  long pinLtiAssignmentTemplate(String issuer, String deploymentId, String resourceLinkId,
+      long templateProjectId);
+
   List<StoredData.LtiKeyData> getLtiKeys();
 
   void storeLtiKey(String kid, byte[] privateKey, byte[] publicKey);

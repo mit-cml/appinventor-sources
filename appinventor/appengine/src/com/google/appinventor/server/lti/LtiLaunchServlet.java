@@ -551,10 +551,20 @@ public class LtiLaunchServlet extends HttpServlet {
           // not open. The template picker filters a trashed project the same way.
         }
       }
+      // The template the platform sends is what the teacher selected most recently, so it is
+      // fixed to the assignment on the first learner who opens it and read back on every launch
+      // after that. Otherwise a teacher who selects a different template halfway through would
+      // hand a different starting point to whoever has not opened it yet. The classroom portal
+      // reaches the same result by refusing the change, which the specification does not let a
+      // tool do here, since a Deep Linking request may not name the link being replaced.
+      long templateId = resourceLinkId.isEmpty()
+          ? templateProjectId(claims)
+          : LtiAssignmentTemplates.pin(issuer, deploymentId, resourceLinkId,
+              templateProjectId(claims));
       // Not transactional across the read and the create, so two launches of a
       // new assignment fired at once can each fork once. A spike accepts the rare
       // duplicate rather than reserve the link under a transaction first.
-      long projectId = forkNewProject(user, claims, forkProjectName(claims));
+      long projectId = forkNewProject(user, templateId, forkProjectName(claims));
       if (projectId > 0 && !resourceLinkId.isEmpty()) {
         LtiResourceLinks.put(userId, issuer, deploymentId, resourceLinkId, projectId);
       }
@@ -569,9 +579,8 @@ public class LtiLaunchServlet extends HttpServlet {
   }
 
   /** Copies the teacher template, or creates a blank project when there is none. */
-  private long forkNewProject(User user, JSONObject claims, String baseName) {
+  private long forkNewProject(User user, long templateId, String baseName) {
     String projectName = uniqueProjectName(user.getUserId(), baseName);
-    long templateId = templateProjectId(claims);
     if (templateId > 0) {
       try {
         String ownerId = storageIo.getProjectUserId(templateId);

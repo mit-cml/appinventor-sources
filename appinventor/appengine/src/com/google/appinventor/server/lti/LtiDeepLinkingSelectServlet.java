@@ -5,12 +5,15 @@
 
 package com.google.appinventor.server.lti;
 
+import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.StoredData;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +45,8 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
   private static final long RESPONSE_TTL_SECONDS = 300;
 
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
+  private final transient YoungAndroidProjectService projectService =
+      new YoungAndroidProjectService(storageIo);
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -65,26 +70,33 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       // picker only lists that teacher's own projects, but the posted id is
       // editable, so the owner is verified here before it is signed into a
       // response that would copy the project to students.
-      String title;
+      long pid;
       try {
-        long pid = Long.parseLong(templateId);
-        String owner = storageIo.getProjectUserId(pid);
-        if (owner == null || !owner.equals(dl.teacherUserId)) {
-          invalidSelection(resp);
-          return;
-        }
-        UserProject selected = storageIo.getUserProject(owner, pid);
-        if (selected == null || storageIo.getTrashProjectIds(owner).contains(pid)) {
-          // A template trashed or purged after the picker was rendered must not be signed as the
-          // assignment, since a student launch could not open it.
-          invalidSelection(resp);
-          return;
-        }
-        title = "App Inventor " + storageIo.getProjectName(owner, pid);
+        pid = Long.parseLong(templateId);
       } catch (NumberFormatException e) {
         invalidSelection(resp);
         return;
       }
+      String owner = storageIo.getProjectUserId(pid);
+      if (owner == null || !owner.equals(dl.teacherUserId)) {
+        invalidSelection(resp);
+        return;
+      }
+      UserProject selected = storageIo.getUserProject(owner, pid);
+      if (selected == null || storageIo.getTrashProjectIds(owner).contains(pid)) {
+        // A template trashed or purged after the picker was rendered must not be signed as the
+        // assignment, since a student launch could not open it.
+        invalidSelection(resp);
+        return;
+      }
+      String title = "App Inventor " + storageIo.getProjectName(owner, pid);
+
+      // Learners copy from a frozen copy of the chosen project rather than from the teacher's own
+      // one, so an edit the teacher makes afterwards does not change what the next learner
+      // receives. The classroom portal copies the template into an account of its own for the
+      // same reason. A failure here fails the selection, because an assignment that quietly kept
+      // pointing at a live project would not hold that promise.
+      long frozenTemplateId = freezeTemplate(owner, pid);
 
       long now = System.currentTimeMillis() / 1000L;
       LtiKeys.SigningKey signing = LtiKeys.signingKey();
@@ -94,8 +106,8 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
       // parameter were set outside this flow.
       String templateRef = LtiJwt.sign(
           LtiJwt.rs256Header(signing.kid),
-          new JSONObject().put("template_project_id", templateId).put("iat", now)
-              .put("iss", dl.issuer),
+          new JSONObject().put("template_project_id", Long.toString(frozenTemplateId))
+              .put("iat", now).put("iss", dl.issuer),
           signing.privateKey);
 
       JSONObject contentItem = new JSONObject()
@@ -147,6 +159,46 @@ public class LtiDeepLinkingSelectServlet extends HttpServlet {
           + "<p>App Inventor could not return your selection. Close this window, then try adding "
           + "the assignment again.</p>" + LtiHtml.closeButton() + LtiHtml.pageFoot());
     }
+  }
+
+  /**
+   * Copies the chosen project into a reserved account and returns that copy, so the assignment
+   * points at something the teacher can no longer change. The reserved account sits in the
+   * {@code lti.invalid} namespace that the sign in path refuses, so nobody ever opens the copy
+   * directly, and learners only ever reach it through another copy made for them.
+   */
+  long freezeTemplate(String teacherUserId, long sourceProjectId) throws Exception {
+    String templateOwnerId = templateOwnerId(teacherUserId, sourceProjectId);
+    User templateOwner = storageIo.getUser(templateOwnerId, templateOwnerId + "@lti.invalid");
+    if (!templateOwnerId.equals(templateOwner.getUserId())) {
+      throw new SecurityException("LTI template owner account mismatch");
+    }
+    long templateProjectId = projectService.copyProject(teacherUserId, sourceProjectId,
+        templateProjectName(sourceProjectId), templateOwnerId);
+    if (templateProjectId <= 0 || templateProjectId == sourceProjectId) {
+      throw new IllegalStateException("LTI template copy returned an invalid project");
+    }
+    if (!templateOwnerId.equals(storageIo.getProjectUserId(templateProjectId))) {
+      throw new SecurityException("LTI template project owner mismatch");
+    }
+    LOG.info("LTI template froze project " + sourceProjectId + " as project " + templateProjectId);
+    return templateProjectId;
+  }
+
+  /** A stable shadow account holding every frozen template taken from one teacher project. */
+  private static String templateOwnerId(String teacherUserId, long sourceProjectId) {
+    try {
+      String material = teacherUserId.length() + ":" + teacherUserId + sourceProjectId;
+      return "lti-template-" + LtiJwt.hex(LtiJwt.sha256(material)).substring(0, 32);
+    } catch (Exception e) {
+      throw new IllegalStateException("SHA-256 is unavailable", e);
+    }
+  }
+
+  /** A valid project name, unique per selection so two assignments can share one source. */
+  private static String templateProjectName(long sourceProjectId) {
+    String unique = UUID.randomUUID().toString().substring(0, 6);
+    return "Template_" + Long.toString(sourceProjectId, 36) + "_" + unique;
   }
 
   private static boolean isHttpUrl(String url) {

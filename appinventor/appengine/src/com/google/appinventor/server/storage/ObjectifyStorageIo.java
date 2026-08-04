@@ -32,6 +32,7 @@ import com.google.appinventor.server.storage.StoredData.Backpack;
 import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
+import com.google.appinventor.server.storage.StoredData.LtiAssignmentTemplateData;
 import com.google.appinventor.server.storage.StoredData.LtiGradeContextData;
 import com.google.appinventor.server.storage.StoredData.LtiKeyData;
 import com.google.appinventor.server.storage.StoredData.LtiNonceData;
@@ -225,6 +226,7 @@ public class ObjectifyStorageIo implements StorageIo {
     ObjectifyService.register(LtiResourceLinkData.class);
     ObjectifyService.register(LtiGradeContextData.class);
     ObjectifyService.register(LtiSubmissionData.class);
+    ObjectifyService.register(LtiAssignmentTemplateData.class);
     ObjectifyService.register(LtiKeyData.class);
 
     // Learn GCS Bucket from App Configuration or App Engine Default
@@ -2604,6 +2606,63 @@ public class ObjectifyStorageIo implements StorageIo {
   }
 
   @Override
+  public long getLtiAssignmentTemplate(final String issuer, final String deploymentId,
+      final String resourceLinkId) {
+    final Result<Long> result = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiAssignmentTemplateData data =
+                datastore.find(ltiAssignmentTemplateKey(issuer, deploymentId, resourceLinkId));
+            if (data != null) {
+              result.t = data.templateProjectId;
+            }
+          }
+        }, false);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return (result.t == null) ? 0 : result.t;
+  }
+
+  @Override
+  public long pinLtiAssignmentTemplate(final String issuer, final String deploymentId,
+      final String resourceLinkId, final long templateProjectId) {
+    final Result<Long> result = new Result<Long>();
+    try {
+      // Transactional, so two learners opening a new assignment at the same moment settle on one
+      // template rather than each fixing their own.
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            LtiAssignmentTemplateData existing =
+                datastore.find(ltiAssignmentTemplateKey(issuer, deploymentId, resourceLinkId));
+            if (existing != null && existing.templateProjectId > 0) {
+              result.t = existing.templateProjectId;
+              return;
+            }
+            if (templateProjectId <= 0) {
+              // An assignment created without a template stays without one, and every learner on
+              // it gets a blank project.
+              result.t = 0L;
+              return;
+            }
+            LtiAssignmentTemplateData data = new LtiAssignmentTemplateData();
+            data.id = ltiAssignmentTemplateId(issuer, deploymentId, resourceLinkId);
+            data.templateProjectId = templateProjectId;
+            data.pinnedAt = new Date();
+            datastore.put(data);
+            result.t = templateProjectId;
+          }
+        }, true);
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+    return (result.t == null) ? 0 : result.t;
+  }
+
+  @Override
   public List<LtiKeyData> getLtiKeys() {
     Objectify datastore = ObjectifyService.begin();
     List<LtiKeyData> keys = new ArrayList<LtiKeyData>();
@@ -2641,6 +2700,11 @@ public class ObjectifyStorageIo implements StorageIo {
     return ltiKey(issuer, subject);
   }
 
+  private static String ltiAssignmentTemplateId(String issuer, String deploymentId,
+      String resourceLinkId) {
+    return ltiKey(issuer, deploymentId, resourceLinkId);
+  }
+
   // A composite datastore key that cannot collide, each part length prefixed so a
   // delimiter inside a platform supplied value cannot shift a field boundary.
   private static String ltiKey(String... parts) {
@@ -2675,6 +2739,12 @@ public class ObjectifyStorageIo implements StorageIo {
   private Key<StoredData.LtiSubmissionData> ltiSubmissionKey(long sourceProjectId) {
     return new Key<StoredData.LtiSubmissionData>(
         LtiSubmissionData.class, Long.toString(sourceProjectId));
+  }
+
+  private Key<StoredData.LtiAssignmentTemplateData> ltiAssignmentTemplateKey(String issuer,
+      String deploymentId, String resourceLinkId) {
+    return new Key<StoredData.LtiAssignmentTemplateData>(LtiAssignmentTemplateData.class,
+        ltiAssignmentTemplateId(issuer, deploymentId, resourceLinkId));
   }
 
   // Create a name for a blob from a project id and file name. This is mostly
