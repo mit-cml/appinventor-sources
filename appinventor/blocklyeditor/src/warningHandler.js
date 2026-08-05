@@ -879,9 +879,12 @@ Blockly.WarningHandler.prototype.buildDuplicateDictKeyCache_ = function(keyPairs
     // 3. component_component_block
     // 4. helpers_dropdown
     var value = Blockly.WarningHandler.keyCacheHelper(keyBlock);
-    if (!(value in keyValues)) {
-      keyValues[value] = keyBlock.id;
-    }
+if (value == null) {
+  continue;
+}
+if (!(value in keyValues)) {
+  keyValues[value] = keyBlock.id;
+}
   }
   return keyValues;
 };
@@ -906,11 +909,17 @@ Blockly.WarningHandler.prototype['buildDuplicateDictKeysMap'] = function(block) 
       continue;
     }
     var lookupKey = Blockly.WarningHandler.keyCacheHelper(keyPair.key);
-    if (lookupKey in block.keyCache && keyPair.key.id != block.keyCache[lookupKey]) {
-      keyPair.pair.setWarningText(warningMessage);
-    } else {
-      keyPair.pair.setWarningText(null);
-    }
+if (lookupKey == null) {
+  keyPair.pair.setWarningText(null);
+  continue;
+}
+
+if (lookupKey in block.keyCache &&
+    keyPair.key.id != block.keyCache[lookupKey]) {
+  keyPair.pair.setWarningText(warningMessage);
+} else {
+  keyPair.pair.setWarningText(null);
+}
   }
 };
 
@@ -921,18 +930,18 @@ Blockly.WarningHandler.prototype['checkIfIAmADuplicateKey'] = function(block) {
   var fieldName = Blockly.WarningHandler.SPECIAL_KEY_MAP[keyBlock.type];
   if (!fieldName) return; //if not one of the four we are checking
   var lookupKey = Blockly.WarningHandler.keyCacheHelper(keyBlock);
-
-  if (parentBlock){
-    this['buildDuplicateDictKeysMap'](parentBlock);
-    if (lookupKey in parentBlock.keyCache && keyBlock.id != parentBlock.keyCache[lookupKey]) {
-      var warningMessage = Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS;
-      block.setWarningText(warningMessage);
-      return true;
-    } else {
-      return false;
-    }
-  }
+if (!parentBlock || lookupKey == null) {
   return false;
+}
+
+this['buildDuplicateDictKeysMap'](parentBlock);
+if (lookupKey in parentBlock.keyCache &&
+    keyBlock.id != parentBlock.keyCache[lookupKey]) {
+  var warningMessage = Blockly.Msg.DUPLICATE_KEY_BLOCK_WARNINGS;
+  block.setWarningText(warningMessage);
+  return true;
+}
+return false;
 };
 
 // Part of the contract of a warning handler is that it has the following functions
