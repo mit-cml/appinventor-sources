@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.CommonSettings;
+import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.SettingsAccessProvider;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
@@ -48,6 +49,15 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
     return project.getProjectId();
   }
 
+  /**
+   * Returns whether this project carries the marker set by an LTI launch.
+   */
+  public boolean isLtiLaunched() {
+    Settings settings = getSettings(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS);
+    return settings != null && "true".equals(settings.getPropertyValue(
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED));
+  }
+
   // SettingsAccessProvider implementation
 
   @Override
@@ -58,6 +68,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
           LOG.info("Loaded project settings: " + result);
           decodeSettings(result);
           changed = false;
+          Ode.getInstance().getTopToolbar().updateSubmitToLmsMenuItem();
           return resolve(ProjectSettings.this);
         });
   }
