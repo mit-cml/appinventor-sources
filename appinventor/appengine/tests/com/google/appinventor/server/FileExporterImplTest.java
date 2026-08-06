@@ -134,22 +134,24 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     }
   }
 
+  /** The two argument overload exports the standard source only archive. */
   public void testExportProjectSourceZipWithDefaults() throws IOException {
     ProjectSourceZip project = exporter.exportProjectSourceZip(USER_ID, projectId);
     Map<String, byte[]> content = testExportProjectSourceZipHelper(project);
     assertEquals(2, content.size());
-    /* The two-argument overload exports the same source-only zip as the full
-     * method with all flags false: the two source files and no remix history. */
+    // The overload matches the full method with every flag off, so the archive
+    // holds the two source files and no remix history.
     assertFalse(content.containsKey(FileExporter.REMIX_INFORMATION_FILE_PATH));
   }
 
+  /** The overload reports a project that does not exist rather than returning an archive. */
   public void testExportProjectSourceZipWithDefaultsNonExistingProject() throws IOException {
     try {
       exporter.exportProjectSourceZip(USER_ID, projectId + 1);
       fail();
     } catch (Exception e) {
-      assertTrue(e instanceof IllegalArgumentException ||
-                 e.getCause() instanceof IllegalArgumentException);
+      assertTrue(e instanceof IllegalArgumentException
+          || e.getCause() instanceof IllegalArgumentException);
     }
   }
 
