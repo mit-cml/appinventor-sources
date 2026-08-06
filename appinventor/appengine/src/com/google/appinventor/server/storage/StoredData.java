@@ -325,6 +325,108 @@ public class StoredData {
     String allowedExtensions;
   }
 
+  // LTI 1.3 platform registry. One row per registered LMS platform (Moodle,
+  // Canvas, and so on), looked up at login and launch by the issuer the
+  // platform presents. Replaces the single platform flag configuration and
+  // lets several platforms share one App Inventor server.
+  @Unindexed
+  public static final class LtiPlatformData {
+    @Id Long id;
+    @Indexed public String issuer;
+    public String clientId;
+    public String authEndpoint;
+    public String tokenEndpoint;
+    public String jwksEndpoint;
+    public String deploymentId;
+    public boolean enabled;
+  }
+
+  // A durable link from a launching LTI identity (the issuer and subject the
+  // platform asserts) to the App Inventor account provisioned for it, so the
+  // account stays stable and can later be linked to an existing account by an
+  // explicit opt in. The id is the issuer and subject, each length prefixed then
+  // joined (see ObjectifyStorageIo.ltiKey), so no platform value shifts a field.
+  @Unindexed
+  public static final class LtiUserLinkData {
+    @Id public String id;
+    public String userId;
+    public Date created;
+  }
+
+  // A one time launch nonce, so replay protection works across server instances
+  // rather than only in process memory. The id is the nonce itself, and the
+  // timestamp lets expired nonces be cleaned up.
+  @Unindexed
+  public static final class LtiNonceData {
+    @Id public String id;
+    @Indexed public Date timestamp;
+  }
+
+  // The per assignment resource link. Maps one user's assignment (issuer,
+  // deployment, and resource link id) to the App Inventor project forked for
+  // it, so a relaunch finds the same project instead of forking again. The id is
+  // the user id and those three values, each length prefixed then joined (see
+  // ObjectifyStorageIo.ltiKey).
+  @Unindexed
+  public static final class LtiResourceLinkData {
+    @Id public String id;
+    public long projectId;
+  }
+
+  // The platform issuer, grade line item, and platform subject for one forked
+  // assignment project, written on launch and read by the Submit to LMS action,
+  // so submitting a project posts to that project's own line item. The id is the
+  // forked project id, and userId is the owner the submit checks.
+  @Unindexed
+  public static final class LtiGradeContextData {
+    @Id public String id;
+    public String userId;
+    public String issuer;
+    public String lineItemUrl;
+    public String ltiUserSub;
+  }
+
+  // The current snapshot state for one submitted assignment project. A zero
+  // snapshot project id records that the newest copy failed, so an older artifact
+  // is not mistaken for the newest submission. The source project id is both the
+  // lookup key and a stored field for audit clarity. The snapshot owner is a
+  // reserved account that the learner cannot launch into, and userId ties the row
+  // to account deletion.
+  @Unindexed
+  public static final class LtiSubmissionData {
+    @Id public String id;
+    public String userId;
+    public long sourceProjectId;
+    public long snapshotProjectId;
+    public String snapshotOwnerId;
+    public Date submittedAt;
+  }
+
+  // The template one assignment copies from, fixed the first time a learner opens
+  // that assignment and read on every launch after it, so all the learners on an
+  // assignment start from the same project even when the teacher selects a
+  // different template later. The id is the platform issuer, the deployment, and
+  // the resource link id, each length prefixed then joined (see
+  // ObjectifyStorageIo.ltiKey).
+  @Unindexed
+  public static final class LtiAssignmentTemplateData {
+    @Id public String id;
+    public long templateProjectId;
+    public Date pinnedAt;
+  }
+
+  // The tool RSA key pair, generated on first use and kept in the datastore so
+  // it is not part of the deployed artifact. The kid identifies the key in the
+  // published JWK set. The newest key signs, so adding a key rotates in a new
+  // signer while the older public keys stay published for verification.
+  @Unindexed
+  public static final class LtiKeyData {
+    @Id public String kid;
+    public byte[] privateKey;
+    public byte[] publicKey;
+    public Date created;
+  }
+
   public static final class ProjectNotFoundException extends IOException {
     ProjectNotFoundException(String message) {
       super(message);

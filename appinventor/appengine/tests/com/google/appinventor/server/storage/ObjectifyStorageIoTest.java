@@ -17,6 +17,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import com.google.common.base.Charsets;
@@ -27,7 +28,11 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Tests for {@link ObjectifyStorageIo}.
@@ -125,6 +130,106 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     User user4 = storage.getUser(USER_ID);
     assertEquals(USER_ID, user4.getUserId());
     assertEquals(USER_EMAIL_NEW, user4.getUserEmail());
+  }
+
+  public void testGetUserFromEmailRefusesReservedLtiNamespace() {
+    // The @lti.invalid domain is reserved for accounts provisioned by the verified LTI launch.
+    // getUserFromEmail is reachable unauthenticated (the local login form), so it must refuse
+    // to create or resolve a row there; otherwise a pre-seeded row with a different id would
+    // let a launch alias onto it by email and hijack the real user's identity.
+    try {
+      storage.getUserFromEmail("lti-0123456789abcdef0123456789abcdef@lti.invalid");
+      fail("expected getUserFromEmail to refuse the reserved LTI namespace");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    // A mixed case domain must be refused too, since a launch would still match by emaillower.
+    try {
+      storage.getUserFromEmail("lti-0123456789abcdef0123456789abcdef@LTI.Invalid");
+      fail("expected getUserFromEmail to refuse the reserved namespace regardless of case");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    // An ordinary email is unaffected and still resolves.
+    User user = storage.getUserFromEmail("real.person@example.com");
+    assertNotNull(user);
+    assertEquals("real.person@example.com", user.getUserEmail());
+  }
+
+  public void testDeleteAccountCascadesLtiRows() {
+    final String USER_ID = "700";
+    final String USER_EMAIL = "user700@test.com";
+    final String ISSUER = "https://platform.example.org";
+    final String SUBJECT = "platform-subject-700";
+    final String DEPLOYMENT = "deployment-1";
+    final String RESOURCE_LINK = "resource-link-1";
+    storage.getUser(USER_ID, USER_EMAIL);
+
+    // A forked assignment project, plus the identity link, resource link, and grade context that
+    // the LTI launch and submit paths write for it.
+    long projectId = storage.createProject(USER_ID, project, SETTINGS);
+    storage.storeLtiUserLink(ISSUER, SUBJECT, USER_ID);
+    storage.storeLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
+    storage.storeLtiGradeContext(projectId, USER_ID, ISSUER, "https://platform/lineitem/1", SUBJECT);
+    storage.storeLtiSubmission(projectId, USER_ID, 9001L, "snapshot-owner",
+        new Date(1_700_000_000_000L));
+    assertEquals(USER_ID, storage.getLtiUserId(ISSUER, SUBJECT));
+    assertEquals(projectId, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
+    assertNotNull(storage.getLtiGradeContext(projectId));
+    assertNotNull(storage.getLtiSubmission(projectId));
+
+    // Deletion only proceeds once every project is trashed. The trash is a folder in the user's
+    // folder tree rather than a flag on the project, so the project is put there the way the
+    // client does it, by storing the tree in the user's settings.
+    storage.storeSettings(USER_ID, settingsWithTrashedProject(projectId));
+    assertTrue(storage.deleteAccount(USER_ID));
+
+    // Identity link, resource link, and grade context are all gone, so a later launch of the same
+    // subject provisions a fresh account rather than resurrecting the deleted one.
+    assertNull(storage.getLtiUserId(ISSUER, SUBJECT));
+    assertEquals(0, storage.getLtiForkProject(USER_ID, ISSUER, DEPLOYMENT, RESOURCE_LINK));
+    assertNull(storage.getLtiGradeContext(projectId));
+    assertNull(storage.getLtiSubmission(projectId));
+  }
+
+  public void testGetTrashProjectIds() {
+    final String USER_ID = "710";
+    storage.getUser(USER_ID, "user710@test.com");
+
+    // An LTI launch creates an account that has never opened the IDE, so it has no folder tree at
+    // all, and later it has one without a Folders entry. Neither has anything in the trash, and
+    // neither may fail to read, since the launch and the template picker ask on every request.
+    assertTrue(storage.getTrashProjectIds(USER_ID).isEmpty());
+    storage.storeSettings(USER_ID, "{\"GeneralSettings\":{\"CurrentProjectId\":\"1\"}}");
+    assertTrue(storage.getTrashProjectIds(USER_ID).isEmpty());
+
+    long projectId = storage.createProject(USER_ID, project, SETTINGS);
+    storage.storeSettings(USER_ID, settingsWithTrashedProject(projectId));
+    assertEquals(Arrays.asList(projectId), storage.getTrashProjectIds(USER_ID));
+  }
+
+  public void testUnreadableFolderTreeReadsAsAnEmptyTrash() {
+    final String USER_ID = "720";
+    storage.getUser(USER_ID, "user720@test.com");
+
+    // The folder tree is a settings string a client writes, so a shape the reader does not
+    // recognise has to answer with an empty trash. The launch, the template picker, and account
+    // deletion all ask for it, and none of them should fail the whole request over it.
+    String[] unreadable = {
+      "not json at all",
+      "[]",
+      "{}",
+      "{\"folders\":[{}]}",
+      "{\"folders\":[null]}",
+      "{\"folders\":[{\"name\":\"*trash*\"}]}",
+      "{\"folders\":[{\"name\":\"*trash*\",\"projects\":[7],\"folders\":[]}]}",
+      "{\"folders\":[{\"name\":\"*trash*\",\"projects\":[\"seven\"],\"folders\":[]}]}",
+    };
+    for (String folders : unreadable) {
+      storage.storeSettings(USER_ID, settingsWithFolders(folders));
+      assertTrue("should read as empty: " + folders,
+          storage.getTrashProjectIds(USER_ID).isEmpty());
+    }
   }
 
   public void testSetTosAccepted() {
@@ -570,6 +675,155 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     sourcesFiles = storage.getProjectSourceFiles(USER_ID, projectId);
     assertFalse(sourcesFiles.contains(YAIL_FILE_NAME2));
   }
+
+  public void testLtiPlatformRegistry() {
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiPlatform(issuer));
+    storage.storeLtiPlatform(issuer, "client-1", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-1", true);
+    StoredData.LtiPlatformData platform = storage.getLtiPlatform(issuer);
+    assertNotNull(platform);
+    assertEquals("client-1", platform.clientId);
+    assertEquals(issuer + "/token", platform.tokenEndpoint);
+    assertEquals("dep-1", platform.deploymentId);
+    assertEquals(1, storage.getLtiPlatforms().size());
+    // Storing the same issuer again updates in place rather than adding a row.
+    storage.storeLtiPlatform(issuer, "client-2", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-2", true);
+    assertEquals(1, storage.getLtiPlatforms().size());
+    assertEquals("client-2", storage.getLtiPlatform(issuer).clientId);
+    // A disabled platform is not returned for launch resolution.
+    storage.storeLtiPlatform(issuer, "client-2", issuer + "/auth", issuer + "/token",
+        issuer + "/jwks", "dep-2", false);
+    assertNull(storage.getLtiPlatform(issuer));
+  }
+
+  public void testLtiUserLink() {
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiUserId(issuer, "subject-1"));
+    storage.storeLtiUserLink(issuer, "subject-1", "user-100");
+    assertEquals("user-100", storage.getLtiUserId(issuer, "subject-1"));
+    // A different subject, or a different issuer, is a different account.
+    assertNull(storage.getLtiUserId(issuer, "subject-2"));
+    assertNull(storage.getLtiUserId("https://other.example.org", "subject-1"));
+  }
+
+  public void testLtiNonceReplay() {
+    assertTrue(storage.useLtiNonce("nonce-aaa"));
+    // The same nonce a second time is a replay and must be rejected.
+    assertFalse(storage.useLtiNonce("nonce-aaa"));
+    // A fresh nonce is still accepted.
+    assertTrue(storage.useLtiNonce("nonce-bbb"));
+  }
+
+  public void testLtiForkProjectIdempotency() {
+    final String userId = "user-200";
+    final String issuer = "https://moodle.example.org";
+    assertEquals(0, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-1"));
+    storage.storeLtiForkProject(userId, issuer, "dep-1", "rl-1", 4242L);
+    assertEquals(4242L, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-1"));
+    // A different resource link, or a different user, is a separate fork.
+    assertEquals(0, storage.getLtiForkProject(userId, issuer, "dep-1", "rl-2"));
+    assertEquals(0, storage.getLtiForkProject("user-201", issuer, "dep-1", "rl-1"));
+  }
+
+  public void testLtiGradeContext() {
+    final long projectId = 5066549580791808L;
+    final String userId = "user-300";
+    final String issuer = "https://moodle.example.org";
+    assertNull(storage.getLtiGradeContext(projectId));
+    storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/9", "sub-9");
+    StoredData.LtiGradeContextData ctx = storage.getLtiGradeContext(projectId);
+    assertNotNull(ctx);
+    assertEquals(userId, ctx.userId);
+    assertEquals(issuer, ctx.issuer);
+    assertEquals(issuer + "/lineitem/9", ctx.lineItemUrl);
+    assertEquals("sub-9", ctx.ltiUserSub);
+    // A relaunch of the assignment replaces its own context, and a different
+    // project keeps a separate one.
+    storage.storeLtiGradeContext(projectId, userId, issuer, issuer + "/lineitem/10", "sub-10");
+    assertEquals(issuer + "/lineitem/10", storage.getLtiGradeContext(projectId).lineItemUrl);
+    assertNull(storage.getLtiGradeContext(projectId + 1));
+  }
+
+  /** A source project stores one current submission and ignores an older completion. */
+  public void testLtiSubmissionSnapshot() {
+    final long sourceProjectId = 5066549580791810L;
+    final Date submittedAt = new Date(1_700_000_123_456L);
+    assertNull(storage.getLtiSubmission(sourceProjectId));
+
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791810L,
+        "snapshot-owner-310", submittedAt);
+    StoredData.LtiSubmissionData submission = storage.getLtiSubmission(sourceProjectId);
+    assertNotNull(submission);
+    assertEquals("user-310", submission.userId);
+    assertEquals(sourceProjectId, submission.sourceProjectId);
+    assertEquals(6066549580791810L, submission.snapshotProjectId);
+    assertEquals("snapshot-owner-310", submission.snapshotOwnerId);
+    assertEquals(submittedAt.getTime(), submission.submittedAt.getTime());
+
+    Date resubmittedAt = new Date(submittedAt.getTime() + 1000);
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791811L,
+        "snapshot-owner-310", resubmittedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(6066549580791811L, submission.snapshotProjectId);
+    assertEquals(resubmittedAt.getTime(), submission.submittedAt.getTime());
+
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791812L,
+        "snapshot-owner-310", submittedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(6066549580791811L, submission.snapshotProjectId);
+    assertEquals(resubmittedAt.getTime(), submission.submittedAt.getTime());
+
+    Date failedAt = new Date(submittedAt.getTime() + 2000);
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 0, "", failedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(0, submission.snapshotProjectId);
+    assertEquals("", submission.snapshotOwnerId);
+    assertEquals(failedAt.getTime(), submission.submittedAt.getTime());
+
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791813L,
+        "snapshot-owner-310", resubmittedAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(0, submission.snapshotProjectId);
+    assertEquals(failedAt.getTime(), submission.submittedAt.getTime());
+
+    Date recoveredAt = new Date(submittedAt.getTime() + 3000);
+    storage.storeLtiSubmission(sourceProjectId, "user-310", 6066549580791814L,
+        "snapshot-owner-310", recoveredAt);
+    submission = storage.getLtiSubmission(sourceProjectId);
+    assertEquals(6066549580791814L, submission.snapshotProjectId);
+    assertEquals(recoveredAt.getTime(), submission.submittedAt.getTime());
+    assertNull(storage.getLtiSubmission(sourceProjectId + 1));
+  }
+
+  /** Submission pointers are isolated by source project across learners and activities. */
+  public void testLtiSubmissionSnapshotsAreIndependent() {
+    Date submittedAt = new Date(1_700_000_222_000L);
+    storage.storeLtiSubmission(7101L, "student-a", 8101L, "snapshot-a1", submittedAt);
+    storage.storeLtiSubmission(7102L, "student-a", 8102L, "snapshot-a2", submittedAt);
+    storage.storeLtiSubmission(7201L, "student-b", 8201L, "snapshot-b1", submittedAt);
+
+    assertEquals(8101L, storage.getLtiSubmission(7101L).snapshotProjectId);
+    assertEquals(8102L, storage.getLtiSubmission(7102L).snapshotProjectId);
+    assertEquals(8201L, storage.getLtiSubmission(7201L).snapshotProjectId);
+    assertEquals("student-a", storage.getLtiSubmission(7102L).userId);
+    assertEquals("student-b", storage.getLtiSubmission(7201L).userId);
+  }
+
+  public void testLtiKeys() {
+    assertTrue(storage.getLtiKeys().isEmpty());
+    storage.storeLtiKey("kid-1", new byte[] {1, 2, 3}, new byte[] {4, 5, 6});
+    java.util.List<StoredData.LtiKeyData> keys = storage.getLtiKeys();
+    assertEquals(1, keys.size());
+    assertEquals("kid-1", keys.get(0).kid);
+    assertTrue(java.util.Arrays.equals(new byte[] {1, 2, 3}, keys.get(0).privateKey));
+    assertTrue(java.util.Arrays.equals(new byte[] {4, 5, 6}, keys.get(0).publicKey));
+    // A second key coexists, which is what makes key rotation possible.
+    storage.storeLtiKey("kid-2", new byte[] {7}, new byte[] {8});
+    assertEquals(2, storage.getLtiKeys().size());
+  }
+
   /*
    * Fail on the Nth call to runJobWithRetries, where N is the value of the
    * failingRun argument to the constructor. Also allows counting
@@ -617,5 +871,37 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     project.setProjectType(type);
     project.addTextFile(new TextFile(fileName, ""));
     return storageIo.createProject(userId, project, SETTINGS);
+  }
+
+  /**
+   * Builds the settings the client stores once the given project has been moved to the trash. The
+   * folder tree is held as a string under GeneralSettings.Folders, it is the global folder, and
+   * the trash is a child folder named *trash* whose projects are ids written as strings.
+   */
+  private static String settingsWithTrashedProject(long projectId) {
+    JSONObject trash = folderJson("*trash*");
+    trash.put("projects", new JSONArray().put(Long.toString(projectId)));
+    JSONObject global = folderJson("*global*");
+    global.put("folders", new JSONArray().put(trash));
+    return settingsWithFolders(global.toString());
+  }
+
+  /** One folder the way the client serialises it, with every field it always writes. */
+  private static JSONObject folderJson(String name) {
+    return new JSONObject()
+        .put("name", name)
+        .put("dateCreated", "0")
+        .put("dateModified", "0")
+        .put("projects", new JSONArray())
+        .put("folders", new JSONArray());
+  }
+
+  /** The settings blob holding a given folder tree, which is stored as a string. */
+  private static String settingsWithFolders(String foldersValue) {
+    JSONObject general = new JSONObject();
+    general.put(SettingsConstants.FOLDERS, foldersValue);
+    return new JSONObject()
+        .put(SettingsConstants.USER_GENERAL_SETTINGS, general)
+        .toString();
   }
 }
