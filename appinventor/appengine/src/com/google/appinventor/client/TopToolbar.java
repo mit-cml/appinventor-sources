@@ -14,6 +14,8 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignProject;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -69,6 +71,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
+  private static final String WIDGET_NAME_SUBMIT_TO_LMS = "SubmitToLms";
   private static final String WIDGET_NAME_PROJECTPROPERTIES = "ProjectProperties";
 
   private static final String WIDGET_NAME_ADMIN = "Admin";
@@ -131,6 +134,8 @@ public class TopToolbar extends Composite {
     }
 
     fileDropDown.removeUnneededSeparators();
+    // Separator cleanup removes hidden items, so apply dynamic visibility only after it.
+    updateSubmitToLmsMenuItem();
 
     // Second Buildserver Menu Items
     //
@@ -210,6 +215,17 @@ public class TopToolbar extends Composite {
     fileDropDown.setItemHtmlById(WIDGET_NAME_EXPORTPROJECT, exportProjectLabel);
     fileDropDown.setItemEnabledById(WIDGET_NAME_EXPORTPROJECT, allowExport);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), allowExportAll);
+  }
+
+  /**
+   * Shows Submit to LMS only while a writable project carrying the LTI launch marker is open.
+   */
+  public void updateSubmitToLmsMenuItem() {
+    Project project = Ode.getCurrentProject();
+    ProjectSettings settings = project == null ? null : project.getSettings();
+    boolean visible = hasWriteAccess && Ode.getInstance().getCurrentView() == Ode.DESIGNER
+        && settings != null && settings.isLtiLaunched();
+    fileDropDown.setItemVisibleById(WIDGET_NAME_SUBMIT_TO_LMS, visible);
   }
 
   public void updateKeystoreStatus(boolean present) {
@@ -316,6 +332,7 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(int view) {
+    updateSubmitToLmsMenuItem();
     if (readOnly) {
       // This may be too simple
       return;
