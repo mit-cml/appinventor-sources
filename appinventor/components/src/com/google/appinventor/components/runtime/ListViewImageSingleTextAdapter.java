@@ -22,7 +22,6 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView {
 
@@ -33,11 +32,11 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
   private int imageHeight;
   private int textMainAlignment;
 
-  public ListViewImageSingleTextAdapter(ComponentContainer container, List<Object> data,
+  public ListViewImageSingleTextAdapter(ComponentContainer container, ListDataModel model,
       int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
       float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
       int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
-    super(container, data, backgroundColor, selectionColor, radius);
+    super(container, model, backgroundColor, selectionColor, radius);
     this.container = container;
     this.textMainColor = textMainColor;
     this.textMainSize = textMainSize;
@@ -88,7 +87,7 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
   @Override
   public void onBindViewHolder(RvViewHolder holder, int position) {
     ImageSingleTextRvViewHolder imageSingleTextHolder = (ImageSingleTextRvViewHolder) holder;
-    Object o = items.get(position);
+    Object o = model.getVisibleItem(position);
     YailDictionary dictItem = new YailDictionary();
     if (o instanceof YailDictionary) {
       if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {

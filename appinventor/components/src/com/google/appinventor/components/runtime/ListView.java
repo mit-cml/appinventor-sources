@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Filter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
@@ -42,7 +43,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Canvas;
@@ -89,7 +89,7 @@ public final class ListView extends AndroidViewComponent {
   private RecyclerView recyclerView;
   private ListAdapterWithRecyclerView listAdapterWithRecyclerView;
   private LinearLayoutManager layoutManager;
-  private List<Object> items;
+  private final ListDataModel dataModel = new ListDataModel();
   private int selectionIndex;
   private String selection;
   private String selectionDetailText = "Uninitialized";
@@ -151,7 +151,6 @@ public final class ListView extends AndroidViewComponent {
 
     super(container);
     this.container = container;
-    items = new ArrayList<>();
 
     linearLayout = new LinearLayout(container.$context());
     linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -196,7 +195,16 @@ public final class ListView extends AndroidViewComponent {
       @Override
       public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
         // When user changed the Text
-        listAdapterWithRecyclerView.getFilter().filter(cs);
+        listAdapterWithRecyclerView.getFilter().filter(cs, new Filter.FilterListener() {
+          @Override
+          public void onFilterComplete(int count) {
+            // Keep the selection while the selected item is still on screen, and clear it only
+            // when the filter hides it, so the user never has a selection they cannot see.
+            if (selectionIndex > 0 && !dataModel.isVisible(selectionIndex - 1)) {
+              SelectionIndex(0);
+            }
+          }
+        });
       }
 
       @Override
@@ -340,7 +348,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty
   public void Elements(List<Object> itemsList) {
-    items = new ArrayList<>(itemsList);
+    dataModel.setItems(itemsList);
     updateAdapterData();
     listAdapterWithRecyclerView.notifyDataSetChanged();
   }
@@ -356,7 +364,7 @@ public final class ListView extends AndroidViewComponent {
       + "containing Text, Description, and Image file name.",
       category = PropertyCategory.BEHAVIOR)
   public List<Object> Elements() {
-    return items;
+    return dataModel.getItems();
   }
 
   /**
@@ -371,7 +379,7 @@ public final class ListView extends AndroidViewComponent {
                                     + "before the comma will be an element in the list.",
       category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
-    items = new ArrayList<Object>(ElementsUtil.elementsListFromString(itemstring));
+    dataModel.setItems(ElementsUtil.elementsListFromString(itemstring));
     updateAdapterData();
     listAdapterWithRecyclerView.notifyDataSetChanged();
   }
@@ -400,8 +408,8 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty
   public void SelectionIndex(int index) {
     selectionIndex = index;
-    if (index > 0 && index <= items.size()) {
-      Object o = items.get(index - 1);
+    if (index > 0 && index <= dataModel.size()) {
+      Object o = dataModel.get(index - 1);
       if (o instanceof YailDictionary) {
         if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
           selection = ((YailDictionary) o).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
@@ -445,9 +453,9 @@ public final class ListView extends AndroidViewComponent {
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
-    if (!items.isEmpty()) {
-      for (int i = 0; i < items.size(); ++i) {
-        Object item = items.get(i);
+    if (!dataModel.isEmpty()) {
+      for (int i = 0; i < dataModel.size(); ++i) {
+        Object item = dataModel.get(i);
         if (item instanceof YailDictionary) {
           if (((YailDictionary) item).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
             if (((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString() == value) {
@@ -1024,7 +1032,7 @@ public final class ListView extends AndroidViewComponent {
         // Note that ListData is set from the designer only. If we change this, then the logic here
         // will need to be updated to handle the case where ListData is set from the blocks and
         // happens to clear the contents.
-        items.clear();
+        dataModel.clear();
         // Convert the JSON data into a list of Dictionaries
         for (int i = 0; i < arr.length(); ++i) {
           JSONObject jsonItem = arr.getJSONObject(i);
@@ -1034,7 +1042,7 @@ public final class ListView extends AndroidViewComponent {
             yailItem.put(Component.LISTVIEW_KEY_DESCRIPTION, jsonItem.has(Component.LISTVIEW_KEY_DESCRIPTION) ? jsonItem.getString(Component.LISTVIEW_KEY_DESCRIPTION) : "");
             yailItem.put(Component.LISTVIEW_KEY_IMAGE, jsonItem.has(Component.LISTVIEW_KEY_IMAGE) ? jsonItem
                                                                                                         .getString(Component.LISTVIEW_KEY_IMAGE) : "");
-            items.add(yailItem);
+            dataModel.add(yailItem);
           }
         }
       } catch (JSONException e) {
@@ -1223,12 +1231,12 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Removes Item from list at a given index.")
   public void RemoveItemAtIndex(int index) {
-    if (index < 1 || index > items.size()) {
+    if (index < 1 || index > dataModel.size()) {
       container.$form().dispatchErrorOccurredEvent(this, "RemoveItemAtIndex",
           ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
       return;
     }
-    items.remove(index - 1);
+    dataModel.remove(index - 1);
     updateAdapterData();
     listAdapterWithRecyclerView.notifyItemRemoved(index - 1);
   }
@@ -1238,22 +1246,22 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Add new Item to list at the end.")
   public void AddItem(String mainText, String detailText, String imageName) {
-    if (!items.isEmpty()) {
-      Object o = items.get(0);
+    if (!dataModel.isEmpty()) {
+      Object o = dataModel.get(0);
       if (o instanceof YailDictionary) {
         if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-          items.add(CreateElement(mainText, detailText, imageName));
+          dataModel.add(CreateElement(mainText, detailText, imageName));
         } else {
-          items.add(mainText);
+          dataModel.add(mainText);
         }
       } else {
-        items.add(mainText);
+        dataModel.add(mainText);
       }
     } else {
       if (layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-        items.add(mainText);
+        dataModel.add(mainText);
       } else {
-        items.add(CreateElement(mainText, detailText, imageName));
+        dataModel.add(CreateElement(mainText, detailText, imageName));
       }
     }
     updateAdapterData();
@@ -1266,9 +1274,9 @@ public final class ListView extends AndroidViewComponent {
   @SimpleFunction(description = "Add new Items to list at the end.")
   public void AddItems(List<Object> itemsList) {
     if (!itemsList.isEmpty()) {
-      int positionStart = items.size();
+      int positionStart = dataModel.size();
       int itemCount = itemsList.size();
-      items.addAll(itemsList);
+      dataModel.addAll(itemsList);
       updateAdapterData();
       listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
     }
@@ -1279,27 +1287,27 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Add new Item to list at a given index.")
   public void AddItemAtIndex(int index, String mainText, String detailText, String imageName) {
-    if (index < 1 || index > items.size() + 1) {
+    if (index < 1 || index > dataModel.size() + 1) {
       container.$form().dispatchErrorOccurredEvent(this, "AddItemAtIndex",
           ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
       return;
     }
-    if (!items.isEmpty()) {
-      Object o = items.get(0);
+    if (!dataModel.isEmpty()) {
+      Object o = dataModel.get(0);
       if (o instanceof YailDictionary) {
         if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-          items.add(index - 1, CreateElement(mainText, detailText, imageName));
+          dataModel.addAt(index - 1, CreateElement(mainText, detailText, imageName));
         } else {
-          items.add(index - 1, mainText);
+          dataModel.addAt(index - 1, mainText);
         }
       } else {
-        items.add(index - 1, mainText);
+        dataModel.addAt(index - 1, mainText);
       }
     } else {
       if (layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-        items.add(index - 1, mainText);
+        dataModel.addAt(index - 1, mainText);
       } else {
-        items.add(index - 1, CreateElement(mainText, detailText, imageName));
+        dataModel.addAt(index - 1, CreateElement(mainText, detailText, imageName));
       }
     }
     updateAdapterData();
@@ -1311,7 +1319,7 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Add new Items to list at specific index.")
   public void AddItemsAtIndex(int index, YailList itemsList) {
-    if (index < 1 || index > items.size() + 1) {
+    if (index < 1 || index > dataModel.size() + 1) {
       container.$form().dispatchErrorOccurredEvent(this, "AddItemsAtIndex",
           ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
       return;
@@ -1319,7 +1327,7 @@ public final class ListView extends AndroidViewComponent {
     if (!itemsList.isEmpty()) {
       int positionStart = index - 1;
       int itemCount = itemsList.size();
-      items.addAll(positionStart, itemsList);
+      dataModel.addAllAt(positionStart, itemsList);
       updateAdapterData();
       listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
     }
@@ -1331,37 +1339,37 @@ public final class ListView extends AndroidViewComponent {
   public void setAdapterData() {
     switch (layout) {
       case LISTVIEW_LAYOUT_SINGLE_TEXT:
-        setListAdapter(new ListViewSingleTextAdapter(container, items,
+        setListAdapter(new ListViewSingleTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT:
-        setListAdapter(new ListViewTwoTextAdapter(container, items,
+        setListAdapter(new ListViewTwoTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT_LINEAR:
-        setListAdapter(new ListViewTwoTextLinearAdapter(container, items,
+        setListAdapter(new ListViewTwoTextLinearAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT:
-        setListAdapter(new ListViewImageSingleTextAdapter(container, items,
+        setListAdapter(new ListViewImageSingleTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
-        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, items,
+        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
-        setListAdapter(new ListViewImageTopTwoTextAdapter(container, items,
+        setListAdapter(new ListViewImageTopTwoTextAdapter(container, dataModel,
             textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
             elementColor, selectionColor, radius, imageWidth, imageHeight,
             textAlignmentMain, textAlignmentDetail));
@@ -1374,7 +1382,9 @@ public final class ListView extends AndroidViewComponent {
    */
   public void updateAdapterData() {
     SelectionIndex(0);
-    listAdapterWithRecyclerView.updateData(items);
+    // Data changed, so rebuild the filtered view (a no-op when unfiltered) and refresh.
+    dataModel.refreshFilter();
+    listAdapterWithRecyclerView.notifyDataSetChanged();
   }
 
   /**

@@ -17,93 +17,46 @@ import androidx.core.view.ViewCompat;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.appinventor.components.runtime.util.YailDictionary;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class ListAdapterWithRecyclerView
     extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
   protected static final String LOG_TAG = ListView.LOG_TAG;
-  
+
   protected ClickListener clickListener;
 
   protected int backgroundColor;
   protected int selectionColor;
   protected float radius;
-  protected List<Object> items = new ArrayList<>();
-  protected List<Object> originalItems = new ArrayList<>();
-  protected List<Integer> originalPositions = new ArrayList<>();
+  // The model owns the data, the filter, and the selection; this adapter is only a view over it.
+  protected final ListDataModel model;
   protected ComponentContainer container;
-  protected List<Integer> selectedItems = new ArrayList<>();
-  protected String lastQuery = "";
 
   protected final Filter filter = new Filter() {
     @Override
     protected FilterResults performFiltering(CharSequence charSequence) {
-      lastQuery = charSequence.toString().toLowerCase();
+      // Background thread: compute the filtered view without touching state the UI thread reads.
+      ListDataModel.FilterResult computed = model.computeFilter(charSequence.toString());
       FilterResults results = new FilterResults();
-      List<Object> filteredList = new ArrayList<>();
-      originalPositions = new ArrayList<>();
-      if (lastQuery == null || lastQuery.length() == 0) {
-        filteredList = new ArrayList<>(originalItems);
-        items = new ArrayList<>(originalItems);
-      } else {
-        for (int index = 0; index < originalItems.size(); index++) {
-          Object item = originalItems.get(index);
-          String filterString;
-          if (item instanceof YailDictionary) {
-            if (((YailDictionary) item).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-              Object o = ((YailDictionary) item).get(Component.LISTVIEW_KEY_DESCRIPTION);
-              filterString = ((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-              if (o != null) {
-                filterString += " " + o.toString();
-              }
-            } else {
-              filterString = item.toString();
-            }
-          } else {
-            filterString = item.toString();
-          }
-          if (filterString.toLowerCase().contains(lastQuery)) {
-            filteredList.add(item);
-            originalPositions.add(index);
-          }
-        }
-      }
-      results.count = filteredList.size();
-      results.values = filteredList;
+      results.values = computed;
+      results.count = computed.size();
       return results;
     }
 
     @Override
     protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-      items = new ArrayList<>((List<Object>) filterResults.values);
-      clearSelections();
+      // UI thread: apply the finished result and refresh, back to back, so the row count and the
+      // data never disagree.
+      model.commitFilter((ListDataModel.FilterResult) filterResults.values);
       notifyDataSetChanged();
-      // We store the original data in the originalItems variable
-      // We store the original item indexes in the originalPositions variable
-      // We have eliminated hiding/showing CardView to improve performance
     }
   };
 
-  public ListAdapterWithRecyclerView(ComponentContainer container, List<Object> data,
+  public ListAdapterWithRecyclerView(ComponentContainer container, ListDataModel model,
       int backgroundColor, int selectionColor, float radius) {
     this.container = container;
+    this.model = model;
     this.backgroundColor = backgroundColor;
     this.radius = radius;
     this.selectionColor = selectionColor;
-    updateData(data);
-}
-
-  public void updateData(List<Object> newItems) {
-    this.originalItems = newItems;
-    if (originalPositions.isEmpty()) {
-      this.items = new ArrayList<>(newItems);
-    } else {
-      filter.filter(lastQuery);
-    }
-    clearSelections();
   }
 
   protected CardView createCardView(ViewGroup parent) {
@@ -126,8 +79,19 @@ public abstract class ListAdapterWithRecyclerView
     return cardView;
   }
 
+  /**
+   * Refreshes the row showing the given original item index, if it is currently visible.
+   */
+  private void notifyOriginalChanged(int originalPosition) {
+    int displayPosition = model.toDisplayPosition(originalPosition);
+    if (displayPosition >= 0) {
+      notifyItemChanged(displayPosition);
+    }
+  }
+
   protected void updateCardViewColor(CardView cardView, int position) {
-    if (selectedItems.contains(position)) {
+    // position is a display row; map it back to the original index the selection is keyed by.
+    if (model.isSelected(model.toOriginalPosition(position))) {
       cardView.setCardBackgroundColor(selectionColor);
     } else {
       cardView.setCardBackgroundColor(backgroundColor);
@@ -136,39 +100,34 @@ public abstract class ListAdapterWithRecyclerView
 
   @Override
   public int getItemCount() {
-    return items.size();
+    return model.visibleSize();
   }
 
+  /**
+   * Selects the item at the given original index, replacing any previous selection.
+   */
   public void toggleSelection(int position) {
-    if (!originalPositions.isEmpty()) {
-      position = originalPositions.indexOf(position);
-    }
-    if (selectedItems.contains(position)) {
+    if (model.isSelected(position)) {
       return;
     }
-    if (!selectedItems.isEmpty()) {
-      int oldPosition = selectedItems.get(0);
-      selectedItems.clear();
-      notifyItemChanged(oldPosition);
+    int oldPosition = model.firstSelection();
+    model.selectSingle(position);
+    if (oldPosition >= 0) {
+      notifyOriginalChanged(oldPosition);
     }
-    selectedItems.add(position);
-    notifyItemChanged(position);
+    notifyOriginalChanged(position);
   }
 
+  /**
+   * Toggles the item at the given original index, used when MultiSelect is enabled.
+   */
   public void changeSelections(int position) {
-    if (!originalPositions.isEmpty()) {
-      position = originalPositions.indexOf(position);
-    }
-    if (selectedItems.contains(position)) {
-      selectedItems.remove(Integer.valueOf(position));
-    } else {
-      selectedItems.add(position);
-    }
-    notifyItemChanged(position);
+    model.toggleSelection(position);
+    notifyOriginalChanged(position);
   }
 
   public void clearSelections() {
-    selectedItems.clear();
+    model.clearSelection();
   }
 
   abstract class RvViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -179,12 +138,7 @@ public abstract class ListAdapterWithRecyclerView
 
     @Override
     public void onClick(View v) {
-      int position = getAdapterPosition();
-      
-      if (!originalPositions.isEmpty()) {
-        position = originalPositions.get(position);
-      }
-      clickListener.onItemClick(position, v);
+      clickListener.onItemClick(model.toOriginalPosition(getAdapterPosition()), v);
     }
   }
 

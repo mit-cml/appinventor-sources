@@ -15,8 +15,6 @@ import androidx.core.view.ViewCompat;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 
-import java.util.List;
-
 public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
 
   private int textMainColor;
@@ -24,11 +22,11 @@ public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
   private String textMainFont;
   private int textMainAlignment;
 
-  public ListViewSingleTextAdapter(ComponentContainer container, List<Object> data,
+  public ListViewSingleTextAdapter(ComponentContainer container, ListDataModel model,
       int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
       float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
       int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
-    super(container, data, backgroundColor, selectionColor, radius);
+    super(container, model, backgroundColor, selectionColor, radius);
     this.container = container;
     this.textMainColor = textMainColor;
     this.textMainSize = textMainSize;
@@ -65,7 +63,7 @@ public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
   @Override
   public void onBindViewHolder(RvViewHolder holder, int position) {
     SingleTextRvViewHolder singleTextHolder = (SingleTextRvViewHolder) holder;
-    Object o = items.get(position);
+    Object o = model.getVisibleItem(position);
     YailDictionary dictItem = new YailDictionary();
     if (o instanceof YailDictionary) {
       if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
