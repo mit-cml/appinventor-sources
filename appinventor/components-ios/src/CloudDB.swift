@@ -104,9 +104,11 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   fileprivate func getRedis() {
     _redisQueue.sync {
       if _redis == nil {
+        let serverName = _useDefault ? _defaultRedisServer: _redisServer
         var sslConfig: [String: NSObject] = [:]
         if _useSSL {
-          sslConfig = [GCDAsyncSocketManuallyEvaluateTrust as String: true as NSObject]
+          sslConfig = [GCDAsyncSocketManuallyEvaluateTrust as String: true as NSObject,
+                       kCFStreamSSLPeerName as String: serverName as NSObject]
         }
         var jToken: String = _token
         if _token.hasPrefix("%") {
@@ -115,8 +117,8 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
         
         _redis = RedisClient(delegate: self, queue: _redisQueue, sslConfig: sslConfig)
         _subscriptionManager = RedisClient(delegate: self, queue: _redisQueue, sslConfig: sslConfig)
-        _redis?.connect(host: _useDefault ? _defaultRedisServer: _redisServer, port: Int(_redisPort), pwd: jToken)
-        _subscriptionManager?.connect(host: _useDefault ? _defaultRedisServer: _redisServer, port: Int(_redisPort), pwd: jToken)
+        _redis?.connect(host: serverName, port: Int(_redisPort), pwd: jToken)
+        _subscriptionManager?.connect(host: serverName, port: Int(_redisPort), pwd: jToken)
       }
     }
   }
