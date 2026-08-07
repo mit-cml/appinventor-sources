@@ -476,7 +476,19 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 
  The emulator does not emulate sensors on all devices. Code should be tested on a physical device.
 
+//from line 481-491
 
+### Android 10+ Service Behavior {#LocationSensor-Android10}
+
+Starting with Android 10 (API 29), Google has significantly changed how location permissions work to protect user privacy. Developers should be aware of the following:
+
+* **Foreground Location:** By default, location is only available while the app is open and visible on the screen.
+* **Background Location (Android 10 & 11):** If your app needs to track location while in the background (e.g., a fitness tracker), the user must select **"Allow all the time"** in the permission dialog. 
+* **Manual Settings (Android 11+):** On newer devices, the "Allow all the time" option is often hidden from the initial popup. The app will redirect the user to the system settings page where they must manually enable it.
+* **Precise vs. Approximate (Android 12+):** Users can now choose to give your app "Approximate" location instead of "Precise." If your app requires exact coordinates, you should explain this to the user before asking for permission.
+
+**Recommendation for Developers:**
+Before the system permission dialog appears, use a `Notifier` component to show a simple message explaining *why* your app needs location access (especially for background access). This increases the chance that users will grant the necessary permissions.
 
 ### Properties  {#LocationSensor-Properties}
 
