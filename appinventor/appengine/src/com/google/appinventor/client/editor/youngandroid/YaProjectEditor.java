@@ -48,8 +48,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.appinventor.shared.storage.StorageUtil;
-import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -137,7 +135,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
    */
   public void openProjectPropertyDialog() {
     if (propertyDialogBox == null) {
-      propertyDialogBox = new ProjectPropertiesDialogBox(this);
+      propertyDialogBox = uiFactory.createProjectPropertiesDialog(this);
     }
     String curScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
     propertyDialogBox.showDialog(curScreen);
