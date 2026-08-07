@@ -68,6 +68,9 @@ public final class ComponentListGenerator extends ComponentProcessor {
   private static JSONObject outputComponentBuildInfo(ComponentInfo component) {
     JSONObject json = new JSONObject();
     json.put("type", component.type);
+    if (component.isCoreLibraryDesugaringEnabled()) {
+      json.put("coreLibraryDesugaring", "true");
+    }
     appendComponentInfo(json, ComponentDescriptorConstants.PERMISSIONS_TARGET,
         component.permissions);
     appendPermissionConstraints(json, ComponentDescriptorConstants.PERMISSION_CONSTRAINTS_TARGET,

@@ -34,6 +34,7 @@ public final class ComponentDescriptorConstants {
   public static final String CONDITIONALS_TARGET = "conditionals";
   public static final String XMLS_TARGET = "xmls";
   public static final String FEATURES_TARGET = "features";
+  public static final String CORE_LIBRARY_DESUGARING = "coreLibraryDesugaring";
 
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should

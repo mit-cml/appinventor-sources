@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -28,16 +30,24 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 @BuildType(aab = true, apk = true)
 public class RunD8 extends DexTask implements AndroidTask {
   private static final boolean USE_D8_PROGUARD_RULES = true;
+  private static Path configJson;
 
   @Override
   public TaskResult execute(AndroidCompilerContext context) {
     Set<String> mainDexClasses = new HashSet<>();
     final List<File> inputs = new ArrayList<>();
     try {
+      if (context.isCoreLibraryDesugaring()) {
+        // Extract the desugar.json file for later use.
+        configJson = extractConfigJson(context);
+      }
+
       recordForMainDex(context.getPaths().getClassesDir(), mainDexClasses);
       inputs.add(preDexLibrary(context, recordForMainDex(
           new File(context.getResources().getSimpleAndroidRuntimeJar()), mainDexClasses)));
@@ -66,7 +76,11 @@ public class RunD8 extends DexTask implements AndroidTask {
 
       // Add the rest of the libraries in any order
       for (String lib : context.getComponentInfo().getUniqueLibsNeeded()) {
-        inputs.add(preDexLibrary(context, new File(lib)));
+        if (context.isCoreLibraryDesugaring()) {
+          inputs.add(new File(lib));
+        } else {
+          inputs.add(preDexLibrary(context, new File(lib)));
+        }
       }
 
       // Add extension libraries
@@ -91,7 +105,7 @@ public class RunD8 extends DexTask implements AndroidTask {
         @Override
         public FileVisitResult visitFile(Path file,
             BasicFileAttributes attrs) {
-          if (file.toString().endsWith(".class")) {
+          if (file.toString().endsWith(".class") || file.toString().endsWith(".jar")) {
             inputs.add(file.toFile());
           }
           return FileVisitResult.CONTINUE;
@@ -130,6 +144,17 @@ public class RunD8 extends DexTask implements AndroidTask {
       // Run the final DX step to include user's compiled screens
       if (!runD8(context, inputs, mainDexClasses)) {
         return TaskResult.generateError("d8 failed.");
+      }
+
+      // Run L8 to dex `desugar_jdk_libs` library
+      if (context.isCoreLibraryDesugaring()) {
+        long startTime = System.currentTimeMillis();
+        if (new RunL8().execute(context, configJson)) {
+          long seconds = (System.currentTimeMillis() - startTime) / 1000;
+          context.getReporter().info("L8 succeeded in " + seconds + " seconds");
+        } else {
+          return TaskResult.generateError(new Exception("L8 Error!"));
+        }
       }
 
       // Aggregate all classes.dex files output by dx
@@ -191,6 +216,10 @@ public class RunD8 extends DexTask implements AndroidTask {
       javaArgs.add("--classpath");
       javaArgs.add(context.getPaths().getClassesDir().getAbsolutePath());
     }
+    if (context.isCoreLibraryDesugaring() && configJson != null) {
+      javaArgs.add("--desugared-lib");
+      javaArgs.add(configJson.toString());
+    }
     javaArgs.add("--output");
     javaArgs.add(outputDir);
     javaArgs.add("--min-api");
@@ -251,6 +280,34 @@ public class RunD8 extends DexTask implements AndroidTask {
         }
       }
       return dexedLib;
+    }
+  }
+
+  private Path extractConfigJson(AndroidCompilerContext context) throws IOException {
+    try (JarFile jarFile = new JarFile(new File(context.getResources().getDesugarJdkConfig()))) {
+      String jsonPath = "META-INF/desugar/d8/desugar.json";
+      JarEntry entry = jarFile.getJarEntry(jsonPath);
+      if (entry == null) {
+        throw new FileNotFoundException(
+            "desugar.json not found in jar: " + context.getResources().getDesugarJdkConfig());
+      }
+      try (InputStream is = jarFile.getInputStream(entry)) {
+        // Write to temp json file
+        File tempFile = new File(context.getPaths().getTmpDir(), "desugar.json");
+        if (tempFile.exists()) {
+          tempFile.delete();
+        }
+        tempFile.deleteOnExit();
+
+        try (OutputStream os = new FileOutputStream(tempFile)) {
+          byte[] buffer = new byte[8192];
+          int read;
+          while ((read = is.read(buffer)) != -1) {
+            os.write(buffer, 0, read);
+          }
+        }
+        return tempFile.toPath();
+      }
     }
   }
 }
