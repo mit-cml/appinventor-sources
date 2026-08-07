@@ -79,6 +79,15 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
   private boolean useLegacy = true;
 
   private String language = "";
+  
+  // --- Lifecycle state management ---
+  private enum RecognizerState {
+    IDLE,
+    LISTENING
+  }
+
+  private RecognizerState state = RecognizerState.IDLE;
+  private long lastStartTime = 0;
 
   private YailList availableLanguages = YailList.makeEmptyList();
   private YailList availableCountries = YailList.makeEmptyList();
@@ -193,9 +202,25 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
       });
       return;
     }
+    
+    long now = System.currentTimeMillis();
+
+    // debounce rapid calls
+    if (now - lastStartTime < 300) {
+      return;
+    }
+
+    // prevent overlapping sessions
+    if (state != RecognizerState.IDLE) {
+      return;
+    }
+    lastStartTime = now;
+
     BeforeGettingText();
     speechRecognizerController.addListener(this);
     speechRecognizerController.start();
+
+    state = RecognizerState.LISTENING;
   }
 
   /**
@@ -206,9 +231,15 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Stop() {
+    if (state == RecognizerState.IDLE) {
+      return;
+    }
+
     if (speechRecognizerController != null) {
       speechRecognizerController.stop();
     }
+
+    state = RecognizerState.IDLE;
   }
 
   /**
@@ -248,6 +279,7 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   @Override
   public void onResult(String text) {
+    state = RecognizerState.IDLE;
     result = text;
     AfterGettingText(result, false);
   }
@@ -257,6 +289,8 @@ public class SpeechRecognizer extends AndroidNonvisibleComponent
    */
   @Override
   public void onError(int errorNumber) {
+    state = RecognizerState.IDLE;
+
     String functionName = "GetText";
     form.dispatchErrorOccurredEvent(this, functionName, errorNumber);
   }
