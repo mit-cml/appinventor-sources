@@ -3201,6 +3201,8 @@ Dictionary implementation.
 - combine two dicts         (yail-dictionary-combine-dicts first-dictionary second-dictionary)
 - turn alist to dict        (yail-dictionary-alist-to-dict alist)
 - turn dict to alist        (yail-dictionary-dict-to-alist dict)
+- json text to dict         (yail-dictionary-from-json-text json-text)
+- dict to json text         (yail-dictionary-to-json-text dict)
 
 - is YailDictionary?        (yail-dictionary? x)
 
@@ -3269,6 +3271,26 @@ Dictionary implementation.
 
 (define (yail-dictionary-dict-to-alist dict)
   (YailDictionary:dictToAlist dict))
+
+(define (yail-dictionary-from-json-text json-text)
+  ;; getObjectFromJson returns a matrix (not a dictionary) for the internal
+  ;; matrix marker object, so such text is reported as not a dictionary below.
+  (let ((result (try-catch
+                 (com.google.appinventor.components.runtime.util.JsonUtil:getObjectFromJson json-text #t)
+                 (exception org.json.JSONException
+                   (signal-runtime-error
+                    (format #f "Get dictionary from JSON text: the text ~A is not valid JSON."
+                            (get-display-representation json-text))
+                    "Malformed JSON")))))
+    (if (yail-dictionary? result)
+        result
+        (signal-runtime-error
+         (format #f "Get dictionary from JSON text: the JSON ~A does not represent a dictionary. To decode JSON whose top-level value is not an object, use the Web component's JsonTextDecodeWithDictionaries method instead."
+                 (get-display-representation json-text))
+         "Not a JSON Object"))))
+
+(define (yail-dictionary-to-json-text yail-dictionary)
+  (com.google.appinventor.components.runtime.util.JsonUtil:encodeJsonObject yail-dictionary))
 
 (define (yail-dictionary-copy yail-dictionary)
   (*:clone (as YailDictionary yail-dictionary)))
