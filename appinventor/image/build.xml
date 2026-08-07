@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2026 Massachusetts Institute of Technology, All rights reserved.
+     App Inventor Docker Image
+     ====================================================================== -->
+
+
+<project name="Makeimage" default="docker-build">
+  <description>
+    App Inventor Docker Image
+  </description>
+
+  <!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+  <import file="../build-common.xml" />
+  <target name="image"
+          description="Build docker images" >
+    <ant inheritAll="false" useNativeBasedir="true" dir="../starter"/>
+    <mkdir dir="${build.dir}/image"/>
+    <jar destfile="${build.dir}/image/appinventor.war">
+      <fileset dir="../appengine/build/war">
+        <include name="**"/>
+      </fileset>
+    </jar>
+    <copy tofile="${build.dir}/image/appinventor.tpl" file="../../jettybase/appinventor.tpl" />
+    <copy tofile="${build.dir}/image/appinventor.ini.sample" file="../../jettybase/appinventor.ini.sample"/>
+    <copy tofile="${build.dir}/image/starter.jar" file="${build.dir}/starter.jar" />
+    <copy tofile="${build.dir}/image/nginx.conf" file="nginx.conf" />
+    <copy tofile="${build.dir}/image/start.sh" file="start.sh" />
+    <copy tofile="${build.dir}/image/passwd" file="passwd" />
+    <mkdir dir="${build.dir}/image/opt" />
+    <copy todir="${build.dir}/image/opt">
+      <fileset dir="opt">
+        <include name="**"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="dev"
+          description="Run Dev Server" >
+    <ant inheritAll="false" useNativeBasedir="true" dir="../starter"/>
+    <mkdir dir="${build.dir}/devserver"/>
+    <jar destfile="${build.dir}/devserver/appinventor.war">
+      <fileset dir="../appengine/build/war">
+        <include name="**"/>
+      </fileset>
+    </jar>
+    <mkdir dir="${build.dir}/devserver/opt" />
+    <copy todir="${build.dir}/devserver/opt">
+      <fileset dir="opt">
+        <include name="**"/>
+      </fileset>
+    </copy>
+    <copy tofile="${build.dir}/devserver/opt/appinventor/webapps/appinventor.tpl" file="../../jettybase/appinventor.tpl" />
+    <copy tofile="${build.dir}/devserver/opt/appinventor/webapps/appinventor.ini.sample" file="../../jettybase/appinventor.ini.sample"/>
+    <copy tofile="${build.dir}/devserver/opt/appinventor/webapps/appinventor.ini" file="../../jettybase/appinventor.ini.sample"/>
+    <copy tofile="${build.dir}/devserver/opt/appinventor/webapps/starter.jar" file="${build.dir}/starter.jar" />
+    <copy tofile="${build.dir}/devserver/opt/appinventor/webapps/appinventor.war" file="${build.dir}/devserver/appinventor.war" />
+    <exec executable="java" dir="${build.dir}/devserver/opt/appinventor/webapps">
+      <arg value="-jar"/>
+      <arg value="starter.jar"/>
+      <arg value="makeauthkey"/>
+    </exec>
+    <exec executable="java" dir="${build.dir}/devserver/opt/appinventor/webapps">
+      <arg value="-jar"/>
+      <arg value="starter.jar"/>
+      <arg value="nobuildserver"/>
+    </exec>
+  </target>
+
+  <target name="docker-build" depends="image">
+    <exec executable="docker" failonerror="true">
+      <arg value="build"/>
+      <!-- 1. Explicitly tell Docker where the Dockerfile is -->
+      <arg value="-t"/>
+      <arg value="127.0.0.1:5002/appinventor:test"/>
+      <arg value="-f"/>
+      <arg value="Dockerfile"/>
+      <!-- 2. Set the context to the parent directory -->
+      <arg value="../build/image"/>
+    </exec>
+</target>
+
+<target name="clean">
+  <delete dir="${build.dir}/image" />
+  <delete dir="${build.dir}/devserver" />
+</target>
+</project>
+
+

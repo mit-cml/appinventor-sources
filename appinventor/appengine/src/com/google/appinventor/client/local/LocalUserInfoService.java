@@ -76,6 +76,11 @@ public class LocalUserInfoService implements UserInfoServiceAsync {
   }
 
   @Override
+  public void setAuthCode(String code, AsyncCallback<Void> callback) {
+
+  }
+
+  @Override
   public void storeAppStoreSettings(String content, AsyncCallback<Void> callback) {
 
   }

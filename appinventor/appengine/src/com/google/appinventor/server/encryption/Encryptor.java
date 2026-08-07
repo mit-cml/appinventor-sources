@@ -30,4 +30,12 @@ public interface Encryptor {
    *         process
    */
   byte[] decrypt(byte[] encrypted) throws EncryptionException;
+
+  /**
+   * Sets the path for the key.
+   *
+   * @param path where the key is located
+   */
+  void setKeyPath(String keyPath);
+
 }
