@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright © 2017 Massachusetts Institute of Technology, All rights reserved.
+// Copyright © 2017-2026 Massachusetts Institute of Technology, All rights reserved.
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -8,6 +8,11 @@ package com.google.appinventor.buildserver.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -170,6 +175,11 @@ public class AARLibraries extends HashSet<AARLibrary> {
    * @return true if the merge was successful, otherwise false.
    */
   public boolean mergeResources(File outputDir, File mainResDir, PngCruncher cruncher) {
+    // Move fonts from AAR res/font/ directly to the merged output directory,
+    // bypassing ResourceMerger which does not support font resources and would
+    // fail trying to parse binary .ttf/.otf files as XML.
+    moveFontsToOutputDir(outputDir);
+
     List<ResourceSet> resourceSets = getResourceSets();
     ResourceSet mainResSet = new ResourceSet("main");
     mainResSet.addSource(mainResDir);
@@ -189,6 +199,56 @@ public class AARLibraries extends HashSet<AARLibrary> {
     } catch(MergingException e) {
       e.printStackTrace();
       return false;
+    }
+  }
+
+  /**
+   * Moves font directories from AAR res/font/ directly into the merged resource output
+   * directory, including any subdirectories and their contents. Fonts are written straight
+   * to {@code outputDir/font/} so {@code aapt} can package them without passing through
+   * {@link ResourceMerger}, which does not support font resources and will fail trying to
+   * parse binary font files as XML.
+   *
+   * <p>Using {@link Files#walkFileTree} ensures all files are moved and directories are
+   * deleted bottom-up in a single pass, so no {@code font/} directory remains in the AAR
+   * {@code res/} after this method returns.
+   *
+   * @param outputDir the merged resource output directory (same one passed to
+   *                  {@link #mergeResources(File, File, PngCruncher)})
+   */
+  private void moveFontsToOutputDir(File outputDir) {
+    Path mergedFontDir = outputDir.toPath().resolve("font");
+  
+    for (AARLibrary library : this) {
+      File resDir = library.getResDirectory();
+      if (resDir == null) continue;
+    
+      Path fontDir = resDir.toPath().resolve("font");
+      if (!Files.isDirectory(fontDir)) continue;
+    
+      try {
+        Files.walkFileTree(fontDir, new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path src, BasicFileAttributes attrs) throws IOException {
+            Path dest = mergedFontDir.resolve(fontDir.relativize(src));
+            Files.createDirectories(dest.getParent());
+            if (!Files.exists(dest)) {
+              Files.move(src, dest);
+            } else {
+              LOG.warning(null, "Skipping duplicate font file: %s", src.getFileName());
+            }
+            return FileVisitResult.CONTINUE;
+          }
+        
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
+            Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+          }
+        });
+      } catch (IOException e) {
+        LOG.warning(null, "Failed to move font directory from %s: %s", fontDir, e.getMessage());
+      }
     }
   }
 
