@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 0.0.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/0.0.0/distro-source/core/src/gwt-module.dtd">
+<module rename-to='tasks'>
+  <!-- Inherit the core Web Toolkit stuff.                        -->
+  <inherits name='com.google.gwt.user.User'/>
+
+  <!-- Other module inherits                                      -->
+  <inherits name='com.google.gwt.resources.Resources' />
+ 
+  <!-- Human readable Style names. Comment out for production     -->     
+  <set-configuration-property name="CssResource.style" value="pretty" />              
+  
+  <!-- Disable automatic base64 encoding of images                -->
+  <set-property name="ClientBundle.enableInlining" value="false" />
+
+  <!-- We are targeting mobile webkit based browsers              -->  
+  <set-property name="user.agent" value="safari" />  
+
+  <!-- Specify where our GWT client code lives                    -->
+  <source path="client" />
+
+  <!-- We can also have source shared amongst client and server   -->
+  <source path="shared" />  
+
+  <!-- Specify the app entry point class.                         -->
+  <entry-point class='com.google.appengine.demos.taskengine.client.Tasks'/>
+  
+</module>

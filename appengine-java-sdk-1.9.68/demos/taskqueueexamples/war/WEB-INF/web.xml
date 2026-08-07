@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+  "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+  <servlet>
+    <servlet-name>simple-counter</servlet-name>
+    <servlet-class>
+      com.google.appengine.demos.taskqueueexamples.SimpleCounterServlet
+    </servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>simple-counter-worker</servlet-name>
+    <servlet-class>
+      com.google.appengine.demos.taskqueueexamples.SimpleCounterWorker
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>simple-counter</servlet-name>
+    <url-pattern>/simplecounter</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>simple-counter-worker</servlet-name>
+    <url-pattern>/workers/simplecounter</url-pattern>
+  </servlet-mapping>
+
+  <!-- security-constraint>
+      <web-resource-collection>
+          <web-resource-name>workers</web-resource-name>
+          <url-pattern>/workers/*</url-pattern>
+      </web-resource-collection>
+      <auth-constraint>
+          <role-name>admin</role-name>
+      </auth-constraint>
+  </security-constraint -->
+</web-app>
