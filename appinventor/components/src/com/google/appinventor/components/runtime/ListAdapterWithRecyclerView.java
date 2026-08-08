@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
@@ -17,17 +19,20 @@ import androidx.core.view.ViewCompat;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.appinventor.components.runtime.util.TextViewUtil;
+
 public abstract class ListAdapterWithRecyclerView
     extends RecyclerView.Adapter<ListAdapterWithRecyclerView.RvViewHolder> implements Filterable {
   protected static final String LOG_TAG = ListView.LOG_TAG;
 
   protected ClickListener clickListener;
 
-  protected int backgroundColor;
-  protected int selectionColor;
-  protected float radius;
   // The model owns the data, the filter, and the selection; this adapter is only a view over it.
   protected final ListDataModel model;
+  // The ListView owns the style and mutates it in place, so re-binding a row is enough to pick up
+  // an appearance change. Subclasses must therefore apply style when they bind a row, never when
+  // they create one: onCreateViewHolder runs only once per recycled view.
+  protected final ListViewStyle style;
   protected ComponentContainer container;
 
   protected final Filter filter = new Filter() {
@@ -51,12 +56,10 @@ public abstract class ListAdapterWithRecyclerView
   };
 
   public ListAdapterWithRecyclerView(ComponentContainer container, ListDataModel model,
-      int backgroundColor, int selectionColor, float radius) {
+      ListViewStyle style) {
     this.container = container;
     this.model = model;
-    this.backgroundColor = backgroundColor;
-    this.radius = radius;
-    this.selectionColor = selectionColor;
+    this.style = style;
   }
 
   protected CardView createCardView(ViewGroup parent) {
@@ -64,8 +67,6 @@ public abstract class ListAdapterWithRecyclerView
     cardView.setContentPadding(15, 15, 15, 15);
     cardView.setPreventCornerOverlap(false);
     cardView.setMaxCardElevation(3f);
-    cardView.setCardBackgroundColor(backgroundColor);
-    cardView.setRadius(radius);
     cardView.setCardElevation(0.0f);
     ViewCompat.setElevation(cardView, 0);
 
@@ -89,12 +90,48 @@ public abstract class ListAdapterWithRecyclerView
     }
   }
 
-  protected void updateCardViewColor(CardView cardView, int position) {
+  /**
+   * Applies the current style to a row's main text. Call this while binding, so that changing an
+   * appearance property only has to re-bind the visible rows.
+   */
+  protected void styleMainText(TextView textView) {
+    textView.setTextSize(style.fontSizeMain);
+    textView.setTextColor(style.textColor);
+    TextViewUtil.setFontTypeface(container.$form(), textView, style.fontTypeface, false, false);
+    TextViewUtil.setAlignment(textView, style.textAlignmentMain, false);
+  }
+
+  /**
+   * Applies the current style to a row's detail text. See {@link #styleMainText}.
+   */
+  protected void styleDetailText(TextView textView) {
+    textView.setTextSize(style.fontSizeDetail);
+    textView.setTextColor(style.detailTextColor);
+    TextViewUtil.setFontTypeface(container.$form(), textView, style.fontTypeDetail, false, false);
+    TextViewUtil.setAlignment(textView, style.textAlignmentDetail, false);
+  }
+
+  /**
+   * Applies the current image dimensions to a row's image. See {@link #styleMainText}.
+   */
+  protected void styleImage(ImageView imageView) {
+    ViewGroup.LayoutParams params = imageView.getLayoutParams();
+    params.width = style.imageWidth;
+    params.height = style.imageHeight;
+    imageView.setLayoutParams(params);
+  }
+
+  /**
+   * Applies the current style to a row's card, including the selection highlight. See
+   * {@link #styleMainText}.
+   */
+  protected void styleCardView(CardView cardView, int position) {
+    cardView.setRadius(style.radius);
     // position is a display row; map it back to the original index the selection is keyed by.
     if (model.isSelected(model.toOriginalPosition(position))) {
-      cardView.setCardBackgroundColor(selectionColor);
+      cardView.setCardBackgroundColor(style.selectionColor);
     } else {
-      cardView.setCardBackgroundColor(backgroundColor);
+      cardView.setCardBackgroundColor(style.elementColor);
     }
   }
 

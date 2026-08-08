@@ -7,16 +7,21 @@ package com.google.appinventor.components.runtime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -119,9 +124,60 @@ public class ListViewTest extends RobolectricTestBase {
     assertEquals(0, listView1.SelectionIndex());
   }
 
-  private View getViewForPosition(ListView listView, int position) {
+  /**
+   * Test that changing an appearance property restyles the rows already on screen rather than
+   * building a new adapter, which would drop every row view and send the user's scroll position
+   * back to the top of the list.
+   */
+  @Test
+  public void testAppearanceChangeReusesAdapter() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe");
+    listView.Height(200);
+    listView.Width(320);
+    initialize(listView);
+
+    RecyclerView.Adapter<?> before = getRecyclerView(listView).getAdapter();
+    listView.TextColor(Component.COLOR_RED);
+    shadowOf(Looper.getMainLooper()).idle();
+
+    assertSame(before, getRecyclerView(listView).getAdapter());
+    assertEquals(Component.COLOR_RED, listView.TextColor());
+    // The new color must actually reach the row, not just the property.
+    assertEquals(Component.COLOR_RED, getMainTextView(listView, 0).getCurrentTextColor());
+
+  }
+
+  /**
+   * Test that changing the layout still builds a new adapter: each layout is a different adapter
+   * class, so it is the one appearance property that cannot be handled by re-binding.
+   */
+  @Test
+  public void testLayoutChangeRebuildsAdapter() {
+    // Left empty on purpose: swapping the adapter while rows are on screen makes RecyclerView
+    // re-bind the old layout's view holders with the new layout's adapter, which throws. That is
+    // pre-existing behaviour of ListViewLayout, not something this test is about.
+    ListView listView = new ListView(getForm());
+
+    RecyclerView.Adapter<?> before = getRecyclerView(listView).getAdapter();
+    listView.ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_TWO_TEXT);
+
+    assertNotSame(before, getRecyclerView(listView).getAdapter());
+  }
+
+  private RecyclerView getRecyclerView(ListView listView) {
     LinearLayout listLayout = (LinearLayout) ((LinearLayout) listView.getView()).getChildAt(1);
-    RecyclerView rv = (RecyclerView) listLayout.getChildAt(0);
+    return (RecyclerView) listLayout.getChildAt(0);
+  }
+
+  /** The main text of a row: the card holds a LinearLayout whose first child is that TextView. */
+  private TextView getMainTextView(ListView listView, int position) {
+    ViewGroup cardView = (ViewGroup) getViewForPosition(listView, position);
+    return (TextView) ((ViewGroup) cardView.getChildAt(0)).getChildAt(0);
+  }
+
+  private View getViewForPosition(ListView listView, int position) {
+    RecyclerView rv = getRecyclerView(listView);
     rv.scrollToPosition(position);
     shadowOf(Looper.getMainLooper()).idle();
     RecyclerView.ViewHolder vh = rv.findViewHolderForAdapterPosition(position);
