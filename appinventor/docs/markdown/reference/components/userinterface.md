@@ -913,13 +913,29 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.ListViewLayout" .number} *ListViewLayout*
 : Specifies type of layout for ListView row.
 
+{:id="ListView.MultiSelect" .boolean} *MultiSelect*
+: Whether the user can select more than one element at a time. `true`{:.logic.block} makes a tap
+ add a row to, or remove it from, [`SelectedItems`](#ListView.SelectedItems); `false`{:.logic.block} makes each
+ tap replace the previous selection.
+
+ Turning this on or off clears whatever is selected at the time, since a set built up in one
+ mode has no meaning in the other.
+
 {:id="ListView.Orientation" .number} *Orientation*
 : Specifies the layout's orientation. This may be: `Vertical`, which displays elements
  in rows one after the other; or `Horizontal`, which displays one element at a time and
  allows the user to swipe left or right to brows the elements.
 
+{:id="ListView.SelectedItems" .list .ro .bo} *SelectedItems*
+: Returns every element the user has selected, in the order they were picked. Unless
+ [`MultiSelect`](#ListView.MultiSelect) is enabled this holds at most one element, since selecting a
+ row replaces the previous selection.
+
 {:id="ListView.Selection" .text} *Selection*
 : Returns the text in the `ListView` at the position of [`SelectionIndex`](#ListView.SelectionIndex).
+
+ While [`MultiSelect`](#ListView.MultiSelect) is enabled this is the text of the row the user touched
+ last. Read [`SelectedItems`](#ListView.SelectedItems) for every element that is selected now.
 
 {:id="ListView.SelectionColor" .color} *SelectionColor*
 : The color of the item when it is selected.
@@ -932,6 +948,9 @@ This is a visible component that displays a list of text and image elements in y
  will be `0`. If an attempt is made to set this to a number less than `1` or greater than the
  number of items in the `ListView`, `SelectionIndex` will be set to `0`, and
  [`Selection`](#ListView.Selection) will be set to the empty text.
+
+ While [`MultiSelect`](#ListView.MultiSelect) is enabled this is the row the user touched last, which
+ may have been touched to deselect it. Read [`SelectedItems`](#ListView.SelectedItems) for what is selected now.
 
 {:id="ListView.ShowFilterBar" .boolean} *ShowFilterBar*
 : Sets visibility of the filter bar. `true`{:.logic.block} will show the bar,
@@ -975,6 +994,9 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.AfterPicking"} AfterPicking()
 : Simple event to be raised after the an element has been chosen in the list.
  The selected element is available in the [`Selection`](#ListView.Selection) property.
+
+ While [`MultiSelect`](#ListView.MultiSelect) is enabled this is raised for every tap, including a tap
+ that takes a row back out of [`SelectedItems`](#ListView.SelectedItems).
 
 ### Methods  {#ListView-Methods}
 

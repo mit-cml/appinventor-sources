@@ -106,7 +106,7 @@ public abstract class ListAdapterWithRecyclerView
   /**
    * Selects the item at the given original index, replacing any previous selection.
    */
-  public void toggleSelection(int position) {
+  public void selectOnly(int position) {
     if (model.isSelected(position)) {
       return;
     }
@@ -119,9 +119,9 @@ public abstract class ListAdapterWithRecyclerView
   }
 
   /**
-   * Toggles the item at the given original index, used when MultiSelect is enabled.
+   * Adds or removes the item at the given original index, used when MultiSelect is enabled.
    */
-  public void changeSelections(int position) {
+  public void toggleSelection(int position) {
     model.toggleSelection(position);
     notifyOriginalChanged(position);
   }
