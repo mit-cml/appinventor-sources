@@ -23,10 +23,11 @@ let HORIZONTAL_LAYOUT = 1
  * model instead of holding its own fields.
  */
 class ListDataModel {
-  /// Simple string items (populated for string lists).
-  var elements = [String]()
+  /// Simple string items (populated for string lists). Mutate through the methods below.
+  private(set) var elements = [String]()
   /// Rich rows: Text1 / Text2 / Image (populated for ListData / image layouts).
-  var items: [[String: AnyObject]] = []
+  /// Mutate through the methods below.
+  private(set) var items: [[String: AnyObject]] = []
 
   // ---- Filtering (makes the search box actually filter the list, for both string and rich rows) ----
   private var query = ""
@@ -60,6 +61,83 @@ class ListDataModel {
   var displayCount: Int { filteredIndices.count }
   /// Maps a visible row back to its real position in `elements` / `items`.
   func originalIndex(_ displayRow: Int) -> Int { filteredIndices[displayRow] }
+  /// Maps a real position to the row it is drawn on, or nil when the filter hides it.
+  func toDisplayPosition(_ originalIndex: Int) -> Int? { filteredIndices.firstIndex(of: originalIndex) }
+
+  // ---- Reading a row (callers never have to know whether it came from `elements` or `items`) ----
+  static func makeItem(text1: String = "", text2: String = "", image: String = "") -> [String: AnyObject] {
+    return [
+      "Text1": text1 as AnyObject,
+      "Text2": text2 as AnyObject,
+      "Image": image as AnyObject
+    ]
+  }
+
+  /// The row at a real (unfiltered) position, or nil when out of range.
+  func item(at index: Int) -> [String: AnyObject]? {
+    guard index >= 0 && index < count else {
+      return nil
+    }
+    return isDataMode ? items[index] : ListDataModel.makeItem(text1: elements[index])
+  }
+
+  func mainText(at index: Int) -> String {
+    return item(at: index)?["Text1"] as? String ?? ""
+  }
+
+  func detailText(at index: Int) -> String {
+    return item(at: index)?["Text2"] as? String ?? ""
+  }
+
+  // ---- Mutations (mirrors the Android ListDataModel's setItems/add/addAt/remove/clear) ----
+  func clear() {
+    elements.removeAll()
+    items.removeAll()
+  }
+
+  /// Replaces the list with rich rows, dropping any string rows (used by the ListData setter).
+  func setItems(_ newItems: [[String: AnyObject]]) {
+    elements.removeAll()
+    items = newItems
+  }
+
+  func append(_ text: String) {
+    elements.append(text)
+  }
+
+  func append(_ item: [String: AnyObject]) {
+    items.append(item)
+  }
+
+  func append(contentsOf newItems: [[String: AnyObject]]) {
+    items.append(contentsOf: newItems)
+  }
+
+  func insert(_ text: String, at index: Int) {
+    elements.insert(text, at: index)
+  }
+
+  func insert(_ item: [String: AnyObject], at index: Int) {
+    items.insert(item, at: index)
+  }
+
+  func insert(contentsOf texts: [String], at index: Int) {
+    elements.insert(contentsOf: texts, at: index)
+  }
+
+  func insert(contentsOf newItems: [[String: AnyObject]], at index: Int) {
+    items.insert(contentsOf: newItems, at: index)
+  }
+
+  /// Removes the row at a real (unfiltered) position from whichever array holds it.
+  func remove(at index: Int) {
+    if items.count > index {
+      items.remove(at: index)
+    }
+    if elements.count > index {
+      elements.remove(at: index)
+    }
+  }
 }
 
 fileprivate final class ListViewRootView: UIView {
@@ -223,32 +301,16 @@ fileprivate final class ListViewRootView: UIView {
       }
     }
     set(elements) {
-      _model.items = []
-      _model.elements = []
+      _model.clear()
+      // The old selection refers to an item that no longer exists, so drop it (Android clears the
+      // selection the same way whenever the data is replaced).
+      applySelection(0, scroll: false)
       guard !elements.isEmpty else {
         elementsCount()
         return
       }
       addElements(elements)
     }
-  }
-    
-  private func makeListItem(text1: String = "", text2: String = "", image: String = "") -> [String: AnyObject] {
-    return [
-      "Text1": text1 as AnyObject,
-      "Text2": text2 as AnyObject,
-      "Image": image as AnyObject
-    ]
-  }
-
-  private func listItem(at index: Int) -> [String: AnyObject]? {
-    guard index >= 0 && index < _model.count else {
-      return nil
-    }
-    if _model.isDataMode {
-      return _model.items[index]
-    }
-    return makeListItem(text1: _model.elements[index])
   }
 
   private func normalizedListItem(from item: AnyObject) -> [String: AnyObject] {
@@ -262,7 +324,7 @@ fileprivate final class ListViewRootView: UIView {
         "Image": (dictionary["Image"] as? String ?? "") as AnyObject
       ]
     }
-    return makeListItem(text1: toString(item))
+    return ListDataModel.makeItem(text1: toString(item))
   }
 
   private func normalizedElements(_ elements: [AnyObject]) -> [AnyObject] {
@@ -279,17 +341,17 @@ fileprivate final class ListViewRootView: UIView {
         let otherElements = elements.filter { !($0 is NSDictionary) }
         let useDictFormat = testItemsForDict?["Text1"] != nil || testElementsForDict?["Text1"] != nil
         if useDictFormat {
-          _model.items.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
+          _model.append(contentsOf: elements.compactMap { $0 as? [String: AnyObject] })
           for item in otherElements {
             // Fall back to simple text item
             if let str = item as? String {
-              _model.items.append(makeListItem(text1: str))
+              _model.append(ListDataModel.makeItem(text1: str))
             } else if let n = item as? NSNumber {
-              _model.items.append(makeListItem(text1: n.stringValue))
+              _model.append(ListDataModel.makeItem(text1: n.stringValue))
             }
           }
         }
-        _model.elements.insert(contentsOf: otherElements.toStringArray(), at: 0)
+        _model.insert(contentsOf: otherElements.toStringArray(), at: 0)
         elementsCount()
       }
     }
@@ -420,8 +482,7 @@ fileprivate final class ListViewRootView: UIView {
     set(jsonString) {
       do {
         if let dictionaries = try getObjectFromJson(jsonString) as? [[String: Any]] {
-          _model.elements.removeAll()
-          _model.items = dictionaries.compactMap { dictionary in
+          _model.setItems(dictionaries.compactMap { dictionary in
             var item: [String: String] = [:]
 
             if let text1 = dictionary["Text1"] as? String {
@@ -442,7 +503,9 @@ fileprivate final class ListViewRootView: UIView {
             }
 
             return nil
-          }
+          })
+          // The old selection refers to an item that no longer exists, so drop it.
+          applySelection(0, scroll: false)
           elementsCount()
         }
       } catch {
@@ -515,29 +578,45 @@ fileprivate final class ListViewRootView: UIView {
   }
 
 
+  /// The one place a selection is applied: derives Selection and SelectionDetailText from the model
+  /// and moves the highlight to the row that item is drawn on. `index` is 1-based; 0 clears.
+  /// Mirrors Android, where SelectionIndex(int) is likewise the single derivation point.
+  fileprivate func applySelection(_ index: Int32, scroll: Bool) {
+    // Drop the old highlight first: the newly selected item may be hidden by the filter, in which
+    // case there is no row to move the highlight to.
+    if let selectedRow = _view.indexPathForSelectedRow {
+      _view.deselectRow(at: selectedRow, animated: false)
+    }
+    for path in _collectionView.indexPathsForSelectedItems ?? [] {
+      _collectionView.deselectItem(at: path, animated: false)
+    }
+    guard index > 0, let item = _model.item(at: Int(index) - 1) else {
+      _selectionIndex = 0
+      _selection = ""
+      _selectionDetailText = ""
+      return
+    }
+    _selectionIndex = index
+    _selection = item["Text1"] as? String ?? ""
+    _selectionDetailText = item["Text2"] as? String ?? ""
+    // The highlight belongs to the visible row, which differs from the item's real position while a
+    // filter is active. A nil position means the filter currently hides the selected item.
+    guard let displayRow = _model.toDisplayPosition(Int(index) - 1) else {
+      return
+    }
+    let path = IndexPath(row: displayRow, section: 0)
+    _view.selectRow(at: path, animated: true, scrollPosition: scroll ? .middle : .none)
+    _collectionView.selectItem(at: path, animated: true,
+                               scrollPosition: scroll ? .centeredHorizontally : [])
+  }
+
   @objc open var Selection: String {
     get {
       return _selection
     }
     set(selection) {
-      if let selectedRow = _view.indexPathForSelectedRow {
-        _view.deselectRow(at: selectedRow, animated: false)
-      }
-      if let index = _model.items.firstIndex(where: { $0["Text1"] as? String == selection }) {
-        _selectionIndex = Int32(index) + 1
-        _selection = selection
-        _selectionDetailText = _model.items[index]["Text2"] as? String ?? ""
-        _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else if let index = _model.elements.firstIndex(of: selection) {
-        _selectionIndex = Int32(index) + 1
-        _selection = selection
-        _selectionDetailText = ""
-        _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else {
-        _selectionIndex = 0
-        _selection = ""
-        _selectionDetailText = ""
-      }
+      let index = (0..<_model.count).first { _model.mainText(at: $0) == selection }
+      applySelection(index.map { Int32($0) + 1 } ?? 0, scroll: false)
     }
   }
 
@@ -546,19 +625,11 @@ fileprivate final class ListViewRootView: UIView {
       return _selectionDetailText
     }
     set(selectionDetailText) {
-      if let selectedRow = _view.indexPathForSelectedRow {
-        _view.deselectRow(at: selectedRow, animated: false)
-      }
-      if let index = _model.items.firstIndex(where: { $0["Text2"] as? String == selectionDetailText }) {
-        _selectionIndex = Int32(index) + 1
-        _selection = _model.items[index]["Text1"] as? String ?? ""
-        _selectionDetailText = selectionDetailText
-        _view.selectRow(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .none)
-      } else {
-        _selectionIndex = 0
-        _selection = ""
-        _selectionDetailText = ""
-      }
+      // Only rich rows carry detail text, so a plain string list never matches and clears instead.
+      let index = _model.isDataMode
+        ? (0..<_model.count).first { _model.detailText(at: $0) == selectionDetailText }
+        : nil
+      applySelection(index.map { Int32($0) + 1 } ?? 0, scroll: false)
     }
   }
 
@@ -577,20 +648,7 @@ fileprivate final class ListViewRootView: UIView {
       return _selectionIndex
     }
     set(selectionIndex) {
-      if selectionIndex > 0 && selectionIndex <= Int32(listItemCount),
-         let item = listItem(at: Int(selectionIndex) - 1) {
-        _selectionIndex = selectionIndex
-        _selection = item["Text1"] as? String ?? ""
-        _selectionDetailText = item["Text2"] as? String ?? ""
-        _view.selectRow(at: IndexPath(row: Int(_selectionIndex) - 1, section: 0), animated: true, scrollPosition: UITableView.ScrollPosition.middle)
-      } else {
-        _selectionIndex = 0
-        _selection = ""
-        _selectionDetailText = ""
-        if let path = _view.indexPathForSelectedRow {
-          _view.deselectRow(at: path, animated: true)
-        }
-      }
+      applySelection(selectionIndex, scroll: true)
     }
   }
 
@@ -728,9 +786,9 @@ fileprivate final class ListViewRootView: UIView {
 
   @objc open func AddItem(_ mainText: String, _ detailText: String, _ imageName: String) {
     if usesPlainStrings {
-      _model.elements.append(mainText)
+      _model.append(mainText)
     } else {
-      _model.items.append(makeListItem(text1: mainText, text2: detailText, image: imageName))
+      _model.append(ListDataModel.makeItem(text1: mainText, text2: detailText, image: imageName))
     }
     elementsCount()
   }
@@ -743,9 +801,10 @@ fileprivate final class ListViewRootView: UIView {
     }
     let index = Int(addIndex - 1)
     if usesPlainStrings {
-      _model.elements.insert(mainText, at: index)
+      _model.insert(mainText, at: index)
     } else {
-      _model.items.insert(makeListItem(text1: mainText, text2: detailText, image: imageName), at: index)
+      _model.insert(ListDataModel.makeItem(text1: mainText, text2: detailText, image: imageName),
+                    at: index)
     }
     elementsCount()
   }
@@ -771,7 +830,7 @@ fileprivate final class ListViewRootView: UIView {
     
     let index = Int(addIndex - 1)
     let newItems = elements.map { normalizedListItem(from: $0) }
-    _model.items.insert(contentsOf: newItems, at: index)
+    _model.insert(contentsOf: newItems, at: index)
     elementsCount()
   }
 
@@ -809,12 +868,7 @@ fileprivate final class ListViewRootView: UIView {
            ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index)
       return
     }
-    if _model.items.count >= index {
-      _model.items.remove(at: Int(index - 1))
-    }
-    if _model.elements.count >= index {
-      _model.elements.remove(at: Int(index - 1))
-    }
+    _model.remove(at: Int(index - 1))
     elementsCount()
   }
 
@@ -832,7 +886,7 @@ fileprivate final class ListViewRootView: UIView {
         UITableViewCell(style: .subtitle, reuseIdentifier: layoutReuseIdentifier)
       // Map the visible row back to its real position so search filtering works.
       let origRow = _model.originalIndex(indexPath.row)
-      let item = listItem(at: origRow) ?? makeListItem()
+      let item = _model.item(at: origRow) ?? ListDataModel.makeItem()
       cell.imageView?.image = nil
       tableView.rowHeight = UITableView.automaticDimension
 
@@ -1162,15 +1216,8 @@ fileprivate final class ListViewRootView: UIView {
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
       // Map the tapped visible row back to its real position, so selection is correct while filtering.
-      let origRow = _model.originalIndex(indexPath.row)
-      _selectionIndex = Int32(origRow) + 1
-      if _model.isDataMode {
-        _selection = _model.items[origRow]["Text1"] as? String ?? ""
-        _selectionDetailText = _model.items[origRow]["Text2"] as? String ?? ""
-      } else {
-        _selection = _model.elements[origRow]
-        _selectionDetailText = ""
-      }
+      // Tapping must not scroll the list — the row is already where the user is looking.
+      applySelection(Int32(_model.originalIndex(indexPath.row)) + 1, scroll: false)
       AfterPicking()
     }
     
@@ -1185,13 +1232,11 @@ fileprivate final class ListViewRootView: UIView {
     // visible row while it survives the filter, and clear it only when the filter hides it, so the
     // user never ends up with a selection they cannot see.
     if _selectionIndex > 0 {
-      if let displayRow = _model.filteredIndices.firstIndex(of: Int(_selectionIndex) - 1) {
+      if let displayRow = _model.toDisplayPosition(Int(_selectionIndex) - 1) {
         _view.selectRow(at: IndexPath(row: displayRow, section: 0), animated: false, scrollPosition: .none)
         _collectionView.selectItem(at: IndexPath(item: displayRow, section: 0), animated: false, scrollPosition: [])
       } else {
-        _selectionIndex = 0
-        _selection = ""
-        _selectionDetailText = ""
+        applySelection(0, scroll: false)
       }
     }
   }
@@ -1335,27 +1380,16 @@ fileprivate final class ListViewRootView: UIView {
   public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HListCell.reuseId, for: indexPath) as! HListCell
 
-    let isData = _model.isDataMode
     // Map the visible item back to its real position so search filtering works here too.
     let origRow = _model.originalIndex(indexPath.item)
-    let mainText: String
-    let detailText: String
+    let mainText = _model.mainText(at: origRow)
+    let detailText = _model.detailText(at: origRow)
     var image: UIImage? = nil
-
-    if isData {
-      let item = _model.items[origRow]
-      mainText = item["Text1"] as? String ?? ""
-      detailText = item["Text2"] as? String ?? ""
-      if let path = item["Image"] as? String,
-         !path.isEmpty {
-        image = AssetManager.shared.imageFromPath(path: path)
-      }
-    } else {
-      mainText = _model.elements[origRow]
-      detailText = ""
+    if let path = _model.item(at: origRow)?["Image"] as? String, !path.isEmpty {
+      image = AssetManager.shared.imageFromPath(path: path)
     }
 
-    
+
     if _elementCornerRadius > 0 {
       cell.layer.cornerRadius = CGFloat(_elementCornerRadius) / CGFloat(COMPANION_CORRECTION)
       cell.layer.masksToBounds = true
@@ -1407,16 +1441,7 @@ fileprivate final class ListViewRootView: UIView {
   // UICollectionViewDelegate (selection → AfterPicking)
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     // Map the tapped visible item back to its real position, so selection is correct while filtering.
-    let origRow = _model.originalIndex(indexPath.item)
-    _selectionIndex = Int32(origRow) + 1
-    if _model.isDataMode {
-      let item = _model.items[origRow]
-      _selection = item["Text1"] as? String ?? ""
-      _selectionDetailText = item["Text2"] as? String ?? ""
-    } else {
-      _selection = _model.elements[origRow]
-      _selectionDetailText = ""
-    }
+    applySelection(Int32(_model.originalIndex(indexPath.item)) + 1, scroll: false)
     AfterPicking()
   }
 
