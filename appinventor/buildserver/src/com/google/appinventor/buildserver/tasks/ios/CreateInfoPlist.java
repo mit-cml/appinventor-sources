@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 public class CreateInfoPlist implements IosTask {
   private static final String DEFAULT_MESSAGE =
       "This feature is requested by a library but not used by this app.";
-  private static final String PLAYER = "com.google.appinventor.components.runtime.Player";
+  private static final String PLAYER = "Player";
 
   @Override
   public TaskResult execute(IosCompilerContext context) {
