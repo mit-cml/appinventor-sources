@@ -407,6 +407,67 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual(0, testList.Elements.count)
   }
 
+  // MARK: Selection while filtering
+
+  func testSelectionWhileFilteredUsesTappedItemsRealIndex() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    testList.searchBar(UISearchBar(), textDidChange: "an")
+
+    let tableView = visibleTableView(for: testList)
+    XCTAssertEqual(1, testList.tableView(tableView, numberOfRowsInSection: 0))
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+
+    XCTAssertEqual(2, testList.SelectionIndex)
+    XCTAssertEqual("banana", testList.Selection)
+  }
+
+  func testSelectionSetterHighlightsVisibleRowWhileFiltered() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    testList.searchBar(UISearchBar(), textDidChange: "rr")
+
+    // "cherry" is item 3, but it is drawn on the only visible row while the filter is active.
+    testList.Selection = "cherry"
+
+    XCTAssertEqual(3, testList.SelectionIndex)
+    let tableView = visibleTableView(for: testList)
+    XCTAssertEqual(1, testList.tableView(tableView, numberOfRowsInSection: 0))
+    XCTAssertEqual(0, tableView.indexPathForSelectedRow?.row)
+  }
+
+  func testFilterKeepsVisibleSelectionAndClearsHiddenOne() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    testList.SelectionIndex = 2
+
+    testList.searchBar(UISearchBar(), textDidChange: "ban")
+    XCTAssertEqual(2, testList.SelectionIndex)
+    XCTAssertEqual("banana", testList.Selection)
+
+    testList.searchBar(UISearchBar(), textDidChange: "cher")
+    XCTAssertEqual(0, testList.SelectionIndex)
+    XCTAssertEqual("", testList.Selection)
+  }
+
+  func testReplacingTheListClearsStaleSelection() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    testList.SelectionIndex = 2
+
+    testList.Elements = ["kiwi"] as [AnyObject]
+
+    XCTAssertEqual(0, testList.SelectionIndex)
+    XCTAssertEqual("", testList.Selection)
+    XCTAssertEqual("", testList.SelectionDetailText)
+  }
+
+  func testReplacingListDataClearsStaleSelection() {
+    testList.ListData = "[{\"Text1\":\"77\"},{\"Text1\":\"hello\"}]"
+    testList.SelectionIndex = 2
+
+    testList.ListData = "[{\"Text1\":\"fresh\"}]"
+
+    XCTAssertEqual(0, testList.SelectionIndex)
+    XCTAssertEqual("", testList.Selection)
+  }
+
   // MARK: Events
 
   func testAfterPicking() {
