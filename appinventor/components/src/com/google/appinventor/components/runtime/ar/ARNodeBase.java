@@ -35,6 +35,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   protected float[] fromPropertyPosition = {0f, 0f, 0f};
   protected float[] fromPropertyRotation = {0f, 0f, 0f, 1f};
   protected float[] fromGeoCoordinates = {0f, 0f, 0f};
+  protected float[] pendingGeoPosition = null;
   protected float[] pendingPosition = null;
   protected float[] pendingRotation = {0f, 0f, 0f, 1f};
   protected float scale = 1.0f;
@@ -100,6 +101,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   // The world matrix is the single source of truth during simulation
   public float[] currentWorldMatrix = null;
 
+  private boolean placementFailed = false;
+  private static final int GEO_TRACKING_TIMEOUT_FRAMES = 300; // ~10 seconds at 30fps
+  private int geoTrackingWaitFrames = 0;
+
   protected NearestPlaneFinder planeFinder = null;
 
   public void setGroundLevel(float y) {
@@ -136,6 +141,9 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
 
   public void setPendingPosition(float[] pendingPosition) {
     this.pendingPosition = pendingPosition;
+  }
+  public void setPendingGeoPosition(float[] pendingGeoPosition) {
+    this.pendingGeoPosition = pendingGeoPosition;
   }
 
   public float[] getPendingPosition() {
@@ -397,30 +405,70 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     }
   }
 
-  public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder) {
-    Log.d("arnodebase", name + " tryCreateAnchor: anchor=" + (Anchor() != null)
-        + " pendingPosition=" + (pendingPosition == null ? "null" : arrayToString(pendingPosition)));
-
-    if (Anchor() != null || pendingPosition == null) return;
-    Log.w("Node", this.name + "has pending position " + pendingPosition[0] + " " + pendingPosition[1] + " " + pendingPosition[2] + " " );
-    Plane bestDetectedPlane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
-    if (session == null || bestDetectedPlane == null) {
-      return;   // not ready — retry next frame
+  public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder, Earth earth, int trackingType) {
+      if (placementFailed){
+        Log.d("arnodebase", name + " tryCreateAnchor anchor placement failed");
+      }
+      return;
     }
 
+    if (trackingType != ARView3D.TRACKING_GEO) {
+      Log.w("arnodebase","tryCreateAnchor is only SLAM " + trackingType);
+      slamAnchor(planeFinder);
+      return;
+    }
+
+    if (earth == null || earth.getTrackingState() != TrackingState.TRACKING) {
+      if (++geoTrackingWaitFrames >= GEO_TRACKING_TIMEOUT_FRAMES) {
+        Log.w("arnodebase", name + " Earth never reached TRACKING — falling back to InitialPosition");
+        geoTrackingWaitFrames = 0;
+        slamAnchor(planeFinder);
+        Log.w("arnodebase","tryCreateAnchor is only SLAM with wait");
+      }
+      return;
+    }
+
+    geoTrackingWaitFrames = 0;
+
+    if (pendingGeoPosition != null) {
+      geoAnchor(earth);
+      Log.w("arnodebase", " tryCreateAnchor pending geoAnchor");
+    } else if (pendingPosition != null) {
+      Log.w("arnodebase", name + "tryCreateAnchor GeoTracking enabled but no geo coordinates — falling back to InitialPosition");
+      slamAnchor(planeFinder);
+    } else {
+      cannotPlace("tryCreateAnchor no GeoCoordinates or InitialPosition set");
+    }
+  }
+
+  private void slamAnchor(NearestPlaneFinder planeFinder) {
+    if (pendingPosition == null) { cannotPlace("no InitialPosition set"); return; }
+    Plane plane = planeFinder.find(pendingPosition[0], pendingPosition[2]);
+    if (plane == null) return;
     try {
-        Pose newPose = new Pose(pendingPosition, pendingRotation);
-        Anchor(bestDetectedPlane.createAnchor(newPose));
-        pendingPosition = null;
-
-    } catch (com.google.ar.core.exceptions.NotTrackingException e) {
-      // Normal during VIO reset — silent, no log
-    } catch (com.google.ar.core.exceptions.ResourceExhaustedException e) {
-      Log.w("Node", "Anchor limit reached");
+      Anchor(plane.createAnchor(new Pose(pendingPosition, pendingRotation)));
+      Log.d("arnodebase", name + " placed and anchored via slam");
+      pendingPosition = null;
+    } catch (com.google.ar.core.exceptions.NotTrackingException ignored) {
     } catch (Exception e) {
-      Log.e("Node", "Anchor creation failed: "
-          + e.getClass().getSimpleName() + " " + e.getMessage());
+      Log.e("arnodebase", name + " SLAM anchor failed: " + e.getMessage());
     }
+  }
+
+  private void geoAnchor(Earth earth) {
+    try {
+      Anchor(earth.createAnchor(pendingGeoPosition[0], pendingGeoPosition[1], pendingGeoPosition[2], new float[]{0, 0, 0, 1}));
+      pendingGeoPosition = null;
+      Log.d("arnodebase", name + " placed and anchored via geo");
+    } catch (Exception e) {
+      Log.e("arnodebase", name + " geo anchor failed: " + e.getMessage());
+    }
+  }
+
+  private void cannotPlace(String reason) {
+    Log.e("arnodebase", name + " cannot be placed: " + reason);
+    placementFailed = true;
+    EventDispatcher.dispatchEvent(this, "NodePlacementFailed", name, reason);
   }
 
   @Override
@@ -447,6 +495,10 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   @Override
   @SimpleFunction(description = "Rotates the node to look at the (x,y,z) position in meters.")
   public void LookAtPosition(float x, float y, float z) {
+    if (session == null) {
+      Log.w("ARNodeBase", "null session");
+      return;
+    }
     if (anchor == null) {
       Log.w("ARNodeBase", "Cannot look at position - no anchor");
       return;
@@ -929,8 +981,11 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     this.anchor = a;
     if (a != null) {
       initWorldMatrixFromAnchor();
-      // Also set ground level from anchor's plane Y
-      GROUND_LEVEL = a.getPose().ty();
+      // Also set ground level from anchor's plane Y, but only if not from geo
+      float anchorY = a.getPose().ty();
+      if (Math.abs(anchorY) < 10f) {
+        GROUND_LEVEL = anchorY;
+      }
       if (this instanceof RollingDraggable) {
         currentWorldMatrix[13] = GROUND_LEVEL + ((RollingDraggable) this).getRollingRadius();
       }
@@ -999,7 +1054,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
       }
     }
     if (Anchor() == null) {
-      setPendingPosition(position.clone());
+      setPendingPosition(position.clone()); //mechanism by which designer properties are assigned when anchor is ready
     }
     fromPropertyPosition = position;
     Log.i("ARNodeBase", "Stored pose with position " + positionFromProperty);
@@ -1029,10 +1084,13 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     for (int i = 0; i < geoFloatArray.length; i++) {
       try {
         geoPosition[i] = Float.parseFloat(geoFloatArray[i]);
-        Log.i("ARNodeBase", "Initial position: " + geoPosition[i]);
+        Log.i("ARNodeBase", "Initial GEO position: " + geoPosition[i]);
       } catch (NumberFormatException e) {
-        Log.w("ARNodeBase", "Invalid number in position: " + geoFloatArray[i]);
+        Log.w("ARNodeBase", "Invalid number in geo position: " + geoFloatArray[i]);
       }
+    }
+    if (Anchor() == null) {
+      setPendingGeoPosition(geoPosition.clone()); //mechanism by which designer properties are assigned when anchor is ready
     }
     fromGeoCoordinates = geoPosition;
   }
@@ -1061,14 +1119,14 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
     return this.isGeoAnchorLocalized;
   }
 
-  // Property setter (called from iOS side to update state)
+  // Property setter (called from subclasses to update state)
   @SimpleProperty
   public void IsGeoLocalized(boolean localized) {
     this.isGeoAnchorLocalized = localized;
   }
 
   // Event fired when localization is confirmed
-  @SimpleEvent(description = "Fired when ARKit successfully resolves this node's geo anchor in world space")
+  @SimpleEvent(description = "Fired when ARCore/ARKit successfully resolves this node's geo anchor in world space")
   public void GeoAnchorLocalized() {
     EventDispatcher.dispatchEvent(this, "GeoAnchorLocalized");
   }
@@ -1726,6 +1784,10 @@ public void updateCollisionShape() {
 
 
   public void setRotationComponent(int component, float radians) {
+    if (session == null) {
+      Log.w("ARNodeBase", "Can't rotate component: null session");
+      return;
+    }
     if (anchor == null) return;
     float[] euler = quaternionToEulerAngles(anchor.getPose().getRotationQuaternion());
     euler[component] = radians;
