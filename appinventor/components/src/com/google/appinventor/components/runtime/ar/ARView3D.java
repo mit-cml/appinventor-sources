@@ -1519,9 +1519,9 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     }
 
     // Configure ARCore session
-    private void configureSession() {
+    private void configureSession(Session newSession) {
 
-        Config config = session.getConfig();
+        Config config = newSession.getConfig();
         //config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
         config.setLightEstimationMode(Config.LightEstimationMode.AMBIENT_INTENSITY);
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
@@ -1541,30 +1541,30 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         floorManager = new FloorPlaneManager();
 
         boolean isGeospatialSupported =
-            session.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
+            newSession.isGeospatialModeSupported(Config.GeospatialMode.ENABLED);
         Log.i(LOG_TAG, "ARCore: geospatial supported ? " + isGeospatialSupported);
 
         if (isGeospatialSupported && trackingType == TRACKING_GEO) {
             config.setGeospatialMode(Config.GeospatialMode.ENABLED);
         }
 
-        buildImageMarkerDatabase(config);
+        buildImageMarkerDatabase(newSession, config);
         try {
-            session.configure(config);
+            newSession.configure(config);
         } catch (com.google.ar.core.exceptions.GooglePlayServicesLocationLibraryNotLinkedException e) {
             Log.w(LOG_TAG, "Geospatial requires Play Services Location, not linked — disabling and retrying.");
             config.setGeospatialMode(Config.GeospatialMode.DISABLED);
-            session.configure(config);
+            newSession.configure(config);
         } catch (com.google.ar.core.exceptions.FineLocationPermissionNotGrantedException e) {
             Log.w(LOG_TAG, "Geospatial requires ACCESS_FINE_LOCATION, not granted — disabling and retrying.");
             config.setGeospatialMode(Config.GeospatialMode.DISABLED);
-            session.configure(config);
+            newSession.configure(config);
         }
 
-        configureDepth(config);
+        configureDepth(newSession, config);
 
     }
-    private void configureDepth(Config config) {
+    private void configureDepth(Session newSession, Config config) {
 
         Log.i(LOG_TAG, "configureDepth: lightMode=" + config.getLightEstimationMode()
             + " planeFinding=" + config.getPlaneFindingMode()
@@ -1575,7 +1575,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                 Config.DepthMode.AUTOMATIC, Config.DepthMode.RAW_DEPTH_ONLY}) {
                 config.setDepthMode(mode);
                 try {
-                    session.configure(config);
+                    newSession.configure(config);
                     isDepthSupported = true;
                     depthMode = mode;
                     Log.i(LOG_TAG, "Depth enabled: " + mode);
@@ -1588,11 +1588,11 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
         }
         config.setDepthMode(Config.DepthMode.DISABLED);
         try {
-            session.configure(config);
+            newSession.configure(config);
         } catch (com.google.ar.core.exceptions.GooglePlayServicesLocationLibraryNotLinkedException e) {
             Log.w(LOG_TAG, "Geospatial unavailable (missing location library) — retrying without it");
             config.setGeospatialMode(Config.GeospatialMode.DISABLED);
-            session.configure(config);
+            newSession.configure(config);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Session configure failed: " + e.getMessage());
             return;
@@ -1751,26 +1751,32 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
                     return;
                 }
 
-                session = new Session($context());
-                activeSession = session;
-                configureSession();
+                new Thread(() -> {
+                    try {
+                        Session newSession = new Session($context());
+                        configureSession(newSession);
+                        $form().runOnUiThread(() -> {
+                            session = newSession;
+                            activeSession = newSession;
+                            try {
+                                session.resume();
+                                depthSettings.setUseDepthForOcclusion(EnableOcclusion());
+                                displayRotationHelper.onResume();
+                                Log.d(LOG_TAG, "resume called");
+                            } catch (Exception e) {
+                                Log.e(LOG_TAG, "Failed to resume session: " + e.getMessage(), e);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, "Failed to create AR session: " + e.getMessage(), e);
+                    }
+                }, "ARSessionInit").start();
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Failed to create AR session", e);
                 return;
             }
         }
-        try {
-            session.resume();
-            Log.d(LOG_TAG, "resume called");
-            // Initialize renderers with ARCore session
-            //initializeFilamentAndRenderers();
-            depthSettings.setUseDepthForOcclusion(EnableOcclusion());
-            // Resume display rotation helper
-            displayRotationHelper.onResume();
 
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Failed to create AR session", e);
-        }
     }
 
 
@@ -2290,7 +2296,7 @@ public class ARView3D extends AndroidViewComponent implements Component, ARNodeC
     public boolean ShowAnchorGeometry() {
         return false;
     }
-    
+
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
     @SimpleProperty
     public void ShowPhysics(boolean showP) {
