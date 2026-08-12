@@ -10,15 +10,11 @@ import com.google.appinventor.components.runtime.ComponentContainer;
 
 import android.graphics.PointF;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.google.appinventor.components.runtime.ar.ImageMarker;
 import com.google.appinventor.components.runtime.ar.NearestPlaneFinder;
-import com.google.ar.core.Anchor;
-import com.google.ar.core.Plane;
-import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
+import com.google.ar.core.*;
 
 /**
  * Utilities used by the Augmented Reality components.
@@ -143,7 +139,7 @@ public final class AR3DFactory {
      float ZRotation();
      void ZRotation(float zRotation);
 
-     void tryCreateAnchorIfNeeded(NearestPlaneFinder finder);
+     void tryCreateAnchorIfNeeded(NearestPlaneFinder finder, Earth earth, int trackingType);
 
      float[] InitialRotation();
      void InitialRotation(String r);
