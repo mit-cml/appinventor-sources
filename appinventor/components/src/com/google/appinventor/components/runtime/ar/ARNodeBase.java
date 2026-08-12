@@ -406,6 +406,7 @@ public abstract class ARNodeBase implements ARNode, FollowsMarker {
   }
 
   public void tryCreateAnchorIfNeeded(NearestPlaneFinder planeFinder, Earth earth, int trackingType) {
+    if (Anchor() != null || placementFailed) {
       if (placementFailed){
         Log.d("arnodebase", name + " tryCreateAnchor anchor placement failed");
       }
