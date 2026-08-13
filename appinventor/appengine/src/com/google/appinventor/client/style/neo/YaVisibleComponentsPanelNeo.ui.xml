@@ -24,6 +24,8 @@
           <g:item value="1"><ui:text from="{messages.previewAndroidHolo}" /></g:item>
           <g:item value="2"><ui:text from="{messages.previewIOS13}" /></g:item>
         </g:ListBox>
+        <ai:Icon icon="translate" tooltip="{messages.i18nPreviewLanguage}" />
+        <g:ListBox ui:field="listboxI18nPreviewLanguage" title="{messages.i18nPreviewLanguage}" />
         <ai:Icon icon="visibility_off" tooltip="{messages.showInvisiblePropertyComponents}"/>
         <g:CheckBox ui:field="HiddenComponentsCheckbox" title="{messages.showHiddenComponentsCheckbox}" />
       </g:FlowPanel>

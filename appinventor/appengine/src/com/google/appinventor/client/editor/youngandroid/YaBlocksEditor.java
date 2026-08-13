@@ -305,4 +305,17 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     }
   }-*/;
 
+  // Send a best-effort Companion-only background command. Older Companions may not
+  // support i18n preview, so suppress runtime errors for this optional operation.
+  public static native void setI18nPreviewLanguage(String language, String translationsJson)/*-{
+    if (top.ReplState && (top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.CONNECTED ||
+                          top.ReplState.state == $wnd.Blockly.ReplMgr.rsState.EXTENSIONS)) {
+      var quotedLanguage = language ? $wnd.AI.Yail.quotifyForREPL(language) : "\"\"";
+      var quotedTranslations = translationsJson ? $wnd.AI.Yail.quotifyForREPL(translationsJson) : "\"\"";
+      var yail = "(I18nTranslationManager:setPreviewLanguageForCompanion "
+          + quotedLanguage + " " + quotedTranslations + ")";
+      $wnd.Blockly.ReplMgr.putYail(yail, null, null, null, true);
+    }
+  }-*/;
+
 }

@@ -22,6 +22,7 @@
             <g:item value="1"><ui:text from="{messages.previewAndroid4Devices}"/></g:item>
             <g:item value="2"><ui:text from="{messages.previewIOS}"/></g:item>
           </g:ListBox>
+          <g:ListBox ui:field="listboxI18nPreviewLanguage" title="{messages.i18nPreviewLanguage}" />
         </g:VerticalPanel>
     </g:VerticalPanel>
 </ui:UiBinder>

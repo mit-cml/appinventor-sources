@@ -345,7 +345,7 @@ Blockly.ReplMgr.putYail = (function() {
     };
     var engine = {
         // Enqueue form for the phone
-        'putYail' : function(code, block, success, failure) {
+        'putYail' : function(code, block, success, failure, suppressRuntimeError) {
             context = this;
             rs = top.ReplState;
             if (code === undefined) {      // This is a kludge. It lets us call putYail without args
@@ -381,7 +381,8 @@ Blockly.ReplMgr.putYail = (function() {
                 'code' : Blockly.ReplMgr.quoteUnicode(code), // Deal with unicode characters and kawa
                 'success' : success,
                 'failure' : failure,
-                'block' : block
+                'block' : block,
+                'suppressRuntimeError' : suppressRuntimeError
             });
             engine.pollphone(); // Trigger callback side
         },
@@ -653,7 +654,9 @@ Blockly.ReplMgr.putYail = (function() {
                 }
                 if (rs.state == Blockly.ReplMgr.rsState.CONNECTED) {
                     while ((work = rs.phoneState.phoneQueue.shift())) {
-                        if (!work.block) {
+                        if (work.suppressRuntimeError) {
+                            blockid = -3;
+                        } else if (!work.block) {
                             blockid = -1;
                         } else {
                             blockid = '"' + work.block.id + '"';
@@ -679,7 +682,10 @@ Blockly.ReplMgr.putYail = (function() {
                 return;
             }
             // We only get here if we are not using webrtc
-            if (top.loadAll && (rs.phoneState.assetQueue.length == 0)) { // If we have assets, do not chunk
+            if (top.loadAll && (rs.phoneState.assetQueue.length == 0) &&
+                !rs.phoneState.phoneQueue.some(function(item) {
+                    return item.suppressRuntimeError;
+                })) { // If we have assets, do not chunk
                 // First we load the assets, do not "chunk" them
                 var chunk;
                 var allcode = "";
@@ -724,7 +730,11 @@ Blockly.ReplMgr.putYail = (function() {
                 rs.phoneState.ioRunning = true; // We have work, indicate i/o running
             }
 
-            if (work.block) {
+            if (work.suppressRuntimeError) {
+                // -3 identifies optional background commands whose runtime errors
+                // should not be shown to the user.
+                blockid = "-3";
+            } else if (work.block) {
                 // Quote blockId as a string due to non-numeric identifiers generated from
                 // Blockly's soup {@see Blockly.utils.genUid.soup_}
                 blockid = '"' + work.block.id + '"';
@@ -1075,6 +1085,10 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                 console.log("Error in chunking, disabling.");
                 this.resetYail(true);
                 this.pollYail(Blockly.common.getMainWorkspace());
+            } else if (r.blockid == "-3") {
+                if (r.status != "OK") {
+                    console.log("Optional Companion command failed: " + r.value);
+                }
             } else if (r.blockid != "-1" && r.blockid != "-2") {
                 block = Blockly.common.getMainWorkspace().getBlockById(r.blockid);
                 if (block === null) {

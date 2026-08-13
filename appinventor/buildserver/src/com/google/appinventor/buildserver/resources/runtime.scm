@@ -3851,3 +3851,4 @@ Matrix implementation.
 ;; as well as learning which assets we need to load
 
 (define-alias AssetFetcher <com.google.appinventor.components.runtime.util.AssetFetcher>)
+(define-alias I18nTranslationManager <com.google.appinventor.components.runtime.util.I18nTranslationManager>)

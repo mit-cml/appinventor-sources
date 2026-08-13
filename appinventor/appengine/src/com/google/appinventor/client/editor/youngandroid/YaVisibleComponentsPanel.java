@@ -14,11 +14,16 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -37,6 +42,8 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
   protected final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };
   protected final ProjectEditor projectEditor;
   @UiField protected CheckBox HiddenComponentsCheckbox;
+  // A ListBox for i18n preview languages
+  @UiField public ListBox listboxI18nPreviewLanguage;
 
   /**
    * Creates new component design panel for visible components.
@@ -77,6 +84,17 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
         projectEditor.changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_PHONE_PREVIEW, val);
         changeFormPhonePreview(idx, val);
+      }
+    });
+    listboxI18nPreviewLanguage.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        String translationsJson = projectEditor.getProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS);
+
+        YaBlocksEditor.setI18nPreviewLanguage(
+            listboxI18nPreviewLanguage.getSelectedValue(), translationsJson);
       }
     });
     HiddenComponentsCheckbox.addClickHandler(new ClickHandler() {
@@ -221,6 +239,79 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
     listboxPhonePreview.setEnabled(enable);
   }
 
+  protected void refreshI18nPreviewLanguages() {
+    if (listboxI18nPreviewLanguage == null) {
+      return;
+    }
+
+    String previousValue = "";
+    if (listboxI18nPreviewLanguage.getItemCount() > 0) {
+      previousValue = listboxI18nPreviewLanguage.getSelectedValue();
+    }
+
+    listboxI18nPreviewLanguage.clear();
+    listboxI18nPreviewLanguage.addItem(Ode.MESSAGES.i18nPreviewDeviceLanguage(), "");
+
+    for (String language : getI18nPreviewLanguages()) {
+      listboxI18nPreviewLanguage.addItem(language, language);
+    }
+
+    for (int i = 0; i < listboxI18nPreviewLanguage.getItemCount(); i++) {
+      if (listboxI18nPreviewLanguage.getValue(i).equals(previousValue)) {
+        listboxI18nPreviewLanguage.setSelectedIndex(i);
+        return;
+      }
+    }
+
+    listboxI18nPreviewLanguage.setSelectedIndex(0);
+  }
+
+  private Set<String> getI18nPreviewLanguages() {
+    Set<String> languages = new TreeSet<String>();
+    String savedJson = projectEditor.getProjectSettingsProperty(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_I18N_TRANSLATIONS);
+
+    if (savedJson == null || savedJson.trim().length() == 0) {
+      return languages;
+    }
+
+    try {
+      JSONObject rootObject = JSONParser.parseStrict(savedJson).isObject();
+      if (rootObject == null) {
+        return languages;
+      }
+
+      JSONObject entries = getJsonObject(rootObject, "entries");
+      if (entries == null) {
+        return languages;
+      }
+
+      for (String key : entries.keySet()) {
+        JSONObject entry = getJsonObject(entries, key);
+        if (entry == null) {
+          continue;
+        }
+
+        JSONObject translations = getJsonObject(entry, "translations");
+        if (translations == null) {
+          continue;
+        }
+
+        languages.addAll(translations.keySet());
+      }
+    } catch (Exception e) {
+      LOG.warning("Unable to parse i18n translations for preview languages: " + e.getMessage());
+    }
+
+    return languages;
+  }
+
+  private JSONObject getJsonObject(JSONObject object, String key) {
+    JSONValue value = object.get(key);
+    return value == null ? null : value.isObject();
+  }
+
   public void focusCheckbox() {
     HiddenComponentsCheckbox.setFocus(true);
   }
@@ -233,6 +324,7 @@ public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockF
     boolean effectiveState = (state != null) ? state : false;
     LOG.info("Setting checkbox state for " + form.getTitle() + " to " + effectiveState);
     HiddenComponentsCheckbox.setValue(effectiveState);
+    refreshI18nPreviewLanguages();
   }
 
   public void showHiddenComponentsCheckbox() {
