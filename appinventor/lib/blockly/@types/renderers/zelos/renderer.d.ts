@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../../block_svg.js';
+import type { RenderedConnection } from '../../rendered_connection.js';
 import type { BlockStyle } from '../../theme.js';
 import type { RenderInfo as BaseRenderInfo } from '../common/info.js';
 import { Renderer as BaseRenderer } from '../common/renderer.js';
@@ -60,5 +61,12 @@ export declare class Renderer extends BaseRenderer {
      * @returns The constant provider.
      */
     getConstants(): ConstantProvider;
+    /**
+     * Determine whether or not to highlight a connection.
+     *
+     * @param connection The connection to determine whether or not to highlight.
+     * @returns True if we should highlight the connection.
+     */
+    shouldHighlightConnection(connection: RenderedConnection): boolean;
 }
 //# sourceMappingURL=renderer.d.ts.map

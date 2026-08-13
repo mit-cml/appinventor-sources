@@ -74,11 +74,31 @@ export declare abstract class Icon implements IIcon, IContextMenu {
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
     /**
+     * Handles the user acting on this icon via keyboard navigation.
+     * Performs the same action as a click would, and focuses this icon's bubble
+     * if it has one.
+     */
+    performAction(): void;
+    /**
      * Returns the block that this icon is attached to.
      *
      * @returns The block this icon is attached to.
      */
     getSourceBlock(): Block;
     showContextMenu(e: PointerEvent): void;
+    /**
+     * Recomputes the ARIA label and role for this icon. This is automatically called
+     * during initialization, but implementations may find it useful to call this if
+     * the icon's label should be changed.
+     */
+    protected recomputeAriaContext(): void;
+    /**
+     * Returns the ARIA label to use for this icon (defaults to null). Note that this
+     * method will only be called during initialization by default, so dynamic changes
+     * to the icon's ARIA label need to be applied by calling recomputeAriaContext.
+     *
+     * @returns The ARIA label to use for this icon, or null to use a default.
+     */
+    protected getAriaLabel(): string | null;
 }
 //# sourceMappingURL=icon.d.ts.map

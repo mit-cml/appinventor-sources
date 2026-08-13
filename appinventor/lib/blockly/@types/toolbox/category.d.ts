@@ -137,6 +137,12 @@ export declare class ToolboxCategory extends ToolboxItem implements ISelectableT
      */
     protected getColour_(categoryDef: CategoryInfo): string;
     /**
+     * Returns the colour of this category.
+     *
+     * @internal
+     */
+    getColour(): string;
+    /**
      * Sets the colour for the category using the style name and returns the new
      * colour as a hex string.
      *
@@ -229,6 +235,11 @@ export declare class ToolboxCategory extends ToolboxItem implements ISelectableT
     getName(): string;
     getParent(): ICollapsibleToolboxItem | null;
     getDiv(): HTMLDivElement | null;
+    /**
+     * Handles this toolbox category gaining focus by informing its parent
+     * toolbox that it has been selected.
+     */
+    onNodeFocus(): void;
     /**
      * Gets the contents of the category. These are items that are meant to be
      * displayed in the flyout.

@@ -34,8 +34,8 @@ export declare class FocusableTreeTraverser {
      * the specified IFocusableTree.
      *
      * If the element exists within the specified tree's DOM structure but does
-     * not directly correspond to a node, the nearest parent node (or the tree's
-     * root) will be returned to represent the provided element.
+     * not directly correspond to a node and is not a tab stop, the nearest parent
+     * node (or the tree's root) will be returned to represent the provided element.
      *
      * If the tree contains another nested IFocusableTree, the nested tree may be
      * traversed but its nodes will never be returned here per the contract of

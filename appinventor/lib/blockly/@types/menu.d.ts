@@ -41,6 +41,8 @@ export declare class Menu {
     private element;
     /** ARIA name for this menu. */
     private roleName;
+    /** The menu's ID. */
+    private id;
     /** Constructs a new Menu instance. */
     constructor();
     /**
@@ -166,5 +168,6 @@ export declare class Menu {
      * @returns The MenuItem objects displayed in this menu.
      */
     private getMenuItems;
+    getId(): string;
 }
 //# sourceMappingURL=menu.d.ts.map

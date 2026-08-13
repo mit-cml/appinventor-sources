@@ -3,9 +3,9 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import type { INavigationPolicy } from '../interfaces/i_navigation_policy.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
+import type { IFocusableNode } from '../../interfaces/i_focusable_node.js';
+import type { INavigationPolicy } from '../../interfaces/i_navigation_policy.js';
+import { WorkspaceSvg } from '../../workspace_svg.js';
 /**
  * Set of rules controlling keyboard navigation from a workspace.
  */
@@ -38,6 +38,13 @@ export declare class WorkspaceNavigationPolicy implements INavigationPolicy<Work
      * @returns Null.
      */
     getPreviousSibling(_current: WorkspaceSvg): IFocusableNode | null;
+    /**
+     * Returns the row ID of the given workspace.
+     *
+     * @param current The workspace to retrieve the row ID of.
+     * @returns The row ID of the given workspace.
+     */
+    getRowId(current: WorkspaceSvg): string;
     /**
      * Returns whether or not the given workspace can be navigated to.
      *

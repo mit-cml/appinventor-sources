@@ -3,12 +3,6 @@
  * Copyright 2012 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Text input field.
- *
- * @class
- */
-import './events/events_block_change.js';
 import { Field, FieldConfig, FieldValidator } from './field.js';
 import { Size } from './utils/size.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
@@ -21,7 +15,7 @@ type InputTypes = string | number;
 /**
  * Abstract class for an editable input field.
  *
- * @typeParam T - The value stored on the field.
+ * @template T - The value stored on the field.
  * @internal
  */
 export declare abstract class FieldInput<T extends InputTypes> extends Field<string | T> {
@@ -40,6 +34,10 @@ export declare abstract class FieldInput<T extends InputTypes> extends Field<str
      * True if the value currently displayed in the field's editory UI is valid.
      */
     protected isTextValid_: boolean;
+    /**
+     * The warning icon to display on invalid input
+     */
+    protected warningIcon: SVGElement | null;
     /**
      * The intial value of the field when the user opened an editor to change its
      * value. When the editor is disposed, an event will be fired that uses this
@@ -78,13 +76,15 @@ export declare abstract class FieldInput<T extends InputTypes> extends Field<str
      *     to abort the change.
      * @param config A map of options used to configure the field.
      *     See the [field creation documentation]{@link
-     * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/text-input#creation}
+     * https://docs.blockly.com/guides/create-custom-blocks/fields/built-in-fields/text-input/#creation}
      * for a list of properties this parameter supports.
      */
     constructor(value?: string | typeof Field.SKIP_SETUP, validator?: FieldInputValidator<T> | null, config?: FieldInputConfig);
     protected configure_(config: FieldInputConfig): void;
     initView(): void;
     isFullBlockField(): boolean;
+    /** Creates the DOM elements for the invalid input warning icon. */
+    protected createWarningIcon(): SVGElement | null;
     /**
      * Called by setValue if the text input is not valid. If the field is
      * currently being edited it reverts value of the field to the previous
@@ -130,6 +130,7 @@ export declare abstract class FieldInput<T extends InputTypes> extends Field<str
      * block field or not.
      */
     protected render_(): void;
+    protected renderWarningIcon(rtl: boolean, isValid: boolean): void;
     /**
      * Set whether this field is spellchecked by the browser.
      *
@@ -218,8 +219,8 @@ export declare abstract class FieldInput<T extends InputTypes> extends Field<str
     protected resizeEditor_(): void;
     /**
      * Handles repositioning the WidgetDiv used for input fields when the
-     * workspace is resized. Will bump the block into the viewport and update the
-     * position of the text input if necessary.
+     * workspace is resized. Scrolls this field into view, then updates the
+     * position of the text input.
      *
      * @returns True for rendered workspaces, as we never want to hide the widget
      *     div.
@@ -263,6 +264,29 @@ export declare abstract class FieldInput<T extends InputTypes> extends Field<str
      * @returns The value to store.
      */
     protected getValueFromEditorText_(text: string): any;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string | null;
+    /**
+     * Customizes the label for this field to include "editable" if it applies.
+     */
+    recomputeAriaContext(): boolean;
 }
 /**
  * Config options for the input field.
@@ -276,7 +300,7 @@ export interface FieldInputConfig extends FieldConfig {
  * A function that is called to validate changes to the field's value before
  * they are set.
  *
- * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/validators#return_values}
+ * @see {@link https://docs.blockly.com/guides/create-custom-blocks/fields/validators/#return-values}
  * @param newValue The value to be validated.
  * @returns One of three instructions for setting the new value: `T`, `null`,
  * or `undefined`.

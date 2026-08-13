@@ -19,7 +19,6 @@ import type { ISerializer } from './interfaces/i_serializer.js';
 import type { IToolbox } from './interfaces/i_toolbox.js';
 import type { IVariableMap } from './interfaces/i_variable_map.js';
 import type { IVariableModel, IVariableModelStatic, IVariableState } from './interfaces/i_variable_model.js';
-import type { LineCursor } from './keyboard_nav/line_cursor.js';
 import type { Options } from './options.js';
 import type { Renderer } from './renderers/common/renderer.js';
 import type { Theme } from './theme.js';
@@ -50,7 +49,6 @@ export declare class Type<_T> {
     toString(): string;
     static CONNECTION_CHECKER: Type<IConnectionChecker>;
     static CONNECTION_PREVIEWER: Type<IConnectionPreviewer>;
-    static CURSOR: Type<LineCursor>;
     static EVENT: Type<Abstract>;
     static FIELD: Type<Field<any>>;
     static INPUT: Type<Input>;

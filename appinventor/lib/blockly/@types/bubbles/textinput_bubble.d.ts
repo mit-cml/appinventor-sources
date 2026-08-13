@@ -43,6 +43,7 @@ export declare class TextInputBubble extends Bubble {
     private editable;
     /** View responsible for supporting text editing. */
     private editor;
+    private readonly textChangeListener;
     /**
      * @param workspace The workspace this bubble belongs to.
      * @param anchor The anchor location of the thing this bubble is attached to.
@@ -98,5 +99,14 @@ export declare class TextInputBubble extends Bubble {
      * @internal
      */
     getEditor(): CommentEditor;
+    /**
+     * Handles the user acting on this bubble via keyboard navigation by focusing
+     * the comment editor.
+     */
+    performAction(): void;
+    /**
+     * Dispose of this bubble.
+     */
+    dispose(): void;
 }
 //# sourceMappingURL=textinput_bubble.d.ts.map

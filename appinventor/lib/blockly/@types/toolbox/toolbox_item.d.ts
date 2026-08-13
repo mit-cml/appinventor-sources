@@ -105,5 +105,9 @@ export declare class ToolboxItem implements IToolboxItem {
     onNodeBlur(): void;
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
+    /**
+     * Returns the toolbox this toolbox item belongs to.
+     */
+    getParentToolbox(): IToolbox;
 }
 //# sourceMappingURL=toolbox_item.d.ts.map

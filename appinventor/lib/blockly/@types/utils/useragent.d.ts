@@ -11,4 +11,5 @@ export declare const IPAD: boolean;
 export declare const IPHONE: boolean;
 export declare const MAC: boolean;
 export declare const MOBILE: boolean;
+export declare const APPLE: boolean;
 //# sourceMappingURL=useragent.d.ts.map

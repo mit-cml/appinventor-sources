@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../../block_svg.js';
-import type { Connection } from '../../connection.js';
 import type { BlockStyle } from '../../theme.js';
 import { PathObject as BasePathObject } from '../common/path_object.js';
 import type { ConstantProvider } from './constants.js';
@@ -40,8 +39,6 @@ export declare class PathObject extends BasePathObject {
     applyColour(block: BlockSvg): void;
     flipRTL(): void;
     updateSelected(enable: boolean): void;
-    updateReplacementFade(enable: boolean): void;
-    updateShapeForInputHighlight(conn: Connection, enable: boolean): void;
     /**
      * Method that's called when the drawer is about to draw the block.
      */

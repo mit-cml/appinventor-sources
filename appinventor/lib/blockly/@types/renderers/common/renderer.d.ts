@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../../block_svg.js';
-import { Connection } from '../../connection.js';
 import type { IRegistrable } from '../../interfaces/i_registrable.js';
+import type { RenderedConnection } from '../../rendered_connection.js';
 import type { BlockStyle, Theme } from '../../theme.js';
 import { ConstantProvider } from './constants.js';
 import { Drawer } from './drawer.js';
@@ -113,10 +113,10 @@ export declare class Renderer implements IRegistrable {
     /**
      * Determine whether or not to highlight a connection.
      *
-     * @param _conn The connection to determine whether or not to highlight.
+     * @param connection The connection to determine whether or not to highlight.
      * @returns True if we should highlight the connection.
      */
-    shouldHighlightConnection(_conn: Connection): boolean;
+    shouldHighlightConnection(connection: RenderedConnection): boolean;
     /**
      * Checks if an orphaned block can connect to the "end" of the topBlock's
      * block-clump. If the clump is a row the end is the last input. If the clump

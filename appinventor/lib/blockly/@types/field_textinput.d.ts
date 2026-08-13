@@ -8,7 +8,6 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import { Field } from './field.js';
 import { FieldInput, FieldInputConfig, FieldInputValidator } from './field_input.js';
 /**
@@ -26,7 +25,7 @@ export declare class FieldTextInput extends FieldInput<string> {
      *     to abort the change.
      * @param config A map of options used to configure the field.
      *     See the [field creation documentation]{@link
-     * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/text-input#creation}
+     * https://docs.blockly.com/guides/create-custom-blocks/fields/built-in-fields/text-input/#creation}
      * for a list of properties this parameter supports.
      */
     constructor(value?: string | typeof Field.SKIP_SETUP, validator?: FieldTextInputValidator | null, config?: FieldTextInputConfig);
@@ -48,6 +47,16 @@ export declare class FieldTextInput extends FieldInput<string> {
      * @internal
      */
     static fromJson(options: FieldTextInputFromJsonConfig): FieldTextInput;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
 }
 /**
  *  Config options for the text input field.
@@ -63,7 +72,7 @@ export interface FieldTextInputFromJsonConfig extends FieldTextInputConfig {
  * A function that is called to validate changes to the field's value before
  * they are set.
  *
- * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/validators#return_values}
+ * @see {@link https://docs.blockly.com/guides/create-custom-blocks/fields/validators/#return-values}
  * @param newValue The value to be validated.
  * @returns One of three instructions for setting the new value: `T`, `null`,
  * or `undefined`.

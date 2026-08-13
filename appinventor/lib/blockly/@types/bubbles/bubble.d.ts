@@ -3,6 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import { IBoundedElement } from '../interfaces/i_bounded_element.js';
 import { IBubble } from '../interfaces/i_bubble.js';
 import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
 import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
@@ -13,11 +14,17 @@ import { Rect } from '../utils/rect.js';
 import { Size } from '../utils/size.js';
 import { WorkspaceSvg } from '../workspace_svg.js';
 /**
+ * Represents a either a string or a function that, when called, can provide a
+ * custom ARIA string to represent a bubble, or null if the default fallback
+ * should be used. See setAriaLabelProvider for more context.
+ */
+export type AriaLabelProvider = string | ((bubble: Bubble) => string | null);
+/**
  * The abstract pop-up bubble class. This creates a UI that looks like a speech
  * bubble, where it has a "tail" that points to the block, and a "head" that
  * displays arbitrary svg elements.
  */
-export declare abstract class Bubble implements IBubble, ISelectable, IFocusableNode {
+export declare abstract class Bubble implements IBubble, ISelectable, IFocusableNode, IBoundedElement {
     readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
@@ -65,6 +72,7 @@ export declare abstract class Bubble implements IBubble, ISelectable, IFocusable
     private relativeLeft;
     private dragStrategy;
     private focusableElement;
+    private ariaLabelProvider;
     /**
      * @param workspace The workspace this bubble belongs to.
      * @param anchor The anchor location of the thing this bubble is attached to.
@@ -127,6 +135,14 @@ export declare abstract class Bubble implements IBubble, ISelectable, IFocusable
      */
     moveTo(x: number, y: number): void;
     /**
+     * Moves the bubble by the given amounts in the x and y directions.
+     *
+     * @param dx The distance to move along the x axis.
+     * @param dy The distance to move along the y axis.
+     * @param _reason A description of why this move is happening.
+     */
+    moveBy(dx: number, dy: number, _reason?: string[]): void;
+    /**
      * Positions the bubble "optimally" so that the most of it is visible and
      * it does not overlap the rect (if provided).
      */
@@ -182,6 +198,12 @@ export declare abstract class Bubble implements IBubble, ISelectable, IFocusable
     bringToFront(): boolean;
     /** @internal */
     getRelativeToSurfaceXY(): Coordinate;
+    /**
+     * Returns the bounds of this bubble.
+     *
+     * @returns A bounding box for this bubble.
+     */
+    getBoundingRectangle(): Rect;
     /** @internal */
     getSvgRoot(): SVGElement;
     /**
@@ -201,7 +223,7 @@ export declare abstract class Bubble implements IBubble, ISelectable, IFocusable
     /** Returns whether this bubble is movable or not. */
     isMovable(): boolean;
     /** Starts a drag on the bubble. */
-    startDrag(): void;
+    startDrag(): IBubble;
     /** Drags the bubble to the given location. */
     drag(newLoc: Coordinate): void;
     /** Ends the drag on the bubble. */
@@ -224,5 +246,37 @@ export declare abstract class Bubble implements IBubble, ISelectable, IFocusable
      * Returns the object that owns/hosts this bubble, if any.
      */
     getOwner(): (IHasBubble & IFocusableNode) | undefined;
+    /**
+     * Recomputes the ARIA label and role for this bubble. This is automatically called
+     * during initialization, but implementations may find it useful to call this if
+     * the bubble's label should be changed.
+     *
+     * Bubbles use a default non-specific label unless they're customized otherwise
+     * which is the responsibility of the bubble's owner rather than bubble
+     * implementations. Customization can be done via setAriaLabelProvider.
+     */
+    protected recomputeAriaContext(): void;
+    /**
+     * Sets a custom ARIA label provider for this bubble, or null if it should be reset
+     * to use the default method.
+     *
+     * Bubbles do not compute ARIA labels specifically to their implementation since
+     * they can be rather general-purpose. Instead, owners of the specific bubble
+     * instance (such as an icon) are responsible for defining custom label providers
+     * for their bubbles.
+     *
+     * Note that calling this isn't sufficient for it to actually be used.
+     * recomputeAriaContext will likely also need to be called to actually apply the
+     * custom label to the bubble's focusable element.
+     */
+    setAriaLabelProvider(provider: AriaLabelProvider | null): void;
+    /**
+     * Returns the ARIA label to use for this bubble based on the provider set via
+     * setAriaLabelProvider. This will return null if the provider is absent or
+     * returns null.
+     *
+     * @returns The ARIA label to use for this bubble, or null if one is not provided.
+     */
+    getAriaLabel(): string | null;
 }
 //# sourceMappingURL=bubble.d.ts.map

@@ -14,6 +14,15 @@ import { RightConnectionShape } from './measurables/row_elements.js';
 import { TopRow } from './measurables/top_row.js';
 import type { Renderer } from './renderer.js';
 /**
+ * Horizontal inset from a round output-cap tip needed so content at the given
+ * vertical distance from the centerline stays inside the circle.
+ *
+ * @param radius Round cap radius (dynamic connection width).
+ * @param distanceFromCenter Vertical distance from the cap centerline.
+ * @returns Clearance from the tip to the content edge.
+ */
+export declare function roundCapClearance(radius: number, distanceFromCenter: number): number;
+/**
  * An object containing all sizing information needed to draw this block.
  *
  * This measure pass does not propagate changes to the block (although fields

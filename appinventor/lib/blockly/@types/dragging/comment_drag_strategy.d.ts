@@ -3,16 +3,16 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { RenderedWorkspaceComment } from '../comments.js';
-import { IDragStrategy } from '../interfaces/i_draggable.js';
-import { Coordinate } from '../utils.js';
+import type { RenderedWorkspaceComment } from '../comments.js';
+import type { IDragStrategy } from '../interfaces/i_draggable.js';
+import type { Coordinate } from '../utils.js';
 export declare class CommentDragStrategy implements IDragStrategy {
     private comment;
     private startLoc;
     private workspace;
     constructor(comment: RenderedWorkspaceComment);
     isMovable(): boolean;
-    startDrag(): void;
+    startDrag(): RenderedWorkspaceComment;
     drag(newLoc: Coordinate): void;
     endDrag(): void;
     /** Fire a UI event at the start of a comment drag. */

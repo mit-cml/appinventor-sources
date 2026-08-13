@@ -3,9 +3,9 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Icon } from '../icons/icon.js';
-import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import type { INavigationPolicy } from '../interfaces/i_navigation_policy.js';
+import { Icon } from '../../icons/icon.js';
+import type { IFocusableNode } from '../../interfaces/i_focusable_node.js';
+import type { INavigationPolicy } from '../../interfaces/i_navigation_policy.js';
 /**
  * Set of rules controlling keyboard navigation from an icon.
  */
@@ -13,10 +13,10 @@ export declare class IconNavigationPolicy implements INavigationPolicy<Icon> {
     /**
      * Returns the first child of the given icon.
      *
-     * @param current The icon to return the first child of.
+     * @param _current The icon to return the first child of.
      * @returns Null.
      */
-    getFirstChild(current: Icon): IFocusableNode | null;
+    getFirstChild(_current: Icon): IFocusableNode | null;
     /**
      * Returns the parent of the given icon.
      *
@@ -38,6 +38,13 @@ export declare class IconNavigationPolicy implements INavigationPolicy<Icon> {
      * @returns The icon's previous icon, if any.
      */
     getPreviousSibling(current: Icon): IFocusableNode | null;
+    /**
+     * Returns the row ID of the given icon.
+     *
+     * @param current The icon to retrieve the row ID of.
+     * @returns The row ID of the given icon.
+     */
+    getRowId(current: Icon): string;
     /**
      * Returns whether or not the given icon can be navigated to.
      *

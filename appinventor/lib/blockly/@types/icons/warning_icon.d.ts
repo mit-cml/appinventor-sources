@@ -73,5 +73,13 @@ export declare class WarningIcon extends Icon implements IHasBubble {
      *     I.E. the block that owns this icon.
      */
     private getBubbleOwnerRect;
+    /**
+     * Returns the ARIA label to use for this icon (defaults to null). Note that this
+     * method will only be called during initialization by default, so dynamic changes
+     * to the icon's ARIA label need to be applied by calling recomputeAriaContext.
+     *
+     * @returns The ARIA label to use for this icon, or null to use a default.
+     */
+    protected getAriaLabel(): string | null;
 }
 //# sourceMappingURL=warning_icon.d.ts.map

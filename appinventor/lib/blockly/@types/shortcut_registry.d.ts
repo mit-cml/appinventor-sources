@@ -21,7 +21,7 @@ export declare class ShortcutRegistry {
     static readonly registry: ShortcutRegistry;
     /** Registry of all keyboard shortcuts, keyed by name of shortcut. */
     private shortcuts;
-    /** Map of key codes to an array of shortcut names. */
+    /** Map of key codes to a set of shortcut names. */
     private keyMap;
     /** Resets the existing ShortcutRegistry singleton. */
     private constructor();
@@ -223,6 +223,12 @@ export declare namespace ShortcutRegistry {
          * name.
          */
         allowCollision?: boolean;
+        /**
+         * Display text for the shortcut. This is not used in core but may
+         * be used by plugins or applications to provide a user-facing
+         * label for the shortcut.
+         */
+        displayText?: string | (() => string);
     }
     /** Supported modifiers. */
     enum modifierKeys {

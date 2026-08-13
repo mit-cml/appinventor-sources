@@ -8,7 +8,6 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import type { Block } from './block.js';
 import { Field, FieldConfig } from './field.js';
 import { FieldDropdown, FieldDropdownValidator, MenuGenerator, MenuOption } from './field_dropdown.js';
@@ -52,7 +51,7 @@ export declare class FieldVariable extends FieldDropdown {
      *     is not provided.
      * @param config A map of options used to configure the field.
      *    See the [field creation documentation]{@link
-     * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/variable#creation}
+     * https://docs.blockly.com/guides/create-custom-blocks/fields/built-in-fields/variable/#creation}
      * for a list of properties this parameter supports.
      */
     constructor(varName: string | null | typeof Field.SKIP_SETUP, validator?: FieldVariableValidator, variableTypes?: string[] | null, defaultType?: string, config?: FieldVariableConfig);
@@ -228,6 +227,15 @@ export declare class FieldVariable extends FieldDropdown {
      * @returns Array of variable names/id tuples.
      */
     static dropdownCreate(this: FieldVariable): MenuOption[];
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string;
 }
 /**
  * Config options for the variable field.
@@ -246,7 +254,7 @@ export interface FieldVariableFromJsonConfig extends FieldVariableConfig {
  * A function that is called to validate changes to the field's value before
  * they are set.
  *
- * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/validators#return_values}
+ * @see {@link https://docs.blockly.com/guides/create-custom-blocks/fields/validators/#return-values}
  * @param newValue The value to be validated.
  * @returns One of three instructions for setting the new value: `T`, `null`,
  * or `undefined`.

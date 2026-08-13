@@ -3,14 +3,6 @@
  * Copyright 2011 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * The class representing one block.
- *
- * @class
- */
-import './events/events_block_change.js';
-import './events/events_block_create.js';
-import './events/events_block_delete.js';
 import { Connection } from './connection.js';
 import { ConnectionType } from './connection_type.js';
 import type { Abstract } from './events/events_abstract.js';
@@ -149,7 +141,7 @@ export declare class Block {
      * @internal
      */
     initialized: boolean;
-    private readonly xy;
+    protected readonly xy: Coordinate;
     isInFlyout: boolean;
     isInMutator: boolean;
     RTL: boolean;
@@ -174,6 +166,8 @@ export declare class Block {
     type: string;
     inputsInlineDefault?: boolean;
     workspace: Workspace;
+    /** A custom provider for generating the aria role description for this block. */
+    private ariaRoleDescriptionProvider;
     /**
      * @param workspace The block's workspace.
      * @param prototypeName Name of the language object containing type-specific
@@ -455,7 +449,25 @@ export declare class Block {
      */
     isDisposed(): boolean;
     /**
-     * @returns True if this block is a value block with a single editable field.
+     * Determines and returns the full-block field for this block, or null if there isn't one
+     * and this block can't be considered a singleton field block.
+     *
+     * Note that this method is unreliable if a block contains a single field that
+     * hasn't been initialized/rendered yet.
+     *
+     * @returns The full-block field this block contains, or null if it doesn't contain one.
+     * @internal
+     */
+    getFullBlockField(): Field<any> | null;
+    /**
+     * A block is a simple reporter if it has an output connection and exactly one field.
+     * In some renderers, simple reporters are rendered differently from other blocks.
+     * Being a simple reporter block is a prerequisite to the single field rendering itself
+     * as a "full-block field", but it is not sufficient, as not all fields or renderers use
+     * this special rendering. Use `getFullBlockField` to determine if the block is rendered
+     * as a "full-block field block".
+     *
+     * @returns True if this block is a value block with a single field.
      * @internal
      */
     isSimpleReporter(): boolean;
@@ -548,14 +560,7 @@ export declare class Block {
     /**
      * Return all variables referenced by this block.
      *
-     * @returns List of variable ids.
-     */
-    getVars(): string[];
-    /**
-     * Return all variables referenced by this block.
-     *
      * @returns List of variable models.
-     * @internal
      */
     getVarModels(): IVariableModel<IVariableState>[];
     /**
@@ -695,6 +700,23 @@ export declare class Block {
      * @param collapsed True if collapsed.
      */
     setCollapsed(collapsed: boolean): void;
+    /**
+     * Set a custom aria role description provider for this block. If not set,
+     * uses a default provider based on the block's properties (e.g. whether it has
+     * inputs, outputs, etc.).
+     *
+     * @param description The description or function to provide the description.
+     *   If a string, we'll replace message references in the string, e.g.
+     *   `%{BKY_CUSTOM_MESSAGE}` will be replaced with the value of
+     *   `Blockly.Msg['CUSTOM_MESSAGE']`.}'
+     */
+    setAriaRoleDescriptionProvider(description: string | (() => string)): void;
+    /**
+     * @returns The string to use as the role description for this block. If a
+     *    custom provider has been set, use that. Otherwise, return a default
+     *    description based on the block's properties.
+     */
+    getAriaRoleDescription(): string;
     /**
      * Create a human-readable text representation of this block and any children.
      *

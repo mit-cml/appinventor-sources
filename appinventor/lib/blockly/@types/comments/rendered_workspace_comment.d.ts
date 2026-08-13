@@ -83,7 +83,7 @@ export declare class RenderedWorkspaceComment extends WorkspaceComment implement
     /** Returns whether this comment is movable or not. */
     isMovable(): boolean;
     /** Starts a drag on the comment. */
-    startDrag(): void;
+    startDrag(): RenderedWorkspaceComment;
     /** Drags the comment to the given location. */
     drag(newLoc: Coordinate): void;
     /** Ends the drag on the comment. */
@@ -117,5 +117,10 @@ export declare class RenderedWorkspaceComment extends WorkspaceComment implement
     onNodeBlur(): void;
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
+    /**
+     * Handles the user acting on this comment via keyboard navigation.
+     * Expands the comment and focuses its editor.
+     */
+    performAction(): void;
 }
 //# sourceMappingURL=rendered_workspace_comment.d.ts.map

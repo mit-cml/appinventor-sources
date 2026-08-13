@@ -37,14 +37,12 @@ export declare const onCreateVariableButtonClick_Number: typeof numberButtonClic
 declare function colourButtonClickHandler(button: FlyoutButton): void;
 export declare const onCreateVariableButtonClick_Colour: typeof colourButtonClickHandler;
 /**
- * Internal wrapper that returns the contents of the dynamic variables category.
+ * Construct the elements (blocks and button) required by the flyout for the
+ * dynamic variables category.
  *
- * @internal
- * @param workspace The workspace to populate variable blocks for.
+ * @returns List of flyout contents as JSON.
  */
-export declare function internalFlyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
-export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: true): Element[];
-export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: false): FlyoutItemInfo[];
+export declare function flyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
 /**
  * Construct the blocks required by the flyout for the variable category.
  *
