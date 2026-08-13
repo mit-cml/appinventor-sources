@@ -88,6 +88,16 @@ public class ListDataModel {
     shiftSelectionForInsert(index, newItems.size());
   }
 
+  /**
+   * Replaces the item at the given index. Nothing moves, so the indexes around it are untouched,
+   * but the replaced row loses its selection: a different item occupies that position now, so a
+   * selection pointing there no longer refers to what the user picked.
+   */
+  public void set(int index, Object item) {
+    items.set(index, item);
+    selectedItems.remove(Integer.valueOf(index));
+  }
+
   public void remove(int index) {
     items.remove(index);
     dropAndShiftSelectionForRemove(index);

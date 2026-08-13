@@ -1029,6 +1029,13 @@ This is a visible component that displays a list of text and image elements in y
 {:id="ListView.RemoveItemAtIndex" class="method"} <i/> RemoveItemAtIndex(*index*{:.number})
 : Removes Item from list at a given index
 
+{:id="ListView.UpdateItemAtIndex" class="method"} <i/> UpdateItemAtIndex(*index*{:.number},*mainText*{:.text},*detailText*{:.text},*imageName*{:.text})
+: Replaces the item at the given index. `MainText` is required; `DetailText` and `ImageName`
+ are used only by the layouts that show them.
+
+ The row stops being selected, because a different item occupies that position afterwards and
+ a selection pointing there would no longer refer to what the user picked.
+
 ## Notifier  {#Notifier}
 
 The Notifier component displays alert messages and creates Android log entries through

@@ -1674,6 +1674,10 @@ public final class YoungAndroidFormUpgrader {
       // Added SelectedItems property.
       srcCompVersion = 12;
     }
+    if (srcCompVersion < 13) {
+      // Added UpdateItemAtIndex method.
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 

@@ -242,6 +242,45 @@ public class ListViewTest extends RobolectricTestBase {
     assertEquals(0, listView.SelectedItems().size());
   }
 
+  /**
+   * Replacing an item leaves the rows around it alone, but the replaced row stops being selected:
+   * a different item occupies that position afterwards, so a selection pointing there would no
+   * longer refer to what the user picked.
+   */
+  @Test
+  public void testUpdateItemAtIndexClearsThatRowsSelection() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe");
+    listView.Height(200);
+    listView.Width(320);
+    listView.SelectionIndex(3);  // cantaloupe
+
+    listView.UpdateItemAtIndex(1, "apricot", "", "");  // a row the user did not pick
+    assertEquals("apricot", listView.Elements().get(0));
+    assertEquals(3, listView.SelectionIndex());
+    assertEquals("cantaloupe", listView.Selection());
+
+    listView.UpdateItemAtIndex(3, "cherry", "", "");  // the selected row
+    assertEquals("cherry", listView.Elements().get(2));
+    assertEquals(0, listView.SelectionIndex());
+    assertEquals("", listView.Selection());
+  }
+
+  /** An index outside the list is reported as an error and leaves the items untouched. */
+  @Test
+  public void testUpdateItemAtIndexOutOfBoundsLeavesTheListAlone() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana");
+    listView.Height(200);
+    listView.Width(320);
+
+    listView.UpdateItemAtIndex(3, "cherry", "", "");
+
+    assertEquals(2, listView.Elements().size());
+    assertEquals("apple", listView.Elements().get(0));
+    assertEquals("banana", listView.Elements().get(1));
+  }
+
   private View getViewForPosition(ListView listView, int position) {
     LinearLayout listLayout = (LinearLayout) ((LinearLayout) listView.getView()).getChildAt(1);
     RecyclerView rv = (RecyclerView) listLayout.getChildAt(0);

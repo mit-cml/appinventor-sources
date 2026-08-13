@@ -1283,7 +1283,9 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 12:
   // - Made the MultiSelect property visible in the designer and the blocks
   // - Added SelectedItems property
-  public static final int LISTVIEW_COMPONENT_VERSION = 12;
+  // For LISTVIEW_COMPONENT_VERSION 13:
+  // - Added UpdateItemAtIndex method
+  public static final int LISTVIEW_COMPONENT_VERSION = 13;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

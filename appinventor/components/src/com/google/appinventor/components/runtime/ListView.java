@@ -1303,6 +1303,31 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
+   * Replaces the item at the given index. `MainText` is required; `DetailText` and `ImageName`
+   * are used only by the layouts that show them.
+   *
+   * The row stops being selected, because a different item occupies that position afterwards and
+   * a selection pointing there would no longer refer to what the user picked.
+   */
+  @SimpleFunction(description = "Replaces the item at the given index. MainText is required. "
+                                    + "DetailText and ImageName are optional. The item stops "
+                                    + "being selected, since it is no longer the item the user "
+                                    + "picked.")
+  public void UpdateItemAtIndex(int index, String mainText, String detailText, String imageName) {
+    if (index < 1 || index > dataModel.size()) {
+      container.$form().dispatchErrorOccurredEvent(this, "UpdateItemAtIndex",
+          ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
+      return;
+    }
+    dataModel.set(index - 1, newRowFrom(mainText, detailText, imageName));
+    if (selectionIndex == index) {
+      clearSelectionInfo();
+    }
+    // Replacing a row moves nothing, so no other selected index needs adjusting.
+    updateAdapterData();
+  }
+
+  /**
    * Removes Item from list at a given index
    */
   @SimpleFunction(description = "Removes Item from list at a given index.")
@@ -1328,26 +1353,28 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleFunction(description = "Add new Item to list at the end.")
   public void AddItem(String mainText, String detailText, String imageName) {
-    if (!dataModel.isEmpty()) {
-      Object o = dataModel.get(0);
-      if (o instanceof YailDictionary) {
-        if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-          dataModel.add(CreateElement(mainText, detailText, imageName));
-        } else {
-          dataModel.add(mainText);
-        }
-      } else {
-        dataModel.add(mainText);
-      }
-    } else {
-      if (layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-        dataModel.add(mainText);
-      } else {
-        dataModel.add(CreateElement(mainText, detailText, imageName));
-      }
-    }
+    dataModel.add(newRowFrom(mainText, detailText, imageName));
     // Appending leaves every existing index where it was, so the selection needs no adjustment.
     updateAdapterData();
+  }
+
+  /**
+   * Builds a row in whatever shape this list already holds: a plain string for a list of strings,
+   * a dictionary for a list of rich rows. An empty list has no row to copy, so it takes its shape
+   * from the layout instead.
+   */
+  private Object newRowFrom(String mainText, String detailText, String imageName) {
+    if (dataModel.isEmpty()) {
+      return layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT
+          ? mainText
+          : CreateElement(mainText, detailText, imageName);
+    }
+    Object first = dataModel.get(0);
+    if (first instanceof YailDictionary
+        && ((YailDictionary) first).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
+      return CreateElement(mainText, detailText, imageName);
+    }
+    return mainText;
   }
 
   /**
@@ -1372,24 +1399,7 @@ public final class ListView extends AndroidViewComponent {
           ErrorMessages.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, index);
       return;
     }
-    if (!dataModel.isEmpty()) {
-      Object o = dataModel.get(0);
-      if (o instanceof YailDictionary) {
-        if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-          dataModel.addAt(index - 1, CreateElement(mainText, detailText, imageName));
-        } else {
-          dataModel.addAt(index - 1, mainText);
-        }
-      } else {
-        dataModel.addAt(index - 1, mainText);
-      }
-    } else {
-      if (layout == Component.LISTVIEW_LAYOUT_SINGLE_TEXT) {
-        dataModel.addAt(index - 1, mainText);
-      } else {
-        dataModel.addAt(index - 1, CreateElement(mainText, detailText, imageName));
-      }
-    }
+    dataModel.addAt(index - 1, newRowFrom(mainText, detailText, imageName));
     if (selectionIndex >= index) {
       // The new row pushed the selected item down one.
       selectionIndex++;

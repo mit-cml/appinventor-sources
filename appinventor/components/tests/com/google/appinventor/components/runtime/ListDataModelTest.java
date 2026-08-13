@@ -164,6 +164,24 @@ public class ListDataModelTest extends RobolectricTestBase {
     assertEquals(0, model.firstSelection());
   }
 
+  /** Replacing one item drops its selection and leaves the other selections where they are. */
+  @Test
+  public void testReplaceDropsOnlyThatItemsSelection() {
+    ListDataModel model = modelOf("apple", "banana", "cantaloupe");
+    model.toggleSelection(0);
+    model.toggleSelection(2);
+
+    model.set(1, "blueberry");  // an unselected row, so nothing about the selection changes
+    assertTrue(model.isSelected(0));
+    assertTrue(model.isSelected(2));
+    assertEquals("blueberry", model.get(1));
+
+    model.set(2, "cherry");  // a selected row: a different item sits there now
+    assertFalse(model.isSelected(2));
+    assertTrue(model.isSelected(0));
+    assertEquals("cherry", model.get(2));
+  }
+
   /** Replacing or emptying the items drops the selection, because those items are gone. */
   @Test
   public void testReplacingItemsClearsSelection() {
