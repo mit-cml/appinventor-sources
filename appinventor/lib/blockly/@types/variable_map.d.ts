@@ -3,14 +3,6 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Object representing a map of variables and their types.
- *
- * @class
- */
-import './events/events_var_delete.js';
-import './events/events_var_rename.js';
-import type { Block } from './block.js';
 import type { IVariableMap } from './interfaces/i_variable_map.js';
 import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
@@ -45,15 +37,6 @@ export declare class VariableMap implements IVariableMap<IVariableModel<IVariabl
      */
     renameVariable(variable: IVariableModel<IVariableState>, newName: string): IVariableModel<IVariableState>;
     changeVariableType(variable: IVariableModel<IVariableState>, newType: string): IVariableModel<IVariableState>;
-    /**
-     * Rename a variable by updating its name in the variable map. Identify the
-     * variable to rename with the given ID.
-     *
-     * @deprecated v12: use VariableMap.renameVariable.
-     * @param id ID of the variable to rename.
-     * @param newName New variable name.
-     */
-    renameVariableById(id: string, newName: string): void;
     /**
      * Update the name of the given variable and refresh all references to it.
      * The new name must not conflict with any existing variable names.
@@ -100,14 +83,6 @@ export declare class VariableMap implements IVariableMap<IVariableModel<IVariabl
      */
     deleteVariable(variable: IVariableModel<IVariableState>): void;
     /**
-     * Delete a variables by the passed in ID and all of its uses from this
-     * workspace. May prompt the user for confirmation.
-     *
-     * @deprecated v12: use Blockly.Variables.deleteVariable.
-     * @param id ID of variable to delete.
-     */
-    deleteVariableById(id: string): void;
-    /**
      * Find the variable by the given name and type and return it.  Return null if
      *     it is not found.
      *
@@ -145,20 +120,5 @@ export declare class VariableMap implements IVariableMap<IVariableModel<IVariabl
      * @returns List of variable models.
      */
     getAllVariables(): IVariableModel<IVariableState>[];
-    /**
-     * Returns all of the variable names of all types.
-     *
-     * @deprecated v12: use Blockly.Variables.getAllVariables.
-     * @returns All of the variable names of all types.
-     */
-    getAllVariableNames(): string[];
-    /**
-     * Find all the uses of a named variable.
-     *
-     * @deprecated v12: use Blockly.Variables.getVariableUsesById.
-     * @param id ID of the variable to find.
-     * @returns Array of block usages.
-     */
-    getVariableUsesById(id: string): Block[];
 }
 //# sourceMappingURL=variable_map.d.ts.map

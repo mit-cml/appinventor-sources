@@ -6,8 +6,10 @@
 import { DeleteArea } from './delete_area.js';
 import './events/events_trashcan_open.js';
 import type { IAutoHideable } from './interfaces/i_autohideable.js';
+import type { IComponent } from './interfaces/i_component';
 import type { IDraggable } from './interfaces/i_draggable.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IPositionable } from './interfaces/i_positionable.js';
 import type { UiMetrics } from './metrics_manager.js';
 import { Rect } from './utils/rect.js';
@@ -15,13 +17,20 @@ import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Class for a trash can.
  */
-export declare class Trashcan extends DeleteArea implements IAutoHideable, IPositionable {
+export declare class Trashcan extends DeleteArea implements IAutoHideable, IPositionable, IFocusableNode, IComponent {
     private workspace;
     /**
-     * The unique id for this component that is used to register with the
+     * The id for this component that is used to register with the
      * ComponentManager.
      */
     id: string;
+    /**
+     * A globally unique ID for this particular trashcan. Component Manager IDs
+     * (the ID above) are 1:1 with classes, but if there are multiple workspaces
+     * with trashcans on a page, each actual trashcan DOM element needs a unique
+     * ID to support focusable node resolution. This ID is for that purpose.
+     */
+    private uniqueId;
     /**
      * A list of JSON (stored as strings) representing blocks in the trashcan.
      */
@@ -34,19 +43,8 @@ export declare class Trashcan extends DeleteArea implements IAutoHideable, IPosi
     flyout: IFlyout | null;
     /** Current open/close state of the lid. */
     isLidOpen: boolean;
-    /**
-     * The minimum openness of the lid. Used to indicate if the trashcan
-     * contains blocks.
-     */
-    private minOpenness;
     /** The SVG group containing the trash can. */
     private svgGroup;
-    /** The SVG image element of the trash can lid. */
-    private svgLid;
-    /** Task ID of opening/closing animation. */
-    private lidTask;
-    /** Current state of lid opening (0.0 = closed, 1.0 = open). */
-    private lidOpen;
     /** Left coordinate of the trash can. */
     private left;
     /** Top coordinate of the trash can. */
@@ -148,22 +146,6 @@ export declare class Trashcan extends DeleteArea implements IAutoHideable, IPosi
      * @internal
      */
     setLidOpen(state: boolean): void;
-    /** Rotate the lid open or closed by one step.  Then wait and recurse. */
-    private animateLid;
-    /**
-     * Set the angle of the trashcan's lid.
-     *
-     * @param lidAngle The angle at which to set the lid.
-     */
-    private setLidAngle;
-    /**
-     * Sets the minimum openness of the trashcan lid. If the lid is currently
-     * closed, this will update lid's position.
-     *
-     * @param newMin The new minimum openness of the lid. Should be between 0
-     *     and 1.
-     */
-    private setMinOpenness;
     /**
      * Flip the lid shut.
      * Called externally after a drag.
@@ -184,15 +166,6 @@ export declare class Trashcan extends DeleteArea implements IAutoHideable, IPosi
      */
     private blockMouseDownWhenOpenable;
     /**
-     * Indicate that the trashcan can be clicked (by opening it) if it has blocks.
-     */
-    private mouseOver;
-    /**
-     * Close the lid of the trashcan if it was open (Vis. it was indicating it had
-     *    blocks).
-     */
-    private mouseOut;
-    /**
      * Handle a BLOCK_DELETE event. Adds deleted blocks oldXml to the content
      * array.
      *
@@ -208,5 +181,11 @@ export declare class Trashcan extends DeleteArea implements IAutoHideable, IPosi
      *     unnecessary attributes.
      */
     private cleanBlockJson;
+    getFocusableElement(): SVGElement;
+    getFocusableTree(): WorkspaceSvg;
+    onNodeFocus(): void;
+    onNodeBlur(): void;
+    canBeFocused(): boolean;
+    performAction(): void;
 }
 //# sourceMappingURL=trashcan.d.ts.map

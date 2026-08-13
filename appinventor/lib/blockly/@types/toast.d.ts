@@ -3,6 +3,7 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import * as aria from './utils/aria.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Display/configuration options for a toast notification.
@@ -30,7 +31,7 @@ export interface ToastOptions {
      * How prominently/interrupting the readout of the toast should be for
      * screenreaders. Corresponds to aria-live and defaults to polite.
      */
-    assertiveness?: Toast.Assertiveness;
+    assertiveness?: aria.LiveRegionAssertiveness;
 }
 /**
  * Class that allows for showing and dismissing temporary notifications.
@@ -60,15 +61,5 @@ export declare class Toast {
      * @param id The toast ID, or undefined to clear any toast.
      */
     static hide(workspace: WorkspaceSvg, id?: string): void;
-}
-/**
- * Options for how aggressively toasts should be read out by screenreaders.
- * Values correspond to those for aria-live.
- */
-export declare namespace Toast {
-    enum Assertiveness {
-        ASSERTIVE = "assertive",
-        POLITE = "polite"
-    }
 }
 //# sourceMappingURL=toast.d.ts.map

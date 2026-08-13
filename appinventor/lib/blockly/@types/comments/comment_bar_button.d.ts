@@ -58,5 +58,19 @@ export declare abstract class CommentBarButton implements IFocusableNode {
     onNodeBlur(): void;
     /** Returns whether this button can be focused. True if it is visible. */
     canBeFocused(): boolean;
+    /**
+     * Recomputes the ARIA label and role for this button. Note that this is not
+     * automatically called during initialization and must be called once a button's
+     * focusable element (icon) is initialized. Implementations may also find it useful
+     * to call this if the button's label should be changed.
+     */
+    protected recomputeAriaContext(): void;
+    /**
+     * Returns the ARIA label to use for this button (defaults to null). Note that this
+     * method will only be called and apply when recomputeAriaContext is called.
+     *
+     * @returns The ARIA label to use for this button, or null to use a default.
+     */
+    protected getAriaLabel(): string | null;
 }
 //# sourceMappingURL=comment_bar_button.d.ts.map

@@ -3,26 +3,24 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { BlockSvg } from '../block_svg.js';
-import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import type { INavigationPolicy } from '../interfaces/i_navigation_policy.js';
-import { RenderedConnection } from '../rendered_connection.js';
+import type { IFocusableNode } from '../../interfaces/i_focusable_node.js';
+import type { INavigationPolicy } from '../../interfaces/i_navigation_policy.js';
+import { RenderedConnection } from '../../rendered_connection.js';
 /**
  * Set of rules controlling keyboard navigation from a connection.
  */
 export declare class ConnectionNavigationPolicy implements INavigationPolicy<RenderedConnection> {
     /**
-     * Returns the first child of the given connection.
+     * Returns the first child of a connection.
      *
-     * @param current The connection to return the first child of.
-     * @returns The connection's first child element, or null if not none.
+     * @returns Null, as connections do not have children.
      */
-    getFirstChild(current: RenderedConnection): IFocusableNode | null;
+    getFirstChild(): IFocusableNode | null;
     /**
      * Returns the parent of the given connection.
      *
      * @param current The connection to return the parent of.
-     * @returns The given connection's parent connection or block.
+     * @returns The given connection's parent block.
      */
     getParent(current: RenderedConnection): IFocusableNode | null;
     /**
@@ -40,15 +38,12 @@ export declare class ConnectionNavigationPolicy implements INavigationPolicy<Ren
      */
     getPreviousSibling(current: RenderedConnection): IFocusableNode | null;
     /**
-     * Gets the parent connection on a block.
-     * This is either an output connection, previous connection or undefined.
-     * If both connections exist return the one that is actually connected
-     * to another block.
+     * Returns the row ID of the given connection.
      *
-     * @param block The block to find the parent connection on.
-     * @returns The connection connecting to the parent of the block.
+     * @param current The connection to retrieve the row ID of.
+     * @returns The row ID of the given connection.
      */
-    protected getParentConnection(block: BlockSvg): RenderedConnection;
+    getRowId(current: RenderedConnection): string;
     /**
      * Returns whether or not the given connection can be navigated to.
      *

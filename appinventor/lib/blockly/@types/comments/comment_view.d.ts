@@ -3,12 +3,12 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { IFocusableNode } from '../interfaces/i_focusable_node';
 import { IRenderedElement } from '../interfaces/i_rendered_element.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Size } from '../utils/size.js';
 import { WorkspaceSvg } from '../workspace_svg.js';
 import { CommentBarButton } from './comment_bar_button.js';
+import { CommentEditor } from './comment_editor.js';
 export declare class CommentView implements IRenderedElement {
     readonly workspace: WorkspaceSvg;
     readonly commentId: string;
@@ -84,7 +84,7 @@ export declare class CommentView implements IRenderedElement {
      *
      * @returns The FocusableNode representing the editor portion of this comment.
      */
-    getEditorFocusableNode(): IFocusableNode;
+    getEditorFocusableNode(): CommentEditor;
     /** Creates the DOM elements for the comment resize handle. */
     private createResizeHandle;
     /** Returns the root SVG group element of the comment view. */

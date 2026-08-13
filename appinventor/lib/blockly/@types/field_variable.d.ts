@@ -8,7 +8,6 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import type { Block } from './block.js';
 import { Field, FieldConfig } from './field.js';
 import { FieldDropdown, FieldDropdownValidator, MenuGenerator, MenuOption } from './field_dropdown.js';
@@ -228,6 +227,15 @@ export declare class FieldVariable extends FieldDropdown {
      * @returns Array of variable names/id tuples.
      */
     static dropdownCreate(this: FieldVariable): MenuOption[];
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string;
 }
 /**
  * Config options for the variable field.

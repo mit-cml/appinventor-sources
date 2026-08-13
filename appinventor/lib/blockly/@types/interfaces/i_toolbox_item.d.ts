@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { IFocusableNode } from './i_focusable_node.js';
+import type { IToolbox } from './i_toolbox.js';
 /**
  * Interface for an item in the toolbox.
  */
@@ -67,5 +68,10 @@ export interface IToolboxItem extends IFocusableNode {
      * @param isVisible True if category should be visible.
      */
     setVisible_(isVisible: boolean): void;
+    getParentToolbox(): IToolbox;
 }
+/**
+ * Type guard that checks whether an object is an IToolboxItem.
+ */
+export declare function isToolboxItem(obj: any): obj is IToolboxItem;
 //# sourceMappingURL=i_toolbox_item.d.ts.map

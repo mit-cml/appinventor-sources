@@ -3,7 +3,6 @@
  * Copyright 2012 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import './events/events_block_change.js';
 import type { Block } from './block.js';
 import type { Abstract } from './events/events_abstract.js';
 import { Field } from './field.js';
@@ -65,14 +64,12 @@ export declare function isNameUsed(name: string, workspace: Workspace, opt_exclu
  */
 export declare function rename(this: Field, name: string): string;
 /**
- * Internal wrapper that returns the contents of the procedure category.
+ * Construct the blocks required by the flyout for the procedure category.
  *
- * @internal
- * @param workspace The workspace to populate procedure blocks for.
+ * @param workspace The workspace containing procedures.
+ * @returns List of flyout contents as JSON.
  */
-export declare function internalFlyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
-export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: true): Element[];
-export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: false): FlyoutItemInfo[];
+export declare function flyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
 /**
  * Listens for when a procedure mutator is opened. Then it triggers a flyout
  * update and adds a mutator change listener to the mutator workspace.

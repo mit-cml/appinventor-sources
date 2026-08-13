@@ -16,6 +16,11 @@ export declare class ConnectionDB {
     /** Array of connections sorted by y position in workspace units. */
     private readonly connections;
     /**
+     * Count of how many times bulk updates have been enabled. When reaching 0,
+     * the connection DB will be resorted.
+     */
+    private bulkCounter;
+    /**
      * @param connectionChecker The workspace's connection type checker, used to
      *     decide if connections are valid during a drag.
      */
@@ -56,6 +61,17 @@ export declare class ConnectionDB {
      */
     removeConnection(connection: RenderedConnection, yPos: number): void;
     /**
+     * Moves the given connection in the connection DB to reflect its new Y
+     * position. For performance, this will be deferred if the connection DB is in
+     * the middle of a bulk update.
+     *
+     * @param connection The connection that is moving. Should be provided before
+     *     its `Connection.y` field has been updated.
+     * @param newYPos The y coordinate (in workspace units) to which the
+     *     connection will move.
+     */
+    reorderConnection(connection: RenderedConnection, newYPos: number): void;
+    /**
      * Find all nearby connections to the given connection.
      * Type checking does not apply, since this function is used for bumping.
      *
@@ -88,6 +104,30 @@ export declare class ConnectionDB {
         connection: RenderedConnection | null;
         radius: number;
     };
+    /**
+     * Notifies the connection DB that a series of connection moves is about to
+     * begin. May be called multiple times, and must be paired with a
+     * corresponding call to `endBulkUpdates()`.
+     *
+     * @internal
+     */
+    beginBulkUpdates(): void;
+    /**
+     * Notifies the connection DB that the most recent bulk series of connection
+     * moves has ended. Must be called after the corresponding
+     * `beginBulkUpdates()`. If all in-flight bulk updates have ended, this method
+     * will reorder the connection DB to reflect the current state of the
+     * connections.
+     *
+     * @internal
+     */
+    endBulkUpdates(): void;
+    /**
+     * Sorts the connections in the connection DB to reflect the current
+     * coordinates of the connections to allow for quick and correct connection
+     * lookups. Run automatically when a bulk update finishes.
+     */
+    private reorderConnections;
     /**
      * Initialize a set of connection DBs for a workspace.
      *

@@ -13,6 +13,15 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     private markerConn;
     private draggedConn;
     private staticConn;
+    private insertionMarker;
+    /**
+     * If set to true, uses a faster method for rendering insertion markers which
+     * will become the default in v14. This rendering method is enabled for the
+     * built-in Thrasos, Geras and Zelos renderers regardless of the state of this
+     * flag. Custom renderers will use the old rendering behavior unless this is
+     * set to true. This field will be removed in v14.
+     */
+    static useFastInsertionMarkers: boolean;
     constructor(draggedBlock: BlockSvg);
     /**
      * Display a connection preview where the draggedCon connects to the
@@ -28,7 +37,7 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     previewReplacement(draggedConn: RenderedConnection, staticConn: RenderedConnection, replacedBlock: BlockSvg): void;
     /**
      * Display a connection preview where the draggedCon connects to the
-     * staticCon, and no block is being relaced.
+     * staticCon, and no block is being replaced.
      *
      * @param draggedConn The connection on the block stack being dragged.
      * @param staticConn The connection not being dragged that we are
@@ -63,5 +72,12 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     private hideInsertionMarker;
     /** Dispose of any references held by this connection previewer. */
     dispose(): void;
+    /**
+     * Returns whether or not new fast insertion marker rendering should be used.
+     * Defaults on for built-in renderers and off for custom renderers. Can be
+     * enabled for custom renderers by setting
+     * `InsertionMarkerPreviewer.useFastInsertionMarkers = true`.
+     */
+    private shouldUseFastInsertionMarkers;
 }
 //# sourceMappingURL=insertion_marker_previewer.d.ts.map

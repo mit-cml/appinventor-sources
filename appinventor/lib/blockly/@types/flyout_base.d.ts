@@ -3,43 +3,23 @@
  * Copyright 2011 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Flyout tray containing blocks which may be created.
- *
- * @class
- */
-import { BlockSvg } from './block_svg.js';
 import { DeleteArea } from './delete_area.js';
 import { FlyoutItem } from './flyout_item.js';
 import { IAutoHideable } from './interfaces/i_autohideable.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
 import type { IFlyoutInflater } from './interfaces/i_flyout_inflater.js';
-import { IFocusableNode } from './interfaces/i_focusable_node.js';
-import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import type { Options } from './options.js';
-import * as blocks from './serialization/blocks.js';
-import { Coordinate } from './utils/coordinate.js';
 import { Svg } from './utils/svg.js';
 import * as toolbox from './utils/toolbox.js';
 import { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Class for a flyout.
  */
-export declare abstract class Flyout extends DeleteArea implements IAutoHideable, IFlyout, IFocusableNode {
+export declare abstract class Flyout extends DeleteArea implements IAutoHideable, IFlyout {
     /**
      * Position the flyout.
      */
     abstract position(): void;
-    /**
-     * Determine if a drag delta is toward the workspace, based on the position
-     * and orientation of the flyout. This is used in determineDragIntention_ to
-     * determine if a new block should be created or if the flyout should scroll.
-     *
-     * @param currentDragDeltaXY How far the pointer has
-     *     moved from the position at mouse down, in pixel units.
-     * @returns True if the drag is toward the workspace.
-     */
-    abstract isDragTowardWorkspace(currentDragDeltaXY: Coordinate): boolean;
     /**
      * Sets the translation of the flyout to match the scrollbars.
      *
@@ -151,27 +131,6 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      * Height of flyout.
      */
     protected height_: number;
-    /**
-     * Range of a drag angle from a flyout considered "dragging toward
-     * workspace". Drags that are within the bounds of this many degrees from
-     * the orthogonal line to the flyout edge are considered to be "drags toward
-     * the workspace".
-     *
-     * @example
-     *
-     * ```
-     * Flyout                                                 Edge   Workspace
-     * [block] /  <-within this angle, drags "toward workspace" |
-     * [block] ---- orthogonal to flyout boundary ----          |
-     * [block] \                                                |
-     * ```
-     *
-     * The angle is given in degrees from the orthogonal.
-     *
-     * This is used to know when to create a new block and when to scroll the
-     * flyout. Setting it to 360 means that all drags create a new block.
-     */
-    protected dragAngleRange_: number;
     /**
      * The path around the background of the flyout, which will be filled with a
      * background colour.
@@ -310,6 +269,16 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      */
     show(flyoutDef: toolbox.FlyoutDefinition | string): void;
     /**
+     * Updates the aria attributes for the entire flyout dom.
+     * This needs to do two things:
+     * 1. Set aria-owns on the flyout's workspace canvas to include the ids of all
+     *    focusable elements in the flyout.
+     * 2. Update the aria attributes on the flyout's workspace. This can't be done at workspace
+     *    creation because the workspace may not have all required information until the flyout
+     *    is fully shown.
+     */
+    protected updateAriaContext(): void;
+    /**
      * Create the contents array and gaps array necessary to create the layout for
      * the flyout.
      *
@@ -349,25 +318,6 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      */
     private onMouseDown;
     /**
-     * Does this flyout allow you to create a new instance of the given block?
-     * Used for deciding if a block can be "dragged out of" the flyout.
-     *
-     * @param block The block to copy from the flyout.
-     * @returns True if you can create a new instance of the block, false
-     *    otherwise.
-     * @internal
-     */
-    isBlockCreatable(block: BlockSvg): boolean;
-    /**
-     * Create a copy of this block on the workspace.
-     *
-     * @param originalBlock The block to copy from the flyout.
-     * @returns The newly created block.
-     * @throws {Error} if something went wrong with deserialization.
-     * @internal
-     */
-    createBlock(originalBlock: BlockSvg): BlockSvg;
-    /**
      * Reflow flyout contents.
      */
     reflow(): void;
@@ -378,20 +328,6 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      */
     isScrollable(): boolean;
     /**
-     * Serialize a block to JSON.
-     *
-     * @param block The block to serialize.
-     * @returns A serialized representation of the block.
-     */
-    protected serializeBlock(block: BlockSvg): blocks.State;
-    /**
-     * Positions a block on the target workspace.
-     *
-     * @param oldBlock The flyout block being copied.
-     * @param block The block to posiiton.
-     */
-    private positionNewBlock;
-    /**
      * Returns the inflater responsible for constructing items of the given type.
      *
      * @param type The type of flyout content item to provide an inflater for.
@@ -399,55 +335,5 @@ export declare abstract class Flyout extends DeleteArea implements IAutoHideable
      *     is registered for that type.
      */
     protected getInflaterForType(type: string): IFlyoutInflater | null;
-    /**
-     * See IFocusableNode.getFocusableElement.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    getFocusableElement(): HTMLElement | SVGElement;
-    /**
-     * See IFocusableNode.getFocusableTree.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    getFocusableTree(): IFocusableTree;
-    /** See IFocusableNode.onNodeFocus. */
-    onNodeFocus(): void;
-    /** See IFocusableNode.onNodeBlur. */
-    onNodeBlur(): void;
-    /** See IFocusableNode.canBeFocused. */
-    canBeFocused(): boolean;
-    /**
-     * See IFocusableNode.getRootFocusableNode.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    getRootFocusableNode(): IFocusableNode;
-    /**
-     * See IFocusableNode.getRestoredFocusableNode.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    getRestoredFocusableNode(_previousNode: IFocusableNode | null): IFocusableNode | null;
-    /**
-     * See IFocusableNode.getNestedTrees.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    getNestedTrees(): Array<IFocusableTree>;
-    /**
-     * See IFocusableNode.lookUpFocusableNode.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    lookUpFocusableNode(_id: string): IFocusableNode | null;
-    /** See IFocusableTree.onTreeFocus. */
-    onTreeFocus(_node: IFocusableNode, _previousTree: IFocusableTree | null): void;
-    /**
-     * See IFocusableNode.onTreeBlur.
-     *
-     * @deprecated v12: Use the Flyout's workspace for focus operations, instead.
-     */
-    onTreeBlur(_nextTree: IFocusableTree | null): void;
 }
 //# sourceMappingURL=flyout_base.d.ts.map

@@ -41,14 +41,13 @@ export declare function allUsedVarModels(ws: Workspace): IVariableModel<IVariabl
  */
 export declare function allDeveloperVariables(workspace: Workspace): string[];
 /**
- * Internal wrapper that returns the contents of the variables category.
+ * Construct the elements (blocks and button) required by the flyout for the
+ * variable category.
  *
- * @internal
- * @param workspace The workspace to populate variable blocks for.
+ * @param workspace The workspace containing variables.
+ * @returns List of flyout contents as JSON.
  */
-export declare function internalFlyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
-export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: true): Element[];
-export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: false): FlyoutItemInfo[];
+export declare function flyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
 /**
  * Construct the blocks required by the flyout for the variable category.
  *
@@ -109,7 +108,7 @@ export declare function generateUniqueNameFromOptions(startChar: string, usedNam
  * @param opt_type The type of the variable like 'int', 'string', or ''. This
  *     will default to '', which is a specific type.
  */
-export declare function createVariableButtonHandler(workspace: Workspace, opt_callback?: (p1?: string | null) => void, opt_type?: string): void;
+export declare function createVariableButtonHandler(workspace: WorkspaceSvg, opt_callback?: (p1?: string | null) => void, opt_type?: string): void;
 /**
  * Opens a prompt that allows the user to enter a new name for a variable.
  * Triggers a rename if the new name is valid. Or re-prompts if there is a

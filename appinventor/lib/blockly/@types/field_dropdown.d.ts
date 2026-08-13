@@ -57,6 +57,11 @@ export declare class FieldDropdown extends Field<string> {
     /** The total vertical padding above and below an image. */
     protected static IMAGE_Y_PADDING: number;
     /**
+     * True once the field’s DOM has been created and it is safe to run ARIA
+     * updates in response to value changes.
+     */
+    isInitialized: boolean;
+    /**
      * @param menuGenerator A non-empty array of options for a dropdown list, or a
      *     function which generates these options. Also accepts Field.SKIP_SETUP
      *     if you wish to skip setup (only used by subclasses that want to handle
@@ -93,6 +98,15 @@ export declare class FieldDropdown extends Field<string> {
      * Create the block UI for this dropdown.
      */
     initView(): void;
+    /**
+     * This is hacky way of determining if a dropdown field is a full-block field or not.
+     * The constants that control the border rect are the same ones that determine how we
+     * render full-block dropdown fields. It's a full-block field if it doesn't have the
+     * border rect (and it's a simple reporter block).
+     *
+     * @returns true if this field should be treated as a full-block field
+     */
+    isFullBlockField(): boolean;
     /**
      * Whether or not the dropdown should add a border rect.
      *
@@ -238,6 +252,50 @@ export declare class FieldDropdown extends Field<string> {
      * @throws {TypeError} If proposed options are incorrectly structured.
      */
     protected validateOptions(options: MenuOption[]): void;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string;
+    /**
+     * Returns the ARIA label for the currently selected dropdown option.
+     *
+     * @returns The computed ARIA label for the selected option, or `null` if no
+     * option is selected.
+     */
+    private getSelectedAriaLabel;
+    /**
+     * Sets additional aria state.
+     */
+    recomputeAriaContext(): boolean;
+    /**
+     * Computes an ARIA-friendly label for a dropdown option.
+     *
+     * The label is derived using a prioritized set of sources.
+     *
+     * Returned values are guaranteed to be non-empty strings for all non-separator
+     * options. Whitespace-only values are ignored when determining a usable label.
+     *
+     * @param option The dropdown option for which to compute the ARIA label.
+     * @param index The index of the option within the dropdown (0-based).
+     * @returns A string suitable for use as an ARIA label. Returns an empty string
+     *     only if the option is a separator.
+     */
+    private computeOptionAriaLabel;
 }
 /**
  * Definition of a human-readable image dropdown option.
@@ -247,6 +305,7 @@ export interface ImageProperties {
     alt: string;
     width: number;
     height: number;
+    ariaLabel?: string;
 }
 /**
  * An individual option in the dropdown menu. Can be either the string literal
@@ -255,7 +314,11 @@ export interface ImageProperties {
  * (text, ImageProperties object, or HTML element), and the second element is
  * the language-neutral value.
  */
-export type MenuOption = [string | ImageProperties | HTMLElement, string] | 'separator';
+export type MenuOption = [
+    string | ImageProperties | HTMLElement,
+    string,
+    string?
+] | 'separator';
 /**
  * A function that generates an array of menu options for FieldDropdown
  * or its descendants.

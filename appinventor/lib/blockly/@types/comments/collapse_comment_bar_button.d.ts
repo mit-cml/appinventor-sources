@@ -48,5 +48,12 @@ export declare class CollapseCommentBarButton extends CommentBarButton {
      * @param e The event that triggered this action.
      */
     performAction(e?: Event): void;
+    /**
+     * Returns the ARIA label to use for this button (defaults to null). Note that this
+     * method will only be called and apply when recomputeAriaContext is called.
+     *
+     * @returns The ARIA label to use for this button, or null to use a default.
+     */
+    protected getAriaLabel(): string;
 }
 //# sourceMappingURL=collapse_comment_bar_button.d.ts.map

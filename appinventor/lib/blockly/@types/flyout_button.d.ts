@@ -136,5 +136,16 @@ export declare class FlyoutButton implements IBoundedElement, IRenderedElement, 
     onNodeBlur(): void;
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
+    /**
+     * Returns the ID of this FlyoutButton.
+     */
+    getId(): string;
+    /**
+     * Handles the user acting on this button via keyboard navigation.
+     * Invokes the click handler callback for buttons. For labels, which are not
+     * interactive, shows a toast directing the user to navigate using the arrow
+     * keys or the next-heading shortcut.
+     */
+    performAction(): void;
 }
 //# sourceMappingURL=flyout_button.d.ts.map

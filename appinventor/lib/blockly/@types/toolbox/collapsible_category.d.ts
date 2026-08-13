@@ -67,6 +67,8 @@ export declare class CollapsibleToolboxCategory extends ToolboxCategory implemen
     isExpanded(): boolean;
     isCollapsible(): boolean;
     onClick(_e: Event): void;
+    /** Sets the visibility of the parent toolbox's flyout. */
+    private setFlyoutVisible;
     /** Toggles whether or not the category is expanded. */
     toggleExpanded(): void;
     getDiv(): HTMLDivElement | null;

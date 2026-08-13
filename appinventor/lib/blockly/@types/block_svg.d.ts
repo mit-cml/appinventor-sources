@@ -8,7 +8,6 @@
  *
  * @class
  */
-import './events/events_selected.js';
 import { Block } from './block.js';
 import { BlockCopyData } from './clipboard/block_paster.js';
 import type { Connection } from './connection.js';
@@ -21,13 +20,14 @@ import type { IBoundedElement } from './interfaces/i_bounded_element.js';
 import { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { ICopyable } from './interfaces/i_copyable.js';
 import { IDeletable } from './interfaces/i_deletable.js';
-import type { IDragStrategy, IDraggable } from './interfaces/i_draggable.js';
+import type { DragDisposition, IDragStrategy, IDraggable } from './interfaces/i_draggable.js';
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import { IIcon } from './interfaces/i_icon.js';
 import { RenderedConnection } from './rendered_connection.js';
 import type { IPathObject } from './renderers/common/i_path_object.js';
 import type { BlockStyle } from './theme.js';
+import * as aria from './utils/aria.js';
 import { Coordinate } from './utils/coordinate.js';
 import { Rect } from './utils/rect.js';
 import { FlyoutItemInfo } from './utils/toolbox.js';
@@ -100,9 +100,9 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
     readonly rendered = true;
     private visuallyDisabled;
     workspace: WorkspaceSvg;
-    outputConnection: RenderedConnection;
-    nextConnection: RenderedConnection;
-    previousConnection: RenderedConnection;
+    outputConnection: RenderedConnection | null;
+    nextConnection: RenderedConnection | null;
+    previousConnection: RenderedConnection | null;
     private translation;
     /** Whether this block is currently being dragged. */
     private dragging;
@@ -151,16 +151,6 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
      * @internal
      */
     setParent(newParent: this | null): void;
-    /**
-     * Return the coordinates of the top-left corner of this block relative to the
-     * drawing surface's origin (0,0), in workspace units.
-     * If the block is on the workspace, (0, 0) is the origin of the workspace
-     * coordinate system.
-     * This does not change with workspace scale.
-     *
-     * @returns Object with .x and .y properties in workspace coordinates.
-     */
-    getRelativeToSurfaceXY(): Coordinate;
     /**
      * Move a block by a relative offset.
      *
@@ -301,6 +291,10 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
      * @internal
      */
     setDragging(adding: boolean): void;
+    /**
+     * Returns whether or not this block is currently being dragged.
+     */
+    isDragging(): boolean;
     /**
      * Set whether this block is movable or not.
      *
@@ -490,6 +484,19 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
      *     adjusting its parents.
      */
     bringToFront(blockOnly?: boolean): void;
+    /**
+     * Reorders this block's SVG root and those of its parents (unless
+     * `blockOnly`` is set to `true`) to the end of their respective parents so
+     * they render on top of their siblings.
+     *
+     * Unlike `bringToFront`, this does not preserve focus across the reorder, so
+     * it is safe to call from within a focus callback
+     *
+     * @param blockOnly True to only move this block to the front without
+     * adjusting its parents.
+     * @internal
+     */
+    moveSvgRootToFront(blockOnly?: boolean): void;
     /**
      * Set whether this block can chain onto the bottom of another block.
      *
@@ -689,15 +696,6 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
      */
     fadeForReplacement(add: boolean): void;
     /**
-     * Visual effect to show that if the dragging block is dropped it will connect
-     * to this input.
-     *
-     * @param conn The connection on the input to highlight.
-     * @param add True if highlighting should be added.
-     * @internal
-     */
-    highlightShapeForInput(conn: RenderedConnection, add: boolean): void;
-    /**
      * Returns the drag strategy currently in use by this block.
      *
      * @internal
@@ -711,11 +709,11 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
     /** Returns whether this block is movable or not. */
     isMovable(): boolean;
     /** Starts a drag on the block. */
-    startDrag(e?: PointerEvent): void;
+    startDrag(e?: PointerEvent | KeyboardEvent): IDraggable;
     /** Drags the block to the given location. */
-    drag(newLoc: Coordinate, e?: PointerEvent): void;
+    drag(newLoc: Coordinate, e?: PointerEvent | KeyboardEvent): void;
     /** Ends the drag on the block. */
-    endDrag(e?: PointerEvent): void;
+    endDrag(e: PointerEvent | KeyboardEvent | undefined, disposition: DragDisposition): void;
     /** Moves the block back to where it was at the start of a drag. */
     revertDrag(): void;
     /**
@@ -723,6 +721,12 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
      */
     toFlyoutInfo(): FlyoutItemInfo[];
     jsonInit(json: any): void;
+    /**
+     * Returns the number of blocks that this block is nested inside of.
+     *
+     * @internal
+     */
+    getNestingLevel(): number;
     /** See IFocusableNode.getFocusableElement. */
     getFocusableElement(): HTMLElement | SVGElement;
     /** See IFocusableNode.getFocusableTree. */
@@ -733,5 +737,55 @@ export declare class BlockSvg extends Block implements IBoundedElement, IContext
     onNodeBlur(): void;
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
+    /**
+     * Handles the user acting on this block via keyboard navigation.
+     * If this block is in the flyout, a new copy is spawned in move mode on the
+     * main workspace. If this block has a single full-block field, that field
+     * will be focused. Otherwise, this is a no-op.
+     */
+    performAction(e?: KeyboardEvent): void;
+    /**
+     * Returns a set of all of the parent blocks of the given block.
+     *
+     * @internal
+     * @returns A set of the parents of the given block.
+     */
+    getParents(): Set<BlockSvg>;
+    /**
+     * Returns a set of all of the parent blocks connected to an output of the
+     * given block or one of its parents. Also includes the given block.
+     *
+     * @internal
+     * @returns A set of the output-connected parents of the given block.
+     */
+    getOutputParents(): Set<BlockSvg>;
+    /**
+     * Returns an ID for the logical "row" this block is part of. A "row" is
+     * bounded by a previous/next connection, a statement input, or a block stack
+     * boundary; all blocks/inputs nested inside of one of those are conceptually
+     * part of its same row.
+     *
+     * @internal
+     */
+    getRowId(): string;
+    /**
+     * Updates the ARIA label, role and roledescription for this block.
+     */
+    private recomputeAriaContext;
+    /**
+     * Returns a description of this block suitable for screenreaders or use in
+     * ARIA attributes.
+     *
+     * @param verbosity How much detail to include in the description.
+     * @returns An accessibility description of this block.
+     */
+    getAriaLabel(verbosity: aria.Verbosity): string;
+    /**
+     * Count the number of blocks in this stack (connected by next connections)
+     * and return a label to describe it. Uses the standard label if there is only one block.
+     *
+     * @internal
+     */
+    getStackBlocksCountLabel(): string;
 }
 //# sourceMappingURL=block_svg.d.ts.map

@@ -3,6 +3,11 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+/**
+ * Toolbox from whence to create blocks.
+ *
+ * @class
+ */
 import * as browserEvents from '../browser_events.js';
 import { DeleteArea } from '../delete_area.js';
 import '../events/events_toolbox_item_select.js';
@@ -16,6 +21,7 @@ import type { ISelectableToolboxItem } from '../interfaces/i_selectable_toolbox_
 import type { IStyleable } from '../interfaces/i_styleable.js';
 import type { IToolbox } from '../interfaces/i_toolbox.js';
 import type { IToolboxItem } from '../interfaces/i_toolbox_item.js';
+import { ToolboxNavigator } from '../keyboard_nav/navigators/toolbox_navigator.js';
 import type { KeyboardShortcut } from '../shortcut_registry.js';
 import { Rect } from '../utils/rect.js';
 import * as toolbox from '../utils/toolbox.js';
@@ -62,6 +68,8 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     protected readonly workspace_: WorkspaceSvg;
     /** Whether the mouse is currently being clicked. */
     private mouseDown;
+    /** Object used by keyboard navigation to move focus in this toolbox. */
+    private navigator;
     /** @param workspace The workspace in which to create new blocks. */
     constructor(workspace: WorkspaceSvg);
     /**
@@ -176,17 +184,6 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
      *     ignored.
      */
     getClientRect(): Rect | null;
-    /**
-     * Returns whether the provided block or bubble would be deleted if dropped on
-     * this area.
-     * This method should check if the element is deletable and is always called
-     * before onDragEnter/onDragOver/onDragExit.
-     *
-     * @param element The block or bubble currently being dragged.
-     * @returns Whether the element provided would be deleted if dropped on this
-     *     area.
-     */
-    wouldDelete(element: IDraggable): boolean;
     /**
      * Handles when a cursor with a block or bubble enters this drag target.
      *
@@ -367,30 +364,12 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
      */
     private fireSelectEvent;
     /**
-     * Closes the current item if it is expanded, or selects the parent.
+     * Sets the currently selected item's expansion state, if possible.
      *
-     * @returns True if a parent category was selected, false otherwise.
+     * @param expanded True to expand the item or false to collapse it.
+     * @returns True if the selected item's expansion state was updated.
      */
-    private selectParent;
-    /**
-     * Selects the first child of the currently selected item, or nothing if the
-     * toolbox item has no children.
-     *
-     * @returns True if a child category was selected, false otherwise.
-     */
-    private selectChild;
-    /**
-     * Selects the next visible toolbox item.
-     *
-     * @returns True if a next category was selected, false otherwise.
-     */
-    private selectNext;
-    /**
-     * Selects the previous visible toolbox item.
-     *
-     * @returns True if a previous category was selected, false otherwise.
-     */
-    private selectPrevious;
+    private toggleSelectedItem;
     /** Disposes of this toolbox. */
     dispose(): void;
     /** See IFocusableNode.getFocusableElement. */
@@ -415,5 +394,10 @@ export declare class Toolbox extends DeleteArea implements IAutoHideable, IKeybo
     onTreeFocus(node: IFocusableNode, _previousTree: IFocusableTree | null): void;
     /** See IFocusableTree.onTreeBlur. */
     onTreeBlur(nextTree: IFocusableTree | null): void;
+    /**
+     * Returns the Navigator instance to use to move between items in this
+     * toolbox.
+     */
+    getNavigator(): ToolboxNavigator;
 }
 //# sourceMappingURL=toolbox.d.ts.map

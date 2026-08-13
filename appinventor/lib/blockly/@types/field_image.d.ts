@@ -129,6 +129,57 @@ export declare class FieldImage extends Field<string> {
      * @internal
      */
     static fromJson(options: FieldImageFromJsonConfig): FieldImage;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text, or null if no text is
+     *     currently defined or known for the field.
+     */
+    getAriaValue(): string | null;
+    /**
+     * Computes a descriptive ARIA label to represent this field with configurable
+     * verbosity.
+     *
+     * A 'verbose' label includes type information, if available, whereas a
+     * non-verbose label only contains the field's value.
+     *
+     * Note that this will always return the latest representation of the field's
+     * label which may differ from any previously set ARIA label for the field
+     * itself. Implementations are largely responsible for ensuring that the
+     * field's ARIA label is set correctly at relevant moments in the field's
+     * lifecycle (such as when its value changes).
+     *
+     * Finally, it is never guaranteed that implementations use the label returned
+     * by this method for their actual ARIA label. Some implementations may rely
+     * on other contexts to convey information like the field's value. Example:
+     * checkboxes represent their checked/non-checked status (i.e. value) through
+     * a separate ARIA property.
+     *
+     * Returns an empty string on clickable images (buttons), as we do not want to
+     * include image buttons on the block-level ARIA label. When the button is
+     * focused the label is set in recomputeAriaContext below.
+     *
+     * @param includeTypeInfo Whether to include the field's type information in
+     *     the returned label, if available.
+     */
+    computeAriaLabel(includeTypeInfo: boolean): string;
+    /**
+     * Customizes label and sets additional aria state.
+     */
+    recomputeAriaContext(): boolean;
 }
 /**
  * Config options for the image field.

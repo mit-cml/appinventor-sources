@@ -244,8 +244,6 @@ export declare class ConstantProvider {
      * The <filter> element to use for a debug highlight, or null if not set.
      */
     private debugFilter;
-    /** The <style> element to use for injecting renderer specific CSS. */
-    private cssNode;
     /**
      * Cursor colour.
      */
@@ -422,7 +420,6 @@ export declare class ConstantProvider {
      * Create any DOM elements that this renderer needs (filters, patterns, etc).
      *
      * @param svg The root of the workspace's SVG.
-     * @param tagName The name to use for the CSS style tag.
      * @param selector The CSS selector to use.
      * @param injectionDivIfIsParent The div containing the parent workspace and
      *   all related workspaces and block containers, if this renderer is for the
@@ -430,7 +427,7 @@ export declare class ConstantProvider {
      *   to this container. Child workspaces should not override the CSS variables
      *   created by the parent and thus do not need access to the injection div.
      */
-    createDom(svg: SVGElement, tagName: string, selector: string, injectionDivIfIsParent?: HTMLElement): void;
+    createDom(svg: SVGElement, selector: string, injectionDivIfIsParent?: HTMLElement): void;
     /**
      * Create a filter for highlighting the currently rendering block during
      * render debugging.
@@ -439,10 +436,10 @@ export declare class ConstantProvider {
     /**
      * Inject renderer specific CSS into the page.
      *
-     * @param tagName The name of the style tag to use.
-     * @param selector The CSS selector to use.
+     * @param root The document root to inject the CSS into.
+     * @param selector The CSS selector to interpolate into the stylesheet.
      */
-    protected injectCSS_(tagName: string, selector: string): void;
+    protected injectCSS_(root: Document | ShadowRoot, selector: string): void;
     /**
      * Get any renderer specific CSS to inject when the renderer is initialized.
      *

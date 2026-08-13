@@ -3,9 +3,9 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { FlyoutSeparator } from '../flyout_separator.js';
-import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import type { INavigationPolicy } from '../interfaces/i_navigation_policy.js';
+import { FlyoutSeparator } from '../../flyout_separator.js';
+import type { IFocusableNode } from '../../interfaces/i_focusable_node.js';
+import type { INavigationPolicy } from '../../interfaces/i_navigation_policy.js';
 /**
  * Set of rules controlling keyboard navigation from a flyout separator.
  * This is a no-op placeholder, since flyout separators can't be navigated to.
@@ -15,6 +15,12 @@ export declare class FlyoutSeparatorNavigationPolicy implements INavigationPolic
     getParent(_current: FlyoutSeparator): IFocusableNode | null;
     getNextSibling(_current: FlyoutSeparator): IFocusableNode | null;
     getPreviousSibling(_current: FlyoutSeparator): IFocusableNode | null;
+    /**
+     * Returns the row ID of the given flyout separator.
+     *
+     * @returns Dummy row ID, as flyout separators are never navigable.
+     */
+    getRowId(): string;
     /**
      * Returns whether or not the given flyout separator can be navigated to.
      *

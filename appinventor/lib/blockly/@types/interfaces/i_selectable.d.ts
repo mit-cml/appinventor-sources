@@ -3,7 +3,7 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { Workspace } from '../workspace.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
 import { IFocusableNode } from './i_focusable_node.js';
 /**
  * The interface for an object that is selectable.
@@ -15,7 +15,7 @@ import { IFocusableNode } from './i_focusable_node.js';
  */
 export interface ISelectable extends IFocusableNode {
     id: string;
-    workspace: Workspace;
+    workspace: WorkspaceSvg;
     /** Select this.  Highlight it visually. */
     select(): void;
     /** Unselect this.  Unhighlight it visually. */

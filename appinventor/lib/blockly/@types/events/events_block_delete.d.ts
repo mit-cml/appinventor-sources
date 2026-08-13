@@ -18,8 +18,6 @@ import { EventType } from './type.js';
  * deleted.
  */
 export declare class BlockDelete extends BlockBase {
-    /** The XML representation of the deleted block(s). */
-    oldXml?: Element | DocumentFragment;
     /** The JSON respresentation of the deleted block(s). */
     oldJson?: blocks.State;
     /** All of the IDs of deleted blocks. */
@@ -53,7 +51,6 @@ export declare class BlockDelete extends BlockBase {
     run(forward: boolean): void;
 }
 export interface BlockDeleteJson extends BlockBaseJson {
-    oldXml: string;
     ids: string[];
     wasShadow: boolean;
     oldJson: blocks.State;

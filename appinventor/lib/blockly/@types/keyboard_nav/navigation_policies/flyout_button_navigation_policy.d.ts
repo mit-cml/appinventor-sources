@@ -3,9 +3,9 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { FlyoutButton } from '../flyout_button.js';
-import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import type { INavigationPolicy } from '../interfaces/i_navigation_policy.js';
+import { FlyoutButton } from '../../flyout_button.js';
+import type { IFocusableNode } from '../../interfaces/i_focusable_node.js';
+import type { INavigationPolicy } from '../../interfaces/i_navigation_policy.js';
 /**
  * Set of rules controlling keyboard navigation from a flyout button.
  */
@@ -38,6 +38,13 @@ export declare class FlyoutButtonNavigationPolicy implements INavigationPolicy<F
      * @returns Null.
      */
     getPreviousSibling(_current: FlyoutButton): IFocusableNode | null;
+    /**
+     * Returns the row ID of the given flyout button.
+     *
+     * @param current The flyout button to retrieve the row ID of.
+     * @returns The row ID of the given flyout button.
+     */
+    getRowId(current: FlyoutButton): string;
     /**
      * Returns whether or not the given flyout button can be navigated to.
      *

@@ -3,12 +3,7 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Object in charge of loading, storing, and playing audio for a
- *     workspace.
- *
- * @class
- */
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Class for loading, storing, and playing audio for a workspace.
@@ -25,7 +20,7 @@ export declare class WorkspaceAudio {
     private readonly context?;
     /**
      * @param parentWorkspace The parent of the workspace this audio object
-     *     belongs to, or null.
+     *     belongs to if it has one, or the workspace that owns this instance.
      */
     constructor(parentWorkspace: WorkspaceSvg);
     /**
@@ -50,6 +45,40 @@ export declare class WorkspaceAudio {
      * @param opt_volume Volume of sound (0-1).
      */
     play(name: string, opt_volume?: number): Promise<void>;
+    /**
+     * Plays a beep at the given frequency.
+     *
+     * @param tone The frequency of the beep to play, in hertz.
+     * @param duration The duration of the beep, in seconds. Defaults to 0.2.
+     */
+    beep(tone: number, duration?: number): Promise<void>;
+    /**
+     * Plays a standard error beep.
+     */
+    playErrorBeep(): Promise<void>;
+    /**
+     * If enabled, plays a tone corresponding to the nesting level of the given
+     * node when it differs from the nesting level of the currently focused node.
+     * These tones are generally used for accessibility purposes to indicate a
+     * scope transition to users who use a screenreader. This method must be
+     * called before focus transitions to the given node.
+     *
+     * @internal
+     * @param newNode The soon-to-be-focused node.
+     */
+    maybePlayScopeChangeAudioCue(newNode: IFocusableNode): void;
+    /**
+     * Returns whether or not playing sounds is currently allowed.
+     *
+     * @returns False if audio is muted or a sound has just been played, otherwise
+     *     true.
+     */
+    private isPlayingAllowed;
+    /**
+     * Prepares to play audio by recording the time of the last play and resuming
+     * the audio context.
+     */
+    private prepareToPlay;
     /**
      * @param muted If true, mute sounds. Otherwise, play them.
      */

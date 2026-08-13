@@ -23,6 +23,7 @@ export declare class FieldLabel extends Field<string> {
     EDITABLE: boolean;
     /** Text labels should not truncate. */
     maxDisplayLength: number;
+    isLabelField(): boolean;
     /**
      * @param value The initial value of the field. Should cast to a string.
      *     Defaults to an empty string if null or undefined. Also accepts
@@ -41,6 +42,33 @@ export declare class FieldLabel extends Field<string> {
      * Create block UI for this label.
      */
     initView(): void;
+    /**
+     * Computes a descriptive ARIA label to represent this field with configurable
+     * verbosity.
+     *
+     * A 'verbose' label includes type information, if available, whereas a
+     * non-verbose label only contains the field's value.
+     *
+     * Note that this will always return the latest representation of the field's
+     * label which may differ from any previously set ARIA label for the field
+     * itself. Implementations are largely responsible for ensuring that the
+     * field's ARIA label is set correctly at relevant moments in the field's
+     * lifecycle (such as when its value changes).
+     *
+     * Finally, it is never guaranteed that implementations use the label returned
+     * by this method for their actual ARIA label. Some implementations may rely
+     * on other contexts to convey information like the field's value. Example:
+     * checkboxes represent their checked/non-checked status (i.e. value) through
+     * a separate ARIA property.
+     *
+     * Unlike other built-in fields, FieldLabel does return an empty string when its
+     * value is empty. This is because empty labels are sometimes used for layout
+     * purposes.
+     *
+     * @param includeTypeInfo Whether to include the field's type information in
+     *     the returned label, if available.
+     */
+    computeAriaLabel(includeTypeInfo?: boolean): string;
     /**
      * Ensure that the input value casts to a valid string.
      *

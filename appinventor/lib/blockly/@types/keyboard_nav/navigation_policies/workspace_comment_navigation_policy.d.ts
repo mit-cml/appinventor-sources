@@ -3,9 +3,9 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { RenderedWorkspaceComment } from '../comments/rendered_workspace_comment.js';
-import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import type { INavigationPolicy } from '../interfaces/i_navigation_policy.js';
+import { RenderedWorkspaceComment } from '../../comments/rendered_workspace_comment.js';
+import type { IFocusableNode } from '../../interfaces/i_focusable_node.js';
+import type { INavigationPolicy } from '../../interfaces/i_navigation_policy.js';
 /**
  * Set of rules controlling keyboard navigation from an RenderedWorkspaceComment.
  */
@@ -27,17 +27,22 @@ export declare class WorkspaceCommentNavigationPolicy implements INavigationPoli
     /**
      * Returns the next peer node of the given workspace comment.
      *
-     * @param current The workspace comment to find the following element of.
-     * @returns The next workspace comment or block stack, if any.
+     * @returns Null, as workspace comments do not have peers.
      */
-    getNextSibling(current: RenderedWorkspaceComment): IFocusableNode | null;
+    getNextSibling(): IFocusableNode | null;
     /**
      * Returns the previous peer node of the given workspace comment.
      *
-     * @param current The workspace comment to find the preceding element of.
-     * @returns The previous workspace comment or block stack, if any.
+     * @returns Null, as workspace comments do not have peers.
      */
-    getPreviousSibling(current: RenderedWorkspaceComment): IFocusableNode | null;
+    getPreviousSibling(): IFocusableNode | null;
+    /**
+     * Returns the row ID of the given workspace comment.
+     *
+     * @param current The workspace comment to retrieve the row ID of.
+     * @returns The row ID of the given workspace comment.
+     */
+    getRowId(current: RenderedWorkspaceComment): string;
     /**
      * Returns whether or not the given workspace comment can be navigated to.
      *

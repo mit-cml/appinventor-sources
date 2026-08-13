@@ -3,13 +3,9 @@
  * Copyright 2016 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * Components for creating connections between blocks.
- *
- * @class
- */
 import type { BlockSvg } from './block_svg.js';
 import { Connection } from './connection.js';
+import type { InsertionMarker } from './insertion_marker.js';
 import { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
@@ -24,6 +20,7 @@ export declare class RenderedConnection extends Connection implements IContextMe
     private readonly offsetInBlock;
     private trackedState;
     private highlighted;
+    private insertionMarker?;
     /** Connection this connection connects to.  Null if not connected. */
     targetConnection: RenderedConnection | null;
     /**
@@ -133,6 +130,18 @@ export declare class RenderedConnection extends Connection implements IContextMe
         connection: RenderedConnection | null;
         radius: number;
     };
+    /**
+     * Sets the aria role and role description for this connection.
+     *
+     * @param highlightSvg The focusable element for this connection.
+     */
+    setAriaRole(highlightSvg: SVGElement): void;
+    /**
+     * Sets the aria role, label, and other state for this connection.
+     *
+     * @param highlightSvg The focusable element for this connection.
+     */
+    private recomputeAriaContext;
     /** Add highlighting around this connection. */
     highlight(): void;
     /** Remove the highlighting around this connection. */
@@ -238,6 +247,24 @@ export declare class RenderedConnection extends Connection implements IContextMe
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
     private findHighlightSvg;
+    /**
+     * Associates the given insertion marker with this connection.
+     *
+     * @internal
+     */
+    attachInsertionMarker(marker: InsertionMarker): void;
+    /**
+     * Removes the insertion marker associated with this connection, if any.
+     *
+     * @internal
+     */
+    detachInsertionMarker(): void;
+    /**
+     * Returns the insertion marker associated with this connection, if any.
+     *
+     * @internal
+     */
+    getInsertionMarker(): InsertionMarker | undefined;
 }
 export declare namespace RenderedConnection {
     /**

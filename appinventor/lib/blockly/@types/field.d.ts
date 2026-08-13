@@ -10,7 +10,6 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import type { Block } from './block.js';
 import type { Input } from './inputs/input.js';
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
@@ -43,7 +42,7 @@ export type FieldValidator<T = any> = (newValue: T) => T | null | undefined;
 /**
  * Abstract class for an editable field.
  *
- * @typeParam T - The value stored on the field.
+ * @template T - The value stored on the field.
  */
 export declare abstract class Field<T = any> implements IKeyboardAccessible, IRegistrable, ISerializable, IFocusableNode {
     /**
@@ -70,6 +69,8 @@ export declare abstract class Field<T = any> implements IKeyboardAccessible, IRe
     protected value_: T | null;
     /** Validation function called when user edits an editable field. */
     protected validator_: FieldValidator<T> | null;
+    /** The ARIA-friendly label representation of this field's type. */
+    protected ariaTypeName: string | null;
     /**
      * Used to cache the field's tooltip value if setTooltip is called when the
      * field is not yet initialized. Is *not* guaranteed to be accurate.
@@ -185,6 +186,77 @@ export declare abstract class Field<T = any> implements IKeyboardAccessible, IRe
      */
     getSourceBlock(): Block | null;
     /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or null if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
+    /**
+     * Sets the ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, set a localized
+     * version of the ARIA representation of the field's type. To that end, the
+     * provided value may contain message references of the form `%{BKY_...}`
+     * (e.g. `%{BKY_MY_FIELD_ARIA_TYPE}`), which are replaced with the
+     * corresponding `Blockly.Msg` value.
+     *
+     * @param ariaTypeName An ARIA representation of the field's type.
+     */
+    setAriaTypeName(ariaTypeName: string): void;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Note that implementations should generally always override this value to
+     * ensure a non-null value is returned. The default implementation relies on
+     * 'getText' which may return an empty string. A null return value from this
+     * function will prompt ARIA label generation to skip the field's value
+     * entirely when there may be a better contextual placeholder to use isstead.
+     *
+     * For example, to avoid hiding an empty text input field from screen reader,
+     * implementations should ensure that if the text is an empty string, this
+     * function would return an appropriate, localized value such as "empty text".
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text, or null if no text is
+     *     currently defined or known for the field.
+     */
+    getAriaValue(): string | null;
+    /**
+     * Computes a descriptive ARIA label to represent this field with configurable
+     * verbosity.
+     *
+     * A 'verbose' label includes type information, if available, whereas a
+     * non-verbose label only contains the field's value.
+     *
+     * Note that this will always return the latest representation of the field's
+     * label which may differ from any previously set ARIA label for the field
+     * itself. Implementations are largely responsible for ensuring that the
+     * field's ARIA label is set correctly at relevant moments in the field's
+     * lifecycle (such as when its value changes).
+     *
+     * Finally, it is never guaranteed that implementations use the label returned
+     * by this method for their actual ARIA label. Some implementations may rely
+     * on other contexts to convey information like the field's value. Example:
+     * checkboxes represent their checked/non-checked status (i.e. value) through
+     * a separate ARIA property.
+     *
+     * If the field's value is empty then it will return a localized placeholder
+     * indicating that its value is empty. If this method returns an empty string,
+     * the output will be ignored when composing the block-level ARIA label. Make
+     * sure you want your label hidden from screenreaders before returning an
+     * empty string.
+     *
+     * @param includeTypeInfo Whether to include the field's type information in
+     *     the returned label, if available.
+     */
+    computeAriaLabel(includeTypeInfo?: boolean): string;
+    /**
      * Initialize everything to render this field. Override
      * methods initModel and initView rather than this method.
      *
@@ -204,14 +276,25 @@ export declare abstract class Field<T = any> implements IKeyboardAccessible, IRe
     /**
      * Defines whether this field should take up the full block or not.
      *
-     * Be cautious when overriding this function. It may not work as you expect /
-     * intend because the behavior was kind of hacked in. If you are thinking
-     * about overriding this function, post on the forum with your intended
-     * behavior to see if there's another approach.
+     * This is typically only done for certain kinds of fields and in certain
+     * renderers. You should only override this if you're sure your field will
+     * render correctly in zelos and other renderers that support full-block
+     * fields.
+     *
+     * Blocks that contain only a single field that is a full-block-field
+     * have a special appearance in some renderers and their behavior is
+     * unique, because we pretend that the field is a whole block in some cases.
+     * This is hacky and you should use caution when attempting to do anything
+     * with this method.
+     */
+    isFullBlockField(): boolean;
+    /**
+     * Returns whether this field is a static text label (ex. FieldLabel).
+     * Used internally instead of `instanceof FieldLabel` to avoid circular imports.
      *
      * @internal
      */
-    isFullBlockField(): boolean;
+    isLabelField(): boolean;
     /**
      * Create a field border rect element. Not to be overridden by subclasses.
      * Instead modify the result of the function inside initView, or create a
@@ -219,9 +302,11 @@ export declare abstract class Field<T = any> implements IKeyboardAccessible, IRe
      */
     protected createBorderRect_(): void;
     /**
-     * Create a field text element. Not to be overridden by subclasses. Instead
+     * Create a field text element. Not to be overridden by subclasses. Instead,
      * modify the result of the function inside initView, or create a separate
-     * function to call.
+     * function to call. Aria state is hidden; use the aria label for the field
+     * and/or containing block to expose content to screen readers. Text content
+     * for custom blocks can be set after creation.
      */
     protected createTextElement_(): void;
     /**
@@ -685,6 +770,27 @@ export declare abstract class Field<T = any> implements IKeyboardAccessible, IRe
     /** See IFocusableNode.canBeFocused. */
     canBeFocused(): boolean;
     /**
+     * Handles the user acting on this field via keyboard navigation.
+     * Shows and focuses the field editor.
+     */
+    performAction(): void;
+    /**
+     * Recomputes the aria state and label for this field. Fields are generally hidden
+     * when in blocks in the flyout (except for top-level full-block fields), and
+     * otherwise set to a role of button (indicating they can be clicked to edit)
+     * and given the label returned from their `computeAriaLabel` method.
+     *
+     * Subclasses can override this in order to change the role or label, but they must
+     * ensure they keep the correct behavior for fields in flyout blocks.
+     *
+     * This method will return a boolean indicating if the element is displayed in the
+     * aria tree or not. This can be used by subclasses to determine whether or not
+     * to continue customizing the role and label (hidden elements should not have labels).
+     *
+     * @returns true if the element is in the accessibility tree, false if the aria state is hidden
+     */
+    recomputeAriaContext(): boolean;
+    /**
      * Subclasses should reimplement this method to construct their Field
      * subclass from a JSON arg object.
      *
@@ -701,6 +807,7 @@ export declare abstract class Field<T = any> implements IKeyboardAccessible, IRe
  */
 export interface FieldConfig {
     tooltip?: string;
+    ariaTypeName?: string;
 }
 /**
  * Represents an object that has all the prototype properties of the `Field`

@@ -7,11 +7,15 @@ import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 /**
  * Type declaration for returning focus to FocusManager upon completing an
- * ephemeral UI flow (such as a dialog).
+ * ephemeral UI flow (such as a dialog). Normally, the FocusManager will refocus
+ * the previously-focused element. If callers do not wish for the FocusManager
+ * to do so, they may call this method with `restoreFocus` set to false to
+ * prevent automatic refocusing and leave focus where it is.
+ *
  *
  * See FocusManager.takeEphemeralFocus for more details.
  */
-export type ReturnEphemeralFocus = () => void;
+export type ReturnEphemeralFocus = (restoreFocus?: boolean) => void;
 /**
  * A per-page singleton that manages Blockly focus across one or more
  * IFocusableTrees, and bidirectionally synchronizes this focus with the DOM.
@@ -56,6 +60,20 @@ export declare class FocusManager {
     private lockFocusStateChanges;
     private recentlyLostAllFocus;
     private isUpdatingFocusedNode;
+    /**
+     * Root element in which popovers (WidgetDiv, DropDownDiv) currently live.
+     */
+    private popoverFocusRoot?;
+    /**
+     * Set of callbacks to invoke if the popover focus root loses focus.
+     */
+    private popoverFocusLossHandlers;
+    /**
+     * Handler for focusout in the popover focus root that selectively
+     * invokes the popover focus loss handlers if focus has truly transitioned
+     * outside of the focus root, and not e.g. to a different popover.
+     */
+    private popoverFocusOutHandler;
     constructor(addGlobalEventListener: (type: string, listener: EventListener) => void);
     /**
      * Registers a new IFocusableTree for automatic focus management.
@@ -260,6 +278,33 @@ export declare class FocusManager {
      * but may change across page loads.
      */
     static getFocusManager(): FocusManager;
+    /**
+     * Sets the current popover focus root. Generally this is active
+     * workspace's injection div or the explicitly specified parent container for
+     * the WidgetDiv, DropDownDiv, etc.
+     *
+     * @internal
+     * @param newRoot The new element that contains all popovers.
+     */
+    setPopoverFocusRoot(newRoot: HTMLElement): void;
+    /**
+     * Registers a callback to be invoked if the popover focus root loses
+     * focus. This should only be called by popovers that need to react to
+     * focus changes by e.g. hiding themselves and resigning ephemeral focus.
+     *
+     * @internal
+     * @param handler A callback function.
+     */
+    registerPopoverFocusLossHandler(handler: () => void): void;
+    /**
+     * Unregisters a previously-registered popover focus loss handler. This
+     * should only be invoked by popovers when they no longer need to be
+     * notified of focus loss, typically when they are hidden.
+     *
+     * @internal
+     * @param handler A previously-registered callback function.
+     */
+    unregisterPopoverFocusLossHandler(handler: () => void): void;
 }
 /** Convenience function for FocusManager.getFocusManager. */
 export declare function getFocusManager(): FocusManager;

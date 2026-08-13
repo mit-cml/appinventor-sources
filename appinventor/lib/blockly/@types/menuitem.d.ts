@@ -15,6 +15,7 @@ import * as aria from './utils/aria.js';
 export declare class MenuItem {
     private readonly content;
     private readonly opt_value?;
+    private readonly ariaLabel?;
     /** Is the menu item clickable, as opposed to greyed-out. */
     private enabled;
     /** The DOM element for the menu item. */
@@ -31,18 +32,24 @@ export declare class MenuItem {
     private highlight;
     /** Bound function to call when this menu item is clicked. */
     private actionHandler;
+    /** The unique ID for this menu item. */
+    private id;
     /**
      * @param content Text caption to display as the content of the item, or a
      *     HTML element to display.
      * @param opt_value Data/model associated with the menu item.
      */
-    constructor(content: string | HTMLElement, opt_value?: string | undefined);
+    constructor(content: string | HTMLElement, opt_value?: string | undefined, ariaLabel?: string | undefined);
     /**
      * Creates the menuitem's DOM.
      *
      * @returns Completed DOM.
      */
     createDom(): Element;
+    /**
+     * Gets the ARIA label for this menu item.
+     */
+    getAriaLabel(): string;
     /** Dispose of this menu item. */
     dispose(): void;
     /**

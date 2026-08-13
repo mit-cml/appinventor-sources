@@ -84,5 +84,13 @@ export interface IPathObject {
      * @param blockStyle The block style to use.
      */
     setStyle?(blockStyle: BlockStyle): void;
+    /**
+     * Add or remove styling indicating that a block will be bumped out and
+     * replaced by another block that is mid-move.
+     *
+     * @param replacing True if the block is at risk of being replaced, false
+     *     otherwise.
+     */
+    updateReplacing?(replacing: boolean): void;
 }
 //# sourceMappingURL=i_path_object.d.ts.map

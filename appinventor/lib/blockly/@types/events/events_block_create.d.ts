@@ -19,8 +19,6 @@ import { EventType } from './type.js';
  */
 export declare class BlockCreate extends BlockBase {
     type: EventType;
-    /** The XML representation of the created block(s). */
-    xml?: Element | DocumentFragment;
     /** The JSON respresentation of the created block(s). */
     json?: blocks.State;
     /** All of the IDs of created blocks. */
@@ -51,7 +49,6 @@ export declare class BlockCreate extends BlockBase {
     run(forward: boolean): void;
 }
 export interface BlockCreateJson extends BlockBaseJson {
-    xml: string;
     ids: string[];
     json: object;
     recordUndo?: boolean;

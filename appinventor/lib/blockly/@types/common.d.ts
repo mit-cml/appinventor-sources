@@ -33,6 +33,13 @@ export declare function registerWorkspace(workspace: Workspace): void;
  *
  * @param workspace
  */
+export declare function unregisterWorkspace(workspace: Workspace): void;
+/**
+ * Unregister a workspace from the workspace db.
+ *
+ * @deprecated v13: use Blockly.common.unregisterWorkspace
+ * @param workspace
+ */
 export declare function unregisterWorkpace(workspace: Workspace): void;
 /**
  * Returns the last used top level workspace (based on focus).  Try not to use
@@ -79,7 +86,7 @@ export declare function fireSelectedEvent(newSelection: ISelectable | null): voi
  *
  * @returns The parent container.
  */
-export declare function getParentContainer(): Element | null;
+export declare function getParentContainer(workspace?: Workspace): Element | null;
 /**
  * Set the parent container.  This is the container element that the WidgetDiv,
  * DropDownDiv, and Tooltip are rendered into the first time `Blockly.inject`

@@ -98,5 +98,9 @@ export interface IToolbox extends IRegistrable, IFocusableTree {
     setSelectedItem(item: IToolboxItem | null): void;
     /** Disposes of this toolbox. */
     dispose(): void;
+    /**
+     * Returns a list of items in this toolbox.
+     */
+    getToolboxItems(): IToolboxItem[];
 }
 //# sourceMappingURL=i_toolbox.d.ts.map
