@@ -1026,6 +1026,25 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       slowBlockSpeed: .15
     }
   });
+  const registry = Blockly.ShortcutRegistry.registry;
+  const keyCodes = Blockly.utils.KeyCodes;
+  const shortcutKeyRemappings = [
+    {from: keyCodes.T, to: registry.createSerializedKey(keyCodes.T, [keyCodes.ALT])},
+    {from: keyCodes.C, to: registry.createSerializedKey(keyCodes.C, [keyCodes.ALT])},
+    {from: keyCodes.X, to: registry.createSerializedKey(keyCodes.X, [keyCodes.ALT])},
+    {from: keyCodes.M, to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT])},
+    {from: registry.createSerializedKey(keyCodes.M, [keyCodes.SHIFT]), to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT, keyCodes.SHIFT])},
+    {from: registry.createSerializedKey(keyCodes.D, [keyCodes.SHIFT]), to: registry.createSerializedKey(keyCodes.D, [keyCodes.ALT, keyCodes.SHIFT])},
+    {from: keyCodes.N, to: registry.createSerializedKey(keyCodes.N, [keyCodes.ALT])},
+    {from: keyCodes.B, to: registry.createSerializedKey(keyCodes.B, [keyCodes.ALT])},
+    {from: keyCodes.W, to: registry.createSerializedKey(keyCodes.W, [keyCodes.ALT])},
+  ];
+  shortcutKeyRemappings.forEach(shortcutKeyRemapping => {
+    registry.getShortcutNamesByKeyCode(shortcutKeyRemapping.from).forEach(shortcutName => {
+      registry.removeAllKeyMappings(shortcutName);
+      registry.addKeyMapping(shortcutKeyRemapping.to, shortcutName, true);
+    });
+  });
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
