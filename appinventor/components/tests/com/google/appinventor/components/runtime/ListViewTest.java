@@ -266,6 +266,39 @@ public class ListViewTest extends RobolectricTestBase {
     assertEquals("", listView.Selection());
   }
 
+  /**
+   * When MultiSelect leaves other items selected, replacing the reported row moves Selection and
+   * SelectionIndex onto the most recent pick that remains, rather than reading as nothing
+   * selected while SelectedItems still holds a set.
+   */
+  @Test
+  public void testUpdateItemAtIndexMovesReportingToTheRemainingSelection() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe,date");
+    listView.Height(200);
+    listView.Width(320);
+    listView.MultiSelect(true);
+    initialize(listView);
+
+    assertTrue(getViewForPosition(listView, 0).performClick());  // apple
+    assertTrue(getViewForPosition(listView, 2).performClick());  // cantaloupe, touched last
+    assertEquals(3, listView.SelectionIndex());
+
+    listView.UpdateItemAtIndex(3, "cherry", "", "");
+
+    // cantaloupe stopped being a pick, so reporting falls back to apple, the pick still standing.
+    assertEquals(1, listView.SelectedItems().size());
+    assertEquals(1, listView.SelectionIndex());
+    assertEquals("apple", listView.Selection());
+
+    listView.UpdateItemAtIndex(1, "apricot", "", "");
+
+    // Nothing is left now, so reporting nothing selected is the truth.
+    assertEquals(0, listView.SelectedItems().size());
+    assertEquals(0, listView.SelectionIndex());
+    assertEquals("", listView.Selection());
+  }
+
   /** An index outside the list is reported as an error and leaves the items untouched. */
   @Test
   public void testUpdateItemAtIndexOutOfBoundsLeavesTheListAlone() {

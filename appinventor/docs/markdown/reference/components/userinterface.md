@@ -1034,7 +1034,10 @@ This is a visible component that displays a list of text and image elements in y
  are used only by the layouts that show them.
 
  The row stops being selected, because a different item occupies that position afterwards and
- a selection pointing there would no longer refer to what the user picked.
+ a selection pointing there would no longer refer to what the user picked. When
+ [`MultiSelect`](#ListView.MultiSelect) left other items selected, [`Selection`](#ListView.Selection) and
+ [`SelectionIndex`](#ListView.SelectionIndex) move to the most recent of those, so that they only report nothing
+ selected when [`SelectedItems`](#ListView.SelectedItems) really is empty.
 
 ## Notifier  {#Notifier}
 

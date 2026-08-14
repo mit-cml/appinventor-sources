@@ -1307,12 +1307,16 @@ public final class ListView extends AndroidViewComponent {
    * are used only by the layouts that show them.
    *
    * The row stops being selected, because a different item occupies that position afterwards and
-   * a selection pointing there would no longer refer to what the user picked.
+   * a selection pointing there would no longer refer to what the user picked. When
+   * {@link #MultiSelect(boolean)} left other items selected, {@link #Selection()} and
+   * {@link #SelectionIndex()} move to the most recent of those, so that they only report nothing
+   * selected when {@link #SelectedItems()} really is empty.
    */
   @SimpleFunction(description = "Replaces the item at the given index. MainText is required. "
                                     + "DetailText and ImageName are optional. The item stops "
                                     + "being selected, since it is no longer the item the user "
-                                    + "picked.")
+                                    + "picked. If MultiSelect left other items selected, Selection "
+                                    + "and SelectionIndex move to the most recent of those.")
   public void UpdateItemAtIndex(int index, String mainText, String detailText, String imageName) {
     if (index < 1 || index > dataModel.size()) {
       container.$form().dispatchErrorOccurredEvent(this, "UpdateItemAtIndex",
@@ -1321,7 +1325,16 @@ public final class ListView extends AndroidViewComponent {
     }
     dataModel.set(index - 1, newRowFrom(mainText, detailText, imageName));
     if (selectionIndex == index) {
-      clearSelectionInfo();
+      // The replaced row has stopped being one of the user's picks, so move what the singular
+      // blocks report onto the most recent pick that is left. Reporting nothing while MultiSelect
+      // still holds a set would read as "nothing is selected", which is not true.
+      int remaining = dataModel.lastSelection();
+      if (remaining < 0) {
+        clearSelectionInfo();
+      } else {
+        selectionIndex = remaining + 1;
+        readSelectionTextFrom(selectionIndex);
+      }
     }
     // Replacing a row moves nothing, so no other selected index needs adjusting.
     updateAdapterData();

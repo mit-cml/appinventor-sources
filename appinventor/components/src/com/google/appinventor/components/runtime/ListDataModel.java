@@ -245,6 +245,11 @@ public class ListDataModel {
     return selectedItems.isEmpty() ? -1 : selectedItems.get(0);
   }
 
+  /** The most recently selected original index, or -1 when nothing is selected. */
+  public int lastSelection() {
+    return selectedItems.isEmpty() ? -1 : selectedItems.get(selectedItems.size() - 1);
+  }
+
   /** Every selected original index, in the order the items were picked. */
   public List<Integer> getSelectedIndexes() {
     return Collections.unmodifiableList(selectedItems);
