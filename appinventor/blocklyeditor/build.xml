@@ -135,7 +135,7 @@
 			<arg line="--output_wrapper='%output%&#10;//# sourceMappingURL=/static/js/blockly-all.js.map'" if:true="${release}"/>
 			<arg line="--dependency_mode=PRUNE_LEGACY"/>
 			<arg value="--js='${blockly.src.dir}/blockly_compressed.js'"/>
-			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-pr68-db9c159.min.js'"/>
+			<arg value="--js='${blockly.plugin.dir}/block-lexical-variables-core-pr88-71ee694.min.js'"/>
 			<arg value="--js='${blockly.plugin.dir}/typeblocking-josmas-pr6-fd54c90.min.js'"/>
 			<arg value="--js='${blockly.plugin.dir}/field-multilineinput-6.0.9.min.js'"/>
 			<arg value="--js='blocklyeditor/src/**.js'"/>
