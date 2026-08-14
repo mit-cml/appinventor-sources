@@ -23,7 +23,7 @@ module.exports = function(config) {
       'appengine/war/static/js/scroll-options-13.2.0.min.js',
       'appengine/war/static/js/workspace-search-13.2.0.min.js',
       'appengine/war/static/js/block-dynamic-connection-13.2.0.min.js',
-      'appengine/war/static/js/blockly-field-colour-6.0.11.min.js',
+      'appengine/war/static/js/blockly-field-colour-13.2.0.min.js',
       'appengine/war/static/js/workspace-multiselect-pr133-f26447c.min.js',
       'blocklyeditor/tests/testCommon.js',
       'blocklyeditor/tests/com/google/appinventor/mocha/*.js',
