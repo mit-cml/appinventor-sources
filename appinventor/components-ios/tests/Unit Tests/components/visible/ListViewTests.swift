@@ -530,6 +530,54 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual("", testList.Selection)
   }
 
+  func testUpdateItemAtIndexClearsThatRowsSelection() {
+    testList.Elements = ["apple", "banana", "cantaloupe"] as [AnyObject]
+    testList.SelectionIndex = 3  // cantaloupe
+
+    testList.UpdateItemAtIndex(1, "apricot", "", "")  // a row the user did not pick
+    XCTAssertEqual("apricot", testList.Elements[0] as? String)
+    XCTAssertEqual(3, testList.SelectionIndex)
+    XCTAssertEqual("cantaloupe", testList.Selection)
+
+    testList.UpdateItemAtIndex(3, "cherry", "", "")  // the picked row
+    XCTAssertEqual("cherry", testList.Elements[2] as? String)
+    XCTAssertEqual(0, testList.SelectionIndex)
+    XCTAssertEqual("", testList.Selection)
+  }
+
+  func testUpdateItemAtIndexMovesReportingToTheRemainingSelection() {
+    testList.Elements = ["apple", "banana", "cantaloupe", "date"] as [AnyObject]
+    testList.MultiSelect = true
+    let tableView = visibleTableView(for: testList)
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))  // apple
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 2, section: 0))  // cantaloupe
+    XCTAssertEqual(3, testList.SelectionIndex)
+
+    testList.UpdateItemAtIndex(3, "cherry", "", "")
+
+    // cantaloupe stopped being a pick, so reporting falls back to apple, the pick still standing.
+    XCTAssertEqual(["apple"], testList.SelectedItems as? [String])
+    XCTAssertEqual(1, testList.SelectionIndex)
+    XCTAssertEqual("apple", testList.Selection)
+
+    testList.UpdateItemAtIndex(1, "apricot", "", "")
+
+    // Nothing is left now, so reporting nothing selected is the truth.
+    XCTAssertEqual(0, testList.SelectedItems.count)
+    XCTAssertEqual(0, testList.SelectionIndex)
+    XCTAssertEqual("", testList.Selection)
+  }
+
+  func testUpdateItemAtIndexOutOfBoundsLeavesTheListAlone() {
+    testList.Elements = ["apple", "banana"] as [AnyObject]
+
+    testList.UpdateItemAtIndex(3, "cherry", "", "")
+
+    XCTAssertEqual(2, testList.Elements.count)
+    XCTAssertEqual("apple", testList.Elements[0] as? String)
+    XCTAssertEqual("banana", testList.Elements[1] as? String)
+  }
+
   // MARK: Events
 
   func testAfterPicking() {

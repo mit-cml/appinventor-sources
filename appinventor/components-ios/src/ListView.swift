@@ -98,6 +98,9 @@ class ListDataModel {
   /// The first selected original index, or nil when nothing is selected.
   var firstSelection: Int? { selectedIndices.first }
 
+  /// The most recently selected original index, or nil when nothing is selected.
+  var lastSelection: Int? { selectedIndices.last }
+
   func isSelected(_ originalIndex: Int) -> Bool { selectedIndices.contains(originalIndex) }
 
   /// Selects only the given original index, replacing any previous selection.
@@ -183,6 +186,24 @@ class ListDataModel {
   func insert(contentsOf newItems: [[String: AnyObject]], at index: Int) {
     items.insert(contentsOf: newItems, at: index)
     shiftSelectionForInsert(at: index, count: newItems.count)
+  }
+
+  // Replacing a row moves nothing, so the indexes around it are untouched. The replaced row does
+  // lose its selection: a different item occupies that position now, so a selection pointing there
+  // no longer refers to what the user picked.
+
+  func replace(at index: Int, with text: String) {
+    elements[index] = text
+    dropSelection(at: index)
+  }
+
+  func replace(at index: Int, with item: [String: AnyObject]) {
+    items[index] = item
+    dropSelection(at: index)
+  }
+
+  private func dropSelection(at index: Int) {
+    selectedIndices.removeAll { $0 == index }
   }
 
   /// Removes the row at a real (unfiltered) position from whichever array holds it.
@@ -993,6 +1014,38 @@ fileprivate final class ListViewRootView: UIView {
     _collectionView.reloadData()
     _collectionView.collectionViewLayout.invalidateLayout()
     invalidateListViewSize()
+  }
+
+  /// Replaces the item at the given index. The row stops being selected, because a different item
+  /// occupies that position afterwards. When MultiSelect left other items selected, Selection and
+  /// SelectionIndex move to the most recent of those, so they report nothing selected only when
+  /// SelectedItems really is empty.
+  @objc open func UpdateItemAtIndex(_ updateIndex: Int32, _ mainText: String, _ detailText: String,
+                                    _ imageName: String) {
+    guard updateIndex > 0 && updateIndex <= Int32(listItemCount) else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "UpdateItemAtIndex",
+                                                   ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, updateIndex)
+      return
+    }
+    let index = Int(updateIndex - 1)
+    if usesPlainStrings {
+      _model.replace(at: index, with: mainText)
+    } else {
+      _model.replace(at: index,
+                     with: ListDataModel.makeItem(text1: mainText, text2: detailText, image: imageName))
+    }
+    if _selectionIndex == updateIndex {
+      // The replaced row has stopped being one of the user's picks, so move what the singular
+      // properties report onto the most recent pick that is left. Reporting nothing while
+      // MultiSelect still holds a set would read as "nothing is selected", which is not true.
+      if let remaining = _model.lastSelection {
+        readSelectionInfo(from: remaining)
+      } else {
+        clearSelectionInfo()
+      }
+    }
+    // Replacing a row moves nothing, so no other selected index needs adjusting.
+    elementsCount()
   }
 
   @objc open func RemoveItemAtIndex(_ index: Int32) {
