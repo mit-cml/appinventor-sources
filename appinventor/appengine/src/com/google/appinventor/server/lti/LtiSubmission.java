@@ -13,8 +13,8 @@ import java.util.Date;
 /**
  * Remembers the current immutable copy of an LTI assignment project. A new
  * submission replaces the state for the source project, so review can find the
- * latest submitted artifact, or learn that its copy failed, with one datastore
- * lookup.
+ * latest submitted artifact with one datastore lookup. A record whose copy id
+ * is empty reads as nothing to review, a shape older data can still hold.
  */
 final class LtiSubmission {
 
@@ -43,12 +43,6 @@ final class LtiSubmission {
       String snapshotOwnerId, Date submittedAt) {
     StorageIoInstanceHolder.getInstance().storeLtiSubmission(sourceProjectId, userId,
         snapshotProjectId, snapshotOwnerId, submittedAt);
-  }
-
-  /** Makes a failed newer attempt supersede any older submitted copy. */
-  static void markUnavailable(long sourceProjectId, String userId, Date submittedAt) {
-    StorageIoInstanceHolder.getInstance().storeLtiSubmission(sourceProjectId, userId,
-        0, "", submittedAt);
   }
 
   /** Loads the current submitted copy for a source project, or null if none exists. */

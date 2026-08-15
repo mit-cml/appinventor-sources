@@ -97,14 +97,17 @@ public class LtiReviewAccessTest extends LocalDatastoreTestCase {
    * A later attempt whose copy failed supersedes the older one, and there is then nothing to
    * open, rather than an older copy passing for the newest submission.
    */
-  public void testFailedLaterCopySupersedesTheOlderOne() throws Exception {
+  public void testARecordWithNoCopyReadsAsNothingToReview() throws Exception {
     long projectId = createProject(LEARNER, "Exercise_1");
     long snapshotId = createProject(SNAPSHOT_OWNER, "Snapshot_1");
     LtiResourceLinks.put(LEARNER, ISSUER, DEPLOYMENT, RESOURCE_LINK, projectId);
     LtiSubmission.put(projectId, LEARNER, snapshotId, SNAPSHOT_OWNER, new Date(1000L));
     assertEquals(snapshotId, review(LEARNER));
-    LtiSubmission.markUnavailable(projectId, LEARNER, new Date(2000L));
-    assertEquals("a failed newer copy must not fall back to the live project",
+    // Nothing writes this shape any more, but older data can still hold it, and meeting it
+    // must read as nothing to review rather than fall back to the learner's live project.
+    StorageIoInstanceHolder.getInstance().storeLtiSubmission(projectId, LEARNER, 0, "",
+        new Date(2000L));
+    assertEquals("a record with no copy must not fall back to the live project",
         0, review(LEARNER));
   }
 

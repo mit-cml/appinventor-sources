@@ -100,16 +100,14 @@ public class LtiSubmitServlet extends HttpServlet {
       return;
     }
     try {
-      try {
-        snapshotSubmission(projectId, ctx);
-      } catch (Exception e) {
-        // The submission still reaches the LMS, so the learner is not left thinking their
-        // work was never handed in. The review then has nothing to open for this attempt,
-        // because the learner's own project is deliberately never offered as a substitute,
-        // and snapshotSubmission marked the record unavailable before rethrowing, so an
-        // older copy cannot pass for this one.
-        LOG.log(Level.WARNING,
-            "LTI submission snapshot failed for source project " + projectId, e);
+      if (snapshotSubmission(projectId, ctx) != Snapshot.STORED) {
+        // The platform is told a learner has handed in only when there is a copy for the
+        // teacher to open. Telling it otherwise puts Submitted in the gradebook against
+        // nothing to grade, which a teacher cannot tell apart from a tool that is broken,
+        // and a learner who tries again gets a real submission instead.
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        resp.getWriter().println("Your work could not be handed in. Please try again.");
+        return;
       }
       LtiAgs.postSubmission(ctx.issuer, ctx.lineItemUrl, ctx.ltiUserSub);
       resp.getWriter().println(
@@ -122,9 +120,22 @@ public class LtiSubmitServlet extends HttpServlet {
     }
   }
 
+  /** What an attempt left on record, which decides whether the LMS is told about it. */
+  @VisibleForTesting
+  enum Snapshot {
+    /** A frozen copy is stored and is the copy a review of this project would open. */
+    STORED,
+    /**
+     * No copy was stored. Whatever was on record before is left exactly as it was, because the
+     * platform was told about that one and has to be able to open it, and it was never told
+     * about this attempt at all.
+     */
+    FAILED
+  }
+
   /** Copies the submitted project into an account no interactive login can reach. */
-  private void snapshotSubmission(long sourceProjectId, LtiGradeContext.Context ctx)
-      throws Exception {
+  @VisibleForTesting
+  Snapshot snapshotSubmission(long sourceProjectId, LtiGradeContext.Context ctx) {
     Date submittedAt = new Date();
     try {
       String sourceOwnerId = storageIo.getProjectUserId(sourceProjectId);
@@ -148,22 +159,40 @@ public class LtiSubmitServlet extends HttpServlet {
       removeLaunchMarker(snapshotOwnerId, snapshotProjectId);
       LtiSubmission.put(sourceProjectId, sourceOwnerId, snapshotProjectId,
           snapshotOwnerId, submittedAt);
+      // The store keeps whichever record carries the later time, so writing is not the same as
+      // being on record. Nothing writes a record without a copy any more, but older data can
+      // still hold one, and a review meeting it opens nothing, so the platform must not be
+      // told this attempt arrived. Any record with a copy behind it is this attempt or a
+      // newer one, and either is something the teacher can open.
+      if (LtiSubmission.get(sourceProjectId) == null) {
+        LOG.warning("LTI submission copy " + snapshotProjectId + " for source project "
+            + sourceProjectId + " was superseded by an attempt with no copy");
+        return Snapshot.FAILED;
+      }
       LOG.info("LTI submission snapshot copied source project " + sourceProjectId
           + " to project " + snapshotProjectId);
+      return Snapshot.STORED;
     } catch (Exception e) {
-      try {
-        // A failed resubmission must not leave an older artifact looking current.
-        LtiSubmission.markUnavailable(sourceProjectId, ctx.userId, submittedAt);
-      } catch (Exception recordFailure) {
-        e.addSuppressed(recordFailure);
-      }
-      throw e;
+      // Nothing is written down and nothing already on record is disturbed. The platform is
+      // told only about an attempt that stored a copy, so an attempt that did not store one
+      // never happened as far as the platform is concerned, and the copy it was told about
+      // last has to stay openable. Removing that copy would leave the platform saying handed
+      // in with nothing behind it, which is what this whole path exists to avoid.
+      LOG.log(Level.WARNING,
+          "LTI submission snapshot failed for source project " + sourceProjectId, e);
+      return Snapshot.FAILED;
     }
   }
 
+
+
   /**
-   * The snapshot is never a submit-capable learner project, even though project
-   * copying carries settings across.
+   * Makes sure the frozen copy cannot look like a live assignment project.
+   *
+   * <p>Copying rebuilds a project's settings from the fixed list in
+   * {@code YoungAndroidSettingsBuilder}, which does not carry the launch marker, so a copy
+   * arrives without one already. This stays as the guard for that, since the menu the marker
+   * drives is the one thing a teacher must not be offered while reviewing.
    */
   @VisibleForTesting
   void removeLaunchMarker(String snapshotOwnerId, long snapshotProjectId) {
