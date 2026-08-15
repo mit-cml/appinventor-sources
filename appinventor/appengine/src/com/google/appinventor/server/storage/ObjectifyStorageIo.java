@@ -2643,8 +2643,10 @@ public class ObjectifyStorageIo implements StorageIo {
               return;
             }
             if (templateProjectId <= 0) {
-              // An assignment created without a template stays without one, and every learner on
-              // it gets a blank project.
+              // Nothing is fixed to an assignment that has no template yet, so a teacher who
+              // forgot to pick one can still add it and have it take effect. Only a real
+              // template is fixed, since that is the case that would otherwise change a
+              // starting point halfway through a class.
               result.t = 0L;
               return;
             }

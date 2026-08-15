@@ -132,6 +132,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(USER_EMAIL_NEW, user4.getUserEmail());
   }
 
+  /**
+   * The lti.invalid namespace holds the accounts that own frozen copies, so an ordinary sign
+   * in must never resolve to one of them, whatever address it presents.
+   */
   public void testGetUserFromEmailRefusesReservedLtiNamespace() {
     // The @lti.invalid domain is reserved for accounts provisioned by the verified LTI launch.
     // getUserFromEmail is reachable unauthenticated (the local login form), so it must refuse
@@ -156,6 +160,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals("real.person@example.com", user.getUserEmail());
   }
 
+  /**
+   * Deleting an account takes its LTI rows with it, since a later launch of the same platform
+   * subject would otherwise find the identity link and land back in the deleted account.
+   */
   public void testDeleteAccountCascadesLtiRows() {
     final String USER_ID = "700";
     final String USER_EMAIL = "user700@test.com";
@@ -192,6 +200,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertNull(storage.getLtiSubmission(projectId));
   }
 
+  /**
+   * An account made by a launch has never opened the IDE, so it has no folder tree, and the
+   * launch and the template picker both ask what is in the trash on every request.
+   */
   public void testGetTrashProjectIds() {
     final String USER_ID = "710";
     storage.getUser(USER_ID, "user710@test.com");
@@ -208,6 +220,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(Arrays.asList(projectId), storage.getTrashProjectIds(USER_ID));
   }
 
+  /**
+   * A folder tree that cannot be read must not stop a launch, so it reads as nothing in the
+   * trash rather than as a failure.
+   */
   public void testUnreadableFolderTreeReadsAsAnEmptyTrash() {
     final String USER_ID = "720";
     storage.getUser(USER_ID, "user720@test.com");
@@ -395,7 +411,6 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     modificationDate = storage.getProjectDateModified(USER_ID, projectId);
     assertEquals(oldModificationDate, modificationDate);
     oldModificationDate = modificationDate;
-
 
     modificationDate = storage.deleteFile(USER_ID, projectId, FILE_NAME1);
     assertTrue(oldModificationDate <= modificationDate);
@@ -676,6 +691,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertFalse(sourcesFiles.contains(YAIL_FILE_NAME2));
   }
 
+  /**
+   * A platform is stored and read back by its issuer, which is the only thing a launch is
+   * guaranteed to arrive with.
+   */
   public void testLtiPlatformRegistry() {
     final String issuer = "https://moodle.example.org";
     assertNull(storage.getLtiPlatform(issuer));
@@ -698,6 +717,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertNull(storage.getLtiPlatform(issuer));
   }
 
+  /**
+   * The link from a platform subject to an App Inventor account is what puts a returning
+   * learner back in the account they worked in last time.
+   */
   public void testLtiUserLink() {
     final String issuer = "https://moodle.example.org";
     assertNull(storage.getLtiUserId(issuer, "subject-1"));
@@ -708,6 +731,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertNull(storage.getLtiUserId("https://other.example.org", "subject-1"));
   }
 
+  /**
+   * A nonce is accepted once and refused afterwards, which is what stops a captured launch
+   * from being sent a second time.
+   */
   public void testLtiNonceReplay() {
     assertTrue(storage.useLtiNonce("nonce-aaa"));
     // The same nonce a second time is a replay and must be rejected.
@@ -716,6 +743,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertTrue(storage.useLtiNonce("nonce-bbb"));
   }
 
+  /**
+   * One learner and one assignment keep one project, so a second launch returns the project
+   * they already have rather than forking another.
+   */
   public void testLtiForkProjectIdempotency() {
     final String userId = "user-200";
     final String issuer = "https://moodle.example.org";
@@ -727,6 +758,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals(0, storage.getLtiForkProject("user-201", issuer, "dep-1", "rl-1"));
   }
 
+  /**
+   * Submit needs the line item and the platform subject to reach the platform, so the grade
+   * context is stored against the project and read back whole.
+   */
   public void testLtiGradeContext() {
     final long projectId = 5066549580791808L;
     final String userId = "user-300";
@@ -811,6 +846,10 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertEquals("student-b", storage.getLtiSubmission(7201L).userId);
   }
 
+  /**
+   * The signing key survives a round trip through the datastore, since a key that changed
+   * between requests would break every platform that had already fetched the public half.
+   */
   public void testLtiKeys() {
     assertTrue(storage.getLtiKeys().isEmpty());
     storage.storeLtiKey("kid-1", new byte[] {1, 2, 3}, new byte[] {4, 5, 6});

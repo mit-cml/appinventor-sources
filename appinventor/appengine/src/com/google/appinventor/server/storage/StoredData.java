@@ -386,9 +386,9 @@ public class StoredData {
     public String ltiUserSub;
   }
 
-  // The current snapshot state for one submitted assignment project. A zero
-  // snapshot project id records that the newest copy failed, so an older artifact
-  // is not mistaken for the newest submission. The source project id is both the
+  // The current snapshot state for one submitted assignment project. A row with
+  // no snapshot project id reads as nothing to review. Nothing writes that shape
+  // any more, but older data can still hold it. The source project id is both the
   // lookup key and a stored field for audit clarity. The snapshot owner is a
   // reserved account that the learner cannot launch into, and userId ties the row
   // to account deletion.

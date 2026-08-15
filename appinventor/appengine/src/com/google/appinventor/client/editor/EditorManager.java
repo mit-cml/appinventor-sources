@@ -212,6 +212,20 @@ public final class EditorManager {
   }
 
   /**
+   * Check whether any editor or project setting still holds changes that are not on the server.
+   *
+   * <p>The command given to {@link #saveDirtyEditors(Command)} runs once every save has finished,
+   * whether it succeeded or not, and a file whose save failed is put back in the dirty set. Asking
+   * this from that command is therefore how a caller tells a completed save apart from a failed
+   * one before it acts on the saved content.
+   *
+   * @return true if something is still unsaved, otherwise false
+   */
+  public boolean hasUnsavedChanges() {
+    return !dirtyFileEditors.isEmpty() || !dirtyProjectSettings.isEmpty();
+  }
+
+  /**
    * Schedules the auto-save timer.
    */
   private void scheduleAutoSaveTimer() {

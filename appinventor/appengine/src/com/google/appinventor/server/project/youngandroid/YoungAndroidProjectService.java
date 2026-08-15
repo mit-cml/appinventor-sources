@@ -286,12 +286,24 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
 
+  /**
+   * Copies a project, leaving out what an export leaves out when it changes hands.
+   *
+   * <p>A copy that stays inside one account carries everything, which is what Save As and
+   * Checkpoint want. A copy that goes to a different account is closer to an export, and the
+   * exporter leaves the generated Yail behind because the Firebase component can put a token
+   * in it. Whether that applies is worked out here from where the copy is going, rather than
+   * asked of the caller, so a caller cannot get it wrong. Leaving the file out while the copy
+   * is being built also means it never reaches the other account at all, so there is no window
+   * in which it is there and no cleanup afterwards that could fail and leave it behind.
+   */
   @Override
   public long copyProject(String userId, long oldProjectId, String newName, String newuserId) {
     // By default we assume that the project ownership doesn't change
     if (newuserId == null) {
       newuserId = userId;
     }
+    boolean crossAccount = !userId.equals(newuserId);
     String oldName = storageIo.getProjectName(userId, oldProjectId);
     String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
@@ -308,6 +320,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Get the old project's source files and add them to new project, modifying where necessary.
     for (String oldSourceFileName : storageIo.getProjectSourceFiles(userId, oldProjectId)) {
+      if (crossAccount && oldSourceFileName.startsWith(SRC_FOLDER)
+          && oldSourceFileName.endsWith(YAIL_FILE_EXTENSION)) {
+        // The build writes this again from the screens, and an imported project arrives
+        // without one, so nothing is lost by not carrying it over.
+        continue;
+      }
       String newSourceFileName;
 
       String newContents = null;
