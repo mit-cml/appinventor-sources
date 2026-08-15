@@ -73,25 +73,50 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
         });
   }
 
+  /**
+   * Saves the settings, and answers the given command once, whatever happens.
+   *
+   * <p>The caller counts the answer, so a path that returned without answering would leave a
+   * save looking unfinished forever. A failure also puts the settings back in the queue, since
+   * the caller has already taken them out of it and would otherwise never try them again.
+   */
   @Override
   public void saveSettings(final Command command) {
-    if (Ode.getInstance().isReadOnly()) {
-      return;                   // No changes when in read only mode
-    } else if (!changed) {
-      // Do not save project settings if they haven't changed.
+    if (Ode.getInstance().isReadOnly() || !changed) {
+      // Nothing to write, either because the session may not write or because nothing moved.
+      if (command != null) {
+        command.execute();
+      }
       return;
     }
-    String s = encodeSettings();
-    LOG.info("Saving project settings: " + s);
+    final String sent = encodeSettings();
+    LOG.info("Saving project settings: " + sent);
     Ode.getInstance().getProjectService().storeProjectSettings(
         Ode.getInstance().getSessionId(),
-        project.getProjectId(), s,
+        project.getProjectId(), sent,
         new OdeAsyncCallback<Void>(
             // failure message
             MESSAGES.settingsSaveError()) {
           @Override
           public void onSuccess(Void result) {
-            changed = false;
+            // Only what was sent is on the server. A setting the learner moved while this was
+            // in flight is not, so saying nothing has changed would lose it.
+            if (sent.equals(encodeSettings())) {
+              changed = false;
+            }
+            if (command != null) {
+              command.execute();
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            // Put them back the way a failed file save is put back, so the next save retries
+            // them and anything asking what is still unsaved is told the truth. No timer is
+            // started for them, since retrying a failure on a clock of its own would hammer
+            // a server that is already in trouble.
+            Ode.getInstance().getEditorManager().settingsSaveFailed(ProjectSettings.this);
+            super.onFailure(caught);
             if (command != null) {
               command.execute();
             }

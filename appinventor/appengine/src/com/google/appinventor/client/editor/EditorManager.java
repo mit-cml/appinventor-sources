@@ -18,16 +18,15 @@ import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -55,9 +54,11 @@ public final class EditorManager {
   private static final int AUTO_SAVE_FORCED_TIMEOUT = 30000;
 
   // Fields used for saving and auto-saving.
-  private final Set<ProjectSettings> dirtyProjectSettings;
-  private final Set<FileEditor> dirtyFileEditors;
-  private final HashMap<String,FileEditor> pendingFileEditors;
+  /** Files waiting to be saved and files whose save has not answered yet. */
+  private final PendingSaves<FileEditor> files;
+
+  /** Project settings waiting to be saved and settings whose save has not answered yet. */
+  private final PendingSaves<ProjectSettings> settings;
   private final Timer autoSaveTimer;
   private boolean autoSaveIsScheduled;
   private long autoSaveRequestTime;
@@ -73,15 +74,23 @@ public final class EditorManager {
   public EditorManager() {
     openProjectEditors = Maps.newHashMap();
 
-    dirtyProjectSettings = new HashSet<ProjectSettings>();
-    dirtyFileEditors = new HashSet<FileEditor>();
-    pendingFileEditors = new HashMap<String,FileEditor>();
+    files = new PendingSaves<FileEditor>(new PendingSaves.Key<FileEditor>() {
+      @Override
+      public Object of(FileEditor fileEditor) {
+        return fileEditor.getFileId();
+      }
+    });
+    settings = new PendingSaves<ProjectSettings>(new PendingSaves.Key<ProjectSettings>() {
+      @Override
+      public Object of(ProjectSettings projectSettings) {
+        return projectSettings;
+      }
+    });
 
     autoSaveTimer = new Timer() {
       @Override
       public void run() {
-        // When the timer goes off, save all dirtyProjectSettings and
-        // dirtyFileEditors.
+        // When the timer goes off, save everything that is waiting.
         Ode.getInstance().lockScreens(true); // Lock out changes
         saveDirtyEditors(new Command() {
             @Override
@@ -151,7 +160,7 @@ public final class EditorManager {
         // in case the file is not open in an editor (possible?) check 
         // the FileEditors for null. 
         if (fileEditor != null) {
-          dirtyFileEditors.remove(fileEditor);
+          files.discard(fileEditor);
         }
       }
       projectEditor.closeFileEditors(fileIds);
@@ -170,7 +179,7 @@ public final class EditorManager {
     // memory even after we've removed them.
     Project project = Ode.getInstance().getProjectManager().getProject(projectId);
     ProjectSettings projectSettings = project.getSettings();
-    dirtyProjectSettings.remove(projectSettings);
+    settings.discard(projectSettings);
     openProjectEditors.remove(projectId);
   }
 
@@ -181,8 +190,8 @@ public final class EditorManager {
    * @param projectSettings the project settings for which to schedule auto-save
    */
   public void scheduleAutoSave(ProjectSettings projectSettings) {
-    // Add the project settings to the dirtyProjectSettings list.
-    dirtyProjectSettings.add(projectSettings);
+    // Note that the project settings need saving.
+    settings.add(projectSettings);
     scheduleAutoSaveTimer();
   }
 
@@ -193,9 +202,9 @@ public final class EditorManager {
    * @param fileEditor the file editor for which to schedule auto-save
    */
   public void scheduleAutoSave(FileEditor fileEditor) {
-    // Add the file editor to the dirtyFileEditors list.
+    // Note that the file editor needs saving.
     if (!fileEditor.isDamaged()) { // Don't save damaged files
-      dirtyFileEditors.add(fileEditor);
+      files.add(fileEditor);
     } else {
       LOG.info("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
     }
@@ -221,8 +230,38 @@ public final class EditorManager {
    *
    * @return true if something is still unsaved, otherwise false
    */
+  /**
+   * Puts settings whose save did not do what it was asked back in the queue.
+   *
+   * <p>The next save takes them, the way a failed file save is retried, and no timer is
+   * started for them. Retrying a failure on a clock of its own would hammer a server that is
+   * already in trouble, which the file path deliberately avoids, so the settings path avoids
+   * it the same way.
+   */
+  public void settingsSaveFailed(ProjectSettings projectSettings) {
+    settings.failed(projectSettings);
+  }
+
+  /**
+   * How many completions {@link #saveDirtyEditors} waits for before it reports back.
+   *
+   * <p>Each project settings save is its own operation, and so is each file, because
+   * {@link #saveMultipleFilesAtOnce} sends one request per file and answers the command once
+   * for each of them. With no files to save it still answers once. Counting the files as a
+   * single operation would report back while the rest were still in flight, and would clear
+   * anything still waiting before a later failure could put its editor back.
+   *
+   * @param settingsCount how many project settings are being saved
+   * @param fileCount how many files are being saved
+   * @return the number of completions to wait for
+   */
+  @VisibleForTesting
+  static int pendingSaveOperationCount(int settingsCount, int fileCount) {
+    return settingsCount + (fileCount == 0 ? 1 : fileCount);
+  }
+
   public boolean hasUnsavedChanges() {
-    return !dirtyFileEditors.isEmpty() || !dirtyProjectSettings.isEmpty();
+    return !files.isEmpty() || !settings.isEmpty();
   }
 
   /**
@@ -249,56 +288,57 @@ public final class EditorManager {
   }
 
   /**
-   * Saves all modified files and project settings and calls the afterSaving
-   * command after they have all been saved successfully.
-   *
-   * If any errors occur while saving, the afterSaving command will not be
-   * executed.
-   * If nothing needs to be saved, the afterSavingFiles command is called
+   * Saves what needs saving and runs the afterSaving command once every save it
+   * sent has answered, whether it succeeded or not. What is still unsaved
+   * afterwards is what {@link #hasUnsavedChanges} reports, which is how a
+   * caller tells the two apart. With nothing to send it runs the command
    * immediately, not asynchronously.
    *
-   * @param afterSaving  optional command to be executed after project
-   *                     settings and file editors are saved successfully
+   * @param afterSaving  optional command to be executed once every save this
+   *                     call sent has answered
    */
   public void saveDirtyEditors(final Command afterSaving) {
     // Note, We don't do any saving if we are in read only mode
     if (Ode.getInstance().isReadOnly()) {
-      afterSaving.execute();
+      if (afterSaving != null) {
+        afterSaving.execute();
+      }
       return;
     }
 
-    // Collect the files that need to be saved.
+    // Take everything that can be sent now. Anything whose previous save has not answered yet
+    // is held back, because two saves of one thing can land in either order and the older one
+    // landing last would undo the newer one.
+    List<FileEditor> editorsToSave = files.take();
+    final List<ProjectSettings> projectSettingsToSave = settings.take();
     List<FileDescriptorWithContent> filesToSave = new ArrayList<FileDescriptorWithContent>();
-    for (FileEditor fileEditor : dirtyFileEditors) {
-      FileDescriptorWithContent fileContent = new FileDescriptorWithContent(
-          fileEditor.getProjectId(), fileEditor.getFileId(), fileEditor.getRawFileContent());
-      filesToSave.add(fileContent);
-      pendingFileEditors.put(fileEditor.getFileId(), fileEditor); // pending save
+    for (FileEditor fileEditor : editorsToSave) {
+      filesToSave.add(new FileDescriptorWithContent(
+          fileEditor.getProjectId(), fileEditor.getFileId(), fileEditor.getRawFileContent()));
     }
-    dirtyFileEditors.clear();
-
-    // Collect the project settings that need to be saved.
-    List<ProjectSettings> projectSettingsToSave = new ArrayList<ProjectSettings>();
-    projectSettingsToSave.addAll(dirtyProjectSettings);
-    dirtyProjectSettings.clear();
 
     autoSaveTimer.cancel();
     autoSaveIsScheduled = false;
+    if (files.heldBack() || settings.heldBack()) {
+      // Something is waiting for a save that has not answered yet. Nothing else would come
+      // back for it, since the timer only starts again when the learner types, so it is
+      // started here and the next save takes what is waiting.
+      scheduleAutoSaveTimer();
+    }
 
     // Keep count as each save operation finishes so we can set the projects' modified date and
     // call the afterSaving command after everything has been saved.
-    // Each project settings is saved as a separate operation, but all files are saved as a single
-    // save operation. So the initial value of pendingSaveOperations is the size of
-    // projectSettingsToSave plus 1.
-    final AtomicInteger pendingSaveOperations = new AtomicInteger(projectSettingsToSave.size() + 1);
+    final AtomicInteger pendingSaveOperations = new AtomicInteger(
+        pendingSaveOperationCount(projectSettingsToSave.size(), filesToSave.size()));
     final DateHolder dateHolder = new DateHolder();
     Command callAfterSavingCommand = new Command() {
       @Override
       public void execute() {
         if (pendingSaveOperations.decrementAndGet() == 0) {
           // We get here when all save operations have completed, either
-          // with success or not.
-          pendingFileEditors.clear(); // Failed I/O will be back in dirtyFileEditors
+          // with success or not. Each one has already said so for itself as it
+          // finished, since clearing the whole map here would also drop the files of a save
+          // that is still running, and a save started while another is in flight is ordinary.
           // Execute the afterSaving command if one was given.
           if (afterSaving != null) {
             afterSaving.execute();
@@ -313,11 +353,14 @@ public final class EditorManager {
     };
 
     // Save all files at once (asynchronously).
-    saveMultipleFilesAtOnce(filesToSave, callAfterSavingCommand, dateHolder);
+    saveMultipleFilesAtOnce(editorsToSave, filesToSave, callAfterSavingCommand, dateHolder);
 
-    // Save project settings one at a time (asynchronously).
+    // Save project settings one at a time (asynchronously). Each completion first marks its
+    // own save answered, or the settings would count as on their way forever and everything
+    // waiting for the last save to finish would wait for good.
     for (ProjectSettings projectSettings : projectSettingsToSave) {
-      projectSettings.saveSettings(callAfterSavingCommand);
+      projectSettings.saveSettings(
+          PendingSaves.answering(settings, projectSettings, callAfterSavingCommand));
     }
   }
   
@@ -386,17 +429,22 @@ public final class EditorManager {
    * a trivial blocks workspace is attempting to be written over a non-trivial
    * file.
    *
-   * If any unhandled errors occur while saving, the afterSavingFiles
-   * command will not be executed.  If filesWithContent is empty, the
-   * afterSavingFiles command is called immediately, not
-   * asynchronously.
+   * The afterSavingFiles command is executed once for every file, whether its
+   * save succeeded or not, which is how the caller counts the batch down. If
+   * filesWithContent is empty, the afterSavingFiles command is called
+   * immediately, not asynchronously.
    *
    * @param filesWithContent  the files that need to be saved
    * @param afterSavingFiles  optional command to be executed after file
    *                          editors are saved.
    */
-  private void saveMultipleFilesAtOnce(
-      final List<FileDescriptorWithContent> filesWithContent, final Command afterSavingFiles, final DateHolder dateHolder) {
+  private void saveMultipleFilesAtOnce(final List<FileEditor> editorsBeingSaved,
+      final List<FileDescriptorWithContent> filesWithContent, final Command afterSavingFiles,
+      final DateHolder dateHolder) {
+    final Map<String, String> contentById = new HashMap<String, String>();
+    for (FileDescriptorWithContent fileDescriptor : filesWithContent) {
+      contentById.put(fileDescriptor.getFileId(), fileDescriptor.getContent());
+    }
     if (filesWithContent.isEmpty()) {
       // No files needed saving.
       // Execute the afterSavingFiles command if one was given.
@@ -405,15 +453,16 @@ public final class EditorManager {
       }
 
     } else {
-      for (FileDescriptorWithContent fileDescriptor : filesWithContent ) {
-        final long projectId = fileDescriptor.getProjectId();
-        final String fileId = fileDescriptor.getFileId();
-        final String content = fileDescriptor.getContent();
+      for (final FileEditor fileEditor : editorsBeingSaved) {
+        final long projectId = fileEditor.getProjectId();
+        final String fileId = fileEditor.getFileId();
+        final String content = contentById.get(fileId);
         Ode.CLog("Saving fileId " + fileId + " for projectId " + projectId);
         Ode.getInstance().getProjectService().save2(Ode.getInstance().getSessionId(),
           projectId, fileId, false, content, new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
             @Override
             public void onSuccess(Long date) {
+              files.answered(fileEditor);
               if (dateHolder.date != 0) {
                 // This sets the project modification time to that of one of
                 // the successful file saves. It doesn't really matter which
@@ -432,7 +481,12 @@ public final class EditorManager {
             public void onFailure(Throwable caught) {
               // Here is where we handle BlocksTruncatedException
               if (caught instanceof BlocksTruncatedException) {
+                // The learner is being asked whether to save truncated blocks, and this same
+                // callback answers again once they decide, so the attempt is not finished.
+                // Counting it as finished here would let a submission go out while the
+                // question is still on the screen, and would count this file twice.
                 Ode.getInstance().blocksTruncatedDialog(projectId, fileId, content, this);
+                return;
               } else {
                 // We mark the file editor as dirty again because the save failed.
                 //
@@ -443,9 +497,7 @@ public final class EditorManager {
                 // we mark the editors as dirty, so the next update by the user to any
                 // file will retry all of the non-saved files. The "Save Project" menu
                 // item will also re-attempt the failed I/O
-                if (pendingFileEditors.containsKey(fileId)) {
-                  dirtyFileEditors.add(pendingFileEditors.get(fileId));
-                }
+                files.failed(fileEditor);
                 super.onFailure(caught);
               }
               if (afterSavingFiles != null) { // Need to call this to decrement the count
