@@ -5,7 +5,6 @@
 
 package com.google.appinventor.server.lti;
 
-import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
@@ -96,14 +95,23 @@ public class LtiJwtTest extends TestCase {
     }
   }
 
-  /** A token that claims a non RS256 algorithm is rejected, blocking algorithm confusion. */
+  /**
+   * A token that claims a non RS256 algorithm is rejected, blocking algorithm confusion.
+   *
+   * <p>The signature is a real one made with the platform's own key, so the only thing
+   * standing between this token and acceptance is the algorithm check. A token carrying a
+   * signature that could not verify anyway would pass this test with the check removed.
+   */
   public void testNonRs256TokenIsRejected() throws Exception {
-    String header = LtiJwt.b64u(new JSONObject().put("alg", "HS256").put("kid", "test-kid")
-        .toString().getBytes(StandardCharsets.UTF_8));
-    String payload = LtiJwt.b64u(new JSONObject().put("sub", "student-1")
-        .toString().getBytes(StandardCharsets.UTF_8));
+    JSONObject header = new JSONObject().put("alg", "HS256").put("kid", "test-kid");
+    JSONObject payload = new JSONObject().put("sub", "student-1");
+    String jwt = LtiJwt.sign(header, payload, keyPair.getPrivate());
+    assertNotNull("the same token verifies once it stops misdeclaring its algorithm",
+        LtiJwt.verify(LtiJwt.sign(new JSONObject().put("alg", "RS256").put("kid", "test-kid"),
+            payload, keyPair.getPrivate()), jwks));
+
     try {
-      LtiJwt.verify(header + "." + payload + ".AAAA", jwks);
+      LtiJwt.verify(jwt, jwks);
       fail("expected a non RS256 token to be rejected");
     } catch (Exception expected) {
       // expected
