@@ -138,7 +138,56 @@ public class LtiLaunchServletTest extends TestCase {
         LtiLaunchServlet.reviewStudentAccountId(issuer, subject));
   }
 
-  /** The review cookie displays a raw title and a readable fallback. */
+  /**
+   * A learner display name is under learner control on many platforms, and the widget that shows
+   * it writes HTML rather than text, so markup must not survive into the review session.
+   */
+  public void testReviewStudentNameDropsMarkup() {
+    JSONObject claims = new JSONObject().put(FOR_USER,
+        new JSONObject().put("name", "<img src=x onerror=alert(1)>Ada"));
+    String name = LtiLaunchServlet.reviewStudentName(claims);
+    assertFalse("markup must not survive", name.contains("<") || name.contains(">"));
+    assertTrue("the readable part of the name is kept", name.endsWith("Ada"));
+  }
+
+  /** The activity title travels the same display path and is treated the same way. */
+  public void testReviewActivityTitleDropsMarkup() {
+    JSONObject claims = new JSONObject().put(RESOURCE_LINK,
+        new JSONObject().put("title", "Week <b>1</b>"));
+    String title = LtiLaunchServlet.reviewActivityTitle(claims);
+    assertFalse(title.contains("<") || title.contains(">"));
+    assertTrue(title.startsWith("Week"));
+  }
+
+  /** A value that is only markup falls back rather than becoming an empty caption. */
+  public void testReviewStudentNameFallsBackWhenOnlyMarkup() {
+    JSONObject claims = new JSONObject().put(FOR_USER,
+        new JSONObject().put("given_name", "<>").put("family_name", "<<>>"));
+    assertEquals("Student", LtiLaunchServlet.reviewStudentName(claims));
+  }
+
+
+  /** An apostrophe or an ampersand is part of a real name, so neither is taken out. */
+  public void testReviewStudentNameKeepsTheCharactersRealNamesUse() {
+    JSONObject claims = new JSONObject().put(FOR_USER,
+        new JSONObject().put("name", "Grace O'Brien & Ada"));
+    assertEquals("Grace O'Brien & Ada", LtiLaunchServlet.reviewStudentName(claims));
+  }
+
+  /** The full name field falls back the same way, rather than emptying the caption. */
+  public void testReviewStudentNameFallsBackWhenTheFullNameIsOnlyMarkup() {
+    JSONObject claims = new JSONObject().put(FOR_USER,
+        new JSONObject().put("name", "<><>").put("given_name", "Ada"));
+    assertEquals("Ada", LtiLaunchServlet.reviewStudentName(claims));
+  }
+
+  /** With nothing usable anywhere, the caption still says something. */
+  public void testReviewStudentNameFallsBackWhenEverythingIsOnlyMarkup() {
+    JSONObject claims = new JSONObject().put(FOR_USER, new JSONObject().put("name", "<<>>"));
+    assertEquals("Student", LtiLaunchServlet.reviewStudentName(claims));
+  }
+
+  /** The review cookie displays the activity title, with a readable fallback. */
   public void testReviewActivityTitleFallback() {
     assertEquals("Build a quiz: part 2!",
         LtiLaunchServlet.reviewActivityTitle(
@@ -179,8 +228,10 @@ public class LtiLaunchServletTest extends TestCase {
 
   /** A newline in a platform value cannot shift a field boundary onto another identity. */
   public void testAccountKeyResistsDelimiterShift() {
-    assertFalse(LtiLaunchServlet.ltiAccountKey("http://x.org", "a\nb")
-        .equals(LtiLaunchServlet.ltiAccountKey("http://x.org\na", "b")));
+    // Joined without the length prefix both of these read "http://x.organdb", so this pair is
+    // what the prefix is for. A pair differing only by a newline collides under neither scheme.
+    assertFalse(LtiLaunchServlet.ltiAccountKey("http://x.organ", "db")
+        .equals(LtiLaunchServlet.ltiAccountKey("http://x.org", "andb")));
   }
 
   /** A missing subject still produces a stable, valid key. */

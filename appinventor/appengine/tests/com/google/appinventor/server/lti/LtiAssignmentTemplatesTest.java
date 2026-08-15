@@ -42,12 +42,50 @@ public class LtiAssignmentTemplatesTest extends LocalDatastoreTestCase {
   }
 
   private long createProject(String ownerId, String name) {
+    return createProject(ownerId, name, false);
+  }
+
+  /** Optionally with the Yail a build leaves behind, which a copy must not carry across. */
+  private long createProject(String ownerId, String name, boolean withYail) {
     Project project = new Project(name);
     project.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
     project.addTextFile(new TextFile(YoungAndroidProjectService.PROJECT_PROPERTIES_FILE_NAME,
         "main=appinventor.ai_test." + name + ".Screen1\nname=" + name + "\n"));
     project.addTextFile(new TextFile("src/appinventor/ai_test/" + name + "/Screen1.scm", "{}"));
+    if (withYail) {
+      project.addTextFile(new TextFile("src/appinventor/ai_test/" + name + "/Screen1.yail",
+          "(set-and-coerce-property! 'FirebaseDB1 'FirebaseToken \"secret\")"));
+    }
     return storageIo.createProject(ownerId, project, "{}");
+  }
+
+  private static boolean hasYail(java.util.List<String> fileNames) {
+    for (String fileName : fileNames) {
+      if (fileName.endsWith(".yail")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Freezing a template is a copy into another account, so it has to leave the Yail behind.
+   * This drives the selection path rather than the tidy on its own, since the tidy only helps
+   * if the path that makes the copy actually runs it.
+   */
+  public void testFreezingATemplateLeavesTheYailBehind() throws Exception {
+    long source = createProject(TEACHER, "Exercise_1", true);
+    assertTrue("the teacher project has Yail to begin with",
+        hasYail(storageIo.getProjectSourceFiles(TEACHER, source)));
+
+    LtiDeepLinkingSelectServlet servlet = new LtiDeepLinkingSelectServlet();
+    long frozen = servlet.freezeTemplate(TEACHER, source);
+
+    String owner = storageIo.getProjectUserId(frozen);
+    assertFalse("the frozen template must not carry the Yail",
+        hasYail(storageIo.getProjectSourceFiles(owner, frozen)));
+    assertTrue("the teacher keeps their own",
+        hasYail(storageIo.getProjectSourceFiles(TEACHER, source)));
   }
 
   /** Nothing is fixed until a learner opens the assignment. */

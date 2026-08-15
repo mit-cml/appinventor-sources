@@ -389,21 +389,48 @@ public class LtiLaunchServlet extends HttpServlet {
   @VisibleForTesting
   static String reviewStudentName(JSONObject claims) {
     JSONObject forUser = claims.optJSONObject(LTI + "for_user");
-    String name = nonBlankString(forUser, "name");
+    String name = displayOnly(nonBlankString(forUser, "name"));
     if (!name.isEmpty()) {
       return name;
     }
     String givenName = nonBlankString(forUser, "given_name").trim();
     String familyName = nonBlankString(forUser, "family_name").trim();
-    String combined = (givenName + " " + familyName).trim();
+    String combined = displayOnly((givenName + " " + familyName).trim());
     return combined.isEmpty() ? "Student" : combined;
   }
 
-  /** The unsanitized activity title for display, with a readable fallback. */
+  /**
+   * Drops the two characters that can start or end a tag from a string the platform chose, so
+   * it is safe to show whatever the platform sent.
+   *
+   * <p>These values travel through the session into the account name and the project name the
+   * IDE displays, and the widget that shows the account name writes it as HTML rather than as
+   * text. A learner display name is under learner control on many platforms, so a name holding
+   * markup would otherwise run in the teacher's review session.
+   *
+   * <p>Both places put the value in element content and neither puts it in an attribute, so
+   * angle brackets are the whole of it. An ampersand or a quote cannot begin a tag there, and
+   * an ampersand that is left alone shows the name a teacher expects. The characters are
+   * removed rather than escaped, because the project name is shown with setText, where an
+   * escape would appear as the escape rather than as the character.
+   */
+  @VisibleForTesting
+  static String displayOnly(String value) {
+    StringBuilder out = new StringBuilder(value.length());
+    for (int i = 0; i < value.length(); i++) {
+      char c = value.charAt(i);
+      if (c != '<' && c != '>') {
+        out.append(c);
+      }
+    }
+    return out.toString().trim();
+  }
+
+  /** The activity title as the platform wrote it, less any markup, with a readable fallback. */
   @VisibleForTesting
   static String reviewActivityTitle(JSONObject claims) {
     JSONObject resourceLink = claims.optJSONObject(LTI + "resource_link");
-    String title = nonBlankString(resourceLink, "title");
+    String title = displayOnly(nonBlankString(resourceLink, "title"));
     return title.isEmpty() ? "App Inventor assignment" : title;
   }
 
@@ -566,6 +593,13 @@ public class LtiLaunchServlet extends HttpServlet {
           // so fork a fresh one rather than point the IDE at a project it will
           // not open. The template picker filters a trashed project the same way.
         }
+        // The assignment is about to point somewhere else, so this project stops being the
+        // one for it. A learner who takes it back out of the trash would otherwise still be
+        // able to hand it in, while a review of the assignment opened the new project and
+        // found nothing there.
+        if (linked > 0) {
+          retireReplacedProject(userId, linked);
+        }
       }
       // The template the platform sends is what the teacher selected most recently, so it is
       // fixed to the assignment on the first learner who opens it and read back on every launch
@@ -573,10 +607,19 @@ public class LtiLaunchServlet extends HttpServlet {
       // hand a different starting point to whoever has not opened it yet. The classroom portal
       // reaches the same result by refusing the change, which the specification does not let a
       // tool do here, since a Deep Linking request may not name the link being replaced.
-      long templateId = resourceLinkId.isEmpty()
-          ? templateProjectId(claims)
-          : LtiAssignmentTemplates.pin(issuer, deploymentId, resourceLinkId,
+      long templateId;
+      if (resourceLinkId.isEmpty()) {
+        templateId = templateProjectId(claims);
+      } else {
+        // Read the fixed value before looking at what this launch carries. Once an assignment
+        // has a template, that is the template, and a later launch arriving with a reference
+        // this tool cannot read is not a reason to stop the class opening the assignment.
+        templateId = LtiAssignmentTemplates.get(issuer, deploymentId, resourceLinkId);
+        if (templateId <= 0) {
+          templateId = LtiAssignmentTemplates.pin(issuer, deploymentId, resourceLinkId,
               templateProjectId(claims));
+        }
+      }
       // Not transactional across the read and the create, so two launches of a
       // new assignment fired at once can each fork once. A spike accepts the rare
       // duplicate rather than reserve the link under a transaction first.
@@ -594,23 +637,51 @@ public class LtiLaunchServlet extends HttpServlet {
     }
   }
 
-  /** Copies the teacher template, or creates a blank project when there is none. */
-  private long forkNewProject(User user, long templateId, String baseName) {
-    String projectName = uniqueProjectName(user.getUserId(), baseName);
+  /**
+   * Stops a project being the one an assignment points at.
+   *
+   * <p>Both halves matter. Without the grade context the server refuses a submission from it,
+   * and without the marker the client stops offering Submit to LMS on it, so the learner is
+   * not invited to do something that would then be refused.
+   */
+  private void retireReplacedProject(String userId, long projectId) {
+    // Not caught. If the old project cannot be made unsubmittable, the launch fails and shows
+    // the retry page, because pointing the assignment at a new project while the old one can
+    // still be handed in is the split this exists to prevent.
+    LtiGradeContext.revoke(projectId, userId);
+    clearLtiLaunched(userId, projectId);
+    LOG.info("LTI fork: project " + projectId + " is no longer the one for this assignment");
+  }
+
+  /** Gives the learner their own project for the assignment. */
+  @VisibleForTesting
+  long forkNewProject(User user, long templateId, String baseName)
+      throws StoredData.ProjectNotFoundException {
+    return copyTemplateOrCreateBlank(user, templateId,
+        uniqueProjectName(user.getUserId(), baseName));
+  }
+
+  /**
+   * Copies the teacher template, or creates a blank project when the assignment has none.
+   *
+   * <p>A blank project is only ever for an assignment the platform named no template for.
+   * Anything that goes wrong reaching a named template fails the launch instead, because the
+   * whole point of the template is that a class starts from the same place, and one learner
+   * quietly starting from nothing is worse than a launch that can be tried again.
+   */
+  private long copyTemplateOrCreateBlank(User user, long templateId, String projectName)
+      throws StoredData.ProjectNotFoundException {
     if (templateId > 0) {
-      try {
-        String ownerId = storageIo.getProjectUserId(templateId);
-        if (ownerId != null) {
-          long copied =
-              projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
-          LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
-              + projectName + ") for " + user.getUserEmail());
-          return copied;
-        }
-      } catch (Exception te) {
-        LOG.log(Level.WARNING, "LTI fork: template " + templateId
-            + " copy failed, falling back to a blank project", te);
+      String ownerId = storageIo.getProjectUserId(templateId);
+      if (ownerId == null) {
+        throw new IllegalStateException(
+            "LTI fork: assignment template " + templateId + " is no longer readable");
       }
+      long copied =
+          projectService.copyProject(ownerId, templateId, projectName, user.getUserId());
+      LOG.info("LTI fork: copied template " + templateId + " -> project " + copied + " ("
+          + projectName + ") for " + user.getUserEmail());
+      return copied;
     }
     String packageName = StringUtils.getProjectPackage(user.getUserEmail(), projectName);
     NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(packageName);
@@ -650,6 +721,24 @@ public class LtiLaunchServlet extends HttpServlet {
       LOG.log(Level.WARNING,
           "LTI launch: could not mark project " + projectId + " as LTI launched", e);
     }
+  }
+
+  /**
+   * Takes the marker off a project, so the client stops offering Submit to LMS on it.
+   *
+   * <p>The settings the project already carries are kept, since this only removes the one key
+   * the menu reads.
+   */
+  @VisibleForTesting
+  void clearLtiLaunched(String userId, long projectId) {
+    String raw = storageIo.loadProjectSettings(userId, projectId);
+    JSONObject settings = (raw == null || raw.isEmpty()) ? new JSONObject() : new JSONObject(raw);
+    JSONObject group = settings.optJSONObject(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS);
+    if (group == null) {
+      return;
+    }
+    group.remove(SettingsConstants.YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED);
+    storageIo.storeProjectSettings(userId, projectId, settings.toString());
   }
 
   /**
@@ -812,23 +901,33 @@ public class LtiLaunchServlet extends HttpServlet {
   private static long templateProjectId(JSONObject claims) {
     JSONObject custom = claims.optJSONObject(LTI + "custom");
     if (custom == null) {
-      return -1;
+      return 0;
     }
     String ref = custom.optString("template", "");
     if (ref.isEmpty()) {
-      return -1;
+      return 0;
+    }
+    // From here the platform has named a template, so anything that stops this from producing
+    // one is a failure rather than an assignment without a template. Reading it as the second
+    // would hand this learner a blank project while the rest of the class starts from the
+    // teacher's, which is the outcome the retry page exists to avoid.
+    JSONObject refClaims;
+    try {
+      refClaims = LtiJwt.verify(ref, LtiKeys.jwksJson());
+    } catch (Exception e) {
+      throw new IllegalStateException("LTI fork: the template reference does not verify", e);
+    }
+    if (!refClaims.optString("iss").equals(claims.optString("iss"))) {
+      throw new IllegalStateException("LTI fork: the template reference names another platform");
+    }
+    String value = refClaims.optString("template_project_id", "");
+    if (value.isEmpty()) {
+      throw new IllegalStateException("LTI fork: the template reference names no project");
     }
     try {
-      JSONObject refClaims = LtiJwt.verify(ref, LtiKeys.jwksJson());
-      if (!refClaims.optString("iss").equals(claims.optString("iss"))) {
-        // The reference was signed for a different platform, so it does not apply.
-        return -1;
-      }
-      String value = refClaims.optString("template_project_id", "");
-      return value.isEmpty() ? -1 : Long.parseLong(value);
-    } catch (Exception e) {
-      LOG.log(Level.WARNING, "LTI fork: ignoring an unverifiable template reference", e);
-      return -1;
+      return Long.parseLong(value);
+    } catch (NumberFormatException e) {
+      throw new IllegalStateException("LTI fork: the template reference names no project", e);
     }
   }
 

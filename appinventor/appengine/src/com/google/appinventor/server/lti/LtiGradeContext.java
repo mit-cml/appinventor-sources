@@ -51,6 +51,20 @@ final class LtiGradeContext {
         issuer == null ? "" : issuer, lineItemUrl, ltiUserSub == null ? "" : ltiUserSub);
   }
 
+  /**
+   * Takes the grade passback target away from a project.
+   *
+   * <p>An assignment points at one project at a time. When a launch has to give a learner a
+   * new project, the one it replaces must stop being submittable, or that older project could
+   * still be handed in while a review of the assignment opens the new one and finds nothing.
+   * An empty line item is what {@link #get} treats as nothing stored, so submitting from the
+   * replaced project is refused the same way a plain project is.
+   */
+  static void revoke(long projectId, String userId) {
+    StorageIoInstanceHolder.getInstance().storeLtiGradeContext(projectId,
+        userId == null ? "" : userId, "", "", "");
+  }
+
   /** Loads the grade passback target for a project, or null if none is stored. */
   static Context get(long projectId) {
     StoredData.LtiGradeContextData data =

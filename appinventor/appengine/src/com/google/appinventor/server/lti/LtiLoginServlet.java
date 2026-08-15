@@ -56,8 +56,9 @@ public class LtiLoginServlet extends HttpServlet {
     }
     String targetLinkUri = req.getParameter("target_link_uri");
     if (targetLinkUri == null || targetLinkUri.isEmpty()) {
-      // Presence only. The signed launch is what actually routes, so target_link_uri is not
-      // compared against a registered value here, which could reject a conformant launch.
+      // Presence only. The specification asks that the signed launch carry the same address,
+      // and this does not compare the two, because the launch always routes the same way and
+      // rejecting on a mismatch would need testing against more platforms than this has seen.
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing target_link_uri");
       return;
     }
