@@ -9,7 +9,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.EditorManager;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -25,8 +24,11 @@ import com.google.gwt.user.client.Timer;
  *
  * <p>Work in an open editor reaches the server on a timer rather than on every
  * keystroke, so the editors are saved first and the submission is only sent once
- * that save has finished. Otherwise a learner who edits and submits straight away
- * would hand in whatever the last automatic save happened to catch.
+ * nothing is left waiting to reach the server. Otherwise a learner who edits and
+ * submits straight away would hand in whatever the last automatic save happened to
+ * catch. An automatic save may already have been running when the learner chose to
+ * submit, so what is still outstanding decides, rather than the fact that a save
+ * answered.
  *
  * <p>Every attempt carries a number, and a callback that arrives after its own
  * attempt has ended is ignored. A late answer from an attempt that already timed
@@ -54,12 +56,22 @@ public class SubmitToLmsAction implements Command {
   /** Identifies the attempt in flight, so a late callback knows it is stale. */
   private static int attempt = 0;
 
+  /** How long to leave between looks at whether everything has reached the server. */
+  private static final int SETTLE_POLL_MILLIS = 250;
+
   /** Releases the guard if neither the save nor the request ever comes back. */
   private static Timer deadline;
+
+  /** The request in flight, held so that ending the attempt also ends the request. */
+  private static Request inFlight;
 
   @Override
   public void execute() {
     if (submitting) {
+      return;
+    }
+    final long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    if (projectId == 0) {
       return;
     }
     submitting = true;
@@ -73,27 +85,43 @@ public class SubmitToLmsAction implements Command {
     deadline.schedule(OVERALL_TIMEOUT_MILLIS);
     ErrorReporter.reportInfo(MESSAGES.submittingToLms());
 
-    final EditorManager editorManager = Ode.getInstance().getEditorManager();
-    editorManager.saveDirtyEditors(new Command() {
+    // The project is fixed at the click, so a learner who switches project while the save
+    // runs cannot have one project saved and another submitted.
+    Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
-        if (!isCurrent(thisAttempt)) {
-          return;
-        }
-        if (editorManager.hasUnsavedChanges()) {
-          // The save reported back, but something is still dirty, which is how a
-          // failed save shows up. Submitting now would hand in older content than
-          // the learner is looking at.
-          finish(thisAttempt, false);
-          return;
-        }
-        send(thisAttempt);
+        settleThenSend(thisAttempt, projectId);
       }
     });
   }
 
+  /**
+   * Sends once nothing is waiting to reach the server, and gives up when the deadline says so.
+   *
+   * <p>The command a save reports back with covers that save, and an automatic save may have
+   * been running before this one began, so it is what is still outstanding that decides,
+   * not the fact that a save answered. A save that has genuinely failed leaves its editor
+   * waiting, and the deadline is what ends the wait, since retrying it here would be the
+   * thundering herd the editor deliberately avoids.
+   */
+  private static void settleThenSend(final int thisAttempt, final long projectId) {
+    if (!isCurrent(thisAttempt)) {
+      return;
+    }
+    if (Ode.getInstance().getEditorManager().hasUnsavedChanges()) {
+      new Timer() {
+        @Override
+        public void run() {
+          settleThenSend(thisAttempt, projectId);
+        }
+      }.schedule(SETTLE_POLL_MILLIS);
+      return;
+    }
+    send(thisAttempt, projectId);
+  }
+
   /** Posts the saved project, once every editor is known to be on the server. */
-  private static void send(final int thisAttempt) {
+  private static void send(final int thisAttempt, long projectId) {
     if (!isCurrent(thisAttempt)) {
       return;
     }
@@ -103,9 +131,8 @@ public class SubmitToLmsAction implements Command {
     // only a submission started from within App Inventor is accepted.
     builder.setHeader("X-AppInventor-LTI", "1");
     builder.setHeader("Content-Type", "application/x-www-form-urlencoded");
-    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     try {
-      builder.sendRequest("projectId=" + projectId, new RequestCallback() {
+      inFlight = builder.sendRequest("projectId=" + projectId, new RequestCallback() {
         @Override
         public void onResponseReceived(Request request, Response response) {
           finish(thisAttempt, response.getStatusCode() / 100 == 2);
@@ -140,6 +167,13 @@ public class SubmitToLmsAction implements Command {
     if (deadline != null) {
       deadline.cancel();
       deadline = null;
+    }
+    if (inFlight != null) {
+      // The deadline can end the attempt while the request is still running, and a retry
+      // must not race a request that is already on the server. Ending the attempt ends the
+      // request with it, so at most one submission is ever in flight.
+      inFlight.cancel();
+      inFlight = null;
     }
     if (succeeded) {
       ErrorReporter.reportInfo(MESSAGES.submitToLmsSuccess());
