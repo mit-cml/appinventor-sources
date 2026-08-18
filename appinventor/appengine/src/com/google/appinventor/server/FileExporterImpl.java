@@ -103,8 +103,7 @@ public final class FileExporterImpl implements FileExporter {
     String metadata = "";
     for (Long projectId : projectIds) {
       try {
-        ProjectSourceZip projectSourceZip =
-            exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false, false, false);
+        ProjectSourceZip projectSourceZip = exportProjectSourceZip(userId, projectId);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 
@@ -174,8 +173,7 @@ public final class FileExporterImpl implements FileExporter {
         // Note: We never include Yail files when exporting all source projects
         // even for Admins. If you are an admin and want to debug a project, download
         // it explicitly.
-        ProjectSourceZip projectSourceZip =
-          exportProjectSourceZip(userId, projectId, false, false, null, false, false, false, false, false, false);
+        ProjectSourceZip projectSourceZip = exportProjectSourceZip(userId, projectId);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 
