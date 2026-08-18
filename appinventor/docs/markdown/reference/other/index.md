@@ -36,3 +36,4 @@ These documents provide additional details on some App Inventor topics.
 * [Import and export code blocks as PNGs](download-pngs.html)
 * [ListView Layouts with ListViewLayout and ElementsFromString](advanced-listview.html)
 * [Building iOS Apps](build-ios-apps.html)
+* [Connecting App Inventor to a Learning Management System with LTI 1.3](lti-integration.html)
