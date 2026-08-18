@@ -247,4 +247,40 @@ public class PendingSavesTest extends TestCase {
 
     assertEquals(1, q.take().size());
   }
+
+  /**
+   * A closing window sends held back work instead of dropping it. No later save could come
+   * for it there, so takeEvenInFlight hands out everything waiting, and the newer send takes
+   * the slot so a late answer from the older save cannot clear it.
+   */
+  public void testAClosingWindowSendsWhatWasHeldBack() {
+    PendingSaves<Note> q = noteQueue();
+    Note older = new Note("Screen1.bky", 1);
+    Note newer = new Note("Screen1.bky", 2);
+    q.add(older);
+    q.take();
+    q.add(newer);
+    assertEquals("an ordinary save holds the newer one back", 0, q.take().size());
+
+    List<Note> sent = q.takeEvenInFlight();
+
+    assertEquals("the closing window sends it anyway", 1, sent.size());
+    assertSame(newer, sent.get(0));
+    assertFalse("nothing is left waiting", q.heldBack());
+    q.answered(older);
+    assertEquals("the newer send owns the slot, so a late answer cannot clear it",
+        1, q.inFlightCount());
+    q.answered(newer);
+    assertTrue("its own answer clears it", q.isEmpty());
+  }
+
+  /** With nothing waiting, a closing window has nothing to send. */
+  public void testTakeEvenInFlightWithNothingWaitingSendsNothing() {
+    PendingSaves<String> q = queue();
+    q.add("Screen1.bky");
+    q.take();
+
+    assertEquals(0, q.takeEvenInFlight().size());
+    assertEquals("the earlier save still owns its slot", 1, q.inFlightCount());
+  }
 }

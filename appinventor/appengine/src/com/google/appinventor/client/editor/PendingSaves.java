@@ -91,6 +91,23 @@ class PendingSaves<T> {
   }
 
   /**
+   * Takes everything waiting, even what an unanswered save would normally hold back.
+   *
+   * <p>Only for a window that is closing. No later save could ever come for held back work
+   * there, so holding it would drop it, and sending it beside the unanswered save is the
+   * lesser risk. The newer send takes the slot, and the identity checks in {@link #answered}
+   * and {@link #failed} keep a late answer from the older save from clearing it.
+   */
+  List<T> takeEvenInFlight() {
+    List<T> sending = new ArrayList<T>(waiting.values());
+    for (Map.Entry<Object, T> entry : waiting.entrySet()) {
+      inFlight.put(entry.getKey(), entry.getValue());
+    }
+    waiting.clear();
+    return sending;
+  }
+
+  /**
    * Notes that a save answered and did what it was asked.
    *
    * <p>Only the save that owns the slot may clear it. After a discard, a newer save of the
@@ -144,6 +161,7 @@ class PendingSaves<T> {
   }
 
   /** How many are on their way, which is how many answers a caller is waiting for. */
+  @VisibleForTesting
   int inFlightCount() {
     return inFlight.size();
   }

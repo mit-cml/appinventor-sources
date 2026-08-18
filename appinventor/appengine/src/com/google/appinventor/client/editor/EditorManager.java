@@ -221,16 +221,6 @@ public final class EditorManager {
   }
 
   /**
-   * Check whether any editor or project setting still holds changes that are not on the server.
-   *
-   * <p>The command given to {@link #saveDirtyEditors(Command)} runs once every save has finished,
-   * whether it succeeded or not, and a file whose save failed is put back in the dirty set. Asking
-   * this from that command is therefore how a caller tells a completed save apart from a failed
-   * one before it acts on the saved content.
-   *
-   * @return true if something is still unsaved, otherwise false
-   */
-  /**
    * Puts settings whose save did not do what it was asked back in the queue.
    *
    * <p>The next save takes them, the way a failed file save is retried, and no timer is
@@ -260,6 +250,16 @@ public final class EditorManager {
     return settingsCount + (fileCount == 0 ? 1 : fileCount);
   }
 
+  /**
+   * Check whether any editor or project setting still holds changes that are not on the server.
+   *
+   * <p>The command given to {@link #saveDirtyEditors(Command)} runs once every save has finished,
+   * whether it succeeded or not, and a file whose save failed is put back in the dirty set. Asking
+   * this from that command is therefore how a caller tells a completed save apart from a failed
+   * one before it acts on the saved content.
+   *
+   * @return true if something is still unsaved, otherwise false
+   */
   public boolean hasUnsavedChanges() {
     return !files.isEmpty() || !settings.isEmpty();
   }
@@ -308,9 +308,14 @@ public final class EditorManager {
 
     // Take everything that can be sent now. Anything whose previous save has not answered yet
     // is held back, because two saves of one thing can land in either order and the older one
-    // landing last would undo the newer one.
-    List<FileEditor> editorsToSave = files.take();
-    final List<ProjectSettings> projectSettingsToSave = settings.take();
+    // landing last would undo the newer one. A closing window is the one exception. No later
+    // save could ever come for what was held back there, so holding it would drop it, and
+    // sending it beside the unanswered save is the lesser risk.
+    boolean windowClosing = Ode.isWindowClosing();
+    List<FileEditor> editorsToSave =
+        windowClosing ? files.takeEvenInFlight() : files.take();
+    final List<ProjectSettings> projectSettingsToSave =
+        windowClosing ? settings.takeEvenInFlight() : settings.take();
     List<FileDescriptorWithContent> filesToSave = new ArrayList<FileDescriptorWithContent>();
     for (FileEditor fileEditor : editorsToSave) {
       filesToSave.add(new FileDescriptorWithContent(
