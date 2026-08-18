@@ -834,7 +834,7 @@ Blockly.WarningHandler.keyCacheHelper = function(block) {
 
 Blockly.WarningHandler.prototype.getDictionaryKeyBlocks_ = function(block) {
   return block.inputList.map(function(input) {
-    var pair = input.connection.targetBlock();
+    var pair = input.connection && input.connection.targetBlock();
     if (pair) {
       return {
         pair: pair,
