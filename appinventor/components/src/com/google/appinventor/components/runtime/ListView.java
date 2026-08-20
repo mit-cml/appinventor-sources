@@ -1381,6 +1381,23 @@ public final class ListView extends AndroidViewComponent {
     recyclerView.addItemDecoration(new DividerItemDecoration());
   }
 
+  /**
+   * Returns the model holding this ListView's items, filter and selection. Extensions need it to
+   * build an adapter to pass to {@link #setListAdapter}.
+   */
+  public ListDataModel getDataModel() {
+    return dataModel;
+  }
+
+  /**
+   * Returns this ListView's appearance. The ListView mutates it in place, so an adapter holding on
+   * to it picks up appearance changes when its rows re-bind. Extensions need it to build an adapter
+   * to pass to {@link #setListAdapter}.
+   */
+  public ListViewStyle getStyle() {
+    return style;
+  }
+
   public void setListAdapter(ListAdapterWithRecyclerView adapter) {
     listAdapterWithRecyclerView = adapter;
     listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
