@@ -95,7 +95,24 @@ class ListViewTests: AppInventorTestCase {
       XCTFail("Expected ListView to contain a table view")
       return
     }
-    XCTAssertGreaterThan(listView.tableView(tableView, heightForRowAt: IndexPath(row: 0, section: 0)), 44.0)
+    XCTAssertGreaterThan(
+      listView.tableView(tableView, estimatedHeightForRowAt: IndexPath(row: 0, section: 0)), 44.0)
+  }
+
+  func testRowsSizeFromTheirOwnConstraints() {
+    form.clear()
+    let listView = ListView(form)
+    form.onAttach()
+
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView }) as? UITableView else {
+      XCTFail("Expected ListView to contain a table view")
+      return
+    }
+    XCTAssertEqual(tableView.rowHeight, UITableView.automaticDimension)
+    // Implementing heightForRowAt makes UIKit ignore rowHeight, so a row would be pinned to a
+    // height that knows nothing about ImageHeight and a tall image would squeeze out the labels.
+    XCTAssertFalse(
+      listView.responds(to: #selector(UITableViewDelegate.tableView(_:heightForRowAt:))))
   }
   
   func testElementAsDictItems() {
