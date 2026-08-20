@@ -129,6 +129,8 @@ fileprivate final class ListViewRootView: UIView {
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
     _view.backgroundColor = argbToColor(_backgroundColor)
+    // Rows size themselves from their own constraints, whatever the layout mode.
+    _view.rowHeight = UITableView.automaticDimension
 
     // Auto height for the table (existing)
     _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
@@ -834,16 +836,12 @@ fileprivate final class ListViewRootView: UIView {
       let origRow = _model.originalIndex(indexPath.row)
       let item = listItem(at: origRow) ?? makeListItem()
       cell.imageView?.image = nil
-      tableView.rowHeight = UITableView.automaticDimension
 
       if _listViewLayoutMode == 0 {
         cell.textLabel?.text = item["Text1"] as? String
         cell.detailTextLabel?.text = ""
-        tableView.estimatedRowHeight = 44
       } else {
         if _listViewLayoutMode == 1 {
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
 
@@ -876,8 +874,6 @@ fileprivate final class ListViewRootView: UIView {
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
           ])
         } else if _listViewLayoutMode == 2 {
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
 
@@ -913,7 +909,6 @@ fileprivate final class ListViewRootView: UIView {
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
           ])
         } else if _listViewLayoutMode == 3 {
-          tableView.estimatedRowHeight = preferredRowHeight
           cell.textLabel?.text = item["Text1"] as? String ?? ""
           cell.detailTextLabel?.text = ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
@@ -953,7 +948,6 @@ fileprivate final class ListViewRootView: UIView {
             ])
           }
         } else if _listViewLayoutMode == 4 {
-          tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String ?? ""
           cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
@@ -1005,7 +999,6 @@ fileprivate final class ListViewRootView: UIView {
             ])
           }
         } else if _listViewLayoutMode == 5 {
-          tableView.estimatedRowHeight = 120
           cell.textLabel?.text = item["Text1"] as? String ?? ""
           cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
@@ -1054,7 +1047,6 @@ fileprivate final class ListViewRootView: UIView {
             ])
           }
         } else {
-          tableView.estimatedRowHeight = 44
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = ""
         }
@@ -1152,10 +1144,11 @@ fileprivate final class ListViewRootView: UIView {
 
     // MARK: UITableViewDelegate
 
-    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-      return preferredRowHeight
-    }
-
+    // Deliberately no heightForRowAt. Implementing it makes UIKit ignore rowHeight,
+    // automaticDimension included, so a font-derived number would override the cell's
+    // own constraints. Every layout pins its content to the contentView's top and
+    // bottom, so Auto Layout already knows the real height, image and wrapped text
+    // included. This stays an estimate, and an estimate is allowed to be approximate.
     open func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
       return preferredRowHeight
     }
