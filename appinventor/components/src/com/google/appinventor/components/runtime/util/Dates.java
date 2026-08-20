@@ -145,7 +145,7 @@ public final class Dates {
     };
     for (String format : formats) {
       try {
-        return new SimpleDateFormat(format).parse(value);
+        return new SimpleDateFormat(format, java.util.Locale.US).parse(value);
       } catch (ParseException e) {}
     }
     throw new IllegalArgumentException("illegal date/time format in function DateValue()");
@@ -199,11 +199,11 @@ public final class Dates {
    */
   @SimpleFunction
   public static String FormatDateTime(Calendar date, String pattern) {
-    SimpleDateFormat formatdate = new SimpleDateFormat();
+    SimpleDateFormat formatdate = new SimpleDateFormat("", java.util.Locale.US);
     if (pattern.length() == 0) {
-      formatdate.applyPattern("MMM d, yyyy hh:mm:ss a");
+      SimpleDateFormat formatdate = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a", java.util.Locale.US);
     } else {
-      formatdate.applyPattern(pattern);
+      SimpleDateFormat formatdate = new SimpleDateFormat("", java.util.Locale.US);
     }
     return formatdate.format(date.getTime());
   }
@@ -219,7 +219,7 @@ public final class Dates {
    */
   @SimpleFunction
   public static String FormatDate(Calendar date, String pattern) {
-    SimpleDateFormat formatdate = new SimpleDateFormat();
+    SimpleDateFormat formatdate = new SimpleDateFormat("", java.util.Locale.US);
     if (pattern.length() == 0) {
       formatdate.applyPattern("MMM d, yyyy");
     } else {
