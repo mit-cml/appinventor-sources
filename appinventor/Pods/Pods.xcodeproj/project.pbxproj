@@ -17,7 +17,7 @@
 		01404C36FB49F5D97AE7B984CEF19DD1 /* Writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E51E153F8284BAA97FFA121601C6905 /* Writer.cpp */; };
 		0153FC19BA55DAEC59F04B7200FCE822 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE4ECA47805611F9B233FDCF95E852B /* Signature.swift */; };
 		01F2AF3B0A8EE7527334901759EFBA2C /* GTLRDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = B46B1BEA83A8D28CB1BB6FAE64A3D023 /* GTLRDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		02609B535FD4A48E3232BD27744DD5F4 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy in Resources */ = {isa = PBXBuildFile; fileRef = 097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy */; };
+		02609B535FD4A48E3232BD27744DD5F4 /* GTMSessionFetcher_Full_Privacy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher_Full_Privacy.bundle */; };
 		02795C1C937C6DA9DD0A3FFE29FEF082 /* Stylable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035699C17E2DB073BC7DAE5066AACC4A /* Stylable.swift */; };
 		02DFC78C1D43C3A56582107CE010CE03 /* BarLineScatterCandleBubbleChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992D63B5F5539C4C6A662BB964C54595 /* BarLineScatterCandleBubbleChartDataSet.swift */; };
 		02F706339989709C0AC771799C0859FE /* ZXAI01393xDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5CBB306DC331B1D9071922F74D75C /* ZXAI01393xDecoder.m */; };
@@ -378,7 +378,7 @@
 		3FAEC5235EC8AC477F43930D35E99659 /* IndexAxisValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DD9642E774E88A570E2DD8031CCE51 /* IndexAxisValueFormatter.swift */; };
 		3FC58E829D697E270EC04C69DB7A7639 /* Platform+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BD460FADF43D0D8746F89CF3350D30 /* Platform+Color.swift */; };
 		407658788F5E560C4410C7374220A5DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE2ADF38F45EDA3AA6212D1F1AAAAABD /* Foundation.framework */; };
-		407C079501FF086F096771C1EB199E55 /* CryptoSwift-CryptoSwift in Resources */ = {isa = PBXBuildFile; fileRef = 409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift-CryptoSwift */; };
+		407C079501FF086F096771C1EB199E55 /* CryptoSwift.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift.bundle */; };
 		407FCDF5F79C06D5AD6425AA8FC715A2 /* AEADXChaCha20Poly1305.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D2781A926543152EE9894FF5860C48 /* AEADXChaCha20Poly1305.swift */; };
 		4095AD6001EE3A96DB14F465B8FC431B /* ZXUPCEANExtensionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FF5A904C258D85942A5FF72E10D5 /* ZXUPCEANExtensionSupport.m */; };
 		40A5E76B400D9C24BAA9B8D37D306DDB /* OverlayResultValidator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B043DAE9C46F1199D36446D8A5637FA /* OverlayResultValidator.cpp */; };
@@ -529,7 +529,7 @@
 		56709D705F87B3C625FCDB088D29EE70 /* ZXAbstractRSSReader.h in Headers */ = {isa = PBXBuildFile; fileRef = BC8FBC04D5E92EC73586A0631FCB22C1 /* ZXAbstractRSSReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		56A1AA4DF50E81761F2CB04F8BBD2CB4 /* ZXBoolArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 847B9B2674DA0F67304B99457BC251BF /* ZXBoolArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		56B2683A78B4B1A347653A4230CF8444 /* ZXCodaBarWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = D7F8E2F04B944F67273274662D6DF997 /* ZXCodaBarWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		57116744231EA988EB14EDD2876CAE25 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy in Resources */ = {isa = PBXBuildFile; fileRef = E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy */; };
+		57116744231EA988EB14EDD2876CAE25 /* GTMSessionFetcher_Core_Privacy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher_Core_Privacy.bundle */; };
 		571E670839280A30A8ECBD15732DA3C8 /* CrossPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D7431040BD53A37B4DB781CD02BEA3 /* CrossPlatform.swift */; };
 		57206A2F70C695F2C85239F0A86D865A /* RelateComputer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 023AF5BBAF9A2580BD8144DCDE9ABEEA /* RelateComputer.cpp */; };
 		5746320BBB67E457AF4C4EE5A2D32799 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8355FF55C1FBB0E277EC377A192B074 /* Validation.swift */; };
@@ -564,7 +564,7 @@
 		5C196FB6876B14C56525931C41DC9A55 /* LineRadarChartDataSetProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4676EB75393819B04C05AE78F7705671 /* LineRadarChartDataSetProtocol.swift */; };
 		5C7CD2D53150DE713900F9DDE53803DF /* GCDWebServerResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 05DEDC0BABF130A89B6605A9535483BE /* GCDWebServerResponse.m */; };
 		5C8696954F2F195E16FAE4051030950F /* CrossShapeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E0B2F1AA44102CABF5924A6C24A1CC /* CrossShapeRenderer.swift */; };
-		5CD127F101529C336A07D45CE1106A54 /* Alamofire-Alamofire in Resources */ = {isa = PBXBuildFile; fileRef = 085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire-Alamofire */; };
+		5CD127F101529C336A07D45CE1106A54 /* Alamofire.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire.bundle */; };
 		5CDB7E978894E5F2ED96134B71F4C836 /* ProtoNameProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D18C8682EAFDE5FEA7ED106C385A2BF /* ProtoNameProviding.swift */; };
 		5D137D0C3AC375B17CE5229E14590349 /* ECB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 310BF1D3EF276A1A044B807357D9C72C /* ECB.swift */; };
 		5D17A17BFB1B43CB89A6BDF6BC502C44 /* MarkerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D813A3F1BA8A2F278616CF84E3019F9B /* MarkerImage.swift */; };
@@ -1076,7 +1076,7 @@
 		B34920A35B9414EFA8BAFDC95535BFF0 /* ZXProductParsedResult.h in Headers */ = {isa = PBXBuildFile; fileRef = D0B50372893A293C5F8ADEF725C23BB7 /* ZXProductParsedResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B3EC2DE8A5B6FAF5ED30071E4A3D9BE7 /* DataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8611DA4428FEF311E7EEDFE788C9F981 /* DataRequest.swift */; };
 		B40B66B374DB587C10C1794E3143E407 /* ZXProductResultParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 321C1567E8E5FA8CD88CB88016ED659A /* ZXProductResultParser.m */; };
-		B41276D6865E0A584B8922ABE3C45376 /* ZIPFoundation-ZIPFoundation_Privacy in Resources */ = {isa = PBXBuildFile; fileRef = CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation-ZIPFoundation_Privacy */; };
+		B41276D6865E0A584B8922ABE3C45376 /* ZIPFoundation_Privacy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation_Privacy.bundle */; };
 		B441788DD48B230C4B2F0A1454ADE8E7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE2ADF38F45EDA3AA6212D1F1AAAAABD /* Foundation.framework */; };
 		B4739041DE2C943465AD8A4DFD369D51 /* ZXModulusPoly.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F866ED6DD203846156C56E31FAB67D /* ZXModulusPoly.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B4C51A3F086836081C57B28A12C1B14C /* MiscFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A675CE5295666BB9C5D83DA3A853C18E /* MiscFunctions.swift */; };
@@ -1152,7 +1152,7 @@
 		C05D7DAA6371322FAD12E124060FA720 /* Pods-AICompanionAppTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F0946003713227A3D44F5C5AF102E4AD /* Pods-AICompanionAppTests-dummy.m */; };
 		C0646BA988627994065698015D27EAE2 /* wrappers.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B27C4544CB130743546350983F85123 /* wrappers.pb.swift */; };
 		C08E38D0ACB9A780F0FE947618A9A543 /* TextFormatDecodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C943DE40498DC706EDB26544B4ADAF /* TextFormatDecodingError.swift */; };
-		C09593AE3AD632B459F227AC778BE428 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy in Resources */ = {isa = PBXBuildFile; fileRef = 60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy */; };
+		C09593AE3AD632B459F227AC778BE428 /* GoogleAPIClientForREST_Privacy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST_Privacy.bundle */; };
 		C0CEB586260C7EE99068F6C58B559A79 /* ZXPDF417Codeword.m in Sources */ = {isa = PBXBuildFile; fileRef = DF185BD5D34F7E6215213119AD1F66FB /* ZXPDF417Codeword.m */; };
 		C0D4B39991450B5E0A8C372C50DFE9CE /* InteriorPointPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FF9182DA60B20088F747FDCBB53CE412 /* InteriorPointPoint.cpp */; };
 		C1093DE1D2306F848CE0D8BF23A05068 /* LinearIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E1036CBC5D81142212304B291828F15 /* LinearIterator.cpp */; };
@@ -1305,7 +1305,7 @@
 		D9A13AFDABD9905AC08E853CFBC71855 /* ZXQRCodeMatrixUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F3C0A38C49D5F6850145B4702DA1A8 /* ZXQRCodeMatrixUtil.m */; };
 		D9ACD075D54E0541DACDB71D8D0D3204 /* Message+JSONArrayAdditions_Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0F64050A80B9354BAA29011E833FFA /* Message+JSONArrayAdditions_Data.swift */; };
 		DA5231223520539106F259C48A12515A /* Google_Protobuf_Duration+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2C3324F84758B8A6B1AA65F25DFB82 /* Google_Protobuf_Duration+Extensions.swift */; };
-		DAB10FA477D012D378EE7BEC84E361DC /* SwiftProtobuf-SwiftProtobuf in Resources */ = {isa = PBXBuildFile; fileRef = 38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf-SwiftProtobuf */; };
+		DAB10FA477D012D378EE7BEC84E361DC /* SwiftProtobuf.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf.bundle */; };
 		DB0D00514CC366CF627515F8D7781D0F /* CALayer+SVG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785B96D728C4BAD24E28D5902C8E4BF8 /* CALayer+SVG.swift */; };
 		DB27D7D03AC0124D3D050D68B8BB76A4 /* PieHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56A5C7C83325571433752DC1767A22F /* PieHighlighter.swift */; };
 		DB336D07AA4769695FAB9574B2FB7C9E /* UInt128.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5FF0B3AF483FBD9B076BA1D0E5CDA40 /* UInt128.swift */; };
@@ -2420,7 +2420,7 @@
 		021E369F47965B68C914B228F5592F5D /* RectangleIntersects.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = RectangleIntersects.cpp; path = geos/src/operation/predicate/RectangleIntersects.cpp; sourceTree = "<group>"; };
 		023AF5BBAF9A2580BD8144DCDE9ABEEA /* RelateComputer.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = RelateComputer.cpp; path = geos/src/operation/relate/RelateComputer.cpp; sourceTree = "<group>"; };
 		0245451B47DEBD6CA7F6206BAD316D0B /* SpatialRelations.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SpatialRelations.swift; path = GEOSwift/SpatialRelations.swift; sourceTree = "<group>"; };
-		0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionApp"; path = Pods_AICompanionApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		02AA7CE7069636BD40365CBAFF8F8B11 /* any.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = any.pb.swift; path = Sources/SwiftProtobuf/any.pb.swift; sourceTree = "<group>"; };
 		02B1664E45249187B91D4CF60A28E5A4 /* PreparedGeometry.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PreparedGeometry.cpp; path = geos/src/geom/prep/PreparedGeometry.cpp; sourceTree = "<group>"; };
 		02BD3515FDF752E19110685F96ADC6AF /* ZXResultMetadataType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXResultMetadataType.h; path = ZXingObjC/core/ZXResultMetadataType.h; sourceTree = "<group>"; };
@@ -2449,9 +2449,9 @@
 		05C63177BAABD1B59EABC48411E7565D /* WKTReader.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = WKTReader.cpp; path = geos/src/io/WKTReader.cpp; sourceTree = "<group>"; };
 		05DEDC0BABF130A89B6605A9535483BE /* GCDWebServerResponse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerResponse.m; path = GCDWebServer/Core/GCDWebServerResponse.m; sourceTree = "<group>"; };
 		05F79D7D220F0C767B9CB7E967131F32 /* PieChartDataSetProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PieChartDataSetProtocol.swift; path = Source/Charts/Data/Interfaces/PieChartDataSetProtocol.swift; sourceTree = "<group>"; };
-		05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Base58Swift; path = Base58Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Base58Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		05F99A6012A65220E685CDBDA7729D86 /* Response.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Response.swift; path = Source/Core/Response.swift; sourceTree = "<group>"; };
-		06104F6EFDC41BE8952CB943A4E024B3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/CryptoSwift/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		06104F6EFDC41BE8952CB943A4E024B3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Sources/CryptoSwift/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		06D07843E630CD3C096DE08ED3A21D29 /* DefaultAxisValueFormatter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DefaultAxisValueFormatter.swift; path = Source/Charts/Formatters/DefaultAxisValueFormatter.swift; sourceTree = "<group>"; };
 		06D0B1A45EE41F31E60243DC14264234 /* Subtraction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Subtraction.swift; path = Sources/Subtraction.swift; sourceTree = "<group>"; };
 		06E67EB3604395F16BD1B144780D2AF4 /* ParsesAsynchronously.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ParsesAsynchronously.swift; path = SwiftSVG/SVG/Elements/ParsesAsynchronously.swift; sourceTree = "<group>"; };
@@ -2464,13 +2464,13 @@
 		07AA14FE6EF8226278A17A062D5BADB8 /* ZXAI013103decoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAI013103decoder.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI013103decoder.m; sourceTree = "<group>"; };
 		07B944937C48E9E19836562D3A972B18 /* DistanceToPoint.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = DistanceToPoint.cpp; path = geos/src/algorithm/distance/DistanceToPoint.cpp; sourceTree = "<group>"; };
 		0854420C7496E08C92D0417CF214896D /* GEOSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GEOSwift.debug.xcconfig; sourceTree = "<group>"; };
-		085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire-Alamofire */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "Alamofire-Alamofire"; path = Alamofire.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Alamofire.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		08EBA03C10ECC64C317DC8314EBF52A0 /* HCoordinate.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = HCoordinate.cpp; path = geos/src/algorithm/HCoordinate.cpp; sourceTree = "<group>"; };
 		08EC0919CDF7CE491A2147517042DFE4 /* String+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "String+Extension.swift"; path = "Sources/CryptoSwift/String+Extension.swift"; sourceTree = "<group>"; };
 		0900005109AE6D1BF1AADE2AF4F5272B /* Pods-SchemeKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SchemeKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		09214197AD950522BF5C7923965A3FBB /* ZXBookmarkDoCoMoResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXBookmarkDoCoMoResultParser.h; path = ZXingObjC/client/result/ZXBookmarkDoCoMoResultParser.h; sourceTree = "<group>"; };
 		092DA4054FC75CEEE1D07156BC1F9E35 /* type.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = type.pb.swift; path = Sources/SwiftProtobuf/type.pb.swift; sourceTree = "<group>"; };
-		097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "GTMSessionFetcher-GTMSessionFetcher_Full_Privacy"; path = GTMSessionFetcher_Full_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher_Full_Privacy.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GTMSessionFetcher_Full_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		09A1F8DAC89099A392BE0142AB5ADB41 /* SwiftyBase64.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftyBase64.release.xcconfig; sourceTree = "<group>"; };
 		09AA8B39440A414620E06B0F4D2CBF3E /* RedirectHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RedirectHandler.swift; path = Source/Features/RedirectHandler.swift; sourceTree = "<group>"; };
 		09CD36DF4029548615A2E020F2DA7518 /* ZXDecoderResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDecoderResult.h; path = ZXingObjC/common/ZXDecoderResult.h; sourceTree = "<group>"; };
@@ -2793,15 +2793,15 @@
 		384FBF56D4819ABC3851CB6A8FD841FD /* Google_Protobuf_FieldMask+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Google_Protobuf_FieldMask+Extensions.swift"; path = "Sources/SwiftProtobuf/Google_Protobuf_FieldMask+Extensions.swift"; sourceTree = "<group>"; };
 		386F04A4249493C6C46178E3AB4AD78F /* Data+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Data+Extension.swift"; path = "Sources/CryptoSwift/Foundation/Data+Extension.swift"; sourceTree = "<group>"; };
 		38892F73575D00340FCE3E928D07651A /* SVGRectangle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGRectangle.swift; path = SwiftSVG/SVG/Elements/SVGRectangle.swift; sourceTree = "<group>"; };
-		38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionApp-AICompanionAppUITests"; path = Pods_AICompanionApp_AICompanionAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf-SwiftProtobuf */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "SwiftProtobuf-SwiftProtobuf"; path = SwiftProtobuf.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionApp_AICompanionAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftProtobuf.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		38EB930E8698C696FB26139E19C540B8 /* BubbleChartDataProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BubbleChartDataProvider.swift; path = Source/Charts/Interfaces/BubbleChartDataProvider.swift; sourceTree = "<group>"; };
 		39112C9B5DA3E80C9C28879DC6C281BC /* ZXQRCodeBitMatrixParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeBitMatrixParser.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeBitMatrixParser.h; sourceTree = "<group>"; };
 		3921EB492D2A9A3B133D28994D052C4D /* ZIPFoundation.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = ZIPFoundation.modulemap; sourceTree = "<group>"; };
 		393410EFD77BB890B5E476FFC56EAA9C /* BufferParameters.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BufferParameters.cpp; path = geos/src/operation/buffer/BufferParameters.cpp; sourceTree = "<group>"; };
 		393AEAB913DF1CA4013298214D20B307 /* LegendEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LegendEntry.swift; path = Source/Charts/Components/LegendEntry.swift; sourceTree = "<group>"; };
 		396045B698ED8012036A706528B99727 /* ZXRSSExpandedFieldParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedFieldParser.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedFieldParser.m; sourceTree = "<group>"; };
-		398692F2976AA5E49915DC1FA8496F02 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/ZIPFoundation/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		398692F2976AA5E49915DC1FA8496F02 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Sources/ZIPFoundation/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3990E46D409C07DDA8CAA4341EBF32E6 /* GEOS.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GEOS.swift; path = GEOSwift/GEOS.swift; sourceTree = "<group>"; };
 		399F1B6BA18F707F3BBADA49B7B22815 /* IncrementalDelaunayTriangulator.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = IncrementalDelaunayTriangulator.cpp; path = geos/src/triangulate/IncrementalDelaunayTriangulator.cpp; sourceTree = "<group>"; };
 		39C2258973091BE7D0C6B2473FCC88BD /* ZXBinarizer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXBinarizer.h; path = ZXingObjC/core/ZXBinarizer.h; sourceTree = "<group>"; };
@@ -2840,7 +2840,7 @@
 		3E1D6F7F917F5905575E8EBE03139247 /* ZXQRCodeMode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeMode.m; path = ZXingObjC/qrcode/decoder/ZXQRCodeMode.m; sourceTree = "<group>"; };
 		3E4499CEF6CA629ADCDD22ECA5F9D934 /* ZXEANManufacturerOrgSupport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEANManufacturerOrgSupport.h; path = ZXingObjC/oned/ZXEANManufacturerOrgSupport.h; sourceTree = "<group>"; };
 		3E824EAEDED511B4B54FCC56E91F1E2F /* LineMerger.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LineMerger.cpp; path = geos/src/operation/linemerge/LineMerger.cpp; sourceTree = "<group>"; };
-		3E964D1E10F6618712839CCC0264AC90 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/Core/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3E964D1E10F6618712839CCC0264AC90 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Sources/Core/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3EAC22DAE690A55A7E5B151CEDF5E4A5 /* ZXMultiFormatOneDReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXMultiFormatOneDReader.h; path = ZXingObjC/oned/ZXMultiFormatOneDReader.h; sourceTree = "<group>"; };
 		3F4ECD1148C841A904FAE30A8A8134C5 /* ZXDefaultGridSampler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDefaultGridSampler.m; path = ZXingObjC/common/ZXDefaultGridSampler.m; sourceTree = "<group>"; };
 		3F6099614B3D10BE20F009C498509E24 /* ZXQRCodeFormatInformation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeFormatInformation.h; path = ZXingObjC/qrcode/decoder/ZXQRCodeFormatInformation.h; sourceTree = "<group>"; };
@@ -2851,11 +2851,11 @@
 		4013FF354E671BFDC5267BED77C839F7 /* LinearRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LinearRing.cpp; path = geos/src/geom/LinearRing.cpp; sourceTree = "<group>"; };
 		4058F7EBA2972C5BF02E4A09D62C85A3 /* GTLRBase64.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRBase64.m; path = Sources/Core/GTLRBase64.m; sourceTree = "<group>"; };
 		4079735DCF83BD91EC61A5A7951A476F /* ZXPDF417HighLevelEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXPDF417HighLevelEncoder.m; path = ZXingObjC/pdf417/encoder/ZXPDF417HighLevelEncoder.m; sourceTree = "<group>"; };
-		409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift-CryptoSwift */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "CryptoSwift-CryptoSwift"; path = CryptoSwift.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CryptoSwift.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		409B2A6183D0D74CB19199CADC9B88D3 /* ZXISBNResultParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXISBNResultParser.h; path = ZXingObjC/client/result/ZXISBNResultParser.h; sourceTree = "<group>"; };
 		40A43A89292ED63154ADB36AED1A3A58 /* BubbleChartDataSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BubbleChartDataSet.swift; path = Source/Charts/Data/Implementations/Standard/BubbleChartDataSet.swift; sourceTree = "<group>"; };
 		40DA7DF16A627226685BF061737EFF76 /* Result+Alamofire.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Result+Alamofire.swift"; path = "Source/Extensions/Result+Alamofire.swift"; sourceTree = "<group>"; };
-		40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AIComponentKit"; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		416AD30696089D7FCA9C9D6E93F99E16 /* Subgraph.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Subgraph.cpp; path = geos/src/planargraph/Subgraph.cpp; sourceTree = "<group>"; };
 		416E2BFE8FCFDE6D67A572A6A9E8E380 /* timestamp.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = timestamp.pb.swift; path = Sources/SwiftProtobuf/timestamp.pb.swift; sourceTree = "<group>"; };
 		41AE397729575152EA8982DDCE7224B2 /* AsyncMessageSequence.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AsyncMessageSequence.swift; path = Sources/SwiftProtobuf/AsyncMessageSequence.swift; sourceTree = "<group>"; };
@@ -2902,8 +2902,8 @@
 		4845F473132B1B72852C1FF64CEB04B9 /* LocateFailureException.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LocateFailureException.cpp; path = geos/src/triangulate/quadedge/LocateFailureException.cpp; sourceTree = "<group>"; };
 		4864312F9A37F60CD57BCB91888D2627 /* BarChartRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BarChartRenderer.swift; path = Source/Charts/Renderers/BarChartRenderer.swift; sourceTree = "<group>"; };
 		487588C53F1A66F92971752DA9EBA83A /* ZXDataMatrixC40Encoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixC40Encoder.h; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixC40Encoder.h; sourceTree = "<group>"; };
-		48A4A6EDC08C8AC933D0DCD507E9D173 /* ZIPFoundation */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ZIPFoundation; path = ZIPFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		48D031403554BA5789B68E985515041D /* KTVJSONWebToken */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = KTVJSONWebToken; path = KTVJSONWebToken.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		48A4A6EDC08C8AC933D0DCD507E9D173 /* ZIPFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZIPFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = KTVJSONWebToken.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4945D89DBB5FA3B783746472AE35831B /* BufferInputLineSimplifier.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BufferInputLineSimplifier.cpp; path = geos/src/operation/buffer/BufferInputLineSimplifier.cpp; sourceTree = "<group>"; };
 		495A34905913537D20DE86D5692A7567 /* Platform+Gestures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Platform+Gestures.swift"; path = "Source/Charts/Utils/Platform+Gestures.swift"; sourceTree = "<group>"; };
 		4A0EBDA228FEE7E21C555FD1441781F0 /* Pods-AIComponentKit-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AIComponentKit-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -2945,8 +2945,8 @@
 		4EE4ECA47805611F9B233FDCF95E852B /* Signature.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Signature.swift; path = Sources/CryptoSwift/Signature.swift; sourceTree = "<group>"; };
 		4F17A3B4CD8969AEDEF5C6E57C9EF7CA /* Comparable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Comparable.swift; path = Sources/CryptoSwift/CS_BigInt/Comparable.swift; sourceTree = "<group>"; };
 		4FC497D519817778FB1625FBE5CEFE6D /* Google_Protobuf_Struct+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Google_Protobuf_Struct+Extensions.swift"; path = "Sources/SwiftProtobuf/Google_Protobuf_Struct+Extensions.swift"; sourceTree = "<group>"; };
-		5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = PSSRedisClient; path = PSSRedisClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		503BC58DAF7AAA6D7106F819B5AFFB91 /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; name = ioapi.c; path = Zip/minizip/ioapi.c; sourceTree = "<group>"; };
+		5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PSSRedisClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		503BC58DAF7AAA6D7106F819B5AFFB91 /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = Zip/minizip/ioapi.c; sourceTree = "<group>"; };
 		507398E664B071F8FB9278E74820B9F9 /* ResourceBundle-CryptoSwift-CryptoSwift-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-CryptoSwift-CryptoSwift-Info.plist"; sourceTree = "<group>"; };
 		5082C5B8B1BC3848F0B47DFD1E918E54 /* ZXDataMatrixErrorCorrection.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixErrorCorrection.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixErrorCorrection.m; sourceTree = "<group>"; };
 		50A7BB4B42F1AD184EE46ECE94CAF0FC /* TopologyLocation.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = TopologyLocation.cpp; path = geos/src/geomgraph/TopologyLocation.cpp; sourceTree = "<group>"; };
@@ -2979,7 +2979,7 @@
 		5631113C5A113F9C977788D343A34039 /* ZXIntArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXIntArray.h; path = ZXingObjC/common/ZXIntArray.h; sourceTree = "<group>"; };
 		563FE91E4F9E1D08F8E2AFFBE2D0518A /* ZXCode39Writer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXCode39Writer.m; path = ZXingObjC/oned/ZXCode39Writer.m; sourceTree = "<group>"; };
 		56512B9915C2F8A24B670A257670149B /* ZXCapture.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXCapture.h; path = ZXingObjC/client/ZXCapture.h; sourceTree = "<group>"; };
-		568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-SchemeKit"; path = "libPods-SchemeKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		569F6244759F20C4B59AB1B271BB2E91 /* SwiftyBase64-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyBase64-dummy.m"; sourceTree = "<group>"; };
 		56B2E81026232451ECCD37C3CD9E5C58 /* GCM.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GCM.swift; path = Sources/CryptoSwift/BlockMode/GCM.swift; sourceTree = "<group>"; };
 		56BE8A5E4A0A8061D2DAFE748D759BA3 /* GCDWebServerErrorResponse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerErrorResponse.m; path = GCDWebServer/Responses/GCDWebServerErrorResponse.m; sourceTree = "<group>"; };
@@ -3020,7 +3020,7 @@
 		5D1D96E55F218DAB451D146DDC781107 /* ParameterEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ParameterEncoder.swift; path = Source/Core/ParameterEncoder.swift; sourceTree = "<group>"; };
 		5D53E7545C409D66DCD38E08A6B63627 /* ZXUPCEReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXUPCEReader.h; path = ZXingObjC/oned/ZXUPCEReader.h; sourceTree = "<group>"; };
 		5D6D214D6F1321B0D68F8E2780620DB5 /* SortedPackedIntervalRTree.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SortedPackedIntervalRTree.cpp; path = geos/src/index/intervalrtree/SortedPackedIntervalRTree.cpp; sourceTree = "<group>"; };
-		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Alamofire; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DA40DBE86CE530560D19A2D7735A832 /* Key.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Key.cpp; path = geos/src/index/bintree/Key.cpp; sourceTree = "<group>"; };
 		5DB2458F054943542B4B75594F4908CA /* GTMSessionFetcher.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GTMSessionFetcher.release.xcconfig; sourceTree = "<group>"; };
 		5DCE1C3B46E411C190194D45BEF79EE0 /* Zip.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Zip.swift; path = Zip/Zip.swift; sourceTree = "<group>"; };
@@ -3029,7 +3029,7 @@
 		5DF5B3DE561A194DCFCC9D039804876F /* AxisRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AxisRenderer.swift; path = Source/Charts/Renderers/AxisRenderer.swift; sourceTree = "<group>"; };
 		5DFF366CD5278B6CF8E7C56E8CB50AE8 /* Pods-AIComponentKit-AIComponentKitTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AIComponentKit-AIComponentKitTests-dummy.m"; sourceTree = "<group>"; };
 		5E02AF3B208F76A2E371EA05AE823D1F /* ZXCGImageLuminanceSourceInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXCGImageLuminanceSourceInfo.h; path = ZXingObjC/client/ZXCGImageLuminanceSourceInfo.h; sourceTree = "<group>"; };
-		5E0C2CE5FDEA0B0879B03CF56B337AB2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/Core/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5E0C2CE5FDEA0B0879B03CF56B337AB2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Sources/Core/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5E12F5B1957AC12933D28A5947CDBDD9 /* SimpleNoder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleNoder.cpp; path = geos/src/noding/SimpleNoder.cpp; sourceTree = "<group>"; };
 		5E1EDDF816F16B2A45E39682FFAA4B6A /* Rabbit+Foundation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Rabbit+Foundation.swift"; path = "Sources/CryptoSwift/Foundation/Rabbit+Foundation.swift"; sourceTree = "<group>"; };
 		5E3A2B1CAFF229F4C1F16283A570E733 /* GEOSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = GEOSwift.modulemap; sourceTree = "<group>"; };
@@ -3042,7 +3042,7 @@
 		5FFDF9A7F80FC8856E7BB2A1743C8107 /* ViewPortJob.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ViewPortJob.swift; path = Source/Charts/Jobs/ViewPortJob.swift; sourceTree = "<group>"; };
 		6047F66B4EC935E79385E978EE06C61D /* SHA1.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SHA1.swift; path = Sources/CryptoSwift/SHA1.swift; sourceTree = "<group>"; };
 		607126A201000E230D9468CE4FC0805D /* ZXDataMatrixASCIIEncoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixASCIIEncoder.h; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixASCIIEncoder.h; sourceTree = "<group>"; };
-		60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy"; path = GoogleAPIClientForREST_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST_Privacy.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoogleAPIClientForREST_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		60A6E7596172D5C3DF631154443343D4 /* Pods-AIComponentKit-AIComponentKitTests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AIComponentKit-AIComponentKitTests-Info.plist"; sourceTree = "<group>"; };
 		60BA99C9202F9F36E2D3EA9F0905C610 /* WordsAndBits.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WordsAndBits.swift; path = Sources/CryptoSwift/CS_BigInt/WordsAndBits.swift; sourceTree = "<group>"; };
 		60F346D50143A506DCF92037A1FCDF8C /* SnapOverlayOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SnapOverlayOp.cpp; path = geos/src/operation/overlay/snap/SnapOverlayOp.cpp; sourceTree = "<group>"; };
@@ -3062,7 +3062,7 @@
 		6265941CEAA7A8AAE998C9DEB71CFADB /* SVGPath.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGPath.swift; path = SwiftSVG/SVG/Elements/SVGPath.swift; sourceTree = "<group>"; };
 		62BC3015E755553C63658054258E49C6 /* ZXDataMatrixVersion.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixVersion.m; path = ZXingObjC/datamatrix/decoder/ZXDataMatrixVersion.m; sourceTree = "<group>"; };
 		62CCB69CA8798D8F0592526F3BE237A5 /* Platform+Graphics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Platform+Graphics.swift"; path = "Source/Charts/Utils/Platform+Graphics.swift"; sourceTree = "<group>"; };
-		62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftSVG; path = SwiftSVG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftSVG.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		62F90303CAF9E5FCA46FFBCB07A9C153 /* ZXInvertedLuminanceSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXInvertedLuminanceSource.m; path = ZXingObjC/core/ZXInvertedLuminanceSource.m; sourceTree = "<group>"; };
 		62FE5341CA89E8334C207C016C70D7F9 /* XChaCha20+Foundation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "XChaCha20+Foundation.swift"; path = "Sources/CryptoSwift/Foundation/XChaCha20+Foundation.swift"; sourceTree = "<group>"; };
 		6322D6714A2F3BE17D7FBBBE20EAC92B /* ZXEncodeHints.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXEncodeHints.m; path = ZXingObjC/core/ZXEncodeHints.m; sourceTree = "<group>"; };
@@ -3119,7 +3119,7 @@
 		6C579B996963928A53104E8ECFC5E758 /* PieRadarHighlighter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PieRadarHighlighter.swift; path = Source/Charts/Highlight/PieRadarHighlighter.swift; sourceTree = "<group>"; };
 		6C9B0220DDEDB4034F3C6CF1B7FC9EB8 /* ZXPerspectiveTransform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPerspectiveTransform.h; path = ZXingObjC/common/ZXPerspectiveTransform.h; sourceTree = "<group>"; };
 		6C9D5A7FE9EB81232440551B611DC6E7 /* ShapeRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ShapeRenderer.swift; path = Source/Charts/Renderers/Scatter/ShapeRenderer.swift; sourceTree = "<group>"; };
-		6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = CocoaAsyncSocket; path = CocoaAsyncSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CocoaAsyncSocket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CD65F2251F26311898F98F680CCB5B4 /* Depth.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = Depth.cpp; path = geos/src/geomgraph/Depth.cpp; sourceTree = "<group>"; };
 		6D26680735FE2B51CE52C58956183A8C /* ZXQRCodeErrorCorrectionLevel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXQRCodeErrorCorrectionLevel.m; path = ZXingObjC/qrcode/decoder/ZXQRCodeErrorCorrectionLevel.m; sourceTree = "<group>"; };
 		6D2700CBEADC8AF94B22A68709A4F44D /* GTLRFramework.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRFramework.m; path = Sources/Core/GTLRFramework.m; sourceTree = "<group>"; };
@@ -3136,7 +3136,7 @@
 		6F2CFD21CA8D478D42DE90E6F951F12B /* Operators.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Operators.swift; path = Sources/SQLite/Typed/Operators.swift; sourceTree = "<group>"; };
 		6F4C2121D3DBE40EA4C6A6E9CAF62F2D /* ChartDataEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChartDataEntry.swift; path = Source/Charts/Data/Implementations/Standard/ChartDataEntry.swift; sourceTree = "<group>"; };
 		6F659C8F2F7A4E1C412B1DF4721A8916 /* FacetSequenceTreeBuilder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = FacetSequenceTreeBuilder.cpp; path = geos/src/operation/distance/FacetSequenceTreeBuilder.cpp; sourceTree = "<group>"; };
-		6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = ZXingObjC; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZXingObjC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F74F0214F69522A8E526C60662720B6 /* ZXingObjCPDF417.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXingObjCPDF417.h; path = ZXingObjC/pdf417/ZXingObjCPDF417.h; sourceTree = "<group>"; };
 		6F8ACF18C41384E341D158C21EAD0EBB /* SweepLineIndex.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SweepLineIndex.cpp; path = geos/src/index/sweepline/SweepLineIndex.cpp; sourceTree = "<group>"; };
 		6F8D230C8D1232D956DFC8147FFE3F65 /* BigUInt.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BigUInt.swift; path = Sources/BigUInt.swift; sourceTree = "<group>"; };
@@ -3171,7 +3171,7 @@
 		744FBBB9D705E2F3278819B69D9CB211 /* GCDWebServerPrivate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerPrivate.h; path = GCDWebServer/Core/GCDWebServerPrivate.h; sourceTree = "<group>"; };
 		74554C3FA498AF3B85D0A34AA75B4669 /* MultiPolygon.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MultiPolygon.cpp; path = geos/src/geom/MultiPolygon.cpp; sourceTree = "<group>"; };
 		74747FBF3CAF077BB90D5E620073FE7C /* Toast-Swift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Toast-Swift-prefix.pch"; sourceTree = "<group>"; };
-		74773D85423B32B8DC9006501324C6C9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/SwiftProtobuf/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		74773D85423B32B8DC9006501324C6C9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Sources/SwiftProtobuf/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		749966F8C1806B201F4BA3A0FE04F0D1 /* ZXWifiParsedResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXWifiParsedResult.m; path = ZXingObjC/client/result/ZXWifiParsedResult.m; sourceTree = "<group>"; };
 		74A47084A4A9D07D7C7260A18698A8EE /* ZXCalendarParsedResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXCalendarParsedResult.m; path = ZXingObjC/client/result/ZXCalendarParsedResult.m; sourceTree = "<group>"; };
 		74EA5B107B2B6F93A8357C6C1DC7E9A1 /* Archive+Helpers.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Archive+Helpers.swift"; path = "Sources/ZIPFoundation/Archive+Helpers.swift"; sourceTree = "<group>"; };
@@ -3195,7 +3195,7 @@
 		77C9B9BFA08F33F33A76EB897D25ACAF /* ZXCode93Reader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXCode93Reader.h; path = ZXingObjC/oned/ZXCode93Reader.h; sourceTree = "<group>"; };
 		77C9E98222E44CD7C3C955FDFA805E6B /* EdgeList.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = EdgeList.cpp; path = geos/src/geomgraph/EdgeList.cpp; sourceTree = "<group>"; };
 		77DCCA6DC72C1BB40E6C470579A2525F /* Blob.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Blob.swift; path = Sources/SQLite/Core/Blob.swift; sourceTree = "<group>"; };
-		77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GEOSwift; path = GEOSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GEOSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		77FC8E01C414A2FED3E1F0419BFB086A /* BufferOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BufferOp.cpp; path = geos/src/operation/buffer/BufferOp.cpp; sourceTree = "<group>"; };
 		78149FCA1D2ADBF863AB9824D4BC5616 /* SwiftSVG.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftSVG.debug.xcconfig; sourceTree = "<group>"; };
 		781D88D8C56B5F0EA88A842C0096A335 /* Pods-SchemeKit-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SchemeKit-acknowledgements.markdown"; sourceTree = "<group>"; };
@@ -3340,7 +3340,7 @@
 		901714005368E0554BC88100A204BAFD /* SVGLine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGLine.swift; path = SwiftSVG/SVG/Elements/SVGLine.swift; sourceTree = "<group>"; };
 		90221F5B39DE53241A7A6F15E8B9631C /* GeoJSON.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GeoJSON.swift; path = GEOSwift/GeoJSON.swift; sourceTree = "<group>"; };
 		903EC09611114E5998B98778DAA546E3 /* ZXEAN8Reader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXEAN8Reader.h; path = ZXingObjC/oned/ZXEAN8Reader.h; sourceTree = "<group>"; };
-		90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AIComponentKit-AIComponentKitTests"; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AIComponentKit_AIComponentKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9062EC92EAE3CAE770E4DB7CDA67EE58 /* DGCharts.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = DGCharts.modulemap; sourceTree = "<group>"; };
 		90817A2F733590EC60C47E39B3097FCA /* ZXRSSExpandedPair.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSSExpandedPair.m; path = ZXingObjC/oned/rss/expanded/ZXRSSExpandedPair.m; sourceTree = "<group>"; };
 		908C68E333DEC45249DE6025C1A0A6F6 /* ComponentBase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ComponentBase.swift; path = Source/Charts/Components/ComponentBase.swift; sourceTree = "<group>"; };
@@ -3348,10 +3348,10 @@
 		90EB101DA7A53AEE1015479B45766C53 /* RelateNodeGraph.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = RelateNodeGraph.cpp; path = geos/src/operation/relate/RelateNodeGraph.cpp; sourceTree = "<group>"; };
 		90ED0FE082BFFCEA036B506F1EA399DC /* ZXPDF417DetectorResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417DetectorResult.h; path = ZXingObjC/pdf417/detector/ZXPDF417DetectorResult.h; sourceTree = "<group>"; };
 		915AA976D2D0CBE7210255F58B0D484E /* ZXGridSampler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXGridSampler.m; path = ZXingObjC/common/ZXGridSampler.m; sourceTree = "<group>"; };
-		918295EBB61FEA6246B6A2EFA3E679FC /* Pods-PlayerApp */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-PlayerApp"; path = Pods_PlayerApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		918295EBB61FEA6246B6A2EFA3E679FC /* Pods_PlayerApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PlayerApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9194578933518CD15FF35E9F7E5B3FC1 /* RedisClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RedisClient.swift; path = PSSRedisClient/Classes/RedisClient.swift; sourceTree = "<group>"; };
 		919F54453FB6A4FA3A80697DD5760A8E /* ZXRSSExpandedDecodedChar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedDecodedChar.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedDecodedChar.h; sourceTree = "<group>"; };
-		91BB24BA472AF523E913108C9AA301F2 /* BigInt */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = BigInt; path = BigInt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BigInt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		91D0A9A9A5F3968E376CE77F689B892D /* ZXDecodeHints.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDecodeHints.m; path = ZXingObjC/core/ZXDecodeHints.m; sourceTree = "<group>"; };
 		91DCDE7EE4FFFB4A29FC1F7F18968005 /* SessionDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SessionDelegate.swift; path = Source/Core/SessionDelegate.swift; sourceTree = "<group>"; };
 		91FBC472B19BF73B79C9248F2F0B1038 /* MultipartFormData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MultipartFormData.swift; path = Source/Features/MultipartFormData.swift; sourceTree = "<group>"; };
@@ -3368,7 +3368,7 @@
 		93EADB5CE5BBB586B2AEDDD1CF6E338A /* ZXByQuadrantReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXByQuadrantReader.h; path = ZXingObjC/multi/ZXByQuadrantReader.h; sourceTree = "<group>"; };
 		9401E4670C213AD775FB9C1B1FE8A98B /* ZXQRCodeMaskUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeMaskUtil.h; path = ZXingObjC/qrcode/encoder/ZXQRCodeMaskUtil.h; sourceTree = "<group>"; };
 		942060A4AE149706D56B8C9AB2E29598 /* Data+CacheKey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Data+CacheKey.swift"; path = "SwiftSVG/SVG/Helpers/Data+CacheKey.swift"; sourceTree = "<group>"; };
-		943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftProtobuf; path = SwiftProtobuf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftProtobuf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		94572C8513F68EC8E64F8E3ED1759ADE /* SVGLayer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGLayer.swift; path = "SwiftSVG/SVG Extensions/SVGLayer.swift"; sourceTree = "<group>"; };
 		94D612BFF83A89D713DD1ADFFBDE228D /* ZXPDF417ResultMetadata.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXPDF417ResultMetadata.m; path = ZXingObjC/pdf417/ZXPDF417ResultMetadata.m; sourceTree = "<group>"; };
 		9511E034FE60606AAC7D6CD312156A12 /* ioapi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ioapi.h; path = Zip/minizip/include/ioapi.h; sourceTree = "<group>"; };
@@ -3435,9 +3435,9 @@
 		9D18C8682EAFDE5FEA7ED106C385A2BF /* ProtoNameProviding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ProtoNameProviding.swift; path = Sources/SwiftProtobuf/ProtoNameProviding.swift; sourceTree = "<group>"; };
 		9D34CB1150E4664016C4517B2754C50C /* ZXCode39Writer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXCode39Writer.h; path = ZXingObjC/oned/ZXCode39Writer.h; sourceTree = "<group>"; };
 		9D3A1025B4E41A97180EA0E5FA2EE312 /* WKTWriter.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = WKTWriter.cpp; path = geos/src/io/WKTWriter.cpp; sourceTree = "<group>"; };
-		9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AICompanionAppTests"; path = Pods_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AICompanionAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D789039B3F69CB8407E7F6491645D55 /* OverlayOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = OverlayOp.cpp; path = geos/src/operation/overlay/OverlayOp.cpp; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DB451767A226507CCF86D80EBFEC149 /* PrecisionReducerCoordinateOperation.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PrecisionReducerCoordinateOperation.cpp; path = geos/src/precision/PrecisionReducerCoordinateOperation.cpp; sourceTree = "<group>"; };
 		9DB54F2474444EF501DFDC87DC4A934D /* ByteOrderDataInStream.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = ByteOrderDataInStream.cpp; path = geos/src/io/ByteOrderDataInStream.cpp; sourceTree = "<group>"; };
 		9DBBEEC6F3CFBC64DD5D2FDD7FA286BC /* TaggedLinesSimplifier.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = TaggedLinesSimplifier.cpp; path = geos/src/simplify/TaggedLinesSimplifier.cpp; sourceTree = "<group>"; };
@@ -3471,7 +3471,7 @@
 		A2026701248092E4BE1054E397BC1ED1 /* GCDWebServerFunctions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GCDWebServerFunctions.m; path = GCDWebServer/Core/GCDWebServerFunctions.m; sourceTree = "<group>"; };
 		A2689D1048222936B95A6CE6D34A60E6 /* MonotoneChainBuilder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MonotoneChainBuilder.cpp; path = geos/src/index/chain/MonotoneChainBuilder.cpp; sourceTree = "<group>"; };
 		A269635F6E2045C9F760BE1B31E62457 /* Pods-PlayerApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PlayerApp-acknowledgements.markdown"; sourceTree = "<group>"; };
-		A28AB133538FF4F23492D8B0D05D5035 /* geos */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = geos; path = geos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = geos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A6E31CB3376A44DEF07F2D855DAE72 /* Archive+Reading.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Archive+Reading.swift"; path = "Sources/ZIPFoundation/Archive+Reading.swift"; sourceTree = "<group>"; };
 		A300272BD2EB172AF446EFC4E8EBFB95 /* ZXResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXResult.h; path = ZXingObjC/core/ZXResult.h; sourceTree = "<group>"; };
 		A30D7C09E6879DC0192D6014E6E172D5 /* ZXDataMatrixSymbolInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixSymbolInfo.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixSymbolInfo.m; sourceTree = "<group>"; };
@@ -3482,7 +3482,7 @@
 		A34F813292771D8A6B2B5057B440049F /* ZXCode128Writer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXCode128Writer.h; path = ZXingObjC/oned/ZXCode128Writer.h; sourceTree = "<group>"; };
 		A3B6C39671FA7EC2128E9951A2527B94 /* ZXRSSPair.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSPair.h; path = ZXingObjC/oned/rss/ZXRSSPair.h; sourceTree = "<group>"; };
 		A3D128C690C27A812984F9283471C60D /* ZXAddressBookParsedResult.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAddressBookParsedResult.h; path = ZXingObjC/client/result/ZXAddressBookParsedResult.h; sourceTree = "<group>"; };
-		A3D30211B199757A7A2F0AC792234325 /* DGCharts */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = DGCharts; path = DGCharts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A3D30211B199757A7A2F0AC792234325 /* DGCharts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DGCharts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A444E04D8AD6B0F6AE1C9762472C5D95 /* Pods-PlayerApp-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PlayerApp-umbrella.h"; sourceTree = "<group>"; };
 		A477C9F5BA6776CBC7F11EE03AB92E57 /* AEAD.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AEAD.swift; path = Sources/CryptoSwift/AEAD/AEAD.swift; sourceTree = "<group>"; };
 		A4ADDAFFCA6946FE388C82C1F3F73CD7 /* ZXDataMatrixHighLevelEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixHighLevelEncoder.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixHighLevelEncoder.m; sourceTree = "<group>"; };
@@ -3506,14 +3506,14 @@
 		A7B564C2C51E54E4094BE7587A2FF68A /* PolygonizeEdge.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PolygonizeEdge.cpp; path = geos/src/operation/polygonize/PolygonizeEdge.cpp; sourceTree = "<group>"; };
 		A7DC6A3755AC8E6305668D5BBB52A3A6 /* Pods-AICompanionApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AICompanionApp-acknowledgements.markdown"; sourceTree = "<group>"; };
 		A81254B1D10322E9B3577D0791C24071 /* Pods-AIComponentKit-AIComponentKitTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AIComponentKit-AIComponentKitTests-acknowledgements.plist"; sourceTree = "<group>"; };
-		A845402EF959A57A4640F2A4F5155943 /* Zip */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Zip; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A845402EF959A57A4640F2A4F5155943 /* Zip.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Zip.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A89709F28640B39AB86CF1656304D0BF /* ZXRSS14Reader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXRSS14Reader.m; path = ZXingObjC/oned/rss/ZXRSS14Reader.m; sourceTree = "<group>"; };
 		A8BAE61A819247565E8E092D1A03BDAA /* DGCharts-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DGCharts-prefix.pch"; sourceTree = "<group>"; };
 		A8D897EEFEBE66F291CC26C8413DB672 /* ZXAbstractRSSReader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAbstractRSSReader.m; path = ZXingObjC/oned/rss/ZXAbstractRSSReader.m; sourceTree = "<group>"; };
 		A9169ABBA0F606766983DA66D55AFFC7 /* PreparedPoint.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = PreparedPoint.cpp; path = geos/src/geom/prep/PreparedPoint.cpp; sourceTree = "<group>"; };
 		A9698E38E2577B3551EB92DE222E1210 /* Cryptors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Cryptors.swift; path = Sources/CryptoSwift/Cryptors.swift; sourceTree = "<group>"; };
 		A97CCD8137F6D087974FD073AEC23FA9 /* ZXQRCodeDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXQRCodeDetector.h; path = ZXingObjC/qrcode/detector/ZXQRCodeDetector.h; sourceTree = "<group>"; };
-		A987E28672872B6FF8E1A869C3A7902A /* unzip.c */ = {isa = PBXFileReference; includeInIndex = 1; name = unzip.c; path = Zip/minizip/unzip.c; sourceTree = "<group>"; };
+		A987E28672872B6FF8E1A869C3A7902A /* unzip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = unzip.c; path = Zip/minizip/unzip.c; sourceTree = "<group>"; };
 		A9CF81B823CF0EE57EE497DD4454F398 /* CoreFunctions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CoreFunctions.swift; path = Sources/SQLite/Typed/CoreFunctions.swift; sourceTree = "<group>"; };
 		A9D65A67FA38CC060A501BB63E7452BA /* GTLRRuntimeCommon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRRuntimeCommon.h; path = Sources/Core/Public/GoogleAPIClientForREST/GTLRRuntimeCommon.h; sourceTree = "<group>"; };
 		AA01013D75BF71C1578B2C0C4348A01A /* Addition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Addition.swift; path = Sources/CryptoSwift/CS_BigInt/Addition.swift; sourceTree = "<group>"; };
@@ -3529,7 +3529,7 @@
 		AAB93316E57D1E570ADE3EDB410968A9 /* Array+Foundation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Array+Foundation.swift"; path = "Sources/CryptoSwift/Foundation/Array+Foundation.swift"; sourceTree = "<group>"; };
 		AAC17AED5C2B7CE9B6A3EEFE51FC6E67 /* LineMergeGraph.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LineMergeGraph.cpp; path = geos/src/operation/linemerge/LineMergeGraph.cpp; sourceTree = "<group>"; };
 		AADB3BAE525CE5E29298870AB8E3671B /* geos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = geos.release.xcconfig; sourceTree = "<group>"; };
-		AAE8893BBE25052B606AB4B5A32D3829 /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; name = zip.c; path = Zip/minizip/zip.c; sourceTree = "<group>"; };
+		AAE8893BBE25052B606AB4B5A32D3829 /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = zip.c; path = Zip/minizip/zip.c; sourceTree = "<group>"; };
 		AAEFF944A1AF6C62D916AEAC90918CA8 /* BoundaryNodeRule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BoundaryNodeRule.cpp; path = geos/src/algorithm/BoundaryNodeRule.cpp; sourceTree = "<group>"; };
 		AB2A76F0FB1C84F95B7C8F7F8DEB24DB /* ZXBizcardResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXBizcardResultParser.m; path = ZXingObjC/client/result/ZXBizcardResultParser.m; sourceTree = "<group>"; };
 		AB68B50D59BF280647A0EA17C63BDFDB /* BigInt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = BigInt.release.xcconfig; sourceTree = "<group>"; };
@@ -3605,7 +3605,7 @@
 		B46B1BEA83A8D28CB1BB6FAE64A3D023 /* GTLRDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GTLRDefines.h; path = Sources/Core/GTLRDefines.h; sourceTree = "<group>"; };
 		B4965EE2F7976898842036968397CA79 /* TextFormatDecoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TextFormatDecoder.swift; path = Sources/SwiftProtobuf/TextFormatDecoder.swift; sourceTree = "<group>"; };
 		B4C5FF5A904C258D85942A5FF72E10D5 /* ZXUPCEANExtensionSupport.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXUPCEANExtensionSupport.m; path = ZXingObjC/oned/ZXUPCEANExtensionSupport.m; sourceTree = "<group>"; };
-		B4DAD2BF592C0ECD74D89786F086E94C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/Full/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B4DAD2BF592C0ECD74D89786F086E94C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Sources/Full/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		B4DD1AD81F3535FC59B777F27B05BA59 /* PSSRedisClient.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PSSRedisClient.debug.xcconfig; sourceTree = "<group>"; };
 		B50AEC207FC402B5172A51C04256A135 /* RequestInterceptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RequestInterceptor.swift; path = Source/Features/RequestInterceptor.swift; sourceTree = "<group>"; };
 		B53E2E6D2F484BA17623A4A077B269D7 /* ZXDataMatrixDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixDecoder.h; path = ZXingObjC/datamatrix/decoder/ZXDataMatrixDecoder.h; sourceTree = "<group>"; };
@@ -3619,7 +3619,7 @@
 		B63E9CEBD1C4732E7C7F69F91F8231D2 /* LineScatterCandleRadarRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LineScatterCandleRadarRenderer.swift; path = Source/Charts/Renderers/LineScatterCandleRadarRenderer.swift; sourceTree = "<group>"; };
 		B655658FBC3A0342C46B6DDEC62115D2 /* ZIPFoundation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ZIPFoundation-dummy.m"; sourceTree = "<group>"; };
 		B66E501F81CA84753940F3CB9BE3A2AD /* BlockDecryptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BlockDecryptor.swift; path = Sources/CryptoSwift/BlockDecryptor.swift; sourceTree = "<group>"; };
-		B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GCDWebServer; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GCDWebServer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B69A31AFDE327130777E6C5456F2C59C /* SQLite.swift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SQLite.swift-dummy.m"; sourceTree = "<group>"; };
 		B6B465CF1B3932A77820970DC80D3CB7 /* ZXAI01weightDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAI01weightDecoder.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI01weightDecoder.h; sourceTree = "<group>"; };
 		B6F6BFEE28720309D67D8B6998FC3835 /* ResourceBundle-GoogleAPIClientForREST_Privacy-GoogleAPIClientForREST-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-GoogleAPIClientForREST_Privacy-GoogleAPIClientForREST-Info.plist"; sourceTree = "<group>"; };
@@ -3685,7 +3685,7 @@
 		C11A52D5C531A29DEB7A95CC68BE1CD3 /* ZXDataMatrixEdifactEncoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixEdifactEncoder.m; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixEdifactEncoder.m; sourceTree = "<group>"; };
 		C14229D65483F5CA93CC587B93DC003E /* ZXAI013x0xDecoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXAI013x0xDecoder.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI013x0xDecoder.h; sourceTree = "<group>"; };
 		C1840AEFAD13260C23077172D648A4F1 /* ZXMaxiCodeDecoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXMaxiCodeDecoder.m; path = ZXingObjC/maxicode/decoder/ZXMaxiCodeDecoder.m; sourceTree = "<group>"; };
-		C1998E0D8085221AD87F89B614C10E52 /* GTMSessionFetcher */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GTMSessionFetcher; path = GTMSessionFetcher.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1998E0D8085221AD87F89B614C10E52 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GTMSessionFetcher.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1E160015C94486E3622D1AA174411D1 /* RadarChartData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RadarChartData.swift; path = Source/Charts/Data/Implementations/Standard/RadarChartData.swift; sourceTree = "<group>"; };
 		C1F4689F3AF989B2C30D465E10B92EE3 /* ZXDataMatrixDecodedBitStreamParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixDecodedBitStreamParser.h; path = ZXingObjC/datamatrix/decoder/ZXDataMatrixDecodedBitStreamParser.h; sourceTree = "<group>"; };
 		C1F90021AC8AA40C4A970F6ACE06470F /* LegendRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LegendRenderer.swift; path = Source/Charts/Renderers/LegendRenderer.swift; sourceTree = "<group>"; };
@@ -3752,7 +3752,7 @@
 		C9821B6EC1DE03655780E3EF005057FA /* ZXWriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXWriter.h; path = ZXingObjC/core/ZXWriter.h; sourceTree = "<group>"; };
 		C98AE63C6132D3076869050649018A39 /* ZXDataMatrixEncoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixEncoder.h; path = ZXingObjC/datamatrix/encoder/ZXDataMatrixEncoder.h; sourceTree = "<group>"; };
 		C9C7893EC6262D06B26D626A3D9A6655 /* SquareShapeRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SquareShapeRenderer.swift; path = Source/Charts/Renderers/Scatter/SquareShapeRenderer.swift; sourceTree = "<group>"; };
-		CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation-ZIPFoundation_Privacy */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "ZIPFoundation-ZIPFoundation_Privacy"; path = ZIPFoundation_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation_Privacy.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZIPFoundation_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA8E178FF83688D62F8B1228C77662FD /* CryptoSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "CryptoSwift-dummy.m"; sourceTree = "<group>"; };
 		CAA6F27094DB311FBD039203A7A0631E /* LinearGeometryBuilder.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LinearGeometryBuilder.cpp; path = geos/src/linearref/LinearGeometryBuilder.cpp; sourceTree = "<group>"; };
 		CAC5547C9F87E26EA38ADB4C69ADD372 /* ZXMultiFormatWriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXMultiFormatWriter.h; path = ZXingObjC/ZXMultiFormatWriter.h; sourceTree = "<group>"; };
@@ -3777,7 +3777,7 @@
 		CFDA458C05F6E022F112A116D72E8542 /* ZXRGBLuminanceSource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRGBLuminanceSource.h; path = ZXingObjC/core/ZXRGBLuminanceSource.h; sourceTree = "<group>"; };
 		CFEBCD2F6475B0817679841D357F6FC2 /* ZXingObjCQRCode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXingObjCQRCode.h; path = ZXingObjC/qrcode/ZXingObjCQRCode.h; sourceTree = "<group>"; };
 		D0057959D0A5B3B723E3620089586ECB /* GeometricShapeFactory.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = GeometricShapeFactory.cpp; path = geos/src/util/GeometricShapeFactory.cpp; sourceTree = "<group>"; };
-		D01E77CE25369D93CDF6FBD89D8521B9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Source/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D01E77CE25369D93CDF6FBD89D8521B9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Source/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D0568F27497CD59762DE15E6CB535C88 /* STRtree.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = STRtree.cpp; path = geos/src/index/strtree/STRtree.cpp; sourceTree = "<group>"; };
 		D05C91C9464EFA5ECCC2DCD05A2B925E /* SVGGroup.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SVGGroup.swift; path = SwiftSVG/SVG/Elements/SVGGroup.swift; sourceTree = "<group>"; };
 		D09E5F43335A73ABC3607EFA88C100DC /* CocoaAsyncSocket-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "CocoaAsyncSocket-Info.plist"; sourceTree = "<group>"; };
@@ -3808,7 +3808,7 @@
 		D505B96BF1D705B874A28A83A6921556 /* Division.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Division.swift; path = Sources/CryptoSwift/CS_BigInt/Division.swift; sourceTree = "<group>"; };
 		D5C547D433A9AC1AFBCB98F2AD8CE651 /* DiscreteFrechetDistance.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = DiscreteFrechetDistance.cpp; path = geos/src/algorithm/distance/DiscreteFrechetDistance.cpp; sourceTree = "<group>"; };
 		D5F28BAFDCDACA40297276F91D8406BD /* IsSimpleOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = IsSimpleOp.cpp; path = geos/src/operation/IsSimpleOp.cpp; sourceTree = "<group>"; };
-		D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Toast-Swift"; path = Toast_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Toast_Swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D60C79893E5AE0170BA2CE9B7799DC88 /* ZXDataMatrixDetector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXDataMatrixDetector.m; path = ZXingObjC/datamatrix/detector/ZXDataMatrixDetector.m; sourceTree = "<group>"; };
 		D623A2562A31DA69F60702E4D5D8A002 /* CombinedChartDataProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CombinedChartDataProvider.swift; path = Source/Charts/Interfaces/CombinedChartDataProvider.swift; sourceTree = "<group>"; };
 		D6526F83E326A8043251EF11702485B4 /* Prime Test.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Prime Test.swift"; path = "Sources/Prime Test.swift"; sourceTree = "<group>"; };
@@ -3920,7 +3920,7 @@
 		E7CE8B455713FDCDF25F900C7F0E986C /* ClaimValidator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClaimValidator.swift; path = JSONWebToken/ClaimValidator.swift; sourceTree = "<group>"; };
 		E7D073B45789C8711B145FAF2B6420D6 /* Exponentiation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Exponentiation.swift; path = Sources/Exponentiation.swift; sourceTree = "<group>"; };
 		E814CCF48B0E4929F266EEF901CAF539 /* EdgeRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = EdgeRing.cpp; path = geos/src/operation/polygonize/EdgeRing.cpp; sourceTree = "<group>"; };
-		E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "GTMSessionFetcher-GTMSessionFetcher_Core_Privacy"; path = GTMSessionFetcher_Core_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher_Core_Privacy.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GTMSessionFetcher_Core_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8437102241C3EF688750C78854C5DF8 /* UnaryUnionOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = UnaryUnionOp.cpp; path = geos/src/operation/union/UnaryUnionOp.cpp; sourceTree = "<group>"; };
 		E889F78C17DD25B631D7A24570461469 /* Pods-PlayerApp-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PlayerApp-Info.plist"; sourceTree = "<group>"; };
 		E8901F5F1A7676C67721F822FC9890DD /* GTLRSheetsObjects.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GTLRSheetsObjects.m; path = Sources/GeneratedServices/Sheets/GTLRSheetsObjects.m; sourceTree = "<group>"; };
@@ -3999,7 +3999,7 @@
 		F31136CB512EDE4A794AF371F2CD3CF7 /* ZXAI01320xDecoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXAI01320xDecoder.m; path = ZXingObjC/oned/rss/expanded/decoders/ZXAI01320xDecoder.m; sourceTree = "<group>"; };
 		F36F39A2CD6CCBF62EE58AE8697BBF98 /* MaximalEdgeRing.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = MaximalEdgeRing.cpp; path = geos/src/operation/overlay/MaximalEdgeRing.cpp; sourceTree = "<group>"; };
 		F38C8B227F4BDEC12607CA836E3EAA23 /* KTVJSONWebToken-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "KTVJSONWebToken-umbrella.h"; sourceTree = "<group>"; };
-		F3D5A29F1AB6948FE262836EF05753AA /* SwiftyBase64 */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SwiftyBase64; path = SwiftyBase64.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3D5A29F1AB6948FE262836EF05753AA /* SwiftyBase64.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyBase64.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F41D35A54B1AC8649EA4CEFBB70C6D80 /* source_context.pb.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = source_context.pb.swift; path = Sources/SwiftProtobuf/source_context.pb.swift; sourceTree = "<group>"; };
 		F45781BC64DC6A65EDDC5EE93DA08950 /* BufferSubgraph.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = BufferSubgraph.cpp; path = geos/src/operation/buffer/BufferSubgraph.cpp; sourceTree = "<group>"; };
 		F470CA5E970CE422EE567F6E654B6734 /* Utils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Utils.swift; path = Sources/CryptoSwift/Utils.swift; sourceTree = "<group>"; };
@@ -4010,7 +4010,7 @@
 		F5BA726E11DA01E26D9B9D2F2683D1D5 /* ZXPDF417DecodedBitStreamParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXPDF417DecodedBitStreamParser.h; path = ZXingObjC/pdf417/decoder/ZXPDF417DecodedBitStreamParser.h; sourceTree = "<group>"; };
 		F5BCA7F6D68A7587049CF263171EB1D4 /* Version.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Version.swift; path = Sources/SwiftProtobuf/Version.swift; sourceTree = "<group>"; };
 		F5D4454D1FDFAAB5D47429BC69A95EE4 /* IndexedFacetDistance.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = IndexedFacetDistance.cpp; path = geos/src/operation/distance/IndexedFacetDistance.cpp; sourceTree = "<group>"; };
-		F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SQLite.swift; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SQLite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5FED6B27544490D8EE18B40450AD9B5 /* ZXErrors.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXErrors.h; path = ZXingObjC/core/ZXErrors.h; sourceTree = "<group>"; };
 		F6016D3327C02DF3A2E18CB350BAE732 /* SwiftyBase64-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "SwiftyBase64-Info.plist"; sourceTree = "<group>"; };
 		F62A024CDC419A84AA7CD0545DF32685 /* Pods-AIComponentKit-AIComponentKitTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AIComponentKit-AIComponentKitTests.modulemap"; sourceTree = "<group>"; };
@@ -4020,7 +4020,7 @@
 		F700B44578FB98A01096FDFEF789B0E0 /* ZXDataMatrixDetector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXDataMatrixDetector.h; path = ZXingObjC/datamatrix/detector/ZXDataMatrixDetector.h; sourceTree = "<group>"; };
 		F78E7FBCA68209936973407C76510232 /* Archive+ReadingDeprecated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Archive+ReadingDeprecated.swift"; path = "Sources/ZIPFoundation/Archive+ReadingDeprecated.swift"; sourceTree = "<group>"; };
 		F7AC243462B2DB85DFBD73767C3739BB /* ZXExpandedProductParsedResult.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXExpandedProductParsedResult.m; path = ZXingObjC/client/result/ZXExpandedProductParsedResult.m; sourceTree = "<group>"; };
-		F81274EDB681F11E7CB05F7DCA2BB33C /* CryptoSwift */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = CryptoSwift; path = CryptoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F81274EDB681F11E7CB05F7DCA2BB33C /* CryptoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CryptoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F852BB065D52299876BD37BB604732EE /* ZXEmailAddressResultParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ZXEmailAddressResultParser.m; path = ZXingObjC/client/result/ZXEmailAddressResultParser.m; sourceTree = "<group>"; };
 		F878CA608E63885EA7AD46A97A47D60E /* GCDWebServerURLEncodedFormRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GCDWebServerURLEncodedFormRequest.h; path = GCDWebServer/Requests/GCDWebServerURLEncodedFormRequest.h; sourceTree = "<group>"; };
 		F8A4E2B1D9D35C2256CB7FDC033A2D7B /* SnapIfNeededOverlayOp.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SnapIfNeededOverlayOp.cpp; path = geos/src/operation/overlay/snap/SnapIfNeededOverlayOp.cpp; sourceTree = "<group>"; };
@@ -4038,7 +4038,7 @@
 		FB726626917E89A472A8918AD31F8921 /* unzip.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = Zip/minizip/include/unzip.h; sourceTree = "<group>"; };
 		FBC033BCA5E008C813F40CC4C77CA76E /* SegmentIntersector.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = SegmentIntersector.cpp; path = geos/src/geomgraph/index/SegmentIntersector.cpp; sourceTree = "<group>"; };
 		FBD79CC1625B463477A9654FCAB3FB21 /* Pods-AIComponentKit-AIComponentKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AIComponentKit-AIComponentKitTests.debug.xcconfig"; sourceTree = "<group>"; };
-		FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-SchemeKitTests"; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SchemeKitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC13AA2FDF014DF1B09772010489D109 /* ZXReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXReader.h; path = ZXingObjC/core/ZXReader.h; sourceTree = "<group>"; };
 		FC153DEBB9E3C8998BD6FA0A32BDA51C /* StreamDecryptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StreamDecryptor.swift; path = Sources/CryptoSwift/StreamDecryptor.swift; sourceTree = "<group>"; };
 		FC5C86777D1B76D1E92E33BBCDF93BAB /* Setter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Setter.swift; path = Sources/SQLite/Typed/Setter.swift; sourceTree = "<group>"; };
@@ -4051,7 +4051,7 @@
 		FCFF713AE551D6684B2CFFDFB3C962A0 /* Feature.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Feature.swift; path = GEOSwift/Feature.swift; sourceTree = "<group>"; };
 		FCFFDA098B033909F87DD5AE56D653D6 /* LineIntersector.cpp */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.cpp.cpp; name = LineIntersector.cpp; path = geos/src/algorithm/LineIntersector.cpp; sourceTree = "<group>"; };
 		FD4D99829645729916E87F4DC7DB67E6 /* ExtensionFieldValueSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExtensionFieldValueSet.swift; path = Sources/SwiftProtobuf/ExtensionFieldValueSet.swift; sourceTree = "<group>"; };
-		FD519882861480B93B563B477CE1FA29 /* GoogleAPIClientForREST */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = GoogleAPIClientForREST; path = GoogleAPIClientForREST.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD519882861480B93B563B477CE1FA29 /* GoogleAPIClientForREST.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GoogleAPIClientForREST.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD55EC0B10C1391755326E4F3D1DBA08 /* ZXGenericGF.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXGenericGF.h; path = ZXingObjC/common/reedsolomon/ZXGenericGF.h; sourceTree = "<group>"; };
 		FD7EFB06880589789C59642D65BF4BD7 /* Toast-Swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Toast-Swift.release.xcconfig"; sourceTree = "<group>"; };
 		FDAD4D4CA154F5321C723D900335E2C3 /* ZXRSSExpandedCurrentParsingState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ZXRSSExpandedCurrentParsingState.h; path = ZXingObjC/oned/rss/expanded/decoders/ZXRSSExpandedCurrentParsingState.h; sourceTree = "<group>"; };
@@ -4391,7 +4391,6 @@
 				FBCD4705D113D89769D4649E3F4E2A06 /* standard */,
 				1CE447F3644B402846F96ED23BE50151 /* Support Files */,
 			);
-			name = SQLite.swift;
 			path = SQLite.swift;
 			sourceTree = "<group>";
 		};
@@ -4888,7 +4887,6 @@
 				97ECFBAFDA00E4F7FADC7A626ADA10F4 /* Toast.swift */,
 				35732D01E79B1C41AC9CFDBCEF401452 /* Support Files */,
 			);
-			name = "Toast-Swift";
 			path = "Toast-Swift";
 			sourceTree = "<group>";
 		};
@@ -4958,7 +4956,6 @@
 				5704E3BDFDA79DA0F27B77CF05CA73AF /* Full */,
 				DDB207CED9F22FE16D5E10438EABDE18 /* Support Files */,
 			);
-			name = GTMSessionFetcher;
 			path = GTMSessionFetcher;
 			sourceTree = "<group>";
 		};
@@ -5308,7 +5305,6 @@
 				7E51E153F8284BAA97FFA121601C6905 /* Writer.cpp */,
 				FB74BAA99CA664460DAA10E791F2F9D2 /* Support Files */,
 			);
-			name = geos;
 			path = geos;
 			sourceTree = "<group>";
 		};
@@ -5326,7 +5322,6 @@
 				2632E733709D1B44FB9DB6ABC9EC6234 /* Core */,
 				632394AA7541199A8E4644086AF4A2B7 /* Support Files */,
 			);
-			name = GCDWebServer;
 			path = GCDWebServer;
 			sourceTree = "<group>";
 		};
@@ -5360,7 +5355,6 @@
 				8CB3C8EA0E9D99E0A22E1566253B9C2C /* Base64.swift */,
 				E937FC85F37DFABCA327C5E71D985913 /* Support Files */,
 			);
-			name = SwiftyBase64;
 			path = SwiftyBase64;
 			sourceTree = "<group>";
 		};
@@ -5391,7 +5385,6 @@
 				223DFB4B10A5BC3B831F8FFA02E05DDE /* Resources */,
 				D3E6C3A101548E8DC729781502F080C5 /* Support Files */,
 			);
-			name = ZIPFoundation;
 			path = ZIPFoundation;
 			sourceTree = "<group>";
 		};
@@ -5401,7 +5394,6 @@
 				134ED6D154258F2959911C2A8E64F951 /* All */,
 				70F079E8AD24FDA07BB8A58FA7E692CF /* Support Files */,
 			);
-			name = ZXingObjC;
 			path = ZXingObjC;
 			sourceTree = "<group>";
 		};
@@ -5447,7 +5439,6 @@
 				DC83FC78E82C726002D31FCEAAB6B42F /* Words and Bits.swift */,
 				49BCF88054463BAD8CB5E262A80245F2 /* Support Files */,
 			);
-			name = BigInt;
 			path = BigInt;
 			sourceTree = "<group>";
 		};
@@ -5468,7 +5459,6 @@
 				FE10FFF5BF81793A980B8ABD3231E2F3 /* ZipUtilities.swift */,
 				0053E1859129A588E729A615F0D097E0 /* Support Files */,
 			);
-			name = Zip;
 			path = Zip;
 			sourceTree = "<group>";
 		};
@@ -5566,7 +5556,6 @@
 				2961793515B59ECF6B5CA49CC0F02E97 /* Resources */,
 				D473EC728126C5F5CB32B1D8F0E4D212 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -5632,7 +5621,6 @@
 				0245451B47DEBD6CA7F6206BAD316D0B /* SpatialRelations.swift */,
 				DA84AD9214219C4537D2B34A1687CB4A /* Support Files */,
 			);
-			name = GEOSwift;
 			path = GEOSwift;
 			sourceTree = "<group>";
 		};
@@ -5755,7 +5743,6 @@
 				80DF43550E4271CF956F86AC403ACF0C /* Resources */,
 				9BAF2D639CFD07791D64A61B5E3C9254 /* Support Files */,
 			);
-			name = CryptoSwift;
 			path = CryptoSwift;
 			sourceTree = "<group>";
 		};
@@ -5992,7 +5979,6 @@
 				8712909C9EB8D9BD9F0710329F680C85 /* Unown.swift */,
 				F567E2D0C01D938D5C9F08E998C3F71D /* Support Files */,
 			);
-			name = SwiftSVG;
 			path = SwiftSVG;
 			sourceTree = "<group>";
 		};
@@ -6020,7 +6006,6 @@
 				6EC40F3A5563A61184A94EDA414EEC4D /* RedisResponseParser.swift */,
 				574785BB5ADA7260BDD3681E3B7C6B74 /* Support Files */,
 			);
-			name = PSSRedisClient;
 			path = PSSRedisClient;
 			sourceTree = "<group>";
 		};
@@ -6068,7 +6053,6 @@
 				6C3571C3C86CF060604D54BD7158C55A /* Core */,
 				664DD370C89321B862A3980FC3950766 /* Support Files */,
 			);
-			name = DGCharts;
 			path = DGCharts;
 			sourceTree = "<group>";
 		};
@@ -6094,7 +6078,6 @@
 				32096A54FC2A79EC0DA80A694C8B469E /* GCDAsyncUdpSocket.m */,
 				6B7310F907CCE4FC5FF7E743557E6743 /* Support Files */,
 			);
-			name = CocoaAsyncSocket;
 			path = CocoaAsyncSocket;
 			sourceTree = "<group>";
 		};
@@ -6119,7 +6102,6 @@
 				4AC6AB1E5942078356307C1D01548090 /* Base58.swift */,
 				97A9E1DAD7DB23CF196B165E61551925 /* Support Files */,
 			);
-			name = Base58Swift;
 			path = Base58Swift;
 			sourceTree = "<group>";
 		};
@@ -6191,42 +6173,42 @@
 		C943924BF06DE8285DC0E158FFF41444 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */,
-				085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire-Alamofire */,
-				05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */,
-				91BB24BA472AF523E913108C9AA301F2 /* BigInt */,
-				6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */,
-				F81274EDB681F11E7CB05F7DCA2BB33C /* CryptoSwift */,
-				409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift-CryptoSwift */,
-				A3D30211B199757A7A2F0AC792234325 /* DGCharts */,
-				B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */,
-				A28AB133538FF4F23492D8B0D05D5035 /* geos */,
-				77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */,
-				FD519882861480B93B563B477CE1FA29 /* GoogleAPIClientForREST */,
-				60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy */,
-				C1998E0D8085221AD87F89B614C10E52 /* GTMSessionFetcher */,
-				E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy */,
-				097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy */,
-				48D031403554BA5789B68E985515041D /* KTVJSONWebToken */,
-				0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */,
-				38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */,
-				9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */,
-				40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */,
-				90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */,
-				918295EBB61FEA6246B6A2EFA3E679FC /* Pods-PlayerApp */,
-				568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */,
-				FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */,
-				5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */,
-				F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */,
-				943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */,
-				38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf-SwiftProtobuf */,
-				62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */,
-				F3D5A29F1AB6948FE262836EF05753AA /* SwiftyBase64 */,
-				D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */,
-				A845402EF959A57A4640F2A4F5155943 /* Zip */,
-				48A4A6EDC08C8AC933D0DCD507E9D173 /* ZIPFoundation */,
-				CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation-ZIPFoundation_Privacy */,
-				6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */,
+				5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */,
+				085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire.bundle */,
+				05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */,
+				91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */,
+				6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */,
+				F81274EDB681F11E7CB05F7DCA2BB33C /* CryptoSwift.framework */,
+				409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift.bundle */,
+				A3D30211B199757A7A2F0AC792234325 /* DGCharts.framework */,
+				B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */,
+				A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */,
+				77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */,
+				FD519882861480B93B563B477CE1FA29 /* GoogleAPIClientForREST.framework */,
+				60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST_Privacy.bundle */,
+				C1998E0D8085221AD87F89B614C10E52 /* GTMSessionFetcher.framework */,
+				E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher_Core_Privacy.bundle */,
+				097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher_Full_Privacy.bundle */,
+				48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */,
+				0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */,
+				38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */,
+				9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */,
+				40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */,
+				90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */,
+				918295EBB61FEA6246B6A2EFA3E679FC /* Pods_PlayerApp.framework */,
+				568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */,
+				FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */,
+				5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */,
+				F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */,
+				943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */,
+				38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf.bundle */,
+				62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */,
+				F3D5A29F1AB6948FE262836EF05753AA /* SwiftyBase64.framework */,
+				D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */,
+				A845402EF959A57A4640F2A4F5155943 /* Zip.framework */,
+				48A4A6EDC08C8AC933D0DCD507E9D173 /* ZIPFoundation.framework */,
+				CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation_Privacy.bundle */,
+				6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -6238,7 +6220,6 @@
 				F307ABFB42EB992BE04CCA0C98EB32E5 /* Sheets */,
 				F294FBF60376EC7D07F47231A8FB64E7 /* Support Files */,
 			);
-			name = GoogleAPIClientForREST;
 			path = GoogleAPIClientForREST;
 			sourceTree = "<group>";
 		};
@@ -6494,7 +6475,6 @@
 				D91E6F957E46FC0B2EB10BF31ABF8DF4 /* Resources */,
 				D5C21B8AAF7624ED8CC2DEF2BFB852A9 /* Support Files */,
 			);
-			name = SwiftProtobuf;
 			path = SwiftProtobuf;
 			sourceTree = "<group>";
 		};
@@ -6554,7 +6534,6 @@
 				3478452CAA9D695321F1B9D29D171EFA /* TokenValidator.swift */,
 				05FFFC4E493FDFFAD65C9E871CEC5279 /* Support Files */,
 			);
-			name = KTVJSONWebToken;
 			path = KTVJSONWebToken;
 			sourceTree = "<group>";
 		};
@@ -7222,7 +7201,7 @@
 			);
 			name = "Pods-AICompanionApp";
 			productName = Pods_AICompanionApp;
-			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods-AICompanionApp */;
+			productReference = 0275D4965406EB88436BCE1D4C8FD89D /* Pods_AICompanionApp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		09DD83B7D075842A3A5105AD410BD38A /* BigInt */ = {
@@ -7240,7 +7219,7 @@
 			);
 			name = BigInt;
 			productName = BigInt;
-			productReference = 91BB24BA472AF523E913108C9AA301F2 /* BigInt */;
+			productReference = 91BB24BA472AF523E913108C9AA301F2 /* BigInt.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		0BE9E64AA13AC5C466D0A556F4D15857 /* Base58Swift */ = {
@@ -7259,7 +7238,7 @@
 			);
 			name = Base58Swift;
 			productName = Base58Swift;
-			productReference = 05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift */;
+			productReference = 05F8370DCFAA7EC21DF62907888C5636 /* Base58Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		2349E173F60A2065FC65E52DD215DFF0 /* SwiftSVG */ = {
@@ -7277,7 +7256,7 @@
 			);
 			name = SwiftSVG;
 			productName = SwiftSVG;
-			productReference = 62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG */;
+			productReference = 62DF1BDA41B723D7B0440FD765F1C141 /* SwiftSVG.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		24D7789A4C8783E3684E7D8CFAC12CC6 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy */ = {
@@ -7294,7 +7273,7 @@
 			);
 			name = "GTMSessionFetcher-GTMSessionFetcher_Full_Privacy";
 			productName = GTMSessionFetcher_Full_Privacy;
-			productReference = 097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy */;
+			productReference = 097A1F5B958C73856FCF44A3F4A839C6 /* GTMSessionFetcher_Full_Privacy.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		27B040000126206BCDC6DC7AEDA6D938 /* SwiftyBase64 */ = {
@@ -7312,7 +7291,7 @@
 			);
 			name = SwiftyBase64;
 			productName = SwiftyBase64;
-			productReference = F3D5A29F1AB6948FE262836EF05753AA /* SwiftyBase64 */;
+			productReference = F3D5A29F1AB6948FE262836EF05753AA /* SwiftyBase64.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		30950EABCD5EFA0462FC017837EB16BE /* ZXingObjC */ = {
@@ -7330,7 +7309,7 @@
 			);
 			name = ZXingObjC;
 			productName = ZXingObjC;
-			productReference = 6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC */;
+			productReference = 6F73B6C7971A37DCD5170ED89E3DF741 /* ZXingObjC.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		31708EE6929C61C0EDA6F5DAE3AF9DB7 /* Zip */ = {
@@ -7348,7 +7327,7 @@
 			);
 			name = Zip;
 			productName = Zip;
-			productReference = A845402EF959A57A4640F2A4F5155943 /* Zip */;
+			productReference = A845402EF959A57A4640F2A4F5155943 /* Zip.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		3F2C1776D90B62B156DB52C41A5C419C /* SQLite.swift */ = {
@@ -7366,7 +7345,7 @@
 			);
 			name = SQLite.swift;
 			productName = SQLite;
-			productReference = F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.swift */;
+			productReference = F5FA45A44C42CC2CA3A324A3E914CE19 /* SQLite.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		417B25AC44CA1D040034CC1F375CEE36 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy */ = {
@@ -7383,7 +7362,7 @@
 			);
 			name = "GTMSessionFetcher-GTMSessionFetcher_Core_Privacy";
 			productName = GTMSessionFetcher_Core_Privacy;
-			productReference = E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy */;
+			productReference = E826FA0DCB9AA6E7829C68391B323B78 /* GTMSessionFetcher_Core_Privacy.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		4C553636806882CA884CCB37C93B7A1D /* Pods-AICompanionAppTests */ = {
@@ -7404,7 +7383,7 @@
 			);
 			name = "Pods-AICompanionAppTests";
 			productName = Pods_AICompanionAppTests;
-			productReference = 9D569511589CCC02C8F2CCD3DAAEF080 /* Pods-AICompanionAppTests */;
+			productReference = 9D569511589CCC02C8F2CCD3DAAEF080 /* Pods_AICompanionAppTests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		5B10C920DE193A91B2A4865B39D5C800 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy */ = {
@@ -7421,7 +7400,7 @@
 			);
 			name = "GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy";
 			productName = GoogleAPIClientForREST_Privacy;
-			productReference = 60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy */;
+			productReference = 60A08F8640CD99836A2D380855F045D0 /* GoogleAPIClientForREST_Privacy.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		6083682834ABE0AE7BD1CBF06CADD036 /* CocoaAsyncSocket */ = {
@@ -7439,7 +7418,7 @@
 			);
 			name = CocoaAsyncSocket;
 			productName = CocoaAsyncSocket;
-			productReference = 6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket */;
+			productReference = 6CBEFE4F9E22AFDC6347A739BB35FF8C /* CocoaAsyncSocket.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		62884CF888628EFA13EA1613B8C94267 /* PSSRedisClient */ = {
@@ -7458,7 +7437,7 @@
 			);
 			name = PSSRedisClient;
 			productName = PSSRedisClient;
-			productReference = 5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient */;
+			productReference = 5003E54D06FE43FCDA9FC6390C2FA6BD /* PSSRedisClient.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		739D73E5703F6F4ED0DB0A7A83146E9F /* Pods-SchemeKitTests */ = {
@@ -7476,7 +7455,7 @@
 			);
 			name = "Pods-SchemeKitTests";
 			productName = "Pods-SchemeKitTests";
-			productReference = FBED228BFA4D5C2847ED9F50291AFE44 /* Pods-SchemeKitTests */;
+			productReference = FBED228BFA4D5C2847ED9F50291AFE44 /* libPods-SchemeKitTests.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		759D0F22224FF87BBDA4723538A5F811 /* DGCharts */ = {
@@ -7494,7 +7473,7 @@
 			);
 			name = DGCharts;
 			productName = DGCharts;
-			productReference = A3D30211B199757A7A2F0AC792234325 /* DGCharts */;
+			productReference = A3D30211B199757A7A2F0AC792234325 /* DGCharts.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		7F80FEFE0385D9F0B1E5E029AACC864C /* geos */ = {
@@ -7512,7 +7491,7 @@
 			);
 			name = geos;
 			productName = geos;
-			productReference = A28AB133538FF4F23492D8B0D05D5035 /* geos */;
+			productReference = A28AB133538FF4F23492D8B0D05D5035 /* geos.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		8C2C70E07119861A924AFFBB4EDB90F8 /* Pods-AICompanionApp-AICompanionAppUITests */ = {
@@ -7553,7 +7532,7 @@
 			);
 			name = "Pods-AICompanionApp-AICompanionAppUITests";
 			productName = Pods_AICompanionApp_AICompanionAppUITests;
-			productReference = 38AB1DAD66F2C017F7F66AC804026627 /* Pods-AICompanionApp-AICompanionAppUITests */;
+			productReference = 38AB1DAD66F2C017F7F66AC804026627 /* Pods_AICompanionApp_AICompanionAppUITests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		976126A1CE06DC6E162563800E1BDF14 /* Alamofire-Alamofire */ = {
@@ -7570,7 +7549,7 @@
 			);
 			name = "Alamofire-Alamofire";
 			productName = Alamofire;
-			productReference = 085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire-Alamofire */;
+			productReference = 085DBCE7DD98588B2ED103B1C1F36026 /* Alamofire.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		99313990C1D76A6D1D017868B6975CC8 /* CryptoSwift */ = {
@@ -7589,7 +7568,7 @@
 			);
 			name = CryptoSwift;
 			productName = CryptoSwift;
-			productReference = F81274EDB681F11E7CB05F7DCA2BB33C /* CryptoSwift */;
+			productReference = F81274EDB681F11E7CB05F7DCA2BB33C /* CryptoSwift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		A5F702E0DA383BC1479572581615A916 /* SwiftProtobuf */ = {
@@ -7608,7 +7587,7 @@
 			);
 			name = SwiftProtobuf;
 			productName = SwiftProtobuf;
-			productReference = 943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf */;
+			productReference = 943D347E61A2E181A4FA2CA894307B6E /* SwiftProtobuf.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		AA15C8469D67684160CC2A7098EB841C /* ZIPFoundation */ = {
@@ -7627,7 +7606,7 @@
 			);
 			name = ZIPFoundation;
 			productName = ZIPFoundation;
-			productReference = 48A4A6EDC08C8AC933D0DCD507E9D173 /* ZIPFoundation */;
+			productReference = 48A4A6EDC08C8AC933D0DCD507E9D173 /* ZIPFoundation.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		AD904F32069787EFB2DFFE05EB82F5BD /* GCDWebServer */ = {
@@ -7645,7 +7624,7 @@
 			);
 			name = GCDWebServer;
 			productName = GCDWebServer;
-			productReference = B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer */;
+			productReference = B68C1052A3B51DBCF7D960F898AAFA95 /* GCDWebServer.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		B990BD87169C76A3ED3FE8A9258D91A3 /* Toast-Swift */ = {
@@ -7663,7 +7642,7 @@
 			);
 			name = "Toast-Swift";
 			productName = Toast_Swift;
-			productReference = D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast-Swift */;
+			productReference = D6043471C96F93DC41F7DD1E0D7D8B35 /* Toast_Swift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		C4DDD4DFF9E11EB5409BA8CED6FAEA6B /* Pods-AIComponentKit-AIComponentKitTests */ = {
@@ -7703,7 +7682,7 @@
 			);
 			name = "Pods-AIComponentKit-AIComponentKitTests";
 			productName = Pods_AIComponentKit_AIComponentKitTests;
-			productReference = 90432C48F305F9A1003AB8FF5DC3D09B /* Pods-AIComponentKit-AIComponentKitTests */;
+			productReference = 90432C48F305F9A1003AB8FF5DC3D09B /* Pods_AIComponentKit_AIComponentKitTests.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		C7A8D82E407CD3FDC3BA55CEE519B252 /* ZIPFoundation-ZIPFoundation_Privacy */ = {
@@ -7720,7 +7699,7 @@
 			);
 			name = "ZIPFoundation-ZIPFoundation_Privacy";
 			productName = ZIPFoundation_Privacy;
-			productReference = CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation-ZIPFoundation_Privacy */;
+			productReference = CA4A114775B98CEA4A566C18123B145F /* ZIPFoundation_Privacy.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		D1DAECCFA739F2B9F26311F0AA6D96D5 /* KTVJSONWebToken */ = {
@@ -7738,7 +7717,7 @@
 			);
 			name = KTVJSONWebToken;
 			productName = KTVJSONWebToken;
-			productReference = 48D031403554BA5789B68E985515041D /* KTVJSONWebToken */;
+			productReference = 48D031403554BA5789B68E985515041D /* KTVJSONWebToken.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D676E21115185671D7258A56944ABE98 /* GTMSessionFetcher */ = {
@@ -7758,7 +7737,7 @@
 			);
 			name = GTMSessionFetcher;
 			productName = GTMSessionFetcher;
-			productReference = C1998E0D8085221AD87F89B614C10E52 /* GTMSessionFetcher */;
+			productReference = C1998E0D8085221AD87F89B614C10E52 /* GTMSessionFetcher.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D7958E869B6C0073DB3025514393D7A3 /* GoogleAPIClientForREST */ = {
@@ -7778,7 +7757,7 @@
 			);
 			name = GoogleAPIClientForREST;
 			productName = GoogleAPIClientForREST;
-			productReference = FD519882861480B93B563B477CE1FA29 /* GoogleAPIClientForREST */;
+			productReference = FD519882861480B93B563B477CE1FA29 /* GoogleAPIClientForREST.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		D9511E908172FC0635D8A6BF87724844 /* Pods-SchemeKit */ = {
@@ -7795,7 +7774,7 @@
 			);
 			name = "Pods-SchemeKit";
 			productName = "Pods-SchemeKit";
-			productReference = 568139F2266A97047B121D74B32D336E /* Pods-SchemeKit */;
+			productReference = 568139F2266A97047B121D74B32D336E /* libPods-SchemeKit.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		E1AD339F31EABB0CEE96DD92C4E0BC03 /* Pods-AIComponentKit */ = {
@@ -7835,7 +7814,7 @@
 			);
 			name = "Pods-AIComponentKit";
 			productName = Pods_AIComponentKit;
-			productReference = 40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods-AIComponentKit */;
+			productReference = 40E62CC51AE8E91AE22E9052AE5CB5E6 /* Pods_AIComponentKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		E54F0C57DE0D2EF315F248809434B027 /* Pods-PlayerApp */ = {
@@ -7875,7 +7854,7 @@
 			);
 			name = "Pods-PlayerApp";
 			productName = Pods_PlayerApp;
-			productReference = 918295EBB61FEA6246B6A2EFA3E679FC /* Pods-PlayerApp */;
+			productReference = 918295EBB61FEA6246B6A2EFA3E679FC /* Pods_PlayerApp.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EAAA1AD3A8A1B59AB91319EE40752C6D /* Alamofire */ = {
@@ -7894,7 +7873,7 @@
 			);
 			name = Alamofire;
 			productName = Alamofire;
-			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire */;
+			productReference = 5D797E9A5C5782CE845840781FA1CC81 /* Alamofire.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		EBC10B6451F5FE5244D138B5176C2A02 /* CryptoSwift-CryptoSwift */ = {
@@ -7911,7 +7890,7 @@
 			);
 			name = "CryptoSwift-CryptoSwift";
 			productName = CryptoSwift;
-			productReference = 409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift-CryptoSwift */;
+			productReference = 409A40F21065BFF2199E91A10A27F9DA /* CryptoSwift.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		EBEEF85FCA1109D5280B062D0A876D5A /* GEOSwift */ = {
@@ -7930,7 +7909,7 @@
 			);
 			name = GEOSwift;
 			productName = GEOSwift;
-			productReference = 77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift */;
+			productReference = 77FAB2F7F146F553BAA8F57047F3EC4C /* GEOSwift.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		FA0CBCD9613A8E95F24D86AAD4A86E26 /* SwiftProtobuf-SwiftProtobuf */ = {
@@ -7947,7 +7926,7 @@
 			);
 			name = "SwiftProtobuf-SwiftProtobuf";
 			productName = SwiftProtobuf;
-			productReference = 38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf-SwiftProtobuf */;
+			productReference = 38DFD12C0DE83AD51C78858605BBA299 /* SwiftProtobuf.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -7968,8 +7947,6 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			minimizedProjectReferenceProxies = 0;
-			preferredProjectObjectVersion = 77;
 			productRefGroup = C943924BF06DE8285DC0E158FFF41444 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -8055,7 +8032,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B41276D6865E0A584B8922ABE3C45376 /* ZIPFoundation-ZIPFoundation_Privacy in Resources */,
+				B41276D6865E0A584B8922ABE3C45376 /* ZIPFoundation_Privacy.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8085,7 +8062,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5CD127F101529C336A07D45CE1106A54 /* Alamofire-Alamofire in Resources */,
+				5CD127F101529C336A07D45CE1106A54 /* Alamofire.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8107,7 +8084,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DAB10FA477D012D378EE7BEC84E361DC /* SwiftProtobuf-SwiftProtobuf in Resources */,
+				DAB10FA477D012D378EE7BEC84E361DC /* SwiftProtobuf.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8145,7 +8122,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				407C079501FF086F096771C1EB199E55 /* CryptoSwift-CryptoSwift in Resources */,
+				407C079501FF086F096771C1EB199E55 /* CryptoSwift.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8160,8 +8137,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				57116744231EA988EB14EDD2876CAE25 /* GTMSessionFetcher-GTMSessionFetcher_Core_Privacy in Resources */,
-				02609B535FD4A48E3232BD27744DD5F4 /* GTMSessionFetcher-GTMSessionFetcher_Full_Privacy in Resources */,
+				57116744231EA988EB14EDD2876CAE25 /* GTMSessionFetcher_Core_Privacy.bundle in Resources */,
+				02609B535FD4A48E3232BD27744DD5F4 /* GTMSessionFetcher_Full_Privacy.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8240,7 +8217,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C09593AE3AD632B459F227AC778BE428 /* GoogleAPIClientForREST-GoogleAPIClientForREST_Privacy in Resources */,
+				C09593AE3AD632B459F227AC778BE428 /* GoogleAPIClientForREST_Privacy.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10434,6 +10411,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp.modulemap";
@@ -10469,6 +10447,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GEOSwift/GEOSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GEOSwift/GEOSwift.modulemap";
 				PRODUCT_MODULE_NAME = GEOSwift;
@@ -10504,6 +10483,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AICompanionApp/Pods-AICompanionApp.modulemap";
@@ -10540,6 +10520,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GCDWebServer/GCDWebServer.modulemap";
 				PRODUCT_MODULE_NAME = GCDWebServer;
@@ -10574,6 +10555,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/BigInt/BigInt-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/BigInt/BigInt.modulemap";
 				PRODUCT_MODULE_NAME = BigInt;
@@ -10609,6 +10591,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket.modulemap";
 				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
@@ -10633,6 +10616,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GoogleAPIClientForREST";
 				IBSC_MODULE = GoogleAPIClientForREST;
 				INFOPLIST_FILE = "Target Support Files/GoogleAPIClientForREST/ResourceBundle-GoogleAPIClientForREST_Privacy-GoogleAPIClientForREST-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GoogleAPIClientForREST_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -10660,6 +10644,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GCDWebServer/GCDWebServer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GCDWebServer/GCDWebServer.modulemap";
 				PRODUCT_MODULE_NAME = GCDWebServer;
@@ -10695,6 +10680,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/geos/geos-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/geos/geos.modulemap";
 				PRODUCT_MODULE_NAME = geos;
@@ -10730,6 +10716,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf.modulemap";
 				PRODUCT_MODULE_NAME = SwiftProtobuf;
@@ -10764,6 +10751,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SwiftSVG/SwiftSVG-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftSVG/SwiftSVG.modulemap";
 				PRODUCT_MODULE_NAME = SwiftSVG;
@@ -10788,6 +10776,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GTMSessionFetcher";
 				IBSC_MODULE = GTMSessionFetcher;
 				INFOPLIST_FILE = "Target Support Files/GTMSessionFetcher/ResourceBundle-GTMSessionFetcher_Full_Privacy-GTMSessionFetcher-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GTMSessionFetcher_Full_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -10815,6 +10804,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken.modulemap";
 				PRODUCT_MODULE_NAME = KTVJSONWebToken;
@@ -10839,6 +10829,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftProtobuf";
 				IBSC_MODULE = SwiftProtobuf;
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/ResourceBundle-SwiftProtobuf-SwiftProtobuf-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = SwiftProtobuf;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -10855,6 +10846,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Alamofire";
 				IBSC_MODULE = Alamofire;
 				INFOPLIST_FILE = "Target Support Files/Alamofire/ResourceBundle-Alamofire-Alamofire-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -10916,7 +10908,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -10948,6 +10940,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CocoaAsyncSocket/CocoaAsyncSocket.modulemap";
 				PRODUCT_MODULE_NAME = CocoaAsyncSocket;
@@ -10971,6 +10964,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GTMSessionFetcher";
 				IBSC_MODULE = GTMSessionFetcher;
 				INFOPLIST_FILE = "Target Support Files/GTMSessionFetcher/ResourceBundle-GTMSessionFetcher_Full_Privacy-GTMSessionFetcher-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GTMSessionFetcher_Full_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -10987,6 +10981,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GTMSessionFetcher";
 				IBSC_MODULE = GTMSessionFetcher;
 				INFOPLIST_FILE = "Target Support Files/GTMSessionFetcher/ResourceBundle-GTMSessionFetcher_Core_Privacy-GTMSessionFetcher-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GTMSessionFetcher_Core_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -11015,6 +11010,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/ZIPFoundation/ZIPFoundation-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZIPFoundation/ZIPFoundation.modulemap";
 				PRODUCT_MODULE_NAME = ZIPFoundation;
@@ -11049,6 +11045,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GTMSessionFetcher/GTMSessionFetcher-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GTMSessionFetcher/GTMSessionFetcher.modulemap";
 				PRODUCT_MODULE_NAME = GTMSessionFetcher;
@@ -11083,6 +11080,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GTMSessionFetcher/GTMSessionFetcher-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GTMSessionFetcher/GTMSessionFetcher.modulemap";
 				PRODUCT_MODULE_NAME = GTMSessionFetcher;
@@ -11118,6 +11116,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/CryptoSwift/CryptoSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CryptoSwift/CryptoSwift.modulemap";
 				PRODUCT_MODULE_NAME = CryptoSwift;
@@ -11153,6 +11152,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.modulemap";
@@ -11181,6 +11181,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				ENABLE_MODULE_VERIFIER = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MACH_O_TYPE = staticlib;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -11212,6 +11213,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST.modulemap";
 				PRODUCT_MODULE_NAME = GoogleAPIClientForREST;
@@ -11246,6 +11248,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AIComponentKit/Pods-AIComponentKit.modulemap";
@@ -11283,6 +11286,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Alamofire/Alamofire-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
 				PRODUCT_MODULE_NAME = Alamofire;
@@ -11307,6 +11311,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/CryptoSwift";
 				IBSC_MODULE = CryptoSwift;
 				INFOPLIST_FILE = "Target Support Files/CryptoSwift/ResourceBundle-CryptoSwift-CryptoSwift-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = CryptoSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -11334,6 +11339,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/KTVJSONWebToken/KTVJSONWebToken.modulemap";
 				PRODUCT_MODULE_NAME = KTVJSONWebToken;
@@ -11369,6 +11375,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/CryptoSwift/CryptoSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/CryptoSwift/CryptoSwift.modulemap";
 				PRODUCT_MODULE_NAME = CryptoSwift;
@@ -11392,6 +11399,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/CryptoSwift";
 				IBSC_MODULE = CryptoSwift;
 				INFOPLIST_FILE = "Target Support Files/CryptoSwift/ResourceBundle-CryptoSwift-CryptoSwift-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = CryptoSwift;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -11408,6 +11416,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/ZIPFoundation";
 				IBSC_MODULE = ZIPFoundation;
 				INFOPLIST_FILE = "Target Support Files/ZIPFoundation/ResourceBundle-ZIPFoundation_Privacy-ZIPFoundation-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = ZIPFoundation_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -11466,13 +11475,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -11497,6 +11505,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient.modulemap";
 				PRODUCT_MODULE_NAME = PSSRedisClient;
@@ -11531,6 +11540,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests.modulemap";
@@ -11566,6 +11576,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SwiftyBase64/SwiftyBase64-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftyBase64/SwiftyBase64.modulemap";
 				PRODUCT_MODULE_NAME = SwiftyBase64;
@@ -11594,6 +11605,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				ENABLE_MODULE_VERIFIER = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MACH_O_TYPE = staticlib;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -11625,6 +11637,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/ZXingObjC/ZXingObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZXingObjC/ZXingObjC.modulemap";
 				PRODUCT_MODULE_NAME = ZXingObjC;
@@ -11660,6 +11673,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.modulemap";
@@ -11696,6 +11710,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SQLite.swift/SQLite.swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SQLite.swift/SQLite.swift.modulemap";
 				PRODUCT_MODULE_NAME = SQLite;
@@ -11730,6 +11745,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GoogleAPIClientForREST/GoogleAPIClientForREST.modulemap";
 				PRODUCT_MODULE_NAME = GoogleAPIClientForREST;
@@ -11765,6 +11781,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SwiftyBase64/SwiftyBase64-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftyBase64/SwiftyBase64.modulemap";
 				PRODUCT_MODULE_NAME = SwiftyBase64;
@@ -11792,6 +11809,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				ENABLE_MODULE_VERIFIER = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MACH_O_TYPE = staticlib;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -11823,6 +11841,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/DGCharts/DGCharts-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/DGCharts/DGCharts.modulemap";
 				PRODUCT_MODULE_NAME = DGCharts;
@@ -11891,6 +11910,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Base58Swift/Base58Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Base58Swift/Base58Swift.modulemap";
 				PRODUCT_MODULE_NAME = Base58Swift;
@@ -11926,6 +11946,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AIComponentKit-AIComponentKitTests/Pods-AIComponentKit-AIComponentKitTests.modulemap";
@@ -11950,6 +11971,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GoogleAPIClientForREST";
 				IBSC_MODULE = GoogleAPIClientForREST;
 				INFOPLIST_FILE = "Target Support Files/GoogleAPIClientForREST/ResourceBundle-GoogleAPIClientForREST_Privacy-GoogleAPIClientForREST-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GoogleAPIClientForREST_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -11977,6 +11999,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AICompanionApp-AICompanionAppUITests/Pods-AICompanionApp-AICompanionAppUITests.modulemap";
@@ -12002,6 +12025,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/ZIPFoundation";
 				IBSC_MODULE = ZIPFoundation;
 				INFOPLIST_FILE = "Target Support Files/ZIPFoundation/ResourceBundle-ZIPFoundation_Privacy-ZIPFoundation-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = ZIPFoundation_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -12029,6 +12053,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Zip/Zip-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Zip/Zip.modulemap";
 				PRODUCT_MODULE_NAME = Zip;
@@ -12063,6 +12088,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/ZXingObjC/ZXingObjC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZXingObjC/ZXingObjC.modulemap";
 				PRODUCT_MODULE_NAME = ZXingObjC;
@@ -12097,6 +12123,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/geos/geos-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/geos/geos.modulemap";
 				PRODUCT_MODULE_NAME = geos;
@@ -12132,6 +12159,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.modulemap";
@@ -12167,6 +12195,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/PSSRedisClient/PSSRedisClient.modulemap";
 				PRODUCT_MODULE_NAME = PSSRedisClient;
@@ -12202,6 +12231,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Toast-Swift/Toast-Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Toast-Swift/Toast-Swift.modulemap";
 				PRODUCT_MODULE_NAME = Toast_Swift;
@@ -12225,6 +12255,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftProtobuf";
 				IBSC_MODULE = SwiftProtobuf;
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/ResourceBundle-SwiftProtobuf-SwiftProtobuf-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = SwiftProtobuf;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -12245,6 +12276,7 @@
 				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
 				ENABLE_MODULE_VERIFIER = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MACH_O_TYPE = staticlib;
 				OTHER_LDFLAGS = "";
 				OTHER_LIBTOOLFLAGS = "";
@@ -12276,6 +12308,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/DGCharts/DGCharts-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/DGCharts/DGCharts.modulemap";
 				PRODUCT_MODULE_NAME = DGCharts;
@@ -12312,6 +12345,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Alamofire/Alamofire-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Alamofire/Alamofire.modulemap";
 				PRODUCT_MODULE_NAME = Alamofire;
@@ -12347,6 +12381,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/ZIPFoundation/ZIPFoundation-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/ZIPFoundation/ZIPFoundation.modulemap";
 				PRODUCT_MODULE_NAME = ZIPFoundation;
@@ -12381,6 +12416,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SQLite.swift/SQLite.swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SQLite.swift/SQLite.swift.modulemap";
 				PRODUCT_MODULE_NAME = SQLite;
@@ -12449,6 +12485,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Base58Swift/Base58Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Base58Swift/Base58Swift.modulemap";
 				PRODUCT_MODULE_NAME = Base58Swift;
@@ -12483,6 +12520,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "Target Support Files/Pods-AICompanionAppTests/Pods-AICompanionAppTests.modulemap";
@@ -12519,6 +12557,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Zip/Zip-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Zip/Zip.modulemap";
 				PRODUCT_MODULE_NAME = Zip;
@@ -12554,6 +12593,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/Toast-Swift/Toast-Swift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/Toast-Swift/Toast-Swift.modulemap";
 				PRODUCT_MODULE_NAME = Toast_Swift;
@@ -12578,6 +12618,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Alamofire";
 				IBSC_MODULE = Alamofire;
 				INFOPLIST_FILE = "Target Support Files/Alamofire/ResourceBundle-Alamofire-Alamofire-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = Alamofire;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -12605,6 +12646,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/GEOSwift/GEOSwift-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/GEOSwift/GEOSwift.modulemap";
 				PRODUCT_MODULE_NAME = GEOSwift;
@@ -12640,6 +12682,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftProtobuf/SwiftProtobuf.modulemap";
 				PRODUCT_MODULE_NAME = SwiftProtobuf;
@@ -12675,6 +12718,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/BigInt/BigInt-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/BigInt/BigInt.modulemap";
 				PRODUCT_MODULE_NAME = BigInt;
@@ -12698,6 +12742,7 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/GTMSessionFetcher";
 				IBSC_MODULE = GTMSessionFetcher;
 				INFOPLIST_FILE = "Target Support Files/GTMSessionFetcher/ResourceBundle-GTMSessionFetcher_Core_Privacy-GTMSessionFetcher-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_NAME = GTMSessionFetcher_Core_Privacy;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -12725,6 +12770,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Target Support Files/SwiftSVG/SwiftSVG-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MODULEMAP_FILE = "Target Support Files/SwiftSVG/SwiftSVG.modulemap";
 				PRODUCT_MODULE_NAME = SwiftSVG;
