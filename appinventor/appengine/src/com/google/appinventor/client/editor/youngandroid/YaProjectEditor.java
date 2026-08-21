@@ -290,9 +290,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
     for (ProjectNode source: projectRootNode.getAllSourceNodes()) {
       if (source instanceof YoungAndroidBlocksNode) {
-        YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, (YoungAndroidBlocksNode) source);
-        addBlocksEditor(((YoungAndroidBlocksNode) source).getFormName(), newBlocksEditor);
-        newBlocksEditor.initWorkspace();
+        addBlocksEditor(((YoungAndroidBlocksNode) source).getFormName(),
+            new YaBlocksEditor(this, (YoungAndroidBlocksNode) source));
       }
     }
 
@@ -389,9 +388,8 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
     else if (node instanceof YoungAndroidBlocksNode) {
       if (getFileEditor(node.getFileId()) == null) {
-        YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, (YoungAndroidBlocksNode) node);
-        addBlocksEditor(((YoungAndroidBlocksNode) node).getEntityName(), newBlocksEditor);
-        newBlocksEditor.initWorkspace();
+        addBlocksEditor(((YoungAndroidBlocksNode) node).getEntityName(),
+            new YaBlocksEditor(this, (YoungAndroidBlocksNode) node));
         formName = ((YoungAndroidBlocksNode) node).getFormName();
       }
     }
