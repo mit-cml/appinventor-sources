@@ -332,7 +332,7 @@ let kMinimumToastWait = 10.0
       _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor))
     }
     _constraints.append(_scaleFrameLayout.leadingAnchor.constraint(equalTo: view.leadingAnchor))
-    _constraints.append(_scaleFrameLayout.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
+    _constraints.append(_scaleFrameLayout.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
     _constraints.append(_scaleFrameLayout.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0/_scaleFrameLayout.scale))
     _constraints.append(_linearView.topAnchor.constraint(equalTo: _scaleFrameLayout.topAnchor))
     _constraints.append(_linearView.leadingAnchor.constraint(equalTo: _scaleFrameLayout.leadingAnchor))
@@ -1158,27 +1158,18 @@ let kMinimumToastWait = 10.0
 
   // MARK: Keyboard handling
   @objc public func keyboardWillShow(_ notification: NSNotification) {
-    guard !_keyboardVisible else {
-      return
-    }
-    
-    _keyboardVisible = true
     if let userInfo = notification.userInfo,
-        let frame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-      let height = frame.height
-      view.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y,
-                          width: view.frame.size.width, height: view.frame.size.height - height)
+       let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+      let keyboardViewFrame = view.convert(keyboardFrame, from: view.window)
+      let keyboardHeight = max(0, view.bounds.height - keyboardViewFrame.minY)
+      additionalSafeAreaInsets.bottom = keyboardHeight
+      view.layoutIfNeeded()
     }
   }
 
   @objc public func keyboardWillHide(_ notification: NSNotification) {
-    _keyboardVisible = false
-    if let userInfo = notification.userInfo,
-        let frame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-      let height = frame.height
-      view.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y,
-                          width: view.frame.size.width, height: view.frame.size.height + height)
-    }
+    additionalSafeAreaInsets.bottom = 0
+    view.layoutIfNeeded()
   }
 
   open func getChildren() -> [Component] {
