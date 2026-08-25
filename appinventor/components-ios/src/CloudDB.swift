@@ -89,11 +89,13 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   fileprivate let _comodoCert: SecCertificate
   fileprivate let _dstRootX3: SecCertificate
   fileprivate let _comodoUsrtrust: SecCertificate
+  fileprivate let _isrgRootX1Cert: SecCertificate
 
   @objc public override init(_ container: ComponentContainer) {
     _comodoCert = readCert("comodo_root")!
     _dstRootX3 = readCert("dst_root_x3")!
     _comodoUsrtrust = readCert("comodo_usrtrust")!
+    _isrgRootX1Cert = readCert("isrg_root_x1")!
 
     SUB_SCRIPT = readScript("sub_script")
     POP_SCRIPT = readScript("pop_script")
@@ -584,7 +586,7 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
   }
 
   public func socket(_ sock: GCDAsyncSocket, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void) {
-    let certArray = [ _comodoCert, _comodoUsrtrust, _dstRootX3 ]
+    let certArray = [ _comodoCert, _comodoUsrtrust, _dstRootX3, _isrgRootX1Cert ]
     let status = SecTrustSetAnchorCertificates(trust, certArray as NSArray)
     SecTrustSetAnchorCertificatesOnly(trust, false)  // also allow any trusted system root certificate
     if status == errSecSuccess {

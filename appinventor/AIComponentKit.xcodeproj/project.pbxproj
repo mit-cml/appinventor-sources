@@ -216,6 +216,7 @@
 		06B374811DC06F6B003888CB /* SchemeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747D1DC06F6B003888CB /* SchemeKit.framework */; };
 		06B374821DC06F6B003888CB /* ZXingObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06B3747E1DC06F6B003888CB /* ZXingObjC.framework */; };
 		06B5872C1DC02B190092C9DD /* AssetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5872B1DC02B190092C9DD /* AssetManager.swift */; };
+		06B5ECCF303E356700C6B17A /* isrg_root_x1.der in Resources */ = {isa = PBXBuildFile; fileRef = 06B5ECCD303E356700C6B17A /* isrg_root_x1.der */; };
 		06BA52A3203E845A00879F00 /* CsvUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BA52A2203E845A00879F00 /* CsvUtilTests.swift */; };
 		06C43B352D44699100BEF000 /* FileType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B342D44699100BEF000 /* FileType.swift */; };
 		06C43B362D44699100BEF000 /* FileAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C43B332D44699100BEF000 /* FileAction.swift */; };
@@ -641,6 +642,7 @@
 		06B3747D1DC06F6B003888CB /* SchemeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SchemeKit.framework; path = "build/Release-iphoneos/SchemeKit.framework"; sourceTree = "<group>"; };
 		06B3747E1DC06F6B003888CB /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = "Pods/../build/Release-iphoneos/ZXingObjC/ZXingObjC.framework"; sourceTree = "<group>"; };
 		06B5872B1DC02B190092C9DD /* AssetManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetManager.swift; sourceTree = "<group>"; };
+		06B5ECCD303E356700C6B17A /* isrg_root_x1.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = isrg_root_x1.der; sourceTree = "<group>"; };
 		06BA52A2203E845A00879F00 /* CsvUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvUtilTests.swift; sourceTree = "<group>"; };
 		06C43B332D44699100BEF000 /* FileAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAction.swift; sourceTree = "<group>"; };
 		06C43B342D44699100BEF000 /* FileType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileType.swift; sourceTree = "<group>"; };
@@ -1613,6 +1615,7 @@
 				DE962F5B20ADCD2B004AA45A /* comodo_root.der */,
 				DE962F5C20ADCD2B004AA45A /* comodo_usrtrust.der */,
 				DE962F5A20ADCD2B004AA45A /* dst_root_x3.der */,
+				06B5ECCD303E356700C6B17A /* isrg_root_x1.der */,
 				DE962F6120ADCD7D004AA45A /* append_script */,
 				DE962F6320ADCDA0004AA45A /* pop_script */,
 				DE962F6520ADCDE0004AA45A /* sub_script */,
@@ -1767,6 +1770,7 @@
 				069D1CBF2C9C4FF000C0CA96 /* mobilenet_group53-shard1of1 in Resources */,
 				069D1CBE2C9C4FF000C0CA96 /* mobilenet_group10-shard1of1 in Resources */,
 				069D1CB02C9C4FF000C0CA96 /* mobilenet_model.json in Resources */,
+				06B5ECCF303E356700C6B17A /* isrg_root_x1.der in Resources */,
 				069D1CC02C9C4FF000C0CA96 /* mobilenet_group35-shard1of1 in Resources */,
 				069D1CD12C9C4FF000C0CA96 /* mobilenet_group28-shard1of1 in Resources */,
 				069D1CB92C9C4FF000C0CA96 /* mobilenet_group27-shard1of1 in Resources */,
