@@ -15,8 +15,6 @@ import static com.google.appinventor.common.constants.YoungAndroidStructureConst
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 import static com.google.appinventor.server.ios.ProvisioningProfileUtil.validateProvisioningProfile;
 
-import com.google.appengine.api.utils.SystemProperty;
-import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
@@ -120,8 +118,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
       Flag.createFlag("build.server.host", "localhost:9990");
+
+  // host[:port] to use to contact us from the buildserver to return apk
+  // and build.out
+  private static final Flag<String> buildServerReturn =
+      Flag.createFlag("build.server.return", "localhost:8888");
+
   private static final Flag<String> buildServerPassword =
       Flag.createFlag("build.server.password", "");
+
   // host[:port] to use for connecting to the second build server
   private static final Flag<String> buildServerHost2 =
       Flag.createFlag("build2.server.host", "");
@@ -645,22 +650,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (RuntimeException e) {
-      // In particular, we often see RequestTooLargeException (if the zip is too
-      // big) and ApiProxyException. There may be others.
       Throwable wrappedException = e;
-      if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
-        int zipFileLength = zipFile.getContent().length;
-        if (zipFileLength >= MAX_PROJECT_SIZE.get() * MB) {
-          return fileTooBigResult(zipFileLength);
-        } else {
-          wrappedException = new IllegalArgumentException(
-              "Sorry, project was too large to package (" + zipFileLength + " bytes)");
-        }
-      } else {
-        // Unexpected runtime error
-        CrashReport.createAndLogError(LOG, null,
-            buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
-      }
+      CrashReport.createAndLogError(LOG, null,
+          buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
       return new RpcResult(false, "", wrappedException.getMessage());
     }
     return new RpcResult(true, "Building " + projectName, "");
@@ -847,18 +839,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   private String getCurrentHost() {
-    if (Server.isProductionServer()) {
-      if (StringUtils.isNullOrEmpty(appengineHost.get())) {
-        String applicationVersionId = SystemProperty.applicationVersion.get();
-        String applicationId = SystemProperty.applicationId.get();
-        return applicationVersionId + "." + applicationId + ".appspot.com";
-      } else {
-        return appengineHost.get();
-      }
-    } else {
-      // TODO(user): Figure out how to make this more generic
-      return "localhost:8888";
-    }
+    return buildServerReturn.get();
   }
 
   /*

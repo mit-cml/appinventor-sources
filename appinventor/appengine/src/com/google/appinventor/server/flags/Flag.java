@@ -39,6 +39,17 @@ public abstract class Flag<T> {
   }
 
   /**
+   * Sets the value of the flag. This is used to set
+   * root.path at server startup time.
+   *
+   * @param value the value to assign
+   */
+
+  public final void set(T value) {
+    System.setProperty(name, value.toString());
+  }
+
+  /**
    * Sets the value of this flag for testing purposes.
    *
    * @param value the value to assign to this flag
