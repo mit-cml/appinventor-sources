@@ -18,12 +18,12 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class StorageIoInstanceHolder {
   private static StorageIo INSTANCE;
-  
+
   private StorageIoInstanceHolder() {} // not to be instantiated
 
   public static StorageIo getInstance() {
     if (INSTANCE == null) {
-      INSTANCE = new ObjectifyStorageIo();
+      INSTANCE = new PostgreSQLStorageIo();
     }
     return INSTANCE;
   }
