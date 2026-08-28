@@ -6,14 +6,9 @@
 
 package com.google.appinventor.components.common;
 
-/**
- * Contains constants related to Young Android system, blocks, and component
- * version numbers.
- *
- */
+/** Contains constants related to Young Android system, blocks, and component version numbers. */
 public class YaVersion {
-  private YaVersion() {
-  }
+  private YaVersion() {}
 
   // ............................ Young Android System Version Number .............................
 
@@ -298,7 +293,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 112:
   // First test of new upgrading architecture: Dave Wolber's Canvas name changes
   // For YOUNG_ANDROID_VERSION 113:
-  // Second test of new upgrading architecture: Evan Thomas's fillCircle argument for Canvas.DrawCircle
+  // Second test of new upgrading architecture: Evan Thomas's fillCircle argument for
+  // Canvas.DrawCircle
   // - CANVAS_COMPONENT_VERSION was incremented to 9.
   // For YOUNG_ANDROID_VERSION 114:
   // - FORM_COMPONENT_VERSION was incremented to 14.
@@ -367,7 +363,8 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 144:
   // - Reserved for FIRST Tech Challenge.
   // For YOUNG_ANDROID_VERSION 145:
-  // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to 20
+  // - Spelling of "obsfucate" was corrected to obfuscate and BLOCKS_LANGUAGE_VERSION incremented to
+  // 20
   // For YOUNG_ANDROID_VERSION 146:
   // - CAMERA_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 147:
@@ -742,7 +739,8 @@ public class YaVersion {
   // - Added matrices and its operations
   // For BLOCKS_LANGUAGE_VERSION 38
   // - Control: run-in-background & run-after-period were added.
-  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown were added.
+  // - Proceudre: create-procedure, call-procedure, num-inputs, get-with-name & get-with-dropdown
+  // were added.
   // For BLOCKS_LANGUAGE_VERSION 39
   // - The Multiline Text block was added.
   public static final int BLOCKS_LANGUAGE_VERSION = 39;
@@ -768,7 +766,6 @@ public class YaVersion {
   // 4. For AI2, update the table in blocklyeditor/src/versioning.js
   // 5. Update documentation in the appropriate html file in docs/reference/components.
 
-
   // Note added after internationalization (8/25/2014)
   // If you add any properties, events or methods to a component you *must*:
 
@@ -790,13 +787,13 @@ public class YaVersion {
   // - AbsoluteArrangement component was added.
   public static final int ABSOLUTEARRANGEMENT_COMPONENT_VERSION = 1;
 
-  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
+  // For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
   //   the minimum interval to elapse before calling a shaking event when necessary.
-  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
+  // For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
   // - AccelerometerSensor.Sensitivty property was added.
-  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 4:
+  // For ACCELEROMETERSENSOR_COMPONENT_VERSION 4:
   // - Added the LegacyMode property.
   // For ACCELEROMERTERSENSOR_COMPONENT_VERSION 5:
   // - Adds Sensitivity dropdown block.
@@ -894,7 +891,7 @@ public class YaVersion {
   // - The UseFront property was added.
   // For CAMERA_COMPONENT_VERSION 3:
   // - The UseFront property was removed :-( .
-   public static final int CAMERA_COMPONENT_VERSION = 3;
+  public static final int CAMERA_COMPONENT_VERSION = 3;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
@@ -960,7 +957,8 @@ public class YaVersion {
   // For CHATBOT_COMPONENT_VERSION 4:
   // - Added CreateImage and GotResponseWithImage blocks
   // For CHATBOT_COMPONENT_VERSION 5:
-  // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot API.
+  // - Added the ServiceURL property to allow users to specify a custom endpoint for the chatbot
+  // API.
   // For CHATBOT_COMPONENT_VERSION 6:
   // - Added GetModels and GetProviders methods with GotModels and GotProviders events
   public static final int CHATBOT_COMPONENT_VERSION = 6;
@@ -1023,7 +1021,8 @@ public class YaVersion {
   // - RequestFocus function was added (via TextBoxBase)
   // For EMAILPICKER_COMPONENT_VERSION 7:
   // - Bumped up to be strictly greater than Kodular's EmailPicker (6).
-  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart
+  // methods were added.
   // For EMAILPICKER_COMPONENT_VERSION 8:
   // - TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
   public static final int EMAILPICKER_COMPONENT_VERSION = 8;
@@ -1225,7 +1224,8 @@ public class YaVersion {
   // For LABEL_COMPONENT_VERSION 5:
   // - The HTMLContent property is defined.
   // For LABEL_COMPONENT_VERSION 6:
-  // - TextAlignment, FontBold, FontItalic, FontTypeface, HTMLFormat properties made visible in block editor.
+  // - TextAlignment, FontBold, FontItalic, FontTypeface, HTMLFormat properties made visible in
+  // block editor.
   public static final int LABEL_COMPONENT_VERSION = 6;
 
   // For LINESTRING_COMPONENT_VERSION 1:
@@ -1287,7 +1287,8 @@ public class YaVersion {
   // For LOCATIONSENSOR_COMPONENT_VERSION 3:
   // - The speed parameter was added to the LocationChanged event
   // For LOCATIONSENSOR_COMPONENT_VERSION 4:
-  // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
+  // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for
+  // asynchronous calling
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
 
   // For MAP_COMPONENT_VERSION 1:
@@ -1343,7 +1344,8 @@ public class YaVersion {
   // For NOTIFIER_COMPONENT_VERSION 6:
   // - Added a ShowPasswordDialog method
   // For NOTIFIER_COMPONENT_VERSION 7:
-  // - NotifierLength property (setter only), BackgroundColor property (getter only) made visible in block editor.
+  // - NotifierLength property (setter only), BackgroundColor property (getter only) made visible in
+  // block editor.
   public static final int NOTIFIER_COMPONENT_VERSION = 7;
 
   // For NXT_COLORSENSOR_COMPONENT_VERSION 2:
@@ -1357,7 +1359,8 @@ public class YaVersion {
   public static final int NXT_DIRECT_COMMANDS_COMPONENT_VERSION = 3;
 
   // For NXT_DRIVE_COMPONENT_VERSION 2:
-  // - DriveMotors property (getter only), WheelDiameter property (getter only), BluetoothClient properties made visible in block editor.
+  // - DriveMotors property (getter only), WheelDiameter property (getter only), BluetoothClient
+  // properties made visible in block editor.
   public static final int NXT_DRIVE_COMPONENT_VERSION = 2;
 
   // For NXT_LIGHTSENSOR_COMPONENT_VERSION 2:
@@ -1426,7 +1429,8 @@ public class YaVersion {
   // - Added NumbersOnly property
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 7:
   // - Bumped up to be strictly greater than Kodular's PasswordTextBox (6).
-  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart
+  // methods were added.
   // For PASSWORDTEXTBOX_COMPONENT_VERSION 8:
   // - TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
   public static final int PASSWORDTEXTBOX_COMPONENT_VERSION = 8;
@@ -1576,7 +1580,8 @@ public class YaVersion {
   // - ReadOnly property was added
   // For TEXTBOX_COMPONENT_VERSION 14:
   // - Bumped up to be strictly greater than Kodular's TextBox (13).
-  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart methods were added.
+  // - TextChanged event, HintColor property, MoveCursorTo, MoveCursorToEnd and MoveCursorToStart
+  // methods were added.
   // For TEXTBOX_COMPONENT_VERSION 15:
   // - TextAlignment, FontBold, FontItalic, FontTypeface properties made visible in block editor.
   public static final int TEXTBOX_COMPONENT_VERSION = 15;
@@ -1753,7 +1758,7 @@ public class YaVersion {
   // - ClearCaches method was added
   // For WEBVIEWER_COMPONENT_VERSiON 7:
   // - Added WebViewStringChange event
-  //For WEBVIEWER_COMPONENT_VERSION 8:
+  // For WEBVIEWER_COMPONENT_VERSION 8:
   // - Added PageLoaded event
   // For WEBVIEWER_COMPONENT_VERSION 9:
   // - Added BeforePageLoad event
@@ -1778,16 +1783,16 @@ public class YaVersion {
   // - Stubbed out: blocks changed to use Translator
   public static final int YANDEX_COMPONENT_VERSION = 3;
 
-  //For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
+  // For PROXIMITYSENSOR_COMPONENT_VERSION: Initial Version
   public static final int PROXIMITYSENSOR_COMPONENT_VERSION = 1;
 
-  //For SERIAL_COMPONENT_VERSION: Initial Version
+  // For SERIAL_COMPONENT_VERSION: Initial Version
   public static final int SERIAL_COMPONENT_VERSION = 1;
 
-  //For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
+  // For MAGNETICFIELDSENSOR_COMPONENT_VERSION: Initial Version
   public static final int MAGNETICFIELDSENSOR_COMPONENT_VERSION = 1;
 
-  //For TRANSLATE_COMPONENT_VERSION: Initial Version
+  // For TRANSLATE_COMPONENT_VERSION: Initial Version
   public static final int TRANSLATOR_COMPONENT_VERSION = 1;
 
   // Rendezvous Server Location
@@ -1842,14 +1847,13 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.79";
+  public static final String PREFERRED_COMPANION = "2.80";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.79", "2.79u" };
+  public static final String[] ACCEPTABLE_COMPANIONS = {"2.80", "2.80u"};
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
-
 }
