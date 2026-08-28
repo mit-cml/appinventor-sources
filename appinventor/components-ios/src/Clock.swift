@@ -9,11 +9,14 @@ import Foundation
  * Creates a `DateFormatter` object for the given `str`.
  *
  * @param str The date format string
+ * @param locale The locale used to resolve pattern symbols. Defaults to
+ *     en_US_POSIX so parsing and pattern formatting are deterministic
+ *     across device locales (see #3984).
  * @returns A new DateFormatter object configured with the given string
  */
-fileprivate func makeFormat(_ str: String) -> DateFormatter {
+fileprivate func makeFormat(_ str: String, locale: Locale = Locale(identifier: "en_US_POSIX")) -> DateFormatter {
   let date = DateFormatter()
-  date.locale = Locale.preferredLanguage
+  date.locale = locale
   date.dateFormat = str
   return date
 }
@@ -243,7 +246,7 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func WeekdayName(_ instant: Date) -> String {
-    let dayName = makeFormat("EEEE")
+    let dayName = makeFormat("EEEE", locale: Locale.preferredLanguage)
     return dayName.string(from: instant)
   }
   
@@ -252,7 +255,7 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func MonthName(_ instant: Date) -> String {
-    let dayName = makeFormat("LLLL")
+    let dayName = makeFormat("LLLL", locale: Locale.preferredLanguage)
     return dayName.string(from: instant)
   }
   
@@ -271,7 +274,7 @@ open class Clock: NonvisibleComponent, LifecycleDelegate {
   }
   
   @objc open func FormatTime(_ instant: Date) -> String {
-    let dateFormatter = makeFormat("h:mm:ss a")
+    let dateFormatter = makeFormat("h:mm:ss a", locale: Locale.preferredLanguage)
     return dateFormatter.string(from: instant)
   }
   

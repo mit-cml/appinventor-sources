@@ -1,21 +1,17 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2018 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime.util;
-
-import com.google.appinventor.components.runtime.Form;
-import com.google.appinventor.components.runtime.VideoPlayer;
-import com.google.appinventor.components.runtime.errors.PermissionException;
-import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.R;
 import android.app.Dialog;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,17 +23,24 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
-
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
+import androidx.annotation.RequiresApi;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.VideoPlayer;
+import com.google.appinventor.components.runtime.errors.PermissionException;
 import java.io.IOException;
 
 /**
- * Used by the {@link com.google.appinventor.components.runtime.Form} class to
- * display videos in fullscreen.
+ * Used by the {@link com.google.appinventor.components.runtime.Form} class to display videos in
+ * fullscreen.
  *
  * @author Vance Turnewitsch
  */
-public class FullScreenVideoUtil implements OnCompletionListener,
-    OnPreparedListener {
+public class FullScreenVideoUtil implements OnCompletionListener, OnPreparedListener {
 
   // Constants
   public static final int FULLSCREEN_VIDEO_DIALOG_FLAG = 189;
@@ -75,8 +78,9 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   private FrameLayout mFullScreenVideoHolder;
   private VideoView mFullScreenVideoView;
   private CustomMediaController mFullScreenVideoController;
-  private FrameLayout.LayoutParams mMediaControllerParams = new FrameLayout.LayoutParams(
-      LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
+  private FrameLayout.LayoutParams mMediaControllerParams =
+      new FrameLayout.LayoutParams(
+          LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
 
   private Form mForm;
 
@@ -90,141 +94,206 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   // Used for showing a preview of a paused video.
   private Handler mHandler;
 
+  // Holds the android.window.OnBackInvokedCallback registered against the Dialog's own dispatcher
+  // on API 33 and above. Declared as Object so that this field does not name an API 33 class in a
+  // class that also runs on older devices.
+  private Object mBackInvokedCallback;
+
   /**
-   * @param form
-   *          The {@link com.google.appinventor.components.runtime.Form} that
-   *          this FullScreenVideoUtil will use.
-   * @param handler
-   *          A {@link android.os.Handler} created on the UI thread. Used for
-   *          displaying a preview of a paused video.
+   * @param form The {@link com.google.appinventor.components.runtime.Form} that this
+   *     FullScreenVideoUtil will use.
+   * @param handler A {@link android.os.Handler} created on the UI thread. Used for displaying a
+   *     preview of a paused video.
    */
   public FullScreenVideoUtil(Form form, Handler handler) {
 
     mForm = form;
     mHandler = handler;
 
-    mFullScreenVideoDialog = new Dialog(mForm,
-        R.style.Theme_NoTitleBar_Fullscreen) {
-        public void onBackPressed() {
-          // Allows the user to force exiting full-screen.
-          Bundle values = new Bundle();
-          values.putInt(VIDEOPLAYER_POSITION,
-            mFullScreenVideoView.getCurrentPosition());
-          values.putBoolean(VIDEOPLAYER_PLAYING,
-            mFullScreenVideoView.isPlaying());
-          values.putString(VIDEOPLAYER_SOURCE,
-            mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
-          mFullScreenPlayer.fullScreenKilled(values);
-          super.onBackPressed();
-        }
+    mFullScreenVideoDialog =
+        new Dialog(mForm, R.style.Theme_NoTitleBar_Fullscreen) {
+          @Override
+          @SuppressWarnings("deprecation") // Only reached on API levels below 33.
+          public void onBackPressed() {
+            handleFullScreenBackPressed();
+            super.onBackPressed();
+          }
 
-        public void onStart() {
-          super.onStart();
-          // Prepare the Dialog media.
-          startDialog();
-        }
-      };
+          @Override
+          public void onStart() {
+            super.onStart();
+            // Starting with Android 13 (API 33) the back gesture is delivered through the Dialog's
+            // own OnBackInvokedDispatcher and onBackPressed() above is no longer called. Apps
+            // targeting SDK 36 have predictive back on by default, so without this the video would
+            // exit fullscreen without ever telling the VideoPlayer component its position, and the
+            // Screen.BackPressed contract for the player would silently break.
+            //
+            // The callback is scoped to the shown/hidden window rather than registered once in the
+            // constructor, both because the dispatcher wants a live window and because leaving it
+            // registered while the dialog is hidden would swallow the Form's back handling.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+              registerOnBackInvokedCallback(this);
+            }
+            // Prepare the Dialog media.
+            startDialog();
+          }
+
+          @Override
+          public void onStop() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+              unregisterOnBackInvokedCallback(this);
+            }
+            super.onStop();
+          }
+        };
   }
 
   /**
-   * Perform some action and get a result. The data to pass in and the result
-   * returned are controlled by what the action is.
+   * Captures the current playback state and hands it back to the {@link VideoPlayer} that asked to
+   * go fullscreen, so that the component can resume where the fullscreen view left off.
    *
-   * @param action
-   *          Can be any of the following:
-   *          <ul>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_DURATION}
-   *          </li>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_FULLSCREEN}
-   *          </li>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PAUSE}
-   *          </li>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PLAY}
-   *          </li>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SEEK}
-   *          </li>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SOURCE}
-   *          </li>
-   *          <li>
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_STOP}
-   *          </li>
-   *          </ul>
-   * @param source
-   *          The VideoPlayer to use in some actions.
-   * @param data
-   *          Used by the method. This object varies depending on the action.
+   * <p>Shared by the pre-33 {@code onBackPressed} path and the API 33 and later
+   * OnBackInvokedCallback. This deliberately does not dismiss the dialog; each caller is
+   * responsible for that, because the two paths dismiss it differently.
+   */
+  private void handleFullScreenBackPressed() {
+    // Allows the user to force exiting full-screen.
+    if (mFullScreenVideoView == null || mFullScreenPlayer == null) {
+      return;
+    }
+    Bundle values = new Bundle();
+    values.putInt(VIDEOPLAYER_POSITION, mFullScreenVideoView.getCurrentPosition());
+    values.putBoolean(VIDEOPLAYER_PLAYING, mFullScreenVideoView.isPlaying());
+    if (mFullScreenVideoBundle != null) {
+      values.putString(VIDEOPLAYER_SOURCE, mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
+    }
+    mFullScreenPlayer.fullScreenKilled(values);
+  }
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private void registerOnBackInvokedCallback(final Dialog dialog) {
+    if (mBackInvokedCallback != null) {
+      return;
+    }
+    OnBackInvokedCallback callback =
+        new OnBackInvokedCallback() {
+          @Override
+          public void onBackInvoked() {
+            handleFullScreenBackPressed();
+            // This mirrors what Dialog.onBackPressed() does for a cancelable dialog, which this is:
+            // cancel() dismisses the window and notifies any OnCancelListener.
+            dialog.cancel();
+          }
+        };
+    dialog
+        .getOnBackInvokedDispatcher()
+        .registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT, callback);
+    mBackInvokedCallback = callback;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private void unregisterOnBackInvokedCallback(Dialog dialog) {
+    if (mBackInvokedCallback instanceof OnBackInvokedCallback) {
+      dialog
+          .getOnBackInvokedDispatcher()
+          .unregisterOnBackInvokedCallback((OnBackInvokedCallback) mBackInvokedCallback);
+      mBackInvokedCallback = null;
+    }
+  }
+
+  /**
+   * Perform some action and get a result. The data to pass in and the result returned are
+   * controlled by what the action is.
+   *
+   * @param action Can be any of the following:
+   *     <ul>
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_DURATION}
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_FULLSCREEN}
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PAUSE}
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PLAY}
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SEEK}
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SOURCE}
+   *       <li>{@link
+   *           com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_STOP}
+   *     </ul>
+   *
+   * @param source The VideoPlayer to use in some actions.
+   * @param data Used by the method. This object varies depending on the action.
    * @return Varies depending on what action was passed in.
    */
-  public synchronized Bundle performAction(int action, VideoPlayer source,
-      Object data) {
-    Log.i("Form.fullScreenVideoAction", "Actions:" + action + " Source:"
-        + source + ": Current Source:" + mFullScreenPlayer + " Data:" + data);
+  public synchronized Bundle performAction(int action, VideoPlayer source, Object data) {
+    Log.i(
+        "Form.fullScreenVideoAction",
+        "Actions:"
+            + action
+            + " Source:"
+            + source
+            + ": Current Source:"
+            + mFullScreenPlayer
+            + " Data:"
+            + data);
     Bundle result = new Bundle();
     result.putBoolean(ACTION_SUCESS, true);
     if (source == mFullScreenPlayer) {
       switch (action) {
-      case FULLSCREEN_VIDEO_ACTION_FULLSCREEN:
-        return doFullScreenVideoAction(source, (Bundle) data);
-      case FULLSCREEN_VIDEO_ACTION_PAUSE:
-        if (showing()) {
-          mFullScreenVideoView.pause();
+        case FULLSCREEN_VIDEO_ACTION_FULLSCREEN:
+          return doFullScreenVideoAction(source, (Bundle) data);
+        case FULLSCREEN_VIDEO_ACTION_PAUSE:
+          if (showing()) {
+            mFullScreenVideoView.pause();
+            return result;
+          }
+          result.putBoolean(ACTION_SUCESS, false);
           return result;
-        }
-        result.putBoolean(ACTION_SUCESS, false);
-        return result;
-      case FULLSCREEN_VIDEO_ACTION_PLAY:
-        if (showing()) {
-          mFullScreenVideoView.start();
+        case FULLSCREEN_VIDEO_ACTION_PLAY:
+          if (showing()) {
+            mFullScreenVideoView.start();
+            return result;
+          }
+          result.putBoolean(ACTION_SUCESS, false);
           return result;
-        }
-        result.putBoolean(ACTION_SUCESS, false);
-        return result;
-      case FULLSCREEN_VIDEO_ACTION_SEEK:
-        if (showing()) {
-          mFullScreenVideoView.seekTo((Integer) data);
+        case FULLSCREEN_VIDEO_ACTION_SEEK:
+          if (showing()) {
+            mFullScreenVideoView.seekTo((Integer) data);
+            return result;
+          }
+          result.putBoolean(ACTION_SUCESS, false);
           return result;
-        }
-        result.putBoolean(ACTION_SUCESS, false);
-        return result;
-      case FULLSCREEN_VIDEO_ACTION_STOP:
-        if (showing()) {
-          mFullScreenVideoView.stopPlayback();
+        case FULLSCREEN_VIDEO_ACTION_STOP:
+          if (showing()) {
+            mFullScreenVideoView.stopPlayback();
+            return result;
+          }
+          result.putBoolean(ACTION_SUCESS, false);
           return result;
-        }
-        result.putBoolean(ACTION_SUCESS, false);
-        return result;
-      case FULLSCREEN_VIDEO_ACTION_SOURCE:
-        if (showing()) {
-          result.putBoolean(ACTION_SUCESS,setSource((String) data, true));
+        case FULLSCREEN_VIDEO_ACTION_SOURCE:
+          if (showing()) {
+            result.putBoolean(ACTION_SUCESS, setSource((String) data, true));
+            return result;
+          }
+          result.putBoolean(ACTION_SUCESS, false);
           return result;
-        }
-        result.putBoolean(ACTION_SUCESS, false);
-        return result;
-      case FULLSCREEN_VIDEO_ACTION_DURATION:
-        if (showing()) {
-          result.putInt(ACTION_DATA, mFullScreenVideoView.getDuration());
+        case FULLSCREEN_VIDEO_ACTION_DURATION:
+          if (showing()) {
+            result.putInt(ACTION_DATA, mFullScreenVideoView.getDuration());
+            return result;
+          }
+          result.putBoolean(ACTION_SUCESS, false);
           return result;
-        }
-        result.putBoolean(ACTION_SUCESS, false);
-        return result;
       }
     } else if (action == FULLSCREEN_VIDEO_ACTION_FULLSCREEN) {
       // There may be a dialog already being shown.
       if (showing() && mFullScreenPlayer != null) {
         Bundle values = new Bundle();
-        values.putInt(VIDEOPLAYER_POSITION,
-            mFullScreenVideoView.getCurrentPosition());
-        values.putBoolean(VIDEOPLAYER_PLAYING,
-            mFullScreenVideoView.isPlaying());
-        values.putString(VIDEOPLAYER_SOURCE,
-            mFullScreenVideoBundle
-                .getString(VIDEOPLAYER_SOURCE));
+        values.putInt(VIDEOPLAYER_POSITION, mFullScreenVideoView.getCurrentPosition());
+        values.putBoolean(VIDEOPLAYER_PLAYING, mFullScreenVideoView.isPlaying());
+        values.putString(VIDEOPLAYER_SOURCE, mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
         mFullScreenPlayer.fullScreenKilled(values);
       }
       return doFullScreenVideoAction(source, (Bundle) data);
@@ -250,19 +319,15 @@ public class FullScreenVideoUtil implements OnCompletionListener,
         return result;
       } else {
         mFullScreenVideoView.pause();
-        result.putBoolean(ACTION_SUCESS, setSource(
-            mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE),false));
+        result.putBoolean(
+            ACTION_SUCESS, setSource(mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE), false));
         return result;
       }
     } else {
       if (showing()) {
-        result.putBoolean(VIDEOPLAYER_PLAYING,
-            mFullScreenVideoView.isPlaying());
-        result.putInt(VIDEOPLAYER_POSITION,
-            mFullScreenVideoView.getCurrentPosition());
-        result.putString(VIDEOPLAYER_SOURCE,
-            mFullScreenVideoBundle
-                .getString(VIDEOPLAYER_SOURCE));
+        result.putBoolean(VIDEOPLAYER_PLAYING, mFullScreenVideoView.isPlaying());
+        result.putInt(VIDEOPLAYER_POSITION, mFullScreenVideoView.getCurrentPosition());
+        result.putString(VIDEOPLAYER_SOURCE, mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
 
         mFullScreenPlayer = null;
         mFullScreenVideoBundle = null;
@@ -294,49 +359,69 @@ public class FullScreenVideoUtil implements OnCompletionListener,
 
     mFullScreenVideoView.setMediaController(mFullScreenVideoController);
 
-    mFullScreenVideoView.setOnTouchListener(new OnTouchListener() {
+    mFullScreenVideoView.setOnTouchListener(
+        new OnTouchListener() {
 
-      @Override
-      public boolean onTouch(View arg0, MotionEvent arg1) {
-        Log.i("FullScreenVideoUtil..onTouch", "Video Touched!!");
-        return false;
-      }
-    });
+          @Override
+          public boolean onTouch(View arg0, MotionEvent arg1) {
+            Log.i("FullScreenVideoUtil..onTouch", "Video Touched!!");
+            return false;
+          }
+        });
     mFullScreenVideoController.setAnchorView(mFullScreenVideoView);
 
     String orientation = mForm.ScreenOrientation();
     if (orientation.equals("landscape")
         || orientation.equals("sensorLandscape")
         || orientation.equals("reverseLandscape")) {
-      mFullScreenVideoView.setLayoutParams(new FrameLayout.LayoutParams(
-          FrameLayout.LayoutParams.WRAP_CONTENT,
-          FrameLayout.LayoutParams.FILL_PARENT, Gravity.CENTER));
+      mFullScreenVideoView.setLayoutParams(
+          new FrameLayout.LayoutParams(
+              FrameLayout.LayoutParams.WRAP_CONTENT,
+              FrameLayout.LayoutParams.FILL_PARENT,
+              Gravity.CENTER));
     } else {
-      mFullScreenVideoView.setLayoutParams(new FrameLayout.LayoutParams(
-          FrameLayout.LayoutParams.FILL_PARENT,
-          FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+      mFullScreenVideoView.setLayoutParams(
+          new FrameLayout.LayoutParams(
+              FrameLayout.LayoutParams.FILL_PARENT,
+              FrameLayout.LayoutParams.WRAP_CONTENT,
+              Gravity.CENTER));
     }
-    mFullScreenVideoHolder
-        .setLayoutParams(new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT));
+    mFullScreenVideoHolder.setLayoutParams(
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 
     mFullScreenVideoHolder.addView(mFullScreenVideoView);
 
     // Add the MediaController to the Dialog
-    mFullScreenVideoController.addTo(mFullScreenVideoHolder,
-        mMediaControllerParams);
+    mFullScreenVideoController.addTo(mFullScreenVideoHolder, mMediaControllerParams);
+
+    // This Dialog has its own Window, so it is not covered by the inset handling that
+    // AppInventorCompatActivity installs on the Activity's decor view. Under the edge-to-edge
+    // layout that SDK 35 and above require, the bottom-anchored media controller would otherwise
+    // sit underneath the navigation or gesture bar and be difficult to hit. addTo passes
+    // mMediaControllerParams straight to addView, so the controller's layout params are that same
+    // object and updating its margins here takes effect on the next layout pass.
+    ViewCompat.setOnApplyWindowInsetsListener(
+        mFullScreenVideoHolder,
+        (v, windowInsets) -> {
+          Insets bars =
+              windowInsets.getInsets(
+                  WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+          mMediaControllerParams.leftMargin = bars.left;
+          mMediaControllerParams.rightMargin = bars.right;
+          mMediaControllerParams.bottomMargin = bars.bottom;
+          mFullScreenVideoController.setLayoutParams(mMediaControllerParams);
+          return windowInsets;
+        });
 
     mFullScreenVideoDialog.setContentView(mFullScreenVideoHolder);
     return mFullScreenVideoDialog;
   }
 
   /**
-   * Call just before displaying a fullscreen video Dialog. This method
-   * sets up some listeners.
+   * Call just before displaying a fullscreen video Dialog. This method sets up some listeners.
    *
-   * @param dia
-   *          The dialog that will display the video.
+   * @param dia The dialog that will display the video.
    */
   public void prepareFullScreenVideoDialog(Dialog dia) {
     mFullScreenVideoView.setOnPreparedListener(this);
@@ -351,53 +436,45 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   }
 
   /**
-   * @return True if {@link FullScreenVideoUtil#dialogInitialized()} is true and
-   *         the Dialog is showing. False otherwise.
+   * @return True if {@link FullScreenVideoUtil#dialogInitialized()} is true and the Dialog is
+   *     showing. False otherwise.
    */
   public boolean showing() {
     return dialogInitialized() && mFullScreenVideoDialog.isShowing();
   }
 
   /**
-   * Sets the source to be used by the fullscreen video Dialog. This method
-   * also attempts to load the internal VideoView with the source.
+   * Sets the source to be used by the fullscreen video Dialog. This method also attempts to load
+   * the internal VideoView with the source.
    *
-   * @param source
-   *          The source path to use. The {@link MediaUtil} is used to load the
-   *          source.
-   * @param clearSeek
-   *          If True, the video will start playing at position zero. If False,
-   *          the video will start playing from the
-   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#VIDEOPLAYER_POSITION}
-   *          value of the Bundle passed in the
-   *          {@link FullScreenVideoUtil#performAction(int, VideoPlayer, Object)}
-   *          or {@link FullScreenVideoUtil#createFullScreenVideoDialog()}
+   * @param source The source path to use. The {@link MediaUtil} is used to load the source.
+   * @param clearSeek If True, the video will start playing at position zero. If False, the video
+   *     will start playing from the {@link
+   *     com.google.appinventor.components.runtime.util.FullScreenVideoUtil#VIDEOPLAYER_POSITION}
+   *     value of the Bundle passed in the {@link FullScreenVideoUtil#performAction(int,
+   *     VideoPlayer, Object)} or {@link FullScreenVideoUtil#createFullScreenVideoDialog()}
    * @return True if the video was successfully loaded. False otherwise.
    */
   public boolean setSource(String source, boolean clearSeek) {
     try {
       if (clearSeek) {
-        mFullScreenVideoBundle.putInt(VIDEOPLAYER_POSITION,
-            0);
+        mFullScreenVideoBundle.putInt(VIDEOPLAYER_POSITION, 0);
       }
       MediaUtil.loadVideoView(mFullScreenVideoView, mForm, (String) source);
 
-      mFullScreenVideoBundle.putString(VIDEOPLAYER_SOURCE,
-          source);
+      mFullScreenVideoBundle.putString(VIDEOPLAYER_SOURCE, source);
       return true;
     } catch (PermissionException e) {
       mForm.dispatchPermissionDeniedEvent(mFullScreenPlayer, "Source", e);
       return false;
     } catch (IOException e) {
-      mForm.dispatchErrorOccurredEvent(mFullScreenPlayer, "Source",
-          ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, source);
+      mForm.dispatchErrorOccurredEvent(
+          mFullScreenPlayer, "Source", ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, source);
       return false;
     }
   }
 
-  /**
-   * Called when the video has finished playing.
-   */
+  /** Called when the video has finished playing. */
   @Override
   public void onCompletion(MediaPlayer arg0) {
     if (mFullScreenPlayer != null) {
@@ -405,47 +482,42 @@ public class FullScreenVideoUtil implements OnCompletionListener,
     }
   }
 
-  /**
-   * Called when the video has been loaded.
-   */
+  /** Called when the video has been loaded. */
   @Override
   public void onPrepared(MediaPlayer arg0) {
     Log.i(
         "FullScreenVideoUtil..onPrepared",
-        "Seeking to:"
-            + mFullScreenVideoBundle
-                .getInt(VIDEOPLAYER_POSITION));
-    mFullScreenVideoView.seekTo(mFullScreenVideoBundle
-        .getInt(VIDEOPLAYER_POSITION));
-    if (mFullScreenVideoBundle
-        .getBoolean(VIDEOPLAYER_PLAYING)) {
+        "Seeking to:" + mFullScreenVideoBundle.getInt(VIDEOPLAYER_POSITION));
+    mFullScreenVideoView.seekTo(mFullScreenVideoBundle.getInt(VIDEOPLAYER_POSITION));
+    if (mFullScreenVideoBundle.getBoolean(VIDEOPLAYER_PLAYING)) {
       mFullScreenVideoView.start();
     } else {
       mFullScreenVideoView.start();
-      mHandler.postDelayed(new Runnable() {
+      mHandler.postDelayed(
+          new Runnable() {
 
-        @Override
-        public void run() {
-          mFullScreenVideoView.pause();
-        }
-      }, 100);
+            @Override
+            public void run() {
+              mFullScreenVideoView.pause();
+            }
+          },
+          100);
     }
   }
 
-  /**
-   * Called when the Dialog is about to be shown.
-   */
+  /** Called when the Dialog is about to be shown. */
   public void startDialog() {
     try {
-      MediaUtil.loadVideoView(mFullScreenVideoView, mForm,
-          mFullScreenVideoBundle
-              .getString(VIDEOPLAYER_SOURCE));
+      MediaUtil.loadVideoView(
+          mFullScreenVideoView, mForm, mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
     } catch (PermissionException e) {
       mForm.dispatchPermissionDeniedEvent(mFullScreenPlayer, "Source", e);
     } catch (IOException e) {
-      mForm.dispatchErrorOccurredEvent(mFullScreenPlayer, "Source",
-          ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, mFullScreenVideoBundle
-              .getString(VIDEOPLAYER_SOURCE));
+      mForm.dispatchErrorOccurredEvent(
+          mFullScreenPlayer,
+          "Source",
+          ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA,
+          mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
       return;
     }
   }

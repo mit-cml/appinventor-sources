@@ -16,28 +16,28 @@
 
 package com.google.zxing.client.android.common.executor;
 
-/* import android.annotation.TargetApi; */
 import android.os.AsyncTask;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+
 /**
  * On Honeycomb and later, {@link AsyncTask} returns to serial execution by default which is undesirable.
  * This calls Honeycomb-only APIs to request parallel execution.
  *
- * For MIT App Inventor we have to use reflection because we are linked with the Froyo (2.2)
- * version of the android libraries.
+ * <p>This used to go through reflection, with a comment explaining that App Inventor was linked
+ * against the Froyo (2.2) android libraries. That has not been true for a long time: the minimum
+ * SDK is 14 and the components are compiled against a current android.jar, so executeOnExecutor can
+ * simply be called directly.
+ *
+ * <p>The reflection was also broken in two ways, and because the failure was caught and only
+ * printed, the task was never executed at all. getMethod("executeOnExecutor") passed no parameter
+ * types, so it looked for a zero-argument overload that does not exist and threw
+ * NoSuchMethodException; and the subsequent invoke passed the Field object for THREAD_POOL_EXECUTOR
+ * rather than the executor that field holds. The visible symptom was that AutoFocusManager never
+ * rescheduled itself, so the camera focused once when the scanner opened and never again.
  */
-/* @TargetApi(11) */
 public final class HoneycombAsyncTaskExecInterface implements AsyncTaskExecInterface {
 
   @Override
   public <T> void execute(AsyncTask<T,?,?> task, T... args) {
-    try {
-	Field tpe = AsyncTask.class.getField("THREAD_POOL_EXECUTOR");
-	Method emethod = task.getClass().getMethod("executeOnExecutor");
-	emethod.invoke(task, tpe, args);
-    } catch (Exception e) {
-	e.printStackTrace();
-    }
+    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args);
   }
 }
