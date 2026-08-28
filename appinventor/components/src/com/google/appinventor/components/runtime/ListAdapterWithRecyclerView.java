@@ -116,9 +116,13 @@ public abstract class ListAdapterWithRecyclerView
    */
   protected void styleImage(ImageView imageView) {
     ViewGroup.LayoutParams params = imageView.getLayoutParams();
-    params.width = style.imageWidth;
-    params.height = style.imageHeight;
-    imageView.setLayoutParams(params);
+    // setLayoutParams requests a layout pass, and this runs on every bind, so only pay for it
+    // when the dimensions actually changed.
+    if (params.width != style.imageWidth || params.height != style.imageHeight) {
+      params.width = style.imageWidth;
+      params.height = style.imageHeight;
+      imageView.setLayoutParams(params);
+    }
   }
 
   /**

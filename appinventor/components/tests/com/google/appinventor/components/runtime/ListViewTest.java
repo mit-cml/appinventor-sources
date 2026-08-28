@@ -145,7 +145,6 @@ public class ListViewTest extends RobolectricTestBase {
     assertEquals(Component.COLOR_RED, listView.TextColor());
     // The new color must actually reach the row, not just the property.
     assertEquals(Component.COLOR_RED, getMainTextView(listView, 0).getCurrentTextColor());
-
   }
 
   /**
@@ -154,9 +153,9 @@ public class ListViewTest extends RobolectricTestBase {
    */
   @Test
   public void testLayoutChangeRebuildsAdapter() {
-    // Left empty on purpose: swapping the adapter while rows are on screen makes RecyclerView
-    // re-bind the old layout's view holders with the new layout's adapter, which throws. That is
-    // pre-existing behaviour of ListViewLayout, not something this test is about.
+    // The list is left with no elements on purpose: swapping the adapter while rows are on screen
+    // makes RecyclerView re-bind the old layout's view holders with the new layout's adapter,
+    // which throws. That is pre-existing behaviour of ListViewLayout, not what this test is about.
     ListView listView = new ListView(getForm());
 
     RecyclerView.Adapter<?> before = getRecyclerView(listView).getAdapter();
