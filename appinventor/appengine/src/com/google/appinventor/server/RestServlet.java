@@ -23,7 +23,11 @@ import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidPro
 
 import com.google.appinventor.shared.rpc.user.User;
 
+import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
+
+import com.google.appinventor.shared.storage.StorageUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,6 +40,7 @@ import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +69,7 @@ public class RestServlet extends HttpServlet {
   private final StorageIo storageIo = StorageIoInstanceHolder.getInstance();
   private static Logger LOG;
   private final transient YoungAndroidProjectService youngAndroidProjectService = new YoungAndroidProjectService(storageIo);
+  private final FileExporter fileExporter = new FileExporterImpl();
 
 
   private static class RestException extends Exception {
@@ -187,6 +193,26 @@ public class RestServlet extends HttpServlet {
       } else {
         ok(req, resp, "ok");
       }
+      return;
+    case EXPORTPROJECT:
+      userId = token.getUuid();
+      projectId = token.getProjectid();
+      try {
+        storageIo.assertUserHasProject(userId, projectId);
+      } catch (SecurityException e) {
+        fail(req, resp, 8, "Project not found or access denied");
+        return;
+      }
+      ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId, projectId,
+          false, false, null, false, false, false, false, false, false);
+      RawFile rawFile = zipFile.getRawFile();
+      byte[] content = rawFile.getContent();
+      resp.setHeader("content-disposition", "attachment; filename=\"" + rawFile.getFileName() + "\"");
+      resp.setContentType(StorageUtil.getContentTypeForFilePath(rawFile.getFileName()));
+      resp.setContentLength(content.length);
+      ServletOutputStream out = resp.getOutputStream();
+      out.write(content);
+      out.close();
       return;
     default:
       fail(req, resp, -1, "Unimplemented");

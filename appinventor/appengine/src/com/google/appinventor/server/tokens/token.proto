@@ -26,6 +26,9 @@ message token {
                                               // infrequent event
     GETPROJECTS = 22;                         // Get information on user's projects (name, id, dates)
     CHECKACCOUNT = 23;                        // Check the validity of the account in the uuid field
+    EXPORTPROJECT = 24;                       // Export a single project's .aia source zip.
+                                              // uuid = project owner, projectid = project to export.
+                                              // Response is the raw .aia bytes (not JSON) on success.
   }
 
   required CommandType command = 1;
