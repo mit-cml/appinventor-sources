@@ -27,6 +27,8 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
+import com.google.appinventor.shared.rpc.UploadResponse;
+
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import java.io.IOException;
@@ -70,6 +72,7 @@ public class RestServlet extends HttpServlet {
   private static Logger LOG;
   private final transient YoungAndroidProjectService youngAndroidProjectService = new YoungAndroidProjectService(storageIo);
   private final FileExporter fileExporter = new FileExporterImpl();
+  private final FileImporter fileImporter = new FileImporterImpl();
 
 
   private static class RestException extends Exception {
@@ -89,7 +92,14 @@ public class RestServlet extends HttpServlet {
     LOG = Logger.getLogger(RestServlet.class);
   }
 
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+  /*
+   * Parses the "token"/"stoken" query parameter, verifies it, and checks
+   * expiry. On any failure, writes the appropriate error response itself
+   * and returns null -- callers (doGet/doPost) should return immediately
+   * when this returns null.
+   */
+  private TokenProto.token parseAndValidateToken(HttpServletRequest req, HttpServletResponse resp)
+    throws IOException {
 
     String queryString = req.getQueryString();
     HashMap<String, String> params = getQueryMap(queryString);
@@ -104,23 +114,33 @@ public class RestServlet extends HttpServlet {
         encodedToken = params.get("stoken");
         if (encodedToken == null) {
           fail(req, resp, 1, "No Token Provided");
-          return;
+          return null;
         }
         token = Token.verifySToken(encodedToken);
       }
 
     } catch (TokenException e) {
-      LOG.error("doGet(): Invalid Token -- " + e.getMessage());
+      LOG.error("parseAndValidateToken(): Invalid Token -- " + e.getMessage());
       fail(req, resp, 2, e.getMessage());
-      return;
+      return null;
     }
 
     long offset = System.currentTimeMillis() - token.getTs();
     offset /= 1000;  // Convert to seconds
     if (offset > 120) {       // Two minutes
-      LOG.error("doGet(): Token Expired. Was valid until " + new Date(token.getTs()));
+      LOG.error("parseAndValidateToken(): Token Expired. Was valid until " + new Date(token.getTs()));
       fail(req, resp, 3, "Token Expired. Was valid until " +
         new Date(token.getTs()));
+      return null;
+    }
+
+    return token;
+  }
+
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+    TokenProto.token token = parseAndValidateToken(req, resp);
+    if (token == null) {
       return;
     }
 
@@ -213,6 +233,45 @@ public class RestServlet extends HttpServlet {
       ServletOutputStream out = resp.getOutputStream();
       out.write(content);
       out.close();
+      return;
+    default:
+      fail(req, resp, -1, "Unimplemented");
+    }
+
+  }
+
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+
+    TokenProto.token token = parseAndValidateToken(req, resp);
+    if (token == null) {
+      return;
+    }
+
+    switch (token.getCommand()) {
+    case IMPORTPROJECT:
+      String userId = token.getUuid();
+      String name = token.getName();
+      User user = storageIo.getUser(userId);
+      if (user == null) {
+        fail(req, resp, 5, "No Such User");
+        return;
+      }
+      List<String> names = storageIo.getProjectNames(userId);
+      for (String existingName : names) {
+        if (existingName.equals(name)) {
+          fail(req, resp, 6, "Name Already in Use");
+          return;
+        }
+      }
+      try {
+        UserProject newProject = fileImporter.importProject(userId, name, req.getInputStream());
+        LOG.info("IMPORTPROJECT: created project: " + name + " for userId: " + userId +
+          " projectId: " + newProject.getProjectId());
+        ok(req, resp, "projectId = " + newProject.getProjectId());
+      } catch (FileImporterException e) {
+        LOG.error("IMPORTPROJECT: Error: " + e.uploadResponse.getStatus());
+        fail(req, resp, 9, "Import failed: " + e.uploadResponse.getStatus());
+      }
       return;
     default:
       fail(req, resp, -1, "Unimplemented");

@@ -29,6 +29,11 @@ message token {
     EXPORTPROJECT = 24;                       // Export a single project's .aia source zip.
                                               // uuid = project owner, projectid = project to export.
                                               // Response is the raw .aia bytes (not JSON) on success.
+    IMPORTPROJECT = 25;                       // Create a new project from raw .aia bytes posted in
+                                              // the request body. uuid = target project owner,
+                                              // name = target project name. POST only; token in
+                                              // query string (?stoken=), .aia bytes are the raw
+                                              // POST body. Response is JSON either way.
   }
 
   required CommandType command = 1;
@@ -39,6 +44,7 @@ message token {
                                               // source project to copy
   optional string name = 5;                   // Used for account creation, sets the account name.
                                               // Also used for FETCHUID, contains email to lookup
+                                              // Also used for IMPORTPROJECT, target project name
   optional uint64 oneProjectId = 6;           // non-zero to open a specific project
   optional bool readOnly = 20;
   optional uint64 duedate = 21;               // Date when the project is due 0 = never due
