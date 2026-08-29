@@ -150,7 +150,7 @@
 
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
-    <!-- <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/> -->
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>
