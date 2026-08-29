@@ -100,19 +100,99 @@ public class ListDataModelTest extends RobolectricTestBase {
   }
 
   /**
-   * Selection is kept while its item stays visible under a filter and dropped only once the
-   * filter hides it — the policy agreed with the reviewer.
+   * Filtering never changes the selection. It only decides which rows are on screen, so an item
+   * the filter hides is still the item the user picked and is still selected once the query is
+   * cleared. Whether to drop a selection the user can no longer see is {@link ListView}'s policy
+   * call, not the model's.
    */
   @Test
-  public void testSelectionKeptWhileVisibleAndPrunedWhenHidden() {
+  public void testFilteringLeavesTheSelectionAlone() {
     ListDataModel model = modelOf("apple", "banana", "cantaloupe", "date");
     model.selectSingle(1);  // banana, by original index
 
     applyFilter(model, "an");  // banana (1) still visible
     assertTrue(model.isSelected(1));
 
-    applyFilter(model, "date");  // banana now hidden
+    applyFilter(model, "date");  // banana is hidden now, but still the user's pick
+    assertFalse(model.isVisible(1));
+    assertTrue(model.isSelected(1));
+
+    applyFilter(model, "");  // and it is still there when the filter clears
+    assertTrue(model.isSelected(1));
+    assertEquals(1, model.firstSelection());
+  }
+
+  /** Removing an item drops its selection and moves the later ones down with their rows. */
+  @Test
+  public void testRemoveKeepsSelectionOnTheSameItems() {
+    ListDataModel model = modelOf("apple", "banana", "cantaloupe", "date");
+    model.toggleSelection(1);  // banana
+    model.toggleSelection(3);  // date
+
+    model.remove(1);  // banana goes, so date slides from index 3 to index 2
+
     assertFalse(model.isSelected(1));
+    assertTrue(model.isSelected(2));
+    assertEquals("date", model.get(2));
+  }
+
+  /** Inserting ahead of a selected item carries the selection along with it. */
+  @Test
+  public void testInsertShiftsSelectionThatMovedDown() {
+    ListDataModel model = modelOf("apple", "banana");
+    model.toggleSelection(1);  // banana
+
+    model.addAt(0, "apricot");  // banana slides from 1 to 2
+    assertTrue(model.isSelected(2));
+    assertEquals("banana", model.get(2));
+
+    model.addAllAt(0, Arrays.asList("acai", "almond"));  // and down another two
+    assertTrue(model.isSelected(4));
+    assertEquals("banana", model.get(4));
+  }
+
+  /** Appending leaves existing rows where they are, so the selection does not move. */
+  @Test
+  public void testAppendLeavesSelectionInPlace() {
+    ListDataModel model = modelOf("apple", "banana");
+    model.toggleSelection(0);
+
+    model.add("cantaloupe");
+    model.addAll(Arrays.asList("date", "elderberry"));
+
+    assertTrue(model.isSelected(0));
+    assertEquals(0, model.firstSelection());
+  }
+
+  /** Replacing one item drops its selection and leaves the other selections where they are. */
+  @Test
+  public void testReplaceDropsOnlyThatItemsSelection() {
+    ListDataModel model = modelOf("apple", "banana", "cantaloupe");
+    model.toggleSelection(0);
+    model.toggleSelection(2);
+
+    model.set(1, "blueberry");  // an unselected row, so nothing about the selection changes
+    assertTrue(model.isSelected(0));
+    assertTrue(model.isSelected(2));
+    assertEquals("blueberry", model.get(1));
+
+    model.set(2, "cherry");  // a selected row: a different item sits there now
+    assertFalse(model.isSelected(2));
+    assertTrue(model.isSelected(0));
+    assertEquals("cherry", model.get(2));
+  }
+
+  /** Replacing or emptying the items drops the selection, because those items are gone. */
+  @Test
+  public void testReplacingItemsClearsSelection() {
+    ListDataModel model = modelOf("apple", "banana");
+    model.toggleSelection(1);
+
+    model.setItems(Arrays.asList("cherry", "damson"));
+    assertEquals(-1, model.firstSelection());
+
+    model.toggleSelection(0);
+    model.clear();
     assertEquals(-1, model.firstSelection());
   }
 

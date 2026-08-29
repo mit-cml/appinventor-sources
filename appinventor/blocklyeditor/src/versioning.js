@@ -2526,7 +2526,16 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Added TextAlignmentMain property
     // - Added TextAlignmentDetail property
-    11: "noUpgrade"
+    11: "noUpgrade",
+
+    // AI2:
+    // - Made the MultiSelect property visible in the designer and the blocks
+    // - Added SelectedItems property
+    12: "noUpgrade",
+
+    // AI2:
+    // - Added UpdateItemAtIndex method
+    13: "noUpgrade"
 
   }, // End ListView upgraders
 
