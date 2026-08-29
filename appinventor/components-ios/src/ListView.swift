@@ -2,6 +2,13 @@
 // Copyright 2017-2025 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
+//
+// This component is implemented separately for each platform: iOS here, and Android in
+// appinventor/components/src/com/google/appinventor/components/runtime/ListView.java. The
+// expected behavior of every property, method, and event is recorded in
+// LISTVIEW_PARITY_CONTRACT.md at the repository root, along with the current status of each on
+// both platforms. If you add a member, or change the behavior of an existing one, check that
+// document and update it in the same pull request.
 
 import Foundation
 

@@ -61,6 +61,12 @@ import android.graphics.Rect;
  * {@link #Height(int)} is set to Fill Parent.
  *
  * @internaldoc
+ * This component is implemented separately for each platform: Android here, and iOS in
+ * appinventor/components-ios/src/ListView.swift. The expected behavior of every property, method,
+ * and event is recorded in LISTVIEW_PARITY_CONTRACT.md at the repository root, along with the
+ * current status of each on both platforms. If you add a member, or change the behavior of an
+ * existing one, check that document and update it in the same pull request.
+ *
  * TODO(hal): Think about generalizing this to include more than text.
  * @author halabelson@google.com (Hal Abelson)
  * @author osmidy@mit.edu (Olivier Midy)
