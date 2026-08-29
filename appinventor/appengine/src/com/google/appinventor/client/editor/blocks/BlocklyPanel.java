@@ -108,6 +108,10 @@ public class BlocklyPanel extends HTMLPanel {
   // My entity name
   private final String formName;
 
+  private final String projectId;
+
+  private final boolean readOnly;
+
   /**
    * Objects registered to listen for workspace changes.
    */
@@ -140,22 +144,9 @@ public class BlocklyPanel extends HTMLPanel {
     getElement().addClassName("svg");
     getElement().setId(formName);
     this.formName = formName;
+    this.projectId = formName.split("_")[0];
+    this.readOnly = readOnly;
     this.targetPlatform = targetPlatform;
-    String projectId = formName.split("_")[0];
-
-    /* Blockly initialization now occurs in three stages. This is due to the fact that certain
-     * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
-     * initialized and/or null prior to the svg element being attached to the DOM. The first
-     * stage of initialization happens here.
-     *
-     * Stages 2 and 3 can occur in different orders depending on network latency. On a fast
-     * connection, the second stage will be loading of the .bky content into the workspace.
-     * The third stage will then be rendering of the workspace when the user switches to the
-     * Blocks editor. On slow connections, the workspace may render blank until the blocks file
-     * has been downloaded from the server.
-     */
-    initWorkspace(projectId, readOnly, LocaleInfo.getCurrentLocale().isRTL(), targetPlatform.getTarget());
-
     LOG.info("Created BlocklyPanel for " + formName);
   }
 
@@ -722,12 +713,29 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentContainerUuid(*));
   }-*/;
 
-  private native void initWorkspace(String projectId, boolean readOnly, boolean rtl, String targetLang)/*-{
+  /* Blockly initialization now occurs in three stages. This is due to the fact that certain
+   * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
+   * initialized and/or null prior to the svg element being attached to the DOM. The first
+   * stage of initialization happens here.
+   *
+   * Stages 2 and 3 can occur in different orders depending on network latency. On a fast
+   * connection, the second stage will be loading of the .bky content into the workspace.
+   * The third stage will then be rendering of the workspace when the user switches to the
+   * Blocks editor. On slow connections, the workspace may render blank until the blocks file
+   * has been downloaded from the server.
+   */
+  public void initWorkspace() {
+    initWorkspace(LocaleInfo.getCurrentLocale().isRTL(), targetPlatform.getTarget());
+    LOG.info("Initialized Blockly workspace for " + formName);
+  }
+
+  private native void initWorkspace(boolean rtl, String targetLang)/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
     var workspace = $wnd.Blockly.BlocklyEditor.create(el,
       this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::formName,
-      readOnly, rtl, targetLang);
-    workspace.projectId = projectId;
+      this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::readOnly,
+      rtl, targetLang);
+    workspace.projectId = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::projectId;
     var cb = $entry(this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspaceChanged(Lcom/google/gwt/core/client/JavaScriptObject;));
     cb = cb.bind(this);
     workspace.addChangeListener(function(e) {

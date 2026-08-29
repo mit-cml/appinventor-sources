@@ -5,7 +5,7 @@
  */
 import type { Block } from './block.js';
 import { WorkspaceComment } from './comments/workspace_comment.js';
-import type { VariableModel } from './variable_model.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
 import { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -25,7 +25,7 @@ export declare function saveWorkspaceComment(comment: WorkspaceComment, skipId?:
  * @param variableList List of all variable models.
  * @returns Tree of XML elements.
  */
-export declare function variablesToDom(variableList: VariableModel[]): Element;
+export declare function variablesToDom(variableList: IVariableModel<IVariableState>[]): Element;
 /**
  * Encode a block subtree as XML with XY coordinates.
  *
