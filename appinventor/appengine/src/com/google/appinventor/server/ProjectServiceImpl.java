@@ -8,7 +8,9 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.common.version.AppInventorFeatures;
 
+import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.lms.GoogleDriveProjectExporter;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
@@ -229,6 +231,32 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public RpcResult sendToGallery(long projectId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).sendToGallery(userId, projectId);
+  }
+
+  @Override
+  public RpcResult exportProjectToDrive(long projectId) {
+    final String userId = userInfoProvider.getUserId();
+    // Entry-point owner check: confirm the signed-in user owns this project
+    // before the unguarded exporter building block runs, the same guarantee the
+    // download path relies on.
+    storageIo.assertUserHasProject(userId, projectId);
+    try {
+      String driveLink = new GoogleDriveProjectExporter().exportProjectToDrive(userId, projectId);
+      return RpcResult.createSuccessfulRpcResult(driveLink, "");
+    } catch (IllegalStateException e) {
+      // No stored Google credential: the user must connect to Google first. The
+      // error code lets the client show a distinct, actionable message rather
+      // than a generic failure.
+      return RpcResult.createFailingRpcResult("", "NOT_CONNECTED");
+    } catch (IOException | EncryptionException | IllegalArgumentException e) {
+      // The full cause (for example a disabled Drive API, a revoked credential,
+      // or a project with no source files) is logged for the administrator while
+      // the client shows a generic upload-failed message. IllegalArgumentException
+      // is safe to catch here because the ownership check above throws
+      // SecurityException, which is deliberately left to propagate.
+      LOG.log(Level.WARNING, "Drive export failed for user " + userId, e);
+      return RpcResult.createFailingRpcResult("", "UPLOAD_FAILED");
+    }
   }
 
   /**

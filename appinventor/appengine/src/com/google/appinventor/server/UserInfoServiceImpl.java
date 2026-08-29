@@ -11,6 +11,7 @@ import static com.google.appinventor.shared.storage.StorageUtil.APPSTORE_CREDENT
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.ios.CredentialsEncryptor;
+import com.google.appinventor.server.lms.LmsOAuthConfig;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.survey.Survey;
@@ -93,6 +94,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setGalleryEnabled(Flag.createFlag("gallery.enabled", false).get());
     config.setGalleryReadOnly(Flag.createFlag("gallery.readonly", false).get());
     config.setGalleryLocation(Flag.createFlag("gallery.location", "").get());
+    config.setLmsEnabled(LmsOAuthConfig.isConfigured());
     config.setDeleteAccountAllowed(deleteAccountAllowed);
     config.setIosExtensions(storageIo.getIosExtensionsConfig());
     config.setSurveyUrl(surveyUrl);

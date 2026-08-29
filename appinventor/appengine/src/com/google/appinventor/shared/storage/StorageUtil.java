@@ -28,6 +28,7 @@ public class StorageUtil {
   public static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
   public static final String APPSTORE_CREDENTIALS_FILENAME = "appstore_credentials.der";
   public static final String USER_BACKPACK_FILENAME = "backpack.xml";
+  public static final String LMS_GOOGLE_REFRESH_TOKEN_FILENAME = "lms_google_refresh_token.dat";
 
   /**
    * Gets the final component from a path.  This assumes that path components
