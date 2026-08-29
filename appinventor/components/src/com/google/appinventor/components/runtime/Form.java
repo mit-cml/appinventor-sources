@@ -328,6 +328,12 @@ public class Form extends AppInventorCompatActivity
   }
 
   @Override
+  public void onLowMemory() {
+    super.onLowMemory();
+    MediaUtil.clearImageCache();
+  }
+
+  @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
