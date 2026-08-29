@@ -8,7 +8,6 @@ package com.google.appinventor.server.encryption;
 
 import com.google.appinventor.server.flags.Flag;
 import com.google.common.annotations.VisibleForTesting;
-
 import org.keyczar.Crypter;
 import org.keyczar.exceptions.KeyczarException;
 
@@ -38,10 +37,9 @@ public class KeyczarEncryptor implements Encryptor {
   // When running on appengine, the application is running in a way that
   // the rootPath should not be set to anything.  This flag needs to be
   // set for testing.
-  @VisibleForTesting
-  public static final Flag<String> rootPath = Flag.createFlag("root.path", "");
+  @VisibleForTesting public static final Flag<String> rootPath = Flag.createFlag("root.path", "");
 
-  private Crypter crypter = null;  // accessed through getCrypter only
+  private Crypter crypter = null; // accessed through getCrypter only
   private String keyPath = null;
   private static final Object crypterSync = new Object();
 
@@ -99,5 +97,4 @@ public class KeyczarEncryptor implements Encryptor {
   public void setKeyPath(String keyPath) {
     this.keyPath = keyPath;
   }
-
 }
