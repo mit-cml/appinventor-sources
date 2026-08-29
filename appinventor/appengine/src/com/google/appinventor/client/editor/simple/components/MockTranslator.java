@@ -83,11 +83,16 @@ public class MockTranslator extends MockNonVisibleComponent {
     if (propertyName.equals(PROPERTY_NAME_APIKEY)) {
       EditableProperty token = properties.getProperty(PROPERTY_NAME_APIKEY);
       int tokenType = token.getType();
-      persistToken = false;
-      tokenType |= EditableProperty.TYPE_NONPERSISTED;
-      tokenType |= EditableProperty.TYPE_DOYAIL;
+      if (newValue == null || newValue.isEmpty()) {
+        tokenType |= EditableProperty.TYPE_NONPERSISTED;
+        tokenType |= EditableProperty.TYPE_DOYAIL;
+        token.setType(tokenType);
+        getTokenFromServer();
+        return;                 // Callback from getTokenFromServer finishes up
+      } else if (newValue.charAt(0) == '%') {
+        tokenType &= ~EditableProperty.TYPE_NONPERSISTED;
+      }
       token.setType(tokenType);
-      getTokenFromServer();
     }
     super.onPropertyChange(propertyName, newValue);
   }
