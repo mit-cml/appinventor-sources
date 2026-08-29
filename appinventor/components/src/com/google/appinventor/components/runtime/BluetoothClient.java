@@ -492,7 +492,50 @@ public final class BluetoothClient extends BluetoothConnectionBase
       observer.onReceiveValue(this, key, newValue);
     }
   }
+  /**
+ * Send a list of byte values to the connected Bluetooth device, followed by the specified delimiter byte.
+ *
+ * @param list the list of numeric values to write
+ * @param delimiter the delimiter byte as a String (e.g., "0" or "0x0A")
+ */
+@SimpleFunction(description = "Send a list of byte values to the connected Bluetooth device, followed by the specified delimiter byte.")
+public void SendBytesWithDelimiter(YailList list, String delimiter) {
 
+  // Send main bytes
+  SendBytes(list);
+
+  // Convert the delimiter from String → int
+  int value;
+
+  try {
+    if (delimiter.startsWith("0x") || delimiter.startsWith("0X")) {
+      value = Integer.parseInt(delimiter.substring(2), 16);
+    } else {
+      value = Integer.parseInt(delimiter);
+    }
+
+    if (value < 0 || value > 255) {
+      form.dispatchErrorOccurredEvent(
+          this,
+          "SendBytesWithDelimiter",
+          ErrorMessages.ERROR_BLUETOOTH_INVALID_DATA,
+          delimiter
+      );
+      return;
+    }
+
+    // Send exactly one byte
+    Send1ByteNumber(value);
+
+  } catch (NumberFormatException e) {
+    form.dispatchErrorOccurredEvent(
+        this,
+        "SendBytesWithDelimiter",
+        ErrorMessages.ERROR_BLUETOOTH_INVALID_DATA,
+        delimiter
+    );
+  }
+}
   @Override
   public String getDataValue(String key) {
     String value = "";
