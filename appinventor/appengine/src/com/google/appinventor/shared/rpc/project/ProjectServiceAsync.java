@@ -55,6 +55,10 @@ public interface ProjectServiceAsync {
    */
   void sendToGallery(long projectId, AsyncCallback<RpcResult> callback);
   /**
+   * @see ProjectService#submitAssignment(long)
+   */
+  void submitAssignment(long projectId, AsyncCallback<RpcResult> callback);
+  /**
    * @see ProjectService#loadFromGallery(String)
    */
   void loadFromGallery(String galleryId, AsyncCallback<UserProject> callback);

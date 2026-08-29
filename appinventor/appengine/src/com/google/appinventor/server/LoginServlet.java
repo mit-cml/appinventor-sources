@@ -311,6 +311,8 @@ public class LoginServlet extends HttpServlet {
 
       userInfo.setFauxAccountName(fauxUserName);
 
+      userInfo.setDueDate(token.getDuedate());
+
       String newCookie = userInfo.buildCookie(false);
       if (newCookie != null) {
         Cookie cook = new Cookie("AppInventor", newCookie);

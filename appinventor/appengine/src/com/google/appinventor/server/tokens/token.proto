@@ -34,6 +34,10 @@ message token {
                                               // name = target project name. POST only; token in
                                               // query string (?stoken=), .aia bytes are the raw
                                               // POST body. Response is JSON either way.
+    SUBMITASSIGNMENT = 26;                    // App-Inventor-initiated assignment submission.
+                                              // uuid = project owner, projectid = project being
+                                              // submitted. Sent OUTBOUND from AI's server to the
+                                              // portal's /api/ai/submit; not handled by RestServlet.
   }
 
   required CommandType command = 1;

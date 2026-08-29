@@ -20,7 +20,13 @@
     </ai:ToolbarItem>
     <g:Label ui:field="projectNameLabel" styleName="ya-ProjectName"/>
 
-    <ai:ToolbarItem styleName="ya-ProjectName" caption="Screens: " align="center" enabled="false"/>
+    <ai:ToolbarItem name="SubmitAssignment" icon="send" caption="{messages.submitAssignmentCaption}"
+                    tooltip="{messages.submitAssignmentButton}"
+                    ui:field="submitAssignmentItem" align="center" styleName="ode-ProjectListButton inline right-spacer">
+      <ca:SubmitAssignmentAction/>
+    </ai:ToolbarItem>
+
+    <ai:ToolbarItem styleName="ya-ProjectName left-spacer" caption="Screens: " align="center" enabled="false"/>
     <ai:DropDownButton name="ScreensDropdown" caption="{messages.screensButton}"
                        ui:field="pickFormItem" align="center" styleName="ode-ProjectListButton inline bleft primary"/>
     <ai:ToolbarItem name="AddForm" icon="add" ui:field="addFormItem"
@@ -49,7 +55,7 @@
       <ca:SendToGalleryAction/>
     </ai:ToolbarItem>
 
-    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar" 
+    <ai:ToolbarItem name="ToggleConsole" icon="view_sidebar"
                     ui:field="toggleConsoleItem" align="right" styleName="ode-ProjectListButton bleft primary">
       <ya:ToggleConsoleAction/>
     </ai:ToolbarItem>

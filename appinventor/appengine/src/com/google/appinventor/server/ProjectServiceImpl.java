@@ -250,6 +250,38 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Submit a project as an assignment to an external source. The caller's
+   * own session already establishes their identity here; this just notifies
+   * the external system (which owns the actual submission record) that a
+   * submission happened for this project.
+   * @param projectId project ID
+   * @return RPC Result indicating success or failure
+   */
+
+  @Override
+  public RpcResult submitAssignment(long projectId) {
+    final String userId = userInfoProvider.getUserId();
+    try {
+      storageIo.assertUserHasProject(userId, projectId);
+    } catch (SecurityException e) {
+      return RpcResult.createFailingRpcResult("", "Project not found or access denied");
+    }
+    try {
+      // userId here is the App Inventor project owner uuid, which should match the
+      // external system's projectVersions.projectOwnerId for this student/assignment pairing
+      PortalSubmissionClient.submitAssignment(userId, projectId);
+      return RpcResult.createSuccessfulRpcResult("Submitted", "");
+    } catch (PortalSubmissionClient.PortalRejectionException e) {
+      // A well-formed, expected rejection (currently: team assignment) -- show
+      // its message to the student directly, no generic prefix.
+      return RpcResult.createFailingRpcResult("", e.getMessage());
+    } catch (Exception e) {
+      LOG.log(Level.WARNING, "submitAssignment failed for user " + userId, e);
+      return RpcResult.createFailingRpcResult("", "Failed to reach portal: " + e.getMessage());
+    }
+  }
+
+  /**
    * Load a project from the Gallery
    * We take the galleryId, fetch the project from the (remote) Gallery
    * store it with the user's projects and return a UserProject object

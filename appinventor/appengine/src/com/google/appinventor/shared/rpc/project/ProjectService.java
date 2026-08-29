@@ -95,6 +95,14 @@ public interface ProjectService extends RemoteService {
   public RpcResult sendToGallery(long projectId);
 
   /**
+   * Submit a project as an assignment to the classroom portal
+   * @param projectId  project ID
+   * @return RpcResult indicating success or failure
+   */
+
+  public RpcResult submitAssignment(long projectId);
+
+  /**
    * Load a project from the new Gallery
    * @param galleryId  The gallery's unique ID for this project
    * @return UserProject information object for newly loaded project

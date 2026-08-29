@@ -98,6 +98,22 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Error given when sending fails")
   String GallerySendingError();
 
+  @DefaultMessage("Submit Assignment")
+  @Description("Text on \"Submit Assignment\" button")
+  String submitAssignmentButton();
+
+  @DefaultMessage("Submit")
+  @Description("Short caption next to the Submit Assignment button's icon")
+  String submitAssignmentCaption();
+
+  @DefaultMessage("Could not submit assignment")
+  @Description("Error shown when assignment submission fails")
+  String submitAssignmentError();
+
+  @DefaultMessage("Assignment submitted")
+  @Description("Message shown when assignment submission succeeds")
+  String submitAssignmentSuccess();
+
   @DefaultMessage("This project contains extensions and cannot be published to gallery.")
   @Description("Error Message for displaying error when user tries to publish the project" +
     "containing extensions")

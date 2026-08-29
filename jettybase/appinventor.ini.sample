@@ -108,6 +108,10 @@ c3p0.maxconnectionage = 600
 
 stoken.key = changeme
 
+# Base URL of the classroom portal, for outbound submission notifications
+# (PortalSubmissionClient). Must be reachable from this server.
+portal.url = http://127.0.0.1:5173
+
 # google.analytics = changeme
 
 aws.cachesize = 50000000

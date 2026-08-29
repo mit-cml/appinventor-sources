@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2017 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -155,6 +155,7 @@ public class DesignToolbar extends Toolbar {
   @UiField protected ToolbarItem switchToDesign;
   @UiField protected ToolbarItem switchToBlocks;
   @UiField protected ToolbarItem sendToGalleryItem;
+  @UiField protected ToolbarItem submitAssignmentItem;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -177,6 +178,11 @@ public class DesignToolbar extends Toolbar {
     // Is the Gallery Enabled (new gallery)?
     setVisibleItem(sendToGalleryItem, Ode.getSystemConfig().getGalleryEnabled()
         && !Ode.getInstance().getGalleryReadOnly());
+
+    // Only show "Submit Assignment" when a project is opened as an external
+    // assignment (dueDate != 0, carried through the login token) and it is not read only
+    setVisibleItem(submitAssignmentItem, Ode.getInstance().getDueDate() != 0
+        && !Ode.getInstance().isReadOnly());
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);

@@ -547,6 +547,17 @@ public final class TokenProto {
        * <code>IMPORTPROJECT = 25;</code>
        */
       IMPORTPROJECT(25),
+      /**
+       * <pre>
+       * the request body. uuid = target project owner,
+       * name = target project name. POST only; token in
+       * query string (?stoken=), .aia bytes are the raw
+       * POST body. Response is JSON either way.
+       * </pre>
+       *
+       * <code>SUBMITASSIGNMENT = 26;</code>
+       */
+      SUBMITASSIGNMENT(26),
       ;
 
       static {
@@ -668,6 +679,17 @@ public final class TokenProto {
        * <code>IMPORTPROJECT = 25;</code>
        */
       public static final int IMPORTPROJECT_VALUE = 25;
+      /**
+       * <pre>
+       * the request body. uuid = target project owner,
+       * name = target project name. POST only; token in
+       * query string (?stoken=), .aia bytes are the raw
+       * POST body. Response is JSON either way.
+       * </pre>
+       *
+       * <code>SUBMITASSIGNMENT = 26;</code>
+       */
+      public static final int SUBMITASSIGNMENT_VALUE = 26;
 
 
       public final int getNumber() {
@@ -705,6 +727,7 @@ public final class TokenProto {
           case 23: return CHECKACCOUNT;
           case 24: return EXPORTPROJECT;
           case 25: return IMPORTPROJECT;
+          case 26: return SUBMITASSIGNMENT;
           default: return null;
         }
       }
@@ -4268,7 +4291,7 @@ public final class TokenProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013token.proto\022\006tokens\"\300\004\n\005token\022*\n\007comma" +
+      "\n\013token.proto\022\006tokens\"\326\004\n\005token\022*\n\007comma" +
       "nd\030\001 \002(\0162\031.tokens.token.CommandType\022\n\n\002t" +
       "s\030\002 \001(\004\022\014\n\004uuid\030\003 \001(\t\022\021\n\tprojectid\030\004 \001(\004" +
       "\022\014\n\004name\030\005 \001(\t\022\024\n\014oneProjectId\030\006 \001(\004\022\020\n\010" +
@@ -4276,17 +4299,18 @@ public final class TokenProto {
       "ayprojectname\030\026 \001(\t\022\032\n\022displayaccountnam" +
       "e\030\027 \001(\t\022\022\n\nbackpackid\030\030 \001(\t\022\021\n\tclassname" +
       "\030\031 \001(\t\022\020\n\010vendorid\030\032 \001(\t\022\024\n\014refreshtoken" +
-      "\030\033 \001(\t\022\014\n\004anon\030\034 \001(\010\"\201\002\n\013CommandType\022\014\n\010" +
+      "\030\033 \001(\t\022\014\n\004anon\030\034 \001(\010\"\227\002\n\013CommandType\022\014\n\010" +
       "SSOLOGIN\020\000\022\017\n\013SHOWPROJECT\020\001\022\021\n\rCREATEACC" +
       "OUNT\020\002\022\021\n\rCREATEPROJECT\020\003\022\n\n\006LOGOUT\020\004\022\r\n" +
       "\tSSOLOGIN2\020\005\022\r\n\tFETCHUUID\020\006\022\016\n\nUUIDRETUR" +
       "N\020\007\022\r\n\tSSOLOGIN3\020\010\022\010\n\004NOOP\020\024\022\021\n\rDELETEAC" +
       "COUNT\020\025\022\017\n\013GETPROJECTS\020\026\022\020\n\014CHECKACCOUNT" +
       "\020\027\022\021\n\rEXPORTPROJECT\020\030\022\021\n\rIMPORTPROJECT\020\031" +
-      "\"U\n\010envelope\022\022\n\007version\030\001 \001(\004:\0011\022\020\n\005keyi" +
-      "d\030\002 \001(\004:\0011\022\020\n\010unsigned\030\003 \001(\014\022\021\n\tsignatur" +
-      "e\030\004 \001(\014B2\n$com.google.appinventor.server" +
-      ".tokensB\nTokenProto"
+      "\022\024\n\020SUBMITASSIGNMENT\020\032\"U\n\010envelope\022\022\n\007ve" +
+      "rsion\030\001 \001(\004:\0011\022\020\n\005keyid\030\002 \001(\004:\0011\022\020\n\010unsi" +
+      "gned\030\003 \001(\014\022\021\n\tsignature\030\004 \001(\014B2\n$com.goo" +
+      "gle.appinventor.server.tokensB\nTokenProt" +
+      "o"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

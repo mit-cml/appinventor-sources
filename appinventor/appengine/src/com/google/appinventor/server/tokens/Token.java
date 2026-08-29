@@ -14,6 +14,7 @@ import org.keyczar.exceptions.KeyczarException;
 import com.google.protobuf.ByteString;
 
 import java.util.Arrays;
+import java.util.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -83,6 +84,45 @@ public class Token {
         .setName(email)         // Yes, we are using the name field
         .setTs(System.currentTimeMillis()).build();
       return Base64Coder.encode(crypter.encrypt(newToken.toByteArray()));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Make an HMAC-signed stoken-style envelope for an OUTBOUND SUBMITASSIGNMENT
+   * call from this server to the portal (the reverse direction of every other
+   * make*Token method here, which are all Keyczar-ENCRYPTED tokens meant for
+   * the browser/SSO flow, not HMAC-signed envelopes meant for a server-to-server
+   * call). Mirrors the portal's own createToken() byte-for-byte, including the
+   * URL-safe, unpadded base64 encoding it expects -- do NOT use Base64Coder
+   * (Keyczar's, standard alphabet with padding) here, it will not verify.
+   *
+   * @param projectOwnerId the App Inventor project owner uuid
+   * @param projectId the project being submitted
+   * @returns base64url (no padding) encoded envelope
+   */
+  public static String makeSubmitAssignmentToken(String projectOwnerId, long projectId) {
+    String key = stokenKey.get();
+    if (key.isEmpty()) {
+      throw new RuntimeException("stoken.key may not be empty!");
+    }
+    try {
+      TokenProto.token newToken = TokenProto.token.newBuilder()
+        .setCommand(TokenProto.token.CommandType.SUBMITASSIGNMENT)
+        .setUuid(projectOwnerId)
+        .setProjectid(projectId)
+        .setTs(System.currentTimeMillis()).build();
+      byte[] tokenBytes = newToken.toByteArray();
+      SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), HMAC_ALGORITHM);
+      Mac hmac = Mac.getInstance(HMAC_ALGORITHM);
+      hmac.init(secretKeySpec);
+      byte[] signature = hmac.doFinal(tokenBytes);
+      TokenProto.envelope envelope = TokenProto.envelope.newBuilder()
+        .setUnsigned(ByteString.copyFrom(tokenBytes))
+        .setSignature(ByteString.copyFrom(signature))
+        .build();
+      return Base64.getUrlEncoder().withoutPadding().encodeToString(envelope.toByteArray());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

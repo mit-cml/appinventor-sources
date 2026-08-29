@@ -197,6 +197,8 @@ public class Ode implements EntryPoint {
 
   private String fauxProjectName; // Fake Project Name provided by login token
 
+  private long dueDate; // Non-zero if the project is related to an external assignment; provided by login token.
+
   private String sessionId = generateUuid(); // Create new session id
 
   private Random random = new Random(); // For generating random nonce
@@ -798,6 +800,7 @@ public class Ode implements EntryPoint {
           isReadOnly = user.isReadOnly();
           oneProjectId = user.getOneProjectId();
           fauxProjectName = user.getFauxProjectName();
+          dueDate = user.getDueDate();
           if (oneProjectId != 0) {
             oneProjectMode = true;
           }
@@ -2630,6 +2633,10 @@ public class Ode implements EntryPoint {
 
   public String getFauxProjectName() {
     return fauxProjectName;
+  }
+
+  public long getDueDate() {
+    return dueDate;
   }
 
   // Code to lock out certain screen and project switching code

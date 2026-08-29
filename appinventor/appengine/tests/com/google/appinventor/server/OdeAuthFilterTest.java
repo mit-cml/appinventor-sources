@@ -66,7 +66,7 @@ public class OdeAuthFilterTest {
 
     OdeAuthFilter myAuthFilter = new OdeAuthFilter() {
       @Override
-      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly, long oneProjectId, String fauxProjectName, String fauxAccoutName) { localUserMock.set(new User("1", "NonSuch", false, false, null)); return;}
+      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly, long oneProjectId, String fauxProjectName, String fauxAccoutName, long dueDate) { localUserMock.set(new User("1", "NonSuch", false, false, null)); return;}
       @Override
       void removeUser() {}
       @Override
@@ -76,7 +76,7 @@ public class OdeAuthFilterTest {
       }
     };
 
-    myAuthFilter.doMyFilter(localUserInfo, false, false,  0, null, null, mockServletRequest, mockServletResponse, mockFilterChain);
+    myAuthFilter.doMyFilter(localUserInfo, false, false,  0, null, null, 0, mockServletRequest, mockServletResponse, mockFilterChain);
 
     assertEquals(0, isUserWhitelistedCounter.get());
     Mockito.verify(mockFilterChain).doFilter(mockServletRequest, mockServletResponse);
@@ -92,7 +92,7 @@ public class OdeAuthFilterTest {
 
     OdeAuthFilter myAuthFilter = new OdeAuthFilter() {
       @Override
-      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly, long oneProjectId, String fauxProjectName, String fauxAccoutName) { localUserMock.set(new User("1", "NonSuch", false, false, null)); return;}
+      void setUserFromUserId(String userId, boolean isAdmin, boolean isReadOnly, long oneProjectId, String fauxProjectName, String fauxAccoutName, long dueDate) { localUserMock.set(new User("1", "NonSuch", false, false, null)); return;}
       @Override
       void removeUser() {}
       @Override
@@ -106,7 +106,7 @@ public class OdeAuthFilterTest {
       }
     };
 
-    myAuthFilter.doMyFilter(localUserInfo, false, false, 0, null, null, mockServletRequest, mockServletResponse, mockFilterChain);
+    myAuthFilter.doMyFilter(localUserInfo, false, false, 0, null, null, 0, mockServletRequest, mockServletResponse, mockFilterChain);
 
     assertEquals(1, isUserWhitelistedCounter.get());
     assertEquals(1, writeWhitelistErrorMessageCounter.get());
