@@ -64,10 +64,21 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
 
   @Override
   public void saveSettings(final Command command) {
+    // Whatever happens below, the command must run exactly once. The caller may
+    // be counting one answer for every save it asked for, the way
+    // EditorManager.saveDirtyEditors does, and an answer that never comes leaves
+    // that count waiting forever.
     if (Ode.getInstance().isReadOnly()) {
-      return;                   // No changes when in read only mode
+      // No changes when in read only mode
+      if (command != null) {
+        command.execute();
+      }
+      return;
     } else if (!changed) {
       // Do not save project settings if they haven't changed.
+      if (command != null) {
+        command.execute();
+      }
       return;
     }
     String s = encodeSettings();
@@ -83,6 +94,14 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
             changed = false;
             if (command != null) {
               command.execute();
+            }
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            super.onFailure(caught);
+            if (command != null) { // Need to call this to answer the caller's count
+              command.execute();   // for this save (which failed in this case)
             }
           }
         });
