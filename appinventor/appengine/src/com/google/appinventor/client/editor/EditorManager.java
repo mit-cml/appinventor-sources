@@ -236,20 +236,21 @@ public final class EditorManager {
 
   /**
    * Saves all modified files and project settings and calls the afterSaving
-   * command after they have all been saved successfully.
-   *
-   * If any errors occur while saving, the afterSaving command will not be
-   * executed.
-   * If nothing needs to be saved, the afterSavingFiles command is called
+   * command once every save it requested has answered, whether it succeeded
+   * or failed.
+   * A failed file save marks its editor dirty again, so the next save will
+   * retry it. If nothing needs to be saved, the afterSaving command is called
    * immediately, not asynchronously.
    *
-   * @param afterSaving  optional command to be executed after project
-   *                     settings and file editors are saved successfully
+   * @param afterSaving  optional command to be executed once every requested
+   *                     save has answered
    */
   public void saveDirtyEditors(final Command afterSaving) {
     // Note, We don't do any saving if we are in read only mode
     if (Ode.getInstance().isReadOnly()) {
-      afterSaving.execute();
+      if (afterSaving != null) {
+        afterSaving.execute();
+      }
       return;
     }
 
@@ -273,10 +274,13 @@ public final class EditorManager {
 
     // Keep count as each save operation finishes so we can set the projects' modified date and
     // call the afterSaving command after everything has been saved.
-    // Each project settings is saved as a separate operation, but all files are saved as a single
-    // save operation. So the initial value of pendingSaveOperations is the size of
-    // projectSettingsToSave plus 1.
-    final AtomicInteger pendingSaveOperations = new AtomicInteger(projectSettingsToSave.size() + 1);
+    // Each project settings is saved as a separate operation, and each file is saved as its own
+    // save2 call, which answers exactly once whether it succeeds or fails. When there are no
+    // files at all, saveMultipleFilesAtOnce answers exactly once for the empty batch. So the
+    // initial value of pendingSaveOperations is the size of projectSettingsToSave plus the
+    // number of file answers that will come.
+    final AtomicInteger pendingSaveOperations = new AtomicInteger(
+        projectSettingsToSave.size() + Math.max(1, filesToSave.size()));
     final DateHolder dateHolder = new DateHolder();
     Command callAfterSavingCommand = new Command() {
       @Override
