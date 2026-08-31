@@ -70,6 +70,9 @@ AI.Blockly.AIProcedure.getProcedureNames = function(returnValue, opt_workspace) 
   if(procNameArray.length > 1 ){
     procNameArray.splice(0,1);
   }
+  procNameArray.sort(function(proc1, proc2) {
+    return proc1[0].toLowerCase().localeCompare(proc2[0].toLowerCase(), undefined, {numeric: true});
+  });
   return procNameArray;
 };
 
