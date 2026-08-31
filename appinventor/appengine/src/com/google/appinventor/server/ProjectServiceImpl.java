@@ -261,6 +261,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public RpcResult submitAssignment(long projectId) {
     final String userId = userInfoProvider.getUserId();
+    if (userInfoProvider.isReadOnly()) {
+      return RpcResult.createFailingRpcResult("", "Project not found or access denied");
+    }
     try {
       storageIo.assertUserHasProject(userId, projectId);
     } catch (SecurityException e) {
