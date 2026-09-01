@@ -95,6 +95,9 @@ public final class YoungAndroidSettings extends Settings {
         SettingsConstants.YOUNG_ANDROID_SETTINGS_LAST_OPENED, "Screen1",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED, "",
+        EditableProperty.TYPE_INVISIBLE));
+    addProperty(new EditableProperty(this,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_AIVERSIONING, YOUNG_ANDROID_VERSION + "",
         EditableProperty.TYPE_INVISIBLE));
     addProperty(new EditableProperty(this,
