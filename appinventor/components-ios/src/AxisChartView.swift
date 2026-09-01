@@ -158,8 +158,7 @@ open class AxisChartView : ChartView {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let date = Date(timeIntervalSince1970: value)
-        let test = dateFormatter.string(from: date)
-        return test
+        return dateFormatter.string(from: date)
       } else if _vType == CHART_VALUE_TIME {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
