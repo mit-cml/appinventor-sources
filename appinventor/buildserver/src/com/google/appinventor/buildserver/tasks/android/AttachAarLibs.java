@@ -98,7 +98,7 @@ public class AttachAarLibs implements AndroidTask {
               if (!attachedAARs.contains(packageName)) {
                 // explode libraries into ${buildDir}/exploded-aars/<package>/
                 AARLibrary aarLib = new AARLibrary(aarFile);
-                aarLib.unpackToDirectory(explodedBaseDir);
+                aarLib.unpackToDirectory(explodedBaseDir, packageName);
                 context.getComponentInfo().getExplodedAarLibs().add(aarLib);
                 // Attach assets files & jni libraries if available
                 copyAssetsAndJni(aarFile, mergedAssetDir, libsDir);
