@@ -18,7 +18,6 @@ import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.shared.rpc.user.Config;
 
 import com.google.common.base.Strings;
-
 import com.google.common.collect.Lists;
 
 import com.google.gwt.core.client.GWT;
@@ -28,8 +27,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 
 import com.google.gwt.i18n.client.Dictionary;
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.i18n.client.LocaleInfo;
-
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
 import com.google.gwt.uibinder.client.UiBinder;
