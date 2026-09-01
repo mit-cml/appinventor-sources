@@ -7,7 +7,6 @@ package com.google.appinventor.server.storage;
 
 import static com.google.appinventor.components.common.YaVersion.YOUNG_ANDROID_VERSION;
 
-import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
@@ -97,13 +96,6 @@ public class PostgreSQLStorageIo implements StorageIo {
   private static final Flag<String> redisServer = Flag.createFlag("db.redisserver", "");
   private static final Flag<Boolean> useReplicas = Flag.createFlag("db.usereplicas", false);
   private static final Logger LOG = Logger.getLogger(PostgreSQLStorageIo.class.getName());
-  private static final String HOST_ID =
-      String.format(
-          "%s-%s-%s-%s",
-          GitBuildId.GIT_BUILD_VERSION,
-          GitBuildId.GIT_BUILD_FINGERPRINT,
-          GitBuildId.ANT_BUILD_DATE,
-          UUID.randomUUID().toString());
   private static final String DATABASE_ERROR = "Database Error";
 
   private final ComboPooledDataSource cpds;
@@ -299,11 +291,10 @@ public class PostgreSQLStorageIo implements StorageIo {
             stmt.execute(
                 "CREATE UNLOGGED TABLE IF NOT EXISTS buildStatus ("
                     + "  id BIGSERIAL PRIMARY KEY,"
-                    + "  host TEXT NOT NULL,"
                     + "  userId BIGINT NOT NULL,"
                     + "  projectId BIGINT NOT NULL,"
                     + "  progress INT,"
-                    + "  UNIQUE(host, userId, projectId)"
+                    + "  UNIQUE(userId, projectId)"
                     + ")");
             stmt.execute(
                 "CREATE TABLE IF NOT EXISTS splashconfig ("
@@ -3060,13 +3051,12 @@ public class PostgreSQLStorageIo implements StorageIo {
       long userId = getUserId(strUserId, conn, false);
       try (PreparedStatement ustmt =
           conn.prepareStatement(
-              "INSERT INTO buildStatus (host, userId, projectId, progress) VALUES (?, ?, ?, ?) ON"
-                  + " CONFLICT (host, userId, projectId) DO UPDATE SET progress = ?")) {
-        ustmt.setString(1, HOST_ID);
-        ustmt.setLong(2, userId);
-        ustmt.setLong(3, projectId);
+              "INSERT INTO buildStatus (userId, projectId, progress) VALUES (?, ?, ?) ON"
+                  + " CONFLICT (userId, projectId) DO UPDATE SET progress = ?")) {
+        ustmt.setLong(1, userId);
+        ustmt.setLong(2, projectId);
+        ustmt.setInt(3, progress);
         ustmt.setInt(4, progress);
-        ustmt.setInt(5, progress);
         ret = ustmt.executeUpdate();
         if (ret == 0) {
           throw CrashReport.createAndLogError(
@@ -3095,10 +3085,9 @@ public class PostgreSQLStorageIo implements StorageIo {
 
       try (PreparedStatement qstmt =
           conn.prepareStatement(
-              "SELECT progress FROM buildStatus WHERE host = ? AND projectId = ? AND userId = ?")) {
-        qstmt.setString(1, HOST_ID);
-        qstmt.setLong(2, projectId);
-        qstmt.setLong(3, userId);
+              "SELECT progress FROM buildStatus WHERE projectId = ? AND userId = ?")) {
+        qstmt.setLong(1, projectId);
+        qstmt.setLong(2, userId);
         ResultSet rs = qstmt.executeQuery();
 
         if (rs.next()) {
@@ -3889,9 +3878,8 @@ public class PostgreSQLStorageIo implements StorageIo {
                     + " = ? WHERE id = ?")) {
           stmt.setLong(4, id);
           stmt.setBytes(
-              1,
-              content); // If we stored in S3, this will be null, removing the content from the
-                        // database
+              1, content); // If we stored in S3, this will be null, removing the content from the
+          // database
           stmt.setBoolean(2, iss3);
           stmt.setLong(3, contentLength);
           stmt.executeUpdate();
