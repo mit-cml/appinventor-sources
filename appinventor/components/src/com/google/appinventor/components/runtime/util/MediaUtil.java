@@ -24,6 +24,7 @@ import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.net.http.HttpResponseCache;
 import android.os.Build;
 import android.provider.Contacts;
 import android.util.Log;
@@ -49,11 +50,10 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.security.MessageDigest;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -106,77 +106,23 @@ public class MediaUtil {
     }
   }
 
-  /**
-   * Generates a safe and unique filename based on the MD5 hash of the given URL.
-   */
-  private static String getDiskCacheFilename(String url) {
+  private static volatile boolean httpResponseCacheInstalled = false;
+
+  // HttpResponseCache is only available from API 13 onward.
+  private static final int MIN_SDK_FOR_HTTP_RESPONSE_CACHE = 13;
+
+  private static synchronized void installHttpResponseCache(Form form) {
+    if (httpResponseCacheInstalled || Build.VERSION.SDK_INT < MIN_SDK_FOR_HTTP_RESPONSE_CACHE) {
+      return;
+    }
+    httpResponseCacheInstalled = true;
     try {
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      byte[] hash = md.digest(url.getBytes("UTF-8"));
-      StringBuilder sb = new StringBuilder(2 * hash.length);
-      for (byte b : hash) {
-        sb.append(String.format("%02x", b & 0xff));
-      }
-      return "img_cache_" + sb.toString();
-    } catch (Exception e) {
-      return "img_cache_" + Integer.toHexString(url.hashCode());
-    }
-  }
-
-  /**
-   * Returns an {@link InputStream} for a file on disk. If the file does not exist,
-   * it downloads it from the network URL and saves it to the local cache directory.
-   */
-  private static InputStream openUrlWithDiskCache(Form form, String urlString) throws IOException {
-    File cacheDir = new File(form.getCacheDir(), "media_img_cache");
-    if (!cacheDir.exists()) {
-      cacheDir.mkdirs();
-    }
-
-    File cachedFile = new File(cacheDir, getDiskCacheFilename(urlString));
-
-    if (cachedFile.exists() && cachedFile.length() > 0) {
-      return new FileInputStream(cachedFile);
-    }
-
-    URL url = new URL(urlString);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setConnectTimeout(5000);
-    conn.setReadTimeout(5000);
-    conn.setDoInput(true);
-    conn.connect();
-
-    InputStream in = null;
-    FileOutputStream out = null;
-    try {
-      in = conn.getInputStream();
-      out = new FileOutputStream(cachedFile);
-      byte[] buffer = new byte[8192];
-      int bytesRead;
-      while ((bytesRead = in.read(buffer)) != -1) {
-        out.write(buffer, 0, bytesRead);
-      }
+      File cacheDir = new File(form.getCacheDir(), "http_image_cache");
+      long cacheSize = 256 * 1024 * 1024; // 256 MiB
+      HttpResponseCache.install(cacheDir, cacheSize);
     } catch (IOException e) {
-      if (cachedFile.exists()) {
-        cachedFile.delete();
-      }
-      throw e;
-    } finally {
-      if (in != null) {
-        try {
-          in.close();
-        } catch (IOException ignored) {
-        }
-      }
-      if (out != null) {
-        try {
-          out.close();
-        } catch (IOException ignored) {
-        }
-      }
+      Log.w(LOG_TAG, "Unable to install HttpResponseCache", e);
     }
-
-    return new FileInputStream(cachedFile);
   }
 
   static String fileUrlToFilePath(String mediaPath) throws IOException {
@@ -427,10 +373,12 @@ public class MediaUtil {
         }
       case URL:
         if (useDiskCache) {
-          return openUrlWithDiskCache(form, mediaPath);
-        } else {
-          return new URL(mediaPath).openStream();
+          installHttpResponseCache(form);
         }
+        URLConnection connection = new URL(mediaPath).openConnection();
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(15000);
+        return connection.getInputStream();
 
       case CONTENT_URI:
         return form.getContentResolver().openInputStream(Uri.parse(mediaPath));
