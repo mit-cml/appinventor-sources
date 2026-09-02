@@ -10,13 +10,10 @@ import { MenuItem } from './menuitem.js';
  * Class for an editable dropdown field.
  */
 export declare class FieldDropdown extends Field<string> {
-    /** Horizontal distance that a checkmark overhangs the dropdown. */
-    static CHECKMARK_OVERHANG: number;
     /**
-     * Maximum height of the dropdown menu, as a percentage of the viewport
-     * height.
+     * Magic constant used to represent a separator in a list of dropdown items.
      */
-    static MAX_MENU_HEIGHT_VH: number;
+    static readonly SEPARATOR = "separator";
     static ARROW_CHAR: string;
     /** A reference to the currently selected menu item. */
     private selectedMenuItem;
@@ -35,8 +32,6 @@ export declare class FieldDropdown extends Field<string> {
      * are not. Editable fields should also be serializable.
      */
     SERIALIZABLE: boolean;
-    /** Mouse cursor style when over the hotspot that initiates the editor. */
-    CURSOR: string;
     protected menuGenerator_?: MenuGenerator;
     /** A cache of the most recently generated options. */
     private generatedOptions;
@@ -61,6 +56,11 @@ export declare class FieldDropdown extends Field<string> {
     protected static IMAGE_Y_OFFSET: number;
     /** The total vertical padding above and below an image. */
     protected static IMAGE_Y_PADDING: number;
+    /**
+     * True once the field’s DOM has been created and it is safe to run ARIA
+     * updates in response to value changes.
+     */
+    isInitialized: boolean;
     /**
      * @param menuGenerator A non-empty array of options for a dropdown list, or a
      *     function which generates these options. Also accepts Field.SKIP_SETUP
@@ -98,6 +98,15 @@ export declare class FieldDropdown extends Field<string> {
      * Create the block UI for this dropdown.
      */
     initView(): void;
+    /**
+     * This is hacky way of determining if a dropdown field is a full-block field or not.
+     * The constants that control the border rect are the same ones that determine how we
+     * render full-block dropdown fields. It's a full-block field if it doesn't have the
+     * border rect (and it's a simple reporter block).
+     *
+     * @returns true if this field should be treated as a full-block field
+     */
+    isFullBlockField(): boolean;
     /**
      * Whether or not the dropdown should add a border rect.
      *
@@ -150,6 +159,13 @@ export declare class FieldDropdown extends Field<string> {
      */
     getOptions(useCache?: boolean): MenuOption[];
     /**
+     * Update the options on this dropdown. This will reset the selected item to
+     * the first item in the list.
+     *
+     * @param menuGenerator The array of options or a generator function.
+     */
+    setOptions(menuGenerator: MenuGenerator): void;
+    /**
      * Ensure that the input value is a valid language-neutral option.
      *
      * @param newValue The input value.
@@ -189,7 +205,13 @@ export declare class FieldDropdown extends Field<string> {
     /**
      * Use the `getText_` developer hook to override the field's text
      * representation.  Get the selected option text.  If the selected option is
-     * an image we return the image alt text.
+     * an image we return the image alt text. If the selected option is
+     * an HTMLElement, return the title, ariaLabel, or innerText of the
+     * element.
+     *
+     * If you use HTMLElement options in Node.js and call this function,
+     * ensure that you are supplying an implementation of HTMLElement,
+     * such as through jsdom-global.
      *
      * @returns Selected option text.
      */
@@ -230,6 +252,50 @@ export declare class FieldDropdown extends Field<string> {
      * @throws {TypeError} If proposed options are incorrectly structured.
      */
     protected validateOptions(options: MenuOption[]): void;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string;
+    /**
+     * Returns the ARIA label for the currently selected dropdown option.
+     *
+     * @returns The computed ARIA label for the selected option, or `null` if no
+     * option is selected.
+     */
+    private getSelectedAriaLabel;
+    /**
+     * Sets additional aria state.
+     */
+    recomputeAriaContext(): boolean;
+    /**
+     * Computes an ARIA-friendly label for a dropdown option.
+     *
+     * The label is derived using a prioritized set of sources.
+     *
+     * Returned values are guaranteed to be non-empty strings for all non-separator
+     * options. Whitespace-only values are ignored when determining a usable label.
+     *
+     * @param option The dropdown option for which to compute the ARIA label.
+     * @param index The index of the option within the dropdown (0-based).
+     * @returns A string suitable for use as an ARIA label. Returns an empty string
+     *     only if the option is a separator.
+     */
+    private computeOptionAriaLabel;
 }
 /**
  * Definition of a human-readable image dropdown option.
@@ -239,13 +305,20 @@ export interface ImageProperties {
     alt: string;
     width: number;
     height: number;
+    ariaLabel?: string;
 }
 /**
- * An individual option in the dropdown menu. The first element is the human-
- * readable value (text or image), and the second element is the language-
- * neutral value.
+ * An individual option in the dropdown menu. Can be either the string literal
+ * `separator` for a menu separator item, or an array for normal action menu
+ * items. In the latter case, the first element is the human-readable value
+ * (text, ImageProperties object, or HTML element), and the second element is
+ * the language-neutral value.
  */
-export type MenuOption = [string | ImageProperties, string];
+export type MenuOption = [
+    string | ImageProperties | HTMLElement,
+    string,
+    string?
+] | 'separator';
 /**
  * A function that generates an array of menu options for FieldDropdown
  * or its descendants.

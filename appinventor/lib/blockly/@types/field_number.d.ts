@@ -146,6 +146,12 @@ export declare class FieldNumber extends FieldInput<number> {
      */
     protected widgetCreate_(): HTMLInputElement;
     /**
+     * Initialize the field's DOM.
+     *
+     * @override
+     */
+    initView(): void;
+    /**
      * Construct a FieldNumber from a JSON arg object.
      *
      * @param options A JSON object with options (value, min, max, and precision).
@@ -154,6 +160,16 @@ export declare class FieldNumber extends FieldInput<number> {
      * @internal
      */
     static fromJson(options: FieldNumberFromJsonConfig): FieldNumber;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
 }
 /**
  * Config options for the number field.

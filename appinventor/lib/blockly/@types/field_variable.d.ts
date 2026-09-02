@@ -8,14 +8,12 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import type { Block } from './block.js';
 import { Field, FieldConfig } from './field.js';
 import { FieldDropdown, FieldDropdownValidator, MenuGenerator, MenuOption } from './field_dropdown.js';
+import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Menu } from './menu.js';
 import type { MenuItem } from './menuitem.js';
-import { Size } from './utils/size.js';
-import { VariableModel } from './variable_model.js';
 /**
  * Class for a variable's dropdown field.
  */
@@ -29,7 +27,6 @@ export declare class FieldVariable extends FieldDropdown {
      * dropdown.
      */
     variableTypes: string[] | null;
-    protected size_: Size;
     /** The variable model associated with this field. */
     private variable;
     /**
@@ -47,7 +44,8 @@ export declare class FieldVariable extends FieldDropdown {
      *     field's value. Takes in a variable ID  & returns a validated variable
      *     ID, or null to abort the change.
      * @param variableTypes A list of the types of variables to include in the
-     *     dropdown. Will only be used if config is not provided.
+     *     dropdown. Pass `null` to include all types that exist on the
+     *     workspace. Will only be used if config is not provided.
      * @param defaultType The type of variable to create if this field's value
      *     is not explicitly set.  Defaults to ''. Will only be used if config
      *     is not provided.
@@ -56,7 +54,7 @@ export declare class FieldVariable extends FieldDropdown {
      * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/variable#creation}
      * for a list of properties this parameter supports.
      */
-    constructor(varName: string | null | typeof Field.SKIP_SETUP, validator?: FieldVariableValidator, variableTypes?: string[], defaultType?: string, config?: FieldVariableConfig);
+    constructor(varName: string | null | typeof Field.SKIP_SETUP, validator?: FieldVariableValidator, variableTypes?: string[] | null, defaultType?: string, config?: FieldVariableConfig);
     /**
      * Configure the field based on the given map of options.
      *
@@ -69,6 +67,7 @@ export declare class FieldVariable extends FieldDropdown {
      * a variable rather than let the value be invalid.
      */
     initModel(): void;
+    initView(): void;
     shouldAddBorderRect_(): boolean;
     /**
      * Initialize this field based on the given XML.
@@ -129,7 +128,13 @@ export declare class FieldVariable extends FieldDropdown {
      * @returns The selected variable, or null if none was selected.
      * @internal
      */
-    getVariable(): VariableModel | null;
+    getVariable(): IVariableModel<IVariableState> | null;
+    /**
+     * Gets the type of this field's default variable.
+     *
+     * @returns The default type for this variable field.
+     */
+    protected getDefaultType(): string;
     /**
      * Gets the validation function for this field, or null if not set.
      * Returns null if the variable is not set, because validators should not
@@ -166,7 +171,6 @@ export declare class FieldVariable extends FieldDropdown {
      * Return a list of variable types to include in the dropdown.
      *
      * @returns Array of variable types.
-     * @throws {Error} if variableTypes is an empty array.
      */
     private getVariableTypes;
     /**
@@ -223,6 +227,15 @@ export declare class FieldVariable extends FieldDropdown {
      * @returns Array of variable names/id tuples.
      */
     static dropdownCreate(this: FieldVariable): MenuOption[];
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string;
 }
 /**
  * Config options for the variable field.

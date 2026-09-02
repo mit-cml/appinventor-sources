@@ -8,7 +8,6 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import { Field } from './field.js';
 import { FieldInput, FieldInputConfig, FieldInputValidator } from './field_input.js';
 /**
@@ -30,6 +29,7 @@ export declare class FieldTextInput extends FieldInput<string> {
      * for a list of properties this parameter supports.
      */
     constructor(value?: string | typeof Field.SKIP_SETUP, validator?: FieldTextInputValidator | null, config?: FieldTextInputConfig);
+    initView(): void;
     /**
      * Ensure that the input value casts to a valid string.
      *
@@ -47,6 +47,16 @@ export declare class FieldTextInput extends FieldInput<string> {
      * @internal
      */
     static fromJson(options: FieldTextInputFromJsonConfig): FieldTextInput;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
 }
 /**
  *  Config options for the text input field.

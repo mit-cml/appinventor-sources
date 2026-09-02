@@ -90,6 +90,9 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   // True once we've finished loading the current file.
   private boolean loadComplete = false;
 
+  // True once we've initialized the Blockly workspace.
+  private boolean workspaceInitialized = false;
+
   // if selectedDrawer != null, it is either "component_" + instance name or
   // "builtin_" + drawer name
   private String selectedDrawer = null;
@@ -128,16 +131,8 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
     // New layouts don't need all this messing; see comments on selected answer at:
     // http://stackoverflow.com/questions/86901/creating-a-fluid-panel-in-gwt-to-fill-the-page
     initWidget(blocksArea);
-    blocksArea.populateComponentTypes(componentDatabase.getComponentsJSONString());
-
     // Get references to the source structure explorer
     sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();
-
-    // Listen for selection events for built-in drawers
-    BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
-
-    designer = (T) projectEditor.getFileEditor(blocksNode.getEntityName(), DesignerEditor.EDITOR_TYPE);
-    formToBlocksEditor.put(entityName, this);
   }
 
   public abstract void prepareForUnload();
@@ -216,6 +211,29 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
 
   public boolean isLoaded() {
     return loadComplete;
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    if (workspaceInitialized) {
+      return;
+    }
+    workspaceInitialized = true;
+
+    blocksArea.initWorkspace();
+    blocksArea.populateComponentTypes(componentDatabase.getComponentsJSONString());
+
+    // Listen for selection events for built-in drawers
+    BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
+
+    designer = (T) projectEditor.getFileEditor(blocksNode.getEntityName(), DesignerEditor.EDITOR_TYPE);
+    formToBlocksEditor.put(entityName, this);
+
+    onWorkspaceInitialized();
+  }
+
+  protected void onWorkspaceInitialized() {
   }
 
   public WorkspaceSvg getWorkspace() {

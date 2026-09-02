@@ -18,8 +18,6 @@ import { EventType } from './type.js';
  */
 export declare class CommentDelete extends CommentBase {
     type: EventType;
-    /** The XML representation of the deleted workspace comment. */
-    xml?: Element;
     /** The JSON representation of the created workspace comment. */
     json?: comments.State;
     /**
@@ -51,7 +49,6 @@ export declare class CommentDelete extends CommentBase {
     static fromJson(json: CommentDeleteJson, workspace: Workspace, event?: any): CommentDelete;
 }
 export interface CommentDeleteJson extends CommentBaseJson {
-    xml: string;
     json: object;
 }
 //# sourceMappingURL=events_comment_delete.d.ts.map

@@ -26,7 +26,7 @@ export declare class Grid {
      * @param pattern The grid's SVG pattern, created during injection.
      * @param options A dictionary of normalized options for the grid.
      *     See grid documentation:
-     *     https://developers.google.com/blockly/guides/configure/web/grid
+     *     https://developers.google.com/blockly/guides/configure/grid
      */
     constructor(pattern: SVGElement, options: GridOptions);
     /**
@@ -113,9 +113,12 @@ export declare class Grid {
      * @param rnd A random ID to append to the pattern's ID.
      * @param gridOptions The object containing grid configuration.
      * @param defs The root SVG element for this workspace's defs.
+     * @param injectionDiv The div containing the parent workspace and all related
+     *   workspaces and block containers. CSS variables representing SVG patterns
+     *   will be scoped to this container.
      * @returns The SVG element for the grid pattern.
      * @internal
      */
-    static createDom(rnd: string, gridOptions: GridOptions, defs: SVGElement): SVGElement;
+    static createDom(rnd: string, gridOptions: GridOptions, defs: SVGElement, injectionDiv?: HTMLElement): SVGElement;
 }
 //# sourceMappingURL=grid.d.ts.map

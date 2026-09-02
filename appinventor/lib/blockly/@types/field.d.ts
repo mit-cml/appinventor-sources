@@ -10,11 +10,10 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import type { Block } from './block.js';
 import type { Input } from './inputs/input.js';
-import type { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.js';
-import type { IASTNodeLocationWithBlock } from './interfaces/i_ast_node_location_with_block.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import type { IKeyboardAccessible } from './interfaces/i_keyboard_accessible.js';
 import type { IRegistrable } from './interfaces/i_registrable.js';
 import { ISerializable } from './interfaces/i_serializable.js';
@@ -43,9 +42,9 @@ export type FieldValidator<T = any> = (newValue: T) => T | null | undefined;
 /**
  * Abstract class for an editable field.
  *
- * @typeParam T - The value stored on the field.
+ * @template T - The value stored on the field.
  */
-export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IASTNodeLocationWithBlock, IKeyboardAccessible, IRegistrable, ISerializable {
+export declare abstract class Field<T = any> implements IKeyboardAccessible, IRegistrable, ISerializable, IFocusableNode {
     /**
      * To overwrite the default value which is set in **Field**, directly update
      * the prototype.
@@ -70,22 +69,25 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
     protected value_: T | null;
     /** Validation function called when user edits an editable field. */
     protected validator_: FieldValidator<T> | null;
+    /** The ARIA-friendly label representation of this field's type. */
+    protected ariaTypeName: string | null;
     /**
      * Used to cache the field's tooltip value if setTooltip is called when the
      * field is not yet initialized. Is *not* guaranteed to be accurate.
      */
     private tooltip;
-    protected size_: Size;
+    /** This field's dimensions. */
+    private size;
     /**
-     * Holds the cursors svg element when the cursor is attached to the field.
-     * This is null if there is no cursor on the field.
+     * Gets the size of this field. Because getSize() and updateSize() have side
+     * effects, this acts as a shim for subclasses which wish to adjust field
+     * bounds when setting/getting the size without triggering unwanted rendering
+     * or other side effects. Note that subclasses must override *both* get and
+     * set if either is overridden; the implementation may just call directly
+     * through to super, but it must exist per the JS spec.
      */
-    private cursorSvg;
-    /**
-     * Holds the markers svg element when the marker is attached to the field.
-     * This is null if there is no marker on the field.
-     */
-    private markerSvg;
+    protected get size_(): Size;
+    protected set size_(newValue: Size);
     /** The rendered field's SVG group element. */
     protected fieldGroup_: SVGGElement | null;
     /** The rendered field's SVG border element. */
@@ -141,8 +143,8 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * case by default so that SERIALIZABLE is backwards compatible.
      */
     SERIALIZABLE: boolean;
-    /** Mouse cursor style when over the hotspot that initiates the editor. */
-    CURSOR: string;
+    /** The unique ID of this field. */
+    private id_;
     /**
      * @param value The initial value of the field.
      *     Also accepts Field.SKIP_SETUP if you wish to skip setup (only used by
@@ -184,6 +186,77 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      */
     getSourceBlock(): Block | null;
     /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or null if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
+    /**
+     * Sets the ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, set a localized
+     * version of the ARIA representation of the field's type. To that end, the
+     * provided value may contain message references of the form `%{BKY_...}`
+     * (e.g. `%{BKY_MY_FIELD_ARIA_TYPE}`), which are replaced with the
+     * corresponding `Blockly.Msg` value.
+     *
+     * @param ariaTypeName An ARIA representation of the field's type.
+     */
+    setAriaTypeName(ariaTypeName: string): void;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Note that implementations should generally always override this value to
+     * ensure a non-null value is returned. The default implementation relies on
+     * 'getText' which may return an empty string. A null return value from this
+     * function will prompt ARIA label generation to skip the field's value
+     * entirely when there may be a better contextual placeholder to use isstead.
+     *
+     * For example, to avoid hiding an empty text input field from screen reader,
+     * implementations should ensure that if the text is an empty string, this
+     * function would return an appropriate, localized value such as "empty text".
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * @returns An ARIA representation of the field's text, or null if no text is
+     *     currently defined or known for the field.
+     */
+    getAriaValue(): string | null;
+    /**
+     * Computes a descriptive ARIA label to represent this field with configurable
+     * verbosity.
+     *
+     * A 'verbose' label includes type information, if available, whereas a
+     * non-verbose label only contains the field's value.
+     *
+     * Note that this will always return the latest representation of the field's
+     * label which may differ from any previously set ARIA label for the field
+     * itself. Implementations are largely responsible for ensuring that the
+     * field's ARIA label is set correctly at relevant moments in the field's
+     * lifecycle (such as when its value changes).
+     *
+     * Finally, it is never guaranteed that implementations use the label returned
+     * by this method for their actual ARIA label. Some implementations may rely
+     * on other contexts to convey information like the field's value. Example:
+     * checkboxes represent their checked/non-checked status (i.e. value) through
+     * a separate ARIA property.
+     *
+     * If the field's value is empty then it will return a localized placeholder
+     * indicating that its value is empty. If this method returns an empty string,
+     * the output will be ignored when composing the block-level ARIA label. Make
+     * sure you want your label hidden from screenreaders before returning an
+     * empty string.
+     *
+     * @param includeTypeInfo Whether to include the field's type information in
+     *     the returned label, if available.
+     */
+    computeAriaLabel(includeTypeInfo?: boolean): string;
+    /**
      * Initialize everything to render this field. Override
      * methods initModel and initView rather than this method.
      *
@@ -203,12 +276,25 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
     /**
      * Defines whether this field should take up the full block or not.
      *
-     * Be cautious when overriding this function. It may not work as you expect /
-     * intend because the behavior was kind of hacked in. If you are thinking
-     * about overriding this function, post on the forum with your intended
-     * behavior to see if there's another approach.
+     * This is typically only done for certain kinds of fields and in certain
+     * renderers. You should only override this if you're sure your field will
+     * render correctly in zelos and other renderers that support full-block
+     * fields.
+     *
+     * Blocks that contain only a single field that is a full-block-field
+     * have a special appearance in some renderers and their behavior is
+     * unique, because we pretend that the field is a whole block in some cases.
+     * This is hacky and you should use caution when attempting to do anything
+     * with this method.
      */
-    protected isFullBlockField(): boolean;
+    isFullBlockField(): boolean;
+    /**
+     * Returns whether this field is a static text label (ex. FieldLabel).
+     * Used internally instead of `instanceof FieldLabel` to avoid circular imports.
+     *
+     * @internal
+     */
+    isLabelField(): boolean;
     /**
      * Create a field border rect element. Not to be overridden by subclasses.
      * Instead modify the result of the function inside initView, or create a
@@ -216,9 +302,11 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      */
     protected createBorderRect_(): void;
     /**
-     * Create a field text element. Not to be overridden by subclasses. Instead
+     * Create a field text element. Not to be overridden by subclasses. Instead,
      * modify the result of the function inside initView, or create a separate
-     * function to call.
+     * function to call. Aria state is hidden; use the aria label for the field
+     * and/or containing block to expose content to screen readers. Text content
+     * for custom blocks can be set after creation.
      */
     protected createTextElement_(): void;
     /**
@@ -231,7 +319,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * called by Blockly.Xml.
      *
      * @param fieldElement The element containing info about the field's state.
-     * @internal
      */
     fromXml(fieldElement: Element): void;
     /**
@@ -240,7 +327,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * @param fieldElement The element to populate with info about the field's
      *     state.
      * @returns The element containing info about the field's state.
-     * @internal
      */
     toXml(fieldElement: Element): Element;
     /**
@@ -254,7 +340,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      *     {@link https://developers.devsite.google.com/blockly/guides/create-custom-blocks/fields/customizing-fields/creating#full_serialization_and_backing_data | field serialization docs}
      *     for more information.
      * @returns JSON serializable state.
-     * @internal
      */
     saveState(_doFullSerialization?: boolean): any;
     /**
@@ -262,7 +347,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * called by the serialization system.
      *
      * @param state The state we want to apply to the field.
-     * @internal
      */
     loadState(state: any): void;
     /**
@@ -287,8 +371,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
     loadLegacyState(callingClass: FieldProto, state: any): boolean;
     /**
      * Dispose of all DOM objects and events belonging to this editable field.
-     *
-     * @internal
      */
     dispose(): void;
     /** Add or remove the UI indicating if this field is editable or not. */
@@ -540,8 +622,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * rerender this field and adjust for any sizing changes.
      * Other fields on the same block will not rerender, because their sizes have
      * already been recorded.
-     *
-     * @internal
      */
     forceRerender(): void;
     /**
@@ -651,14 +731,11 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * Subclasses may override this.
      *
      * @returns True if this field has any variable references.
-     * @internal
      */
     referencesVariables(): boolean;
     /**
      * Refresh the variable name referenced by this field if this field references
      * variables.
-     *
-     * @internal
      */
     refreshVariableName(): void;
     /**
@@ -676,38 +753,43 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      */
     getFlipRtl(): boolean;
     /**
-     * Returns whether or not the field is tab navigable.
-     *
-     * @returns True if the field is tab navigable.
-     */
-    isTabNavigable(): boolean;
-    /**
      * Handles the given keyboard shortcut.
      *
      * @param _shortcut The shortcut to be handled.
      * @returns True if the shortcut has been handled, false otherwise.
      */
     onShortcut(_shortcut: KeyboardShortcut): boolean;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
     /**
-     * Add the cursor SVG to this fields SVG group.
-     *
-     * @param cursorSvg The SVG root of the cursor to be added to the field group.
-     * @internal
+     * Handles the user acting on this field via keyboard navigation.
+     * Shows and focuses the field editor.
      */
-    setCursorSvg(cursorSvg: SVGElement): void;
+    performAction(): void;
     /**
-     * Add the marker SVG to this fields SVG group.
+     * Recomputes the aria state and label for this field. Fields are generally hidden
+     * when in blocks in the flyout (except for top-level full-block fields), and
+     * otherwise set to a role of button (indicating they can be clicked to edit)
+     * and given the label returned from their `computeAriaLabel` method.
      *
-     * @param markerSvg The SVG root of the marker to be added to the field group.
-     * @internal
-     */
-    setMarkerSvg(markerSvg: SVGElement): void;
-    /**
-     * Redraw any attached marker or cursor svgs if needed.
+     * Subclasses can override this in order to change the role or label, but they must
+     * ensure they keep the correct behavior for fields in flyout blocks.
      *
-     * @internal
+     * This method will return a boolean indicating if the element is displayed in the
+     * aria tree or not. This can be used by subclasses to determine whether or not
+     * to continue customizing the role and label (hidden elements should not have labels).
+     *
+     * @returns true if the element is in the accessibility tree, false if the aria state is hidden
      */
-    updateMarkers_(): void;
+    recomputeAriaContext(): boolean;
     /**
      * Subclasses should reimplement this method to construct their Field
      * subclass from a JSON arg object.
@@ -725,6 +807,7 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
  */
 export interface FieldConfig {
     tooltip?: string;
+    ariaTypeName?: string;
 }
 /**
  * Represents an object that has all the prototype properties of the `Field`

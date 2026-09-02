@@ -34,7 +34,7 @@ export declare class Renderer extends BaseRenderer {
     init(theme: Theme, opt_rendererOverrides?: {
         [rendererConstant: string]: any;
     }): void;
-    refreshDom(svg: SVGElement, theme: Theme): void;
+    refreshDom(svg: SVGElement, theme: Theme, injectionDiv: HTMLElement): void;
     makeConstants_(): ConstantProvider;
     /**
      * Create a new instance of the renderer's render info object.

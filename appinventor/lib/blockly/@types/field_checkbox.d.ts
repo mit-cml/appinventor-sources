@@ -8,7 +8,6 @@
  *
  * @class
  */
-import './events/events_block_change.js';
 import { Field, FieldConfig, FieldValidator } from './field.js';
 type BoolString = 'TRUE' | 'FALSE';
 type CheckboxBool = BoolString | boolean;
@@ -24,10 +23,6 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      * are not. Editable fields should also be serializable.
      */
     SERIALIZABLE: boolean;
-    /**
-     * Mouse cursor style when over the hotspot that initiates editability.
-     */
-    CURSOR: string;
     /**
      * NOTE: The default value is set in `Field`, so maintain that value instead
      * of overwriting it here or in the constructor.
@@ -119,6 +114,29 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      */
     private convertValueToBool;
     /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * The FieldCheckbox implementation is not used for the actual ARIA label of
+     * the field, since the checked state is already included in the ARIA checked
+     * state, but it is used for the ARIA label of its source block.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string | null;
+    /**
      * Construct a FieldCheckbox from a JSON arg object.
      *
      * @param options A JSON object with options (checked).
@@ -127,6 +145,10 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      * @internal
      */
     static fromJson(options: FieldCheckboxFromJsonConfig): FieldCheckbox;
+    /**
+     * Customizes the label and sets additional aria state.
+     */
+    recomputeAriaContext(): boolean;
 }
 /**
  * Config options for the checkbox field.

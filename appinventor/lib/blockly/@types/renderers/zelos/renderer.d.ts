@@ -4,17 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../../block_svg.js';
-import { InsertionMarkerManager } from '../../insertion_marker_manager.js';
-import type { Marker } from '../../keyboard_nav/marker.js';
 import type { RenderedConnection } from '../../rendered_connection.js';
 import type { BlockStyle } from '../../theme.js';
-import type { WorkspaceSvg } from '../../workspace_svg.js';
 import type { RenderInfo as BaseRenderInfo } from '../common/info.js';
 import { Renderer as BaseRenderer } from '../common/renderer.js';
 import { ConstantProvider } from './constants.js';
 import { Drawer } from './drawer.js';
 import { RenderInfo } from './info.js';
-import { MarkerSvg } from './marker_svg.js';
 import { PathObject } from './path_object.js';
 /**
  * The zelos renderer. This renderer emulates Scratch-style and MakeCode-style
@@ -51,14 +47,6 @@ export declare class Renderer extends BaseRenderer {
      */
     protected makeDrawer_(block: BlockSvg, info: BaseRenderInfo): Drawer;
     /**
-     * Create a new instance of the renderer's cursor drawer.
-     *
-     * @param workspace The workspace the cursor belongs to.
-     * @param marker The marker.
-     * @returns The object in charge of drawing the marker.
-     */
-    makeMarkerDrawer(workspace: WorkspaceSvg, marker: Marker): MarkerSvg;
-    /**
      * Create a new instance of a renderer path object.
      *
      * @param root The root SVG element.
@@ -74,9 +62,11 @@ export declare class Renderer extends BaseRenderer {
      */
     getConstants(): ConstantProvider;
     /**
-     * @deprecated v10 - This function is no longer respected. A custom
-     *    IConnectionPreviewer may be able to fulfill the functionality.
+     * Determine whether or not to highlight a connection.
+     *
+     * @param connection The connection to determine whether or not to highlight.
+     * @returns True if we should highlight the connection.
      */
-    getConnectionPreviewMethod(closest: RenderedConnection, local: RenderedConnection, topBlock: BlockSvg): InsertionMarkerManager.PREVIEW_TYPE;
+    shouldHighlightConnection(connection: RenderedConnection): boolean;
 }
 //# sourceMappingURL=renderer.d.ts.map

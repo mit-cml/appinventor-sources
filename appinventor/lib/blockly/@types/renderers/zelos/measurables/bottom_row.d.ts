@@ -21,6 +21,6 @@ export declare class BottomRow extends BaseBottomRow {
     /** Render a round corner unless the block has an output connection. */
     hasLeftSquareCorner(block: BlockSvg): boolean;
     /** Render a round corner unless the block has an output connection. */
-    hasRightSquareCorner(block: BlockSvg): false;
+    hasRightSquareCorner(block: BlockSvg): boolean;
 }
 //# sourceMappingURL=bottom_row.d.ts.map

@@ -11,6 +11,7 @@ import { Connection } from './connection.js';
  * up during rendering.
  */
 export declare class NextConnection extends Connection {
+    private nextConnection;
     /**
      * @param constants The rendering constants provider.
      * @param connectionModel The connection object on the block that this

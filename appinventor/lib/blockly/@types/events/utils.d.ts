@@ -129,13 +129,9 @@ declare function enqueueEvent(event: Abstract): void;
  * cause them to be reordered.
  *
  * @param queue Array of events.
- * @param forward True if forward (redo), false if backward (undo).
- *     This parameter is deprecated: true is now the default and
- *     calling filter with it set to false will in future not be
- *     supported.
  * @returns Array of filtered events.
  */
-export declare function filter(queue: Abstract[], forward?: boolean): Abstract[];
+export declare function filter(queue: Abstract[]): Abstract[];
 /**
  * Modify pending undo events so that when they are fired they don't land
  * in the undo stack.  Called by Workspace.clearUndo.
