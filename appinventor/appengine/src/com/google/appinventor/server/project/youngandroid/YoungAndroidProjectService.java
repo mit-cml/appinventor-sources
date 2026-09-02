@@ -82,10 +82,13 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -548,6 +551,18 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     for (String buildOutputFile : buildOutputFiles) {
       storageIo.deleteFile(userId, projectId, buildOutputFile);
     }
+
+    // A partially failed screen deletion can leave behind a vestigial YAIL file
+    // with no corresponding .scm/.bky files. The client does not show such a
+    // screen, so the user has no way to remove the file, and sending it to the
+    // buildserver makes the build fail. Delete any orphaned YAIL files before
+    // packaging the project.
+    List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+    for (String yailFile : findVestigialYailFiles(sourceFiles)) {
+      LOG.warning("Deleting vestigial YAIL file " + yailFile + " in project " + projectId);
+      storageIo.deleteFile(userId, projectId, yailFile);
+    }
+
     URL buildServerUrl = null;
     ProjectSourceZip zipFile = null;
     try {
@@ -664,6 +679,34 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       return new RpcResult(false, "", wrappedException.getMessage());
     }
     return new RpcResult(true, "Building " + projectName, "");
+  }
+
+  /**
+   * Returns the YAIL files in {@code fileNames} that have neither a
+   * corresponding form (.scm) file nor a corresponding blocks (.bky) file.
+   *
+   * <p>A YAIL file can be orphaned by a partially failed screen deletion.
+   * The client does not show such a screen, so the user cannot remove the
+   * file, and the buildserver fails the build when it receives a YAIL file
+   * for a screen that does not otherwise exist.
+   *
+   * @param fileNames the names of the project's source files
+   * @return the names of the vestigial YAIL files, possibly empty
+   */
+  @VisibleForTesting
+  static List<String> findVestigialYailFiles(List<String> fileNames) {
+    Set<String> files = new HashSet<>(fileNames);
+    List<String> vestigialYailFiles = new ArrayList<>();
+    for (String fileName : fileNames) {
+      if (fileName.startsWith(SRC_FOLDER + "/") && fileName.endsWith(YAIL_FILE_EXTENSION)) {
+        String base = fileName.substring(0, fileName.length() - YAIL_FILE_EXTENSION.length());
+        if (!files.contains(base + FORM_PROPERTIES_EXTENSION)
+            && !files.contains(base + BLOCKLY_SOURCE_EXTENSION)) {
+          vestigialYailFiles.add(fileName);
+        }
+      }
+    }
+    return vestigialYailFiles;
   }
 
   public RpcResult loginToGallery(String userId) {
