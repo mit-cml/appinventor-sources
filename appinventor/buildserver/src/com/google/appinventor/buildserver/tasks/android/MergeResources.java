@@ -32,7 +32,7 @@ public class MergeResources implements AndroidTask {
         context.getPaths().getDeployDir().getAbsolutePath() + File.separator
             + context.getProject().getProjectName() + ".ap_"));
 
-    PngCruncher cruncher = new AaptCruncher(context.getResources().aapt(), null, null);
+    PngCruncher cruncher = new AaptCruncher(context.getResources().aapt2(), null, null);
     if (!context.getComponentInfo().getExplodedAarLibs().mergeResources(
         context.getPaths().getMergedResDir(), context.getPaths().getResDir(), cruncher)) {
       return TaskResult.generateError("Could not merge resources");
