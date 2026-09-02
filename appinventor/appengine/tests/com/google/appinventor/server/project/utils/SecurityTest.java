@@ -8,29 +8,27 @@ package com.google.appinventor.server.project.utils;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.server.encryption.EncryptionException;
-import com.google.appinventor.server.encryption.KeyczarEncryptor;
+import com.google.appinventor.server.encryption.EncryptionStrategy;
+import com.google.appinventor.server.encryption.Encryptor;
 import com.google.appinventor.server.storage.StorageIo;
-
 import junit.framework.TestCase;
 
-/**
- * Tests for {@link Security}.
- *
- */
+/** Tests for {@link Security}. */
 public class SecurityTest extends TestCase {
 
-  public static final String KEYSTORE_ROOT_PATH = TestUtils.APP_INVENTOR_ROOT_DIR +
-      "/appengine/build/war/";  // must end with a slash
+  public static final String KEYSTORE_KEY =
+      TestUtils.APP_INVENTOR_ROOT_DIR + "/appengine/build/war/WEB-INF/keystore";
+
+  private static final Encryptor encryptor = EncryptionStrategy.WRITE;
 
   @Override
   public void setUp() {
-    KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
+    encryptor.setKeyPath(KEYSTORE_KEY);
   }
 
   /**
-   * Tests {@link Security#encryptUserAndProjectId(long, long)},
-   * {@link Security#decryptUserId(String)} and
-   * {@link Security#decryptProjectId(String)}.
+   * Tests {@link Security#encryptUserAndProjectId(long, long)}, {@link
+   * Security#decryptUserId(String)} and {@link Security#decryptProjectId(String)}.
    */
   public void testUserAndProjectIdEncryption() throws EncryptionException {
     // Test same IDs for user and project

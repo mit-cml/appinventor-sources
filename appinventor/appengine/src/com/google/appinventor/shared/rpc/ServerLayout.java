@@ -66,6 +66,12 @@ public class ServerLayout {
   public static final String ADMIN_INFO_SERVICE = "admininfo";
 
   /**
+   * Relative path of the System Info Service within ODE2
+   */
+
+  public static final String SYSTEM_INFO_SERVICE = "systeminfo";
+
+  /**
    * Relative path of the
    * {@link com.google.appinventor.server.TosServlet}
    * within the ODE GWT module.
@@ -141,6 +147,12 @@ public class ServerLayout {
    * for uploading a project
    */
   public static final String UPLOAD_PROJECT = "project";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.UploadServlet}
+   * for replacing a project
+   */
+  public static final String REPLACE_PROJECT = "replace";
 
   /**
    * Relative path within {@link com.google.appinventor.server.UploadServlet}
