@@ -95,9 +95,83 @@ class ListViewTests: AppInventorTestCase {
       XCTFail("Expected ListView to contain a table view")
       return
     }
-    XCTAssertGreaterThan(listView.tableView(tableView, heightForRowAt: IndexPath(row: 0, section: 0)), 44.0)
+    XCTAssertGreaterThan(
+      listView.tableView(tableView, estimatedHeightForRowAt: IndexPath(row: 0, section: 0)), 44.0)
   }
-  
+
+  func testRowsSizeFromTheirOwnConstraints() {
+    form.clear()
+    let listView = ListView(form)
+    form.onAttach()
+
+    guard let tableView = listView.view.subviews.first(where: { $0 is UITableView }) as? UITableView else {
+      XCTFail("Expected ListView to contain a table view")
+      return
+    }
+    XCTAssertEqual(tableView.rowHeight, UITableView.automaticDimension)
+    // Implementing heightForRowAt makes UIKit ignore rowHeight, so a row would be pinned to a
+    // height that knows nothing about ImageHeight and a tall image would squeeze out the labels.
+    XCTAssertFalse(
+      listView.responds(to: #selector(UITableViewDelegate.tableView(_:heightForRowAt:))))
+  }
+
+  func testAutomaticHeightFollowsImageHeight() {
+    testList.ListViewLayout = 5
+    testList.Elements = ["apple", "banana"] as [AnyObject]
+
+    let atDefaultImageSize = testList.view.intrinsicContentSize.height
+    testList.ImageHeight = 500
+
+    // A row is pinned to ImageHeight / 4, so rows grow with the image. The ListView's automatic
+    // height has to grow with them, or tall images render correctly inside a container still
+    // sized for the default 200px image.
+    XCTAssertGreaterThan(testList.view.intrinsicContentSize.height, atDefaultImageSize)
+  }
+
+  func testImagelessRowStillGetsItsStackView() {
+    testList.ListViewLayout = 3
+    testList.Elements = ["apple", "banana"] as [AnyObject]
+
+    let tableView = visibleTableView(for: testList)
+    let cell = testList.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))
+
+    // The image layouts build their stack whether or not an image loaded. The stack is what pins
+    // the row's content to the contentView, and now that rows size themselves, a row with nothing
+    // pinned has no height to compute.
+    XCTAssertEqual(1, cell.contentView.subviews.filter { $0 is UIStackView }.count)
+  }
+
+  func testReusedRowsDoNotStackUpTheirSubviews() {
+    testList.ListViewLayout = 2
+    testList.Height = 88
+    testList.Elements = (1...40).map { "item \($0)" } as [AnyObject]
+
+    form.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    form.onAttach()
+    form.view.setNeedsLayout()
+    form.view.layoutIfNeeded()
+
+    let tableView = visibleTableView(for: testList)
+    tableView.reloadData()
+    tableView.layoutIfNeeded()
+    tableView.contentOffset = CGPoint(x: 0, y: 600)
+    tableView.layoutIfNeeded()
+    // Scrolling back up is what forces reuse. On the way down every row is new, so UIKit builds
+    // fresh cells and nothing is recycled; coming back up binds the top rows into the cells the
+    // bottom rows just released.
+    tableView.contentOffset = .zero
+    tableView.layoutIfNeeded()
+
+    // Guard against the assertion below passing because nothing was laid out at all.
+    XCTAssertFalse(tableView.visibleCells.isEmpty)
+    // A recycled cell must not keep the stack from its previous bind: a stale stack holds on to
+    // its pins to the contentView's top and bottom and fights the live one over the row's height.
+    for cell in tableView.visibleCells {
+      XCTAssertEqual(1, cell.contentView.subviews.filter { $0 is UIStackView }.count)
+    }
+  }
+
+
   func testElementAsDictItems() {
     testList.Elements = [["Text1": "MainText","Text2": "DetailText", "Image": "Image"] as YailDictionary]
     XCTAssertEqual(1, testList.Elements.count)
