@@ -47,7 +47,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
 
   private static final Logger LOG = Logger.getLogger(ProjectList.class.getName());
 
-  private enum SortField {
+  protected enum SortField {
     NAME,
     DATE_CREATED,
     DATE_MODIFIED,
@@ -158,7 +158,7 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     }
   }
 
-  private void changeSortOrder(SortField clickedSortField) {
+  protected void changeSortOrder(SortField clickedSortField) {
     if (sortField != clickedSortField) {
       sortField = clickedSortField;
       sortOrder = SortOrder.ASCENDING;
