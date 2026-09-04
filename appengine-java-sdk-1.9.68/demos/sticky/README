@@ -1,0 +1,37 @@
+Google App Engine Java Runtime SDK - Sticky Demo
+
+An example of a purely Ajax style application using Google App Engine and
+Google Web Toolkit.
+
+
+
+
+To compile and run this sample in 3 easy steps:
+
+(1) DOWNLOAD GWT 2.0 or later from:
+http://code.google.com/webtoolkit/
+
+
+(2) COMPILE AND RUN:
+ant runserver
+
+
+(3) DANCE WITH YOUR CUBE MATE:
+* This step is optional.
+
+
+
+
+To import this sample into eclipse (with the Google Plugin for Eclipse) in
+3 equally easy steps:
+
+(1) COPY REQUIRED JARS BY RUNNING:
+ant copyjars
+
+(2) IMPORT THE PROJECT INTO ECLIPSE:
+Select File > Import...
+Choose Existing Projects into Workspace
+Select the 'sticky' directory in the file chooser.
+
+(3) SING TO YOUR CUBE MATE:
+* This step is also optional.

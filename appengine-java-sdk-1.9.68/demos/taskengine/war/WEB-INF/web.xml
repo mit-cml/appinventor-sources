@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Tasks.html</welcome-file>
+  </welcome-file-list>
+
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>tasksApi</servlet-name>
+    <servlet-class>com.google.appengine.demos.taskengine.server.TasksApiImpl</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>tasksApi</servlet-name>
+    <url-pattern>/tasks/api</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>all</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+  </security-constraint>
+</web-app>

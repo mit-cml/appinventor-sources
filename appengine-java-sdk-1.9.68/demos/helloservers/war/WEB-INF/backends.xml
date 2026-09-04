@@ -1,0 +1,23 @@
+<backends>
+  <backend name="small">
+    <class>B1</class>
+    <options>
+      <public>true</public>
+    </options>
+  </backend>
+
+  <backend name="medium">
+    <class>B2</class>
+    <instances>3</instances>
+    <options>
+      <fail-fast>true</fail-fast>
+    </options>
+  </backend>
+
+  <backend name="big">
+    <class>B4</class>
+    <options>
+      <dynamic>true</dynamic>
+    </options>
+  </backend>
+</backends>
