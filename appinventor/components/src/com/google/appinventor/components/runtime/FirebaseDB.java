@@ -244,8 +244,7 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
    * @return the URL for this Firebase
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-    description = "Gets the URL for this FirebaseDB.",
-    userVisible = false)
+    description = "Gets the URL for this FirebaseDB.")
   public String FirebaseURL() {
     if (useDefault) {
       return "DEFAULT";
@@ -785,6 +784,22 @@ public class FirebaseDB extends AndroidNonvisibleComponent implements Component 
         }
       };
     firebaseTransaction(toRun, firebaseChild, null);
+  }
+
+  @SimpleFunction(description = "Take the database online.")
+  public void GoOnline() {
+    if (myFirebase != null) {
+      myFirebase.goOnline();
+    } else {
+      connectFirebase();
+    }
+  }
+
+  @SimpleFunction(description = "Take the database offline. This effectively disables realtime updates.")
+  public void GoOffline() {
+    if (myFirebase != null) {
+      myFirebase.goOffline();
+    }
   }
 
   private void firebaseTransaction(final Transactional toRun, Firebase firebase, final Runnable whenDone) {
