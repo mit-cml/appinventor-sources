@@ -22,6 +22,13 @@ public class CompanionUpdateAction implements Command {
       return;
     }
     DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    
+    // Check if emulator is running
+    if (!screen.blocksEditor.isEmulatorRunning()) {
+      Window.alert(MESSAGES.companionUpdateNeedEmulator());
+      return;
+    }
+    
     screen.blocksEditor.updateCompanion();
   }
 }
