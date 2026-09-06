@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.user.SplashConfig;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -147,6 +148,16 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
+
+  /**
+   * Returns the ids of the projects the user has moved to the trash. The trash is a folder in the
+   * user's folder tree rather than a flag on the project, so a caller that needs to skip trashed
+   * projects has to ask for them separately from {@link #getProjects(String)}.
+   *
+   * @param userId  user ID
+   * @return  list of project ids in the trash, empty if the user has no folder tree yet
+   */
+  List<Long> getTrashProjectIds(String userId);
 
   /**
    * Returns an array with the user's project's names
@@ -593,6 +604,71 @@ public interface StorageIo {
   StoredData.PWData findPWData(String uid);
   void cleanuppwdata();
 
+  // LTI 1.3 integration. The platform registry, the account link, the launch
+  // nonce, the per assignment fork, and the per project grade context.
+
+  StoredData.LtiPlatformData getLtiPlatform(String issuer);
+
+  List<StoredData.LtiPlatformData> getLtiPlatforms();
+
+  void storeLtiPlatform(String issuer, String clientId, String authEndpoint,
+      String tokenEndpoint, String jwksEndpoint, String deploymentId, boolean enabled);
+
+  String getLtiUserId(String issuer, String subject);
+
+  void storeLtiUserLink(String issuer, String subject, String userId);
+
+  // Marks a launch nonce used, returning true only the first time it is seen.
+  boolean useLtiNonce(String nonce);
+
+  void cleanupLtiNonces();
+
+  // The project a user forked for one assignment, or 0 when there is none yet.
+  long getLtiForkProject(String userId, String issuer, String deploymentId,
+      String resourceLinkId);
+
+  void storeLtiForkProject(String userId, String issuer, String deploymentId,
+      String resourceLinkId, long projectId);
+
+  StoredData.LtiGradeContextData getLtiGradeContext(long projectId);
+
+  void storeLtiGradeContext(long projectId, String userId, String issuer, String lineItemUrl,
+      String ltiUserSub);
+
+  StoredData.LtiSubmissionData getLtiSubmission(long sourceProjectId);
+
+  void storeLtiSubmission(long sourceProjectId, String userId, long snapshotProjectId,
+      String snapshotOwnerId, Date submittedAt);
+
+  /**
+   * Returns the template project an assignment is fixed to, or 0 if no learner has opened it yet.
+   *
+   * @param issuer  platform issuer
+   * @param deploymentId  platform deployment
+   * @param resourceLinkId  the assignment within that deployment
+   * @return  the fixed template project id, or 0
+   */
+  long getLtiAssignmentTemplate(String issuer, String deploymentId, String resourceLinkId);
+
+  /**
+   * Fixes the template an assignment copies from, so every learner on it starts from the same
+   * project. The first call for an assignment stores the given project and returns it, and every
+   * call after that returns the stored one and leaves it alone, which is what stops a template
+   * selected later from reaching learners who join an assignment already under way.
+   *
+   * @param issuer  platform issuer
+   * @param deploymentId  platform deployment
+   * @param resourceLinkId  the assignment within that deployment
+   * @param templateProjectId  the project to fix the assignment to if it has none yet
+   * @return  the project the assignment is fixed to, which is the argument only on the first call
+   */
+  long pinLtiAssignmentTemplate(String issuer, String deploymentId, String resourceLinkId,
+      long templateProjectId);
+
+  List<StoredData.LtiKeyData> getLtiKeys();
+
+  void storeLtiKey(String kid, byte[] privateKey, byte[] publicKey);
+
   // Routines for user admin interface
 
   List<AdminUser> searchUsers(String partialEmail);
@@ -680,5 +756,4 @@ public interface StorageIo {
   String getIosExtensionsConfig();
 
 }
-
 
