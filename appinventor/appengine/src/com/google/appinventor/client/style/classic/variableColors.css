@@ -309,6 +309,12 @@ body {
   background-color: clr-primary-700;
 }
 
+.gwt-Tree .gwt-TreeItem.ode-AssetItem-dragging span,
+.gwt-Tree .gwt-TreeItem.ode-AssetItem-dragging span:hover {
+  background-color: clr-primary-700;
+  opacity: 0.85;
+}
+
 .gwt-Tree-focused {
   outline: solid 2px border-color;
 }
