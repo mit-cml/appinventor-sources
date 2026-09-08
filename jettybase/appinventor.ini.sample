@@ -95,7 +95,7 @@ logo.url = http://appinventor.mit.edu
 guide.url = http://appinventor.mit.edu/explore/library
 reference.components.url = /reference/components/
 
-jdbc.url = jdbc:postgresql://localhost/appinventor
+jdbc.url = jdbc:postgresql://localhost/appinventor_db
 jdbc.user = appinventor
 jdbc.password = appinventor
 
