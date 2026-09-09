@@ -197,6 +197,11 @@ public final class MockLabel extends MockVisibleComponent implements DesignerCha
   }
 
   @Override
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed before component removal.
+  }
+
+  @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
 
   }
