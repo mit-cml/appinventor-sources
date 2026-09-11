@@ -403,7 +403,7 @@
 	"Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_TITLECASE": "titlecase",
 	"Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE": "Returns a copy of its text string argument converted to uppercase.",
 	"Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_DOWNCASE": "Returns a copy of its text string argument converted to lowercase.",
-	"Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_TITLECASE":"Returns a copy of its text string argument converted to titlecase.",
+	"Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_TITLECASE": "Returns a copy of its text string argument converted to titlecase.",
 	"Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM": "trim",
 	"Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP": "Returns a copy of its text string arguments with any\nleading or trailing spaces removed.",
 	"Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT": "starts at",
