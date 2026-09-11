@@ -149,7 +149,8 @@ AI.Yail.forBlock['text_changeCase'] = function(block, generator) {
 
 AI.Yail.forBlock['text_changeCase'].OPERATORS = {
   UPCASE: ['string-to-upper-case', 'upcase', AI.Yail.ORDER_NONE],
-  DOWNCASE: ['string-to-lower-case', 'downcase', AI.Yail.ORDER_NONE]
+  DOWNCASE: ['string-to-lower-case', 'downcase', AI.Yail.ORDER_NONE],
+  TITLECASE: ['string-to-title-case', 'titlecase', AI.Yail.ORDER_NONE]
 };
 
 AI.Yail.forBlock['text_starts_at'] = function(block, generator) {
