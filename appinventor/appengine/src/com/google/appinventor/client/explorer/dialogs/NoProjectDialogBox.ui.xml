@@ -7,10 +7,10 @@
     xmlns:g='urn:import:com.google.gwt.user.client.ui'
     ui:generateFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
     ui:generateKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
-    ui:baseMessagesInterface="com.google.appinventor.client.OdeMessages"
     ui:generateLocales="default">
 
   <ui:with type="com.google.appinventor.client.Images" field="res"/>
+  <ui:with field="messages" type="com.google.appinventor.client.explorer.dialogs.NoProjectDialogBoxMessages"/>
 
   <g:HTMLPanel>
     <g:Button ui:field='topInvisible' styleName="FocusTrap"/>

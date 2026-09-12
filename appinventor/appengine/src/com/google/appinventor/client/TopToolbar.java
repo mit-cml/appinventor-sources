@@ -88,7 +88,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton settingsDropDown;
   @UiField protected DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
-  @UiField (provided = true) protected Boolean isAvailable;
+  @UiField (provided = true) public Boolean isAvailable;
 
   protected boolean readOnly;
 

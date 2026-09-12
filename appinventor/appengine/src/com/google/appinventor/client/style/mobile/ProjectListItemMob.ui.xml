@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 MIT, All rights reserved -->
+<!-- Released under the Apache License, Version 2.0 -->
+<!-- http://www.apache.org/licenses/LICENSE-2.0 -->
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:ai="urn:import:com.google.appinventor.client.widgets"
+             ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
+             ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
+             ui:generateLocales="default">
+    <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
+    <g:FlowPanel styleName="ode-ProjectRowUnHighlighted ode-ProjectItemMobile" ui:field="container">
+        <g:FlowPanel styleName="ode-ProjectItemContent">
+            <g:FlowPanel styleName="ode-ProjectItemLeft">
+                <g:CheckBox ui:field='checkBox' styleName='gwt-CheckBox ode-ProjectCheckBox'/>
+                <g:FocusPanel ui:field='projectnameFocusPanel' styleName='ode-ProjectNameFocusPanel'>
+                    <g:Label ui:field='nameLabel' styleName='gwt-Label ode-ProjectFieldLabel ode-ProjectNameLabel'/>
+                </g:FocusPanel>
+            </g:FlowPanel>
+            <g:FlowPanel styleName="ode-ProjectItemRight">
+                <ai:DropDownButton ui:field="dateDropdown" styleName="ode-ProjectDateDropdown" icon="info"/>
+            </g:FlowPanel>
+        </g:FlowPanel>
+        <g:Label ui:field='dateCreatedLabel' styleName='gwt-Label ode-ProjectFieldLabel' visible="false"/>
+        <g:Label ui:field='dateModifiedLabel' styleName='gwt-Label ode-ProjectFieldLabel' visible="false"/>
+    </g:FlowPanel>
+</ui:UiBinder>
