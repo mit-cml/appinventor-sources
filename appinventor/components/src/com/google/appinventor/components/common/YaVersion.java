@@ -1280,7 +1280,10 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 11:
   // - Added TextAlignmentMain property
   // - Added TextAlignmentDetail property
-  public static final int LISTVIEW_COMPONENT_VERSION = 11;
+  // For LISTVIEW_COMPONENT_VERSION 12:
+  // - Made the MultiSelect property visible in the designer and the blocks
+  // - Added SelectedItems property
+  public static final int LISTVIEW_COMPONENT_VERSION = 12;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
