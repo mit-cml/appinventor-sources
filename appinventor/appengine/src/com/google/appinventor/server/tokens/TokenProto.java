@@ -511,6 +511,23 @@ public final class TokenProto {
        * <code>DELETEACCOUNT = 21;</code>
        */
       DELETEACCOUNT(21),
+      /**
+       * <pre>
+       * Note: Purposely using a high number as this is an
+       * infrequent event
+       * </pre>
+       *
+       * <code>GETPROJECTS = 22;</code>
+       */
+      GETPROJECTS(22),
+      /**
+       * <pre>
+       * Check the validity of the account in the uuid field
+       * </pre>
+       *
+       * <code>CHECKACCOUNT = 23;</code>
+       */
+      CHECKACCOUNT(23),
       ;
 
       static {
@@ -598,6 +615,23 @@ public final class TokenProto {
        * <code>DELETEACCOUNT = 21;</code>
        */
       public static final int DELETEACCOUNT_VALUE = 21;
+      /**
+       * <pre>
+       * Note: Purposely using a high number as this is an
+       * infrequent event
+       * </pre>
+       *
+       * <code>GETPROJECTS = 22;</code>
+       */
+      public static final int GETPROJECTS_VALUE = 22;
+      /**
+       * <pre>
+       * Check the validity of the account in the uuid field
+       * </pre>
+       *
+       * <code>CHECKACCOUNT = 23;</code>
+       */
+      public static final int CHECKACCOUNT_VALUE = 23;
 
 
       public final int getNumber() {
@@ -631,6 +665,8 @@ public final class TokenProto {
           case 8: return SSOLOGIN3;
           case 20: return NOOP;
           case 21: return DELETEACCOUNT;
+          case 22: return GETPROJECTS;
+          case 23: return CHECKACCOUNT;
           default: return null;
         }
       }
@@ -4188,7 +4224,7 @@ public final class TokenProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013token.proto\022\006tokens\"\367\003\n\005token\022*\n\007comma" +
+      "\n\013token.proto\022\006tokens\"\232\004\n\005token\022*\n\007comma" +
       "nd\030\001 \002(\0162\031.tokens.token.CommandType\022\n\n\002t" +
       "s\030\002 \001(\004\022\014\n\004uuid\030\003 \001(\t\022\021\n\tprojectid\030\004 \001(\004" +
       "\022\014\n\004name\030\005 \001(\t\022\024\n\014oneProjectId\030\006 \001(\004\022\020\n\010" +
@@ -4196,15 +4232,16 @@ public final class TokenProto {
       "ayprojectname\030\026 \001(\t\022\032\n\022displayaccountnam" +
       "e\030\027 \001(\t\022\022\n\nbackpackid\030\030 \001(\t\022\021\n\tclassname" +
       "\030\031 \001(\t\022\020\n\010vendorid\030\032 \001(\t\022\024\n\014refreshtoken" +
-      "\030\033 \001(\t\022\014\n\004anon\030\034 \001(\010\"\270\001\n\013CommandType\022\014\n\010" +
+      "\030\033 \001(\t\022\014\n\004anon\030\034 \001(\010\"\333\001\n\013CommandType\022\014\n\010" +
       "SSOLOGIN\020\000\022\017\n\013SHOWPROJECT\020\001\022\021\n\rCREATEACC" +
       "OUNT\020\002\022\021\n\rCREATEPROJECT\020\003\022\n\n\006LOGOUT\020\004\022\r\n" +
       "\tSSOLOGIN2\020\005\022\r\n\tFETCHUUID\020\006\022\016\n\nUUIDRETUR" +
       "N\020\007\022\r\n\tSSOLOGIN3\020\010\022\010\n\004NOOP\020\024\022\021\n\rDELETEAC" +
-      "COUNT\020\025\"U\n\010envelope\022\022\n\007version\030\001 \001(\004:\0011\022" +
-      "\020\n\005keyid\030\002 \001(\004:\0011\022\020\n\010unsigned\030\003 \001(\014\022\021\n\ts" +
-      "ignature\030\004 \001(\014B2\n$com.google.appinventor" +
-      ".server.tokensB\nTokenProto"
+      "COUNT\020\025\022\017\n\013GETPROJECTS\020\026\022\020\n\014CHECKACCOUNT" +
+      "\020\027\"U\n\010envelope\022\022\n\007version\030\001 \001(\004:\0011\022\020\n\005ke" +
+      "yid\030\002 \001(\004:\0011\022\020\n\010unsigned\030\003 \001(\014\022\021\n\tsignat" +
+      "ure\030\004 \001(\014B2\n$com.google.appinventor.serv" +
+      "er.tokensB\nTokenProto"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
