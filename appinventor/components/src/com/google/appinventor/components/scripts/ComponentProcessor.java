@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -30,6 +30,8 @@ import com.google.appinventor.components.annotations.UsesServices;
 import com.google.appinventor.components.annotations.UsesXmls;
 import com.google.appinventor.components.annotations.XmlElement;
 import com.google.appinventor.components.annotations.UsesFeatures;
+import com.google.appinventor.components.annotations.UsesApplicationAttributes;
+import com.google.appinventor.components.annotations.androidmanifest.ApplicationAttribute;
 import com.google.appinventor.components.annotations.androidmanifest.FeatureElement;
 import com.google.appinventor.components.annotations.androidmanifest.ActivityElement;
 import com.google.appinventor.components.annotations.androidmanifest.ReceiverElement;
@@ -42,6 +44,7 @@ import com.google.appinventor.components.annotations.androidmanifest.ServiceElem
 import com.google.appinventor.components.annotations.androidmanifest.ProviderElement;
 import com.google.appinventor.components.annotations.androidmanifest.PathPermissionElement;
 import com.google.appinventor.components.annotations.androidmanifest.GrantUriPermissionElement;
+import com.google.appinventor.components.common.AllowedAttributes;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -107,6 +110,7 @@ import javax.lang.model.util.Types;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
+
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
@@ -1193,6 +1197,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * Uses features required by this component.
      */
     protected final Set<String> features;
+    
+    /**
+     * Uses application attributes required by this component.
+     */
+    protected final Map<String, String> applicationAttributes;
 
     /**
      * TODO(Will): Remove the following field once the deprecated {@link SimpleBroadcastReceiver}
@@ -1288,6 +1297,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       services = Sets.newHashSet();
       xmls = Sets.newHashSet();
       features = Sets.newHashSet();
+      applicationAttributes = Maps.newTreeMap();
 
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
@@ -1656,6 +1666,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         componentInfo.contentProviders.addAll(parentComponent.contentProviders);
         componentInfo.xmls.addAll(parentComponent.xmls);
         componentInfo.features.addAll(parentComponent.features);
+        componentInfo.applicationAttributes.putAll(parentComponent.applicationAttributes);
+
         // TODO(Will): Remove the following call once the deprecated
         //             @SimpleBroadcastReceiver annotation is removed. It should
         //             should remain for the time being because otherwise we'll break
@@ -1882,6 +1894,20 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       }
       for (FeatureElement fe : featureMap.values()) {
         updateWithNonEmptyValue(componentInfo.features, featureElementToString(fe));
+      }
+    }
+
+    // Gather the required application attributes and build JSON object
+    UsesApplicationAttributes usesApplicationAttributes = element.getAnnotation(UsesApplicationAttributes.class);
+    if (usesApplicationAttributes != null) {
+      for (ApplicationAttribute aa : usesApplicationAttributes.attributes()) {
+        if (aa.name() != null && aa.value() != null) {
+          if (AllowedAttributes.getAllowedApplicationAttributes().contains(aa.name())) {
+            componentInfo.applicationAttributes.putIfAbsent(aa.name(), aa.value());
+          } else {
+            messager.printMessage(Kind.ERROR, aa.name() + " is not allowed or invalid attribute!", element);
+          }
+        }
       }
     }
 
