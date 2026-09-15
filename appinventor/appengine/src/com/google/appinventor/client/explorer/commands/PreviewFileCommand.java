@@ -49,8 +49,6 @@ public class PreviewFileCommand extends ChainableCommand {
     dialogBox.setText(node.getName());
     dialogBox.setStylePrimaryName("ode-DialogBox");
 
-    //setting position of dialog box
-    dialogBox.center();
     dialogBox.setAnimationEnabled(true);
 
     //button element
@@ -75,6 +73,10 @@ public class PreviewFileCommand extends ChainableCommand {
     Widget filePreview = generateFilePreview(node);
     dialogPanel.clear();
     dialogPanel.add(filePreview);
+
+    if (filePreview instanceof Image) {
+      ((Image) filePreview).addLoadHandler(event -> dialogBox.center());
+    }
 
     dialogPanel.add(buttonPanel);
     dialogPanel.setWidth("300px");
@@ -105,6 +107,7 @@ public class PreviewFileCommand extends ChainableCommand {
           || fileType.endsWith("bmp") || fileType.endsWith("svg+xml")) {
         Image img = new Image(fileUrl);
         img.getElement().getStyle().setProperty("maxWidth","600px");
+        img.getElement().getStyle().setProperty("maxHeight","70vh");
         return img;
       }
     } else if (StorageUtil.isAudioFile(fileSuffix)) { // Audio Preview
