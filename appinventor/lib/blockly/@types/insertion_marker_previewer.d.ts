@@ -6,12 +6,22 @@
 import { BlockSvg } from './block_svg.js';
 import { IConnectionPreviewer } from './interfaces/i_connection_previewer.js';
 import { RenderedConnection } from './rendered_connection.js';
+import * as blocks from './serialization/blocks.js';
 export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     private readonly workspace;
     private fadedBlock;
     private markerConn;
     private draggedConn;
     private staticConn;
+    private insertionMarker;
+    /**
+     * If set to true, uses a faster method for rendering insertion markers which
+     * will become the default in v14. This rendering method is enabled for the
+     * built-in Thrasos, Geras and Zelos renderers regardless of the state of this
+     * flag. Custom renderers will use the old rendering behavior unless this is
+     * set to true. This field will be removed in v14.
+     */
+    static useFastInsertionMarkers: boolean;
     constructor(draggedBlock: BlockSvg);
     /**
      * Display a connection preview where the draggedCon connects to the
@@ -27,7 +37,7 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     previewReplacement(draggedConn: RenderedConnection, staticConn: RenderedConnection, replacedBlock: BlockSvg): void;
     /**
      * Display a connection preview where the draggedCon connects to the
-     * staticCon, and no block is being relaced.
+     * staticCon, and no block is being replaced.
      *
      * @param draggedConn The connection on the block stack being dragged.
      * @param staticConn The connection not being dragged that we are
@@ -36,6 +46,16 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     previewConnection(draggedConn: RenderedConnection, staticConn: RenderedConnection): void;
     private shouldUseMarkerPreview;
     private previewMarker;
+    /**
+     * Transforms the given block into a JSON representation used to construct an
+     * insertion marker.
+     *
+     * @param block The block to serialize and use as an insertion marker.
+     * @returns A JSON-formatted string corresponding to a serialized
+     *     representation of the given block suitable for use as an insertion
+     *     marker.
+     */
+    protected serializeBlockToInsertionMarker(block: BlockSvg): blocks.State;
     private createInsertionMarker;
     /**
      * Gets the connection on the marker block that matches the original
@@ -52,5 +72,12 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     private hideInsertionMarker;
     /** Dispose of any references held by this connection previewer. */
     dispose(): void;
+    /**
+     * Returns whether or not new fast insertion marker rendering should be used.
+     * Defaults on for built-in renderers and off for custom renderers. Can be
+     * enabled for custom renderers by setting
+     * `InsertionMarkerPreviewer.useFastInsertionMarkers = true`.
+     */
+    private shouldUseFastInsertionMarkers;
 }
 //# sourceMappingURL=insertion_marker_previewer.d.ts.map

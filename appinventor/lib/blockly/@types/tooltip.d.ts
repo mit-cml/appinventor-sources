@@ -3,6 +3,8 @@
  * Copyright 2011 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * A type which can define a tooltip.
  * Either a string, an object containing a tooltip property, or a function which
@@ -23,9 +25,10 @@ export type CustomTooltip = (p1: Element, p2: Element) => any;
  * Sets a custom function that will be called if present instead of the default
  * tooltip UI.
  *
- * @param customFn A custom tooltip used to render an alternate tooltip UI.
+ * @param customFn A custom tooltip used to render an alternate tooltip UI, or
+ *     undefined to use the default implementation.
  */
-export declare function setCustomTooltip(customFn: CustomTooltip): void;
+export declare function setCustomTooltip(customFn: CustomTooltip | undefined): void;
 /**
  * Gets the custom tooltip function.
  *
@@ -101,6 +104,14 @@ export declare function dispose(): void;
  * Hide the tooltip.
  */
 export declare function hide(): void;
+/**
+ * Display the tooltip for a given target.
+ *
+ * @internal
+ * @param target The node upon which the tooltip should be displayed.
+ * @param workspace The target node's workspace.
+ */
+export declare function display(target: IFocusableNode, workspace?: WorkspaceSvg): void;
 /**
  * Hide any in-progress tooltips and block showing new tooltips until the next
  * call to unblock().

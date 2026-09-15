@@ -4,15 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { ISerializer } from '../interfaces/i_serializer.js';
+import type { IVariableState } from '../interfaces/i_variable_model.js';
 import type { Workspace } from '../workspace.js';
-/**
- * Represents the state of a given variable.
- */
-export interface State {
-    name: string;
-    id: string;
-    type: string | undefined;
-}
 /**
  * Serializer for saving and loading variable state.
  */
@@ -26,7 +19,7 @@ export declare class VariableSerializer implements ISerializer {
      * @returns The state of the workspace's variables, or null if there are no
      *     variables.
      */
-    save(workspace: Workspace): State[] | null;
+    save(workspace: Workspace): IVariableState[] | null;
     /**
      * Deserializes the variable defined by the given state into the given
      * workspace.
@@ -34,7 +27,7 @@ export declare class VariableSerializer implements ISerializer {
      * @param state The state of the variables to deserialize.
      * @param workspace The workspace to deserialize into.
      */
-    load(state: State[], workspace: Workspace): void;
+    load(state: IVariableState[], workspace: Workspace): void;
     /**
      * Disposes of any variables that exist on the workspace.
      *

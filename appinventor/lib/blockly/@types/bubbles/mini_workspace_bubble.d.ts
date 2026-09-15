@@ -5,6 +5,8 @@
  */
 import type { BlocklyOptions } from '../blockly_options.js';
 import { Abstract as AbstractEvent } from '../events/events_abstract.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Options } from '../options.js';
 import { Coordinate } from '../utils/coordinate.js';
 import type { Rect } from '../utils/rect.js';
@@ -18,6 +20,7 @@ export declare class MiniWorkspaceBubble extends Bubble {
     readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
+    protected owner?: (IHasBubble & IFocusableNode) | undefined;
     /**
      * The minimum amount of change to the mini workspace view to trigger
      * resizing the bubble.
@@ -38,7 +41,7 @@ export declare class MiniWorkspaceBubble extends Bubble {
      */
     private autoLayout;
     /** @internal */
-    constructor(workspaceOptions: BlocklyOptions, workspace: WorkspaceSvg, anchor: Coordinate, ownerRect?: Rect | undefined);
+    constructor(workspaceOptions: BlocklyOptions, workspace: WorkspaceSvg, anchor: Coordinate, ownerRect?: Rect | undefined, owner?: (IHasBubble & IFocusableNode) | undefined);
     dispose(): void;
     /** @internal */
     getWorkspace(): WorkspaceSvg;
@@ -80,5 +83,10 @@ export declare class MiniWorkspaceBubble extends Bubble {
     moveTo(x: number, y: number): void;
     /** @internal */
     newWorkspaceSvg(options: Options): WorkspaceSvg;
+    /**
+     * Handles the user acting on this bubble via keyboard navigation by focusing
+     * the mutator workspace.
+     */
+    performAction(): void;
 }
 //# sourceMappingURL=mini_workspace_bubble.d.ts.map

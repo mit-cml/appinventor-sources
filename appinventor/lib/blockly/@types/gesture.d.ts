@@ -3,13 +3,6 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-/**
- * The class representing an in-progress gesture, e.g. a drag,
- * tap, or pinch to zoom.
- *
- * @class
- */
-import './events/events_click.js';
 import type { BlockSvg } from './block_svg.js';
 import { RenderedWorkspaceComment } from './comments.js';
 import type { Field } from './field.js';
@@ -149,18 +142,6 @@ export declare class Gesture {
      * @returns True if the drag just exceeded the drag radius for the first time.
      */
     private updateDragDelta;
-    /**
-     * Update this gesture to record whether a block is being dragged from the
-     * flyout.
-     * This function should be called on a pointermove event the first time
-     * the drag radius is exceeded.  It should be called no more than once per
-     * gesture. If a block should be dragged from the flyout this function creates
-     * the new block on the main workspace and updates targetBlock_ and
-     * startWorkspace_.
-     *
-     * @returns True if a block is being dragged from the flyout.
-     */
-    private updateIsDraggingFromFlyout;
     /**
      * Check whether to start a workspace drag. If a workspace is being dragged,
      * create the necessary WorkspaceDragger and start the drag.
@@ -332,11 +313,6 @@ export declare class Gesture {
      * @param _e A pointerup event.
      */
     private doWorkspaceClick;
-    /**
-     * Move the dragged/clicked block to the front of the workspace so that it is
-     * not occluded by other blocks.
-     */
-    private bringBlockToFront;
     /**
      * Record the field that a gesture started on.
      *

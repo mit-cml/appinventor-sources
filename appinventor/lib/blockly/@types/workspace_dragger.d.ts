@@ -3,6 +3,11 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+/**
+ * Methods for dragging a workspace visually.
+ *
+ * @class
+ */
 import { Coordinate } from './utils/coordinate.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -17,12 +22,6 @@ export declare class WorkspaceDragger {
     protected startScrollXY_: Coordinate;
     /** @param workspace The workspace to drag. */
     constructor(workspace: WorkspaceSvg);
-    /**
-     * Sever all links from this object.
-     *
-     * @internal
-     */
-    dispose(): void;
     /**
      * Start dragging the workspace.
      *

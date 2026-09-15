@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { FlyoutItemInfoArray } from '../utils/toolbox';
-import type { IToolboxItem } from './i_toolbox_item.js';
+import { type IToolboxItem } from './i_toolbox_item.js';
 /**
  * Interface for an item in the toolbox that can be selected.
  */
@@ -45,7 +45,7 @@ export interface ISelectableToolboxItem extends IToolboxItem {
     onClick(_e: Event): void;
 }
 /**
- * Type guard that checks whether an IToolboxItem is an ISelectableToolboxItem.
+ * Type guard that checks whether an object is an ISelectableToolboxItem.
  */
-export declare function isSelectableToolboxItem(toolboxItem: IToolboxItem): toolboxItem is ISelectableToolboxItem;
+export declare function isSelectableToolboxItem(obj: any): obj is ISelectableToolboxItem;
 //# sourceMappingURL=i_selectable_toolbox_item.d.ts.map
