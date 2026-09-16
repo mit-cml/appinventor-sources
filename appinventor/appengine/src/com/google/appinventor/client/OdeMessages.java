@@ -655,7 +655,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String AICompanionMenuItem();
 
   @DefaultMessage("Test in Web")
-  @Description("Menu item for intitiating browser emulator.")
+  @Description("Menu item for initiating browser emulator.")
   String browserMenuItem();
 
   @DefaultMessage("Chromebook")
