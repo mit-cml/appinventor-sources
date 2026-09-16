@@ -189,6 +189,8 @@
     <property name="http.keepAlive" value="true" />
     <property name="http.maxConnections" value="5" />
 
+    <property name="web.emulator.url" value="" />
+
     <!-- Where to load ode from -->
 
     <!-- Set this to the base URL of where ode is located. Leaving it blank -->

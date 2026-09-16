@@ -121,6 +121,11 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     List<String> urls = storageIo.getTutorialsUrlAllowed();
     config.setTutorialUrlAllowed(urls);
 
+    String webEmulatorUrl = Flag.createFlag("web.emulator.url", "").get();
+    if (!webEmulatorUrl.isEmpty()) {
+      config.setWebEmulatorUrl(webEmulatorUrl);
+    }
+
     return config;
   }
 

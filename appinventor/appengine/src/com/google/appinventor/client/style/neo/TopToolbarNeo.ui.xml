@@ -12,6 +12,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
   <ui:with field="isAvailable" type="java.lang.Boolean"/>
+  <ui:with field="webEmulatorEnabled" type="java.lang.Boolean"/>
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
@@ -65,6 +66,11 @@
       </ai:DropDownItem>
       <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
         <yaactions:UsbAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name ="Browser" caption="{messages.browserMenuItem}"
+                       dependentStyleName="needsAiStarter" beta="true"
+                       visible="{webEmulatorEnabled}">
+        <yaactions:BrowserAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
                        dependentStyleName="needsChromebook">

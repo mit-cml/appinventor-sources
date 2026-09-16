@@ -238,9 +238,9 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
    * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
    */
   @Override
-  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, String forBrowser) {
     blocksArea.setActiveFormWorkspace();
-    blocksArea.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
+    blocksArea.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb, forBrowser);
   }
 
   /*
