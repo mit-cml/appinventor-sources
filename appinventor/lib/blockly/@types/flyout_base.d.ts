@@ -5,7 +5,7 @@
  */
 import { DeleteArea } from './delete_area.js';
 import { FlyoutItem } from './flyout_item.js';
-import { IAutoHideable } from './interfaces/i_autohideable.js';
+import type { IAutoHideable } from './interfaces/i_autohideable.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
 import type { IFlyoutInflater } from './interfaces/i_flyout_inflater.js';
 import type { Options } from './options.js';

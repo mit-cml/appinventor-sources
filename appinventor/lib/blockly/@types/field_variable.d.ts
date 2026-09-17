@@ -9,9 +9,11 @@
  * @class
  */
 import type { Block } from './block.js';
-import { Field, FieldConfig } from './field.js';
-import { FieldDropdown, FieldDropdownValidator, MenuGenerator, MenuOption } from './field_dropdown.js';
-import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
+import type { FieldConfig } from './field.js';
+import { Field } from './field.js';
+import type { FieldDropdownValidator, MenuGenerator, MenuOption } from './field_dropdown.js';
+import { FieldDropdown } from './field_dropdown.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Menu } from './menu.js';
 import type { MenuItem } from './menuitem.js';
 /**

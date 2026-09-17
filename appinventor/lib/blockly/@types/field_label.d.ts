@@ -9,7 +9,8 @@
  *
  * @class
  */
-import { Field, FieldConfig } from './field.js';
+import type { FieldConfig } from './field.js';
+import { Field } from './field.js';
 /**
  * Class for a non-editable, non-serializable text field.
  */

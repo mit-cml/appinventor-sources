@@ -7,7 +7,7 @@ import type { Block } from './block.js';
 import { WorkspaceComment } from './comments/workspace_comment.js';
 import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
-import { WorkspaceSvg } from './workspace_svg.js';
+import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Encode a block tree as XML.
  *

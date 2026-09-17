@@ -9,9 +9,9 @@
  *
  * @class
  */
-import { Scope } from './contextmenu_registry.js';
+import type { Scope } from './contextmenu_registry.js';
 import { KeyCodes } from './utils/keycodes.js';
-import { WorkspaceSvg } from './workspace_svg.js';
+import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Class for the registry of keyboard shortcuts. This is intended to be a
  * singleton. You should not create a new instance, and only access this class

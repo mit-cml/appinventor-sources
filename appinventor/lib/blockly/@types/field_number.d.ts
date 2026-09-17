@@ -9,7 +9,8 @@
  * @class
  */
 import { Field } from './field.js';
-import { FieldInput, FieldInputConfig, FieldInputValidator } from './field_input.js';
+import type { FieldInputConfig, FieldInputValidator } from './field_input.js';
+import { FieldInput } from './field_input.js';
 /**
  * Class for an editable number field.
  */

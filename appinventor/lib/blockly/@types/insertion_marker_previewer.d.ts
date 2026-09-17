@@ -3,9 +3,9 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { BlockSvg } from './block_svg.js';
-import { IConnectionPreviewer } from './interfaces/i_connection_previewer.js';
-import { RenderedConnection } from './rendered_connection.js';
+import type { BlockSvg } from './block_svg.js';
+import type { IConnectionPreviewer } from './interfaces/i_connection_previewer.js';
+import type { RenderedConnection } from './rendered_connection.js';
 import * as blocks from './serialization/blocks.js';
 export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     private readonly workspace;

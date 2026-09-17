@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from './block.js';
-import { BlockDefinition } from './blocks.js';
+import type { BlockDefinition } from './blocks.js';
 import type { Connection } from './connection.js';
-import { ISelectable } from './interfaces/i_selectable.js';
+import type { ISelectable } from './interfaces/i_selectable.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**

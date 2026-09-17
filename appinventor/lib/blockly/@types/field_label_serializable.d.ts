@@ -10,7 +10,8 @@
  *
  * @class
  */
-import { FieldLabel, FieldLabelConfig, FieldLabelFromJsonConfig } from './field_label.js';
+import type { FieldLabelConfig, FieldLabelFromJsonConfig } from './field_label.js';
+import { FieldLabel } from './field_label.js';
 /**
  * Class for a non-editable, serializable text field.
  */

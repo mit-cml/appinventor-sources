@@ -5,7 +5,7 @@
  */
 import type { Block } from './block.js';
 import type { Abstract } from './events/events_abstract.js';
-import { Field } from './field.js';
+import type { Field } from './field.js';
 import { ProcedureTuple } from './interfaces/i_legacy_procedure_blocks.js';
 import { IParameterModel } from './interfaces/i_parameter_model.js';
 import { IProcedureBlock, isProcedureBlock } from './interfaces/i_procedure_block.js';

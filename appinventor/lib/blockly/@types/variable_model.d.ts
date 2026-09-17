@@ -3,7 +3,7 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for a variable model.

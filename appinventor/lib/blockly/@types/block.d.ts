@@ -9,12 +9,12 @@ import type { Abstract } from './events/events_abstract.js';
 import type { Field } from './field.js';
 import { IconType } from './icons/icon_types.js';
 import type { MutatorIcon } from './icons/mutator_icon.js';
-import { Input } from './inputs/input.js';
+import type { Input } from './inputs/input.js';
 import { type IIcon } from './interfaces/i_icon.js';
 import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import * as Tooltip from './tooltip.js';
 import { Coordinate } from './utils/coordinate.js';
-import { Size } from './utils/size.js';
+import type { Size } from './utils/size.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for one block.

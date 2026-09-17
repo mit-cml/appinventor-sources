@@ -16,7 +16,7 @@ import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import type { IKeyboardAccessible } from './interfaces/i_keyboard_accessible.js';
 import type { IRegistrable } from './interfaces/i_registrable.js';
-import { ISerializable } from './interfaces/i_serializable.js';
+import type { ISerializable } from './interfaces/i_serializable.js';
 import type { ConstantProvider } from './renderers/common/constants.js';
 import type { KeyboardShortcut } from './shortcut_registry.js';
 import * as Tooltip from './tooltip.js';

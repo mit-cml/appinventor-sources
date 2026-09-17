@@ -3,11 +3,11 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { IRenderedElement } from '../interfaces/i_rendered_element.js';
+import type { IRenderedElement } from '../interfaces/i_rendered_element.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Size } from '../utils/size.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
-import { CommentBarButton } from './comment_bar_button.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
+import type { CommentBarButton } from './comment_bar_button.js';
 import { CommentEditor } from './comment_editor.js';
 export declare class CommentView implements IRenderedElement {
     readonly workspace: WorkspaceSvg;

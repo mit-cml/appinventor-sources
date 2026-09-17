@@ -276,7 +276,7 @@ export declare function getState(element: Element, stateName: State): string | n
  *
  * @param parent The container element to which the live region will be appended.
  */
-export declare function initializeGlobalAriaLiveRegion(parent: HTMLDivElement): void;
+export declare function initializeGlobalAriaLiveRegion(parent: HTMLElement): void;
 /**
  * Requests that the specified text be read to the user if a screen reader is
  * currently active.

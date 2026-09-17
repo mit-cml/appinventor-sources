@@ -5,9 +5,9 @@
  */
 import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
-import { Coordinate } from '../utils/coordinate.js';
-import { Rect } from '../utils/rect.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
+import type { Coordinate } from '../utils/coordinate.js';
+import type { Rect } from '../utils/rect.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
 import { Bubble } from './bubble.js';
 /**
  * A bubble that displays non-editable text. Used by the warning icon.

@@ -6,7 +6,7 @@
 import type { IconType } from '../icons/icon_types.js';
 import type { Coordinate } from '../utils/coordinate.js';
 import type { Size } from '../utils/size.js';
-import { IFocusableNode } from './i_focusable_node.js';
+import type { IFocusableNode } from './i_focusable_node.js';
 export interface IIcon extends IFocusableNode {
     /**
      * @returns the IconType representing the type of the icon. This value should

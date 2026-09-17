@@ -5,7 +5,7 @@
  */
 import type { BlockSvg } from './block_svg.js';
 import type { Input } from './inputs/input.js';
-import { RenderedConnection } from './rendered_connection.js';
+import type { RenderedConnection } from './rendered_connection.js';
 import { Verbosity } from './utils/aria.js';
 /**
  * Prepositions to use when describing the relationship between two blocks based

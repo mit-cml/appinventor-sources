@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { IVariableMap } from './interfaces/i_variable_map.js';
-import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { Workspace } from './workspace.js';
 /**
  * Class for a variable map.  This contains a dictionary data structure with

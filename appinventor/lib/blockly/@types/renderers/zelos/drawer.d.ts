@@ -5,7 +5,7 @@
  */
 import type { BlockSvg } from '../../block_svg.js';
 import { Drawer as BaseDrawer } from '../common/drawer.js';
-import { Connection } from '../measurables/connection.js';
+import type { Connection } from '../measurables/connection.js';
 import type { InlineInput } from '../measurables/inline_input.js';
 import type { Row } from '../measurables/row.js';
 import type { RenderInfo } from './info.js';

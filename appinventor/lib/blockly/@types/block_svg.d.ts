@@ -9,28 +9,28 @@
  * @class
  */
 import { Block } from './block.js';
-import { BlockCopyData } from './clipboard/block_paster.js';
+import type { BlockCopyData } from './clipboard/block_paster.js';
 import type { Connection } from './connection.js';
 import { ConnectionType } from './connection_type.js';
-import { ContextMenuOption, LegacyContextMenuOption } from './contextmenu_registry.js';
-import { IconType } from './icons/icon_types.js';
+import type { ContextMenuOption, LegacyContextMenuOption } from './contextmenu_registry.js';
+import type { IconType } from './icons/icon_types.js';
 import { MutatorIcon } from './icons/mutator_icon.js';
 import type { Input } from './inputs/input.js';
 import type { IBoundedElement } from './interfaces/i_bounded_element.js';
-import { IContextMenu } from './interfaces/i_contextmenu.js';
+import type { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { ICopyable } from './interfaces/i_copyable.js';
-import { IDeletable } from './interfaces/i_deletable.js';
+import type { IDeletable } from './interfaces/i_deletable.js';
 import type { DragDisposition, IDragStrategy, IDraggable } from './interfaces/i_draggable.js';
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
-import { IIcon } from './interfaces/i_icon.js';
+import type { IIcon } from './interfaces/i_icon.js';
 import { RenderedConnection } from './rendered_connection.js';
 import type { IPathObject } from './renderers/common/i_path_object.js';
 import type { BlockStyle } from './theme.js';
 import * as aria from './utils/aria.js';
 import { Coordinate } from './utils/coordinate.js';
 import { Rect } from './utils/rect.js';
-import { FlyoutItemInfo } from './utils/toolbox.js';
+import type { FlyoutItemInfo } from './utils/toolbox.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**

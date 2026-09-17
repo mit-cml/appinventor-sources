@@ -3,12 +3,12 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { BlockSvg } from '../block_svg.js';
-import { IFocusableNode } from '../interfaces/i_focusable_node.js';
-import { IFocusableTree } from '../interfaces/i_focusable_tree.js';
-import { Size } from '../utils/size.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
-import { RenderedWorkspaceComment } from './rendered_workspace_comment.js';
+import type { BlockSvg } from '../block_svg.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
+import type { Size } from '../utils/size.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
+import type { RenderedWorkspaceComment } from './rendered_workspace_comment.js';
 /**
  * String added to the ID of a workspace comment to identify
  * the focusable node for the comment editor.

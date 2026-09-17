@@ -3,7 +3,7 @@
  * Copyright 2026 Raspberry Pi Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
-import { RenderedConnection } from './rendered_connection.js';
+import type { RenderedConnection } from './rendered_connection.js';
 import { Size } from './utils/size.js';
 /**
  * Visual representation of a mid-drag block if it were to be connected.

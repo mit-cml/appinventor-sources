@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../../block_svg.js';
-import { RenderedConnection } from '../../rendered_connection.js';
+import type { RenderedConnection } from '../../rendered_connection.js';
 import type { BlockStyle } from '../../theme.js';
-import { Coordinate } from '../../utils/coordinate.js';
+import type { Coordinate } from '../../utils/coordinate.js';
 import type { ConstantProvider } from './constants.js';
 import type { IPathObject } from './i_path_object.js';
 /**

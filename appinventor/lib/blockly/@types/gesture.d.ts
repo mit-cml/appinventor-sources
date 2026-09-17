@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from './block_svg.js';
-import { RenderedWorkspaceComment } from './comments.js';
+import type { RenderedWorkspaceComment } from './comments.js';
 import type { Field } from './field.js';
 import type { IBubble } from './interfaces/i_bubble.js';
-import { IDragger } from './interfaces/i_dragger.js';
+import type { IDragger } from './interfaces/i_dragger.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
 import type { IIcon } from './interfaces/i_icon.js';
 import { Coordinate } from './utils/coordinate.js';

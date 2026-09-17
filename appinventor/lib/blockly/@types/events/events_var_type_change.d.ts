@@ -10,7 +10,8 @@
  */
 import type { IVariableModel, IVariableState } from '../interfaces/i_variable_model.js';
 import type { Workspace } from '../workspace.js';
-import { VarBase, VarBaseJson } from './events_var_base.js';
+import type { VarBaseJson } from './events_var_base.js';
+import { VarBase } from './events_var_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners that a variable's type has changed.

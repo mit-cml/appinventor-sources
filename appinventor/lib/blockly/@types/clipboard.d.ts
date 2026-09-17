@@ -6,7 +6,7 @@
 import { BlockCopyData, BlockPaster } from './clipboard/block_paster.js';
 import * as registry from './clipboard/registry.js';
 import type { ICopyData, ICopyable } from './interfaces/i_copyable.js';
-import { Coordinate } from './utils/coordinate.js';
+import type { Coordinate } from './utils/coordinate.js';
 import { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Copy a copyable item, and record its data and the workspace it was

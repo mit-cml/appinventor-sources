@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from './block.js';
-import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
+import type { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
 import type { BlockInfo, FlyoutItemInfo } from './utils/toolbox.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';

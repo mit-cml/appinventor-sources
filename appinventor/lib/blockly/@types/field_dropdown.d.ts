@@ -3,7 +3,8 @@
  * Copyright 2012 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Field, FieldConfig, FieldValidator } from './field.js';
+import type { FieldConfig, FieldValidator } from './field.js';
+import { Field } from './field.js';
 import { Menu } from './menu.js';
 import { MenuItem } from './menuitem.js';
 /**

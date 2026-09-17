@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
-import { IRenderedElement } from './interfaces/i_rendered_element.js';
-import { Coordinate } from './utils/coordinate.js';
-import { WorkspaceSvg } from './workspace_svg.js';
+import type { IRenderedElement } from './interfaces/i_rendered_element.js';
+import type { Coordinate } from './utils/coordinate.js';
+import type { WorkspaceSvg } from './workspace_svg.js';
 /** @internal */
 export declare class LayerManager {
     private workspace;

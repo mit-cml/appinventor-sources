@@ -9,7 +9,7 @@
  *
  * @class
  */
-import { GridOptions } from './options.js';
+import type { GridOptions } from './options.js';
 import { Coordinate } from './utils/coordinate.js';
 /**
  * Class for a workspace's grid.

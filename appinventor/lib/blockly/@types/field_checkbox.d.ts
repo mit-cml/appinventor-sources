@@ -8,7 +8,8 @@
  *
  * @class
  */
-import { Field, FieldConfig, FieldValidator } from './field.js';
+import type { FieldConfig, FieldValidator } from './field.js';
+import { Field } from './field.js';
 type BoolString = 'TRUE' | 'FALSE';
 type CheckboxBool = BoolString | boolean;
 /**

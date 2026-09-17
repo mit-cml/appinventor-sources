@@ -10,8 +10,9 @@
  */
 import type { Block } from '../block.js';
 import * as blocks from '../serialization/blocks.js';
-import { Workspace } from '../workspace.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import type { Workspace } from '../workspace.js';
+import type { BlockBaseJson } from './events_block_base.js';
+import { BlockBase } from './events_block_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners when a block (or connected stack of blocks) is

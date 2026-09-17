@@ -7,8 +7,8 @@
  * Events fired when a workspace comment is dragged.
  */
 import type { WorkspaceComment } from '../comments/workspace_comment.js';
-import { Workspace } from '../workspace.js';
-import { AbstractEventJson } from './events_abstract.js';
+import type { Workspace } from '../workspace.js';
+import type { AbstractEventJson } from './events_abstract.js';
 import { UiBase } from './events_ui_base.js';
 import { EventType } from './type.js';
 /**

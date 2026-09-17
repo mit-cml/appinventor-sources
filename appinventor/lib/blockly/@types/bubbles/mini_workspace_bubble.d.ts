@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlocklyOptions } from '../blockly_options.js';
-import { Abstract as AbstractEvent } from '../events/events_abstract.js';
+import type { Abstract as AbstractEvent } from '../events/events_abstract.js';
 import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Options } from '../options.js';
-import { Coordinate } from '../utils/coordinate.js';
+import type { Coordinate } from '../utils/coordinate.js';
 import type { Rect } from '../utils/rect.js';
 import type { WorkspaceSvg } from '../workspace_svg.js';
 import { Bubble } from './bubble.js';

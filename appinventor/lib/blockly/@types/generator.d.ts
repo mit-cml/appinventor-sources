@@ -10,7 +10,7 @@
  * @class
  */
 import type { Block } from './block.js';
-import { Names } from './names.js';
+import type { Names } from './names.js';
 import type { Workspace } from './workspace.js';
 /**
  * Deprecated, no-longer used type declaration for per-block-type generator

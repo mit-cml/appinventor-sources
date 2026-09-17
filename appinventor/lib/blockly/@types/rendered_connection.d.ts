@@ -6,7 +6,7 @@
 import type { BlockSvg } from './block_svg.js';
 import { Connection } from './connection.js';
 import type { InsertionMarker } from './insertion_marker.js';
-import { IContextMenu } from './interfaces/i_contextmenu.js';
+import type { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import { Coordinate } from './utils/coordinate.js';

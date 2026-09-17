@@ -3,7 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { ICopyable, ICopyData } from '../interfaces/i_copyable.js';
+import type { ICopyable, ICopyData } from '../interfaces/i_copyable.js';
 import type { IPaster } from '../interfaces/i_paster.js';
 /**
  * Registers the given paster so that it cna be used for pasting.

@@ -3,16 +3,16 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { IBoundedElement } from '../interfaces/i_bounded_element.js';
-import { IBubble } from '../interfaces/i_bubble.js';
+import type { IBoundedElement } from '../interfaces/i_bounded_element.js';
+import type { IBubble } from '../interfaces/i_bubble.js';
 import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
 import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
-import { ISelectable } from '../interfaces/i_selectable.js';
+import type { ISelectable } from '../interfaces/i_selectable.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Rect } from '../utils/rect.js';
 import { Size } from '../utils/size.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
 /**
  * Represents a either a string or a function that, when called, can provide a
  * custom ARIA string to represent a bubble, or null if the default fallback

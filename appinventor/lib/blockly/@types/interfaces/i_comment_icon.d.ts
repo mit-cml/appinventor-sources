@@ -3,12 +3,12 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { CommentState } from '../icons/comment_icon.js';
-import { Coordinate } from '../utils/coordinate.js';
-import { Size } from '../utils/size.js';
-import { IHasBubble } from './i_has_bubble.js';
-import { IIcon } from './i_icon.js';
-import { ISerializable } from './i_serializable.js';
+import type { CommentState } from '../icons/comment_icon.js';
+import type { Coordinate } from '../utils/coordinate.js';
+import type { Size } from '../utils/size.js';
+import type { IHasBubble } from './i_has_bubble.js';
+import type { IIcon } from './i_icon.js';
+import type { ISerializable } from './i_serializable.js';
 export interface ICommentIcon extends IIcon, IHasBubble, ISerializable {
     setText(text: string): void;
     getText(): string;
