@@ -567,6 +567,41 @@ public interface DarkModeImagesNeo extends ImagesNeo {
   ImageResource arduino();
 
   /**
+   * Media icon: image
+   */
+  @Override
+  @Source("darkmode-images/mediaIcon_img.png")
+  ImageResource mediaIconImg();
+
+  /**
+   * Media icon: audio
+   */
+  @Override
+  @Source("darkmode-images/mediaIcon_audio.png")
+  ImageResource mediaIconAudio();
+
+  /**
+   * Media icon: video
+   */
+  @Override
+  @Source("darkmode-images/mediaIcon_video.png")
+  ImageResource mediaIconVideo();
+
+  /**
+   * Media icon: font
+   */
+  @Override
+  @Source("darkmode-images/mediaIcon_font.png")
+  ImageResource mediaIconFont();
+
+    /**
+   * Media icon: file
+   */
+  @Override
+  @Source("darkmode-images/mediaIcon_file.png")
+  ImageResource mediaIconFile();
+
+  /**
    * Designer palette item: Magnetic Field Sensor component
    */
   @Override
