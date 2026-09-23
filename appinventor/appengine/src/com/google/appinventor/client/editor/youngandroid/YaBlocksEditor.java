@@ -258,6 +258,14 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     blocksArea.updateCompanion();
   }
 
+  /*
+   * Check if emulator is running
+   */
+  @Override
+  public boolean isEmulatorRunning() {
+    return BlocklyPanel.isEmulatorRunning();
+  }
+
   @Override
   public void onProjectLoaded(Project project) {
     for (ProjectNode node : project.getRootNode().getAllSourceNodes()) {

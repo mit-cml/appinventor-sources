@@ -185,6 +185,14 @@ public abstract class FileEditor extends Composite {
   public void updateCompanion() {
   }
 
+  /**
+   * Check if the emulator is currently running and connected.
+   * @return true if emulator is running, false otherwise
+   */
+  public boolean isEmulatorRunning() {
+    return false;
+  }
+
   public void getBlocksImage(Callback<String, String> callback) {
   }
 
