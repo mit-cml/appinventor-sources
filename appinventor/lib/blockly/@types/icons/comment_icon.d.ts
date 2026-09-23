@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Block } from '../block.js';
+import { TextInputBubble } from '../bubbles/textinput_bubble.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import type { ISerializable } from '../interfaces/i_serializable.js';
 import { Coordinate } from '../utils.js';
@@ -28,10 +29,12 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
     private text;
     /** The size of this comment (which is applied to the editable bubble). */
     private bubbleSize;
+    /** The location of the comment bubble in workspace coordinates. */
+    private bubbleLocation?;
     /**
      * The visibility of the bubble for this comment.
      *
-     * This is used to track what the visibile state /should/ be, not necessarily
+     * This is used to track what the visible state /should/ be, not necessarily
      * what it currently /is/. E.g. sometimes this will be true, but the block
      * hasn't been rendered yet, so the bubble will not currently be visible.
      */
@@ -61,6 +64,14 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
     /** @returns the size of the editable bubble for this comment. */
     getBubbleSize(): Size;
     /**
+     * Sets the location of the comment bubble in the workspace.
+     */
+    setBubbleLocation(location: Coordinate): void;
+    /**
+     * @returns the location of the comment bubble in the workspace.
+     */
+    getBubbleLocation(): Coordinate | undefined;
+    /**
      * @returns the state of the comment as a JSON serializable value if the
      * comment has text. Otherwise returns null.
      */
@@ -79,8 +90,11 @@ export declare class CommentIcon extends Icon implements IHasBubble, ISerializab
      * input bubble.
      */
     onSizeChange(): void;
+    onBubbleLocationChange(): void;
     bubbleIsVisible(): boolean;
     setBubbleVisible(visible: boolean): Promise<void>;
+    /** See IHasBubble.getBubble. */
+    getBubble(): TextInputBubble | null;
     /**
      * Shows the editable text bubble for this comment, and adds change listeners
      * to update the state of this icon in response to changes in the bubble.
@@ -112,5 +126,9 @@ export interface CommentState {
     height?: number;
     /** The width of the comment bubble. */
     width?: number;
+    /** The X coordinate of the comment bubble. */
+    x?: number;
+    /** The Y coordinate of the comment bubble. */
+    y?: number;
 }
 //# sourceMappingURL=comment_icon.d.ts.map

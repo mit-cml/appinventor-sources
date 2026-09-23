@@ -10,6 +10,7 @@ import { Measurable } from './base.js';
  * row.
  */
 export declare class InRowSpacer extends Measurable {
+    private inRowSpacer;
     /**
      * @param constants The rendering constants provider.
      * @param width The width of the spacer.

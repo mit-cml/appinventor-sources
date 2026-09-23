@@ -13,8 +13,8 @@
 import './events/events_block_change.js';
 import type { Block } from './block.js';
 import type { Input } from './inputs/input.js';
-import type { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.js';
-import type { IASTNodeLocationWithBlock } from './interfaces/i_ast_node_location_with_block.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import type { IKeyboardAccessible } from './interfaces/i_keyboard_accessible.js';
 import type { IRegistrable } from './interfaces/i_registrable.js';
 import { ISerializable } from './interfaces/i_serializable.js';
@@ -45,7 +45,7 @@ export type FieldValidator<T = any> = (newValue: T) => T | null | undefined;
  *
  * @typeParam T - The value stored on the field.
  */
-export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IASTNodeLocationWithBlock, IKeyboardAccessible, IRegistrable, ISerializable {
+export declare abstract class Field<T = any> implements IKeyboardAccessible, IRegistrable, ISerializable, IFocusableNode {
     /**
      * To overwrite the default value which is set in **Field**, directly update
      * the prototype.
@@ -75,17 +75,18 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * field is not yet initialized. Is *not* guaranteed to be accurate.
      */
     private tooltip;
-    protected size_: Size;
+    /** This field's dimensions. */
+    private size;
     /**
-     * Holds the cursors svg element when the cursor is attached to the field.
-     * This is null if there is no cursor on the field.
+     * Gets the size of this field. Because getSize() and updateSize() have side
+     * effects, this acts as a shim for subclasses which wish to adjust field
+     * bounds when setting/getting the size without triggering unwanted rendering
+     * or other side effects. Note that subclasses must override *both* get and
+     * set if either is overridden; the implementation may just call directly
+     * through to super, but it must exist per the JS spec.
      */
-    private cursorSvg;
-    /**
-     * Holds the markers svg element when the marker is attached to the field.
-     * This is null if there is no marker on the field.
-     */
-    private markerSvg;
+    protected get size_(): Size;
+    protected set size_(newValue: Size);
     /** The rendered field's SVG group element. */
     protected fieldGroup_: SVGGElement | null;
     /** The rendered field's SVG border element. */
@@ -141,8 +142,8 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * case by default so that SERIALIZABLE is backwards compatible.
      */
     SERIALIZABLE: boolean;
-    /** Mouse cursor style when over the hotspot that initiates the editor. */
-    CURSOR: string;
+    /** The unique ID of this field. */
+    private id_;
     /**
      * @param value The initial value of the field.
      *     Also accepts Field.SKIP_SETUP if you wish to skip setup (only used by
@@ -207,8 +208,10 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * intend because the behavior was kind of hacked in. If you are thinking
      * about overriding this function, post on the forum with your intended
      * behavior to see if there's another approach.
+     *
+     * @internal
      */
-    protected isFullBlockField(): boolean;
+    isFullBlockField(): boolean;
     /**
      * Create a field border rect element. Not to be overridden by subclasses.
      * Instead modify the result of the function inside initView, or create a
@@ -231,7 +234,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * called by Blockly.Xml.
      *
      * @param fieldElement The element containing info about the field's state.
-     * @internal
      */
     fromXml(fieldElement: Element): void;
     /**
@@ -240,7 +242,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * @param fieldElement The element to populate with info about the field's
      *     state.
      * @returns The element containing info about the field's state.
-     * @internal
      */
     toXml(fieldElement: Element): Element;
     /**
@@ -254,7 +255,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      *     {@link https://developers.devsite.google.com/blockly/guides/create-custom-blocks/fields/customizing-fields/creating#full_serialization_and_backing_data | field serialization docs}
      *     for more information.
      * @returns JSON serializable state.
-     * @internal
      */
     saveState(_doFullSerialization?: boolean): any;
     /**
@@ -262,7 +262,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * called by the serialization system.
      *
      * @param state The state we want to apply to the field.
-     * @internal
      */
     loadState(state: any): void;
     /**
@@ -287,8 +286,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
     loadLegacyState(callingClass: FieldProto, state: any): boolean;
     /**
      * Dispose of all DOM objects and events belonging to this editable field.
-     *
-     * @internal
      */
     dispose(): void;
     /** Add or remove the UI indicating if this field is editable or not. */
@@ -540,8 +537,6 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * rerender this field and adjust for any sizing changes.
      * Other fields on the same block will not rerender, because their sizes have
      * already been recorded.
-     *
-     * @internal
      */
     forceRerender(): void;
     /**
@@ -651,14 +646,11 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      * Subclasses may override this.
      *
      * @returns True if this field has any variable references.
-     * @internal
      */
     referencesVariables(): boolean;
     /**
      * Refresh the variable name referenced by this field if this field references
      * variables.
-     *
-     * @internal
      */
     refreshVariableName(): void;
     /**
@@ -676,38 +668,22 @@ export declare abstract class Field<T = any> implements IASTNodeLocationSvg, IAS
      */
     getFlipRtl(): boolean;
     /**
-     * Returns whether or not the field is tab navigable.
-     *
-     * @returns True if the field is tab navigable.
-     */
-    isTabNavigable(): boolean;
-    /**
      * Handles the given keyboard shortcut.
      *
      * @param _shortcut The shortcut to be handled.
      * @returns True if the shortcut has been handled, false otherwise.
      */
     onShortcut(_shortcut: KeyboardShortcut): boolean;
-    /**
-     * Add the cursor SVG to this fields SVG group.
-     *
-     * @param cursorSvg The SVG root of the cursor to be added to the field group.
-     * @internal
-     */
-    setCursorSvg(cursorSvg: SVGElement): void;
-    /**
-     * Add the marker SVG to this fields SVG group.
-     *
-     * @param markerSvg The SVG root of the marker to be added to the field group.
-     * @internal
-     */
-    setMarkerSvg(markerSvg: SVGElement): void;
-    /**
-     * Redraw any attached marker or cursor svgs if needed.
-     *
-     * @internal
-     */
-    updateMarkers_(): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
     /**
      * Subclasses should reimplement this method to construct their Field
      * subclass from a JSON arg object.

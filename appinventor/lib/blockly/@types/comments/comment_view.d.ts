@@ -3,36 +3,37 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { IFocusableNode } from '../interfaces/i_focusable_node';
 import { IRenderedElement } from '../interfaces/i_rendered_element.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Size } from '../utils/size.js';
 import { WorkspaceSvg } from '../workspace_svg.js';
+import { CommentBarButton } from './comment_bar_button.js';
 export declare class CommentView implements IRenderedElement {
-    private readonly workspace;
+    readonly workspace: WorkspaceSvg;
+    readonly commentId: string;
     /** The root group element of the comment view. */
     private svgRoot;
     /**
-     * The svg rect element that we use to create a hightlight around the comment.
+     * The SVG rect element that we use to create a highlight around the comment.
      */
     private highlightRect;
     /** The group containing all of the top bar elements. */
     private topBarGroup;
     /** The rect background for the top bar. */
     private topBarBackground;
-    /** The delete icon that goes in the top bar. */
-    private deleteIcon;
-    /** The foldout icon that goes in the top bar. */
-    private foldoutIcon;
+    /** The delete button that goes in the top bar. */
+    private deleteButton;
+    /** The foldout button that goes in the top bar. */
+    private foldoutButton;
     /** The text element that goes in the top bar. */
     private textPreview;
     /** The actual text node in the text preview. */
     private textPreviewNode;
     /** The resize handle element. */
     private resizeHandle;
-    /** The foreignObject containing the HTML text area. */
-    private foreignObject;
-    /** The text area where the user can type. */
-    private textArea;
+    /** The part of the comment view that contains the textarea to edit the comment. */
+    private commentEditor;
     /** The current size of the comment in workspace units. */
     private size;
     /** Whether the comment is collapsed or not. */
@@ -41,10 +42,6 @@ export declare class CommentView implements IRenderedElement {
     private editable;
     /** The current location of the comment in workspace coordinates. */
     private location;
-    /** The current text of the comment. Updates on  text area change. */
-    private text;
-    /** Listeners for changes to text. */
-    private textChangeListeners;
     /** Listeners for changes to size. */
     private sizeChangeListeners;
     /** Listeners for disposal. */
@@ -62,12 +59,14 @@ export declare class CommentView implements IRenderedElement {
      */
     private resizePointerMoveListener;
     /** Whether this comment view is currently being disposed or not. */
-    private disposing;
+    protected disposing: boolean;
     /** Whether this comment view has been disposed or not. */
-    private disposed;
+    protected disposed: boolean;
     /** Size of this comment when the resize drag was initiated. */
     private preResizeSize?;
-    constructor(workspace: WorkspaceSvg);
+    /** The default size of newly created comments. */
+    static defaultCommentSize: Size;
+    constructor(workspace: WorkspaceSvg, commentId: string);
     /**
      * Creates the rect we use for highlighting the comment when it's selected.
      */
@@ -81,6 +80,11 @@ export declare class CommentView implements IRenderedElement {
      * Creates the text area where users can type. Registers event listeners.
      */
     private createTextArea;
+    /**
+     *
+     * @returns The FocusableNode representing the editor portion of this comment.
+     */
+    getEditorFocusableNode(): IFocusableNode;
     /** Creates the DOM elements for the comment resize handle. */
     private createResizeHandle;
     /** Returns the root SVG group element of the comment view. */
@@ -109,24 +113,10 @@ export declare class CommentView implements IRenderedElement {
      * The minimum height is based on the height of the top bar.
      */
     private calcMinSize;
-    /** Calculates the margin that should exist around the delete icon. */
-    private calcDeleteMargin;
-    /** Calculates the margin that should exist around the foldout icon. */
-    private calcFoldoutMargin;
     /** Updates the size of the highlight rect to reflect the new size. */
     private updateHighlightRect;
     /** Updates the size of the top bar to reflect the new size. */
     private updateTopBarSize;
-    /** Updates the size of the text area elements to reflect the new size. */
-    private updateTextAreaSize;
-    /**
-     * Updates the position of the delete icon elements to reflect the new size.
-     */
-    private updateDeleteIconPosition;
-    /**
-     * Updates the position of the foldout icon elements to reflect the new size.
-     */
-    private updateFoldoutIconPosition;
     /**
      * Updates the size and position of the text preview elements to reflect the new size.
      */
@@ -169,11 +159,6 @@ export declare class CommentView implements IRenderedElement {
     addOnCollapseListener(listener: (newCollapse: boolean) => void): void;
     /** Removes the given listener from the list of on collapse listeners. */
     removeOnCollapseListener(listener: () => void): void;
-    /**
-     * Toggles the collapsedness of the block when we receive a pointer down
-     * event on the foldout icon.
-     */
-    private onFoldoutDown;
     /** Returns true if the comment is currently editable. */
     isEditable(): boolean;
     /** Sets the editability of the comment. */
@@ -186,25 +171,22 @@ export declare class CommentView implements IRenderedElement {
      * @param location The location to move to in workspace coordinates.
      */
     moveTo(location: Coordinate): void;
-    /** Retursn the current text of the comment. */
+    /** Returns the current text of the comment. */
     getText(): string;
     /** Sets the current text of the comment. */
     setText(text: string): void;
-    /** Registers a callback that listens for text changes. */
+    /** Sets the placeholder text displayed for an empty comment. */
+    setPlaceholderText(text: string): void;
+    /** Registers a callback that listens for text changes on the comment editor. */
     addTextChangeListener(listener: (oldText: string, newText: string) => void): void;
-    /** Removes the given listener from the list of text change listeners. */
+    /** Removes the given listener from the comment editor. */
     removeTextChangeListener(listener: () => void): void;
-    /**
-     * Triggers listeners when the text of the comment changes, either
-     * programmatically or manually by the user.
-     */
-    private onTextChange;
     /** Updates the preview text element to reflect the given text. */
     private updateTextPreview;
     /** Truncates the text to fit within the top view. */
     private truncateText;
     /** Brings the workspace comment to the front of its layer. */
-    private bringToFront;
+    bringToFront(): void;
     /**
      * Handles disposing of the comment when we get a pointer down event on the
      * delete icon.
@@ -223,5 +205,9 @@ export declare class CommentView implements IRenderedElement {
     addDisposeListener(listener: () => void): void;
     /** Removes the given listener from the list of disposal listeners. */
     removeDisposeListener(listener: () => void): void;
+    /**
+     * @internal
+     */
+    getCommentBarButtons(): CommentBarButton[];
 }
 //# sourceMappingURL=comment_view.d.ts.map

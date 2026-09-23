@@ -14,22 +14,26 @@ import './events/events_viewport.js';
 import type { Block } from './block.js';
 import type { BlockSvg } from './block_svg.js';
 import * as browserEvents from './browser_events.js';
+import { RenderedWorkspaceComment } from './comments/rendered_workspace_comment.js';
 import { WorkspaceComment } from './comments/workspace_comment.js';
 import { ComponentManager } from './component_manager.js';
 import { ContextMenuOption } from './contextmenu_registry.js';
 import type { FlyoutButton } from './flyout_button.js';
 import { Gesture } from './gesture.js';
 import { Grid } from './grid.js';
-import type { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.js';
 import type { IBoundedElement } from './interfaces/i_bounded_element.js';
+import { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { IDragTarget } from './interfaces/i_drag_target.js';
 import type { IFlyout } from './interfaces/i_flyout.js';
+import { type IFocusableNode } from './interfaces/i_focusable_node.js';
+import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import type { IMetricsManager } from './interfaces/i_metrics_manager.js';
 import type { IToolbox } from './interfaces/i_toolbox.js';
-import type { Cursor } from './keyboard_nav/cursor.js';
+import type { LineCursor } from './keyboard_nav/line_cursor.js';
 import type { Marker } from './keyboard_nav/marker.js';
 import { LayerManager } from './layer_manager.js';
 import { MarkerManager } from './marker_manager.js';
+import { Navigator } from './navigator.js';
 import { Options } from './options.js';
 import type { Renderer } from './renderers/common/renderer.js';
 import type { ScrollbarPair } from './scrollbar_pair.js';
@@ -42,7 +46,6 @@ import { Rect } from './utils/rect.js';
 import { Size } from './utils/size.js';
 import { Svg } from './utils/svg.js';
 import * as toolbox from './utils/toolbox.js';
-import type { VariableModel } from './variable_model.js';
 import { Workspace } from './workspace.js';
 import { WorkspaceAudio } from './workspace_audio.js';
 import { ZoomControls } from './zoom_controls.js';
@@ -50,7 +53,7 @@ import { ZoomControls } from './zoom_controls.js';
  * Class for a workspace.  This is an onscreen area with optional trashcan,
  * scrollbars, bubbles, and dragging.
  */
-export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationSvg {
+export declare class WorkspaceSvg extends Workspace implements IContextMenu, IFocusableNode, IFocusableTree {
     /**
      * A wrapper function called when a resize event occurs.
      * You can pass the result to `eventHandling.unbind`.
@@ -234,6 +237,8 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
     private cachedParentSvg;
     /** True if keyboard accessibility mode is on, false otherwise. */
     keyboardAccessibilityMode: boolean;
+    /** True iff a keyboard-initiated move ("drag") is in progress. */
+    keyboardMoveInProgress: boolean;
     /** The list of top-level bounded elements on the workspace. */
     private topBoundedElements;
     /** The recorded drag targets. */
@@ -245,6 +250,11 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
     svgBlockCanvas_: SVGElement;
     svgBubbleCanvas_: SVGElement;
     zoomControls_: ZoomControls | null;
+    /**
+     * Navigator that handles moving focus between items in this workspace in
+     * response to keyboard navigation commands.
+     */
+    private navigator;
     /**
      * @param options Dictionary of options.
      */
@@ -275,22 +285,6 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      */
     getComponentManager(): ComponentManager;
     /**
-     * Add the cursor SVG to this workspaces SVG group.
-     *
-     * @param cursorSvg The SVG root of the cursor to be added to the workspace
-     *     SVG group.
-     * @internal
-     */
-    setCursorSvg(cursorSvg: SVGElement): void;
-    /**
-     * Add the marker SVG to this workspaces SVG group.
-     *
-     * @param markerSvg The SVG root of the marker to be added to the workspace
-     *     SVG group.
-     * @internal
-     */
-    setMarkerSvg(markerSvg: SVGElement): void;
-    /**
      * Get the marker with the given ID.
      *
      * @param id The ID of the marker.
@@ -304,7 +298,7 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      *
      * @returns The cursor for the workspace.
      */
-    getCursor(): Cursor | null;
+    getCursor(): LineCursor;
     /**
      * Get the block renderer attached to this workspace.
      *
@@ -392,7 +386,7 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      * @returns The first parent div with 'injectionDiv' in the name.
      * @internal
      */
-    getInjectionDiv(): Element;
+    getInjectionDiv(): HTMLElement;
     /**
      * Returns the SVG group for the workspace.
      *
@@ -419,7 +413,7 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      *     'blocklyMutatorBackground'.
      * @returns The workspace's SVG group.
      */
-    createDom(opt_backgroundClass?: string, injectionDiv?: Element): Element;
+    createDom(opt_backgroundClass?: string, injectionDiv?: HTMLElement): Element;
     /**
      * Dispose of this workspace.
      * Unlink from all DOM elements to prevent memory leaks.
@@ -442,6 +436,13 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      * @internal
      */
     addZoomControls(): void;
+    /**
+     * Creates a new set of options from this workspace's options with just the
+     * values that are relevant to a flyout.
+     *
+     * @returns A subset of this workspace's options.
+     */
+    copyOptionsForFlyout(): Options;
     /**
      * Add a flyout element in an element with the given tag name.
      *
@@ -495,6 +496,7 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
     updateScreenCalculationsIfScrolled(): void;
     /**
      * @returns The layer manager for this workspace.
+     * @internal
      */
     getLayerManager(): LayerManager | null;
     /**
@@ -572,38 +574,17 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      */
     highlightBlock(id: string | null, opt_state?: boolean): void;
     /**
+     * Handles any necessary updates when a variable changes.
+     *
+     * @internal
+     */
+    private variableChangeCallback;
+    /**
      * Refresh the toolbox unless there's a drag in progress.
      *
      * @internal
      */
     refreshToolboxSelection(): void;
-    /**
-     * Rename a variable by updating its name in the variable map.  Update the
-     *     flyout to show the renamed variable immediately.
-     *
-     * @param id ID of the variable to rename.
-     * @param newName New variable name.
-     */
-    renameVariableById(id: string, newName: string): void;
-    /**
-     * Delete a variable by the passed in ID.   Update the flyout to show
-     *     immediately that the variable is deleted.
-     *
-     * @param id ID of variable to delete.
-     */
-    deleteVariableById(id: string): void;
-    /**
-     * Create a new variable with the given name.  Update the flyout to show the
-     *     new variable immediately.
-     *
-     * @param name The new variable's name.
-     * @param opt_type The type of the variable like 'int' or 'string'.
-     *     Does not need to be unique. Field_variable can filter variables based
-     * on their type. This will default to '' which is a specific type.
-     * @param opt_id The unique ID of the variable. This will default to a UUID.
-     * @returns The newly created variable.
-     */
-    createVariable(name: string, opt_type?: string | null, opt_id?: string | null): VariableModel;
     /** Make a list of all the delete areas for this workspace. */
     recordDragTargets(): void;
     /**
@@ -653,9 +634,36 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      */
     moveDrag(e: PointerEvent): Coordinate;
     /**
-     * Is the user currently dragging a block or scrolling the flyout/workspace?
+     * Indicate whether a keyboard move is in progress or not.
      *
-     * @returns True if currently dragging or scrolling.
+     * Should be called with true when a keyboard move of an IDraggable
+     * is starts, and false when it finishes or is aborted.
+     *
+     * N.B.: This method is experimental and internal-only.  It is
+     * intended only to called only from the keyboard navigation plugin.
+     * Its signature and behaviour may be modified, or the method
+     * removed, at an time without notice and without being treated
+     * as a breaking change.
+     *
+     * TODO(#8960): Delete this.
+     *
+     * @internal
+     * @param inProgress Is a keyboard-initated move in progress?
+     */
+    setKeyboardMoveInProgress(inProgress: boolean): void;
+    /**
+     * Returns true iff the user is currently engaged in a drag gesture,
+     * or if a keyboard-initated move is in progress.
+     *
+     * Dragging gestures normally entail moving a block or other item on
+     * the workspace, or scrolling the flyout/workspace.
+     *
+     * Keyboard-initated movements are implemnted using the dragging
+     * infrastructure and are intended to emulate (a subset of) drag
+     * gestures and so should typically be treated as if they were a
+     * gesture-based drag.
+     *
+     * @returns True iff a drag gesture or keyboard move is in porgress.
      */
     isDragging(): boolean;
     /**
@@ -710,7 +718,7 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      * @param e Mouse event.
      * @internal
      */
-    showContextMenu(e: PointerEvent): void;
+    showContextMenu(e: Event): void;
     /**
      * Modify the block tree on the existing toolbox.
      *
@@ -773,12 +781,27 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      */
     setScale(newScale: number): void;
     /**
-     * Get the workspace's zoom factor.  If the workspace has a parent, we call
-     * into the parent to get the workspace scale.
+     * Get the workspace's zoom factor.
      *
      * @returns The workspace zoom factor. Units: (pixels / workspaceUnit).
      */
     getScale(): number;
+    /**
+     * Returns the absolute scale of the workspace.
+     *
+     * Workspace scaling is multiplicative; if a workspace B (e.g. a mutator editor)
+     * with scale Y is nested within a root workspace A with scale X, workspace B's
+     * effective scale is X * Y, because, as a child of A, it is already transformed
+     * by A's scaling factor, and then further transforms itself by its own scaling
+     * factor. Normally this Just Works, but for global elements (e.g. field
+     * editors) that are visually associated with a particular workspace but live at
+     * the top level of the DOM rather than being a child of their associated
+     * workspace, the absolute/effective scale may be needed to render
+     * appropriately.
+     *
+     * @returns The absolute/effective scale of the given workspace.
+     */
+    getAbsoluteScale(): number;
     /**
      * Scroll the workspace to a specified offset (in pixels), keeping in the
      * workspace bounds. See comment on workspaceSvg.scrollX for more detail on
@@ -828,13 +851,27 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      *
      * @param comment comment to add.
      */
-    addTopComment(comment: WorkspaceComment): void;
+    addTopComment(comment: RenderedWorkspaceComment): void;
     /**
      * Removes a comment from the list of top comments.
      *
      * @param comment comment to remove.
      */
-    removeTopComment(comment: WorkspaceComment): void;
+    removeTopComment(comment: RenderedWorkspaceComment): void;
+    /**
+     * Returns a list of comments on this workspace.
+     *
+     * @param ordered If true, sorts the comments based on their position.
+     * @returns A list of workspace comments.
+     */
+    getTopComments(ordered?: boolean): RenderedWorkspaceComment[];
+    /**
+     * Returns the workspace comment with the given ID, if any.
+     *
+     * @param id The ID of the comment to retrieve.
+     * @returns The workspace comment with the given ID, or null.
+     */
+    getCommentById(id: string): RenderedWorkspaceComment | null;
     getRootWorkspace(): WorkspaceSvg | null;
     /**
      * Adds a bounded element to the list of top bounded elements.
@@ -853,7 +890,7 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      *
      * @returns The top-level bounded elements.
      */
-    getTopBoundedElements(): IBoundedElement[];
+    getTopBoundedElements(ordered?: boolean): IBoundedElement[];
     /**
      * Update whether this workspace has resizes enabled.
      * If enabled, workspace will resize when appropriate.
@@ -921,14 +958,24 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
     removeToolboxCategoryCallback(key: string): void;
     /**
      * Look up the gesture that is tracking this touch stream on this workspace.
-     * May create a new gesture.
+     *
+     * Returns the gesture in progress, except:
+     *
+     * - If there is a keyboard-initiate move in progress then null will
+     *   be returned - after calling event.preventDefault() and
+     *   event.stopPropagation() to ensure the pointer event is ignored.
+     * - If there is a gesture in progress but event.type is
+     *   'pointerdown' then the in-progress gesture will be cancelled;
+     *   this will result in null being returned.
+     * - If no gesutre is in progress but event is a pointerdown then a
+     *   new gesture will be created and returned.
      *
      * @param e Pointer event.
      * @returns The gesture that is tracking this touch stream, or null if no
      *     valid gesture exists.
      * @internal
      */
-    getGesture(e: PointerEvent): Gesture | null;
+    getGesture(e?: PointerEvent): Gesture | null;
     /**
      * Clear the reference to the current gesture.
      *
@@ -975,6 +1022,75 @@ export declare class WorkspaceSvg extends Workspace implements IASTNodeLocationS
      *     and 1 specifying the degree of scrolling.
      */
     private static setTopLevelWorkspaceMetrics;
+    /**
+     * Adds a CSS class to the workspace.
+     *
+     * @param className Name of class to add.
+     */
+    addClass(className: string): void;
+    /**
+     * Removes a CSS class from the workspace.
+     *
+     * @param className Name of class to remove.
+     */
+    removeClass(className: string): void;
+    setIsReadOnly(readOnly: boolean): void;
+    /**
+     * Scrolls the provided bounds into view.
+     *
+     * In the case of small workspaces/large bounds, this function prioritizes
+     * getting the top left corner of the bounds into view. It also adds some
+     * padding around the bounds to allow the element to be comfortably in view.
+     *
+     * @internal
+     * @param bounds A rectangle to scroll into view, as best as possible.
+     * @param padding Amount of spacing to put between the bounds and the edge of
+     *     the workspace's viewport.
+     */
+    scrollBoundsIntoView(bounds: Rect, padding?: number): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    /** See IFocusableTree.getRootFocusableNode. */
+    getRootFocusableNode(): IFocusableNode;
+    /** See IFocusableTree.getRestoredFocusableNode. */
+    getRestoredFocusableNode(previousNode: IFocusableNode | null): IFocusableNode | null;
+    /** See IFocusableTree.getNestedTrees. */
+    getNestedTrees(): Array<IFocusableTree>;
+    /**
+     * Used for searching for a specific workspace comment.
+     * We can't use this.getWorkspaceCommentById because the workspace
+     * comment ids might not be globally unique, but the id assigned to
+     * the focusable element for the comment should be.
+     */
+    private searchForWorkspaceComment;
+    /** See IFocusableTree.lookUpFocusableNode. */
+    lookUpFocusableNode(id: string): IFocusableNode | null;
+    /** See IFocusableTree.onTreeFocus. */
+    onTreeFocus(_node: IFocusableNode, _previousTree: IFocusableTree | null): void;
+    /** See IFocusableTree.onTreeBlur. */
+    onTreeBlur(nextTree: IFocusableTree | null): void;
+    /**
+     * Returns an object responsible for coordinating movement of focus between
+     * items on this workspace in response to keyboard navigation commands.
+     *
+     * @returns This workspace's Navigator instance.
+     */
+    getNavigator(): Navigator;
+    /**
+     * Sets the Navigator instance used by this workspace.
+     *
+     * @param newNavigator A Navigator object to coordinate movement between
+     *     elements on the workspace.
+     */
+    setNavigator(newNavigator: Navigator): void;
 }
 /**
  * Size the workspace when the contents change.  This also updates

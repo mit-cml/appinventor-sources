@@ -249,12 +249,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   public void addBlocksEditor(BlocksEditor<?, ?> editor) {
     String formName = editor.getEntityName();
-    int pos = Collections.binarySearch(fileIds, editor.getFileId(),
-        getFileIdComparator());
-    if (pos < 0) {
-      pos = -pos - 1;
-    }
-    insertFileEditor(editor, pos);
+    openFileEditor(editor);
     if (isLastOpened(formName)) {
       screen1BlocksLoaded = true;
       if (readyToShowScreen1()) {
@@ -295,8 +290,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
     for (ProjectNode source: projectRootNode.getAllSourceNodes()) {
       if (source instanceof YoungAndroidBlocksNode) {
-        addBlocksEditor(((YoungAndroidBlocksNode) source).getFormName(),
-            new YaBlocksEditor(this, (YoungAndroidBlocksNode) source));
+        YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, (YoungAndroidBlocksNode) source);
+        addBlocksEditor(((YoungAndroidBlocksNode) source).getFormName(), newBlocksEditor);
+        newBlocksEditor.initWorkspace();
       }
     }
 
@@ -393,8 +389,9 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
     else if (node instanceof YoungAndroidBlocksNode) {
       if (getFileEditor(node.getFileId()) == null) {
-        addBlocksEditor(((YoungAndroidBlocksNode) node).getEntityName(),
-            new YaBlocksEditor(this, (YoungAndroidBlocksNode) node));
+        YaBlocksEditor newBlocksEditor = new YaBlocksEditor(this, (YoungAndroidBlocksNode) node);
+        addBlocksEditor(((YoungAndroidBlocksNode) node).getEntityName(), newBlocksEditor);
+        newBlocksEditor.initWorkspace();
         formName = ((YoungAndroidBlocksNode) node).getFormName();
       }
     }
@@ -574,6 +571,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           pos = -pos - 1;
         }
         insertFileEditor(newDesigner, pos);
+        openFileEditor(newDesigner);
         if (isLastOpened(entityName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
@@ -619,6 +617,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editorMap.put(entityName, editors);
     }
     addFileEditorByType(newBlocksEditor);
+    int pos = Collections.binarySearch(fileIds, newBlocksEditor.getFileId(),
+        getFileIdComparator());
+    if (pos < 0) {
+      pos = -pos - 1;
+    }
+    insertFileEditor(newBlocksEditor, pos);
   }
 
   private void removeFormEditor(String formName) {
