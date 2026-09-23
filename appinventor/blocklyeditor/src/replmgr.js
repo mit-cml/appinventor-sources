@@ -38,6 +38,26 @@ goog.require('AI.Yail.variables');
 if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {};
 Blockly.ReplMgr.yail = null;
 
+Blockly.ReplMgr.assetFetchNameFromYail = function(code) {
+    if (code.indexOf("AssetFetcher:fetchAssets") === -1) {
+        return null;
+    }
+    var strings = [];
+    var match;
+    var stringPattern = /"((?:\\.|[^"\\])*)"/g;
+    while ((match = stringPattern.exec(code)) !== null) {
+        strings.push(match[1]);
+    }
+    if (strings.length < 4) {
+        return null;
+    }
+    try {
+        return JSON.parse('"' + strings[3] + '"');
+    } catch (e) {
+        return strings[3];
+    }
+};
+
 top.usewebrtc = false;           // True if we are going to use webRTC instead
                                  // of our builtin webserver. This is now set when
                                  // we hear from the Rendezvous server that we are playing the webrtc game!
@@ -363,6 +383,10 @@ Blockly.ReplMgr.putYail = (function() {
                 return;
             }
 
+            if (rs.skipMacros) {
+                sentMacros = true;
+            }
+
             if (!sentMacros) {
                 // Add the protect-enum macro (used by dropdown blocks).
                 code = (rs.android ? PROTECT_ENUM_ANDROID : PROTECT_ENUM_IOS) + code;
@@ -617,7 +641,7 @@ Blockly.ReplMgr.putYail = (function() {
 
             var blockid;
             var sendcode;
-            if (!phonereceiving && !top.usewebrtc) {
+            if (!window.emulator && !phonereceiving && !top.usewebrtc) {
                 engine.receivefromphone();
             }
             var work;
@@ -735,6 +759,19 @@ Blockly.ReplMgr.putYail = (function() {
                     blockid = "-1";
                 }
             }
+            if (window.emulator) {
+                sendcode = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " +
+                  blockid + " (begin " + work.code + ")))";
+                var assetFetchName = Blockly.ReplMgr.assetFetchNameFromYail(work.code);
+                if (assetFetchName) {
+                    rs.phoneState.browserAssetInFlight = assetFetchName;
+                }
+                window.emulator.postMessage({type: 'repl', code: sendcode}, rs.webEmulatorUrl);
+                if (!assetFetchName) {
+                    rs.phoneState.ioRunning = false;
+                }
+                return;
+            }
             var encoder = new URLSearchParams();
             console.log('Low Level Sending: ' + work.code)
             encoder.append('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
@@ -809,6 +846,10 @@ Blockly.ReplMgr.putYail = (function() {
         },
         "reset" : function() {
             sentMacros = false;
+            if (window.emulator) {
+                window.emulator.close();
+                window.emulator = undefined;
+            }
             if (top.usewebrtc) {
                 if (webrtcdata) {
                     webrtcdata.close();
@@ -1109,6 +1150,10 @@ Blockly.ReplMgr.processRetvals = function(responses) {
         case "assetTransferred":
             top.AssetManager_markAssetTransferred(r.value);
             break;
+        case "assetTransferFailed":
+            runtimeerr(Blockly.Msg.REPL_ERROR_FROM_COMPANION + ": " +
+                (r.message || ("Failed to transfer asset " + r.value)));
+            break;
         case "extensionsLoaded":
             rs.state = Blockly.ReplMgr.rsState.CONNECTED;
             Blockly.common.getMainWorkspace().fireChangeListener(new AI.Events.CompanionConnect());
@@ -1378,7 +1423,17 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
     return sb.join("");
 };
 
-Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopback) {
+/**
+ * Start the App Inventor REPL connection.
+ *
+ * @param {boolean} already If the system is already running, perform a reset.
+ * @param {boolean} chromebook Start the Android app on a Chromebook.
+ * @param {boolean} emulator Start the Android emulator package with aiStarter.
+ * @param {boolean} usb Start the Android companion via USB with aiStarter.
+ * @param {?string=} browser Start the web emulator in a browser window.
+ * @param {?boolean=false} loopback Start the emulator with loopback support when running without a backend.
+ */
+Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, browser, loopback) {
     var rs = top.ReplState;
     var me = this;
     rs.didversioncheck = false; // Re-check
@@ -1410,6 +1465,52 @@ Blockly.ReplMgr.startRepl = function(already, chromebook, emulator, usb, loopbac
             rs.seq_count = 1;
             rs.count = 0;
             return;             // startAdbDevice callbacks will continue the connection process
+        }
+        if (browser) {
+            rs.skipMacros = true;
+            rs.hasfetchassets = true;
+            rs.webEmulatorUrl = browser;
+            if (window.emulatorWatcher) {
+                clearInterval(window.emulatorWatcher);
+            }
+            // Open emulator window
+            window.emulator = window.open(rs.webEmulatorUrl, '_blank', "menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,popup=true,width=480,height=675");
+
+            // Listen for a ready message from emulator to avoid missing the message
+            window.addEventListener("message", (event) => {
+                if (event.origin !== browser) return;
+                const data = event.data;
+
+                if (data.type === 'ready') {
+                    rs.state = this.rsState.ASSET;
+                    RefreshAssets(function() {
+                        Blockly.ReplMgr.loadExtensions();
+                    });
+                } else {
+                    Blockly.ReplMgr.processRetvals([event.data]);
+                    if (rs.phoneState && rs.phoneState.browserAssetInFlight &&
+                        (data.type === 'assetTransferred' || data.type === 'assetTransferFailed') &&
+                        data.value === rs.phoneState.browserAssetInFlight) {
+                        rs.phoneState.browserAssetInFlight = null;
+                        rs.phoneState.ioRunning = false;
+                        Blockly.ReplMgr.putYail();
+                    }
+                }
+            });
+            window.emulatorWatcher = setInterval(function() {
+                if (!window.emulator) {
+                    clearInterval(window.emulatorWatcher);
+                    window.emulatorWatcher = 0;
+                } else if (window.emulator.closed) {
+                    clearInterval(window.emulatorWatcher);
+                    window.emulatorWatcher = 0;
+                    window.emulator = undefined;
+                    Blockly.ReplMgr.startRepl(true, false, false, false, false);
+                    window.BlocklyPanel_indicateDisconnect();
+                }
+            }, 500);
+
+            return;
         }
         rs = top.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
