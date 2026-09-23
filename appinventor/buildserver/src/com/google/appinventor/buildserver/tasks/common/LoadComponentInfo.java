@@ -459,6 +459,9 @@ public class LoadComponentInfo implements CommonTask {
         JSONObject compJson = buildInfo.getJSONObject(i);
         JSONArray infoArray = null;
         String type = compJson.getString("type");
+        if (compJson.has(ComponentDescriptorConstants.CORE_LIBRARY_DESUGARING)) {
+          context.setIsCoreLibraryDesugaring(true);
+        }
         infoArray = compJson.optJSONArray(targetInfo);
         if (infoArray == null) {
           context.getReporter().info("Component \"" + type + "\" does not specify " + targetInfo);
