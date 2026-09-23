@@ -105,19 +105,44 @@
 
 (define-syntax gen-event-name (syntax-rules () ((_ component-name event-name) (symbol-append 'component-name (identifier-base '$) 'event-name))))
 
+; Show a user-visible warning when a component is not supported on iOS.
+; This is called instead of crashing the Companion app.
+(define (show-unsupported-component-warning component-type)
+  (android-log
+   (string-append "[AppInventor] Skipping unsupported iOS component: "
+                  (symbol->string (if (symbol? component-type)
+                                      component-type
+                                      'UnknownComponent))))
+  (yail:invoke AIComponentKit.Form 'activeForm
+               'showUnsupportedComponentWarning:
+               (if (symbol? component-type)
+                   (symbol->string component-type)
+                   "UnknownComponent")))
+
+; Create a component instance only if it is available on the current platform.
+; If the component class is not implemented on iOS, skip it gracefully and
+; inform the user instead of crashing.
 (define (make type container)
-  (yail:make-instance type container))
+  (if (yail:class-available? type)
+      (yail:make-instance type container)
+      (begin
+        (show-unsupported-component-warning type)
+        #f)))
 
 (define (add-component-within-repl container-name component-type component-name init-props-thunk)
   (let* ((container (lookup-in-current-form-environment container-name))
          (existing-component (lookup-in-current-form-environment component-name))
          (component-to-add (make component-type container)))
-    (add-to-current-form-environment component-name component-to-add)
-    (add-init-thunk component-name
-                    (lambda ()
-                      (when init-props-thunk (init-props-thunk))
-                      (when existing-component
-                            (copyComponentProperties existing-component component-to-add))))))
+    ; Only register and initialize if the component was successfully created.
+    ; If make returned #f the component is unsupported, so we skip it.
+    (when component-to-add
+      (add-to-current-form-environment component-name component-to-add)
+      (add-init-thunk component-name
+                      (lambda ()
+                        (when init-props-thunk (init-props-thunk))
+                        (when existing-component
+                              (copyComponentProperties existing-component component-to-add)))))))
+
 
 (define-syntax add-component
   (syntax-rules ()
