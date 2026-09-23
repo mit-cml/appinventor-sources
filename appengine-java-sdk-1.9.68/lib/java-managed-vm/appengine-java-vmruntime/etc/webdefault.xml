@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+TODO(isdal): Merge this file with webdefault.xml from
+//java/com/google/apphosting/runtime/jetty/
+once the apphosting/runtime/jetty build target has been refactored into two
+parts. We only want a subset of the filters in there applied to VM runtimes.
+Tracked by b/7551850
+-->
+
+<!-- ===================================================================== -->
+<!-- This file contains the default descriptor for web applications.       -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- The intent of this descriptor is to include jetty specific or common  -->
+<!-- configuration for all webapps.   If a context has a webdefault.xml    -->
+<!-- descriptor, it is applied before the contexts own web.xml file        -->
+<!--                                                                       -->
+<!-- A context may be assigned a default descriptor by:                    -->
+<!--  + Calling WebApplicationContext.setDefaultsDescriptor                -->
+<!--  + Passed an arg to addWebApplications                                -->
+<!--                                                                       -->
+<!-- This file is used both as the resource within the jetty.jar (which is -->
+<!-- used as the default if no explicit defaults descriptor is set) and it -->
+<!-- is copied to the etc directory of the Jetty distro and explicitly     -->
+<!-- by the jetty.xml file.                                                -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+<web-app
+   xmlns="http://java.sun.com/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+   metadata-complete="true"
+   version="2.5">
+
+  <description>
+    Default web.xml file.
+    This file is applied to a Web application before it's own WEB_INF/web.xml file
+  </description>
+
+  <!-- ==================================================================== -->
+  <!-- By default, the AbandonedTransactionDetector filter is mapped to all -->
+  <!-- servlets.  This filter rolls back any transactions that are still    -->
+  <!-- active when the request completes.                                   -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <filter>
+    <filter-name>AbandonedTransactionDetector</filter-name>
+    <filter-class>
+      com.google.apphosting.utils.servlet.TransactionCleanupFilter
+    </filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>AbandonedTransactionDetector</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- ==================================================================== -->
+  <!-- By default, the SaveSessionFilter filter is mapped to all servlets.  -->
+  <!-- This filter saves any dirty sessions to the datastore and memcache.  -->
+  <!-- ==================================================================== -->
+  <filter>
+    <filter-name>SaveSessionFilter</filter-name>
+    <filter-class>
+      com.google.apphosting.runtime.jetty9.SaveSessionFilter
+    </filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>SaveSessionFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>_ah_ParseBlobUploadFilter</filter-name>
+    <filter-class>
+      com.google.apphosting.utils.servlet.ParseBlobUploadFilter
+    </filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>_ah_ParseBlobUploadFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>_ah_VmStopFilter</filter-name>
+    <filter-class>com.google.apphosting.utils.servlet.VmStopFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>_ah_VmStopFilter</filter-name>
+    <url-pattern>/_ah/stop</url-pattern>
+  </filter-mapping>
+
+  <!-- ==================================================================== -->
+  <!-- Default health check response servlet.                               -->
+  <!-- Binds to /_ah/health and responds with "ok".                         -->
+  <!-- ==================================================================== -->
+  <servlet>
+    <servlet-name>_ah_health</servlet-name>
+    <servlet-class>com.google.apphosting.utils.servlet.VmHealthServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>_ah_sessioncleanup</servlet-name>
+    <servlet-class>com.google.apphosting.utils.servlet.SessionCleanupServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>_ah_warmup</servlet-name>
+    <servlet-class>com.google.apphosting.utils.servlet.WarmupServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>_ah_queue_deferred</servlet-name>
+    <servlet-class>com.google.apphosting.utils.servlet.DeferredTaskServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>_ah_health</servlet-name>
+    <url-pattern>/_ah/health</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>_ah_sessioncleanup</servlet-name>
+    <url-pattern>/_ah/sessioncleanup</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>_ah_warmup</servlet-name>
+    <url-pattern>/_ah/warmup</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>_ah_queue_deferred</servlet-name>
+    <url-pattern>/_ah/queue/__deferred__</url-pattern>
+  </servlet-mapping>
+
+  <!-- ===========================JSP====================================== -->
+  <!-- Default servlet. Even though static files are handled before the request
+  hits the VM the default servlet is needed for uncompiled jsp files to be
+  served properly. When we activate jsp compilation in the SDK we can disable
+  the default servlet. -->
+  <servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>aliases</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>acceptRanges</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>dirAllowed</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>welcomeServlets</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>redirectWelcome</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <!-- ==================================================================== -->
+  <!-- JSP Servlet                                                          -->
+  <!-- This is the jasper JSP servlet from the jakarta project              -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <!-- The JSP page compiler and execution servlet, which is the mechanism  -->
+  <!-- used by Glassfish to support JSP pages.  Traditionally, this servlet -->
+  <!-- is mapped to URL patterh "*.jsp".  This servlet supports the         -->
+  <!-- following initialization parameters (default values are in square    -->
+  <!-- brackets):                                                           -->
+  <!--                                                                      -->
+  <!--   checkInterval       If development is false and reloading is true, -->
+  <!--                       background compiles are enabled. checkInterval -->
+  <!--                       is the time in seconds between checks to see   -->
+  <!--                       if a JSP page needs to be recompiled. [300]    -->
+  <!--                                                                      -->
+  <!--   compiler            Which compiler Ant should use to compile JSP   -->
+  <!--                       pages.  See the Ant documenation for more      -->
+  <!--                       information. [javac]                           -->
+  <!--                                                                      -->
+  <!--   classdebuginfo      Should the class file be compiled with         -->
+  <!--                       debugging information?  [true]                 -->
+  <!--                                                                      -->
+  <!--   classpath           What class path should I use while compiling   -->
+  <!--                       generated servlets?  [Created dynamically      -->
+  <!--                       based on the current web application]          -->
+  <!--                       Set to ? to make the container explicitly set  -->
+  <!--                       this parameter.                                -->
+  <!--                                                                      -->
+  <!--   development         Is Jasper used in development mode (will check -->
+  <!--                       for JSP modification on every access)?  [true] -->
+  <!--                                                                      -->
+  <!--   enablePooling       Determines whether tag handler pooling is      -->
+  <!--                       enabled  [true]                                -->
+  <!--                                                                      -->
+  <!--   fork                Tell Ant to fork compiles of JSP pages so that -->
+  <!--                       a separate JVM is used for JSP page compiles   -->
+  <!--                       from the one Tomcat is running in. [true]      -->
+  <!--                                                                      -->
+  <!--   ieClassId           The class-id value to be sent to Internet      -->
+  <!--                       Explorer when using <jsp:plugin> tags.         -->
+  <!--                       [clsid:8AD9C840-044E-11D1-B3E9-00805F499D93]   -->
+  <!--                                                                      -->
+  <!--   javaEncoding        Java file encoding to use for generating java  -->
+  <!--                       source files. [UTF-8]                          -->
+  <!--                                                                      -->
+  <!--   keepgenerated       Should we keep the generated Java source code  -->
+  <!--                       for each page instead of deleting it? [true]   -->
+  <!--                                                                      -->
+  <!--   logVerbosityLevel   The level of detailed messages to be produced  -->
+  <!--                       by this servlet.  Increasing levels cause the  -->
+  <!--                       generation of more messages.  Valid values are -->
+  <!--                       FATAL, ERROR, WARNING, INFORMATION, and DEBUG. -->
+  <!--                       [WARNING]                                      -->
+  <!--                                                                      -->
+  <!--   mappedfile          Should we generate static content with one     -->
+  <!--                       print statement per input line, to ease        -->
+  <!--                       debugging?  [false]                            -->
+  <!--                                                                      -->
+  <!--                                                                      -->
+  <!--   reloading           Should Jasper check for modified JSPs?  [true] -->
+  <!--                                                                      -->
+  <!--   suppressSmap        Should the generation of SMAP info for JSR45   -->
+  <!--                       debugging be suppressed?  [false]              -->
+  <!--                                                                      -->
+  <!--   dumpSmap            Should the SMAP info for JSR45 debugging be    -->
+  <!--                       dumped to a file? [false]                      -->
+  <!--                       False if suppressSmap is true                  -->
+  <!--                                                                      -->
+  <!--   scratchdir          What scratch directory should we use when      -->
+  <!--                       compiling JSP pages?  [default work directory  -->
+  <!--                       for the current web application]               -->
+  <!--                                                                      -->
+  <!--   tagpoolMaxSize      The maximum tag handler pool size  [5]         -->
+  <!--                                                                      -->
+  <!--   xpoweredBy          Determines whether X-Powered-By response       -->
+  <!--                       header is added by generated servlet  [false]  -->
+  <!--                                                                      -->
+  <!-- If you wish to use Jikes to compile JSP pages:                       -->
+  <!--   Set the init parameter "compiler" to "jikes".  Define              -->
+  <!--   the property "-Dbuild.compiler.emacs=true" when starting Jetty     -->
+  <!--   to cause Jikes to emit error messages in a format compatible with  -->
+  <!--   Jasper.                                                            -->
+  <!--   If you get an error reporting that jikes can't use UTF-8 encoding, -->
+  <!--   try setting the init parameter "javaEncoding" to "ISO-8859-1".     -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <servlet
+    id="jsp"
+  >
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+    <init-param>
+      <param-name>development</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>logVerbosityLevel</param-name>
+      <param-value>DEBUG</param-value>
+    </init-param>
+    <init-param>
+      <param-name>fork</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>xpoweredBy</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>*.jsp</url-pattern>
+    <url-pattern>*.jspf</url-pattern>
+    <url-pattern>*.jspx</url-pattern>
+    <url-pattern>*.xsp</url-pattern>
+    <url-pattern>*.JSP</url-pattern>
+    <url-pattern>*.JSPF</url-pattern>
+    <url-pattern>*.JSPX</url-pattern>
+    <url-pattern>*.XSP</url-pattern>
+  </servlet-mapping>
+  <!-- ===========================END JSP================================== -->
+
+  <!-- ==================================================================== -->
+  <!-- Disable TRACE method with security constraint                        -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Disable TRACE</web-resource-name>
+      <url-pattern>/</url-pattern>
+      <http-method>TRACE</http-method>
+    </web-resource-collection>
+    <auth-constraint/>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Enable everything but TRACE</web-resource-name>
+      <url-pattern>/</url-pattern>
+      <http-method-omission>TRACE</http-method-omission>
+    </web-resource-collection>
+  </security-constraint>
+
+
+  <security-constraint>
+    <web-resource-collection>
+      <url-pattern>/_ah/queue/__deferred__</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <session-config>
+    <session-timeout>1440</session-timeout>
+  </session-config>
+</web-app>

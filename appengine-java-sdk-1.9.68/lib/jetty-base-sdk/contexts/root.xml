@@ -1,0 +1,20 @@
+<?xml version="1.0"  encoding="ISO-8859-1"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_1.dtd">
+
+<!-- ================================================================== -->
+<!-- Configure and deploy the application in $(gcloud.java.application) -->
+<!-- ================================================================== -->
+
+<Configure class="com.google.apphosting.vmruntime.jetty9.VmRuntimeWebAppContext" >
+  <Call name="init">
+    <Arg><SystemProperty name="gcloud.java.application" default="."/></Arg>
+    <Arg><SystemProperty name="appengine_web_xml" default="WEB-INF/appengine-web.xml"/></Arg>
+  </Call>
+  <Set name="parentLoaderPriority">
+    <SystemProperty name="jetty_parent_classloader" default="false"/>
+  </Set>
+  <Set name="defaultsDescriptor">
+    <SystemProperty name="jetty.base" default="."/>/etc/webdefault.xml
+  </Set>
+  <Set name="contextPath">/</Set>
+</Configure>
