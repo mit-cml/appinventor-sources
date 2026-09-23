@@ -626,6 +626,13 @@ body {
   color: text-highlight;
 }
 
+.gwt-Tree .gwt-TreeItem.ode-AssetItem-dragging span,
+.gwt-Tree .gwt-TreeItem.ode-AssetItem-dragging span:hover {
+  background-color: row-highlight !important;
+  color: text-highlight;
+  opacity: 0.85;
+}
+
 /* Young Android Toolbar */
 
 .ya-Toolbar {
