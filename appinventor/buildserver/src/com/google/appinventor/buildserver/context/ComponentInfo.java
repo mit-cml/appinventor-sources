@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2025 MIT, All rights reserved
+// Copyright 2021-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -10,6 +10,7 @@ import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
 import com.google.common.collect.Sets;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,7 @@ public class ComponentInfo {
   private final ConcurrentMap<String, Set<String>> contentProvidersNeeded;
   private final ConcurrentMap<String, Set<String>> xmlsNeeded;
   private final ConcurrentMap<String, Set<String>> featuresNeeded;
+  private final Map<String, String> applicationAttributes;
 
   private Set<String> uniqueLibsNeeded;
   private AARLibraries explodedAarLibs;
@@ -62,6 +64,7 @@ public class ComponentInfo {
     contentProvidersNeeded = new ConcurrentHashMap<>();
     xmlsNeeded = new ConcurrentHashMap<>();
     featuresNeeded = new ConcurrentHashMap<>();
+    applicationAttributes = new HashMap<>();
 
     uniqueLibsNeeded = Sets.newHashSet();
   }
@@ -147,6 +150,10 @@ public class ComponentInfo {
     return featuresNeeded;
   }
 
+  public Map<String, String> getApplicationAttributes() {
+    return applicationAttributes;
+  }
+
   @Override
   public String toString() {
     return "JsonInfo{"
@@ -161,6 +168,7 @@ public class ComponentInfo {
         + ", uniqueLibsNeeded=" + uniqueLibsNeeded
         + ", xmlsNeeded=" + xmlsNeeded
         + ", featuresNeeded=" + featuresNeeded
+        + ", applicationAttributes=" + applicationAttributes
         + '}';
   }
 }

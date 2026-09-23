@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2025 MIT, All rights reserved
+// Copyright 2021-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -459,6 +459,7 @@ public class LoadComponentInfo implements CommonTask {
         JSONObject compJson = buildInfo.getJSONObject(i);
         JSONArray infoArray = null;
         String type = compJson.getString("type");
+        processApplicationAttributes(compJson);
         infoArray = compJson.optJSONArray(targetInfo);
         if (infoArray == null) {
           context.getReporter().info("Component \"" + type + "\" does not specify " + targetInfo);
@@ -484,6 +485,19 @@ public class LoadComponentInfo implements CommonTask {
         }
 
         processConditionalInfo(compJson, type, targetInfo);
+      }
+    }
+  }
+
+  private void processApplicationAttributes(JSONObject component) throws JSONException {
+    if (component.has(ComponentDescriptorConstants.APPLICATION_ATTRIBUTES)) {
+      JSONObject attributes = component.getJSONObject(ComponentDescriptorConstants.APPLICATION_ATTRIBUTES);
+      if (attributes != null && attributes.length() > 0) {
+        Iterator<String> keys = attributes.keys();
+        while (keys.hasNext()) {
+          String key = keys.next();
+          context.getComponentInfo().getApplicationAttributes().putIfAbsent(key, attributes.getString(key));
+        }
       }
     }
   }

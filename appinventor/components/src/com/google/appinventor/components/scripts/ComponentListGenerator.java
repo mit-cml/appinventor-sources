@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -90,6 +90,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
         component.contentProviders);
     appendComponentInfo(json, ComponentDescriptorConstants.XMLS_TARGET, component.xmls);
     appendComponentInfo(json, ComponentDescriptorConstants.FEATURES_TARGET, component.features);
+    appendApplicationAttributes(json, ComponentDescriptorConstants.APPLICATION_ATTRIBUTES,
+      component.applicationAttributes);
     appendConditionalComponentInfo(component, json);
     // TODO(Will): Remove the following call once the deprecated
     //             @SimpleBroadcastReceiver annotation is removed. It should
@@ -158,6 +160,15 @@ public final class ComponentListGenerator extends ComponentProcessor {
   private static void appendComponentInfo(JSONObject parent,
       String infoName, Set<String> infoEntries) {
     parent.put(infoName, new JSONArray(infoEntries));
+  }
+
+  private static void appendApplicationAttributes(JSONObject parent,
+    String infoName, Map<String, String> attributes) {
+      JSONObject attrObject = new JSONObject();
+      for (Map.Entry<String, String> entry : attributes.entrySet()) {
+        attrObject.put(entry.getKey(), entry.getValue());
+      }
+      parent.put(infoName, attrObject);
   }
 
   /**
