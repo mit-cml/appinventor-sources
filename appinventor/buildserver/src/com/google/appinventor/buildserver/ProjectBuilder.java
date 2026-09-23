@@ -237,6 +237,10 @@ public final class ProjectBuilder {
           for (File file : context.getOutputFiles()) {
             Files.copy(file, new File(outputDir, file.getName()));
           }
+          if (saveKeystore) {
+            outputKeystore = new File(outputDir, KEYSTORE_FILE_NAME);
+            Files.copy(keyStoreFile, outputKeystore);
+          }
         }
         return new Result(success, messages, context.getReporter().getUserOutput());
       } finally {
