@@ -25,6 +25,12 @@
     <meta HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"/>
     <meta HTTP-EQUIV="expires" CONTENT="0"/>
     <title>MIT App Inventor</title>
+      <style>
+          body {
+              font-size: 3em;
+              display: grid;
+          }
+      </style>
   </head>
 <body>
   <center>
