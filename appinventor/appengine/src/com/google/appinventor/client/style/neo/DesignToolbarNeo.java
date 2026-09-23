@@ -28,6 +28,8 @@ public class DesignToolbarNeo extends DesignToolbar {
   @UiField protected ToolbarItem sendToGalleryItem;
   @UiField protected Boolean isAvailable;
   @UiField protected ToolbarItem backArrow;
+  @UiField protected ToolbarItem undoItem;
+  @UiField protected ToolbarItem redoItem;
 
   @Override
   public void bindUI() {
@@ -44,5 +46,7 @@ public class DesignToolbarNeo extends DesignToolbar {
     super.sendToGalleryItem = sendToGalleryItem;
     super.isAvailable = isAvailable;
     super.backArrow = backArrow;
+    super.undoItem = undoItem;
+    super.redoItem = redoItem;
   }
 }

@@ -154,6 +154,16 @@ public abstract class MockDesignerRoot extends MockContainer implements Designer
   }
 
   /**
+   * Triggers a before-component-removed event to be sent to the listeners.
+   * Called before the component is removed from its container's children list.
+   */
+  public void fireBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    for (DesignerChangeListener listener : changeListeners) {
+      listener.onBeforeComponentRemoved(component, permanentlyDeleted);
+    }
+  }
+
+  /**
    * Triggers a component removed event to be sent to the listener on the listener list.
    */
   public void fireComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
