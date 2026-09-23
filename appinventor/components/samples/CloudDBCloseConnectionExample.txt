@@ -1,0 +1,15 @@
+CloudDB CloseConnection example
+
+Description:
+Call CloseConnection when a screen is hidden to release Redis connections.
+
+Pseudo-blocks:
+
+Screen1.Initialize
+  // normal setup
+
+Screen1.Hide
+  call CloudDB1.CloseConnection
+
+Screen1.Show
+  // If you need CloudDB again, call Initialize on the component or let it auto-start on use.
