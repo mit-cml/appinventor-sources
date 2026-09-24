@@ -244,6 +244,8 @@ public abstract class Box extends HandlerPanel {
     this.highlightCaption = highlightCaption;
 
     captionLabel = new Label(caption, false);
+    captionLabel.getElement().setAttribute("role", "heading");
+    captionLabel.getElement().setAttribute("aria-level", "2");
     captionAlreadySeen = false;
     if (highlightCaption) {
       captionLabel.setStylePrimaryName("ode-Box-header-caption-highlighted");

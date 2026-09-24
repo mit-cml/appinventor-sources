@@ -42,6 +42,9 @@ public final class AdminUserListBox extends Box {
 
     plist = new AdminUserList();
     setContent(plist);
+
+    getElement().setAttribute("role", "region");
+    getElement().setAttribute("aria-label", MESSAGES.adminUserListAriaLabel());
   }
 
   /**
