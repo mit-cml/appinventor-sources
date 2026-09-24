@@ -819,6 +819,18 @@ div.StatusPanel {
   height: 480px;
 }
 
+.ode-SourceStructureExplorer {
+  width: fit-content;
+}
+
+.ode-SourceStructureExplorer > .ode-PanelButtons {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+}
+
 .ode-NavArrow {
   border: transparent;
   background: #C2C2C2;
