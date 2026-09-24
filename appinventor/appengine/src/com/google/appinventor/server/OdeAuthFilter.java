@@ -7,7 +7,6 @@
 package com.google.appinventor.server;
 
 import com.google.appinventor.server.cookieauth.CookieAuth;
-import java.io.Serializable;
 
 import com.google.appinventor.server.flags.Flag;
 
@@ -21,9 +20,10 @@ import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,7 +39,6 @@ import org.keyczar.Crypter;
 import org.keyczar.exceptions.KeyczarException;
 
 import org.keyczar.util.Base64Coder;
-
 
 /**
  * An authentication filter that uses Google Accounts for logged-in users.
@@ -63,7 +62,7 @@ public class OdeAuthFilter implements Filter {
   // of appengine-web.xml.
   @VisibleForTesting
   static final Flag<Boolean> useWhitelist = Flag.createFlag("use.whitelist", false);
-  static final Flag<String> sessionKeyFile = Flag.createFlag("session.keyfile", "WEB-INF/authkey");
+  static final Flag<String> sessionKeyFile = Flag.createFlag("session.keyfile", "authkey");
   static final Flag<Integer> idleTimeout = Flag.createFlag("session.idletimeout", 120);
   static final Flag<Integer> renewTime = Flag.createFlag("session.renew", 30);
 

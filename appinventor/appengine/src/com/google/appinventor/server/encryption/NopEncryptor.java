@@ -30,4 +30,9 @@ class NopEncryptor implements Encryptor {
   public byte[] encrypt(byte[] plain) {
     return plain;
   }
+
+  @Override
+  public void setKeyPath(String keyPath) {
+  }
+
 }

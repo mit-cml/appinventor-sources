@@ -24,6 +24,8 @@ message token {
     DELETEACCOUNT = 21;                       // Delete the account identified by uuid and name
                                               // Note: Purposely using a high number as this is an
                                               // infrequent event
+    GETPROJECTS = 22;                         // Get information on user's projects (name, id, dates)
+    CHECKACCOUNT = 23;                        // Check the validity of the account in the uuid field
   }
 
   required CommandType command = 1;

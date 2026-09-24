@@ -8,6 +8,8 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.utils.MessageDialog;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
@@ -23,6 +25,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -46,6 +49,9 @@ public class ProjectUploadWizard {
   @UiField Button okButton;
   @UiField Button cancelButton;
 
+  long projectId = 0;
+  boolean oneProjectMode = false;
+
   // Project archive extension
   private static final String PROJECT_ARCHIVE_EXTENSION = ".aia";
 
@@ -55,6 +61,12 @@ public class ProjectUploadWizard {
   public ProjectUploadWizard() {
     LOG.warning("Create ProjectUploadWizard");
     // Initialize UI
+    Ode ode = Ode.getInstance();
+    oneProjectMode = ode.getOneProjectMode();
+    if (oneProjectMode) {
+      projectId = ode.getCurrentYoungAndroidProjectId();
+    }
+
     uibinder.createAndBindUi(this);
     upload.setName(ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);
     upload.getElement().setAttribute("accept", PROJECT_ARCHIVE_EXTENSION);
@@ -101,8 +113,15 @@ public class ProjectUploadWizard {
   }
 
   private void upload(FileUpload upload, String filename) {
-    String uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/"
-        + ServerLayout.UPLOAD_PROJECT + "/" + filename;
+    String uploadUrl;
+    if (oneProjectMode) {
+      uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+        ServerLayout.REPLACE_PROJECT + "/" + projectId;
+    } else {
+      uploadUrl = ServerLayout.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+        ServerLayout.UPLOAD_PROJECT + "/" + filename;
+    }
+
     Uploader.getInstance().upload(upload, uploadUrl,
         new OdeAsyncCallback<UploadResponse>(
         // failure message
@@ -114,6 +133,24 @@ public class ProjectUploadWizard {
                 String info = uploadResponse.getInfo();
                 UserProject userProject = UserProject.valueOf(info);
                 Ode ode = Ode.getInstance();
+                if (oneProjectMode) { // We replaced project, so we need to flush the
+                  // old version from memory
+                  boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
+                  ode.getEditorManager().closeProjectEditor(projectId);
+                  if (isCurrentProject) {
+                    ViewerBox.getViewerBox().clear();
+                  }
+                  ode.getProjectManager().removeDeletedProject(projectId);
+                  Timer t = new Timer() {
+                      @Override
+                      public void run() {
+                        // Replacing the existing project doesn't quite work
+                        // correctly, so we are forced to reload
+                        Ode.reloadWindow(false);
+                      }
+                    };
+                  t.schedule(1000); // Give things a second to settle down
+                }
                 Project uploadedProject = ode.getProjectManager().addProject(userProject);
                 ode.openYoungAndroidProjectInDesigner(uploadedProject);
                 break;
