@@ -264,6 +264,10 @@ div.StatusPanel {
 }
 
 .ode-Box-header {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  box-sizing: border-box;
   background: rgba(102, 153, 0, 0.3);
   height: 31px;
   border: 1px solid;
