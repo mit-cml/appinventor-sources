@@ -12,34 +12,13 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
 
-import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 
 public class ListViewTwoTextAdapter extends ListAdapterWithRecyclerView {
 
-  private int textMainColor;
-  private float textMainSize;
-  private String textMainFont;
-  private int textDetailColor;
-  private float textDetailSize;
-  private String textDetailFont;
-  private int textMainAlignment;
-  private int textDetailAlignment;
-
   public ListViewTwoTextAdapter(ComponentContainer container, ListDataModel model,
-      int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
-      float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
-    super(container, model, backgroundColor, selectionColor, radius);
-    this.container = container;
-    this.textMainColor = textMainColor;
-    this.textMainSize = textMainSize;
-    this.textMainFont = textMainFont;
-    this.textDetailColor = textDetailColor;
-    this.textDetailSize = textDetailSize;
-    this.textDetailFont = textDetailFont;
-    this.textMainAlignment = textMainAlignment;
-    this.textDetailAlignment = textDetailAlignment;
+      ListViewStyle style) {
+    super(container, model, style);
   }
 
   @Override
@@ -55,10 +34,6 @@ public class ListViewTwoTextAdapter extends ListAdapterWithRecyclerView {
         new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     textViewFirst.setLayoutParams(layoutParams1);
-    textViewFirst.setTextSize(textMainSize);
-    textViewFirst.setTextColor(textMainColor);
-    TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
-    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
 
     // DetailText
     TextView textViewSecond = new TextView(container.$context());
@@ -67,11 +42,7 @@ public class ListViewTwoTextAdapter extends ListAdapterWithRecyclerView {
     LinearLayout.LayoutParams layoutParams2 =
         new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    textViewSecond.setTextSize(textDetailSize);
-    TextViewUtil.setFontTypeface(container.$form(), textViewSecond, textDetailFont, false, false);
-    textViewSecond.setTextColor(textDetailColor);
     textViewSecond.setLayoutParams(layoutParams2);
-    TextViewUtil.setAlignment(textViewSecond, textDetailAlignment, false);
 
     LinearLayout linearLayout2 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear2 =
@@ -115,8 +86,10 @@ public class ListViewTwoTextAdapter extends ListAdapterWithRecyclerView {
     }
     twoTextHolder.textViewFirst.setText(first);
     twoTextHolder.textViewSecond.setText(second);
-    
-    updateCardViewColor(twoTextHolder.cardView, position);
+
+    styleMainText(twoTextHolder.textViewFirst);
+    styleDetailText(twoTextHolder.textViewSecond);
+    styleCardView(twoTextHolder.cardView, position);
   }
 
   public class TwoTextRvViewHolder extends RvViewHolder {

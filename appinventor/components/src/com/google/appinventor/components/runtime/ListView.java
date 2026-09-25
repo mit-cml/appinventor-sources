@@ -100,33 +100,20 @@ public final class ListView extends AndroidViewComponent {
   private int backgroundColor;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_BLACK;
 
-  private int elementColor = COLOR_NONE;
-
-  private int textColor;
-  private int detailTextColor;
-
-  private int selectionColor;
-
-  private float fontSizeMain;
-  private float fontSizeDetail;
-  private String fontTypeface;
-  private String fontTypeDetail;
+  // The row appearance. The adapter holds this same instance, so changing a value here and
+  // re-binding the rows is enough — no new adapter needed.
+  private final ListViewStyle style = new ListViewStyle();
 
   private String hint;
 
   /* for backward compatibility */
   private static final float DEFAULT_TEXT_SIZE = 22;
 
-  private int imageWidth;
-  private int imageHeight;
   private static final int DEFAULT_IMAGE_WIDTH = 200;
 
   // variable for ListView layout types
   private int layout;
   private String propertyValue;  // JSON string representing data entered through the Designer
-
-  private int textAlignmentMain;
-  private int textAlignmentDetail;
 
   private boolean multiSelect;
   private Paint dividerPaint;
@@ -135,7 +122,6 @@ public final class ListView extends AndroidViewComponent {
   private static final int DEFAULT_DIVIDER_SIZE = 0;
   private int margins;
   private static final int DEFAULT_RADIUS = 0;
-  private int radius;
   private RecyclerView.EdgeEffectFactory edgeEffectFactory;
   private ListBounceEdgeEffectFactory bounceEdgeEffectFactory;
   private boolean bounceEffect;
@@ -163,6 +149,10 @@ public final class ListView extends AndroidViewComponent {
 
     layoutManager = new LinearLayoutManager(container.$context(), LinearLayoutManager.VERTICAL, false);
     recyclerView.setLayoutManager(layoutManager);
+
+    // Build the adapter up front. The property setters below only mutate the style and re-bind, so
+    // an adapter has to exist by the time the first of them runs.
+    setAdapterData();
 
     listLayout = new LinearLayout(container.$context());
     LinearLayout.LayoutParams paramsList = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -225,9 +215,6 @@ public final class ListView extends AndroidViewComponent {
     }
 
     // set the colors and initialize the elements
-    // note that the TextColor and ElementsFromString setters
-    // need to have the textColor set first, since they reset the
-    // adapter
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     SelectionColor(Component.COLOR_LTGRAY);
     TextColor(Component.COLOR_WHITE);
@@ -256,7 +243,6 @@ public final class ListView extends AndroidViewComponent {
     linearLayout.requestLayout();
     container.$add(this);
     Width(Component.LENGTH_FILL_PARENT);
-    ListViewLayout(ComponentConstants.LISTVIEW_LAYOUT_SINGLE_TEXT);
     // initialize selectionIndex which also sets selection
     SelectionIndex(0);
   }
@@ -536,7 +522,6 @@ public final class ListView extends AndroidViewComponent {
     backgroundColor = argb;
     recyclerView.setBackgroundColor(backgroundColor);
     linearLayout.setBackgroundColor(backgroundColor);
-    setAdapterData();
   }
 
   /**
@@ -551,7 +536,7 @@ public final class ListView extends AndroidViewComponent {
       category = PropertyCategory.APPEARANCE)
   @IsColor
   public int ElementColor() {
-    return elementColor;
+    return style.elementColor;
   }
 
   /**
@@ -567,8 +552,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
   @SimpleProperty
   public void ElementColor(int argb) {
-    elementColor = argb;
-    setAdapterData();
+    style.elementColor = argb;
+    refreshStyle();
   }
 
   /**
@@ -584,7 +569,7 @@ public final class ListView extends AndroidViewComponent {
       category = PropertyCategory.APPEARANCE)
   @IsColor
   public int SelectionColor() {
-    return selectionColor;
+    return style.selectionColor;
   }
 
   /**
@@ -601,8 +586,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.DEFAULT_VALUE_COLOR_LTGRAY)
   @SimpleProperty
   public void SelectionColor(int argb) {
-    selectionColor = argb;
-    setAdapterData();
+    style.selectionColor = argb;
+    refreshStyle();
   }
 
   /**
@@ -617,7 +602,7 @@ public final class ListView extends AndroidViewComponent {
       category = PropertyCategory.APPEARANCE)
   @IsColor
   public int TextColor() {
-    return textColor;
+    return style.textColor;
   }
 
   /**
@@ -633,8 +618,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void TextColor(int argb) {
-    textColor = argb;
-    setAdapterData();
+    style.textColor = argb;
+    refreshStyle();
   }
 
   /**
@@ -645,7 +630,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The color of the detail text of ListView elements. ",
       category = PropertyCategory.APPEARANCE)
   public int TextColorDetail() {
-    return detailTextColor;
+    return style.detailTextColor;
   }
 
   /**
@@ -658,8 +643,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void TextColorDetail(int argb) {
-    detailTextColor = argb;
-    setAdapterData();
+    style.detailTextColor = argb;
+    refreshStyle();
   }
 
   /**
@@ -668,7 +653,7 @@ public final class ListView extends AndroidViewComponent {
   @Deprecated
   @SimpleProperty
   public int TextSize() {
-    return Math.round(fontSizeMain);
+    return Math.round(style.fontSizeMain);
   }
 
   /**
@@ -691,7 +676,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The font size of the main text.",
       category = PropertyCategory.APPEARANCE)
   public float FontSize() {
-    return fontSizeMain;
+    return style.fontSizeMain;
   }
 
   /**
@@ -704,10 +689,10 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty
   public void FontSize(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
-      fontSizeMain = 999;
+      style.fontSizeMain = 999;
     else
-      fontSizeMain = fontSize;
-    setAdapterData();
+      style.fontSizeMain = fontSize;
+    refreshStyle();
   }
 
    /**
@@ -718,7 +703,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The font size of the detail text.",
       category = PropertyCategory.APPEARANCE)
   public float FontSizeDetail() {
-    return fontSizeDetail;
+    return style.fontSizeDetail;
   }
 
   /**
@@ -731,10 +716,10 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty
   public void FontSizeDetail(float fontSize) {
     if (fontSize > 1000 || fontSize < 1)
-      fontSizeDetail = 999;
+      style.fontSizeDetail = 999;
     else
-      fontSizeDetail = fontSize;
-    setAdapterData();
+      style.fontSizeDetail = fontSize;
+    refreshStyle();
   }
 
   /**
@@ -749,7 +734,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       userVisible = false)
   public @Options(FontTypeface.class) String FontTypeface() {
-    return fontTypeface;
+    return style.fontTypeface;
   }
 
   /**
@@ -765,8 +750,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(userVisible = false)
   public void FontTypeface(@Options(FontTypeface.class) String typeface) {
-    fontTypeface = typeface;
-    setAdapterData();
+    style.fontTypeface = typeface;
+    refreshStyle();
   }
 
   /**
@@ -781,7 +766,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       userVisible = false)
   public @Options(FontTypeface.class) String FontTypefaceDetail() {
-    return fontTypeDetail;
+    return style.fontTypeDetail;
   }
 
   /**
@@ -797,8 +782,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(userVisible = false)
   public void FontTypefaceDetail(@Options(FontTypeface.class) String typeface) {
-    fontTypeDetail = typeface;
-    setAdapterData();
+    style.fontTypeDetail = typeface;
+    refreshStyle();
   }
 
   /**
@@ -813,7 +798,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "Specifies the alignment of the main text in ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int TextAlignmentMain() {
-    return textAlignmentMain;
+    return style.textAlignmentMain;
   }
 
   /**
@@ -829,8 +814,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.ALIGNMENT_NORMAL + "")
   @SimpleProperty
   public void TextAlignmentMain(int alignment) {
-    textAlignmentMain = alignment;
-    setAdapterData();
+    style.textAlignmentMain = alignment;
+    refreshStyle();
   }
 
   /**
@@ -845,7 +830,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "Specifies the alignment of the detail text in ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int TextAlignmentDetail() {
-    return textAlignmentDetail;
+    return style.textAlignmentDetail;
   }
 
   /**
@@ -861,8 +846,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = Component.ALIGNMENT_NORMAL + "")
   @SimpleProperty
   public void TextAlignmentDetail(int alignment) {
-    textAlignmentDetail = alignment;
-    setAdapterData();
+    style.textAlignmentDetail = alignment;
+    refreshStyle();
   }
 
   /**
@@ -873,7 +858,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "Image width of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int ImageWidth() {
-    return imageWidth;
+    return style.imageWidth;
   }
 
   /**
@@ -885,8 +870,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = DEFAULT_IMAGE_WIDTH + "")
   @SimpleProperty
   public void ImageWidth(int width) {
-    imageWidth = width;
-    setAdapterData();
+    style.imageWidth = width;
+    refreshStyle();
   }
 
   /**
@@ -897,7 +882,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "Image height of ListView elements.",
       category = PropertyCategory.APPEARANCE)
   public int ImageHeight() {
-    return imageHeight;
+    return style.imageHeight;
   }
 
   /**
@@ -909,8 +894,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = DEFAULT_IMAGE_WIDTH + "")
   @SimpleProperty
   public void ImageHeight(int height) {
-    imageHeight = height;
-    setAdapterData();
+    style.imageHeight = height;
+    refreshStyle();
   }
 
   /**
@@ -1179,7 +1164,7 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty(description = "The radius of the rounded corners of a list view element.",
       category = PropertyCategory.APPEARANCE)
   public int ElementCornerRadius() {
-    return radius;
+    return style.radius;
   }
 
   /**
@@ -1191,8 +1176,8 @@ public final class ListView extends AndroidViewComponent {
       defaultValue = DEFAULT_RADIUS + "")
   @SimpleProperty
   public void ElementCornerRadius(int radius) {
-    this.radius = radius;
-    setAdapterData();
+    style.radius = radius;
+    refreshStyle();
   }
 
   /**
@@ -1334,45 +1319,39 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * Create a new adapter and apply visual changes, load data if it exists.
+   * Re-applies the current appearance to the rows on screen.
+   *
+   * <p>The adapter reads the style as it binds each row, so an appearance change only has to
+   * re-bind. Building a new adapter would work too, but it drops every row view and sends the
+   * user's scroll position back to the top of the list.
+   */
+  private void refreshStyle() {
+    listAdapterWithRecyclerView.notifyItemRangeChanged(0,
+        listAdapterWithRecyclerView.getItemCount());
+  }
+
+  /**
+   * Create a new adapter for the current layout, load data if it exists.
    */
   public void setAdapterData() {
     switch (layout) {
       case LISTVIEW_LAYOUT_SINGLE_TEXT:
-        setListAdapter(new ListViewSingleTextAdapter(container, dataModel,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight,
-            textAlignmentMain, textAlignmentDetail));
+        setListAdapter(new ListViewSingleTextAdapter(container, dataModel, style));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT:
-        setListAdapter(new ListViewTwoTextAdapter(container, dataModel,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight,
-            textAlignmentMain, textAlignmentDetail));
+        setListAdapter(new ListViewTwoTextAdapter(container, dataModel, style));
         break;
       case LISTVIEW_LAYOUT_TWO_TEXT_LINEAR:
-        setListAdapter(new ListViewTwoTextLinearAdapter(container, dataModel,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight,
-            textAlignmentMain, textAlignmentDetail));
+        setListAdapter(new ListViewTwoTextLinearAdapter(container, dataModel, style));
         break;
       case LISTVIEW_LAYOUT_IMAGE_SINGLE_TEXT:
-        setListAdapter(new ListViewImageSingleTextAdapter(container, dataModel,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight,
-            textAlignmentMain, textAlignmentDetail));
+        setListAdapter(new ListViewImageSingleTextAdapter(container, dataModel, style));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TWO_TEXT:
-        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, dataModel,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight,
-            textAlignmentMain, textAlignmentDetail));
+        setListAdapter(new ListViewImageTwoTextVerticalAdapter(container, dataModel, style));
         break;
       case LISTVIEW_LAYOUT_IMAGE_TOP_TWO_TEXT:
-        setListAdapter(new ListViewImageTopTwoTextAdapter(container, dataModel,
-            textColor, fontSizeMain, fontTypeface, detailTextColor, fontSizeDetail, fontTypeDetail,
-            elementColor, selectionColor, radius, imageWidth, imageHeight,
-            textAlignmentMain, textAlignmentDetail));
+        setListAdapter(new ListViewImageTopTwoTextAdapter(container, dataModel, style));
         break;
     }
   }
@@ -1400,6 +1379,23 @@ public final class ListView extends AndroidViewComponent {
       }
     }
     recyclerView.addItemDecoration(new DividerItemDecoration());
+  }
+
+  /**
+   * Returns the model holding this ListView's items, filter and selection. Extensions need it to
+   * build an adapter to pass to {@link #setListAdapter}.
+   */
+  public ListDataModel getDataModel() {
+    return dataModel;
+  }
+
+  /**
+   * Returns this ListView's appearance. The ListView mutates it in place, so an adapter holding on
+   * to it picks up appearance changes when its rows re-bind. Extensions need it to build an adapter
+   * to pass to {@link #setListAdapter}.
+   */
+  public ListViewStyle getStyle() {
+    return style;
   }
 
   public void setListAdapter(ListAdapterWithRecyclerView adapter) {
