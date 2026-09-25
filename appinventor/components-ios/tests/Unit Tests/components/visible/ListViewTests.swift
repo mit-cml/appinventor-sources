@@ -468,6 +468,68 @@ class ListViewTests: AppInventorTestCase {
     XCTAssertEqual("", testList.Selection)
   }
 
+  func testSingleSelectReplacesTheSelection() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    let tableView = visibleTableView(for: testList)
+
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 2, section: 0))
+
+    XCTAssertEqual(["cherry"], testList.SelectedItems as? [String])
+    XCTAssertEqual(3, testList.SelectionIndex)
+  }
+
+  func testMultiSelectAccumulatesTappedRows() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    testList.MultiSelect = true
+    let tableView = visibleTableView(for: testList)
+
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 2, section: 0))
+
+    XCTAssertEqual(["apple", "cherry"], testList.SelectedItems as? [String])
+    // The last row touched is what the singular properties report.
+    XCTAssertEqual(3, testList.SelectionIndex)
+    XCTAssertEqual("cherry", testList.Selection)
+
+    // With allowsMultipleSelection on, UIKit reports a tap on an already selected row through
+    // didDeselectRowAt rather than didSelectRowAt, so that is how the un-picking tap arrives.
+    testList.tableView(tableView, didDeselectRowAt: IndexPath(row: 0, section: 0))
+
+    XCTAssertEqual(["cherry"], testList.SelectedItems as? [String])
+    XCTAssertEqual(1, testList.SelectionIndex)
+    XCTAssertEqual("apple", testList.Selection)
+  }
+
+  func testMultiSelectKeepsSelectionThroughFiltering() {
+    testList.Elements = ["apple", "banana", "cherry"] as [AnyObject]
+    testList.MultiSelect = true
+    let tableView = visibleTableView(for: testList)
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 0, section: 0))
+    testList.tableView(tableView, didSelectRowAt: IndexPath(row: 2, section: 0))
+
+    // "ban" hides both of the picked rows, but a set the user is building must survive a search.
+    testList.searchBar(UISearchBar(), textDidChange: "ban")
+    XCTAssertEqual(["apple", "cherry"], testList.SelectedItems as? [String])
+
+    testList.searchBar(UISearchBar(), textDidChange: "")
+    XCTAssertEqual(["apple", "cherry"], testList.SelectedItems as? [String])
+  }
+
+  func testRemoveItemKeepsSelectionOnTheSameItem() {
+    testList.Elements = ["apple", "banana", "cherry", "date"] as [AnyObject]
+    testList.SelectionIndex = 4  // date
+
+    testList.RemoveItemAtIndex(2)  // banana goes, so date slides from 4 to 3
+
+    XCTAssertEqual(3, testList.SelectionIndex)
+    XCTAssertEqual("date", testList.Selection)
+
+    testList.RemoveItemAtIndex(3)  // removing date itself clears what the blocks report
+    XCTAssertEqual(0, testList.SelectionIndex)
+    XCTAssertEqual("", testList.Selection)
+  }
+
   // MARK: Events
 
   func testAfterPicking() {
