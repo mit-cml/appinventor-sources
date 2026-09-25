@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 
 import java.util.Date;
+import java.util.Locale;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -143,12 +144,16 @@ public final class Dates {
       "hh:mm a",
       "HH:mm"
     };
+    ParseException lastException = null;
     for (String format : formats) {
       try {
-        return new SimpleDateFormat(format).parse(value);
-      } catch (ParseException e) {}
+        return new SimpleDateFormat(format, Locale.US).parse(value);
+      } catch (ParseException e) {
+        lastException = e;
+      }
     }
-    throw new IllegalArgumentException("illegal date/time format in function DateValue()");
+    throw new IllegalArgumentException(
+        "illegal date/time format in function DateValue(): " + value, lastException);
   }
 
   /**
@@ -199,7 +204,7 @@ public final class Dates {
    */
   @SimpleFunction
   public static String FormatDateTime(Calendar date, String pattern) {
-    SimpleDateFormat formatdate = new SimpleDateFormat();
+    SimpleDateFormat formatdate = new SimpleDateFormat("", Locale.US);
     if (pattern.length() == 0) {
       formatdate.applyPattern("MMM d, yyyy hh:mm:ss a");
     } else {
@@ -219,7 +224,7 @@ public final class Dates {
    */
   @SimpleFunction
   public static String FormatDate(Calendar date, String pattern) {
-    SimpleDateFormat formatdate = new SimpleDateFormat();
+    SimpleDateFormat formatdate = new SimpleDateFormat("", Locale.US);
     if (pattern.length() == 0) {
       formatdate.applyPattern("MMM d, yyyy");
     } else {
