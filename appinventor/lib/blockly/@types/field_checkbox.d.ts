@@ -8,8 +8,8 @@
  *
  * @class
  */
-import './events/events_block_change.js';
-import { Field, FieldConfig, FieldValidator } from './field.js';
+import type { FieldConfig, FieldValidator } from './field.js';
+import { Field } from './field.js';
 type BoolString = 'TRUE' | 'FALSE';
 type CheckboxBool = BoolString | boolean;
 /**
@@ -24,10 +24,6 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      * are not. Editable fields should also be serializable.
      */
     SERIALIZABLE: boolean;
-    /**
-     * Mouse cursor style when over the hotspot that initiates editability.
-     */
-    CURSOR: string;
     /**
      * NOTE: The default value is set in `Field`, so maintain that value instead
      * of overwriting it here or in the constructor.
@@ -44,7 +40,7 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      *     validated value ('TRUE' or 'FALSE'), or null to abort the change.
      * @param config A map of options used to configure the field.
      *     See the [field creation documentation]{@link
-     * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/checkbox#creation}
+     * https://docs.blockly.com/guides/create-custom-blocks/fields/built-in-fields/checkbox/#creation}
      * for a list of properties this parameter supports.
      */
     constructor(value?: CheckboxBool | typeof Field.SKIP_SETUP, validator?: FieldCheckboxValidator, config?: FieldCheckboxConfig);
@@ -119,6 +115,29 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      */
     private convertValueToBool;
     /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string;
+    /**
+     * Gets an ARIA-friendly label representation of this field's value.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's value.
+     *
+     * The FieldCheckbox implementation is not used for the actual ARIA label of
+     * the field, since the checked state is already included in the ARIA checked
+     * state, but it is used for the ARIA label of its source block.
+     *
+     * @returns An ARIA representation of the field's text.
+     */
+    getAriaValue(): string | null;
+    /**
      * Construct a FieldCheckbox from a JSON arg object.
      *
      * @param options A JSON object with options (checked).
@@ -127,6 +146,10 @@ export declare class FieldCheckbox extends Field<CheckboxBool> {
      * @internal
      */
     static fromJson(options: FieldCheckboxFromJsonConfig): FieldCheckbox;
+    /**
+     * Customizes the label and sets additional aria state.
+     */
+    recomputeAriaContext(): boolean;
 }
 /**
  * Config options for the checkbox field.
@@ -144,7 +167,7 @@ export interface FieldCheckboxFromJsonConfig extends FieldCheckboxConfig {
  * A function that is called to validate changes to the field's value before
  * they are set.
  *
- * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/validators#return_values}
+ * @see {@link https://docs.blockly.com/guides/create-custom-blocks/fields/validators/#return-values}
  * @param newValue The value to be validated.
  * @returns One of three instructions for setting the new value: `T`, `null`,
  * or `undefined`.

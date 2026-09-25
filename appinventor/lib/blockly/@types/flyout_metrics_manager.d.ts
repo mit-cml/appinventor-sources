@@ -9,7 +9,8 @@
  * @class
  */
 import type { IFlyout } from './interfaces/i_flyout.js';
-import { ContainerRegion, MetricsManager } from './metrics_manager.js';
+import type { ContainerRegion } from './metrics_manager.js';
+import { MetricsManager } from './metrics_manager.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
  * Calculates metrics for a flyout's workspace.

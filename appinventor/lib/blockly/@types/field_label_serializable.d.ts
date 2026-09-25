@@ -10,7 +10,8 @@
  *
  * @class
  */
-import { FieldLabel, FieldLabelConfig, FieldLabelFromJsonConfig } from './field_label.js';
+import type { FieldLabelConfig, FieldLabelFromJsonConfig } from './field_label.js';
+import { FieldLabel } from './field_label.js';
 /**
  * Class for a non-editable, serializable text field.
  */
@@ -32,7 +33,7 @@ export declare class FieldLabelSerializable extends FieldLabel {
      * @param textClass Optional CSS class for the field's text.
      * @param config A map of options used to configure the field.
      *    See the [field creation documentation]{@link
-     * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/label-serializable#creation}
+     * https://docs.blockly.com/guides/create-custom-blocks/fields/built-in-fields/label-serializable/#creation}
      * for a list of properties this parameter supports.
      */
     constructor(value?: string, textClass?: string, config?: FieldLabelConfig);

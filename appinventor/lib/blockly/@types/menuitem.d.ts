@@ -15,6 +15,7 @@ import * as aria from './utils/aria.js';
 export declare class MenuItem {
     private readonly content;
     private readonly opt_value?;
+    private readonly ariaLabel?;
     /** Is the menu item clickable, as opposed to greyed-out. */
     private enabled;
     /** The DOM element for the menu item. */
@@ -31,18 +32,24 @@ export declare class MenuItem {
     private highlight;
     /** Bound function to call when this menu item is clicked. */
     private actionHandler;
+    /** The unique ID for this menu item. */
+    private id;
     /**
      * @param content Text caption to display as the content of the item, or a
      *     HTML element to display.
      * @param opt_value Data/model associated with the menu item.
      */
-    constructor(content: string | HTMLElement, opt_value?: string | undefined);
+    constructor(content: string | HTMLElement, opt_value?: string | undefined, ariaLabel?: string | undefined);
     /**
      * Creates the menuitem's DOM.
      *
      * @returns Completed DOM.
      */
     createDom(): Element;
+    /**
+     * Gets the ARIA label for this menu item.
+     */
+    getAriaLabel(): string;
     /** Dispose of this menu item. */
     dispose(): void;
     /**
@@ -120,9 +127,12 @@ export declare class MenuItem {
      * Performs the appropriate action when the menu item is activated
      * by the user.
      *
+     * @param menuSelectEvent the event that triggered the selection
+     * of the menu item.
+     *
      * @internal
      */
-    performAction(): void;
+    performAction(menuSelectEvent: Event): void;
     /**
      * Set the handler that's called when the menu item is activated by the user.
      * `obj` will be used as the 'this' object in the function when called.
@@ -131,6 +141,14 @@ export declare class MenuItem {
      * @param obj Used as the 'this' object in fn when called.
      * @internal
      */
-    onAction(fn: (p1: MenuItem) => void, obj: object): void;
+    onAction(fn: (p1: MenuItem, menuSelectEvent: Event) => void, obj: object): void;
+    /**
+     * Adds or removes the checkmark indicator on this menu item.
+     * The indicator is present even if this menu item is not checked, as long
+     * as it is checkable; its visibility is controlled with CSS.
+     *
+     * @param add True to add the checkmark indicator, false to remove it.
+     */
+    private toggleHasCheckbox;
 }
 //# sourceMappingURL=menuitem.d.ts.map

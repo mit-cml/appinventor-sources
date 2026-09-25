@@ -19,8 +19,6 @@ export interface BlockInfo {
     disabledReasons?: string[];
     enabled?: boolean;
     id?: string;
-    x?: number;
-    y?: number;
     collapsed?: boolean;
     inline?: boolean;
     data?: string;
@@ -157,10 +155,6 @@ export declare function convertFlyoutDefToJsonArray(flyoutDef: FlyoutDefinition 
  */
 export declare function hasCategories(toolboxJson: ToolboxInfo | null): boolean;
 /**
- * Private version of hasCategories for stubbing in tests.
- */
-declare function hasCategoriesInternal(toolboxJson: ToolboxInfo | null): boolean;
-/**
  * Whether or not the category is collapsible.
  *
  * @param categoryInfo Object holing information for creating a category.
@@ -175,8 +169,4 @@ export declare function isCategoryCollapsible(categoryInfo: CategoryInfo): boole
  * @returns DOM tree of blocks, or null.
  */
 export declare function parseToolboxTree(toolboxDef: Element | null | string): Element | null;
-export declare const TEST_ONLY: {
-    hasCategoriesInternal: typeof hasCategoriesInternal;
-};
-export {};
 //# sourceMappingURL=toolbox.d.ts.map

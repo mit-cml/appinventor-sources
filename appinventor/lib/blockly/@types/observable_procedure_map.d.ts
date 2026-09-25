@@ -3,7 +3,7 @@
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { IProcedureMap } from './interfaces/i_procedure_map.js';
+import type { IProcedureMap } from './interfaces/i_procedure_map.js';
 import type { IProcedureModel } from './interfaces/i_procedure_model.js';
 export declare class ObservableProcedureMap extends Map<string, IProcedureModel> implements IProcedureMap {
     /** @internal */

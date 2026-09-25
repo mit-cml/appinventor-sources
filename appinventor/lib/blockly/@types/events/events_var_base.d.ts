@@ -8,9 +8,10 @@
  *
  * @class
  */
-import type { VariableModel } from '../variable_model.js';
+import type { IVariableModel, IVariableState } from '../interfaces/i_variable_model.js';
 import type { Workspace } from '../workspace.js';
-import { Abstract as AbstractEvent, AbstractEventJson } from './events_abstract.js';
+import type { AbstractEventJson } from './events_abstract.js';
+import { Abstract as AbstractEvent } from './events_abstract.js';
 /**
  * Abstract class for a variable event.
  */
@@ -22,7 +23,7 @@ export declare class VarBase extends AbstractEvent {
      * @param opt_variable The variable this event corresponds to.  Undefined for
      *     a blank event.
      */
-    constructor(opt_variable?: VariableModel);
+    constructor(opt_variable?: IVariableModel<IVariableState>);
     /**
      * Encode the event as JSON.
      *

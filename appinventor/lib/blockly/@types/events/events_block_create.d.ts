@@ -10,8 +10,9 @@
  */
 import type { Block } from '../block.js';
 import * as blocks from '../serialization/blocks.js';
-import { Workspace } from '../workspace.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import type { Workspace } from '../workspace.js';
+import type { BlockBaseJson } from './events_block_base.js';
+import { BlockBase } from './events_block_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners when a block (or connected stack of blocks) is
@@ -19,8 +20,6 @@ import { EventType } from './type.js';
  */
 export declare class BlockCreate extends BlockBase {
     type: EventType;
-    /** The XML representation of the created block(s). */
-    xml?: Element | DocumentFragment;
     /** The JSON respresentation of the created block(s). */
     json?: blocks.State;
     /** All of the IDs of created blocks. */
@@ -51,7 +50,6 @@ export declare class BlockCreate extends BlockBase {
     run(forward: boolean): void;
 }
 export interface BlockCreateJson extends BlockBaseJson {
-    xml: string;
     ids: string[];
     json: object;
     recordUndo?: boolean;

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { FlyoutButton } from './flyout_button.js';
+import type { FlyoutItemInfo } from './utils/toolbox.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -37,12 +38,11 @@ declare function colourButtonClickHandler(button: FlyoutButton): void;
 export declare const onCreateVariableButtonClick_Colour: typeof colourButtonClickHandler;
 /**
  * Construct the elements (blocks and button) required by the flyout for the
- * variable category.
+ * dynamic variables category.
  *
- * @param workspace The workspace containing variables.
- * @returns Array of XML elements.
+ * @returns List of flyout contents as JSON.
  */
-export declare function flyoutCategory(workspace: WorkspaceSvg): Element[];
+export declare function flyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
 /**
  * Construct the blocks required by the flyout for the variable category.
  *

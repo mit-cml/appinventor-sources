@@ -45,7 +45,7 @@ public abstract class ProjectEditor extends Composite {
   protected final long projectId;
   protected final Project project;
 
-  // Invariants: openFileEditors, fileIds, and deckPanel contain corresponding
+  // Invariants: fileIds and deckPanel contain corresponding
   // elements, i.e., if a FileEditor is in openFileEditors, its fileid should be
   // in fileIds and the FileEditor should be in deckPanel. If selectedFileEditor
   // is non-null, it is one of the file editors in openFileEditors and the
@@ -163,11 +163,20 @@ public abstract class ProjectEditor extends Composite {
    * @param beforeIndex  the index before which fileEditor will be inserted
    */
   public final void insertFileEditor(FileEditor fileEditor, int beforeIndex) {
-    String fileId = fileEditor.getFileId();
-    openFileEditors.put(fileId, fileEditor);
-    fileIds.add(beforeIndex, fileId);
+    fileIds.add(beforeIndex, fileEditor.getFileId());
     deckPanel.insert(fileEditor, beforeIndex);
     LOG.info("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+  }
+
+  /**
+   * Opens an inserted file editor.
+   *
+   * @param fileEditor  file editor to open
+   */
+  public final void openFileEditor(FileEditor fileEditor) {
+    String fileId = fileEditor.getFileId();
+    openFileEditors.put(fileId, fileEditor);
+    LOG.info("Opened file editor for " + fileEditor.getFileId());
   }
 
   protected final void addFileEditorByType(FileEditor fileEditor) {
