@@ -8,12 +8,12 @@ package com.google.appinventor.components.runtime;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
 import android.media.AudioManager;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -76,6 +76,12 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   private float pitch = 1.0f;
   private float speechRate = 1.0f;
   private static final String LOG_TAG = "TextToSpeech";
+
+  // Delay (ms) between retries while waiting for the TTS engine to finish initializing.
+  private static final int PREPARE_TTS_RETRY_DELAY = 100;
+  // Max number of retries before giving up and reporting ERROR_TTS_NOT_READY.
+  private static final int PREPARE_TTS_MAX_RETRIES = 120;
+  private final Handler prepareTtsHandler = new Handler();
 
   static {
     initLocaleMaps();
@@ -379,18 +385,26 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   }
 
   public void prepareLanguageAndCountryProperties() {
-    if (!isTtsPrepared) {
-      if (!tts.isInitialized()) {
-        form.dispatchErrorOccurredEvent(this, "TextToSpeech",
-            ErrorMessages.ERROR_TTS_NOT_READY);
-        // Force the TTS engine to initialize by making it speak.
-        // If it's not ready the user will have to try again.
-        // Should we put a retry wait here?
-        Speak("");
-      } else {
-        getLanguageAndCountryLists();
-        isTtsPrepared = true;
-      }
+    prepareLanguageAndCountryProperties(0);
+  }
+
+  private void prepareLanguageAndCountryProperties(final int retries) {
+    if (isTtsPrepared) {
+      return;
+    }
+    if (tts.isInitialized()) {
+      getLanguageAndCountryLists();
+      isTtsPrepared = true;
+    } else if (retries >= PREPARE_TTS_MAX_RETRIES) {
+      form.dispatchErrorOccurredEvent(this, "TextToSpeech",
+          ErrorMessages.ERROR_TTS_NOT_READY);
+    } else {
+      prepareTtsHandler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          prepareLanguageAndCountryProperties(retries + 1);
+        }
+      }, PREPARE_TTS_RETRY_DELAY);
     }
   }
 
