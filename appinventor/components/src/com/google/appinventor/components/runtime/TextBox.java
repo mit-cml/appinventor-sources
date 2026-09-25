@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -236,7 +236,9 @@ public final class TextBox extends TextBoxBase {
   @SimpleProperty
   public void ReadOnly(boolean readOnly) {
     this.readOnly = readOnly;
-    view.setEnabled(!readOnly);
+    view.setFocusable(!readOnly);
+    view.setClickable(!readOnly);
+    view.setLongClickable(!readOnly);
   }
 
   // TODO(halabelson): We might also want a method to show the keyboard.
