@@ -603,6 +603,11 @@ body {
   width: 20px;
 }
 
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm,
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockForm {
+  border-radius: 30px;
+}
+
 .gwt-Tree .gwt-TreeItem {
   font-size: 14px;
   color: gray-700;
@@ -900,7 +905,7 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockForm {
   border: none;
-  border-radius: 30px;
+  border-radius: 0px;
 }
 
 /* making changes for modern mockform */
