@@ -89,17 +89,72 @@ class ListDataModel {
     return item(at: index)?["Text2"] as? String ?? ""
   }
 
+  // ---- Selection (stored by ORIGINAL item index, so it survives filtering) ----
+  /// The selected original indexes, in the order the items were picked. An array rather than a
+  /// single value so MultiSelect can hold several; UIKit's own selection state cannot be the
+  /// source of truth because `reloadData()` wipes it on every filter change.
+  private(set) var selectedIndices: [Int] = []
+
+  /// The first selected original index, or nil when nothing is selected.
+  var firstSelection: Int? { selectedIndices.first }
+
+  /// The most recently selected original index, or nil when nothing is selected.
+  var lastSelection: Int? { selectedIndices.last }
+
+  func isSelected(_ originalIndex: Int) -> Bool { selectedIndices.contains(originalIndex) }
+
+  /// Selects only the given original index, replacing any previous selection.
+  func selectOnly(_ originalIndex: Int) {
+    selectedIndices = [originalIndex]
+  }
+
+  /// Adds or removes the given original index from the selection (used by MultiSelect).
+  func toggleSelection(_ originalIndex: Int) {
+    if let position = selectedIndices.firstIndex(of: originalIndex) {
+      selectedIndices.remove(at: position)
+    } else {
+      selectedIndices.append(originalIndex)
+    }
+  }
+
+  func clearSelection() {
+    selectedIndices.removeAll()
+  }
+
+  /// Moves selected indexes up by `count` so they still point at the same items after rows are
+  /// inserted at `index`. Selections before the insert point are unaffected.
+  private func shiftSelectionForInsert(at index: Int, count: Int) {
+    selectedIndices = selectedIndices.map { $0 >= index ? $0 + count : $0 }
+  }
+
+  /// Drops the selection of the item removed at `index` and moves the ones after it down one, so
+  /// the remaining selections still point at the items the user picked.
+  private func dropAndShiftSelectionForRemove(at index: Int) {
+    selectedIndices = selectedIndices.compactMap { selected in
+      if selected == index {
+        return nil
+      }
+      return selected > index ? selected - 1 : selected
+    }
+  }
+
   // ---- Mutations (mirrors the Android ListDataModel's setItems/add/addAt/remove/clear) ----
   func clear() {
     elements.removeAll()
     items.removeAll()
+    // The old items are gone, so the indexes that referred to them mean nothing now.
+    selectedIndices.removeAll()
   }
 
   /// Replaces the list with rich rows, dropping any string rows (used by the ListData setter).
   func setItems(_ newItems: [[String: AnyObject]]) {
     elements.removeAll()
     items = newItems
+    selectedIndices.removeAll()
   }
+
+  // The append methods leave every existing index where it was, so the selection needs no
+  // adjustment; only the insert and remove methods move rows around.
 
   func append(_ text: String) {
     elements.append(text)
@@ -115,18 +170,40 @@ class ListDataModel {
 
   func insert(_ text: String, at index: Int) {
     elements.insert(text, at: index)
+    shiftSelectionForInsert(at: index, count: 1)
   }
 
   func insert(_ item: [String: AnyObject], at index: Int) {
     items.insert(item, at: index)
+    shiftSelectionForInsert(at: index, count: 1)
   }
 
   func insert(contentsOf texts: [String], at index: Int) {
     elements.insert(contentsOf: texts, at: index)
+    shiftSelectionForInsert(at: index, count: texts.count)
   }
 
   func insert(contentsOf newItems: [[String: AnyObject]], at index: Int) {
     items.insert(contentsOf: newItems, at: index)
+    shiftSelectionForInsert(at: index, count: newItems.count)
+  }
+
+  // Replacing a row moves nothing, so the indexes around it are untouched. The replaced row does
+  // lose its selection: a different item occupies that position now, so a selection pointing there
+  // no longer refers to what the user picked.
+
+  func replace(at index: Int, with text: String) {
+    elements[index] = text
+    dropSelection(at: index)
+  }
+
+  func replace(at index: Int, with item: [String: AnyObject]) {
+    items[index] = item
+    dropSelection(at: index)
+  }
+
+  private func dropSelection(at index: Int) {
+    selectedIndices.removeAll { $0 == index }
   }
 
   /// Removes the row at a real (unfiltered) position from whichever array holds it.
@@ -137,6 +214,7 @@ class ListDataModel {
     if elements.count > index {
       elements.remove(at: index)
     }
+    dropAndShiftSelectionForRemove(at: index)
   }
 }
 
@@ -162,6 +240,7 @@ fileprivate final class ListViewRootView: UIView {
   fileprivate var _selectionDetailText = ""
   fileprivate var _selectionColor = kListViewDefaultSelectionColor
   fileprivate var _selectionIndex = Int32(0)
+  fileprivate var _multiSelect = false
   fileprivate var _showFilter = false
   fileprivate var _textColor = kListViewDefaultTextColor
   fileprivate var _textColorDetail = kListViewDefaultTextColor
@@ -358,11 +437,16 @@ fileprivate final class ListViewRootView: UIView {
   func elementsCount() {
     _automaticHeightConstraint?.constant = preferredTableHeight
     if let searchBar = _view.tableHeaderView as? UISearchBar {
+      // Re-running the filter also re-applies the selection to the reloaded rows.
       self.searchBar(searchBar, textDidChange: searchBar.text ?? "")
+      _collectionView.reloadData()
     } else {
       _view.reloadData()
+      _collectionView.reloadData()
+      // reloadData drops UIKit's selection state, so without a filter bar to do it for us the
+      // highlight has to be put back or it vanishes every time the data changes.
+      restoreSelectedRows()
     }
-    _collectionView.reloadData()
     _collectionView.collectionViewLayout.invalidateLayout()
     invalidateListViewSize()
   }
@@ -582,32 +666,67 @@ fileprivate final class ListViewRootView: UIView {
   /// and moves the highlight to the row that item is drawn on. `index` is 1-based; 0 clears.
   /// Mirrors Android, where SelectionIndex(int) is likewise the single derivation point.
   fileprivate func applySelection(_ index: Int32, scroll: Bool) {
-    // Drop the old highlight first: the newly selected item may be hidden by the filter, in which
-    // case there is no row to move the highlight to.
-    if let selectedRow = _view.indexPathForSelectedRow {
-      _view.deselectRow(at: selectedRow, animated: false)
+    guard index > 0, _model.item(at: Int(index) - 1) != nil else {
+      // An index outside the list selects nothing, so report nothing rather than keeping a number
+      // that points at no row.
+      _model.clearSelection()
+      clearSelectionInfo()
+      restoreSelectedRows()
+      return
+    }
+    let originalIndex = Int(index) - 1
+    if _multiSelect {
+      // Setting the index picks that row. Unlike a tap it never un-picks one, so that setting the
+      // same index twice does not quietly undo itself.
+      if !_model.isSelected(originalIndex) {
+        _model.toggleSelection(originalIndex)
+      }
+    } else {
+      _model.selectOnly(originalIndex)
+    }
+    readSelectionInfo(from: originalIndex)
+    restoreSelectedRows(scrollTo: scroll ? originalIndex : nil)
+  }
+
+  /// Points what the Selection blocks report at the item at the given original index.
+  /// Does not change which rows are selected.
+  fileprivate func readSelectionInfo(from originalIndex: Int) {
+    _selectionIndex = Int32(originalIndex) + 1
+    _selection = _model.mainText(at: originalIndex)
+    _selectionDetailText = _model.detailText(at: originalIndex)
+  }
+
+  /// Clears what the Selection blocks report, without touching the selection the model holds, so
+  /// that MultiSelect keeps the rest of the set the user built up.
+  fileprivate func clearSelectionInfo() {
+    _selectionIndex = 0
+    _selection = ""
+    _selectionDetailText = ""
+  }
+
+  /// Re-applies the model's selection to UIKit, which is the one place the highlight can live but
+  /// cannot be trusted to remember it: `reloadData()` wipes UIKit's selection, and it only ever
+  /// tracks rows that are currently on screen. Rows the filter hides are skipped — they stay
+  /// selected in the model and light up again when the query clears. Pass an original index to
+  /// scroll that row into view.
+  fileprivate func restoreSelectedRows(scrollTo originalIndex: Int? = nil) {
+    for path in _view.indexPathsForSelectedRows ?? [] {
+      _view.deselectRow(at: path, animated: false)
     }
     for path in _collectionView.indexPathsForSelectedItems ?? [] {
       _collectionView.deselectItem(at: path, animated: false)
     }
-    guard index > 0, let item = _model.item(at: Int(index) - 1) else {
-      _selectionIndex = 0
-      _selection = ""
-      _selectionDetailText = ""
-      return
+    for selected in _model.selectedIndices {
+      guard let displayRow = _model.toDisplayPosition(selected) else {
+        continue
+      }
+      let path = IndexPath(row: displayRow, section: 0)
+      let scrollToThisRow = selected == originalIndex
+      _view.selectRow(at: path, animated: scrollToThisRow,
+                      scrollPosition: scrollToThisRow ? .middle : .none)
+      _collectionView.selectItem(at: path, animated: scrollToThisRow,
+                                 scrollPosition: scrollToThisRow ? .centeredHorizontally : [])
     }
-    _selectionIndex = index
-    _selection = item["Text1"] as? String ?? ""
-    _selectionDetailText = item["Text2"] as? String ?? ""
-    // The highlight belongs to the visible row, which differs from the item's real position while a
-    // filter is active. A nil position means the filter currently hides the selected item.
-    guard let displayRow = _model.toDisplayPosition(Int(index) - 1) else {
-      return
-    }
-    let path = IndexPath(row: displayRow, section: 0)
-    _view.selectRow(at: path, animated: true, scrollPosition: scroll ? .middle : .none)
-    _collectionView.selectItem(at: path, animated: true,
-                               scrollPosition: scroll ? .centeredHorizontally : [])
   }
 
   @objc open var Selection: String {
@@ -631,6 +750,33 @@ fileprivate final class ListViewRootView: UIView {
         : nil
       applySelection(index.map { Int32($0) + 1 } ?? 0, scroll: false)
     }
+  }
+
+  /// Whether the user can select more than one element at a time. While this is on, a tap adds a
+  /// row to or removes it from `SelectedItems`, and `Selection` / `SelectionIndex` report the row
+  /// touched last.
+  @objc open var MultiSelect: Bool {
+    get {
+      return _multiSelect
+    }
+    set(multiSelect) {
+      _multiSelect = multiSelect
+      _view.allowsMultipleSelection = multiSelect
+      _collectionView.allowsMultipleSelection = multiSelect
+      // Switching modes starts from a clean slate: a set built up in one mode has no meaning in
+      // the other, and a leftover highlight would outlive what the Selection blocks report.
+      _model.clearSelection()
+      clearSelectionInfo()
+      _view.reloadData()
+      _collectionView.reloadData()
+    }
+  }
+
+  /// Every element the user has selected, in the order they were picked. Unless `MultiSelect` is
+  /// enabled this holds at most one element, since selecting a row replaces the previous selection.
+  @objc open var SelectedItems: [AnyObject] {
+    return _model.selectedIndices.compactMap { _model.item(at: $0) }
+      .map { _model.isDataMode ? $0 as AnyObject : ($0["Text1"] as? String ?? "") as AnyObject }
   }
 
   @objc open var SelectionColor: Int32 {
@@ -806,6 +952,10 @@ fileprivate final class ListViewRootView: UIView {
       _model.insert(ListDataModel.makeItem(text1: mainText, text2: detailText, image: imageName),
                     at: index)
     }
+    if _selectionIndex >= addIndex {
+      // The new row pushed the selected item down one.
+      _selectionIndex += 1
+    }
     elementsCount()
   }
 
@@ -831,6 +981,10 @@ fileprivate final class ListViewRootView: UIView {
     let index = Int(addIndex - 1)
     let newItems = elements.map { normalizedListItem(from: $0) }
     _model.insert(contentsOf: newItems, at: index)
+    if _selectionIndex >= addIndex {
+      // The new rows pushed the selected item down by however many went in.
+      _selectionIndex += Int32(newItems.count)
+    }
     elementsCount()
   }
 
@@ -862,6 +1016,38 @@ fileprivate final class ListViewRootView: UIView {
     invalidateListViewSize()
   }
 
+  /// Replaces the item at the given index. The row stops being selected, because a different item
+  /// occupies that position afterwards. When MultiSelect left other items selected, Selection and
+  /// SelectionIndex move to the most recent of those, so they report nothing selected only when
+  /// SelectedItems really is empty.
+  @objc open func UpdateItemAtIndex(_ updateIndex: Int32, _ mainText: String, _ detailText: String,
+                                    _ imageName: String) {
+    guard updateIndex > 0 && updateIndex <= Int32(listItemCount) else {
+      _container?.form?.dispatchErrorOccurredEvent(self, "UpdateItemAtIndex",
+                                                   ErrorMessage.ERROR_LISTVIEW_INDEX_OUT_OF_BOUNDS, updateIndex)
+      return
+    }
+    let index = Int(updateIndex - 1)
+    if usesPlainStrings {
+      _model.replace(at: index, with: mainText)
+    } else {
+      _model.replace(at: index,
+                     with: ListDataModel.makeItem(text1: mainText, text2: detailText, image: imageName))
+    }
+    if _selectionIndex == updateIndex {
+      // The replaced row has stopped being one of the user's picks, so move what the singular
+      // properties report onto the most recent pick that is left. Reporting nothing while
+      // MultiSelect still holds a set would read as "nothing is selected", which is not true.
+      if let remaining = _model.lastSelection {
+        readSelectionInfo(from: remaining)
+      } else {
+        clearSelectionInfo()
+      }
+    }
+    // Replacing a row moves nothing, so no other selected index needs adjusting.
+    elementsCount()
+  }
+
   @objc open func RemoveItemAtIndex(_ index: Int32) {
     if index < 1 || index > Int32(listItemCount) {
       _container?.form?.dispatchErrorOccurredEvent(self, "RemoveItemAtIndex",
@@ -869,6 +1055,13 @@ fileprivate final class ListViewRootView: UIView {
       return
     }
     _model.remove(at: Int(index - 1))
+    if _selectionIndex == index {
+      // The item the blocks are reporting is the one that just went away.
+      clearSelectionInfo()
+    } else if _selectionIndex > index {
+      // Everything after the hole moved down one, so follow the item that is still selected.
+      _selectionIndex -= 1
+    }
     elementsCount()
   }
 
@@ -1217,7 +1410,35 @@ fileprivate final class ListViewRootView: UIView {
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
       // Map the tapped visible row back to its real position, so selection is correct while filtering.
       // Tapping must not scroll the list — the row is already where the user is looking.
-      applySelection(Int32(_model.originalIndex(indexPath.row)) + 1, scroll: false)
+      handleTap(onOriginalIndex: _model.originalIndex(indexPath.row), selected: true)
+    }
+
+    /// With `allowsMultipleSelection` on, UIKit reports a tap on an already selected row here
+    /// rather than through `didSelectRowAt`, so the deselecting half of a MultiSelect tap only
+    /// arrives via this method. Programmatic `deselectRow` calls do not reach it, and in
+    /// single-select mode UIKit uses it to retire the previous row, which is bookkeeping the model
+    /// has already done — hence the guard.
+    open func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+      guard _multiSelect else {
+        return
+      }
+      handleTap(onOriginalIndex: _model.originalIndex(indexPath.row), selected: false)
+    }
+
+    /// The one place a tap is turned into a selection change, for both the table and the
+    /// collection view. MultiSelect toggles the tapped row and leaves the rest of the set alone;
+    /// otherwise the tap replaces the selection. Either way the row just touched is what the
+    /// Selection blocks go on to report, including when the touch was the one that un-picked it.
+    fileprivate func handleTap(onOriginalIndex originalIndex: Int, selected: Bool) {
+      if _multiSelect {
+        // UIKit has already moved its own highlight, so only the model needs syncing.
+        if _model.isSelected(originalIndex) != selected {
+          _model.toggleSelection(originalIndex)
+        }
+        readSelectionInfo(from: originalIndex)
+      } else {
+        applySelection(Int32(originalIndex) + 1, scroll: false)
+      }
       AfterPicking()
     }
     
@@ -1227,17 +1448,16 @@ fileprivate final class ListViewRootView: UIView {
     _model.setFilter(searchText)
     _view.reloadData()
     _collectionView.reloadData()
-    // reloadData drops UIKit's selection state, so the highlight is lost on every filter change.
-    // Selection is stored against the original index, so re-highlight the selected item's new
-    // visible row while it survives the filter, and clear it only when the filter hides it, so the
-    // user never ends up with a selection they cannot see.
-    if _selectionIndex > 0 {
-      if let displayRow = _model.toDisplayPosition(Int(_selectionIndex) - 1) {
-        _view.selectRow(at: IndexPath(row: displayRow, section: 0), animated: false, scrollPosition: .none)
-        _collectionView.selectItem(at: IndexPath(item: displayRow, section: 0), animated: false, scrollPosition: [])
-      } else {
-        applySelection(0, scroll: false)
-      }
+    // reloadData drops UIKit's selection state, so every highlight is lost on each filter change.
+    // Selection is stored against original indexes, so re-highlight whichever selected rows the
+    // filter still shows.
+    restoreSelectedRows()
+    // A single selection is the one thing Selection reports, so a hidden one would be a selection
+    // the user cannot see: drop it once the filter hides it. MultiSelect is a set the user is
+    // building up instead, so searching again must not throw away what they already picked.
+    if !_multiSelect && _selectionIndex > 0
+        && _model.toDisplayPosition(Int(_selectionIndex) - 1) == nil {
+      applySelection(0, scroll: false)
     }
   }
 
@@ -1441,8 +1661,16 @@ fileprivate final class ListViewRootView: UIView {
   // UICollectionViewDelegate (selection → AfterPicking)
   public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     // Map the tapped visible item back to its real position, so selection is correct while filtering.
-    applySelection(Int32(_model.originalIndex(indexPath.item)) + 1, scroll: false)
-    AfterPicking()
+    handleTap(onOriginalIndex: _model.originalIndex(indexPath.item), selected: true)
+  }
+
+  /// The collection view's half of the MultiSelect tap, for the same reason as the table's
+  /// `didDeselectRowAt`: un-picking an already selected item is only reported here.
+  public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    guard _multiSelect else {
+      return
+    }
+    handleTap(onOriginalIndex: _model.originalIndex(indexPath.item), selected: false)
   }
 
   // UICollectionViewDelegateFlowLayout (optional sizing)

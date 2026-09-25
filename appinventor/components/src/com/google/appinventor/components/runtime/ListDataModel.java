@@ -9,7 +9,9 @@ import com.google.appinventor.components.runtime.util.YailDictionary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Single owner of the {@link ListView}'s non-visual state: the item list, the search filter,
@@ -62,7 +64,11 @@ public class ListDataModel {
   public void setItems(Collection<?> newItems) {
     items.clear();
     items.addAll(newItems);
+    // The old items are gone, so the indexes that referred to them mean nothing now.
+    selectedItems.clear();
   }
+
+  // add and addAll append, so no existing index moves and the selection needs no adjustment.
 
   public void add(Object item) {
     items.add(item);
@@ -70,6 +76,7 @@ public class ListDataModel {
 
   public void addAt(int index, Object item) {
     items.add(index, item);
+    shiftSelectionForInsert(index, 1);
   }
 
   public void addAll(Collection<?> newItems) {
@@ -78,14 +85,56 @@ public class ListDataModel {
 
   public void addAllAt(int index, Collection<?> newItems) {
     items.addAll(index, newItems);
+    shiftSelectionForInsert(index, newItems.size());
+  }
+
+  /**
+   * Replaces the item at the given index. Nothing moves, so the indexes around it are untouched,
+   * but the replaced row loses its selection: a different item occupies that position now, so a
+   * selection pointing there no longer refers to what the user picked.
+   */
+  public void set(int index, Object item) {
+    items.set(index, item);
+    selectedItems.remove(Integer.valueOf(index));
   }
 
   public void remove(int index) {
     items.remove(index);
+    dropAndShiftSelectionForRemove(index);
   }
 
   public void clear() {
     items.clear();
+    selectedItems.clear();
+  }
+
+  /**
+   * Moves selected indexes up by {@code count} so they still point at the same items after rows
+   * are inserted at {@code index}. Selections before the insert point are unaffected.
+   */
+  private void shiftSelectionForInsert(int index, int count) {
+    for (int i = 0; i < selectedItems.size(); i++) {
+      int selected = selectedItems.get(i);
+      if (selected >= index) {
+        selectedItems.set(i, selected + count);
+      }
+    }
+  }
+
+  /**
+   * Drops the selection of the item removed at {@code index} and moves the indexes after it down
+   * one, so the remaining selections still point at the items the user picked.
+   */
+  private void dropAndShiftSelectionForRemove(int index) {
+    ListIterator<Integer> iterator = selectedItems.listIterator();
+    while (iterator.hasNext()) {
+      int selected = iterator.next();
+      if (selected == index) {
+        iterator.remove();
+      } else if (selected > index) {
+        iterator.set(selected - 1);
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -120,18 +169,19 @@ public class ListDataModel {
 
   /**
    * Applies a result from {@link #computeFilter}. Call on the UI thread: it swaps in the new
-   * filtered view and drops any selection the filter now hides, so the caller can notify the
-   * adapter immediately afterwards without the row count ever disagreeing with the data.
+   * filtered view, so the caller can notify the adapter immediately afterwards without the row
+   * count ever disagreeing with the data.
+   *
+   * <p>Filtering deliberately leaves the selection alone. Selections are held by original index
+   * and the filter only changes which rows are on screen, so a hidden item is still the item the
+   * user picked and comes back when the query is cleared. Whether a selection the user can no
+   * longer see should be dropped is a policy call, and it belongs to {@link ListView}, which
+   * clears it for a single selection but keeps it when MultiSelect is building up a set.
    */
   public void commitFilter(FilterResult result) {
     lastQuery = result.query;
     filteredItems = result.visibleItems;
     originalPositions = result.originalPositions;
-    if (!lastQuery.isEmpty()) {
-      // Selection is kept by original index, so it survives filtering; only drop entries the
-      // filter now hides.
-      selectedItems.retainAll(originalPositions);
-    }
   }
 
   /** Re-runs the active filter against the current items, e.g. after the data changed. */
@@ -193,6 +243,16 @@ public class ListDataModel {
   /** The first selected original index, or -1 when nothing is selected. */
   public int firstSelection() {
     return selectedItems.isEmpty() ? -1 : selectedItems.get(0);
+  }
+
+  /** The most recently selected original index, or -1 when nothing is selected. */
+  public int lastSelection() {
+    return selectedItems.isEmpty() ? -1 : selectedItems.get(selectedItems.size() - 1);
+  }
+
+  /** Every selected original index, in the order the items were picked. */
+  public List<Integer> getSelectedIndexes() {
+    return Collections.unmodifiableList(selectedItems);
   }
 
   /** Selects only the given original index, replacing any previous selection. */

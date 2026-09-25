@@ -1669,6 +1669,15 @@ public final class YoungAndroidFormUpgrader {
       // Added TextAlignmentDetail property (default: 0 = left).
       srcCompVersion = 11;
     }
+    if (srcCompVersion < 12) {
+      // The MultiSelect property became visible in the designer and the blocks (default: False).
+      // Added SelectedItems property.
+      srcCompVersion = 12;
+    }
+    if (srcCompVersion < 13) {
+      // Added UpdateItemAtIndex method.
+      srcCompVersion = 13;
+    }
     return srcCompVersion;
   }
 
