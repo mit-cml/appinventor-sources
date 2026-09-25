@@ -760,7 +760,17 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
     let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)
+    let wasHidden = _sprites.map { $0.DisplayLayer.isHidden }
 
+    for sprite in _sprites {
+      sprite.DisplayLayer.isHidden = true
+    }
+
+    defer {
+      for (index, sprite) in _sprites.enumerated() {
+        sprite.DisplayLayer.isHidden = wasHidden[index]
+      }
+    }
     if let context = CGContext(data: &pixel, width: 1, height: 1, bitsPerComponent: 8,
                                bytesPerRow: 4, space: colorSpace, bitmapInfo: bitmapInfo.rawValue) {
       context.translateBy(x: -CGFloat(x), y: -CGFloat(y))
@@ -811,6 +821,8 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
           }
         }
       }
+    } else if let ball = sprite as? Ball {
+      return ball.PaintColor
     }
     return GetBackgroundPixelColor(x, y)
   }
