@@ -110,6 +110,22 @@ suite('Blockly Code Generator Tests', function() {
       chai.assert.equal(yailForBlock[0], expected);
     })
   })
+  suite('Dictionary Blocks', function() {
+    test('dictionaries_from_json', function() {
+      let expected = "(call-yail-primitive yail-dictionary-from-json-text (*list-for-runtime* \"\" ) '(text)  \"get dictionary from JSON text\")";
+      let testBlock = Blockly.common.getMainWorkspace().newBlock('dictionaries_from_json');
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
+      chai.assert.lengthOf(yailForBlock, 2);
+      chai.assert.equal(yailForBlock[0], expected);
+    })
+    test('dictionaries_to_json', function() {
+      let expected = "(call-yail-primitive yail-dictionary-to-json-text (*list-for-runtime* (make com.google.appinventor.components.runtime.util.YailDictionary) ) '(dictionary)  \"get JSON text from dictionary\")";
+      let testBlock = Blockly.common.getMainWorkspace().newBlock('dictionaries_to_json');
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
+      chai.assert.lengthOf(yailForBlock, 2);
+      chai.assert.equal(yailForBlock[0], expected);
+    })
+  })
   suite('Text Blocks', function() {
     test('text_split:SPLITATANY', function() {
       let expected = "(call-yail-primitive string-split-at-any (*list-for-runtime* \"\" 1) '(text list) \"split at any\")";

@@ -109,6 +109,37 @@ public class JsonUtilTest {
   }
 
   @Test
+  public void testGetObjectFromJsonObjectWithDicts() throws JSONException {
+    // Mirrors the call made by the yail-dictionary-from-json-text runtime primitive,
+    // which invokes getObjectFromJson with useDicts set to true.
+    String jsonInput = "{\"a\": 1, \"c\": [\"a\", \"b\", \"c\"], "
+        + "\"b\": \"boo\", \"d\": {\"e\": \"f\"}}";
+    Object result = JsonUtil.getObjectFromJson(jsonInput, true);
+    assertTrue(result instanceof YailDictionary);
+    YailDictionary returnDict = (YailDictionary) result;
+    assertEquals(1, returnDict.get("a"));
+    assertEquals("boo", returnDict.get("b"));
+    assertEquals(YailList.makeList(Arrays.asList("a", "b", "c")), returnDict.get("c"));
+    assertEquals(YailDictionary.makeDictionary("e", "f"), returnDict.get("d"));
+  }
+
+  @Test
+  public void testGetObjectFromJsonArrayIsNotDictionary() throws JSONException {
+    // A JSON array is valid JSON but is decoded as a list, not a dictionary. The
+    // runtime primitive relies on this to raise a helpful error for non-object JSON.
+    Object result = JsonUtil.getObjectFromJson("[1, 2, 3]", true);
+    assertTrue(result instanceof List);
+    assertTrue(!(result instanceof YailDictionary));
+  }
+
+  @Test
+  public void testGetJsonRepresentationOfDictionary() throws JSONException {
+    // Mirrors the encoding done by the yail-dictionary-to-json-text runtime primitive.
+    YailDictionary dict = YailDictionary.makeDictionary("name", "Tim");
+    assertEquals("{\"name\":\"Tim\"}", JsonUtil.getJsonRepresentation(dict));
+  }
+
+  @Test
   public void testConvertBoolean() throws JSONException {
     assertEquals(true, JsonUtil.convertJsonItem("true"));
     assertEquals(true, JsonUtil.convertJsonItem(true));
