@@ -756,6 +756,18 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/mediaIcon_video.png")
   ImageResource mediaIconVideo();
+
+  /**
+   * Media icon: font
+   */
+  @Source("com/google/appinventor/images/mediaIcon_font.png")
+  ImageResource mediaIconFont();
+
+    /**
+   * Media icon: file
+   */
+  @Source("com/google/appinventor/images/mediaIcon_file.png")
+  ImageResource mediaIconFile();
   
   /**
    * Designer palette item: Magnetic Field Sensor component
