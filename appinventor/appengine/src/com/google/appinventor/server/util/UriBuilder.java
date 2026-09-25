@@ -17,8 +17,14 @@ public class UriBuilder {
   private StringBuilder sb = new StringBuilder();
   private boolean first = true;
 
+  /** Starts a URI from the given base, which may already carry a query string. */
   public UriBuilder(String baseUri) {
     sb.append(baseUri);
+    // If the base already carries a query string, the first added parameter must join it with an
+    // ampersand rather than start a second "?" that would corrupt the URL.
+    if (baseUri != null && baseUri.indexOf('?') >= 0) {
+      first = false;
+    }
   }
 
   public UriBuilder add(String key, String value) {
