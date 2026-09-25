@@ -722,6 +722,12 @@ body {
   font-size: unset;
 }
 
+.ode-ExtensionPanelButtons {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
 .ode-BlocksDesignerButton {
   color: v-white;
   text-shadow: 0 -1px 0 v-black-shadow;
@@ -1188,16 +1194,6 @@ path.ode-SimpleMockMapFeature-selected {
     padding: 10px;
   }
   
-  /* AI2 Extensions Styles */
-  
-  a.ode-ExtensionAnchor {
-    color: grey;
-  }
-  
-  a.ode-ExtensionAnchor:hover {
-    color: #5B5B5B;
-  }
-  
   /* AndroidServlet */
   
   .ode-Android-caption {
@@ -1469,16 +1465,6 @@ path.ode-SimpleMockMapFeature-selected {
 
 .ode-DialogBox .gwt-Button:hover {
   color: gray-800;
-}
-
-/* AI2 Extensions Styles */
-
-a.ode-ExtensionAnchor {
-  color: grey;
-}
-
-a.ode-ExtensionAnchor:hover {
-  color: gray-700;
 }
 
 /* AndroidServlet */
