@@ -68,12 +68,16 @@ public class BlocklyPanel extends HTMLPanel {
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
     Ode ode = Ode.getInstance();
+    String preferredCompanion = ode.getPreferredCompanion();
+    if (preferredCompanion.isEmpty()) {
+      preferredCompanion = YaVersion.PREFERRED_COMPANION;
+    }
     setPreferredCompanion(
-      MESSAGES.useCompanion(ode.getPreferredCompanion(), ode.getPreferredCompanion() + "u"),
-        YaVersion.COMPANION_UPDATE_URL,
-        YaVersion.COMPANION_UPDATE_URL1,
-        YaVersion.COMPANION_UPDATE_EMULATOR_URL,
-        YaVersion.EMULATOR_UPDATE_URL);
+      MESSAGES.useCompanion(preferredCompanion, preferredCompanion + "u"),
+      YaVersion.COMPANION_UPDATE_URL,
+      YaVersion.COMPANION_UPDATE_URL1,
+      YaVersion.COMPANION_UPDATE_EMULATOR_URL,
+      YaVersion.EMULATOR_UPDATE_URL);
     List<String> acceptableCompanions = ode.getAcceptableCompanions();
     for (String companion : acceptableCompanions) {
       addAcceptableCompanion(companion);

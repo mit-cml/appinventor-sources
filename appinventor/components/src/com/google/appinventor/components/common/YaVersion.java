@@ -1849,6 +1849,7 @@ public class YaVersion {
   // by MIT
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
+  public static final String PREFERRED_COMPANION = "2.80";
 
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
