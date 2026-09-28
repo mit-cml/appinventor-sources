@@ -269,7 +269,7 @@ div.StatusPanel {
   flex-shrink: 0;
   box-sizing: border-box;
   background: rgba(102, 153, 0, 0.3);
-  height: 31px;
+  min-height: 31px;
   border: 1px solid;
   border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
 }
