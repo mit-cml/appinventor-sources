@@ -14,7 +14,6 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.DockPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,7 @@ public final class SourceStructureBoxFilter implements ISourceStructureBox {
     dropDownButton.setCaption(MESSAGES.sourceStructureBoxCaptionAll());
 
     container.getHeaderContainer().clear();
-    container.getHeaderContainer().add(dropDownButton, DockPanel.LINE_START);
+    container.getHeaderContainer().add(dropDownButton);
   }
 
   public void show(DesignerRootComponent root) {

@@ -20,7 +20,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -192,9 +191,6 @@ public abstract class Box extends HandlerPanel {
   // Height of minimized box
   private static final int MINIMIZED_HEIGHT = 31;
 
-  // Padding between header controls
-  private static final int HEADER_CONTROL_PADDING = 2;
-
   // Constants for box decorations (note that these constants correspond to the box's style
   // definition)
   private static final int BOX_PADDING = 5;
@@ -204,7 +200,7 @@ public abstract class Box extends HandlerPanel {
   private final SimplePanel body;
   private final Label captionLabel;
   private final HandlerPanel header;
-  private final DockPanel headerContainer;
+  private final FlowPanel headerContainer;
   private final ScrollPanel scrollPanel;
   private final PushButton minimizeButton;
   private final PushButton menuButton;
@@ -248,6 +244,8 @@ public abstract class Box extends HandlerPanel {
     this.highlightCaption = highlightCaption;
 
     captionLabel = new Label(caption, false);
+    captionLabel.getElement().setAttribute("role", "heading");
+    captionLabel.getElement().setAttribute("aria-level", "2");
     captionAlreadySeen = false;
     if (highlightCaption) {
       captionLabel.setStylePrimaryName("ode-Box-header-caption-highlighted");
@@ -258,10 +256,10 @@ public abstract class Box extends HandlerPanel {
     header.add(captionLabel);
     header.setWidth("100%");
 
-    headerContainer = new DockPanel();
+    headerContainer = new FlowPanel();
     headerContainer.setStylePrimaryName("ode-Box-header");
     headerContainer.setWidth("100%");
-    headerContainer.add(header, DockPanel.LINE_START);
+    headerContainer.add(header);
 
     Images images = Ode.getImageBundle();
 
@@ -274,9 +272,7 @@ public abstract class Box extends HandlerPanel {
               Window.alert("Not implemented yet!");
             }
           });
-      headerContainer.add(closeButton, DockPanel.LINE_END);
-      headerContainer.setCellWidth(closeButton,
-          (closeButton.getOffsetWidth() + HEADER_CONTROL_PADDING) + "px");
+      headerContainer.insert(closeButton, 1);
     }
 
     if (!minimizable) {
@@ -293,9 +289,7 @@ public abstract class Box extends HandlerPanel {
               }
             }
           });
-      headerContainer.add(minimizeButton, DockPanel.LINE_END);
-      headerContainer.setCellWidth(minimizeButton,
-          (minimizeButton.getOffsetWidth() + HEADER_CONTROL_PADDING) + "px");
+      headerContainer.insert(minimizeButton, 1);
     }
 
     if (minimizable || removable) {
@@ -351,9 +345,7 @@ public abstract class Box extends HandlerPanel {
               });
             }
           });
-      headerContainer.add(menuButton, DockPanel.LINE_END);
-      headerContainer.setCellWidth(menuButton,
-          (menuButton.getOffsetWidth() + HEADER_CONTROL_PADDING) + "px");
+      headerContainer.insert(menuButton, 1);
     } else {
       menuButton = null;
     }
@@ -445,7 +437,7 @@ public abstract class Box extends HandlerPanel {
    * Returns the box header container.
    * @return header container
    */
-  public DockPanel getHeaderContainer() {
+  public FlowPanel getHeaderContainer() {
     return headerContainer;
   }
 
