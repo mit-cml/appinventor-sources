@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -127,7 +127,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -335,6 +339,13 @@ public class Ode implements EntryPoint {
 
   private boolean warnedBuild1 = false;
   private boolean warnedBuild2 = false;
+
+  // Preferred and Acceptable Companions. Used to be static in YaVersion, but
+  // now set at runtime in system variables (appinventor.ini or appengine-web.xml)
+  // These are set by the system config
+
+  private List<String> acceptableCompanions = null;
+  private String preferredCompanion = null;
 
   /**
    * Returns global instance of Ode.
@@ -788,6 +799,8 @@ public class Ode implements EntryPoint {
             Window.Location.replace(Urls.makeUri(surveyUrl, true));
             // off we go, no returning
           }
+          acceptableCompanions = new ArrayList<>(Arrays.asList(config.getAcceptableCompanions().split(",")));
+          preferredCompanion = config.getPreferredCompanion();
           user = result.getUser();
           isReadOnly = user.isReadOnly();
           oneProjectId = user.getOneProjectId();
@@ -2661,6 +2674,14 @@ public class Ode implements EntryPoint {
         ((ServiceDefTarget)service).setServiceEntryPoint(newUrl);
       }
     }
+  }
+
+  public String getPreferredCompanion() {
+    return preferredCompanion;
+  }
+
+  public List<String> getAcceptableCompanions() {
+    return acceptableCompanions;
   }
 
   /**

@@ -1,5 +1,5 @@
 // -*- mode: Javascript; js-indent-level: 4; -*-
-// Copyright © 2013-2016 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2013-2026 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Visual blocks editor for App Inventor
@@ -1022,7 +1022,7 @@ Blockly.ReplMgr.acceptablePackage = function(comppack) {
 
 Blockly.ReplMgr.acceptableVersion = function(version) {
     for (var i = 0; i < top.ACCEPTABLE_COMPANIONS.length; i++) {
-        if (top.ACCEPTABLE_COMPANIONS[i] == version) {
+        if (top.ACCEPTABLE_COMPANIONS[i] == version || top.ACCEPTABLE_COMPANIONS[i] == "*") {
             return true;
         }
     }

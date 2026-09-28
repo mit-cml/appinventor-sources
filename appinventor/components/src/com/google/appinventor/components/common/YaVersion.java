@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2024 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -1825,6 +1825,9 @@ public class YaVersion {
 
   // Companion Versions and Update Information
 
+  // (UPDATE) NOTE: PREFERRED_COMPANION AND ACCEPTABLE_COMPANIONS have
+  // move to runtime configuration in appinventor.ini
+
   // The PREFERRED_COMPANION is displayed to the end-user if
   // they ask (via the Help->About menu) and if they are told
   // that they need to update their companion
@@ -1847,12 +1850,10 @@ public class YaVersion {
 
   public static final String ACCEPTABLE_COMPANION_PACKAGE = "edu.mit.appinventor.aicompanion3";
 
-  public static final String PREFERRED_COMPANION = "2.80";
   public static final String EMULATOR_UPDATE_URL = ""; // Should be an APK
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
   public static final String COMPANION_UPDATE_EMULATOR_URL = "";
-  public static final String[] ACCEPTABLE_COMPANIONS = {"2.80", "2.80u"};
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

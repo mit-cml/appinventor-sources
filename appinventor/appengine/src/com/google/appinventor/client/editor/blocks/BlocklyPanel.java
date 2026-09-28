@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright © 2009-2011 Google, All Rights reserved
-// Copyright © 2011-2021 Massachusetts Institute of Technology, All rights reserved
+// Copyright © 2011-2026 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -67,14 +67,16 @@ public class BlocklyPanel extends HTMLPanel {
   static {
     exportMethodsToJavascript();
     // Tell the blockly world about companion versions.
+    Ode ode = Ode.getInstance();
     setPreferredCompanion(
-        MESSAGES.useCompanion(YaVersion.PREFERRED_COMPANION, YaVersion.PREFERRED_COMPANION + "u"),
+      MESSAGES.useCompanion(ode.getPreferredCompanion(), ode.getPreferredCompanion() + "u"),
         YaVersion.COMPANION_UPDATE_URL,
         YaVersion.COMPANION_UPDATE_URL1,
         YaVersion.COMPANION_UPDATE_EMULATOR_URL,
         YaVersion.EMULATOR_UPDATE_URL);
-    for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
-      addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
+    List<String> acceptableCompanions = ode.getAcceptableCompanions();
+    for (String companion : acceptableCompanions) {
+      addAcceptableCompanion(companion);
     }
     addAcceptableCompanionPackage(YaVersion.ACCEPTABLE_COMPANION_PACKAGE);
     SIMPLE_COMPONENT_TRANSLATIONS = NativeTranslationMap.transform(ComponentTranslationTable.myMap);
