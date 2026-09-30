@@ -13,7 +13,7 @@ public class EmulatorAction implements Command {
   @Override
   public void execute() {
     if (Ode.getInstance().okToConnect()) {
-      Ode.getInstance().getTopToolbar().startRepl(true, false, true, false); // true means we are the
+      Ode.getInstance().getTopToolbar().startRepl(true, false, true, false, false); // true means we are the
                                     // emulator
     }
   }

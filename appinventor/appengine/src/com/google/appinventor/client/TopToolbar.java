@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.youngandroid.DesignToolbar.DesignPro
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.Screen;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.core.client.GWT;
@@ -53,6 +54,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_CHROMEBOOK = "Chromebook";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
+  private static final String WIDGET_NAME_WEBTEST_BUTTON = "Browser";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = "RefreshCompanion";
@@ -89,6 +91,7 @@ public class TopToolbar extends Composite {
   @UiField protected DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
   @UiField (provided = true) protected Boolean isAvailable;
+  @UiField (provided = true) Boolean webEmulatorEnabled;
 
   protected boolean readOnly;
 
@@ -115,6 +118,7 @@ public class TopToolbar extends Composite {
     // UIBinder can't negate the boolean itself.
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
+    webEmulatorEnabled = !StringUtils.isNullOrEmpty(Ode.getSystemConfig().getWebEmulatorUrl());
 
     boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
 
@@ -221,14 +225,15 @@ public class TopToolbar extends Composite {
   }
 
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
-      boolean isUsbRunning) {
-    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
+      boolean isUsbRunning, boolean isBrowserRunning) {
+    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning && !isBrowserRunning) {
       connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
       if (iamChromebook) {
         connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
       } else {
         connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_WEBTEST_BUTTON, true);
       }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
       connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), false);
@@ -239,6 +244,7 @@ public class TopToolbar extends Composite {
       } else {
         connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
         connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
+        connectDropDown.setItemEnabledById(WIDGET_NAME_WEBTEST_BUTTON, false);
       }
       connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
       connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), true);
@@ -251,7 +257,7 @@ public class TopToolbar extends Composite {
    */
   public static void indicateDisconnect() {
     TopToolbar instance = Ode.getInstance().getTopToolbar();
-    instance.updateConnectToDropDownButton(false, false, false);
+    instance.updateConnectToDropDownButton(false, false, false, false);
   }
 
   /**
@@ -263,9 +269,10 @@ public class TopToolbar extends Composite {
    * @param forChromebook -- true if we are connecting to a chromebook.
    * @param forEmulator -- true if we are connecting to the emulator.
    * @param forUsb -- true if this is a USB connection.
+   * @param forBrowser -- true if testing on web emulator
    */
 
-  public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean start, boolean forChromebook, boolean forEmulator, boolean forUsb, boolean forBrowser) {
     DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
     if (currentProject == null) {
       LOG.warning("DesignToolbar.currentProject is null. "
@@ -273,17 +280,20 @@ public class TopToolbar extends Composite {
       return;
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb);
+    screen.blocksEditor.startRepl(!start, forChromebook, forEmulator, forUsb,
+        forBrowser ? Ode.getSystemConfig().getWebEmulatorUrl() : null);
     if (start) {
       if (forEmulator) {        // We are starting the emulator...
-        updateConnectToDropDownButton(true, false, false);
+        updateConnectToDropDownButton(true, false, false, false);
       } else if (forUsb) {      // We are starting the usb connection
-        updateConnectToDropDownButton(false, false, true);
-      } else {                  // We are connecting via Wi-Fi to a Companion
-        updateConnectToDropDownButton(false, true, false);
+        updateConnectToDropDownButton(false, false, true, false);
+      } else if (forBrowser) {  // We are testing on the web
+        updateConnectToDropDownButton(false, false, false, true);
+      } else {                  // We are connecting via wifi to a Companion
+        updateConnectToDropDownButton(false, true, false, false);
       }
     } else {
-      updateConnectToDropDownButton(false, false, false);
+      updateConnectToDropDownButton(false, false, false, false);
     }
   }
 
@@ -296,7 +306,7 @@ public class TopToolbar extends Composite {
     }
     Screen screen = currentProject.screens.get(currentProject.currentScreen);
     ((YaBlocksEditor)screen.blocksEditor).hardReset();
-    updateConnectToDropDownButton(false, false, false);
+    updateConnectToDropDownButton(false, false, false, false);
   }
 
   public void replUpdate() {

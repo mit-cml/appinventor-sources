@@ -48,6 +48,7 @@ public class Config implements IsSerializable, Serializable {
   private String iosExtensions;
   private String surveyUrl;
   private boolean iosBuildServer;
+  private String webEmulatorUrl;
 
   public Config() {
   }
@@ -274,5 +275,13 @@ public class Config implements IsSerializable, Serializable {
 
   public void setiOSBuildServer(boolean value) {
     iosBuildServer = value;
+  }
+
+  public String getWebEmulatorUrl() {
+    return webEmulatorUrl;
+  }
+
+  public void setWebEmulatorUrl(String value) {
+    webEmulatorUrl = value;
   }
 }
