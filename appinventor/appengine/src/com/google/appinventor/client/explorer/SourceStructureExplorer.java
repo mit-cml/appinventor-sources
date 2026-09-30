@@ -42,10 +42,9 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.aria.client.Roles;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -351,9 +350,8 @@ public class SourceStructureExplorer extends Composite {
     indicatorDiv.getStyle().setProperty("border",       "none");
     scrollPanel.getElement().appendChild(indicatorDiv);
 
-    HorizontalPanel buttonPanel = new HorizontalPanel();
+    FlowPanel buttonPanel = new FlowPanel();
     buttonPanel.setStyleName("ode-PanelButtons");
-    buttonPanel.setSpacing(4);
 
     renameButton = new TextButton(MESSAGES.renameButton());
     renameButton.setEnabled(false);
@@ -364,7 +362,6 @@ public class SourceStructureExplorer extends Composite {
       }
     });
     buttonPanel.add(renameButton);
-    buttonPanel.setCellHorizontalAlignment(renameButton, HorizontalPanel.ALIGN_RIGHT);
 
     deleteButton = new TextButton(MESSAGES.deleteButton());
     deleteButton.setEnabled(false);
@@ -375,13 +372,12 @@ public class SourceStructureExplorer extends Composite {
       }
     });
     buttonPanel.add(deleteButton);
-    buttonPanel.setCellHorizontalAlignment(deleteButton, HorizontalPanel.ALIGN_LEFT);
 
-    VerticalPanel panel = new VerticalPanel();
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-SourceStructureExplorer");
     panel.add(scrollPanel);
     panel.add(new Label());
     panel.add(buttonPanel);
-    panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
   }
 
