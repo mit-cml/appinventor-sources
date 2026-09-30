@@ -654,6 +654,38 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
 
+  @DefaultMessage("Connect Google Classroom")
+  @Description("Menu item for connecting the user's account to Google Classroom.")
+  String connectGoogleClassroomMenuItem();
+
+  @DefaultMessage("Submit to Google Classroom")
+  @Description("Menu item for exporting the current project to the user's Google Drive for a Google Classroom submission.")
+  String submitToGoogleClassroomMenuItem();
+
+  @DefaultMessage("Uploaded <b>{0}</b> to your Google Drive. {1} to confirm, then attach this file to your assignment in Google Classroom and turn it in.")
+  @Description("Shown after a project is uploaded to Drive for Google Classroom. {0} is the uploaded file name, {1} is a link that opens the file.")
+  String classroomSubmitSuccess(String fileName, String openLink);
+
+  @DefaultMessage("Open it")
+  @Description("Link text in the Google Classroom upload-success banner that opens the uploaded file in Google Drive.")
+  String classroomOpenInDrive();
+
+  @DefaultMessage("Connect your Google account to Google Classroom first, then try again.")
+  @Description("Shown when a Google Classroom submit is attempted before the user has connected their Google account.")
+  String classroomNotConnected();
+
+  @DefaultMessage("Connected to Google Classroom.")
+  @Description("Banner shown after the user successfully connects their Google account to Google Classroom.")
+  String classroomConnectSuccess();
+
+  @DefaultMessage("Could not connect to Google Classroom. Please try again.")
+  @Description("Banner shown after the Google Classroom connection flow fails.")
+  String classroomConnectError();
+
+  @DefaultMessage("Could not submit to Google Classroom. Please try again.")
+  @Description("Shown when exporting a project to Google Drive for Google Classroom fails for a reason other than a missing connection.")
+  String classroomSubmitError();
+
   @DefaultMessage("Chromebook")
   @Description("Menu item for initiating a connection to the companion running on a Chromebook.")
   String chromebookMenuItem();

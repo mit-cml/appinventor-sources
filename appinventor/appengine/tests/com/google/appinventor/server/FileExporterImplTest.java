@@ -134,6 +134,25 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     }
   }
 
+  public void testExportProjectSourceZipWithDefaults() throws IOException {
+    ProjectSourceZip project = exporter.exportProjectSourceZip(USER_ID, projectId);
+    Map<String, byte[]> content = testExportProjectSourceZipHelper(project);
+    assertEquals(2, content.size());
+    /* The two-argument overload exports the same source-only zip as the full
+     * method with all flags false: the two source files and no remix history. */
+    assertFalse(content.containsKey(FileExporter.REMIX_INFORMATION_FILE_PATH));
+  }
+
+  public void testExportProjectSourceZipWithDefaultsNonExistingProject() throws IOException {
+    try {
+      exporter.exportProjectSourceZip(USER_ID, projectId + 1);
+      fail();
+    } catch (Exception e) {
+      assertTrue(e instanceof IllegalArgumentException ||
+                 e.getCause() instanceof IllegalArgumentException);
+    }
+  }
+
   public void testExportProjectOutputFileWithTarget() throws IOException {
     RawFile file = exporter.exportProjectOutputFile(USER_ID, projectId, "target1");
     assertEquals(TARGET1_NAME, file.getFileName());

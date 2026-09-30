@@ -70,6 +70,35 @@
     <servlet-name>RestServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
+
+  <!-- LMS Google Classroom OAuth 2.0 sign-in.
+       lmsConnectServlet (start) runs behind odeAuthFilter, so the user id comes
+       from the authenticated session and is sealed into the OAuth state.
+       lmsAuthCallbackServlet (callback) is intentionally NOT behind the filter,
+       so Google's cross-origin redirect can complete without an App Inventor
+       session; it recovers the user id from the encrypted state. -->
+  <servlet>
+    <servlet-name>lmsConnectServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lms.LmsConnectServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>lmsConnectServlet</servlet-name>
+    <url-pattern>/lms/connect</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>lmsConnectServlet</servlet-name>
+  </filter-mapping>
+
+  <servlet>
+    <servlet-name>lmsAuthCallbackServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lms.LmsAuthCallbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>lmsAuthCallbackServlet</servlet-name>
+    <url-pattern>/lms/auth/callback</url-pattern>
+  </servlet-mapping>
+
   <!-- Nonce based APK download -->
 
   <servlet>
