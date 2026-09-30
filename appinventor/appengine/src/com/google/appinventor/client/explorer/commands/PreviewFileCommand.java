@@ -76,8 +76,6 @@ public class PreviewFileCommand extends ChainableCommand {
 
     if (filePreview instanceof Image) {
       ((Image) filePreview).addLoadHandler(event -> dialogBox.center());
-    } else {
-      dialogBox.center();
     }
 
     dialogPanel.add(buttonPanel);
