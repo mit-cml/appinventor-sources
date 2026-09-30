@@ -70,6 +70,68 @@
     <servlet-name>RestServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
+
+  <!-- Experimental LTI 1.3 tool (for Moodle, Canvas, etc.). None of these
+       servlets is behind odeAuthFilter. The login, launch, jwks, deep linking,
+       and register endpoints are reached before an App Inventor session exists,
+       and the launch servlet establishes the session itself after it validates
+       the platform id_token. The submit servlet runs after the launch and reads
+       that session, and also guards itself with a custom request header a cross
+       site page cannot set. The register servlet is closed by a flag by default. -->
+  <servlet>
+    <servlet-name>ltiLoginServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiLoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiLoginServlet</servlet-name>
+    <url-pattern>/lti/login</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ltiLaunchServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiLaunchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiLaunchServlet</servlet-name>
+    <url-pattern>/lti/launch</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ltiJwksServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiJwksServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiJwksServlet</servlet-name>
+    <url-pattern>/lti/jwks</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ltiSubmitServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiSubmitServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiSubmitServlet</servlet-name>
+    <url-pattern>/lti/submit</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ltiDeepLinkingSelectServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiDeepLinkingSelectServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiDeepLinkingSelectServlet</servlet-name>
+    <url-pattern>/lti/deeplink/select</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ltiRegisterServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.lti.LtiRegisterServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ltiRegisterServlet</servlet-name>
+    <url-pattern>/lti/register</url-pattern>
+  </servlet-mapping>
+
   <!-- Nonce based APK download -->
 
   <servlet>
