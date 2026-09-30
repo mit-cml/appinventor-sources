@@ -367,6 +367,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final String PROPERTY_NAME_VNAME = "VersionName";
   private static final String PROPERTY_NAME_ANDROID_MIN_SDK = "AndroidMinSdk";
   private static final String PROPERTY_NAME_ANAME = "AppName";
+  private static final String PROPERTY_NAME_PACKAGE_NAME = "PackageName";
   private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
   private static final String PROPERTY_NAME_TITLEVISIBLE = "TitleVisible";
   private static final String PROPERTY_NAME_SHOW_STATUS_BAR = "ShowStatusBar";
@@ -811,6 +812,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       case PROPERTY_NAME_SIZING:
       // The AppName property actually applies to the application and is only visible on Screen1.
       case PROPERTY_NAME_ANAME:
+      // The PackageName property actually applies to the application and is only visible on Screen1.
+      case PROPERTY_NAME_PACKAGE_NAME:
       // The ShowListsAsJson property actually applies to the application and is only visible on Screen1.
       case PROPERTY_NAME_SHOW_LISTS_AS_JSON:
       // The TutorialURL property actually applies to the application and is only visible on Screen1.
@@ -1135,7 +1138,8 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   @Override
   protected boolean isPropertyforYail(String propertyName) {
     if (IOS_PERMISSION_PROPERTIES.contains(propertyName)
-        || propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)) {
+        || propertyName.equals(PROPERTY_NAME_ANDROID_MIN_SDK)
+        || propertyName.equals(PROPERTY_NAME_PACKAGE_NAME)) {
       // These are project-level properties, not per form.
       return false;
     }
@@ -1385,6 +1389,13 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
         editor.getProjectEditor().changeProjectSettingsProperty(
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_ANDROID_MIN_SDK,
+            newValue);
+      }
+    } else if (propertyName.equals(PROPERTY_NAME_PACKAGE_NAME)) {
+      if (editor.isScreen1()) {
+        editor.getProjectEditor().changeProjectSettingsProperty(
+            SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+            SettingsConstants.YOUNG_ANDROID_SETTINGS_PACKAGE_NAME,
             newValue);
       }
     } else if (

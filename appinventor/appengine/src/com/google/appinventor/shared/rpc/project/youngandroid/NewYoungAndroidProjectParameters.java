@@ -27,6 +27,10 @@ public final class NewYoungAndroidProjectParameters implements NewProjectParamet
   private String theme;
 
   private String toolkit;
+
+  // Custom Android package name for the app, or empty to derive it from packageName
+  private String customPackageName;
+
   /**
    * Creates new parameters for creating Young Android projects
    *
@@ -49,6 +53,12 @@ public final class NewYoungAndroidProjectParameters implements NewProjectParamet
     formName = YOUNG_ANDROID_FORM_NAME;
     this.theme = theme;
     this.toolkit = toolkit;
+  }
+
+  public NewYoungAndroidProjectParameters(String packageName, String theme, String toolkit,
+      String customPackageName) {
+    this(packageName, theme, toolkit);
+    this.customPackageName = customPackageName;
   }
 
   // For serialization only
@@ -77,6 +87,19 @@ public final class NewYoungAndroidProjectParameters implements NewProjectParamet
       return "";
     }
     return toolkit;
+  }
+
+  /**
+   * Returns the Android package name chosen for the app, or an empty string if the package name
+   * should be derived from the package of the main form.
+   *
+   * @return the custom Android package name, or an empty string
+   */
+  public String getCustomPackageName() {
+    if (customPackageName == null) {
+      return "";
+    }
+    return customPackageName;
   }
 
   /**

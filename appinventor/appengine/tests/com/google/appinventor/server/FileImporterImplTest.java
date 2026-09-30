@@ -12,12 +12,17 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
 
 import junitx.framework.ListAssert;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Test FileImporterImpl.
@@ -119,6 +124,32 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/project2/Screen1.scm");
     ListAssert.assertContains(projectSourceFiles,
         "src/appinventor/ai_joeuser/project2/Screen1.yail");
+  }
+
+  public void testImportProject_clearsCustomPackageName() throws Exception {
+    ByteArrayOutputStream aia = new ByteArrayOutputStream();
+    try (ZipOutputStream zip = new ZipOutputStream(aia)) {
+      zip.putNextEntry(new ZipEntry("youngandroidproject/project.properties"));
+      zip.write(("main=appinventor.ai_author.game.Screen1\nname=game\n"
+          + "packagename=com.author.game\n").getBytes(StorageUtil.DEFAULT_CHARSET));
+      zip.putNextEntry(new ZipEntry("src/appinventor/ai_author/game/Screen1.scm"));
+      // The component's own PackageName property must be kept; only the app's is cleared.
+      zip.write(("#|\n$JSON\n{\"YaVersion\":\"238\",\"Source\":\"Form\",\"Properties\":"
+          + "{\"$Name\":\"Screen1\",\"$Type\":\"Form\",\"PackageName\":\"com.author.game\","
+          + "\"$Components\":[{\"$Name\":\"Ext1\",\"$Type\":\"Ext\","
+          + "\"PackageName\":\"com.other\"}]}}\n|#").getBytes(StorageUtil.DEFAULT_CHARSET));
+    }
+
+    UserProject userProject = fileImporter.importProject(USER_ID, PROJECT_NAME_2,
+        new ByteArrayInputStream(aia.toByteArray()));
+    long projectId = userProject.getProjectId();
+    String screen1 = storageIo.downloadFile(USER_ID, projectId,
+        "src/appinventor/ai_joeuser/project2/Screen1.scm", StorageUtil.DEFAULT_CHARSET);
+    assertFalse(screen1.contains("com.author.game"));
+    assertTrue(screen1.contains("\"PackageName\":\"com.other\""));
+    assertFalse(storageIo.downloadFile(USER_ID, projectId,
+        "youngandroidproject/project.properties", StorageUtil.DEFAULT_CHARSET)
+        .contains("packagename"));
   }
 
   public void testImportProject_withoutProjectHistory() throws Exception {

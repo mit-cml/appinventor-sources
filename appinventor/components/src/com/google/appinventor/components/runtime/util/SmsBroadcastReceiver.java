@@ -221,9 +221,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     Intent newIntent = null;
 
-    // Will the activity name always be "Screen1"?   If not, we need to revise this
     try {
-      String classname = packageName + ".Screen1";
+      String classname = getMainActivityClassName(context);
       newIntent = new Intent(context, Class.forName(classname));
       newIntent.setAction(Intent.ACTION_MAIN);
       newIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -256,10 +255,22 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     }
   }
 
+  /**
+   * Returns the class name of the app's main activity (Screen1). It is looked up from the launch
+   * intent because the application package name can differ from the package of the app's classes.
+   */
+  private static String getMainActivityClassName(Context context) {
+    String packageName = context.getPackageName();
+    Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+    if (launchIntent != null && launchIntent.getComponent() != null) {
+      return launchIntent.getComponent().getClassName();
+    }
+    return packageName + ".Screen1";
+  }
+
   private boolean isRepl(Context context) {
     try {
-      String packageName = context.getPackageName();
-      String classname = packageName + ".Screen1";
+      String classname = getMainActivityClassName(context);
       Class appClass = Class.forName(classname);
       Class superClass = appClass.getSuperclass(); // This should be either Form or ReplForm
       if (superClass.equals(ReplForm.class))

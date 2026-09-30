@@ -283,6 +283,69 @@ public class ProjectServiceTest {
   }
 
   @Test
+  public void testNewYoungAndroidProjectWithCustomPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "com.example.myapp");
+    long yaProject =
+        projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+                                      PROJECT1_NAME, params).getProjectId();
+
+    // The source files stay in the generated package; only the app's package name changes.
+    assertEquals(
+        "#|\n$JSON\n" +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
+        "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
+        "\"Title\":\"Screen1\",\"AppName\":\"noname\",\"Theme\":\"Classic\"," +
+        "\"PackageName\":\"com.example.myapp\"}}\n|#",
+        getTextFiles(USER_ID_ONE, yaProject, true)
+            .get("src/com/domain/noname/Project1/Screen1.scm"));
+    assertEqualProperties(new YoungAndroidSettingsBuilder()
+        .setProjectName("Project1")
+        .setQualifiedFormName("com.domain.noname.Project1.Screen1")
+        .setPackageName("com.example.myapp")
+        .toProperties(), getProjectProperties(USER_ID_ONE, yaProject));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNewYoungAndroidProjectWithInvalidPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "myapp");
+    projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+        PROJECT1_NAME, params);
+  }
+
+  @Test
+  public void testCopyProjectClearsCustomPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "com.example.myapp");
+    long yaProject1 =
+        projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+                                      PROJECT1_NAME, params).getProjectId();
+
+    // The copy is a separate app, so it goes back to the generated package name.
+    long yaProject2 = projectServiceImpl.copyProject(yaProject1, PROJECT2_NAME).getProjectId();
+    String screen1 = getTextFiles(USER_ID_ONE, yaProject2, true)
+        .get("src/appinventor/ai_noname1/Project2/Screen1.scm");
+    assertFalse(screen1.contains("PackageName"));
+    assertTrue(screen1.contains("\"Theme\":\"Classic\""));
+    assertFalse(getProjectProperties(USER_ID_ONE, yaProject2).contains("packagename"));
+    assertFalse(projectServiceImpl.loadProjectSettings(yaProject2)
+        .contains("com.example.myapp"));
+  }
+
+  @Test
   public void testCopyProject() throws Exception {
     when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
     when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));

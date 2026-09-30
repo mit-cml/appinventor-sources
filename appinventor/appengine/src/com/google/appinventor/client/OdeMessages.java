@@ -2489,6 +2489,20 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label for the project name input text box")
   String projectNameLabel();
 
+  @DefaultMessage("Package name (optional):")
+  @Description("Label for the Android package name input text box")
+  String packageNameLabel();
+
+  @DefaultMessage("Leave empty to use {0}")
+  @Description("Hint below the package name box naming the generated package name.")
+  String packageNameHint(String packageName);
+
+  @DefaultMessage("\"{0}\" is not a valid package name. Use at least two parts separated by " +
+      "dots, like com.example.myapp. Each part must start with a letter and contain only " +
+      "letters, numbers, and underscores.")
+  @Description("Error shown when the Android package name entered for a project is invalid.")
+  String invalidPackageNameError(String packageName);
+
   // Used in youngandroid/TextValidators.java
 
   @DefaultMessage("Project names must start with a letter and can contain only letters, " +

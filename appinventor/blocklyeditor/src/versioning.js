@@ -3200,7 +3200,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // For FORM_COMPONENT_VERSION 32:
     // - Added AndroidMinSdk designer property.
     // No blocks need to be changed.
-    32: "noUpgrade"
+    32: "noUpgrade",
+
+    // For FORM_COMPONENT_VERSION 33:
+    // - Added PackageName designer property.
+    // No blocks need to be changed.
+    33: "noUpgrade"
 
   }, // End Screen
 

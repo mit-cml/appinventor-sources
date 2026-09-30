@@ -1330,6 +1330,12 @@ Top-level component containing all other components in the program.
 {:id="Screen.OpenScreenAnimation" .text} *OpenScreenAnimation*
 : Sets the animation type for the transition of this form opening.
 
+{:id="Screen.PackageName" .text .wo .do} *PackageName*
+: The Android package name that identifies the app on devices and in the Google Play Store,
+ for example `com.example.myapp`. Leave it empty to use the package name App Inventor
+ generates from your account and project name. Changing it for an app that is already
+ installed or published makes Android treat the result as a different app.
+
 {:id="Screen.Platform" .text .ro .bo} *Platform*
 : Gets the name of the underlying platform running the app. Currently, this is the text
  "Android". Other platforms may be supported in the future.
