@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -46,7 +46,11 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   @SuppressWarnings("SimpleDateFormat")
   private static final DateFormat ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
-  private static boolean deleteAccountAllowed = Flag.createFlag("auth.deleteaccountallowed", true).get();
+  private static boolean deleteAccountAllowed =
+      Flag.createFlag("auth.deleteaccountallowed", true).get();
+
+  private static String preferredCompanion = Flag.createFlag("companion.preferred", "").get();
+  private static String acceptableCompanions = Flag.createFlag("companion.acceptable", "*").get();
 
   /**
    * Returns System Config, including user information record
@@ -96,6 +100,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     config.setDeleteAccountAllowed(deleteAccountAllowed);
     config.setIosExtensions(storageIo.getIosExtensionsConfig());
     config.setSurveyUrl(surveyUrl);
+    config.setPreferredCompanion(preferredCompanion);
+    config.setAcceptableCompanions(acceptableCompanions);
 
     if (!Flag.createFlag("build2.server.host", "").get().isEmpty()) {
       config.setSecondBuildserver(true);
@@ -134,7 +140,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
     if (!hasUserFile(StorageUtil.USER_BACKPACK_FILENAME)) {
       return "[]";
     } else {
-      return storageIo.downloadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, "UTF-8");
+      return storageIo.downloadUserFile(
+          userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, "UTF-8");
     }
   }
 
@@ -155,7 +162,8 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
 
   @Override
   public void storeUserBackpack(String backpack) {
-    storageIo.uploadUserFile(userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, backpack, "UTF-8");
+    storageIo.uploadUserFile(
+        userInfoProvider.getUserId(), StorageUtil.USER_BACKPACK_FILENAME, backpack, "UTF-8");
   }
 
   /**
