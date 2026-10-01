@@ -72,7 +72,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
     switchGraphic.setHeight(switchHeight + "px");
 
     switchGraphic.setInnerSVG("<rect x=\"0\" y=\"0\" rx=\"" +
-            switchHeight/2 + "\" yx=\"" + switchWidth/2 + "\" stroke-width=\"1\" stroke=\"black\"" +
+            switchHeight/2 + "\" ry=\"" + switchHeight/2 + "\" stroke-width=\"1\" stroke=\"black\" " +
             "height=\"" + switchHeight + "\" width=\"" + switchWidth + "\" fill=\"" + (checked? trackColorActive : trackColorInactive) + "\" />" +
             "<circle cx=\"" + (checked? switchWidth - switchHeight/2: switchHeight/2) + "\" fill=\"" + (checked? thumbColorActive : thumbColorInactive) + "\" " +
             "cy=\"" + (switchHeight/2) + "\" r=\"" + (switchHeight/2 - 1) + "\"/>");
