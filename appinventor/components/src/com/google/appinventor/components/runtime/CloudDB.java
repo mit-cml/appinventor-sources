@@ -1466,8 +1466,11 @@ public class CloudDB extends AndroidNonvisibleComponent implements Component,
         Object value = JsonUtil.getObjectFromJson(valueString);
 
         // Value is a List object; Convert and return it
+        // JsonUtil.getObjectFromJson decodes a top-level JSON array as an ArrayList, not a YailList.
         if (value instanceof YailList) {
           return (YailList)value;
+        } else if (value instanceof List) {
+          return YailList.makeList((List<?>) value);
         }
 
         // Return empty list otherwise
