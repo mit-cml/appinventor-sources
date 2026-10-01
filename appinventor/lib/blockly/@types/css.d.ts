@@ -17,9 +17,10 @@ export declare function register(cssContent: string): void;
  * b) It speeds up loading by not blocking on a separate HTTP transfer.
  * c) The CSS content may be made dynamic depending on init options.
  *
+ * @param container The div or other HTML element into which Blockly was injected.
  * @param hasCss If false, don't inject CSS (providing CSS becomes the
  *     document's responsibility).
  * @param pathToMedia Path from page to the Blockly media directory.
  */
-export declare function inject(hasCss: boolean, pathToMedia: string): void;
+export declare function inject(container: HTMLElement, hasCss: boolean, pathToMedia: string): void;
 //# sourceMappingURL=css.d.ts.map

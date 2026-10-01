@@ -3494,6 +3494,7 @@ textarea::-webkit-input-placeholder {
   overflow-y: auto;
   border: 1px solid #ccc;
   background: #fff;
+  color: #000;
   min-width: 200px;
   font-family: monospace;
 }

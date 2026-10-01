@@ -3,8 +3,8 @@
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { ParameterState } from '../serialization/procedures';
-import { IProcedureModel } from './i_procedure_model';
+import type { ParameterState } from '../serialization/procedures';
+import type { IProcedureModel } from './i_procedure_model';
 /**
  * A data model for a procedure.
  */

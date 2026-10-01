@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../block_svg.js';
+import { MiniWorkspaceBubble } from '../bubbles/mini_workspace_bubble.js';
 import type { Abstract } from '../events/events_abstract.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Coordinate } from '../utils/coordinate.js';
@@ -54,6 +55,8 @@ export declare class MutatorIcon extends Icon implements IHasBubble {
     isClickableInFlyout(): boolean;
     bubbleIsVisible(): boolean;
     setBubbleVisible(visible: boolean): Promise<void>;
+    /** See IHasBubble.getBubble. */
+    getBubble(): MiniWorkspaceBubble | null;
     /** @returns the configuration the mini workspace should have. */
     private getMiniWorkspaceConfig;
     /**
@@ -89,5 +92,13 @@ export declare class MutatorIcon extends Icon implements IHasBubble {
      *     currently open.
      */
     getWorkspace(): WorkspaceSvg | undefined;
+    /**
+     * Returns the ARIA label to use for this icon (defaults to null). Note that this
+     * method will only be called during initialization by default, so dynamic changes
+     * to the icon's ARIA label need to be applied by calling recomputeAriaContext.
+     *
+     * @returns The ARIA label to use for this icon, or null to use a default.
+     */
+    protected getAriaLabel(): string | null;
 }
 //# sourceMappingURL=mutator_icon.d.ts.map

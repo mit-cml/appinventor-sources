@@ -5,7 +5,7 @@
  */
 import type { BlockSvg } from '../../block_svg.js';
 import { Drawer as BaseDrawer } from '../common/drawer.js';
-import { Connection } from '../measurables/connection.js';
+import type { Connection } from '../measurables/connection.js';
 import type { InlineInput } from '../measurables/inline_input.js';
 import type { Row } from '../measurables/row.js';
 import type { RenderInfo } from './info.js';
@@ -46,6 +46,6 @@ export declare class Drawer extends BaseDrawer {
     private getInlineInputPath;
     drawStatementInput_(row: Row): void;
     /** Returns a path to highlight the given connection. */
-    drawConnectionHighlightPath(measurable: Connection): void;
+    drawConnectionHighlightPath(measurable: Connection): SVGElement | undefined;
 }
 //# sourceMappingURL=drawer.d.ts.map

@@ -11,7 +11,8 @@
 import type { Block } from '../block.js';
 import { Coordinate } from '../utils/coordinate.js';
 import type { Workspace } from '../workspace.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import type { BlockBaseJson } from './events_block_base.js';
+import { BlockBase } from './events_block_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners when a block is moved. This could be from one

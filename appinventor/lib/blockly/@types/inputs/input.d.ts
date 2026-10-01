@@ -8,14 +8,20 @@
  *
  * @class
  */
-import '../field_label.js';
 import type { Block } from '../block.js';
 import type { BlockSvg } from '../block_svg.js';
 import type { Connection } from '../connection.js';
-import type { ConnectionType } from '../connection_type.js';
+import { ConnectionType } from '../connection_type.js';
 import type { Field } from '../field.js';
+import { Verbosity } from '../utils/aria.js';
 import { Align } from './align.js';
 import { inputTypes } from './input_types.js';
+/**
+ * Represents a string or a function that returns a string which can be used as a
+ * custom ARIA string to represent an Input, or null if the default fallback should
+ * be used. See setAriaLabelProvider for more context.
+ */
+export type AriaLabelProvider = ((input: Input) => string | null) | string;
 /** Class for an input with optional fields. */
 export declare class Input {
     name: string;
@@ -25,6 +31,8 @@ export declare class Input {
     align: Align;
     /** Is the input visible? */
     private visible;
+    /** The AriaLabelProvider */
+    private ariaLabelProvider;
     readonly type: inputTypes;
     connection: Connection | null;
     /**
@@ -123,6 +131,29 @@ export declare class Input {
     /** Initialize the fields on this input. */
     init(): void;
     /**
+     * Sets a custom ARIA label provider for this input, or null if it should be reset
+     * to use the default method.
+     *
+     * Inputs do not compute ARIA contexts directly, so the set provider will be used
+     * in select cases when the Input needs to be represented (such as for parts of a
+     * block label or for connections). Note that overriding this provider will not
+     * recompute any already constructed ARIA labels, and it cannot be assumed that the
+     * provider will be called any particular number of times during label
+     * recomputation. As such, implementations should make sure to provide a
+     * deterministic and idempotent ARIA representation each time the provider is
+     * called for a given input. It's also fine to reuse providers across multiple
+     * Input implementations.
+     *
+     * @param provider The string or function to use to set the ARIA label for the input
+     * @returns The input being modified (to allow chaining).
+     */
+    setAriaLabelProvider(provider: AriaLabelProvider | null): Input;
+    /**
+     * Returns the string from the custom ARIA label provider set, or null if the default label (from the field row) should
+     * be used. See setAriaLabelProvider for more context.
+     */
+    getAriaLabelText(): string | null;
+    /**
      * Initializes the fields on this input for a headless block.
      *
      * @internal
@@ -143,5 +174,30 @@ export declare class Input {
      *     or rendered connection, based on the type of this input's source block.
      */
     protected makeConnection(type: ConnectionType): Connection;
+    /**
+     * Returns an ID for the logical "row" this input is part of. A "row" is
+     * bounded by a previous/next connection, a statement input, or a block stack
+     * boundary; all blocks/inputs nested inside of one of those are conceptually
+     * part of its same row.
+     *
+     * @internal
+     */
+    getRowId(): string;
+    /**
+     * Returns a derived accessibility label for this input: field row text plus
+     * labels of any connected child blocks (unless excluded). Does not include
+     * custom labels from {@link getAriaLabelText}; those are used in move-mode
+     * and parent-input context only.
+     *
+     * @internal
+     */
+    getLabel(verbosity?: Verbosity, includeChildren?: boolean): string;
+    /**
+     * Returns the index of this input, excluding inputs without connections, on its
+     * source block.
+     *
+     * @internal
+     */
+    getIndex(): number;
 }
 //# sourceMappingURL=input.d.ts.map

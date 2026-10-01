@@ -10,8 +10,9 @@
  * @class
  */
 import type { Block } from '../block.js';
-import { Workspace } from '../workspace.js';
-import { BlockBase, BlockBaseJson } from './events_block_base.js';
+import type { Workspace } from '../workspace.js';
+import type { BlockBaseJson } from './events_block_base.js';
+import { BlockBase } from './events_block_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners when the value of a block's field has changed but the

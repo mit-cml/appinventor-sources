@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { Coordinate } from '../utils/coordinate.js';
-import { Size } from '../utils/size.js';
-import { Workspace } from '../workspace.js';
+import type { Size } from '../utils/size.js';
+import type { Workspace } from '../workspace.js';
 export declare class WorkspaceComment {
     readonly workspace: Workspace;
     /** The unique identifier for this comment. */
