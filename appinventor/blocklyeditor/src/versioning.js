@@ -2451,7 +2451,10 @@ Blockly.Versioning.AllUpgradeMaps =
     38: "noUpgrade",
 
     // AI2: Added Multiline Text block.
-    39: "noUpgrade"
+    39: "noUpgrade",
+
+    // AI2: Add "titlecase" operator for text_changeCase block.
+    40: "noUpgrade"
   }, // End Language upgraders
 
 

@@ -2143,6 +2143,19 @@
 (define (string-to-lower-case s)
   (String:toLowerCase (s:toString)))
 
+(define (string-to-title-case s)
+  (let* ((str (s:toString))
+         (words (yail-list-contents (string-split str " "))))
+    (join-strings
+      (map (lambda (word)
+             (if (> (string-length word) 0)
+                 (string-append
+                   (string-upcase (substring word 0 1))
+                   (string-downcase (substring word 1 (string-length word))))
+                 word))
+           words)
+      " ")))
+
 (define (unicode-string->list str :: <string>) :: <list>
   (let loop ((result :: <list> '()) (i :: <int> (string-length str)))
     (set! i (- i 1))
