@@ -257,8 +257,11 @@ public class TinyDB extends AndroidNonvisibleComponent implements Component, Del
     Object value = GetValue(key, YailList.makeEmptyList());
 
     // Check if value is of type List, and return it if that is the case.
+    // GetValue returns a stored list as an ArrayList, not a YailList.
     if (value instanceof YailList) {
       return (YailList) value;
+    } else if (value instanceof List) {
+      return YailList.makeList((List<?>) value);
     }
 
     // Default option (could not parse data): return empty YailList
