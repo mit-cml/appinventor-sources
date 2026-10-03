@@ -14,7 +14,9 @@ import com.google.appinventor.client.editor.simple.components.MockComponentsUtil
 import com.google.appinventor.client.editor.simple.components.MockContainer;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.utils.ImageAccessibility;
+import com.google.appinventor.client.style.mobile.MobileSidebar;
 import com.google.appinventor.client.widgets.dnd.DragSourcePanel;
 import com.google.appinventor.client.widgets.dnd.DragSourceSupport;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
@@ -29,7 +31,7 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.dom.client.TouchStartHandler;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -57,38 +59,38 @@ public class SimplePaletteItem extends DragSourcePanel {
     this.scd = scd;
 
     // Initialize palette item UI
-    FlowPanel panel = new FlowPanel();
+    HorizontalPanel panel = new HorizontalPanel();
     panel.setStylePrimaryName("ode-SimplePaletteItem");
 
     Image image = new Image(scd.getImage().getUrl());
     image.setStylePrimaryName("ode-SimplePaletteItem-icon");
-    String altText = ComponentTranslationTable.getComponentName(scd.getName()) + " component";
-    ImageAccessibility.setAltText(image, altText);
     panel.add(image);
+    panel.setCellHorizontalAlignment(image, HorizontalPanel.ALIGN_LEFT);
+    panel.setCellWidth(image, "30px");
 
     Label label = new Label(ComponentTranslationTable.getComponentName(scd.getName()));
+    label.setHorizontalAlignment(Label.ALIGN_LEFT);
     label.addStyleName("ode-SimplePaletteItem-caption");
     panel.add(label);
 
-    FlowPanel optPanel = new FlowPanel();
-    optPanel.addStyleName("ode-SimplePaletteItem-options");
+    HorizontalPanel optPanel = new HorizontalPanel();
 
     ComponentHelpWidget helpImage = new ComponentHelpWidget(scd);
     optPanel.add(helpImage);
+    optPanel.setCellHorizontalAlignment(helpImage, HorizontalPanel.ALIGN_LEFT);
 
     if (scd.getExternal()) {
       ComponentRemoveWidget deleteImage = new ComponentRemoveWidget(scd);
       optPanel.add(deleteImage);
+      optPanel.setCellHorizontalAlignment(deleteImage, HorizontalPanel.ALIGN_RIGHT);
     }
 
     panel.add(optPanel);
+    panel.setCellHorizontalAlignment(optPanel, HorizontalPanel.ALIGN_RIGHT);
 
     panel.setWidth("100%");
     add(panel);
     setWidth("100%");
-
-    getElement().setAttribute("role", "listitem");
-    getElement().setAttribute("aria-label", ComponentTranslationTable.getComponentName(scd.getName()));
 
     addHandlers();
   }
@@ -177,7 +179,10 @@ public class SimplePaletteItem extends DragSourcePanel {
 
   @Override
   public void onDragStart() {
-    // no action
+    MobileSidebar sidebar = Ode.getInstance().getmobileSideBar();
+    if (sidebar != null && sidebar.isOpen()) {
+      sidebar.close();
+    }
   }
 
   @Override

@@ -7,6 +7,7 @@
 package com.google.appinventor.client.explorer;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.style.mobile.MobileSidebar;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -70,6 +71,7 @@ public class SourceStructureExplorer extends Composite {
   private ScrollPanel scrollPanel;
   private final TextButton renameButton;
   private final TextButton deleteButton;
+  private MobileSidebar mobileSidebar;
 
   // Drag-and-drop state
   /** Maps component name → SourceStructureExplorerItem; rebuilt on every tree update. */
@@ -162,6 +164,12 @@ public class SourceStructureExplorer extends Composite {
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
             enableButtons(item);
+
+            // Close mobile sidebar when any item is selected
+            if (mobileSidebar != null && mobileSidebar.isOpen()) {
+              mobileSidebar.close();
+            }
+
             //showBlocks(item);
             item.onSelected(tree.lastEvent);
           } else {
@@ -387,6 +395,10 @@ public class SourceStructureExplorer extends Composite {
 
   public void setStyleName (String styleName){
     setStylePrimaryName(styleName);
+  }
+
+  public void setMobileSidebar(MobileSidebar sidebar) {
+    this.mobileSidebar = sidebar;
   }
 
   private void deleteItemFromTree() {

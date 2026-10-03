@@ -64,8 +64,8 @@ public class TopPanel extends Composite {
   @UiField protected DropDownButton accountButton;
   @UiField protected DropDownItem deleteAccountItem;
   @UiField protected FlowPanel links;
-  @UiField protected TextButton myProjects;
-  @UiField protected TextButton viewTrash;
+  @UiField public TextButton myProjects;
+  @UiField public TextButton viewTrash;
 
   final Ode ode = Ode.getInstance();
 

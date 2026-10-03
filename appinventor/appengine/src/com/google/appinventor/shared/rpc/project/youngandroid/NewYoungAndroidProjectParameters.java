@@ -8,6 +8,7 @@ package com.google.appinventor.shared.rpc.project.youngandroid;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
+import static com.google.appinventor.components.common.ComponentConstants.DEFAULT_THEME;
 
 /**
  * Parameters for creating Young Android projects.
@@ -67,7 +68,7 @@ public final class NewYoungAndroidProjectParameters implements NewProjectParamet
 
   public String getThemeName() {
     if (theme == null) {
-      return "Classic";
+      return DEFAULT_THEME;
     }
     return theme;
   }

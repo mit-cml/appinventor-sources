@@ -16,6 +16,35 @@ import com.google.gwt.i18n.client.Messages;
  */
 @LocalizableResource.Generate(format = "com.google.gwt.i18n.rebind.format.PropertiesFormat")
 public interface OdeMessages extends Messages, ComponentTranslations {
+
+  // Mobile Toolbar messages
+
+  @DefaultMessage("Menu")
+  @Description("Title for the hamburger menu button")
+  String menuButton();
+
+  @DefaultMessage("Menu Title")
+  @Description("Title for the mobile toolbar header")
+  String menuTitle();
+
+  @DefaultMessage("Close")
+  @Description("Title for the close button on the popup menu")
+  String closeButton();
+
+  // designTabBar buttons
+
+  @DefaultMessage("Palette")
+  @Description("Title for the palette button")
+  String PaletteButton();
+
+  @DefaultMessage("Components")
+  @Description("Title for the Components button")
+  String componentsButton();
+
+  @DefaultMessage("Properties")
+  @Description("Title for the Properties button")
+  String propertiesButton();
+
   // Used in multiple files
 
   @DefaultMessage("Default")

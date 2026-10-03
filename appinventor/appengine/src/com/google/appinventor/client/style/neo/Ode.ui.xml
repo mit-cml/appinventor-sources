@@ -8,6 +8,7 @@
              xmlns:ya="urn:import:com.google.appinventor.client.editor.youngandroid.actions"
              xmlns:neo="urn:import:com.google.appinventor.client.style.neo"
              xmlns:box="urn:import:com.google.appinventor.client.boxes"
+             xmlns:mob="urn:import:com.google.appinventor.client.style.mobile"
              xmlns:widgets="urn:import:com.google.appinventor.client.widgets"
              ui:generatedFormat="com.google.gwt.i18n.server.PropertyCatalogFactory"
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
@@ -17,7 +18,7 @@
   <g:FlowPanel styleName="ode-Root">
     <neo:TopPanelNeo ui:field="topPanel" />
     <g:FlowPanel styleName="ode-TutorialWrapper" ui:field="overDeckPanel">
-      <ed:TutorialPanel ui:field="tutorialPanel" width="100%" height="100%" visible="false" />
+      <ed:TutorialPanel ui:field="tutorialPanel" width="300px" height="100%" visible="false" />
       <g:DeckPanel ui:field="deckPanel" animationEnabled="false" styleName="ode-DeckPanel">
         <g:FlowPanel width="100%" height="100%" styleName="ode-Project-FlexColumn">
           <neo:ProjectToolbarNeo ui:field="projectToolbar" />
@@ -46,5 +47,9 @@
       </g:DeckPanel>
     </g:FlowPanel>
     <neo:StatusPanelNeo ui:field="statusPanel" />
+    <mob:MobileSidebar ui:field="mobileSideBar" visible="false">
+    </mob:MobileSidebar>
+    <mob:DesignTabBarMob ui:field="designTabBar" styleName="ode-BottomNavBar" visible="false" />
+    <mob:BlockTabBarMob ui:field="blockTabBar" styleName="ode-BottomNavBar align" visible="false" />
   </g:FlowPanel>
 </ui:UiBinder>

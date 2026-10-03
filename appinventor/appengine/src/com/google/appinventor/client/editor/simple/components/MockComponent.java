@@ -383,7 +383,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     initWidget(widget);
 
     // Capture mouse and click events in onBrowserEvent(Event)
-    sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.TOUCHEVENTS);
+    if (!isForm()) {
+      sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.TOUCHEVENTS);
+    } else {
+      sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK );
+    }
 
     // Add the special name property and set the tooltip
     String name = componentName();

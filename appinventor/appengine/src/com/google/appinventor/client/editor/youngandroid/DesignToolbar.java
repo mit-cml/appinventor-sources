@@ -129,7 +129,7 @@ public class DesignToolbar extends Toolbar {
   public View currentView = View.DESIGNER;
 
   @UiField public Label projectNameLabel;
-  @UiField (provided = true) protected Boolean isAvailable;
+  @UiField (provided = true) public Boolean isAvailable;
 
   // Project currently displayed in designer
   private DesignProject currentProject;

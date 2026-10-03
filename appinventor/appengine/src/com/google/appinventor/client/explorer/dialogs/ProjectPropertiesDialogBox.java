@@ -48,22 +48,22 @@ public class ProjectPropertiesDialogBox {
   }
 
   @UiField 
-  Dialog projectProperties;
+  protected Dialog projectProperties;
 
   @UiField
-  ListBox categoryList;
+  protected ListBox categoryList;
 
   @UiField
-  DeckPanel propertiesDeckPanel;
+  protected DeckPanel propertiesDeckPanel;
 
   @UiField
-  Button closeDialogBox;
+  protected Button closeDialogBox;
 
   @UiField
-  Button topInvisible;
+  protected Button topInvisible;
 
   @UiField
-  Button bottomInvisible;
+  protected Button bottomInvisible;
 
   /**
    * List Of project properties category, which will be used to group properties in the dialog 
@@ -107,13 +107,12 @@ public class ProjectPropertiesDialogBox {
   }
 
   public ProjectPropertiesDialogBox(YaProjectEditor projectEditor) {
-    ProjectPropertiesDialogBoxUiBinder uibinder = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
-    uibinder.createAndBindUi(this);
+    bindUI();
     projectProperties.setAutoHideEnabled(false);
     projectProperties.setModal(false);
     projectProperties.setCaption(MESSAGES.projectPropertiesText());
 
-    categoryList.getElement().getStyle().setProperty("height", "400px");
+//    categoryList.getElement().getStyle().setProperty("height", "400px");
 
     // Get current instance of YaProjectEditor
     this.projectEditor = projectEditor;
@@ -149,11 +148,17 @@ public class ProjectPropertiesDialogBox {
       }
     });
 
-    categoryList.setVisibleItemCount(projectCategories.size());
+//    categoryList.setVisibleItemCount(projectCategories.size());
       
     // When dialog is opened, properties related to the General category is shown
     propertiesDeckPanel.showWidget(0);
   }
+
+  public void bindUI() {
+    ProjectPropertiesDialogBoxUiBinder uibinder = GWT.create(ProjectPropertiesDialogBoxUiBinder.class);
+    uibinder.createAndBindUi(this);
+  }
+
 
   /**
    * Build vertical panel for each categories
@@ -207,7 +212,7 @@ public class ProjectPropertiesDialogBox {
   }
 
   @UiHandler("closeDialogBox")
-  void handleClose(ClickEvent e) {
+  protected void handleClose(ClickEvent e) {
     projectProperties.hide();
     applyPropertyChanges();
   }
