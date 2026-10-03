@@ -29,7 +29,6 @@ import { Types } from '../measurables/types.js';
 import { Drawer } from './drawer.js';
 import type { IPathObject } from './i_path_object.js';
 import { RenderInfo } from './info.js';
-import { MarkerSvg } from './marker_svg.js';
 import { PathObject } from './path_object.js';
 import { Renderer } from './renderer.js';
 /**
@@ -59,6 +58,6 @@ export declare function unregister(name: string): void;
 export declare function init(name: string, theme: Theme, opt_rendererOverrides?: {
     [rendererConstant: string]: any;
 }): Renderer;
-export { BottomRow, Connection, Drawer, ExternalValueInput, Field, Hat, Icon, InlineInput, InputConnection, InputRow, InRowSpacer, IPathObject, JaggedEdge, MarkerSvg, Measurable, NextConnection, OutputConnection, PathObject, PreviousConnection, Renderer, RenderInfo, RoundCorner, Row, SpacerRow, SquareCorner, StatementInput, TopRow, Types, };
+export { BottomRow, Connection, Drawer, ExternalValueInput, Field, Hat, Icon, InlineInput, InputConnection, InputRow, InRowSpacer, IPathObject, JaggedEdge, Measurable, NextConnection, OutputConnection, PathObject, PreviousConnection, Renderer, RenderInfo, RoundCorner, Row, SpacerRow, SquareCorner, StatementInput, TopRow, Types, };
 export { BaseShape, ConstantProvider, DynamicShape, InsideCorners, JaggedTeeth, Notch, OutsideCorners, PuzzleTab, StartHat, } from './constants.js';
 //# sourceMappingURL=block_rendering.d.ts.map

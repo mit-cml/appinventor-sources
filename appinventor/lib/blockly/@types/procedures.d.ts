@@ -13,6 +13,7 @@ import { IProcedureBlock, isProcedureBlock } from './interfaces/i_procedure_bloc
 import { IProcedureMap } from './interfaces/i_procedure_map.js';
 import { IProcedureModel } from './interfaces/i_procedure_model.js';
 import { ObservableProcedureMap } from './observable_procedure_map.js';
+import type { FlyoutItemInfo } from './utils/toolbox.js';
 import type { Workspace } from './workspace.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
 /**
@@ -64,12 +65,14 @@ export declare function isNameUsed(name: string, workspace: Workspace, opt_exclu
  */
 export declare function rename(this: Field, name: string): string;
 /**
- * Construct the blocks required by the flyout for the procedure category.
+ * Internal wrapper that returns the contents of the procedure category.
  *
- * @param workspace The workspace containing procedures.
- * @returns Array of XML block elements.
+ * @internal
+ * @param workspace The workspace to populate procedure blocks for.
  */
-export declare function flyoutCategory(workspace: WorkspaceSvg): Element[];
+export declare function internalFlyoutCategory(workspace: WorkspaceSvg): FlyoutItemInfo[];
+export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: true): Element[];
+export declare function flyoutCategory(workspace: WorkspaceSvg, useXml: false): FlyoutItemInfo[];
 /**
  * Listens for when a procedure mutator is opened. Then it triggers a flyout
  * update and adds a mutator change listener to the mutator workspace.

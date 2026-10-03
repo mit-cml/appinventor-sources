@@ -333,11 +333,6 @@ export declare class Gesture {
      */
     private doWorkspaceClick;
     /**
-     * Move the dragged/clicked block to the front of the workspace so that it is
-     * not occluded by other blocks.
-     */
-    private bringBlockToFront;
-    /**
      * Record the field that a gesture started on.
      *
      * @param field The field the gesture started on.

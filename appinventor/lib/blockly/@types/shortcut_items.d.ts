@@ -13,7 +13,8 @@ export declare enum names {
     CUT = "cut",
     PASTE = "paste",
     UNDO = "undo",
-    REDO = "redo"
+    REDO = "redo",
+    MENU = "menu"
 }
 /**
  * Keyboard shortcut to hide chaff on escape.
@@ -44,6 +45,10 @@ export declare function registerUndo(): void;
  * or alt+shift+z.
  */
 export declare function registerRedo(): void;
+/**
+ * Keyboard shortcut to show the context menu on ctrl/cmd+Enter.
+ */
+export declare function registerShowContextMenu(): void;
 /**
  * Registers all default keyboard shortcut item. This should be called once per
  * instance of KeyboardShortcutRegistry.

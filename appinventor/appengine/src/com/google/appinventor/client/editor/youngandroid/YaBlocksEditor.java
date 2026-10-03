@@ -75,7 +75,11 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     super(projectEditor, blocksNode, YaVersion.YOUNG_ANDROID_VERSION, YAIL,
         BlocksCodeGenerationTarget.YAIL,
         SimpleComponentDatabase.getInstance(blocksNode.getProjectId()));
+  }
 
+  @Override
+  public void initWorkspace() {
+    super.initWorkspace();
     project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
     project.addProjectChangeListener(this);
     onProjectLoaded(project);

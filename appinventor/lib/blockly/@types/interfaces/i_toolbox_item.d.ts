@@ -3,10 +3,11 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { IFocusableNode } from './i_focusable_node.js';
 /**
  * Interface for an item in the toolbox.
  */
-export interface IToolboxItem {
+export interface IToolboxItem extends IFocusableNode {
     /**
      * Initializes the toolbox item.
      * This includes creating the DOM and updating the state of any items based

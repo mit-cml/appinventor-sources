@@ -10,8 +10,6 @@ export declare class BubbleDragStrategy implements IDragStrategy {
     private bubble;
     private workspace;
     private startLoc;
-    /** Was there already an event group in progress when the drag started? */
-    private inGroup;
     constructor(bubble: IBubble, workspace: WorkspaceSvg);
     isMovable(): boolean;
     startDrag(): void;

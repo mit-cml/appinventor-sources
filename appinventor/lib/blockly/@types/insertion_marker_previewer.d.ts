@@ -6,6 +6,7 @@
 import { BlockSvg } from './block_svg.js';
 import { IConnectionPreviewer } from './interfaces/i_connection_previewer.js';
 import { RenderedConnection } from './rendered_connection.js';
+import * as blocks from './serialization/blocks.js';
 export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     private readonly workspace;
     private fadedBlock;
@@ -36,6 +37,16 @@ export declare class InsertionMarkerPreviewer implements IConnectionPreviewer {
     previewConnection(draggedConn: RenderedConnection, staticConn: RenderedConnection): void;
     private shouldUseMarkerPreview;
     private previewMarker;
+    /**
+     * Transforms the given block into a JSON representation used to construct an
+     * insertion marker.
+     *
+     * @param block The block to serialize and use as an insertion marker.
+     * @returns A JSON-formatted string corresponding to a serialized
+     *     representation of the given block suitable for use as an insertion
+     *     marker.
+     */
+    protected serializeBlockToInsertionMarker(block: BlockSvg): blocks.State;
     private createInsertionMarker;
     /**
      * Gets the connection on the marker block that matches the original

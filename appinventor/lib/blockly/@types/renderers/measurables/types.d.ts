@@ -4,7 +4,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { Measurable } from './base.js';
+import type { BottomRow } from './bottom_row.js';
+import type { ExternalValueInput } from './external_value_input.js';
+import type { Field } from './field.js';
+import type { Hat } from './hat.js';
+import type { Icon } from './icon.js';
+import type { InRowSpacer } from './in_row_spacer.js';
+import type { InlineInput } from './inline_input.js';
+import type { InputConnection } from './input_connection.js';
+import type { InputRow } from './input_row.js';
+import type { JaggedEdge } from './jagged_edge.js';
+import type { NextConnection } from './next_connection.js';
+import type { PreviousConnection } from './previous_connection.js';
+import type { RoundCorner } from './round_corner.js';
 import type { Row } from './row.js';
+import type { SpacerRow } from './spacer_row.js';
+import type { SquareCorner } from './square_corner.js';
+import type { StatementInput } from './statement_input.js';
+import type { TopRow } from './top_row.js';
 /**
  * Types of rendering elements.
  */
@@ -63,77 +80,84 @@ declare class TypesContainer {
      * @param elem The element to check.
      * @returns 1 if the object stores information about a field.
      */
-    isField(elem: Measurable): number;
+    isField(elem: Measurable): elem is Field;
     /**
      * Whether a measurable stores information about a hat.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a hat.
      */
-    isHat(elem: Measurable): number;
+    isHat(elem: Measurable): elem is Hat;
     /**
      * Whether a measurable stores information about an icon.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about an icon.
      */
-    isIcon(elem: Measurable): number;
+    isIcon(elem: Measurable): elem is Icon;
     /**
      * Whether a measurable stores information about a spacer.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a spacer.
      */
-    isSpacer(elem: Measurable | Row): number;
+    isSpacer(elem: Measurable | Row): elem is SpacerRow | InRowSpacer;
     /**
      * Whether a measurable stores information about an in-row spacer.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about an in-row spacer.
      */
-    isInRowSpacer(elem: Measurable): number;
+    isInRowSpacer(elem: Measurable): elem is InRowSpacer;
+    /**
+     * Whether a row is a spacer row.
+     *
+     * @param row The row to check.
+     * @returns True if the row is a spacer row.
+     */
+    isSpacerRow(row: Row): row is SpacerRow;
     /**
      * Whether a measurable stores information about an input.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about an input.
      */
-    isInput(elem: Measurable): number;
+    isInput(elem: Measurable): elem is InputConnection;
     /**
      * Whether a measurable stores information about an external input.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about an external input.
      */
-    isExternalInput(elem: Measurable): number;
+    isExternalInput(elem: Measurable): elem is ExternalValueInput;
     /**
      * Whether a measurable stores information about an inline input.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about an inline input.
      */
-    isInlineInput(elem: Measurable): number;
+    isInlineInput(elem: Measurable): elem is InlineInput;
     /**
      * Whether a measurable stores information about a statement input.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a statement input.
      */
-    isStatementInput(elem: Measurable): number;
+    isStatementInput(elem: Measurable): elem is StatementInput;
     /**
      * Whether a measurable stores information about a previous connection.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a previous connection.
      */
-    isPreviousConnection(elem: Measurable): number;
+    isPreviousConnection(elem: Measurable): elem is PreviousConnection;
     /**
      * Whether a measurable stores information about a next connection.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a next connection.
      */
-    isNextConnection(elem: Measurable): number;
+    isNextConnection(elem: Measurable): elem is NextConnection;
     /**
      * Whether a measurable stores information about a previous or next
      * connection.
@@ -142,91 +166,92 @@ declare class TypesContainer {
      * @returns 1 if the object stores information about a previous or next
      *     connection.
      */
-    isPreviousOrNextConnection(elem: Measurable): number;
+    isPreviousOrNextConnection(elem: Measurable): elem is PreviousConnection | NextConnection;
+    isRoundCorner(elem: Measurable): elem is RoundCorner;
     /**
      * Whether a measurable stores information about a left round corner.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a left round corner.
      */
-    isLeftRoundedCorner(elem: Measurable): number;
+    isLeftRoundedCorner(elem: Measurable): boolean;
     /**
      * Whether a measurable stores information about a right round corner.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a right round corner.
      */
-    isRightRoundedCorner(elem: Measurable): number;
+    isRightRoundedCorner(elem: Measurable): boolean;
     /**
      * Whether a measurable stores information about a left square corner.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a left square corner.
      */
-    isLeftSquareCorner(elem: Measurable): number;
+    isLeftSquareCorner(elem: Measurable): boolean;
     /**
      * Whether a measurable stores information about a right square corner.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a right square corner.
      */
-    isRightSquareCorner(elem: Measurable): number;
+    isRightSquareCorner(elem: Measurable): boolean;
     /**
      * Whether a measurable stores information about a corner.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a corner.
      */
-    isCorner(elem: Measurable): number;
+    isCorner(elem: Measurable): elem is SquareCorner | RoundCorner;
     /**
      * Whether a measurable stores information about a jagged edge.
      *
      * @param elem The element to check.
      * @returns 1 if the object stores information about a jagged edge.
      */
-    isJaggedEdge(elem: Measurable): number;
+    isJaggedEdge(elem: Measurable): elem is JaggedEdge;
     /**
      * Whether a measurable stores information about a row.
      *
      * @param row The row to check.
      * @returns 1 if the object stores information about a row.
      */
-    isRow(row: Row): number;
+    isRow(row: Row): row is Row;
     /**
      * Whether a measurable stores information about a between-row spacer.
      *
      * @param row The row to check.
      * @returns 1 if the object stores information about a between-row spacer.
      */
-    isBetweenRowSpacer(row: Row): number;
+    isBetweenRowSpacer(row: Row): row is SpacerRow;
     /**
      * Whether a measurable stores information about a top row.
      *
      * @param row The row to check.
      * @returns 1 if the object stores information about a top row.
      */
-    isTopRow(row: Row): number;
+    isTopRow(row: Row): row is TopRow;
     /**
      * Whether a measurable stores information about a bottom row.
      *
      * @param row The row to check.
      * @returns 1 if the object stores information about a bottom row.
      */
-    isBottomRow(row: Row): number;
+    isBottomRow(row: Row): row is BottomRow;
     /**
      * Whether a measurable stores information about a top or bottom row.
      *
      * @param row The row to check.
      * @returns 1 if the object stores information about a top or bottom row.
      */
-    isTopOrBottomRow(row: Row): number;
+    isTopOrBottomRow(row: Row): row is TopRow | BottomRow;
     /**
      * Whether a measurable stores information about an input row.
      *
      * @param row The row to check.
      * @returns 1 if the object stores information about an input row.
      */
-    isInputRow(row: Row): number;
+    isInputRow(row: Row): row is InputRow;
 }
 export declare const Types: TypesContainer;
 export {};

@@ -25,8 +25,8 @@ export declare class BlockDragStrategy implements IDragStrategy {
      * block, to add to the drag location. In workspace units.
      */
     private dragOffset;
-    /** Was there already an event group in progress when the drag started? */
-    private inGroup;
+    /** Used to persist an event group when snapping is done async. */
+    private originalEventGroup;
     constructor(block: BlockSvg);
     /** Returns true if the block is currently movable. False otherwise. */
     isMovable(): boolean;
@@ -35,6 +35,23 @@ export declare class BlockDragStrategy implements IDragStrategy {
      * from any parent blocks.
      */
     startDrag(e?: PointerEvent): void;
+    /**
+     * Returns an array of visible bubbles attached to the given block or its
+     * descendants.
+     *
+     * @param block The block to identify open bubbles on.
+     * @returns An array of all currently visible bubbles on the given block or
+     *    its descendants.
+     */
+    private getVisibleBubbles;
+    /**
+     * Get whether the drag should act on a single block or a block stack.
+     *
+     * @param e The instigating pointer event, if any.
+     * @returns True if just the initial block should be dragged out, false
+     *     if all following blocks should also be dragged.
+     */
+    protected shouldHealStack(e: PointerEvent | undefined): boolean;
     /** Starts a drag on a shadow, recording the drag offset. */
     private startDraggingShadow;
     /**
@@ -84,6 +101,10 @@ export declare class BlockDragStrategy implements IDragStrategy {
      * compatible type (input, output, etc) and connection check.
      */
     private getConnectionCandidate;
+    /**
+     * Get the radius to use when searching for a nearby valid connection.
+     */
+    protected getSearchRadius(): number;
     /**
      * Returns all of the connections we might connect to blocks on the workspace.
      *

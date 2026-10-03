@@ -3,6 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import { IRenderedElement } from './interfaces/i_rendered_element.js';
 import { Coordinate } from './utils/coordinate.js';
 import { WorkspaceSvg } from './workspace_svg.js';
@@ -37,15 +38,24 @@ export declare class LayerManager {
      * Moves the given element to the drag layer, which exists on top of all other
      * layers, and the drag surface.
      *
-     * @internal
-     */
-    moveToDragLayer(elem: IRenderedElement): void;
-    /**
-     * Moves the given element off of the drag layer.
+     * @param elem The element to move onto the drag layer.
+     * @param focus Whether or not to focus the element post-move.
      *
      * @internal
      */
-    moveOffDragLayer(elem: IRenderedElement, layerNum: number): void;
+    moveToDragLayer(elem: IRenderedElement & IFocusableNode, focus?: boolean): void;
+    /**
+     * Moves the given element off of the drag layer.
+     *
+     * @param elem The element to move off of the drag layer.
+     * @param layerNum The identifier of the layer to move the element onto.
+     *     Should be a constant from layers.ts.
+     * @param focus Whether or not the element should be focused once moved onto
+     *     the destination layer.
+     *
+     * @internal
+     */
+    moveOffDragLayer(elem: IRenderedElement & IFocusableNode, layerNum: number, focus?: boolean): void;
     /**
      * Appends the given element to a layer. If the layer does not exist, it is
      * created.
@@ -81,5 +91,11 @@ export declare class LayerManager {
      * @internal
      */
     getBubbleLayer(): SVGGElement;
+    /**
+     * Returns the drag layer.
+     *
+     * @internal
+     */
+    getDragLayer(): SVGGElement | undefined;
 }
 //# sourceMappingURL=layer_manager.d.ts.map

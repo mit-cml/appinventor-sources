@@ -9,6 +9,7 @@
  * @class
  */
 import type { ICollapsibleToolboxItem } from '../interfaces/i_collapsible_toolbox_item.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
 import type { IToolbox } from '../interfaces/i_toolbox.js';
 import type { IToolboxItem } from '../interfaces/i_toolbox_item.js';
 import type * as toolbox from '../utils/toolbox.js';
@@ -94,5 +95,15 @@ export declare class ToolboxItem implements IToolboxItem {
      * @param _isVisible True if category should be visible.
      */
     setVisible_(_isVisible: boolean): void;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
 }
 //# sourceMappingURL=toolbox_item.d.ts.map

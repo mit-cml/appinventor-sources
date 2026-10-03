@@ -9,7 +9,6 @@
  * @class
  */
 import { Field, FieldConfig } from './field.js';
-import { Size } from './utils/size.js';
 /**
  * Class for an image on a block.
  */
@@ -19,7 +18,6 @@ export declare class FieldImage extends Field<string> {
      * of the field.
      */
     private static readonly Y_PADDING;
-    protected size_: Size;
     protected readonly imageHeight: number;
     /** The function to be called when this field is clicked. */
     private clickHandler;
@@ -94,6 +92,12 @@ export declare class FieldImage extends Field<string> {
      * @param alt New alt text.
      */
     setAlt(alt: string | null): void;
+    /**
+     * Check whether this field should be clickable.
+     *
+     * @returns Whether this field is clickable.
+     */
+    isClickable(): boolean;
     /**
      * If field click is called, and click handler defined,
      * call the handler.
