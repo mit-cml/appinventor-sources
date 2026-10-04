@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2021-2023 MIT, All rights reserved
+// Copyright 2021-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -7,6 +7,7 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
 
+import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
@@ -20,7 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@BuildType(aab = true)
+@BuildType(aab = true, apk = true)
 public class RunAapt2 implements AndroidTask {
   CompilerContext<AndroidPaths> context;
   File resourcesZip;
@@ -77,7 +78,9 @@ public class RunAapt2 implements AndroidTask {
     List<String> aapt2CommandLine = new ArrayList<>();
     aapt2CommandLine.add(aapt2Tool);
     aapt2CommandLine.add("link");
-    aapt2CommandLine.add("--proto-format");
+    if (context.getExt().equals("aab")) {
+      aapt2CommandLine.add("--proto-format");
+    }
     aapt2CommandLine.add("-o");
     aapt2CommandLine.add(context.getPaths().getTmpPackageName().getAbsolutePath());
     aapt2CommandLine.add("-I");
@@ -88,6 +91,11 @@ public class RunAapt2 implements AndroidTask {
     aapt2CommandLine.add(context.getPaths().getAssetsDir().getAbsolutePath());
     aapt2CommandLine.add("--manifest");
     aapt2CommandLine.add(context.getPaths().getManifest().getAbsolutePath());
+    if (context.getExt().equals("apk") && !context.getComponentInfo().getExplodedAarLibs().isEmpty()) {
+      String packageName = Signatures.getPackageName(context.getProject().getMainClass());
+      aapt2CommandLine.add("--custom-package");
+      aapt2CommandLine.add(packageName);
+    }
     aapt2CommandLine.add("--output-text-symbols");
     aapt2CommandLine.add(context.getResources().getAppRTxt().getAbsolutePath());
     aapt2CommandLine.add("--auto-add-overlay");
