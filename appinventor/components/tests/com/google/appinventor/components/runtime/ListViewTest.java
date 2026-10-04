@@ -119,6 +119,201 @@ public class ListViewTest extends RobolectricTestBase {
     assertEquals(0, listView1.SelectionIndex());
   }
 
+  /**
+   * With MultiSelect enabled, tapping rows builds up SelectedItems instead of replacing it, and
+   * tapping a selected row again removes it. Selection and SelectionIndex report the row that was
+   * touched last either way, including when that touch was the one that deselected it.
+   */
+  @Test
+  public void testMultiSelectAccumulatesTappedRows() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe");
+    listView.Height(200);
+    listView.Width(320);
+    listView.MultiSelect(true);
+    initialize(listView);
+
+    assertTrue(getViewForPosition(listView, 0).performClick());
+    assertTrue(getViewForPosition(listView, 2).performClick());
+
+    assertEquals(2, listView.SelectedItems().size());
+    assertEquals("apple", listView.SelectedItems().getObject(0));
+    assertEquals("cantaloupe", listView.SelectedItems().getObject(1));
+    // The last row touched is what the singular blocks report.
+    assertEquals(3, listView.SelectionIndex());
+    assertEquals("cantaloupe", listView.Selection());
+
+    // Tapping an already selected row takes it back out of the set.
+    assertTrue(getViewForPosition(listView, 0).performClick());
+    assertEquals(1, listView.SelectedItems().size());
+    assertEquals("cantaloupe", listView.SelectedItems().getObject(0));
+    assertEquals(1, listView.SelectionIndex());
+  }
+
+  /**
+   * Without MultiSelect, each tap replaces the previous selection, so SelectedItems never holds
+   * more than the one element the user last picked.
+   */
+  @Test
+  public void testSingleSelectReplacesTheSelection() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe");
+    listView.Height(200);
+    listView.Width(320);
+    initialize(listView);
+
+    assertTrue(getViewForPosition(listView, 0).performClick());
+    assertTrue(getViewForPosition(listView, 2).performClick());
+
+    assertEquals(1, listView.SelectedItems().size());
+    assertEquals("cantaloupe", listView.SelectedItems().getObject(0));
+    assertEquals(3, listView.SelectionIndex());
+  }
+
+  /**
+   * Filtering must not throw away a set the user is building with MultiSelect: an item the filter
+   * hides stays selected and is still there once the query is cleared.
+   */
+  @Test
+  public void testMultiSelectKeepsSelectionThroughFiltering() throws InterruptedException {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe,date");
+    listView.Height(200);
+    listView.Width(320);
+    listView.MultiSelect(true);
+    initialize(listView);
+
+    assertTrue(getViewForPosition(listView, 0).performClick());  // apple
+    assertTrue(getViewForPosition(listView, 3).performClick());  // date
+    assertEquals(2, listView.SelectedItems().size());
+
+    EditText filterBox = (EditText) ((LinearLayout) listView.getView()).getChildAt(0);
+    filterBox.setText("an");  // hides both apple and date
+    Thread.sleep(100);  // Filtering runs on a separate thread for performance reasons
+    runAllEvents();
+    assertEquals(2, listView.SelectedItems().size());
+
+    filterBox.setText("");
+    Thread.sleep(100);
+    runAllEvents();
+    assertEquals(2, listView.SelectedItems().size());
+    assertEquals("apple", listView.SelectedItems().getObject(0));
+    assertEquals("date", listView.SelectedItems().getObject(1));
+  }
+
+  /**
+   * Removing an item above the selected one keeps the selection on the item the user picked,
+   * rather than leaving the index pointing at whatever slid into its place.
+   */
+  @Test
+  public void testRemoveItemKeepsSelectionOnTheSameItem() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe,date");
+    listView.Height(200);
+    listView.Width(320);
+
+    listView.SelectionIndex(4);  // date
+    listView.RemoveItemAtIndex(2);  // banana goes, so date moves from 4 to 3
+
+    assertEquals(3, listView.SelectionIndex());
+    assertEquals("date", listView.Selection());
+
+    listView.RemoveItemAtIndex(3);  // removing date itself clears what the blocks report
+    assertEquals(0, listView.SelectionIndex());
+    assertEquals("", listView.Selection());
+  }
+
+  /**
+   * An index outside the list selects nothing, so SelectionIndex reports 0 rather than keeping a
+   * number that points at no row — which is what its documentation has always promised.
+   */
+  @Test
+  public void testOutOfRangeSelectionIndexReportsNothingSelected() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe");
+    listView.Height(200);
+    listView.Width(320);
+
+    listView.SelectionIndex(2);
+    listView.SelectionIndex(99);
+
+    assertEquals(0, listView.SelectionIndex());
+    assertEquals("", listView.Selection());
+    assertEquals(0, listView.SelectedItems().size());
+  }
+
+  /**
+   * Replacing an item leaves the rows around it alone, but the replaced row stops being selected:
+   * a different item occupies that position afterwards, so a selection pointing there would no
+   * longer refer to what the user picked.
+   */
+  @Test
+  public void testUpdateItemAtIndexClearsThatRowsSelection() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe");
+    listView.Height(200);
+    listView.Width(320);
+    listView.SelectionIndex(3);  // cantaloupe
+
+    listView.UpdateItemAtIndex(1, "apricot", "", "");  // a row the user did not pick
+    assertEquals("apricot", listView.Elements().get(0));
+    assertEquals(3, listView.SelectionIndex());
+    assertEquals("cantaloupe", listView.Selection());
+
+    listView.UpdateItemAtIndex(3, "cherry", "", "");  // the selected row
+    assertEquals("cherry", listView.Elements().get(2));
+    assertEquals(0, listView.SelectionIndex());
+    assertEquals("", listView.Selection());
+  }
+
+  /**
+   * When MultiSelect leaves other items selected, replacing the reported row moves Selection and
+   * SelectionIndex onto the most recent pick that remains, rather than reading as nothing
+   * selected while SelectedItems still holds a set.
+   */
+  @Test
+  public void testUpdateItemAtIndexMovesReportingToTheRemainingSelection() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana,cantaloupe,date");
+    listView.Height(200);
+    listView.Width(320);
+    listView.MultiSelect(true);
+    initialize(listView);
+
+    assertTrue(getViewForPosition(listView, 0).performClick());  // apple
+    assertTrue(getViewForPosition(listView, 2).performClick());  // cantaloupe, touched last
+    assertEquals(3, listView.SelectionIndex());
+
+    listView.UpdateItemAtIndex(3, "cherry", "", "");
+
+    // cantaloupe stopped being a pick, so reporting falls back to apple, the pick still standing.
+    assertEquals(1, listView.SelectedItems().size());
+    assertEquals(1, listView.SelectionIndex());
+    assertEquals("apple", listView.Selection());
+
+    listView.UpdateItemAtIndex(1, "apricot", "", "");
+
+    // Nothing is left now, so reporting nothing selected is the truth.
+    assertEquals(0, listView.SelectedItems().size());
+    assertEquals(0, listView.SelectionIndex());
+    assertEquals("", listView.Selection());
+  }
+
+  /** An index outside the list is reported as an error and leaves the items untouched. */
+  @Test
+  public void testUpdateItemAtIndexOutOfBoundsLeavesTheListAlone() {
+    ListView listView = new ListView(getForm());
+    listView.ElementsFromString("apple,banana");
+    listView.Height(200);
+    listView.Width(320);
+
+    listView.UpdateItemAtIndex(3, "cherry", "", "");
+
+    assertEquals(2, listView.Elements().size());
+    assertEquals("apple", listView.Elements().get(0));
+    assertEquals("banana", listView.Elements().get(1));
+  }
+
   private View getViewForPosition(ListView listView, int position) {
     LinearLayout listLayout = (LinearLayout) ((LinearLayout) listView.getView()).getChildAt(1);
     RecyclerView rv = (RecyclerView) listLayout.getChildAt(0);
