@@ -540,6 +540,15 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   /**
+   * Check if the emulator is currently running and connected.
+   * @return true if emulator is running, false otherwise
+   */
+  public static native boolean isEmulatorRunning() /*-{
+    return $wnd.ReplState && $wnd.ReplState.replcode === 'emulator' && 
+           $wnd.ReplState.state === $wnd.Blockly.ReplMgr.rsState.CONNECTED;
+  }-*/;
+
+  /**
    * Access UI translations for generating a deletion warning dialog.
    * @param message Identifier of message
    * @return Translated message
