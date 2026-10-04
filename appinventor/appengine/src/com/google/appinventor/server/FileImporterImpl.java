@@ -30,7 +30,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.ByteStreams;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -179,26 +178,16 @@ public final class FileImporterImpl implements FileImporter {
 
     BufferedInputStream bis = new BufferedInputStream(uploadedFileStream);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    BufferedOutputStream bos = new BufferedOutputStream(os);
-
-    // Alledgedly since it is buffered, reading in units of one byte
-    // should be as fast as many bytes, but we can always adjust this.
-    int bytes = 0;
+    int bytesRead;
     long fileLength = 0;
-    byte[] buffer = new byte[1];
-    while ((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
-      bos.write(buffer, 0, bytes);
-      fileLength += bytes;
+    byte[] buffer = new byte[8192];
+    while ((bytesRead = bis.read(buffer, 0, buffer.length)) != -1) {
+      fileLength += bytesRead;
       if (fileLength > maxSizeBytes) {
-        // Read the rest of the stream, but throw it away
-        // and throw an error, so we do not consume memory storing
-        // a large object
-        while((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
-        }
         throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
       }
+      os.write(buffer, 0, bytesRead);
     }
-    bos.flush();
 
     byte[] content = os.toByteArray();
 
