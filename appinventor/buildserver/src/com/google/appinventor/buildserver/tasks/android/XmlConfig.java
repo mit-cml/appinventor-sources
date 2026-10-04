@@ -434,7 +434,7 @@ public class XmlConfig implements AndroidTask {
         Files.newOutputStream(icBackgroundFile.toPath()), StandardCharsets.UTF_8))) {
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
       out.write("<resources>\n");
-      out.write("<color name=\"ic_launcher_background\">#ffffff</color>\n");
+      out.write("<color name=\"ic_launcher_background\">#00ffffff</color>\n");
       out.write("</resources>\n");
     } catch (IOException e) {
       context.getReporter().error("Error writing IC launcher background file");
