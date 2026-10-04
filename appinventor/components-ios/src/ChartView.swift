@@ -93,6 +93,7 @@ open class ChartView {
     let dataset : ChartDataSet = model.dataset ?? ChartDataSet()
     dataset.replaceEntries(entries)
     dataset.drawValuesEnabled = true
+    self.chart?.fitScreen()
     self.chart?.data?.notifyDataChanged()
     self.chart?.notifyDataSetChanged()
     self.chart?.setNeedsDisplay()
