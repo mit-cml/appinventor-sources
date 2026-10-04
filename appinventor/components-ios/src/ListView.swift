@@ -207,6 +207,8 @@ fileprivate final class ListViewRootView: UIView {
     _view.tableFooterView = UIView()
     _view.backgroundView = nil
     _view.backgroundColor = argbToColor(_backgroundColor)
+    // Rows size themselves from their own constraints, whatever the layout mode.
+    _view.rowHeight = UITableView.automaticDimension
 
     // Auto height for the table (existing)
     _automaticHeightConstraint = _view.heightAnchor.constraint(equalToConstant: kDefaultTableCellHeight)
@@ -455,6 +457,10 @@ fileprivate final class ListViewRootView: UIView {
     set(height) {
       _imageHeight = height
       _view.reloadData()
+      // A row in the image layouts is as tall as its image, so the ListView's own automatic
+      // height has to follow the image size the same way it follows the row count.
+      _automaticHeightConstraint?.constant = preferredTableHeight
+      invalidateListViewSize()
     }
 }
 
@@ -888,16 +894,19 @@ fileprivate final class ListViewRootView: UIView {
       let origRow = _model.originalIndex(indexPath.row)
       let item = _model.item(at: origRow) ?? ListDataModel.makeItem()
       cell.imageView?.image = nil
-      tableView.rowHeight = UITableView.automaticDimension
+      // This method rebuilds a cell's subviews every time it binds, so drop the previous build
+      // first. A stack left behind by an earlier bind keeps its pins to the contentView's top and
+      // bottom, and since rows size themselves those stale pins fight the live stack over the
+      // row's height. Only stacks are removed: the layouts that do not build one (mode 0 and the
+      // fallback) leave their system labels where UIKit put them, and the reuse identifier is per
+      // layout mode, so a cell never crosses over from a layout that does build one.
+      cell.contentView.subviews.filter { $0 is UIStackView }.forEach { $0.removeFromSuperview() }
 
       if _listViewLayoutMode == 0 {
         cell.textLabel?.text = item["Text1"] as? String
         cell.detailTextLabel?.text = ""
-        tableView.estimatedRowHeight = 44
       } else {
         if _listViewLayoutMode == 1 {
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 44
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
 
@@ -930,8 +939,6 @@ fileprivate final class ListViewRootView: UIView {
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
           ])
         } else if _listViewLayoutMode == 2 {
-          tableView.rowHeight = UITableView.automaticDimension
-          tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = item["Text2"] as? String
 
@@ -967,148 +974,161 @@ fileprivate final class ListViewRootView: UIView {
             stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
           ])
         } else if _listViewLayoutMode == 3 {
-          tableView.estimatedRowHeight = preferredRowHeight
           cell.textLabel?.text = item["Text1"] as? String ?? ""
           cell.detailTextLabel?.text = ""
+
+          // Configure the layout
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
+          // Create a stack view to hold the labels horizontally
+          let stackView = UIStackView()
+          stackView.axis = .horizontal
+          stackView.alignment = .leading
+          stackView.distribution = .fill
+          stackView.spacing = 8.0
+
+          // The image is optional, the stack is not: it is what pins the row's content to the
+          // contentView, and without it a self-sizing row has nothing to take its height from.
+          var imageConstraints: [NSLayoutConstraint] = []
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
-
-            // Configure the layout
-            cell.layoutMargins = UIEdgeInsets.zero
-            cell.separatorInset = UIEdgeInsets.zero
-            cell.preservesSuperviewLayoutMargins = true
-
-            // Create a stack view to hold the labels horizontally
-            let stackView = UIStackView()
-            stackView.axis = .horizontal
-            stackView.alignment = .leading
-            stackView.distribution = .fill
-            stackView.spacing = 8.0
-
-            // Add the labels to the stack view
             stackView.addArrangedSubview(cell.imageView!)
-            stackView.addArrangedSubview(cell.textLabel!)
-
-            // Add the stack view to the cell's content view
-            cell.contentView.addSubview(stackView)
-
-            // Set up constraints
-            stackView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-
-              stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
-              stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
-              stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
-              stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            imageConstraints = [
               cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
               cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
-            ])
+            ]
           }
+
+          // Add the labels to the stack view
+          stackView.addArrangedSubview(cell.textLabel!)
+
+          // Add the stack view to the cell's content view
+          cell.contentView.addSubview(stackView)
+
+          // Set up constraints
+          stackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate(imageConstraints + [
+            stackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            stackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            stackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            stackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
+          ])
         } else if _listViewLayoutMode == 4 {
-          tableView.estimatedRowHeight = 60
           cell.textLabel?.text = item["Text1"] as? String ?? ""
           cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
+
+          // Configure the layout
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
+          // Create a horizontal stack view to hold the imageView and a nested vertical stack view
+          let horizontalStackView = UIStackView()
+          horizontalStackView.axis = .horizontal
+          horizontalStackView.alignment = .center
+          horizontalStackView.distribution = .fill
+          horizontalStackView.spacing = 8.0
+
+          // Create a vertical stack view to hold the textLabel and detailTextLabel.
+          // Use .fill so labels span the inner stack width and textAlignment is
+          // visible regardless of text length.
+          let verticalStackView = UIStackView()
+          verticalStackView.axis = .vertical
+          verticalStackView.alignment = .fill
+          verticalStackView.distribution = .fill
+          verticalStackView.spacing = 8.0
+
+          // The image is optional, the stack is not: it is what pins the row's content to the
+          // contentView, and without it a self-sizing row has nothing to take its height from.
+          var imageConstraints: [NSLayoutConstraint] = []
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
-
-            // Configure the layout
-            cell.layoutMargins = UIEdgeInsets.zero
-            cell.separatorInset = UIEdgeInsets.zero
-            cell.preservesSuperviewLayoutMargins = true
-
-            // Create a horizontal stack view to hold the imageView and a nested vertical stack view
-            let horizontalStackView = UIStackView()
-            horizontalStackView.axis = .horizontal
-            horizontalStackView.alignment = .center
-            horizontalStackView.distribution = .fill
-            horizontalStackView.spacing = 8.0
-
-            // Create a vertical stack view to hold the textLabel and detailTextLabel.
-            // Use .fill so labels span the inner stack width and textAlignment is
-            // visible regardless of text length.
-            let verticalStackView = UIStackView()
-            verticalStackView.axis = .vertical
-            verticalStackView.alignment = .fill
-            verticalStackView.distribution = .fill
-            verticalStackView.spacing = 8.0
-
-            // Add the imageView and nested vertical stack view to the horizontal stack view
             horizontalStackView.addArrangedSubview(cell.imageView!)
-            horizontalStackView.addArrangedSubview(verticalStackView)
-
-            // Add the textLabel and detailTextLabel to the vertical stack view
-            verticalStackView.addArrangedSubview(cell.textLabel!)
-            verticalStackView.addArrangedSubview(cell.detailTextLabel!)
-
-            // Add the horizontal stack view to the cell's content view
-            cell.contentView.addSubview(horizontalStackView)
-
-            // Set up constraints
-            horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-              horizontalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
-              horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
-              horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
-              horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            imageConstraints = [
               cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
               cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
-            ])
+            ]
           }
+
+          // Add the nested vertical stack view to the horizontal stack view
+          horizontalStackView.addArrangedSubview(verticalStackView)
+
+          // Add the textLabel and detailTextLabel to the vertical stack view
+          verticalStackView.addArrangedSubview(cell.textLabel!)
+          verticalStackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Add the horizontal stack view to the cell's content view
+          cell.contentView.addSubview(horizontalStackView)
+
+          // Set up constraints
+          horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate(imageConstraints + [
+            horizontalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            horizontalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            horizontalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            horizontalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
+          ])
         } else if _listViewLayoutMode == 5 {
-          tableView.estimatedRowHeight = 120
           cell.textLabel?.text = item["Text1"] as? String ?? ""
           cell.detailTextLabel?.text = item["Text2"] as? String ?? ""
+
+          // Configure the layout
+          cell.layoutMargins = UIEdgeInsets.zero
+          cell.separatorInset = UIEdgeInsets.zero
+          cell.preservesSuperviewLayoutMargins = true
+
+          // Inner stack: labels with .fill so they span the full label-stack
+          // width, making textAlignment visible regardless of text length.
+          let labelsStackView = UIStackView()
+          labelsStackView.axis = .vertical
+          labelsStackView.alignment = .fill
+          labelsStackView.distribution = .fill
+          labelsStackView.spacing = 8.0
+          labelsStackView.addArrangedSubview(cell.textLabel!)
+          labelsStackView.addArrangedSubview(cell.detailTextLabel!)
+
+          // Outer stack: image (centered) + labels stack
+          let verticalStackView = UIStackView()
+          verticalStackView.axis = .vertical
+          verticalStackView.alignment = .center
+          verticalStackView.distribution = .fill
+          verticalStackView.spacing = 8.0
+
+          // The image is optional, the stack is not: it is what pins the row's content to the
+          // contentView, and without it a self-sizing row has nothing to take its height from.
+          var imageConstraints: [NSLayoutConstraint] = []
           if let imagePath = item["Image"] as? String, !imagePath.isEmpty,
              let image = AssetManager.shared.imageFromPath(path: imagePath) {
             cell.imageView?.image = image
             cell.imageView?.contentMode = .scaleAspectFit
-
-            // Configure the layout
-            cell.layoutMargins = UIEdgeInsets.zero
-            cell.separatorInset = UIEdgeInsets.zero
-            cell.preservesSuperviewLayoutMargins = true
-
-            // Inner stack: labels with .fill so they span the full label-stack
-            // width, making textAlignment visible regardless of text length.
-            let labelsStackView = UIStackView()
-            labelsStackView.axis = .vertical
-            labelsStackView.alignment = .fill
-            labelsStackView.distribution = .fill
-            labelsStackView.spacing = 8.0
-            labelsStackView.addArrangedSubview(cell.textLabel!)
-            labelsStackView.addArrangedSubview(cell.detailTextLabel!)
-
-            // Outer stack: image (centered) + labels stack
-            let verticalStackView = UIStackView()
-            verticalStackView.axis = .vertical
-            verticalStackView.alignment = .center
-            verticalStackView.distribution = .fill
-            verticalStackView.spacing = 8.0
             verticalStackView.addArrangedSubview(cell.imageView!)
-            verticalStackView.addArrangedSubview(labelsStackView)
-
-            // Add the outer stack to the cell's content view
-            cell.contentView.addSubview(verticalStackView)
-
-            // Set up constraints. The labelsStackView width is pinned to the
-            // outer stack so labels span full row width while the image stays
-            // centered at its intrinsic / explicit size.
-            verticalStackView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-              verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
-              verticalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
-              verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
-              verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0),
+            imageConstraints = [
               cell.imageView!.widthAnchor.constraint(equalToConstant: CGFloat(_imageWidth / 4)),
               cell.imageView!.heightAnchor.constraint(equalToConstant: CGFloat(_imageHeight / 4))
-            ])
+            ]
           }
+          verticalStackView.addArrangedSubview(labelsStackView)
+
+          // Add the outer stack to the cell's content view
+          cell.contentView.addSubview(verticalStackView)
+
+          // Set up constraints. The labelsStackView width is pinned to the
+          // outer stack so labels span full row width while the image stays
+          // centered at its intrinsic / explicit size.
+          verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+          NSLayoutConstraint.activate(imageConstraints + [
+            verticalStackView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 8.0),
+            verticalStackView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -8.0),
+            verticalStackView.topAnchor.constraint(equalTo: cell.contentView.topAnchor, constant: 8.0),
+            verticalStackView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor, constant: -8.0)
+          ])
         } else {
-          tableView.estimatedRowHeight = 44
           cell.textLabel?.text = item["Text1"] as? String
           cell.detailTextLabel?.text = ""
         }
@@ -1206,10 +1226,11 @@ fileprivate final class ListViewRootView: UIView {
 
     // MARK: UITableViewDelegate
 
-    open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-      return preferredRowHeight
-    }
-
+    // Deliberately no heightForRowAt. Implementing it makes UIKit ignore rowHeight,
+    // automaticDimension included, so a font-derived number would override the cell's
+    // own constraints. Every layout pins its content to the contentView's top and
+    // bottom, so Auto Layout already knows the real height, image and wrapped text
+    // included. This stays an estimate, and an estimate is allowed to be approximate.
     open func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
       return preferredRowHeight
     }
@@ -1273,17 +1294,26 @@ fileprivate final class ListViewRootView: UIView {
     let twoTextVerticalHeight = mainTextHeight + detailTextHeight + kDefaultTableCellVerticalPadding
     let twoTextHorizontalHeight = max(mainTextHeight, detailTextHeight) + kDefaultTableCellVerticalPadding
 
+    // The image layouts pin the image to a quarter of its set size — keep this in step with the
+    // height anchors in cellForRowAt. The 60 and 120 floors below are what a default 200px image
+    // works out to, so without this term a taller image gives correct rows inside a ListView that
+    // is still sized as though every image were 200px.
+    let imageHeight = CGFloat(_imageHeight / 4)
+
     switch _listViewLayoutMode {
     case 1:
       return max(kDefaultTableCellHeight, twoTextVerticalHeight)
     case 2:
       return max(kDefaultTableCellHeight, twoTextHorizontalHeight)
     case 3:
-      return max(60.0, singleTextHeight)
+      // Image beside the text, so the row is as tall as the taller of the two.
+      return max(60.0, singleTextHeight, imageHeight + kDefaultTableCellVerticalPadding)
     case 4:
-      return max(60.0, twoTextVerticalHeight)
+      // Image beside both labels, so again the taller of the two.
+      return max(60.0, twoTextVerticalHeight, imageHeight + kDefaultTableCellVerticalPadding)
     case 5:
-      return max(120.0, twoTextVerticalHeight)
+      // Image above both labels, so here they add up.
+      return max(120.0, imageHeight + twoTextVerticalHeight)
     default:
       return max(kDefaultTableCellHeight, singleTextHeight)
     }

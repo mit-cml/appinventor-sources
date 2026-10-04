@@ -12,28 +12,15 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
 
-import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 
 public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
 
-  private int textMainColor;
-  private float textMainSize;
-  private String textMainFont;
-  private int textMainAlignment;
-
   public ListViewSingleTextAdapter(ComponentContainer container, ListDataModel model,
-      int textMainColor, float textMainSize, String textMainFont, int textDetailColor,
-      float textDetailSize, String textDetailFont, int backgroundColor, int selectionColor,
-      int radius, int imageWidth, int imageHeight, int textMainAlignment, int textDetailAlignment) {
-    super(container, model, backgroundColor, selectionColor, radius);
-    this.container = container;
-    this.textMainColor = textMainColor;
-    this.textMainSize = textMainSize;
-    this.textMainFont = textMainFont;
-    this.textMainAlignment = textMainAlignment;
+      ListViewStyle style) {
+    super(container, model, style);
   }
-  
+
 
   @Override
   public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -46,10 +33,6 @@ public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
     textViewFirst.setId(idFirst);
     LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     textViewFirst.setLayoutParams(layoutParams1);
-    textViewFirst.setTextSize(textMainSize);
-    textViewFirst.setTextColor(textMainColor);
-    TextViewUtil.setFontTypeface(container.$form(), textViewFirst, textMainFont, false, false);
-    TextViewUtil.setAlignment(textViewFirst, textMainAlignment, false);
     LinearLayout linearLayout1 = new LinearLayout(container.$context());
     LinearLayout.LayoutParams layoutParamslinear1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     linearLayout1.setLayoutParams(layoutParamslinear1);
@@ -77,7 +60,8 @@ public class ListViewSingleTextAdapter extends ListAdapterWithRecyclerView {
     String first = dictItem.get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
     singleTextHolder.textViewFirst.setText(first);
 
-    updateCardViewColor(singleTextHolder.cardView, position);
+    styleMainText(singleTextHolder.textViewFirst);
+    styleCardView(singleTextHolder.cardView, position);
   }
  
   public class SingleTextRvViewHolder extends RvViewHolder {
