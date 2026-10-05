@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * Tests for the Form component.
@@ -68,6 +69,8 @@ public class FormTest extends RobolectricTestBase {
   @Test
   public void testStartNewFormUsesFormClassPackage() {
     Form form = getForm();
+    // The companion's ReplForm evaluates the next screen's YAIL instead of starting an activity.
+    assumeFalse(form instanceof ReplForm);
     form.startNewForm("Screen2", null);
     Intent intent = Shadows.shadowOf(form).getNextStartedActivity();
     assertEquals(form.getPackageName(), intent.getComponent().getPackageName());
