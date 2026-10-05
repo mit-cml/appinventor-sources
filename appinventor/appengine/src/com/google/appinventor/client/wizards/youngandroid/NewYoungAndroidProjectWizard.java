@@ -42,7 +42,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidPro
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.dom.client.Element;
 
 import java.util.logging.Logger;
 
@@ -67,7 +67,6 @@ public class NewYoungAndroidProjectWizard {
   @UiField protected Button cancelButton;
   @UiField protected LabeledTextBox projectNameTextBox;
   @UiField protected LabeledTextBox packageNameTextBox;
-  @UiField protected Label packageNameHint;
   @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField protected FlowPanel horizontalThemePanel;
@@ -147,7 +146,7 @@ public class NewYoungAndroidProjectWizard {
       @Override
       public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
         projectNameTextBox.validate();
-        updatePackageNameHint();
+        updatePackageNamePlaceholder();
       }
     });
     packageNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
@@ -156,9 +155,7 @@ public class NewYoungAndroidProjectWizard {
         packageNameTextBox.validate();
       }
     });
-    packageNameTextBox.getTextBox().getElement().setAttribute("placeholder",
-        "com.example.myapp");
-    updatePackageNameHint();
+    updatePackageNamePlaceholder();
   }
 
   public void bindUI() {
@@ -175,17 +172,21 @@ public class NewYoungAndroidProjectWizard {
   }
 
   /**
-   * Shows the package name generated for the project name, which is what an empty package name
-   * box means. The hint is hidden until the project name is valid.
+   * Shows the package name generated for the project name as the placeholder of the package name
+   * box, since that is what an empty box means. Until the project name is valid, the placeholder
+   * is an example package name.
    */
-  private void updatePackageNameHint() {
+  private void updatePackageNamePlaceholder() {
     String projectName = normalizeProjectName(projectNameTextBox.getText());
-    boolean show = !projectName.isEmpty() && TextValidators.getErrorMessage(projectName).isEmpty();
-    packageNameHint.setVisible(show);
-    if (show) {
-      packageNameHint.setText(MESSAGES.packageNameHint(
-          StringUtils.getProjectPackage(Ode.getInstance().getUser().getUserEmail(), projectName)));
+    String placeholder = "com.example.myapp";
+    if (!projectName.isEmpty() && TextValidators.getErrorMessage(projectName).isEmpty()) {
+      placeholder = StringUtils.getProjectPackage(
+          Ode.getInstance().getUser().getUserEmail(), projectName);
     }
+    Element textBox = packageNameTextBox.getTextBox().getElement();
+    textBox.setAttribute("placeholder", placeholder);
+    // A long generated name does not fit in the box, so it is also shown on hover.
+    textBox.setTitle(placeholder);
   }
 
   public void show() {

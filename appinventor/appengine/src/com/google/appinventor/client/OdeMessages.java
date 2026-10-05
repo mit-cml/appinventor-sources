@@ -2493,13 +2493,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label for the Android package name input text box")
   String packageNameLabel();
 
-  @DefaultMessage("Leave empty to use {0}")
-  @Description("Hint below the package name box naming the generated package name.")
-  String packageNameHint(String packageName);
-
-  @DefaultMessage("\"{0}\" is not a valid package name. Use at least two parts separated by " +
-      "dots, like com.example.myapp. Each part must start with a letter and contain only " +
-      "letters, numbers, and underscores.")
+  @DefaultMessage("\"{0}\" is not a valid package name. Use dot-separated parts that start " +
+      "with a letter, like com.example.myapp.")
   @Description("Error shown when the Android package name entered for a project is invalid.")
   String invalidPackageNameError(String packageName);
 

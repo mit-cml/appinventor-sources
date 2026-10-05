@@ -14,8 +14,8 @@
              ui:generateLocales="default">
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <wiz:Dialog ui:field="addDialog" caption="{messages.newYoungAndroidProjectWizardCaption}"
-              styleName="ode-DialogBox" width="340px" height="40px">
-    <g:FlowPanel>
+              styleName="ode-DialogBox" width="480px" height="40px">
+    <g:FlowPanel styleName="ode-NewProjectForm">
       <g:Button ui:field='topInvisible' styleName="FocusTrap"/>
       <!--ProjectName-->
       <w:LabeledTextBox ui:field="projectNameTextBox" caption="{messages.projectNameLabel}"
@@ -23,15 +23,14 @@
       <!--PackageName-->
       <w:LabeledTextBox ui:field="packageNameTextBox" caption="{messages.packageNameLabel}"
                         stylePrimaryName="ode-LabeledTextBox"/>
-      <g:Label ui:field="packageNameHint" styleName="ode-PackageNameHint"/>
       <!--Blocks-->
       <g:FlowPanel ui:field="horizontalBlocksPanel" styleName="contentRow">
-        <g:Label text="{messages.blocksToolkitTitle}:" width="37%"/>
+        <g:Label text="{messages.blocksToolkitTitle}:"/>
         <s:SubsetJSONPropertyEditor ui:field="blockstoolkitEditor"/>
       </g:FlowPanel>
       <!--Theme-->
       <g:FlowPanel ui:field="horizontalThemePanel" styleName="contentRow">
-        <g:Label text="{messages.themeTitle}:" width="37%"/>
+        <g:Label text="{messages.themeTitle}:"/>
         <e:YoungAndroidThemeChoicePropertyEditor ui:field="themeEditor"/>
       </g:FlowPanel>
       <g:FlowPanel styleName="buttonRow">
