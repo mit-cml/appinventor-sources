@@ -46,7 +46,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Label;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -376,7 +375,6 @@ public class SourceStructureExplorer extends Composite {
     FlowPanel panel = new FlowPanel();
     panel.setStyleName("ode-SourceStructureExplorer");
     panel.add(scrollPanel);
-    panel.add(new Label());
     panel.add(buttonPanel);
     initWidget(panel);
   }
