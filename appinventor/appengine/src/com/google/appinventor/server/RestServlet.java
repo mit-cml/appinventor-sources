@@ -223,7 +223,8 @@ public class RestServlet extends HttpServlet {
         throw new RestException(6, "Name Already in Use");
       }
     }
-    return youngAndroidProjectService.copyProject(userId, oldProjectId, projectName, newuserId);
+    return youngAndroidProjectService.copyProject(userId, oldProjectId, projectName, newuserId,
+        true);
   }
 
 }

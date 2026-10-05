@@ -10,7 +10,6 @@ import com.google.appinventor.buildserver.Project;
 import com.google.appinventor.buildserver.Reporter;
 import com.google.appinventor.buildserver.stats.StatReporter;
 
-import com.google.appinventor.common.utils.StringUtils;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -358,9 +357,7 @@ public class CompilerContext<P extends Paths> {
   }
 
   public File getSourcePackageDir() {
-    String mainClass = project.getMainClass();
-    String packageName = StringUtils.getPackageName(mainClass);
-    String packagePath = packageName.replace(".", File.separator);
+    String packagePath = project.getFormPackageName().replace(".", File.separator);
     return new File(getWorkDir().getAbsolutePath() + File.separator + "src" + File.separator + packagePath);
   }
 

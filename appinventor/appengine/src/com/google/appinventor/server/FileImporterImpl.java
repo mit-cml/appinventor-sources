@@ -6,7 +6,6 @@
 
 package com.google.appinventor.server;
 
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.FORM_PROPERTIES_EXTENSION;
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.SRC_FOLDER;
 
 import com.google.appinventor.common.utils.StringUtils;
@@ -115,9 +114,16 @@ public final class FileImporterImpl implements FileImporter {
             props.load(zin);
             lastOpened = props.getProperty("lastopened", "Screen1");
             String projectColors = props.getProperty("projectcolors", "{}");
+            // Keep the custom package name, so that an exported project imported again still
+            // builds the same app.
+            String packageName = props.getProperty("packagename", "").trim();
+            if (!StringUtils.isValidPackageName(packageName)) {
+              packageName = "";
+            }
             YoungAndroidSettingsBuilder settingsBuilder = new YoungAndroidSettingsBuilder()
                 .setProjectName(projectName)
                 .setQualifiedFormName(qualifiedFormName)
+                .setPackageName(packageName)
                 .setDefaultLastOpened(lastOpened)
                 .setProjectColors(projectColors);
             String content = settingsBuilder.toProperties();
@@ -150,16 +156,7 @@ public final class FileImporterImpl implements FileImporter {
             ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
             ByteStreams.copy(zin, contentStream);
 
-            byte[] content = contentStream.toByteArray();
-            if (fileName.endsWith(FORM_PROPERTIES_EXTENSION)) {
-              // An imported project must not reuse the custom package name of the original.
-              String form = new String(content, StorageUtil.DEFAULT_CHARSET);
-              String newForm = YoungAndroidProjectService.removePackageNameProperty(form);
-              if (!newForm.equals(form)) {
-                content = newForm.getBytes(StorageUtil.DEFAULT_CHARSET);
-              }
-            }
-            project.addRawFile(new RawFile(fileName, content));
+            project.addRawFile(new RawFile(fileName, contentStream.toByteArray()));
           }
         }
       }

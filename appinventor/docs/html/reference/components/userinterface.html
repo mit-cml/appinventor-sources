@@ -1169,7 +1169,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>The Android package name that identifies the app on devices and in the Google Play Store,
  for example <code class="highlighter-rouge">com.example.myapp</code>. Leave it empty to use the package name App Inventor
  generates from your account and project name. Changing it for an app that is already
- installed or published makes Android treat the result as a different app.</dd>
+ installed or published makes Android treat the result as a different app. The screens keep
+ their generated class names, so an ActivityStarter that opens one of the app's own screens
+ must set ActivityPackage to this package name.</dd>
   <dt id="Screen.Platform" class="text ro bo"><em>Platform</em></dt>
   <dd>Gets the name of the underlying platform running the app. Currently, this is the text
  “Android”. Other platforms may be supported in the future.</dd>

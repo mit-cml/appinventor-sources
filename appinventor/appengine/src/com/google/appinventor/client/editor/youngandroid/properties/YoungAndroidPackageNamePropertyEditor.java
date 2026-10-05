@@ -26,10 +26,22 @@ public class YoungAndroidPackageNamePropertyEditor extends TextPropertyEditor {
     }
   }
 
+  /**
+   * Returns the error message for a package name typed by the user, or an empty string if the
+   * text is empty (meaning the generated package name) or a valid package name.
+   */
+  public static String getPackageNameError(String text) {
+    if (text.isEmpty() || StringUtils.isValidPackageName(text)) {
+      return "";
+    }
+    return MESSAGES.invalidPackageNameError(text);
+  }
+
   @Override
   protected void validate(String text) throws InvalidTextException {
-    if (!text.isEmpty() && !StringUtils.isValidPackageName(text)) {
-      throw new InvalidTextException(MESSAGES.invalidPackageNameError(text));
+    String error = getPackageNameError(text);
+    if (!error.isEmpty()) {
+      throw new InvalidTextException(error);
     }
   }
 }

@@ -16,6 +16,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Label;
 
 public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizard {
   interface NewYoungAndroidProjectWizardUiBinderNeo
@@ -25,6 +26,8 @@ public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizar
   @UiField protected Button addButton;
   @UiField protected Button cancelButton;
   @UiField protected LabeledTextBox projectNameTextBox;
+  @UiField protected LabeledTextBox packageNameTextBox;
+  @UiField protected Label packageNameHint;
   @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField protected FlowPanel horizontalThemePanel;
@@ -39,6 +42,8 @@ public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizar
     super.addButton = addButton;
     super.cancelButton = cancelButton;
     super.projectNameTextBox = projectNameTextBox;
+    super.packageNameTextBox = packageNameTextBox;
+    super.packageNameHint = packageNameHint;
     super.horizontalThemePanel = horizontalThemePanel;
     super.horizontalBlocksPanel = horizontalBlocksPanel;
   }

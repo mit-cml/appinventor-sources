@@ -7,7 +7,6 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
 
-import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
@@ -59,7 +58,7 @@ public class RunAapt implements AndroidTask {
     aaptPackageCommandLineArgs.add(context.getPaths().getTmpPackageName().getAbsolutePath());
     if (!context.getComponentInfo().getExplodedAarLibs().isEmpty()) {
       // If AARs are used, generate R.txt for later processing
-      String packageName = Signatures.getPackageName(context.getProject().getMainClass());
+      String packageName = context.getProject().getFormPackageName();
       aaptPackageCommandLineArgs.add("-m");
       aaptPackageCommandLineArgs.add("-J");
       aaptPackageCommandLineArgs.add(sourceOutputDir.getAbsolutePath());

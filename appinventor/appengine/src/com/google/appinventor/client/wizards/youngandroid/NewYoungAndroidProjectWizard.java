@@ -12,6 +12,7 @@ import static com.google.appinventor.components.common.ComponentConstants.DEFAUL
 
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidPackageNamePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
@@ -74,6 +75,9 @@ public class NewYoungAndroidProjectWizard {
   @UiField protected Button topInvisible;
   @UiField protected Button bottomInvisible;
 
+  private boolean projectNameValid = true;
+  private boolean packageNameValid = true;
+
   /**
    * Creates a new YoungAndroid project wizard.
    */
@@ -99,12 +103,12 @@ public class NewYoungAndroidProjectWizard {
       public boolean validate(String value) {
         errorMessage = TextValidators.getErrorMessage(value);
         projectNameTextBox.setErrorMessage(errorMessage);
-        if (errorMessage.length() > 0) {
-          addButton.setEnabled(false);
+        projectNameValid = errorMessage.isEmpty();
+        updateAddButton();
+        if (!projectNameValid) {
           return false;
         }
         errorMessage = TextValidators.getWarningMessages(value);
-        addButton.setEnabled(true);
         return true;
       }
       @Override
@@ -115,13 +119,10 @@ public class NewYoungAndroidProjectWizard {
     packageNameTextBox.setValidator(new Validator() {
       @Override
       public boolean validate(String value) {
-        String packageName = value.trim();
-        if (!packageName.isEmpty() && !StringUtils.isValidPackageName(packageName)) {
-          errorMessage = MESSAGES.invalidPackageNameError(packageName);
-          return false;
-        }
-        errorMessage = "";
-        return true;
+        errorMessage = YoungAndroidPackageNamePropertyEditor.getPackageNameError(value);
+        packageNameValid = errorMessage.isEmpty();
+        updateAddButton();
+        return packageNameValid;
       }
       @Override
       public String getErrorMessage() {
@@ -165,15 +166,26 @@ public class NewYoungAndroidProjectWizard {
     uibinder.createAndBindUi(this);
   }
 
+  private static String normalizeProjectName(String projectName) {
+    return projectName.trim().replaceAll("( )+", " ").replace(" ", "_");
+  }
+
+  private void updateAddButton() {
+    addButton.setEnabled(projectNameValid && packageNameValid);
+  }
+
   /**
    * Shows the package name generated for the project name, which is what an empty package name
-   * box means.
+   * box means. The hint is hidden until the project name is valid.
    */
   private void updatePackageNameHint() {
-    String projectName = projectNameTextBox.getText().trim()
-        .replaceAll("( )+", " ").replace(" ", "_");
-    packageNameHint.setText(MESSAGES.packageNameHint(
-        StringUtils.getProjectPackage(Ode.getInstance().getUser().getUserEmail(), projectName)));
+    String projectName = normalizeProjectName(projectNameTextBox.getText());
+    boolean show = !projectName.isEmpty() && TextValidators.getErrorMessage(projectName).isEmpty();
+    packageNameHint.setVisible(show);
+    if (show) {
+      packageNameHint.setText(MESSAGES.packageNameHint(
+          StringUtils.getProjectPackage(Ode.getInstance().getUser().getUserEmail(), projectName)));
+    }
   }
 
   public void show() {
@@ -193,8 +205,7 @@ public class NewYoungAndroidProjectWizard {
 
   @UiHandler("addButton")
   protected void addProject(ClickEvent e) {
-    String projectName = projectNameTextBox.getText().trim()
-        .replaceAll("( )+", " ").replace(" ", "_");
+    String projectName = normalizeProjectName(projectNameTextBox.getText());
     if (!packageNameTextBox.validate()) {
       packageNameTextBox.setFocus(true);
       return;
@@ -228,7 +239,7 @@ public class NewYoungAndroidProjectWizard {
       String packageName = StringUtils.getProjectPackage(
           Ode.getInstance().getUser().getUserEmail(), projectName);
       // An empty or unchanged package name keeps the generated one.
-      String customPackageName = packageNameTextBox.getText().trim();
+      String customPackageName = packageNameTextBox.getText();
       if (customPackageName.equals(packageName)) {
         customPackageName = "";
       }

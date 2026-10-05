@@ -2389,7 +2389,9 @@ public class Form extends AppInventorCompatActivity
    * The Android package name that identifies the app on devices and in the Google Play Store,
    * for example `com.example.myapp`. Leave it empty to use the package name App Inventor
    * generates from your account and project name. Changing it for an app that is already
-   * installed or published makes Android treat the result as a different app.
+   * installed or published makes Android treat the result as a different app. The screens keep
+   * their generated class names, so an ActivityStarter that opens one of the app's own screens
+   * must set ActivityPackage to this package name.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_PACKAGE_NAME,
     defaultValue = "")
@@ -2398,7 +2400,9 @@ public class Form extends AppInventorCompatActivity
                   + "Google Play Store, for example com.example.myapp. Leave it empty to use "
                   + "the package name App Inventor generates from your account and project "
                   + "name. Changing it for an app that is already installed or published makes "
-                  + "Android treat the result as a different app.",
+                  + "Android treat the result as a different app. The screens keep their "
+                  + "generated class names, so an ActivityStarter that opens one of the app's own "
+                  + "screens must set ActivityPackage to this package name.",
     category = PropertyCategory.PUBLISHING)
   public void PackageName(String packageName) {
     // Stored automatically in project properties

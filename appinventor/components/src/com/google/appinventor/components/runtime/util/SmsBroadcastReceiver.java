@@ -18,6 +18,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
@@ -256,14 +259,29 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
   }
 
   /**
-   * Returns the class name of the app's main activity (Screen1). It is looked up from the launch
-   * intent because the application package name can differ from the package of the app's classes.
+   * Returns the class name of the app's main activity (Screen1). It is looked up from the app's
+   * activities because the application package name can differ from the package of the app's
+   * classes.
    */
-  private static String getMainActivityClassName(Context context) {
+  static String getMainActivityClassName(Context context) {
     String packageName = context.getPackageName();
-    Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+    PackageManager packageManager = context.getPackageManager();
+    Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
     if (launchIntent != null && launchIntent.getComponent() != null) {
       return launchIntent.getComponent().getClassName();
+    }
+    // The launcher activity can be missing or disabled; look for Screen1 among the activities.
+    try {
+      PackageInfo info = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+      if (info.activities != null) {
+        for (ActivityInfo activity : info.activities) {
+          if (activity.name.endsWith(".Screen1")) {
+            return activity.name;
+          }
+        }
+      }
+    } catch (PackageManager.NameNotFoundException e) {
+      Log.w(TAG, "Unable to read the activities of " + packageName, e);
     }
     return packageName + ".Screen1";
   }

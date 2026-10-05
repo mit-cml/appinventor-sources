@@ -7,7 +7,6 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.Project;
-import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
@@ -52,7 +51,7 @@ public class CreateManifest implements AndroidTask {
     // The application package can be customized, so it may differ from the package of the
     // generated form classes. Generated package names are valid by construction.
     String packageName = context.getProject().getPackageName();
-    if (!packageName.equals(Signatures.getPackageName(mainClass))
+    if (!packageName.equals(context.getProject().getFormPackageName())
         && !StringUtils.isValidPackageName(packageName)) {
       context.getReporter().error("Invalid package name: " + packageName, true);
       return TaskResult.generateError("Invalid package name: " + packageName);

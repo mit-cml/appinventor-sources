@@ -40,9 +40,10 @@ public interface ProjectServiceAsync {
   void retrieveTemplateData(String pathToTemplates, AsyncCallback<String> callback);
 
   /**
-   * @see ProjectService#copyProject(long, String)
+   * @see ProjectService#copyProject(long, String, boolean)
    */
-  void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback);
+  void copyProject(long oldProjectId, String newName, boolean keepPackageName,
+      AsyncCallback<UserProject> callback);
 
   /**
    * @see ProjectService@loginToGallery()

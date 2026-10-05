@@ -189,10 +189,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @return  a {@link UserProject} for new project
    */
   @Override
-  public UserProject copyProject(long oldProjectId, String newName){
+  public UserProject copyProject(long oldProjectId, String newName, boolean keepPackageName){
     final String userId = userInfoProvider.getUserId();
     long projectId = getProjectRpcImpl(userId, oldProjectId).
-      copyProject(userId, oldProjectId, newName, null);
+      copyProject(userId, oldProjectId, newName, null, keepPackageName);
     return makeUserProject(userId, projectId);
   }
 

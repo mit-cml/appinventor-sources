@@ -132,6 +132,10 @@ public class LocalProjectService implements ProjectServiceAsync {
         "theme=AppTheme.Light.DarkActionBar\n" +
         "versioncode=1\n" +
         "versionname=1.0\n";
+    String customPackageName = youngAndroidParams.getCustomPackageName();
+    if (!customPackageName.isEmpty()) {
+      projectPropertiesFileContents += "packagename=" + customPackageName + "\n";
+    }
     contents.put(hash + ":" + projectPropertiesFileName,
         new TextEncoder("utf-8").encode(projectPropertiesFileContents));
 
@@ -149,6 +153,9 @@ public class LocalProjectService implements ProjectServiceAsync {
     String formName = qualifiedName.substring(lastDotPos + 1);
     String themeName = youngAndroidParams.getThemeName();
     String blocksToolkit = youngAndroidParams.getBlocksToolkit();
+    String customPackageName = youngAndroidParams.getCustomPackageName();
+    String packageNameProperty = customPackageName.isEmpty() ? ""
+        : ",\"PackageName\":" + JSONUtil.toJson(customPackageName);
 
     String newString = "#|\n$JSON\n" +
         "{\"authURL\":[]," +
@@ -156,7 +163,7 @@ public class LocalProjectService implements ProjectServiceAsync {
         "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" +
-        themeName + "\"}}\n|#";
+        themeName + "\"" + packageNameProperty + "}}\n|#";
     if (!blocksToolkit.isEmpty()){
       newString = "#|\n$JSON\n" +
           "{\"authURL\":[]," +
@@ -164,7 +171,8 @@ public class LocalProjectService implements ProjectServiceAsync {
           "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
           "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
           "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\",\"Theme\":\"" +
-          themeName +  "\",\"BlocksToolkit\":" + JSONUtil.toJson(blocksToolkit) +"}}\n|#";
+          themeName +  "\",\"BlocksToolkit\":" + JSONUtil.toJson(blocksToolkit) +
+          packageNameProperty + "}}\n|#";
     }
     return newString;
   }
@@ -255,7 +263,8 @@ public class LocalProjectService implements ProjectServiceAsync {
   }
 
   @Override
-  public void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback) {
+  public void copyProject(long oldProjectId, String newName, boolean keepPackageName,
+      AsyncCallback<UserProject> callback) {
 
   }
 

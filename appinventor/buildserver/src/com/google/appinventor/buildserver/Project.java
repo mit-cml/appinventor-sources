@@ -204,13 +204,23 @@ public final class Project {
 
   /**
    * Returns the Android application package name. This is the custom package name if the
-   * project sets one, and the package of the main form class otherwise.
+   * project sets one, and the package of the form classes otherwise.
    *
    * @return  application package name
    */
   public String getPackageName() {
     String packageName = properties.getProperty(PACKAGE_NAME_TAG, "").trim();
-    return packageName.isEmpty() ? StringUtils.getPackageName(getMainClass()) : packageName;
+    return packageName.isEmpty() ? getFormPackageName() : packageName;
+  }
+
+  /**
+   * Returns the Java package of the generated form classes, which is derived from the project
+   * and never changes with the custom package name.
+   *
+   * @return  package of the form classes
+   */
+  public String getFormPackageName() {
+    return StringUtils.getPackageName(getMainClass());
   }
 
   /**
