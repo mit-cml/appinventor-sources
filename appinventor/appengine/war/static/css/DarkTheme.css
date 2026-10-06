@@ -13,6 +13,11 @@
   display: flex;
 }
 
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockFormDark,
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockFormDark {
+  border-radius: 30px;
+}
+
 .ode-SimpleMockFormPhoneLandscape .ode-SimpleMockFormDark,
 .ode-SimpleMockFormPhoneLandscapeTablet .ode-SimpleMockFormDark,
 .ode-SimpleMockFormPhoneLandscapeMonitor .ode-SimpleMockFormDark,
