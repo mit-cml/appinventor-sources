@@ -415,6 +415,30 @@ public class ChartData2DTest extends RobolectricTestBase {
   }
 
   /**
+   * Test case to ensure that importing from a real (non-mocked) TinyDB
+   * component imports the stored data. The stored value is decoded from
+   * JSON, so TinyDB must handle lists that are not already YailLists.
+   */
+  @Test
+  public void testImportFromRealTinyDB() {
+    String tag = "ChartData2DTestRealTinyDB";
+    TinyDB tinyDB = new TinyDB(getForm());
+    tinyDB.StoreValue(tag, YailList.makeList(
+        Arrays.asList(
+            YailList.makeList(Arrays.asList("1", "2")),
+            YailList.makeList(Arrays.asList("2", "4")),
+            YailList.makeList(Arrays.asList("4", "2")),
+            YailList.makeList(Arrays.asList("5", "2"))
+        )
+    ));
+
+    data.ImportFromTinyDB(tinyDB, tag);
+
+    // 4 entries are expected to be imported
+    assertEquals(4, model.getDataset().getEntryCount());
+  }
+
+  /**
    * Test case to ensure that importing from a Web component
    * via the ImportFromWeb method with valid columns imports
    * the data properly.
