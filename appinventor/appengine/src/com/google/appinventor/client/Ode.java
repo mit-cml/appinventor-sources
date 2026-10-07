@@ -127,7 +127,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -192,8 +191,6 @@ public class Ode implements EntryPoint {
   private String fauxProjectName; // Fake Project Name provided by login token
 
   private String sessionId = generateUuid(); // Create new session id
-
-  private Random random = new Random(); // For generating random nonce
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -2386,10 +2383,21 @@ public class Ode implements EntryPoint {
    * @return nonce
    */
   public String generateNonce() {
-    int v = random.nextInt(10000000);
-    nonce = Integer.toString(v, 36); // Base 36 string
+    // The nonce is the only credential for the unauthenticated download link, so it has to be
+    // unguessable. The server only accepts 32 lowercase hex characters (128 random bits).
+    nonce = generateSecureNonce();
     return nonce;
   }
+
+  private static native String generateSecureNonce() /*-{
+    var bytes = new Uint8Array(16);
+    $wnd.crypto.getRandomValues(bytes);
+    var hex = '';
+    for (var i = 0; i < bytes.length; i++) {
+      hex += (bytes[i] < 16 ? '0' : '') + bytes[i].toString(16);
+    }
+    return hex;
+  }-*/;
 
   public String getSessionId() {
     return sessionId;

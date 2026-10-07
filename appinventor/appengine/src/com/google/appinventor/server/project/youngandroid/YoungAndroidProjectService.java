@@ -88,6 +88,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeSet;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Provides support for Young Android projects.
@@ -116,6 +117,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   // Build folder path
   private static final String BUILD_FOLDER = "build";
+
+  // The build nonce is the only credential for the unauthenticated /b/<nonce> download link, so
+  // it must be unguessable: 128 random bits as lowercase hex (see Ode.generateNonce()).
+  private static final Pattern NONCE_PATTERN = Pattern.compile("[0-9a-f]{32}");
 
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
@@ -540,7 +545,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     // Store the userId and projectId based on the nonce
 
-    storageIo.storeNonce(nonce, userId, projectId);
+    if (nonce == null || !NONCE_PATTERN.matcher(nonce).matches()) {
+      return new RpcResult(false, "", "Invalid build nonce. Please reload App Inventor and try again.");
+    }
+    try {
+      storageIo.storeNonce(nonce, userId, projectId);
+    } catch (SecurityException e) {
+      return new RpcResult(false, "", "Invalid build nonce. Please reload App Inventor and try again.");
+    }
     List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
 
     // Delete the existing build output files, if any, so that future attempts to get it won't get
