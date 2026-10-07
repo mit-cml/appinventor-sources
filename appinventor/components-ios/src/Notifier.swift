@@ -470,6 +470,7 @@ open class Notifier: NonvisibleComponent {
 
     let text = UITextField(frame: .zero)
     text.borderStyle = .bezel
+    text.textColor = .black
     text.isSecureTextEntry = maskInput
 
     _activeAlert?.stack.addArrangedSubview(text)
