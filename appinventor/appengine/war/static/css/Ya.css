@@ -843,6 +843,10 @@ div.StatusPanel {
   text-align: center;
 }
 
+.ode-VerticalLayout-middle {
+  justify-content: center;
+}
+
 .ode-HorizontalLayout {
   display: flex;
   align-items: flex-start;
@@ -851,6 +855,11 @@ div.StatusPanel {
 
 .ode-HorizontalLayout-middle {
   align-items: center;
+}
+
+/* Children share the spare width, as cells of a full-width table did. */
+.ode-HorizontalLayout-spread > * {
+  margin-right: auto;
 }
 
 .ode-SourceStructureExplorer {
