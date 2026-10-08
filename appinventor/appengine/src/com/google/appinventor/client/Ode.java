@@ -1665,7 +1665,7 @@ public class Ode implements EntryPoint {
     FlowPanel mainPanel = new FlowPanel();
     mainPanel.setStyleName("ode-HorizontalLayout");
     mainPanel.addStyleName("ode-HorizontalLayout-middle");
-    mainPanel.addStyleName("ode-EmptyTrashDialog");
+    mainPanel.addStyleName("ode-Layout-spacing10");
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 

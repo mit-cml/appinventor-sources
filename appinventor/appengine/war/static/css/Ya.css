@@ -2331,7 +2331,7 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 /* Spacing 10 between and around the cells. */
-.ode-DialogBox .dialogContent .ode-EmptyTrashDialog {
+.ode-DialogBox .dialogContent .ode-Layout-spacing10 {
   gap: 14px;
   padding: 12px;
 }
