@@ -80,8 +80,10 @@
         *non-coercible-value*)))
 
 (define (lookup-handler registeredObjectName eventName)
-  (let ((eventSymbol (string->symbol (string-append registeredObjectName "$" eventName))))
-    (lookup-in-form-environment eventSymbol)))
+  (if (and (string? registeredObjectName) (string? eventName))
+      (let ((eventSymbol (string->symbol (string-append registeredObjectName "$" eventName))))
+        (lookup-in-form-environment eventSymbol))
+      #f))
 
 (define-syntax try-catch
   (syntax-rules ()
@@ -190,27 +192,41 @@
       arg))
 
 (define (dispatchEvent component registeredComponentName eventName args)
-  (let ((registeredObject (string->symbol registeredComponentName)))
-    (if (is-bound-in-form-environment registeredObject)
-        (if (eq? (lookup-in-form-environment registeredObject) component)
-            (let ((handler (lookup-handler registeredComponentName eventName)))
-              (apply handler (map sanitize-input args))
-              #t)
-            #f)
-        (begin
-          (yail:invoke AIComponentKit.EventDispatcher 'unregisterEventForDelegation *this-form* registeredComponentName eventName)
-          #f))))
+  (if (and (string? registeredComponentName) (string? eventName))
+      (let ((registeredObject (string->symbol registeredComponentName)))
+        (if (is-bound-in-form-environment registeredObject)
+            (if (eq? (lookup-in-form-environment registeredObject) component)
+                (let ((handler (lookup-handler registeredComponentName eventName)))
+                  (if handler
+                      (begin
+                        (apply handler (map sanitize-input args))
+                        #t)
+                      #f))
+                #f)
+            (begin
+              (yail:invoke AIComponentKit.EventDispatcher 'unregisterEventForDelegation *this-form* registeredComponentName eventName)
+              #f)))
+      #f))
 
 (define (get-simple-name object)
-  (*:getSimpleName (*:getClass object)))
+  (if (and object (not (eq? object #!void)) (not (eq? object *the-null-value*)))
+      (let ((clazz (*:getClass object)))
+        (if (and clazz (not (eq? clazz #!void)))
+            (let ((name (*:getSimpleName clazz)))
+              (if (string? name) name ""))
+            ""))
+      ""))
 
 (define (dispatchGenericEvent component eventName unhandled args)
-  (let* ((handler-symbol (string->symbol (string-append "any$" (get-simple-name component) "$" eventName)))
-         (handler (lookup-in-form-environment handler-symbol)))
-    (if handler
-        (begin
-          (apply handler (cons component (cons unhandled args)))
-          #t)
+  (let ((simple-name (get-simple-name component)))
+    (if (and (string? simple-name) (not (string=? simple-name "")) (string? eventName))
+        (let* ((handler-symbol (string->symbol (string-append "any$" simple-name "$" eventName)))
+               (handler (lookup-in-form-environment handler-symbol)))
+          (if handler
+              (begin
+                (apply handler (cons component (cons unhandled args)))
+                #t)
+              #f))
         #f)))
 
 (define-syntax do-after-form-creation

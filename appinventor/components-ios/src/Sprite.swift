@@ -588,19 +588,19 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   fileprivate func overWestEdge() -> Bool {
-    return X < 0
+    return _xLeft < 0
   }
 
   fileprivate func overNorthEdge() -> Bool {
-    return Y < 0
+    return _yTop < 0
   }
 
   fileprivate func overEastEdge(_ canvasWidth: Int32) -> Bool {
-    return X + Double(Width) > Double(canvasWidth)
+    return Double(_xLeft) + Double(Width) > Double(canvasWidth)
   }
 
   fileprivate func overSouthEdge(_ canvasHeight: Int32) -> Bool {
-    return Y + Double(Height) > Double(canvasHeight)
+    return Double(_yTop) + Double(Height) > Double(canvasHeight)
   }
 
   @objc open func intersectsWith(_ rect: CGRect) -> Bool {
@@ -609,13 +609,13 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
 
   // Returns bounding box of sprite
   @objc open func getBoundingBox(border: Int) -> CGRect {
-    let start_x = CGFloat(X)
-    let start_y = CGFloat(Y)
-    return CGRect(origin: CGPoint(x: start_x, y: start_y), size: CGSize(width: CGFloat(Width), height: CGFloat(Height)))
+    let start_x = _xLeft - CGFloat(border)
+    let start_y = _yTop - CGFloat(border)
+    return CGRect(origin: CGPoint(x: start_x, y: start_y), size: CGSize(width: CGFloat(Width) + CGFloat(border * 2), height: CGFloat(Height) + CGFloat(border * 2)))
   }
 
   @objc func contains(_ point: CGPoint) -> Bool {
-    return CGFloat(X) <= point.x && point.x <= CGFloat(X + Double(Width)) && CGFloat(Y) <= point.y && point.y <= CGFloat(Y + Double(Height))
+    return _xLeft <= point.x && point.x <= (_xLeft + CGFloat(Width)) && _yTop <= point.y && point.y <= (_yTop + CGFloat(Height))
   }
 
   @objc func restartTimer() {
