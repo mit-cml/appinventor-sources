@@ -9,14 +9,14 @@ package com.google.appinventor.client.actions;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Command for displaying information about the companion app.
@@ -43,7 +43,8 @@ public class AboutCompanionAction implements Command {
           + "</a><br/>\n" + BlocklyPanel.getQRCode(url);
     }
 
-    VerticalPanel dialogBoxContents = new VerticalPanel();
+    FlowPanel dialogBoxContents = new FlowPanel();
+    dialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(
         MESSAGES.companionVersion(BlocklyPanel.getCompVersion()) + downloadinfo
     );
