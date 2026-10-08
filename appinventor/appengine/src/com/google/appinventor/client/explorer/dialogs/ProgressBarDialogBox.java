@@ -8,9 +8,8 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -46,8 +45,10 @@ public class ProgressBarDialogBox extends DialogBox {
 
     //declare the ok button
     dismissButton.addClickHandler(buttonHandler);
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    FlowPanel buttonPanel = new FlowPanel();
+    buttonPanel.setStyleName("ode-HorizontalLayout");
+    buttonPanel.addStyleName("ode-DialogButtons");
+    buttonPanel.addStyleName("ode-DialogButtons-centered");
     dismissButton.setVisible(false); // we don't need the button unless we get an error
 
     //warning label
@@ -56,16 +57,16 @@ public class ProgressBarDialogBox extends DialogBox {
     warningLabel.setWidth("60em");  // set width to get the text to wrap
 
     //warning panel
-    HorizontalPanel warningPanel = new HorizontalPanel();
-    warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
+    FlowPanel warningPanel = new FlowPanel();
+    warningPanel.setStyleName("ode-HorizontalLayout");
     warningPanel.add(warningLabel);
 
     // button panel
     buttonPanel.add(dismissButton);
-    buttonPanel.setSize("100%", "24px");
 
     //content panel
-    VerticalPanel contentPanel = new VerticalPanel();
+    FlowPanel contentPanel = new FlowPanel();
+    contentPanel.setStyleName("ode-VerticalLayout");
     contentPanel.add(mpb);
     contentPanel.add(warningPanel);
     contentPanel.add(buttonPanel);
