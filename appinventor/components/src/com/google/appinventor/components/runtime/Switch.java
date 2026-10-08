@@ -178,7 +178,7 @@ public final class Switch extends ToggleBase<CompoundButton> {
    * @param argb
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-          defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
+          defaultValue = Component.DEFAULT_VALUE_COLOR_GRAY)
   @SimpleProperty(description = "Color of the toggle track when switched off", userVisible = true)
   public void TrackColorInactive(int argb) {
     trackColorInactive = argb;
