@@ -16,7 +16,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -35,7 +34,8 @@ public class TutorialPanel extends Frame {
     dialogBox.setText("Tutorial Video");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     // Adds Youtube Video
     HTML message = new HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/" + tutorialId + "?rel=0&autoplay=1\" frameborder=\"0\" allowfullscreen></iframe>");
     message.setStyleName("DialogBox-message");
@@ -64,7 +64,8 @@ public class TutorialPanel extends Frame {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     FlowPanel holder = new FlowPanel();
     Button ok = new Button("Close");
     ok.addClickListener(new ClickListener() {

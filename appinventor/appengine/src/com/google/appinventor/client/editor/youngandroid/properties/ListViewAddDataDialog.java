@@ -39,10 +39,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -270,21 +267,22 @@ public class ListViewAddDataDialog {
    * Confirmation dialog shown when the user clicks CANCEL, asking whether to discard unsaved data.
    */
   static class Cancel extends DialogBox {
-    VerticalPanel verticalPanel;
-    HorizontalPanel buttonPanel;
+    FlowPanel verticalPanel;
+    FlowPanel buttonPanel;
     Button yes;
     Button no;
 
     Cancel() {
-      verticalPanel = new VerticalPanel();
-      buttonPanel = new HorizontalPanel();
+      verticalPanel = new FlowPanel();
+      verticalPanel.setStyleName("ode-VerticalLayout");
+      buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
       setText(MESSAGES.cancelButton());
       verticalPanel.add(new Label(MESSAGES.listDataConcelConfirm()));
       yes = new Button(MESSAGES.okButton());
       no = new Button(MESSAGES.cancelButton());
       buttonPanel.add(yes);
       buttonPanel.add(no);
-      buttonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
       verticalPanel.add(buttonPanel);
       setWidget(verticalPanel);
     }
