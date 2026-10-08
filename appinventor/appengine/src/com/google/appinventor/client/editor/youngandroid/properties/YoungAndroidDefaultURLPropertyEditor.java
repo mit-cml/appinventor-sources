@@ -14,9 +14,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -46,7 +45,8 @@ public class YoungAndroidDefaultURLPropertyEditor extends PropertyEditor {
   public YoungAndroidDefaultURLPropertyEditor(final String defaultURL) {
     // The radio button group cannot be shared across all instances, so we append a unique id.
     this.defaultURL = defaultURL;
-    Panel panel = new VerticalPanel();
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
     panel.add(urlField);
     panel.add(setDefaultCheckbox);
 
