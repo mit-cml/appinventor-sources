@@ -64,18 +64,28 @@ open class ImageSprite: Sprite {
     }
   }
 
-  @objc open func setMarkOrigin(_ originString: String) {
-    let parts = originString.split(",")
-    if parts.count == 2 {
-      guard let x = Double(parts[0]) else {
-        return
-      }
-      guard let y = Double(parts[1]) else {
-        return
-      }
-      U = x
-      Y = y
+  @objc open var MarkOrigin: String {
+    get {
+      return String(format: "(%f, %f)", U, V)
     }
+    set(originString) {
+      let cleaned = originString.trimmingCharacters(in: CharacterSet(charactersIn: "() \t\r\n"))
+      let parts = cleaned.components(separatedBy: ",")
+      if parts.count == 2 {
+        guard let x = Double(parts[0].trimmingCharacters(in: .whitespaces)) else {
+          return
+        }
+        guard let y = Double(parts[1].trimmingCharacters(in: .whitespaces)) else {
+          return
+        }
+        U = x
+        V = y
+      }
+    }
+  }
+
+  @objc open func setMarkOrigin(_ originString: String) {
+    MarkOrigin = originString
   }
 
   @objc open var OriginX: Double {
@@ -207,17 +217,16 @@ open class ImageSprite: Sprite {
 
   override func updateDisplayLayer() {
     let d = DisplayLayer
-    let xCenter = X + (0.5 - u) * Double(Width)
-    let yCenter = Y + (0.5 - v) * Double(Height)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
+    d.bounds = CGRect(x: 0, y: 0, width: CGFloat(Width), height: CGFloat(Height))
+    d.anchorPoint = CGPoint(x: CGFloat(u), y: CGFloat(v))
+    d.position = CGPoint(x: CGFloat(X), y: CGFloat(Y))
     if _rotates {
-      DisplayLayer.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
+      d.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
     } else {
-      DisplayLayer.transform = CATransform3DMakeRotation(0, 0, 0, 1.0)
+      d.transform = CATransform3DMakeRotation(0, 0, 0, 1.0)
     }
-    d.position = CGPoint(x: xCenter, y: yCenter)
-    d.bounds = CGRect(x: xCenter, y: yCenter, width: CGFloat(Width), height: CGFloat(Height))
     CATransaction.commit()
   }
 
