@@ -9,6 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -21,9 +22,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import java.util.logging.Logger;
 
 /**
@@ -118,9 +117,11 @@ public class RequestNewProjectNameWizard extends Wizard {
           handleOkClick(db);
         }
       });
-    VerticalPanel page = new VerticalPanel();
+    FlowPanel page = new FlowPanel();
+    page.setStyleName("ode-VerticalLayout");
     page.add(projectNameTextBox);   
-    HorizontalPanel hp = new HorizontalPanel();
+    FlowPanel hp = new FlowPanel();
+    hp.setStyleName("ode-HorizontalLayout");
                
     hp.add(cancelButton);
     hp.add(okButton);
