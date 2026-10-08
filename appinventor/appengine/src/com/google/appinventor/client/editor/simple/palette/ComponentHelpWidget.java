@@ -15,10 +15,10 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -56,7 +56,8 @@ public final class ComponentHelpWidget extends AbstractPaletteItemWidget {
 
       // Create panel to hold the above three widgets and act as the
       // popup's widget.
-      VerticalPanel inner = new VerticalPanel();
+      FlowPanel inner = new FlowPanel();
+      inner.setStyleName("ode-VerticalLayout");
       inner.add(helpText);
 
       // Create link to more information.  This would be cleaner if
