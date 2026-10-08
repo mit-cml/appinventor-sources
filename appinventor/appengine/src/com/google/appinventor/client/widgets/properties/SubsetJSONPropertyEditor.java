@@ -47,14 +47,13 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.HashMap;
@@ -184,9 +183,12 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
 
     if (customPopup.getTitle() != MESSAGES.blocksToolkitTitle()) {
       final DockLayoutPanel treePanel = new DockLayoutPanel(Style.Unit.PCT);
-      VerticalPanel componentPanel = new VerticalPanel();
-      VerticalPanel blockPanel = new VerticalPanel();
-      HorizontalPanel buttonPanel = new HorizontalPanel();
+      FlowPanel componentPanel = new FlowPanel();
+      componentPanel.setStyleName("ode-VerticalLayout");
+      FlowPanel blockPanel = new FlowPanel();
+      blockPanel.setStyleName("ode-VerticalLayout");
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
       final ScrollPanel componentScroll = new ScrollPanel(componentPanel);
       ScrollPanel blockScroll = new ScrollPanel(blockPanel);
 
@@ -583,7 +585,8 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
     dialogBox.setText(MESSAGES.saveAsButton());
     final Label saveNameLabel = new Label("Save as file:");  // Todo: Internationalize
     final TextBox saveName = new TextBox();
-    final HorizontalPanel savePanel = new HorizontalPanel();
+    final FlowPanel savePanel = new FlowPanel();
+    savePanel.setStyleName("ode-HorizontalLayout");
     savePanel.add(saveNameLabel);
     savePanel.add(saveName);
     Button cancelButton = new Button("Cancel");
