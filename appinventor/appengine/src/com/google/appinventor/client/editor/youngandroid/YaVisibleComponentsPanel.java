@@ -17,8 +17,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
 
 /**
@@ -27,11 +27,11 @@ import java.util.logging.Logger;
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
 public class YaVisibleComponentsPanel extends SimpleVisibleComponentsPanel<MockForm> {
-  interface YaVisibleComponentsPanelUiBinder extends UiBinder<VerticalPanel,
+  interface YaVisibleComponentsPanelUiBinder extends UiBinder<FlowPanel,
        YaVisibleComponentsPanel> {}
   private static final Logger LOG = Logger.getLogger(YaVisibleComponentsPanel.class.getName());
   // UI elements
-  @UiField protected VerticalPanel phoneScreen;
+  @UiField protected FlowPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview; // A ListBox for Holo/Material/iOS preview styles
   protected final String[] drop_lst_phone_preview = { "Android Material", "Android Holo", "iOS" };

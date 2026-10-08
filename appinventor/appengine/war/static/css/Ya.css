@@ -1493,6 +1493,10 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleFormDesigner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
   padding: 2px;
 }
 
