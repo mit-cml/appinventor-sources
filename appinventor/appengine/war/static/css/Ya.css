@@ -857,6 +857,22 @@ div.StatusPanel {
   align-items: center;
 }
 
+/* setSpacing(n) on the table-based panels put n pixels between and around the cells. */
+.ode-Layout-spacing2 {
+  gap: 2px;
+  padding: 2px;
+}
+
+.ode-Layout-spacing4 {
+  gap: 4px;
+  padding: 4px;
+}
+
+.ode-Layout-spacing10 {
+  gap: 10px;
+  padding: 10px;
+}
+
 /* Children share the spare width, as cells of a full-width table did. */
 .ode-HorizontalLayout-spread > * {
   margin-right: auto;
@@ -2330,7 +2346,17 @@ path.ode-SimpleMockMapFeature-selected {
   color: #555;
 }
 
-/* Spacing 10 between and around the cells. */
+/* In dialogs the spacing comes on top of the cell padding. */
+.ode-DialogBox .dialogContent .ode-Layout-spacing2 {
+  gap: 6px;
+  padding: 4px;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing4 {
+  gap: 8px;
+  padding: 6px;
+}
+
 .ode-DialogBox .dialogContent .ode-Layout-spacing10 {
   gap: 14px;
   padding: 12px;

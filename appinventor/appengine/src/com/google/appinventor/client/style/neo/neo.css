@@ -1473,6 +1473,16 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-700;
 }
 
+.ode-DialogBox .dialogContent .ode-Layout-spacing2 {
+  gap: 6px 12px;
+  padding: 4px 7px;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing4 {
+  gap: 8px 14px;
+  padding: 6px 9px;
+}
+
 .ode-DialogBox .dialogContent .ode-Layout-spacing10 {
   gap: 14px 20px;
   padding: 12px 15px;
