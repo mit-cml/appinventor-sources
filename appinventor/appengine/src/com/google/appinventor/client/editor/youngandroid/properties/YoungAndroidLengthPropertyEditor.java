@@ -16,12 +16,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,21 +68,24 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     percentLengthField.setVisibleLength(4);
     percentLengthField.setMaxLength(4);
 
-    Panel customRow = new HorizontalPanel();
+    FlowPanel customRow = new FlowPanel();
+    customRow.setStyleName("ode-HorizontalLayout");
     customRow.add(customLengthRadioButton);
     customRow.add(customLengthField);
     Label pixels = new Label(MESSAGES.pixelsCaption());
     pixels.setStylePrimaryName("ode-PixelsLabel");
     customRow.add(pixels);
 
-    Panel percentRow = new HorizontalPanel();
+    FlowPanel percentRow = new FlowPanel();
+    percentRow.setStyleName("ode-HorizontalLayout");
     percentRow.add(percentfillRadioButton);
     percentRow.add(percentLengthField);
     Label percent = new Label(MESSAGES.percentCaption());
     percent.setStylePrimaryName("ode-PixelsLabel"); // recycle css definition
     percentRow.add(percent);
 
-    Panel panel = new VerticalPanel();
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
     panel.add(automaticRadioButton);
     panel.add(fillParentRadioButton);
     panel.add(customRow);
