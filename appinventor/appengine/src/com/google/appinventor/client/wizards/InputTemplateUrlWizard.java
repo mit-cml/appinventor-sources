@@ -14,8 +14,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * Wizard for inputting the Url of a Template repository
@@ -38,7 +37,8 @@ public final class InputTemplateUrlWizard extends Wizard {
 
     // Initialize the UI.
     setStylePrimaryName("ode-DialogBox");
-    HorizontalPanel panel = new HorizontalPanel();
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-HorizontalLayout");
 
     urlTextBox = new LabeledTextBox(MESSAGES.newUrlLabel());
     urlTextBox.getTextBox().setWidth("250px");
@@ -54,7 +54,8 @@ public final class InputTemplateUrlWizard extends Wizard {
       }
     });
 
-    VerticalPanel page = new VerticalPanel();
+    FlowPanel page = new FlowPanel();
+    page.setStyleName("ode-VerticalLayout");
     panel.add(urlTextBox);
     page.add(panel);
     addPage(page);
