@@ -33,8 +33,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -161,12 +160,12 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     private static final int IPHONEX_HEIGHT = 44;
 
     // UI elements
-    private DockPanel bar;
+    private FlowPanel bar;
 
-    private HorizontalPanel phoneBarLeftPanel;
-    private HorizontalPanel phoneBarRightPanel;
-    private HorizontalPanel iPadPhoneBarLeftPanel;
-    private HorizontalPanel iPadPhoneBarRightPanel;
+    private FlowPanel phoneBarLeftPanel;
+    private FlowPanel phoneBarRightPanel;
+    private FlowPanel iPadPhoneBarLeftPanel;
+    private FlowPanel iPadPhoneBarRightPanel;
     private Image blackIconsLeft;
     private Image blackIconsRight;
     private Image whiteIconsLeft;
@@ -183,27 +182,25 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     PhoneBar() {
       Image phoneBarImage = new Image(images.phonebar());
       phoneBarImage.setAltText("Android status bar");
-      bar = new DockPanel();
-      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-      bar.add(phoneBarImage, DockPanel.EAST);
+      bar = new FlowPanel();
+      bar.add(phoneBarImage);
 
       initWidget(bar);
       setStylePrimaryName("ode-SimpleMockFormPhoneBarAndroidHolo");
-      setSize("100%", HEIGHT + "px");
+      setBarHeight(HEIGHT);
     }
 
     PhoneBar(String color) {
       Image phoneBarAndroidMaterial = new Image(images.phonebarAndroidMaterial());
       phoneBarAndroidMaterial.setAltText("Android status bar");
 
-      bar = new DockPanel();
-      bar.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-      bar.add(phoneBarAndroidMaterial, DockPanel.EAST);
+      bar = new FlowPanel();
+      bar.add(phoneBarAndroidMaterial);
 
       initWidget(bar);
       MockComponentsUtil.setWidgetBackgroundColor(bar, color);
       setStylePrimaryName("ode-SimpleMockFormPhoneBarAndroidMaterial");
-      setSize("100%", HEIGHT + "px");
+      setBarHeight(HEIGHT);
     }
 
     PhoneBar(boolean blackIcons, int size, String color) {
@@ -217,9 +214,9 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       whiteIconsRight = new Image(images.phonebariPhoneRightWhite());
       whiteIconsRight.setAltText("iOS status bar right");
 
-      phoneBarLeftPanel = new HorizontalPanel();
+      phoneBarLeftPanel = new FlowPanel();
       phoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeft");
-      phoneBarRightPanel = new HorizontalPanel();
+      phoneBarRightPanel = new FlowPanel();
       phoneBarRightPanel.setStylePrimaryName("ode-SimpleMockFormRight");
 
       //icons for iPad
@@ -232,17 +229,17 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       iPadBlackIconsRight = new Image(images.phonebariPadRightBlack());
       iPadBlackIconsRight.setAltText("iOS status bar right");
 
-      iPadPhoneBarLeftPanel = new HorizontalPanel();
+      iPadPhoneBarLeftPanel = new FlowPanel();
       iPadPhoneBarLeftPanel.setStylePrimaryName("ode-SimpleMockFormLeftIPad");
-      iPadPhoneBarRightPanel = new HorizontalPanel();
+      iPadPhoneBarRightPanel = new FlowPanel();
       iPadPhoneBarRightPanel.setStylePrimaryName("ode-SimpleMockFormRightIPad");
 
-      bar = new DockPanel();
+      bar = new FlowPanel();
       setIconColor(blackIcons, size);
-      bar.add(phoneBarLeftPanel, DockPanel.WEST);
-      bar.add(phoneBarRightPanel, DockPanel.EAST);
-      bar.add(iPadPhoneBarLeftPanel, DockPanel.WEST);
-      bar.add(iPadPhoneBarRightPanel, DockPanel.EAST);
+      bar.add(phoneBarLeftPanel);
+      bar.add(phoneBarRightPanel);
+      bar.add(iPadPhoneBarLeftPanel);
+      bar.add(iPadPhoneBarRightPanel);
       initWidget(bar);
       MockComponentsUtil.setWidgetBackgroundColor(bar, color);
       setStylePrimaryName("ode-SimpleMockFormPhoneBariOS");
@@ -274,7 +271,14 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
 
     //set status bar size for the iOS theme
     void setSize(int size) {
-      setSize("100%", (size == 0 ? IPHONEX_HEIGHT : IPAD_HEIGHT) + "px");
+      setBarHeight(size == 0 ? IPHONEX_HEIGHT : IPAD_HEIGHT);
+    }
+
+    // The height is a minimum, as it was for the table this bar used to be: the bar grows to
+    // fit the status bar image and the line it sits on.
+    private void setBarHeight(int height) {
+      setWidth("100%");
+      getElement().getStyle().setProperty("minHeight", height + "px");
     }
 
     void setVisibility(boolean visible) {
