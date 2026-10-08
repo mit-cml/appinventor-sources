@@ -2544,7 +2544,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // The speed parameter to the LocationChanged event
     3: "noUpgrade",
     // AI2: The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2: The LastTimestamp property was added.
+    5: "noUpgrade"
 
   }, // End LocationSensor upgraders
 

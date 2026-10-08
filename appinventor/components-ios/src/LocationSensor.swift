@@ -155,6 +155,16 @@ open class LocationSensor: NonvisibleComponent, CLLocationManagerDelegate, Lifec
     }
   }
 
+  @objc open var LastTimestamp: Int64 {
+    get {
+      if let _lastLocation = _lastLocation {
+        return Int64(_lastLocation.timestamp.timeIntervalSince1970 * 1000.0)
+      } else {
+        return 0
+      }
+    }
+  }
+
   @objc open var Enabled: Bool {
     get {
       return _enabled

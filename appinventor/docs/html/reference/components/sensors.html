@@ -580,6 +580,16 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dt id="LocationSensor.HasLongitudeLatitude" class="boolean ro bo"><em>HasLongitudeLatitude</em></dt>
   <dd>If <code class="language-plaintext logic block highlighter-rouge">true</code>, the device can report longitude and latitude.  It is
  always the case that either both or neither are.</dd>
+  <dt id="LocationSensor.LastTimestamp" class="number ro bo"><em>LastTimestamp</em></dt>
+  <dd>The time at which the most recent location was measured, in milliseconds since
+ January 1, 1970 UTC. The device may report a cached location, for example when the app
+ starts, so this can be older than the time the
+ <a href="#LocationSensor.LocationChanged"><code class="language-plaintext highlighter-rouge">LocationChanged</code></a> event fired. Subtract it from
+ <a href="#Clock.SystemTime"><code class="language-plaintext highlighter-rouge">Clock.SystemTime</code></a> to get the age of the location in milliseconds and
+ ignore locations that are too old for your app.
+
+    <p>If no location has been received, the return value is 0.</p>
+  </dd>
   <dt id="LocationSensor.Latitude" class="number ro bo"><em>Latitude</em></dt>
   <dd>The most recently available latitude value in degrees reported to 5 decimal places.
  If no value is available, 0 will be returned.
