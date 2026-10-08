@@ -1561,7 +1561,9 @@ public class YaVersion {
   //  - Initial Version
   // For SWITCH_COMPONENT_VERSION 2:
   // - FontBold, FontItalic, FontTypeface properties made visible in block editor.
-  public static final int SWITCH_COMPONENT_VERSION = 2;
+  // For SWITCH_COMPONENT_VERSION 3:
+  // - The TrackColorInactive property default value was changed to Component.DEFAULT_VALUE_COLOR_GRAY.
+  public static final int SWITCH_COMPONENT_VERSION = 3;
 
   // For TABLEARRANGEMENT_COMPONENT_VERSION 2:
   // - Columns, Rows property (getters only) made visible in block editor.

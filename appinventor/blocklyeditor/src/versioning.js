@@ -3314,7 +3314,10 @@ Blockly.Versioning.AllUpgradeMaps =
     1: "noUpgrade",
 
     // AI2: FontBold, FontItalic, FontTypeface properties made visible in block editor.
-    2: "noUpgrade"
+    2: "noUpgrade",
+
+    // AI2: The TrackColorInactive property default value was changed. No upgrade w.r.t. blocks.
+    3: "noUpgrade"
 
   }, // End Switch upgraders
 
