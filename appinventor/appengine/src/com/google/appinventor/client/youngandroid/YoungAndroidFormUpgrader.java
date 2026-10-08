@@ -1692,6 +1692,11 @@ public final class YoungAndroidFormUpgrader {
       //The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The LastTimestamp property was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
