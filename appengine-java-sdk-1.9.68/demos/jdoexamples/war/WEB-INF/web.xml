@@ -1,0 +1,34 @@
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+  <servlet>
+    <servlet-name>guestbook</servlet-name>
+    <servlet-class>com.google.appengine.demos.jdoexamples.GuestbookServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>namedcounter</servlet-name>
+    <servlet-class>com.google.appengine.demos.jdoexamples.NamedCounterServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>friends</servlet-name>
+    <servlet-class>com.google.appengine.demos.jdoexamples.FriendServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>addressbook</servlet-name>
+    <servlet-class>com.google.appengine.demos.jdoexamples.AddressBookServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>guestbook</servlet-name>
+    <url-pattern>/guestbook</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>namedcounter</servlet-name>
+    <url-pattern>/namedcounter</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>friends</servlet-name>
+    <url-pattern>/friends</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>addressbook</servlet-name>
+    <url-pattern>/addressbook</url-pattern>
+  </servlet-mapping>
+</web-app>

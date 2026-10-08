@@ -1,0 +1,42 @@
+<project name="taskqueueexamples" default="compile">
+  <property name="project.dir" location="." />
+  <property name="appengine.sdk" location="../.." />
+
+  <path id="project.classpath">
+    <pathelement path="${project.dir}/war/WEB-INF/classes" />
+    <fileset dir="${project.dir}/war/WEB-INF/lib">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${appengine.sdk}/lib">
+      <include name="shared/**/*.jar" />
+    </fileset>
+  </path>
+
+  <import file="${appengine.sdk}/config/user/ant-macros.xml" />
+
+  <target name="copyjars">
+    <copy
+        todir="${project.dir}/war/WEB-INF/lib">
+      <fileset dir="${appengine.sdk}/lib/user">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${appengine.sdk}/lib/user/orm">
+        <include name="*.jar" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile" depends="copyjars">
+    <javac
+        srcdir="${project.dir}/src"
+        destdir="${project.dir}/war/WEB-INF/classes"
+        classpathref="project.classpath"
+        debug="on" />
+  </target>
+
+  <target name="runserver" depends="compile">
+    <dev_appserver war="${project.dir}/war" />
+  </target>
+
+</project>
+

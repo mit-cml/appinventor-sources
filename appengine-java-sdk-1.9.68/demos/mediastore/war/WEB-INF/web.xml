@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <display-name>MediaStore</display-name>
+
+  <servlet>
+    <servlet-name>upload</servlet-name>
+    <servlet-class>com.google.appengine.demos.mediastore.Upload</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>post</servlet-name>
+    <servlet-class>com.google.appengine.demos.mediastore.UploadPost</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>index</servlet-name>
+    <servlet-class>com.google.appengine.demos.mediastore.Index</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>resource</servlet-name>
+    <servlet-class>com.google.appengine.demos.mediastore.Resource</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>display</servlet-name>
+    <servlet-class>com.google.appengine.demos.mediastore.Display</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>upload</servlet-name>
+    <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>post</servlet-name>
+    <url-pattern>/post</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>index</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>resource</servlet-name>
+    <url-pattern>/resource</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>display</servlet-name>
+    <url-pattern>/display</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>upload</web-resource-name>
+      <url-pattern>/upload</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+  </security-constraint>
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>post</web-resource-name>
+      <url-pattern>/post</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+</web-app>

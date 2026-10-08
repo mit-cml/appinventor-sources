@@ -1,0 +1,104 @@
+<project name="Sticky" default="compile">
+  <property file="build.properties" />
+  <property name="project.dir" location="." />
+
+  <macrodef name="compile.gwtc">
+    <attribute name="module" />
+    <attribute name="srcdir" default="src" />
+    <attribute name="wardir" />
+    <attribute name="classpathref" />
+    <sequential>
+      <java dir="@{srcdir}"
+          classname="com.google.gwt.dev.Compiler"
+          classpathref="@{classpathref}"
+          fork="yes"
+          failonerror="true">
+        <jvmarg value="-Xmx512M"/>
+        <arg value="-war" />
+        <arg file="@{wardir}" />
+        <arg value="@{module}" />
+      </java>
+    </sequential>
+  </macrodef>
+
+  <path id="backend.classpath">
+    <pathelement path="war/WEB-INF/classes" />
+    <fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
+    <fileset dir="${appengine.sdk}/lib" includes="shared/**/*.jar" />
+  </path>
+
+  <path id="frontend.classpath">
+    <pathelement path="src" />
+    <fileset file="${gwt.sdk}/gwt-user.jar" />
+    <fileset file="${gwt.sdk}/gwt-dev.jar" />
+  </path>
+
+  <import file="${appengine.sdk}/config/user/ant-macros.xml" />
+
+  <target name="copyjars" >
+    <copy todir="war/WEB-INF/lib"
+        flatten="true">
+      <fileset dir="${appengine.sdk}/lib/user"
+          includes="**/*.jar" />
+    </copy>
+    <copy todir="war/WEB-INF/lib">
+      <fileset file="${gwt.sdk}/gwt-servlet.jar" />
+    </copy>
+  </target>
+
+  <target name="compile.init">
+    <mkdir dir="war/WEB-INF/classes" />
+  </target>
+
+  <path id="enhancer.classpath">
+    <pathelement path="war/WEB-INF/classes" />
+    <!-- The server side code instantiates client side objects, so the enhancer
+         will need gwt user to resolve all the imports it sees. -->
+    <fileset file="${gwt.sdk}/gwt-user.jar" />
+    <fileset dir="${appengine.sdk}/lib"
+        includes="shared/**/*.jar, tools/**/*.jar, user/*.jar" />
+  </path>
+
+  <target name="compile.backend" depends="compile.init, copyjars">
+    <!-- copy configs -->
+    <copy todir="war/WEB-INF/classes">
+      <fileset dir="src" includes="META-INF/**" />
+    </copy>
+    <!-- build backend classes -->
+    <javac srcdir="src"
+        destdir="war/WEB-INF/classes"
+        classpathref="backend.classpath">
+      <include name="com/google/appengine/demos/sticky/server/**" />
+    </javac>
+    <!-- enhance classes -->
+    <taskdef name="enhance"
+        classpathref="enhancer.classpath"
+        classname="org.datanucleus.enhancer.tools.EnhancerTask" />
+    <enhance classpathref="enhancer.classpath"
+        failonerror="true">
+      <fileset dir="war/WEB-INF/classes"
+          includes="com/google/appengine/demos/sticky/server/**" />
+    </enhance>
+  </target>
+
+  <target name="compile.frontend">
+    <compile.gwtc module="com.google.appengine.demos.sticky.Sticky"
+        srcdir="src"
+        wardir="war"
+        classpathref="frontend.classpath" />
+  </target>
+
+  <target name="compile" depends="compile.backend, compile.frontend"/>
+
+  <target name="runserver" depends="compile">
+    <dev_appserver war="${project.dir}/war" />
+  </target>
+
+  <target name="clean">
+    <delete dir="war/WEB-INF/classes" />
+    <delete dir="war/sticky" />
+    <delete>
+      <fileset dir="war/WEB-INF/lib" includes="*.jar" />
+    </delete>
+  </target>
+</project>

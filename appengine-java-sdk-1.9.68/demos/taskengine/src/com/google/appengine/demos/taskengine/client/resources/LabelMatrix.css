@@ -1,0 +1,116 @@
+/* Annotated styles for LabelMatrix.java */
+.labelMatrix {
+  position: relative;
+  display: inline-block;
+}
+
+.selected {
+  position: relative;
+  width: 60px;
+  height: 25px;
+  border: 1px solid #666;
+  display: none;
+}
+
+.colorChooser {
+  display: inline-block;
+  position: relative;
+  border: 2px solid #777;
+  height: 152px;
+  width: 152px;
+  font-family: Arial, sans-serif;
+  font-size: 8pt;
+}
+
+.tl {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  background-color: #fff;
+}
+
+.tm {
+  position: absolute;
+  left: 20px;
+  padding-top: 5px;
+  padding-left: 15px;
+  height: 15px;
+  width: 50px;
+  background-color: #ddd;
+  border-left: 2px solid #777;
+}
+
+.tr {
+  position: absolute;
+  left: 85px;
+  padding-top: 5px;
+  padding-left: 5px;
+  height: 15px;
+  width: 60px;
+  background-color: #ddd;
+  border-left: 2px solid #777;
+}
+
+@sprite .ml {
+  gwt-image: "important";
+  position: absolute;
+  top: 20px;
+  width: 20px;
+  height: 65px;
+  background-color: #ddd;
+  border-top: 2px solid #777;
+}
+
+.mm {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 65px;
+  height: 65px;
+  background-color: #f81f34;
+  border-top: 2px solid #777;
+  border-left: 2px solid #777;
+}
+
+.mr {
+  position: absolute;
+  left: 85px;
+  top: 20px;
+  width: 65px;
+  height: 65px;
+  background-color: #fb9708;
+  border-top: 2px solid #777;
+  border-left: 2px solid #777;
+}
+
+@sprite .bl {
+  gwt-image: "notImportant";
+  position: absolute;
+  top: 85px;
+  width: 20px;
+  height: 65px;
+  background-color: #ddd;
+  border-top: 2px solid #777;
+}
+
+.bm {
+  position: absolute;
+  left: 20px;
+  top: 85px;
+  width: 65px;
+  height: 65px;
+  background-color: #f9f60d;
+  border-top: 2px solid #777;
+  border-left: 2px solid #777;
+}
+
+.br {
+  position: absolute;
+  left: 85px;
+  top: 85px;
+  width: 65px;
+  height: 65px;
+  background-color: #08db1c;
+  border-top: 2px solid #777;
+  border-left: 2px solid #777;
+}
