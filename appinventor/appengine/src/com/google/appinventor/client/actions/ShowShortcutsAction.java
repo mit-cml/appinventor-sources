@@ -15,8 +15,8 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ShowShortcutsAction implements Command {
 
@@ -36,7 +36,8 @@ public class ShowShortcutsAction implements Command {
 
     @Override
     public void execute() {
-        VerticalPanel DialogBoxContents = new VerticalPanel();
+        FlowPanel DialogBoxContents = new FlowPanel();
+        DialogBoxContents.setStyleName("ode-VerticalLayout");
         HTML message = new HTML(MESSAGES.KeyBoardShortcuts());
         Button button = new Button(Ode.MESSAGES.okButton());
         button.addClickHandler(event -> db.hide());
