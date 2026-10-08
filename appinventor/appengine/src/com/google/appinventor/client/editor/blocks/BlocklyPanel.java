@@ -20,6 +20,7 @@ import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Promise.WrappedException;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -35,7 +36,6 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -685,9 +685,9 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.BlocklyPanel_createDialog =
         $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::createDialog(*));
     $wnd.BlocklyPanel_hideDialog =
-        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
+        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::HideDialog(Lcom/google/appinventor/client/widgets/DialogBox;));
     $wnd.BlocklyPanel_setDialogContent =
-        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
+        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::SetDialogContent(Lcom/google/appinventor/client/widgets/DialogBox;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstanceTypeName =
         $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentInstanceTypeName(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstancePropertyValue =

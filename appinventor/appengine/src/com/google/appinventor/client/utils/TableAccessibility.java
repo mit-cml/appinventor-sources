@@ -38,6 +38,20 @@ public class TableAccessibility {
   }
 
   /**
+   * Marks the closest table that contains the given element as used only for layout. Use this
+   * when only a cell of the table is reachable, as with the frame of a
+   * {@code DecoratedPopupPanel}.
+   *
+   * @param element An element inside the table, such as one of its cells
+   */
+  public static void setEnclosingLayoutTable(Element element) {
+    while (element != null && !"table".equalsIgnoreCase(element.getTagName())) {
+      element = element.getParentElement();
+    }
+    setLayoutTable(element);
+  }
+
+  /**
    * Marks the widget's element, if it is a table, and every table inside it as used only for
    * layout. Use this only for widgets that contain no data tables.
    *

@@ -7,6 +7,7 @@
 package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -19,7 +20,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;

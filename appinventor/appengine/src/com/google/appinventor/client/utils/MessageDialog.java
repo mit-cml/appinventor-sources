@@ -5,13 +5,13 @@
 
 package com.google.appinventor.client.utils;
 
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.boxes.Box;
 
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;

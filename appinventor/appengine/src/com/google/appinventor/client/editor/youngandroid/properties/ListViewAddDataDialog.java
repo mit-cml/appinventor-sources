@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.wizards.Dialog;
 
 import com.google.appinventor.components.common.ComponentConstants;
@@ -37,7 +38,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;

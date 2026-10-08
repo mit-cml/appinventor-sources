@@ -16,6 +16,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.wizards.ComponentImportWizard.ImportComponentCallback;
 import com.google.appinventor.client.wizards.RequestNewProjectNameWizard;
 import com.google.appinventor.client.wizards.RequestProjectNewNameInterface;
@@ -39,7 +40,6 @@ import com.google.gwt.query.client.builders.JsniBundle;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;

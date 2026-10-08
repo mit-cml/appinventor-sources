@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.StyleElement;

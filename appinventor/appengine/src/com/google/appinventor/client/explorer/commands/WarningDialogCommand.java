@@ -5,11 +5,11 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
