@@ -2324,6 +2324,20 @@ path.ode-SimpleMockMapFeature-selected {
   padding: 5px 10px;
 }
 
+/* Wizard pages above a row of buttons that share the spare width, as table cells did. */
+.ode-WizardContent > .ode-WizardPage {
+  flex: 1 1 auto;
+}
+
+.ode-WizardButtons {
+  width: 100%;
+  min-height: 24px;
+}
+
+.ode-WizardButtons > * {
+  margin-right: auto;
+}
+
 .ode-DialogBox .settings-labeled-textbox td:first-child {
   width: 60%;
 }
