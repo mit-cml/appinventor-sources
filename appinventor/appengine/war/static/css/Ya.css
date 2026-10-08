@@ -868,6 +868,11 @@ div.StatusPanel {
   padding: 4px;
 }
 
+.ode-Layout-spacing5 {
+  gap: 5px;
+  padding: 5px;
+}
+
 .ode-Layout-spacing10 {
   gap: 10px;
   padding: 10px;
