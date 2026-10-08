@@ -810,11 +810,15 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-800;
 }
 
-.ode-DialogBox .dialogContent td {
+.ode-DialogBox .dialogContent td,
+.ode-DialogBox .dialogContent .ode-VerticalLayout,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout {
   color: gray-800;
 }
 
-.ode-DialogBox .dialogContent td a {
+.ode-DialogBox .dialogContent td a,
+.ode-DialogBox .dialogContent .ode-VerticalLayout a,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout a {
     color: clr-primary-500;
 }
 
