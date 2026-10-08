@@ -1083,7 +1083,9 @@ select.ode-PropertyEditor[disabled] {
   color: selected-color;
 }
 
-.ode-DialogBox .dialogContent td a {
+.ode-DialogBox .dialogContent td a,
+.ode-DialogBox .dialogContent .ode-VerticalLayout a,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout a {
     color: selected-color;
 }
 
@@ -1460,6 +1462,13 @@ path.ode-SimpleMockMapFeature-selected {
 }
 
 .ode-DialogBox .dialogContent td {
+  padding: 2px 5px;
+  color: gray-700;
+}
+
+.ode-DialogBox .dialogContent .ode-VerticalLayout,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout {
+  gap: 4px 10px;
   padding: 2px 5px;
   color: gray-700;
 }
