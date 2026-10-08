@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -82,7 +81,8 @@ public class MessageDialog {
     String messageId = Document.get().createUniqueId();
     dialogBox.getElement().setAttribute("aria-describedby", messageId);
 
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML messageHtml = new HTML("<p>" + message + "</p>");
     messageHtml.setStyleName("DialogBox-message");
     messageHtml.getElement().setId(messageId);
