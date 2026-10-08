@@ -27,7 +27,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Map;
@@ -142,8 +141,10 @@ public abstract class Box extends HandlerPanel {
     private ResizeControl() {
       super(false); // no autohide
 
-      VerticalPanel buttonPanel = new VerticalPanel();
-      buttonPanel.setSpacing(10);
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-VerticalLayout");
+      buttonPanel.addStyleName("ode-VerticalLayout-center");
+      buttonPanel.addStyleName("ode-Layout-spacing10");
       addControlButton(buttonPanel, "-", new Command() {
         @Override
         public void execute() {
@@ -175,7 +176,7 @@ public abstract class Box extends HandlerPanel {
     /**
      * Creates a button with a click handler which will execute the given command.
      */
-    private void addControlButton(VerticalPanel panel, String caption, final Command command) {
+    private void addControlButton(FlowPanel panel, String caption, final Command command) {
       TextButton button = new TextButton(caption);
       button.addClickHandler(new ClickHandler() {
         @Override
@@ -184,7 +185,6 @@ public abstract class Box extends HandlerPanel {
         }
       });
       panel.add(button);
-      panel.setCellHorizontalAlignment(button, VerticalPanel.ALIGN_CENTER);
     }
   }
 
