@@ -7,6 +7,7 @@
 package com.google.appinventor.client.explorer;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -476,6 +477,7 @@ public class SourceStructureExplorer extends Composite {
       tree.addItem(root);
       collectNameToItem(root);
     }
+    TableAccessibility.setLayoutTables(tree);
     if (itemToSelect != null) {
       selectItem(itemToSelect, true);
     } else {

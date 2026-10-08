@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -162,6 +163,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         assetList.addItem(treeItem);
       }
     }
+    TableAccessibility.setLayoutTables(assetList);
   }
 
   public void refreshAssetList(long projectId) {
