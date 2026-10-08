@@ -823,6 +823,84 @@ div.StatusPanel {
   height: 480px;
 }
 
+/*
+ * Flex layouts that replace GWT's VerticalPanel and HorizontalPanel, which render as <table>s
+ * that screen readers announce as data tables. Like those panels, the children start at the
+ * top left, and in a vertical layout block children fill its width.
+ */
+.ode-VerticalLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
+  box-sizing: border-box;
+}
+
+.ode-VerticalLayout > div:not(.ode-HorizontalLayout):not(.ode-VerticalLayout) {
+  align-self: stretch;
+}
+
+.ode-VerticalLayout-center {
+  align-items: center;
+  text-align: center;
+}
+
+.ode-VerticalLayout-middle {
+  justify-content: center;
+}
+
+.ode-HorizontalLayout {
+  display: flex;
+  align-items: flex-start;
+  width: fit-content;
+  box-sizing: border-box;
+}
+
+.ode-HorizontalLayout-middle {
+  align-items: center;
+}
+
+/* Inline children, such as check boxes and radio buttons, had no vertical margins in a cell. */
+.ode-VerticalLayout > span,
+.ode-VerticalLayout > a,
+.ode-HorizontalLayout > span,
+.ode-HorizontalLayout > a {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* A focus trap kept the row it sat in. In the flow with no height, the gap keeps that space. */
+.ode-VerticalLayout > .FocusTrap {
+  position: static;
+  height: 0;
+}
+
+/* setSpacing(n) on the table-based panels put n pixels between and around the cells. */
+.ode-Layout-spacing2 {
+  gap: 2px;
+  padding: 2px;
+}
+
+.ode-Layout-spacing4 {
+  gap: 4px;
+  padding: 4px;
+}
+
+.ode-Layout-spacing5 {
+  gap: 5px;
+  padding: 5px;
+}
+
+.ode-Layout-spacing10 {
+  gap: 10px;
+  padding: 10px;
+}
+
+/* Children share the spare width, as cells of a full-width table did. */
+.ode-HorizontalLayout-spread > * {
+  margin-right: auto;
+}
+
 .ode-SourceStructureExplorer {
   width: fit-content;
 }
@@ -2243,6 +2321,34 @@ path.ode-SimpleMockMapFeature-selected {
   color: #555;
 }
 
+/*
+ * Inside dialogs, the flex layouts get the same spacing, font and color that the cells of
+ * the table-based panels had: 2px around each child and 4px between children.
+ */
+.ode-DialogBox .dialogContent .ode-VerticalLayout,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout {
+  gap: 4px;
+  padding: 2px;
+  font-size: 12px;
+  color: #555;
+}
+
+/* In dialogs the spacing comes on top of the cell padding. */
+.ode-DialogBox .dialogContent .ode-Layout-spacing2 {
+  gap: 6px;
+  padding: 4px;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing4 {
+  gap: 8px;
+  padding: 6px;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing10 {
+  gap: 14px;
+  padding: 12px;
+}
+
 .ode-DialogBox .gwt-Button {
   margin: 10px;
 }
@@ -2250,6 +2356,21 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-DialogBox .ode-LabeledTextBox {
   margin-bottom: 0;
   padding: 5px 10px;
+}
+
+/* Rows of dialog buttons share the spare width, as the cells of a full-width table did. */
+.ode-DialogButtons {
+  width: 100%;
+  min-height: 24px;
+}
+
+/* Specific enough to win over the 10px margin of buttons in dialogs. */
+.ode-HorizontalLayout.ode-DialogButtons > :not(.FocusTrap) {
+  margin-right: auto;
+}
+
+.ode-HorizontalLayout.ode-DialogButtons-centered > :not(.FocusTrap) {
+  margin-left: auto;
 }
 
 .ode-DialogBox .settings-labeled-textbox td:first-child {
