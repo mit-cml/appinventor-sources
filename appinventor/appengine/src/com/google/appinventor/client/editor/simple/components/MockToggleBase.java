@@ -192,6 +192,11 @@ abstract class MockToggleBase<T extends Widget> extends MockWrapper implements D
   }
 
   @Override
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed before component removal.
+  }
+
+  @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
 
   }

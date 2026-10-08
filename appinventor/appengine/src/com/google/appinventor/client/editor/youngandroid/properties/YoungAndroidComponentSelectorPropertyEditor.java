@@ -182,6 +182,10 @@ public final class YoungAndroidComponentSelectorPropertyEditor
       String propertyName, String propertyValue) {
   }
 
+  public void onBeforeComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+    // No action needed before component removal.
+  }
+
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
     if (permanentlyDeleted) {
       if (componentTypes == null || componentTypes.contains(component.getType())) {
