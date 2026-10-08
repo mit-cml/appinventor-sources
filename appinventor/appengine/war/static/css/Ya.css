@@ -1105,6 +1105,12 @@ div.StatusPanel {
   font-size: 12px;
 }
 
+.ode-AssetList > .ode-PanelButtons {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
 .ode-BlocksDesignerButton {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
