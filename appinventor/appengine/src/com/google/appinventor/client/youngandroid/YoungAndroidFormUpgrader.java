@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockVisibleComponent;
 import com.google.appinventor.client.properties.json.ClientJsonString;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONArray;
@@ -18,9 +19,8 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Map;
 import java.util.logging.Level;
@@ -2555,7 +2555,8 @@ public final class YoungAndroidFormUpgrader {
     dialogBox.setAnimationEnabled(true);
     final HTML message = new HTML(aMessage);
     message.setStyleName("DialogBox-message");
-    VerticalPanel vPanel = new VerticalPanel();
+    FlowPanel vPanel = new FlowPanel();
+    vPanel.setStyleName("ode-VerticalLayout");
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
         @Override
