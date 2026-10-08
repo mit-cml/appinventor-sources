@@ -19,8 +19,8 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Map;
 import java.util.logging.Level;
@@ -2555,7 +2555,8 @@ public final class YoungAndroidFormUpgrader {
     dialogBox.setAnimationEnabled(true);
     final HTML message = new HTML(aMessage);
     message.setStyleName("DialogBox-message");
-    VerticalPanel vPanel = new VerticalPanel();
+    FlowPanel vPanel = new FlowPanel();
+    vPanel.setStyleName("ode-VerticalLayout");
     Button okButton = new Button("OK");
     okButton.addClickListener(new ClickListener() {
         @Override
