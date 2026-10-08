@@ -12,6 +12,7 @@ layout: documentation
 * [trim](#trim)
 * [upcase](#upcase)
 * [downcase](#downcase)
+* [titlecase](#titlecase)
 * [starts at](#startsat)
 * [contains](#contains)
 * [contains any](#containsany)
@@ -87,6 +88,12 @@ Returns a copy of its text string argument converted to all upper case.
 ![](images/text/downcase.png)
 
 Returns a copy of its text string argument converted to all lower case.
+
+### titlecase   {#titlecase}
+
+![](images/text/titlecase.png)
+
+Returns a copy of its text string argument converted to title case. For example, the title case of *hello WORLD* is *Hello World*.
 
 ### starts at   {#startsat}
 

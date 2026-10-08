@@ -1812,6 +1812,19 @@ Matrix implementation.
 ;;;;Text implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define (string-to-title-case s)
+  (let* ((str (coerce-to-string s))
+         (words (yail-list-contents (string-split str " "))))
+    (join-strings
+      (map (lambda (word)
+             (if (> (string-length word) 0)
+                 (string-append
+                   (string-to-upper-case (substring word 0 1))
+                   (string-to-lower-case (substring word 1 (string-length word))))
+                 word))
+           words)
+      " ")))
+
 (define (string-starts-at text piece)
   (+ (string-index-of text piece) 1))
 
