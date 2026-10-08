@@ -13,6 +13,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -32,11 +33,10 @@ import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 import java.util.List;
@@ -109,14 +109,16 @@ public class ComponentImportWizard extends Wizard {
 
     final CellTable compTable = createCompTable();
     final FileUpload fileUpload = createFileUpload();
-    final Grid urlGrid = createUrlGrid();
+    final FlowPanel urlPanel = createUrlPanel();
     final TabPanel tabPanel = new TabPanel();
     tabPanel.add(fileUpload, MESSAGES.componentImportFromComputer());
-    tabPanel.add(urlGrid, MESSAGES.componentImportFromURL());
+    tabPanel.add(urlPanel, MESSAGES.componentImportFromURL());
     tabPanel.selectTab(FROM_MY_COMPUTER_TAB);
     tabPanel.addStyleName("ode-Tabpanel");
+    TableAccessibility.setLayoutTables(tabPanel);
 
-    VerticalPanel panel = new VerticalPanel();
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
     panel.add(tabPanel);
 
     addPage(panel);
@@ -136,7 +138,7 @@ public class ComponentImportWizard extends Wizard {
             ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
 
         if (tabPanel.getTabBar().getSelectedTab() == URL_TAB) {
-          TextBox urlTextBox = (TextBox) urlGrid.getWidget(1, 0);
+          TextBox urlTextBox = (TextBox) urlPanel.getWidget(1);
           String url = urlTextBox.getText();
 
           if (url.trim().isEmpty()) {
@@ -214,13 +216,14 @@ public class ComponentImportWizard extends Wizard {
     return compTable;
   }
 
-  private Grid createUrlGrid() {
+  private FlowPanel createUrlPanel() {
     TextBox urlTextBox = new TextBox();
     urlTextBox.setWidth("100%");
-    Grid grid = new Grid(2, 1);
-    grid.setWidget(0, 0, new Label("Url:"));
-    grid.setWidget(1, 0, urlTextBox);
-    return grid;
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
+    panel.add(new Label("Url:"));
+    panel.add(urlTextBox);
+    return panel;
   }
 
   private FileUpload createFileUpload() {
