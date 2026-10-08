@@ -832,9 +832,11 @@ div.StatusPanel {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: fit-content;
+  box-sizing: border-box;
 }
 
-.ode-VerticalLayout > div:not(.ode-HorizontalLayout) {
+.ode-VerticalLayout > div:not(.ode-HorizontalLayout):not(.ode-VerticalLayout) {
   align-self: stretch;
 }
 
@@ -851,10 +853,26 @@ div.StatusPanel {
   display: flex;
   align-items: flex-start;
   width: fit-content;
+  box-sizing: border-box;
 }
 
 .ode-HorizontalLayout-middle {
   align-items: center;
+}
+
+/* Inline children, such as check boxes and radio buttons, had no vertical margins in a cell. */
+.ode-VerticalLayout > span,
+.ode-VerticalLayout > a,
+.ode-HorizontalLayout > span,
+.ode-HorizontalLayout > a {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* A focus trap kept the row it sat in. In the flow with no height, the gap keeps that space. */
+.ode-VerticalLayout > .FocusTrap {
+  position: static;
+  height: 0;
 }
 
 /* setSpacing(n) on the table-based panels put n pixels between and around the cells. */
@@ -2387,12 +2405,13 @@ path.ode-SimpleMockMapFeature-selected {
   min-height: 24px;
 }
 
-.ode-WizardButtons > *,
-.ode-DialogButtons > * {
+/* Specific enough to win over the 10px margin of buttons in dialogs. */
+.ode-HorizontalLayout.ode-WizardButtons > :not(.FocusTrap),
+.ode-HorizontalLayout.ode-DialogButtons > :not(.FocusTrap) {
   margin-right: auto;
 }
 
-.ode-DialogButtons-centered > * {
+.ode-HorizontalLayout.ode-DialogButtons-centered > :not(.FocusTrap) {
   margin-left: auto;
 }
 
