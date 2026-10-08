@@ -29,8 +29,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Property editor for selecting a font asset for a property.
@@ -55,7 +55,8 @@ public final class YoungAndroidFontTypefaceChoicePropertyEditor extends Addition
     assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
     project.addProjectChangeListener(this);
 
-    VerticalPanel selectorPanel = new VerticalPanel();
+    FlowPanel selectorPanel = new FlowPanel();
+    selectorPanel.setStyleName("ode-VerticalLayout");
     fontAssetsList = new ListBox();
     fontAssetsList.setVisibleItemCount(10);
     fontAssetsList.setWidth("100%");
