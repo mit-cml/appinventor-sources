@@ -20,6 +20,8 @@ Table of Contents:
 * [size of dictionary](#size-of-dictionary)
 * [list of pairs to dictionary](#list-of-pairs-to-dictionary)
 * [dictionary to list of pairs](#dictionary-to-list-of-pairs)
+* [get dictionary from JSON text](#dictionary-from-json)
+* [get JSON text from dictionary](#dictionary-to-json)
 * [copy dictionary](#copy-dictionary)
 * [merge into dictionary](#merge-into-dictionary)
 * [list by walking key path](#list-by-walking-key-path)
@@ -161,6 +163,16 @@ The `dictionary to list of pairs`{:.dictionary.block} converts a dictionary into
 This block reverses the conversion performed by the [`list of pairs to dictionary`{:.list.block}](#list-of-pairs-to-dictionary) block.
 
 ![Example of how the dictionary to list of pairs block reverses the list of pairs to dictionary block](images/dictionaries/alist-dict-reversability.png)
+
+### get dictionary from JSON text
+{:#dictionary-from-json}
+
+The `get dictionary from JSON text`{:.dictionary.block} block parses the given JSON text and returns the corresponding dictionary. Nested JSON objects become dictionaries and JSON arrays become lists. If the text is not valid JSON, or if the top-level value of the JSON text is not an object (for example, if it is an array, number, or string), an error is raised. To decode JSON whose top-level value may not be an object, use the [`Web.JsonTextDecodeWithDictionaries`{:.method.block}](/reference/components/connectivity.html#Web.JsonTextDecodeWithDictionaries) method instead.
+
+### get JSON text from dictionary
+{:#dictionary-to-json}
+
+The `get JSON text from dictionary`{:.dictionary.block} block returns the JSON text representation of the given dictionary.
 
 ### copy dictionary
 

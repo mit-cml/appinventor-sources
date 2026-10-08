@@ -187,6 +187,29 @@ AI.Yail.forBlock['dictionaries_dict_to_alist'] = function(block, generator) {
   return [ code, AI.Yail.ORDER_ATOMIC ];
 };
 
+AI.Yail.forBlock['dictionaries_from_json'] = function(block, generator) {
+  var argument = generator.valueToCode(block, 'JSON', AI.Yail.ORDER_NONE)
+      || (AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_DOUBLE_QUOTE);
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-dictionary-from-json-text" + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
+  code = code + argument + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
+  code = code + "text" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_DOUBLE_QUOTE + "get dictionary from JSON text" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+};
+
+AI.Yail.forBlock['dictionaries_to_json'] = function(block, generator) {
+  var argument = generator.valueToCode(block, 'DICT', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_EMPTY_DICT;
+  var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-dictionary-to-json-text" + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_OPEN_COMBINATION + AI.Yail.YAIL_LIST_CONSTRUCTOR + AI.Yail.YAIL_SPACER;
+  code = code + argument + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_QUOTE + AI.Yail.YAIL_OPEN_COMBINATION;
+  code = code + "dictionary" + AI.Yail.YAIL_CLOSE_COMBINATION + AI.Yail.YAIL_SPACER;
+  code = code + AI.Yail.YAIL_SPACER + AI.Yail.YAIL_DOUBLE_QUOTE + "get JSON text from dictionary" + AI.Yail.YAIL_DOUBLE_QUOTE + AI.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, AI.Yail.ORDER_ATOMIC ];
+};
+
 AI.Yail.forBlock['dictionaries_copy'] = function(block, generator) {
   var argument = generator.valueToCode(block, 'DICT', AI.Yail.ORDER_NONE) || AI.Yail.YAIL_EMPTY_DICT;
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-dictionary-copy" + AI.Yail.YAIL_SPACER;

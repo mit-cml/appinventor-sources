@@ -795,6 +795,12 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '<value name="NOTFOUND"><block type="text"><title name="TEXT">not found</title></block></value>' +
     '</block>' +
   '</xml>'},
+  dictionaries_from_json: {xmlString:
+  '<xml>' +
+    '<block type="dictionaries_from_json">' +
+    '<value name="JSON"><block type="text"><title name="TEXT">{}</title></block></value>' +
+    '</block>' +
+  '</xml>'},
   matrices_create: {xmlString:
   '<xml>' +
     '<block type="matrices_create">' +

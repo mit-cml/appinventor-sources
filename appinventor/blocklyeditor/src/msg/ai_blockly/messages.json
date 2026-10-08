@@ -718,6 +718,14 @@
 	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_TOOLTIP": "Converts a dictionary to a list of pairs.",
 	"Blockly.Msg.LANG_DICTIONARIES_DICT_TO_ALIST_HELPURL": "/reference/blocks/dictionaries.html#dictionary-to-list-of-pairs",
 
+	"Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_TITLE": "get dictionary from JSON text",
+	"Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_TOOLTIP": "Parses the given JSON text and returns the corresponding dictionary. If the JSON text does not represent a dictionary, an error is raised. To decode JSON whose top-level value is not an object, use the Web component's JsonTextDecodeWithDictionaries method instead.",
+	"Blockly.Msg.LANG_DICTIONARIES_FROM_JSON_HELPURL": "/reference/blocks/dictionaries.html#dictionary-from-json",
+
+	"Blockly.Msg.LANG_DICTIONARIES_TO_JSON_TITLE": "get JSON text from dictionary",
+	"Blockly.Msg.LANG_DICTIONARIES_TO_JSON_TOOLTIP": "Returns the JSON text representation of the given dictionary.",
+	"Blockly.Msg.LANG_DICTIONARIES_TO_JSON_HELPURL": "/reference/blocks/dictionaries.html#dictionary-to-json",
+
 	"Blockly.Msg.LANG_DICTIONARIES_COPY_TITLE": "copy dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_COPY_INPUT": "dictionary",
 	"Blockly.Msg.LANG_DICTIONARIES_COPY_TOOLTIP": "Returns a shallow copy of the dictionary",

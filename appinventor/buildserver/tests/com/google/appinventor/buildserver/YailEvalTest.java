@@ -669,6 +669,50 @@ public class YailEvalTest extends TestCase {
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
   }
 
+  public void testDictionaryToJsonText() throws Throwable {
+    /* Exercises the yail-dictionary-to-json-text primitive end to end. */
+    String schemeInputString =
+        "(call-yail-primitive yail-dictionary-to-json-text " +
+        " (*list-for-runtime* " +
+        "  (call-yail-primitive make-yail-dictionary " +
+        "   (*list-for-runtime* " +
+        "    (call-yail-primitive make-dictionary-pair " +
+        "     (*list-for-runtime* \"name\" \"Tim\") '(key any) \"make a pair\") " +
+        "   ) '(pair) \"make a dictionary\") " +
+        " ) '(dictionary) \"get JSON text from dictionary\")";
+    assertEquals("{\"name\":\"Tim\"}", scheme.eval(schemeInputString).toString());
+  }
+
+  // Note: the happy path for yail-dictionary-from-json-text (decoding a JSON object
+  // into a YailDictionary) is exercised in JsonUtilTest under Robolectric. It cannot be
+  // run here because JsonUtil.getObjectFromJson logs via android.util.Log, which is only
+  // a throwing stub in this plain-JVM Kawa harness. The non-object error path below does
+  // not reach that logging branch and is validated directly.
+
+  public void testDictionaryFromJsonTextNotObject() throws Throwable {
+    /* A JSON array is valid JSON but not a dictionary, so an error is raised. */
+    String schemeInputString =
+        " (try-catch " +
+        "  (call-yail-primitive yail-dictionary-from-json-text " +
+        "   (*list-for-runtime* \"[1, 2, 3]\") '(text) " +
+        "   \"get dictionary from JSON text\") " +
+        "  (exception com.google.appinventor.components.runtime.errors.YailRuntimeError " +
+        "   \"caught\")) ";
+    assertEquals("caught", scheme.eval(thunkify(schemeInputString)).toString());
+  }
+
+  public void testDictionaryFromJsonTextMalformed() throws Throwable {
+    /* Malformed JSON raises a runtime error rather than leaking a JSONException. */
+    String schemeInputString =
+        " (try-catch " +
+        "  (call-yail-primitive yail-dictionary-from-json-text " +
+        "   (*list-for-runtime* \"{not valid json\") '(text) " +
+        "   \"get dictionary from JSON text\") " +
+        "  (exception com.google.appinventor.components.runtime.errors.YailRuntimeError " +
+        "   \"caught\")) ";
+    assertEquals("caught", scheme.eval(thunkify(schemeInputString)).toString());
+  }
+
   public void testForRange() throws Throwable {
     /* test forrange */
     String schemeInputString = "(begin " +
