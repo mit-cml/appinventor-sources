@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar.View;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -30,10 +31,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -83,7 +82,8 @@ public final class AddFormCommand extends ChainableCommand {
 
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.newFormTitle());
-      VerticalPanel contentPanel = new VerticalPanel();
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
 
       final String prefix = "Screen";
       final int prefixLength = prefix.length();
@@ -130,10 +130,12 @@ public final class AddFormCommand extends ChainableCommand {
       // Keeps track of the total number of screens.
       int formCount = otherFormNames.size() + 1;
       if (formCount > MAX_FORM_COUNT) {
-        HorizontalPanel errorPanel = new HorizontalPanel();
+        FlowPanel errorPanel = new FlowPanel();
+        errorPanel.setStyleName("ode-HorizontalLayout");
+        errorPanel.setWidth("100%");
+        errorPanel.getElement().getStyle().setProperty("minHeight", "24px");
         HTML tooManyScreensLabel = new HTML(MESSAGES.formCountErrorLabel());
         errorPanel.add(tooManyScreensLabel);
-        errorPanel.setSize("100%", "24px");
         contentPanel.add(errorPanel);
 
         okText = MESSAGES.addScreenButton();
@@ -158,10 +160,11 @@ public final class AddFormCommand extends ChainableCommand {
           handleOkClick(projectRootNode);
         }
       });
-      HorizontalPanel buttonPanel = new HorizontalPanel();
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
       buttonPanel.add(cancelButton);
       buttonPanel.add(okButton);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
 
