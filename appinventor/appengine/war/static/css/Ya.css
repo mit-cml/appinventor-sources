@@ -2352,6 +2352,10 @@ path.ode-SimpleMockMapFeature-selected {
   margin-right: auto;
 }
 
+.ode-DialogButtons-centered > * {
+  margin-left: auto;
+}
+
 .ode-DialogBox .settings-labeled-textbox td:first-child {
   width: 60%;
 }

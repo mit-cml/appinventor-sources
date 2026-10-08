@@ -10,9 +10,8 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -84,12 +83,14 @@ public class WarningDialogCommand extends ChainableCommand {
       } else {
         message = new HTML(MESSAGES.PackageNotice());
       }
-      HorizontalPanel buttonPanel = new HorizontalPanel();
-      buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
+      buttonPanel.addStyleName("ode-DialogButtons-centered");
       buttonPanel.add(cancelButton);
       buttonPanel.add(okButton);
-      buttonPanel.setSize("100%", "24px");
-      VerticalPanel contentPanel = new VerticalPanel();
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
       contentPanel.add(message);
       contentPanel.add(buttonPanel);
 //      contentPanel.setSize("320px", "100%");
