@@ -2336,17 +2336,19 @@ path.ode-SimpleMockMapFeature-selected {
   padding: 5px 10px;
 }
 
-/* Wizard pages above a row of buttons that share the spare width, as table cells did. */
+/* Wizard pages above a row of buttons. The buttons share the spare width, as table cells did. */
 .ode-WizardContent > .ode-WizardPage {
   flex: 1 1 auto;
 }
 
-.ode-WizardButtons {
+.ode-WizardButtons,
+.ode-DialogButtons {
   width: 100%;
   min-height: 24px;
 }
 
-.ode-WizardButtons > * {
+.ode-WizardButtons > *,
+.ode-DialogButtons > * {
   margin-right: auto;
 }
 

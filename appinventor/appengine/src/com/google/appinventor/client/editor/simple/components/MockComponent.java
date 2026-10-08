@@ -71,15 +71,14 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -119,7 +118,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       setGlassEnabled(true);
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.renameTitle());
-      VerticalPanel contentPanel = new VerticalPanel();
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
 
       Button topInvisible = new Button();
       contentPanel.add(topInvisible);
@@ -174,11 +174,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         }
       });
 
-      HorizontalPanel buttonPanel = new HorizontalPanel();
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
       buttonPanel.add(cancelButton);
       buttonPanel.add(okButton);
       buttonPanel.add(bottomInvisible);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
 
@@ -258,7 +259,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
       setStylePrimaryName("ode-DialogBox");
       setText(MESSAGES.deleteComponentButton());
-      VerticalPanel contentPanel = new VerticalPanel();
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
 
       contentPanel.add(new HTML(MESSAGES.reallyDeleteComponent()));
       Button cancelButton = new Button(MESSAGES.cancelButton());
@@ -278,10 +280,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
           SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer().getTree().setFocus(true);
         }
       });
-      HorizontalPanel buttonPanel = new HorizontalPanel();
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
       buttonPanel.add(cancelButton);
       buttonPanel.add(deleteButton);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
 
