@@ -117,14 +117,10 @@ import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Random;
@@ -1177,7 +1173,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the structureAndAssets panel.
    *
-   * @return  {@link VerticalPanel}
+   * @return  {@link FlowPanel}
    */
   public FlowPanel getStructureAndAssets() {
     return structureAndAssets;
@@ -1186,7 +1182,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the workColumns panel.
    *
-   * @return  {@link HorizontalPanel}
+   * @return  {@link FlowPanel}
    */
   public FlowPanel getWorkColumns() {
     return workColumns;
@@ -1666,23 +1662,21 @@ public class Ode implements EntryPoint {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
-    HorizontalPanel mainPanel = new HorizontalPanel();
-    mainPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    mainPanel.setSpacing(10);
+    FlowPanel mainPanel = new FlowPanel();
+    mainPanel.setStyleName("ode-HorizontalLayout");
+    mainPanel.addStyleName("ode-HorizontalLayout-middle");
+    mainPanel.addStyleName("ode-EmptyTrashDialog");
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
-    VerticalPanel messagePanel = new VerticalPanel();
-    messagePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+    FlowPanel messagePanel = new FlowPanel();
+    messagePanel.setStyleName("ode-VerticalLayout");
 
     Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
     messagePanel.add(messageChunk2);
 
     mainPanel.add(dialogImage);
     mainPanel.add(messagePanel);
-
-    mainPanel.setCellHorizontalAlignment(dialogImage, HasHorizontalAlignment.ALIGN_CENTER);
-    mainPanel.setCellVerticalAlignment(dialogImage, HasVerticalAlignment.ALIGN_MIDDLE);
 
     dialogBox.setWidget(mainPanel);
     dialogBox.center();
@@ -1734,7 +1728,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(splashConfig.content);
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -1849,7 +1844,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.showSurveySplashMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -1975,7 +1971,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.sessionDead());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2014,7 +2011,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.invalidSessionDialogMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2074,7 +2072,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.bashWarningDialogMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2125,7 +2124,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.finalDialogMessage());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
@@ -2149,7 +2149,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.galleryLoadingDialogText());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
@@ -2173,7 +2174,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.corruptionDialogMessage());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
@@ -2194,7 +2196,8 @@ public class Ode implements EntryPoint {
     String screenNameParts = fileParts[fileParts.length - 1];
     final String screenName = screenNameParts.split("\\.")[0]; // Get rid of the .bky part
     final String userEmail = user.getUserEmail();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.blocksTruncatedDialogMessage().replace("%1", screenName));
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2225,7 +2228,7 @@ public class Ode implements EntryPoint {
               @Override
               public void run() {
                 if (count > 0) {
-                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
+                  HTML html = (HTML) ((FlowPanel)dialogBox.getWidget()).getWidget(0);
                   html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
                   count -= 1;
                 } else {
@@ -2261,7 +2264,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML("<p>" + inputMessage + "</p>");
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2294,7 +2298,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML("<p>" + MESSAGES.noprojectDuringConnect() + "</p>");
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2330,7 +2335,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML("<iframe src=\"" + Url + "\" style=\"border: 0; width: 680px; height: 660px;\"></iframe>");
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);

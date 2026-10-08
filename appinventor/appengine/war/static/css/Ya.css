@@ -2321,6 +2321,12 @@ path.ode-SimpleMockMapFeature-selected {
   color: #555;
 }
 
+/* Spacing 10 between and around the cells. */
+.ode-DialogBox .dialogContent .ode-EmptyTrashDialog {
+  gap: 14px;
+  padding: 12px;
+}
+
 .ode-DialogBox .gwt-Button {
   margin: 10px;
 }

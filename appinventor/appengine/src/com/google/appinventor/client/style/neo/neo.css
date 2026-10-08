@@ -1473,6 +1473,11 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-700;
 }
 
+.ode-DialogBox .dialogContent .ode-EmptyTrashDialog {
+  gap: 14px 20px;
+  padding: 12px 15px;
+}
+
 .ode-DialogBox .gwt-FileUpload {
   padding: 2px 35px;
   font-size: 12px;
