@@ -640,7 +640,9 @@ public class YaVersion {
   // - EV3_GYROSENSOR_COMPONENT_VERSION was incremented to 3.
   // - EV3_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
   // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
-  public static final int YOUNG_ANDROID_VERSION = 237;
+  // For YOUNG_ANDROID_VERSION 238:
+  // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 5.
+  public static final int YOUNG_ANDROID_VERSION = 238;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1292,7 +1294,9 @@ public class YaVersion {
   // For LOCATIONSENSOR_COMPONENT_VERSION 4:
   // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for
   // asynchronous calling
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 5:
+  // - The LastTimestamp property was added.
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 5;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap

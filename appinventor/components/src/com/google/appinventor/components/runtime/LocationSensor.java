@@ -536,6 +536,23 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
+   * The time at which the most recent location was measured, in milliseconds since
+   * January 1, 1970 UTC. The device may report a cached location, for example when the app
+   * starts, so this can be older than the time the
+   * [`LocationChanged`](#LocationSensor.LocationChanged) event fired. Subtract it from
+   * [`Clock.SystemTime`](#Clock.SystemTime) to get the age of the location in milliseconds and
+   * ignore locations that are too old for your app.
+   *
+   *   If no location has been received, the return value is 0.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "The time the most recent location was measured, in milliseconds since "
+          + "January 1, 1970 UTC.  If no value is available, 0 will be returned.")
+  public long LastTimestamp() {
+    return lastLocation == null ? 0 : lastLocation.getTime();
+  }
+
+  /**
    * Indicates whether the user has specified that the sensor should
    * listen for location changes and raise the corresponding events.
    */
