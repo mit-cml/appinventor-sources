@@ -892,7 +892,7 @@ div.StatusPanel {
 
 .ode-SimpleUiDesignerNonVisibleComponents .ode-Icon,
 .ode-SimpleUiDesignerNonVisibleComponents .ode-Icon-selected {
-  display: inline-table;
+  display: inline-block;
 }
 
 .ode-SimpleUiDesignerNonVisibleComponents .gwt-Label {
@@ -901,8 +901,14 @@ div.StatusPanel {
 }
 
 .ode-Icon, .ode-Icon-selected {
+  width: fit-content;
+  text-align: center;
   font-size: small;
   padding: 2px 4px 2px 4px;
+}
+
+.ode-Icon > .gwt-Label, .ode-Icon-selected > .gwt-Label {
+  text-align: left;
 }
 
 .ode-Icon-selected {
