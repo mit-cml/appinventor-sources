@@ -12,6 +12,7 @@ import com.google.appinventor.client.editor.simple.components.i18n.ComponentTran
 import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownItem;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -353,6 +354,8 @@ public class SubsetJSONPropertyEditor  extends PropertyEditor
       }
       blockTree.addItem(blockCatItem);
     }
+    TableAccessibility.setLayoutTables(componentTree);
+    TableAccessibility.setLayoutTables(blockTree);
   }
 
   private void loadComponents(JSONObject jsonObj) {
