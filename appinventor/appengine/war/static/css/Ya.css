@@ -875,6 +875,14 @@ div.StatusPanel {
  * Non-visible component panel
  */
 
+.ode-NonVisibleComponentsPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  text-align: center;
+}
+
 .ya-NonVisibleComponentsHeader {
   font-size: 13px;
   font-weight: bold;
