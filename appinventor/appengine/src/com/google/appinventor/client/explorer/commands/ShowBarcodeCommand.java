@@ -21,10 +21,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
 
 /**
@@ -92,7 +91,8 @@ public class ShowBarcodeCommand extends ChainableCommand {
       setText(MESSAGES.downloadIpaDialogTitle(projectName));
       setWidth("400px");
 
-      VerticalPanel contentPanel = new VerticalPanel();
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
 
       contentPanel.add(new HTML(MESSAGES.continueOnAppStore()));
 
@@ -102,12 +102,13 @@ public class ShowBarcodeCommand extends ChainableCommand {
           hide();
         }
       };
-      HorizontalPanel buttonPanel = new HorizontalPanel();
-      buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
+      buttonPanel.addStyleName("ode-DialogButtons-centered");
       Button okButton = new Button(MESSAGES.dismissButton());
       okButton.addClickHandler(buttonHandler);
       buttonPanel.add(okButton);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
 
       add(contentPanel);
@@ -131,16 +132,18 @@ public class ShowBarcodeCommand extends ChainableCommand {
       }
 
       // Main layout panel
-      VerticalPanel contentPanel = new VerticalPanel();
-      contentPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
+      contentPanel.addStyleName("ode-VerticalLayout-center");
 
       // Container
-      HorizontalPanel container = new HorizontalPanel();
-      container.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel container = new FlowPanel();
+      container.setStyleName("ode-HorizontalLayout");
 
       // Container > Left
-      VerticalPanel left = new VerticalPanel();
-      left.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel left = new FlowPanel();
+      left.setStyleName("ode-VerticalLayout");
+      left.addStyleName("ode-VerticalLayout-center");
 
       // Container > Left > Download Button
       ClickHandler downloadHandler = new ClickHandler() {
@@ -149,8 +152,10 @@ public class ShowBarcodeCommand extends ChainableCommand {
           Window.open(downloadUrl, "_self", "enabled");
         }
       };
-      HorizontalPanel downloadPanel = new HorizontalPanel();
-      downloadPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel downloadPanel = new FlowPanel();
+      downloadPanel.setStyleName("ode-HorizontalLayout");
+      downloadPanel.addStyleName("ode-DialogButtons");
+      downloadPanel.addStyleName("ode-DialogButtons-centered");
       Anchor downloadButton = new Anchor();
       downloadButton.setHref(downloadUrl);
       downloadButton.addStyleName("gwt-Button");
@@ -166,7 +171,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       downloadButton.getElement().appendChild(text);
       downloadButton.addClickHandler(downloadHandler);
       downloadPanel.add(downloadButton);
-      downloadPanel.setSize("100%", "30px");
+      downloadPanel.getElement().getStyle().setProperty("minHeight", "30px");
       left.add(downloadPanel);
 
       // Container > Left
@@ -177,7 +182,8 @@ public class ShowBarcodeCommand extends ChainableCommand {
       // install in the phone directly.
       if (!isAab) {
         // Container > Right
-        VerticalPanel right = new VerticalPanel();
+        FlowPanel right = new FlowPanel();
+        right.setStyleName("ode-VerticalLayout");
 
         // Container > Right > Barcode
         HTML barcodeQrcode = new HTML("<center>" + BlocklyPanel.getQRCode(appInstallUrl) + "</center>");
@@ -195,8 +201,8 @@ public class ShowBarcodeCommand extends ChainableCommand {
       // The warning label is added only in APK files, as there is no QR code for the AAB. It is supposed that
       // users download the bundle just when they get it.
       if (!isAab) {
-        HorizontalPanel warningPanel = new HorizontalPanel();
-        warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
+        FlowPanel warningPanel = new FlowPanel();
+        warningPanel.setStyleName("ode-HorizontalLayout");
         HTML warningLabel = new HTML(MESSAGES.barcodeWarning2(
             "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
                 "\" target=\"_blank\">",
@@ -215,12 +221,13 @@ public class ShowBarcodeCommand extends ChainableCommand {
           hide();
         }
       };
-      HorizontalPanel buttonPanel = new HorizontalPanel();
-      buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
+      buttonPanel.addStyleName("ode-DialogButtons-centered");
       Button okButton = new Button(MESSAGES.dismissButton());
       okButton.addClickHandler(buttonHandler);
       buttonPanel.add(okButton);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
 
       add(contentPanel);
