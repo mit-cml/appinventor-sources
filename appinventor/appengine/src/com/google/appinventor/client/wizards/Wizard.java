@@ -7,6 +7,7 @@
 package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -19,11 +20,9 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -40,7 +39,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class Wizard extends DialogBox {
   // UI for button panel to switch between wizard pages
-  private final HorizontalPanel buttonPanel;
+  private final FlowPanel buttonPanel;
   private final Button backButton;
   private final Button cancelButton;
   private final Button nextButton;
@@ -134,21 +133,25 @@ public abstract class Wizard extends DialogBox {
     okButton = new Button(MESSAGES.okButton());
     okButton.addClickListener(buttonListener);
 
-    buttonPanel = new HorizontalPanel();
+    buttonPanel = new FlowPanel();
+    buttonPanel.setStyleName("ode-HorizontalLayout");
+    buttonPanel.addStyleName("ode-DialogButtons");
     buttonPanel.add(cancelButton);
     buttonPanel.add(backButton);
     buttonPanel.add(nextButton);
     buttonPanel.add(okButton);
-    buttonPanel.setSize("100%", "24px");
 
     pageDeck = new DeckPanel();
     pageDeck.setSize("100%", "100%");
 
     pagePanel = new AbsolutePanel();
+    pagePanel.setStyleName("ode-WizardPage");
     pagePanel.add(pageDeck);
     pagePanel.setWidth("100%");
 
-    VerticalPanel contentPanel = new VerticalPanel();
+    FlowPanel contentPanel = new FlowPanel();
+    contentPanel.setStyleName("ode-VerticalLayout");
+    contentPanel.addStyleName("ode-WizardContent");
     contentPanel.add(pagePanel);
     contentPanel.add(buttonPanel);
     contentPanel.setSize("100%", "100%");
@@ -313,7 +316,7 @@ public abstract class Wizard extends DialogBox {
     okButton.setEnabled(true);
   }
 
-  protected HorizontalPanel getButtonPanel() {
+  protected FlowPanel getButtonPanel() {
     return buttonPanel;
   }
 

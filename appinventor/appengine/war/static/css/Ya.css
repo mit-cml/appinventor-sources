@@ -2296,6 +2296,11 @@ path.ode-SimpleMockMapFeature-selected {
   margin-right: 5px;
 }
 
+/* Wizard pages fill the space above the buttons. */
+.ode-WizardContent > .ode-WizardPage {
+  flex: 1 1 auto;
+}
+
 .ode-DialogBox .dialogTop {
   background-color: #8fc202;
 }
