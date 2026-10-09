@@ -10,16 +10,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.shared.rpc.user.Config;
 import com.google.common.base.Strings;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AboutAction implements Command {
@@ -34,7 +34,8 @@ public class AboutAction implements Command {
     db.setAnimationEnabled(true);
     db.center();
 
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     String html = MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
         "<BR/>Use Companion: " + BlocklyPanel.getCompVersion();
     Config config = Ode.getInstance().getSystemConfig();

@@ -1083,7 +1083,9 @@ select.ode-PropertyEditor[disabled] {
   color: selected-color;
 }
 
-.ode-DialogBox .dialogContent td a {
+.ode-DialogBox .dialogContent td a,
+.ode-DialogBox .dialogContent .ode-VerticalLayout a,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout a {
     color: selected-color;
 }
 
@@ -1462,6 +1464,28 @@ path.ode-SimpleMockMapFeature-selected {
 .ode-DialogBox .dialogContent td {
   padding: 2px 5px;
   color: gray-700;
+}
+
+.ode-DialogBox .dialogContent .ode-VerticalLayout,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout {
+  gap: 4px 10px;
+  padding: 2px 5px;
+  color: gray-700;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing2 {
+  gap: 6px 12px;
+  padding: 4px 7px;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing4 {
+  gap: 8px 14px;
+  padding: 6px 9px;
+}
+
+.ode-DialogBox .dialogContent .ode-Layout-spacing10 {
+  gap: 14px 20px;
+  padding: 12px 15px;
 }
 
 .ode-DialogBox .gwt-FileUpload {
