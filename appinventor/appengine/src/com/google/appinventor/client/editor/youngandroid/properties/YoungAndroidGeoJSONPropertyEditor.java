@@ -27,8 +27,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.Collections;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -44,7 +44,8 @@ public class YoungAndroidGeoJSONPropertyEditor extends AdditionalChoicePropertyE
     assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
     project.addProjectChangeListener(this);
 
-    VerticalPanel selectorPanel = new VerticalPanel();
+    FlowPanel selectorPanel = new FlowPanel();
+    selectorPanel.setStyleName("ode-VerticalLayout");
     assetsList = new ListBox();
     assetsList.setVisibleItemCount(10);
     assetsList.addChangeHandler(new ChangeHandler() {

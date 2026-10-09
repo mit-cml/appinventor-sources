@@ -14,11 +14,10 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Property editor for situations where a property involves additional choices,
@@ -83,18 +82,16 @@ public abstract class AdditionalChoicePropertyEditor extends PropertyEditor {
       }
     });
 
-    HorizontalPanel buttonPanel = new HorizontalPanel();
+    FlowPanel buttonPanel = new FlowPanel();
+    buttonPanel.setStyleName("ode-AdditionalChoiceButtons");
     buttonPanel.add(cancelButton);
     buttonPanel.add(okButton);
-    buttonPanel.setWidth("100%");
-    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    buttonPanel.setVerticalAlignment(HorizontalPanel.ALIGN_BOTTOM);
 
-    VerticalPanel contentPanel = new VerticalPanel();
+    FlowPanel contentPanel = new FlowPanel();
+    contentPanel.setStyleName("ode-VerticalLayout");
     panel.setHeight("100%");
     contentPanel.add(panel);
     contentPanel.add(buttonPanel);
-    contentPanel.setCellHeight(buttonPanel, (cancelButton.getOffsetHeight() + 10) + "px");
 
     popup = new PopupPanel(false, true);
     popup.setAutoHideEnabled(true);

@@ -678,7 +678,8 @@ path.ode-SimpleMockMapFeature-selected {
   color: clr-primary-600;
 }
 
-.ode-DialogBox .dialogContent td .ode-ComponentHelpPopup-Link a {
+.ode-DialogBox .dialogContent td .ode-ComponentHelpPopup-Link a,
+.ode-DialogBox .dialogContent .ode-VerticalLayout .ode-ComponentHelpPopup-Link a {
   color: clr-primary-600;
   text-decoration: underline;
 }
@@ -810,11 +811,15 @@ path.ode-SimpleMockMapFeature-selected {
   color: gray-800;
 }
 
-.ode-DialogBox .dialogContent td {
+.ode-DialogBox .dialogContent td,
+.ode-DialogBox .dialogContent .ode-VerticalLayout,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout {
   color: gray-800;
 }
 
-.ode-DialogBox .dialogContent td a {
+.ode-DialogBox .dialogContent td a,
+.ode-DialogBox .dialogContent .ode-VerticalLayout a,
+.ode-DialogBox .dialogContent .ode-HorizontalLayout a {
     color: clr-primary-500;
 }
 

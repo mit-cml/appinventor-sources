@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -68,6 +69,9 @@ public class LabeledTextBox extends Composite {
     panel.setCellVerticalAlignment(textbox, HasVerticalAlignment.ALIGN_MIDDLE);
     VerticalPanel vp = new VerticalPanel();
     vp.add(panel);
+    // The caption takes 45% of a table sized to fit the text box, which a flex layout cannot
+    // reproduce, so the tables stay and are marked as layout only.
+    TableAccessibility.setLayoutTables(vp);
 
     initWidget(vp);
 
@@ -106,6 +110,7 @@ public class LabeledTextBox extends Composite {
       HorizontalPanel errorPanel = new HorizontalPanel();
       errorLabel = new Label("");
       errorPanel.add(errorLabel);
+      TableAccessibility.setLayoutTables(errorPanel);
       VerticalPanel vp = (VerticalPanel) getWidget();
       vp.add(errorPanel);
     }
