@@ -5,7 +5,6 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import com.google.appinventor.client.widgets.DialogBox;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 
