@@ -875,6 +875,14 @@ div.StatusPanel {
  * Non-visible component panel
  */
 
+.ode-NonVisibleComponentsPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  text-align: center;
+}
+
 .ya-NonVisibleComponentsHeader {
   font-size: 13px;
   font-weight: bold;
@@ -884,7 +892,7 @@ div.StatusPanel {
 
 .ode-SimpleUiDesignerNonVisibleComponents .ode-Icon,
 .ode-SimpleUiDesignerNonVisibleComponents .ode-Icon-selected {
-  display: inline-table;
+  display: inline-block;
 }
 
 .ode-SimpleUiDesignerNonVisibleComponents .gwt-Label {
@@ -893,8 +901,14 @@ div.StatusPanel {
 }
 
 .ode-Icon, .ode-Icon-selected {
+  width: fit-content;
+  text-align: center;
   font-size: small;
   padding: 2px 4px 2px 4px;
+}
+
+.ode-Icon > .gwt-Label, .ode-Icon-selected > .gwt-Label {
+  text-align: left;
 }
 
 .ode-Icon-selected {
@@ -1089,6 +1103,12 @@ div.StatusPanel {
 
 .ode-PanelButtons .ode-TextButton {
   font-size: 12px;
+}
+
+.ode-AssetList > .ode-PanelButtons {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .ode-BlocksDesignerButton {
@@ -1492,7 +1512,17 @@ select.ode-PropertyEditor[disabled] {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.07), 0 0 8px rgba(82, 168, 236, 0.8);
 }
 
+.ode-DesignerComponentsPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .ode-SimpleFormDesigner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
   padding: 2px;
 }
 

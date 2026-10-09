@@ -15,13 +15,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class YaVisibleComponentsPanelNeo extends YaVisibleComponentsPanel {
-  interface SimpleVisibleComponentsPanelUiBinderNeo extends UiBinder<VerticalPanel,
+  interface SimpleVisibleComponentsPanelUiBinderNeo extends UiBinder<FlowPanel,
       YaVisibleComponentsPanelNeo> {}
-  @UiField protected VerticalPanel phoneScreen;
+  @UiField protected FlowPanel phoneScreen;
   @UiField(provided = true) protected ListBox listboxPhoneTablet; // A ListBox for Phone/Tablet/Monitor preview sizes
   @UiField(provided = true) protected ListBox listboxPhonePreview;
   @UiField Icon os_icon;

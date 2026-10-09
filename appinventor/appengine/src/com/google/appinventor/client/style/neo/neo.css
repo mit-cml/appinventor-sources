@@ -1010,6 +1010,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleFormDesigner {
+  align-items: center;
   padding: 2px;
 }
 
