@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { WorkspaceComment } from '../comments/workspace_comment.js';
-import { ISerializer } from '../interfaces/i_serializer.js';
-import { Workspace } from '../workspace.js';
+import type { ISerializer } from '../interfaces/i_serializer.js';
+import type { Workspace } from '../workspace.js';
 export interface State {
     id?: string;
     text?: string;

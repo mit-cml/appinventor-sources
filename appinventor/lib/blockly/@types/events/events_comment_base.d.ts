@@ -10,7 +10,8 @@
  */
 import type { WorkspaceComment } from '../comments/workspace_comment.js';
 import type { Workspace } from '../workspace.js';
-import { Abstract as AbstractEvent, AbstractEventJson } from './events_abstract.js';
+import type { AbstractEventJson } from './events_abstract.js';
+import { Abstract as AbstractEvent } from './events_abstract.js';
 import type { CommentCreate } from './events_comment_create.js';
 import type { CommentDelete } from './events_comment_delete.js';
 /**

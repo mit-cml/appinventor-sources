@@ -3,22 +3,25 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { WorkspaceCommentCopyData } from '../clipboard/workspace_comment_paster.js';
-import { IBoundedElement } from '../interfaces/i_bounded_element.js';
-import { IContextMenu } from '../interfaces/i_contextmenu.js';
-import { ICopyable } from '../interfaces/i_copyable.js';
-import { IDeletable } from '../interfaces/i_deletable.js';
-import { IDraggable } from '../interfaces/i_draggable.js';
-import { IRenderedElement } from '../interfaces/i_rendered_element.js';
-import { ISelectable } from '../interfaces/i_selectable.js';
+import type { WorkspaceCommentCopyData } from '../clipboard/workspace_comment_paster.js';
+import type { IBoundedElement } from '../interfaces/i_bounded_element.js';
+import type { IContextMenu } from '../interfaces/i_contextmenu.js';
+import type { ICopyable } from '../interfaces/i_copyable.js';
+import type { IDeletable } from '../interfaces/i_deletable.js';
+import type { IDraggable } from '../interfaces/i_draggable.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IFocusableTree } from '../interfaces/i_focusable_tree.js';
+import type { IRenderedElement } from '../interfaces/i_rendered_element.js';
+import type { ISelectable } from '../interfaces/i_selectable.js';
 import { Coordinate } from '../utils/coordinate.js';
 import { Rect } from '../utils/rect.js';
-import { Size } from '../utils/size.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
+import type { Size } from '../utils/size.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
+import { CommentView } from './comment_view.js';
 import { WorkspaceComment } from './workspace_comment.js';
-export declare class RenderedWorkspaceComment extends WorkspaceComment implements IBoundedElement, IRenderedElement, IDraggable, ISelectable, IDeletable, ICopyable<WorkspaceCommentCopyData>, IContextMenu {
+export declare class RenderedWorkspaceComment extends WorkspaceComment implements IBoundedElement, IRenderedElement, IDraggable, ISelectable, IDeletable, ICopyable<WorkspaceCommentCopyData>, IContextMenu, IFocusableNode {
     /** The class encompassing the svg elements making up the workspace comment. */
-    private view;
+    view: CommentView;
     readonly workspace: WorkspaceSvg;
     private dragStrategy;
     /** Constructs the workspace comment, including the view. */
@@ -30,6 +33,8 @@ export declare class RenderedWorkspaceComment extends WorkspaceComment implement
     private addModelUpdateBindings;
     /** Sets the text of the comment. */
     setText(text: string): void;
+    /** Sets the placeholder text displayed if the comment is empty. */
+    setPlaceholderText(text: string): void;
     /** Sets the size of the comment. */
     setSize(size: Size): void;
     /** Sets whether the comment is collapsed or not. */
@@ -73,10 +78,12 @@ export declare class RenderedWorkspaceComment extends WorkspaceComment implement
     private startGesture;
     /** Visually indicates that this comment would be deleted if dropped. */
     setDeleteStyle(wouldDelete: boolean): void;
+    /** Returns whether this comment is copyable or not */
+    isCopyable(): boolean;
     /** Returns whether this comment is movable or not. */
     isMovable(): boolean;
     /** Starts a drag on the comment. */
-    startDrag(): void;
+    startDrag(): RenderedWorkspaceComment;
     /** Drags the comment to the given location. */
     drag(newLoc: Coordinate): void;
     /** Ends the drag on the comment. */
@@ -93,8 +100,27 @@ export declare class RenderedWorkspaceComment extends WorkspaceComment implement
      */
     toCopyData(): WorkspaceCommentCopyData | null;
     /** Show a context menu for this comment. */
-    showContextMenu(e: PointerEvent): void;
+    showContextMenu(e: Event): void;
     /** Snap this comment to the nearest grid point. */
     snapToGrid(): void;
+    /**
+     * @returns The FocusableNode representing the editor portion of this comment.
+     */
+    getEditorFocusableNode(): IFocusableNode;
+    /** See IFocusableNode.getFocusableElement. */
+    getFocusableElement(): HTMLElement | SVGElement;
+    /** See IFocusableNode.getFocusableTree. */
+    getFocusableTree(): IFocusableTree;
+    /** See IFocusableNode.onNodeFocus. */
+    onNodeFocus(): void;
+    /** See IFocusableNode.onNodeBlur. */
+    onNodeBlur(): void;
+    /** See IFocusableNode.canBeFocused. */
+    canBeFocused(): boolean;
+    /**
+     * Handles the user acting on this comment via keyboard navigation.
+     * Expands the comment and focuses its editor.
+     */
+    performAction(): void;
 }
 //# sourceMappingURL=rendered_workspace_comment.d.ts.map

@@ -6,6 +6,9 @@
 /**
  * Complete a deep merge of all members of a source object with a target object.
  *
+ * N.B. This is not a very sophisticated merge algorithm and does not
+ * handle complex cases. Use with caution.
+ *
  * @param target Target.
  * @param source Source.
  * @returns The resulting object.

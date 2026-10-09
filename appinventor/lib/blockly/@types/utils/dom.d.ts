@@ -3,7 +3,7 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { Svg } from './svg.js';
+import { Svg } from './svg.js';
 /**
  * Required name space for SVG elements.
  */

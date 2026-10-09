@@ -11,4 +11,6 @@ export interface IContextMenu {
      */
     showContextMenu(e: Event): void;
 }
+/** @returns true if the given object implements IContextMenu. */
+export declare function hasContextMenu(obj: any): obj is IContextMenu;
 //# sourceMappingURL=i_contextmenu.d.ts.map

@@ -10,14 +10,14 @@
  * @class
  */
 import type { Block } from './block.js';
-import { Names } from './names.js';
+import type { Names } from './names.js';
 import type { Workspace } from './workspace.js';
 /**
  * Deprecated, no-longer used type declaration for per-block-type generator
  * functions.
  *
  * @deprecated
- * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/generating-code}
+ * @see {@link https://docs.blockly.com/guides/create-custom-blocks/code-generation/overview/#block-code-generators}
  * @param block The Block instance to generate code for.
  * @param generator The CodeGenerator calling the function.
  * @returns A string containing the generated code (for statement blocks),

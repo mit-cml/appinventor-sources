@@ -9,7 +9,8 @@
 import type { WorkspaceComment } from '../comments/workspace_comment.js';
 import { Size } from '../utils/size.js';
 import type { Workspace } from '../workspace.js';
-import { CommentBase, CommentBaseJson } from './events_comment_base.js';
+import type { CommentBaseJson } from './events_comment_base.js';
+import { CommentBase } from './events_comment_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners that a workspace comment has resized.
