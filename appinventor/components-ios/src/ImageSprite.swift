@@ -64,28 +64,19 @@ open class ImageSprite: Sprite {
     }
   }
 
-  @objc open var MarkOrigin: String {
-    get {
-      return String(format: "(%f, %f)", U, V)
-    }
-    set(originString) {
-      let cleaned = originString.trimmingCharacters(in: CharacterSet(charactersIn: "() \t\r\n"))
-      let parts = cleaned.components(separatedBy: ",")
-      if parts.count == 2 {
-        guard let x = Double(parts[0].trimmingCharacters(in: .whitespaces)) else {
-          return
-        }
-        guard let y = Double(parts[1].trimmingCharacters(in: .whitespaces)) else {
-          return
-        }
-        U = x
-        V = y
-      }
-    }
-  }
-
   @objc open func setMarkOrigin(_ originString: String) {
-    MarkOrigin = originString
+    let cleaned = originString.trimmingCharacters(in: CharacterSet(charactersIn: "() \t\r\n"))
+    let parts = cleaned.components(separatedBy: ",")
+    if parts.count == 2 {
+      guard let x = Double(parts[0].trimmingCharacters(in: .whitespaces)) else {
+        return
+      }
+      guard let y = Double(parts[1].trimmingCharacters(in: .whitespaces)) else {
+        return
+      }
+      U = x
+      V = y
+    }
   }
 
   @objc open var OriginX: Double {
