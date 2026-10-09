@@ -2199,6 +2199,11 @@ public class ObjectifyStorageIo implements StorageIo {
   public void storeNonce(final String nonceValue, final String userId, final long projectId) {
     Objectify datastore = ObjectifyService.begin();
     final NonceData data  = datastore.query(NonceData.class).filter("nonce", nonceValue).get();
+    // The nonce is the only credential for the unauthenticated download link, so never let
+    // one user rebind a nonce that already points at another user's build.
+    if (data != null && data.userId != null && !data.userId.equals(userId)) {
+      throw new SecurityException("Unauthorized access");
+    }
     try {
       runJobWithRetries(new JobRetryHelper() {
           @Override
