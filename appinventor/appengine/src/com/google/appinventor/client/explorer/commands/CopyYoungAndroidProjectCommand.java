@@ -264,7 +264,9 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       };
 
       // Create new copy on the backend
-      ode.getProjectService().copyProject(oldProjectNode.getProjectId(), newName, callback);
+      // A checkpoint is a backup of the same app, so it keeps the custom package name.
+      ode.getProjectService().copyProject(oldProjectNode.getProjectId(), newName, checkpoint,
+          callback);
     }
 
     @Override

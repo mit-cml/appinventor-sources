@@ -25,6 +25,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSMICROPHONEUSAGE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PACKAGE_NAME;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PRIMARY_COLOR_DARK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_PROJECT_COLORS;
@@ -55,6 +56,7 @@ public class YoungAndroidSettingsBuilder {
   private String versionName = "1.0";
   private String usesLocation = "false";
   private String appName = "";
+  private String packageName = "";
   private String sizing = "Fixed";
   private String showListsAsJson = "false";
   private String tutorialUrl = "";
@@ -107,6 +109,8 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_BLOCK_SUBSET));
     appName = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_APP_NAME));
+    packageName = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_PACKAGE_NAME));
     actionBar = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_ACTIONBAR));
     theme = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
@@ -158,6 +162,7 @@ public class YoungAndroidSettingsBuilder {
     projectName = properties.getProperty("name", "");
     qualifiedFormName = properties.getProperty("main", "");
     appName = properties.getProperty("aname", "");
+    packageName = properties.getProperty("packagename", "");
     icon = properties.getProperty("icon", "");
     versionCode = properties.getProperty("versioncode", "");
     versionName = properties.getProperty("versionname", "");
@@ -229,6 +234,11 @@ public class YoungAndroidSettingsBuilder {
 
   public YoungAndroidSettingsBuilder setAppName(String appName) {
     this.appName = appName;
+    return this;
+  }
+
+  public YoungAndroidSettingsBuilder setPackageName(String packageName) {
+    this.packageName = packageName;
     return this;
   }
 
@@ -310,6 +320,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_VERSION_NAME, versionName);
     object.put(YOUNG_ANDROID_SETTINGS_USES_LOCATION, usesLocation);
     object.put(YOUNG_ANDROID_SETTINGS_APP_NAME, appName);
+    object.put(YOUNG_ANDROID_SETTINGS_PACKAGE_NAME, packageName);
     object.put(YOUNG_ANDROID_SETTINGS_SIZING, sizing);
     object.put(YOUNG_ANDROID_SETTINGS_SHOW_LISTS_AS_JSON, showListsAsJson);
     object.put(YOUNG_ANDROID_SETTINGS_TUTORIAL_URL, tutorialUrl);
@@ -350,6 +361,7 @@ public class YoungAndroidSettingsBuilder {
     result.put("assets", "../" + ASSETS_FOLDER);
     result.put("source", "../" + SRC_FOLDER);
     result.put("build", "../build");
+    addPropertyIfSet(result, "packagename", packageName);
     addPropertyIfSet(result, "icon", icon);
     addPropertyIfSet(result, "versioncode", versionCode);
     addPropertyIfSet(result, "androidminsdk", androidMinSdk);
@@ -415,6 +427,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.usesLocation.equals(usesLocation);
       result &= other.sizing.equals(sizing);
       result &= other.appName.equals(appName);
+      result &= other.packageName.equals(packageName);
       result &= other.showListsAsJson.equals(showListsAsJson);
       result &= other.tutorialUrl.equals(tutorialUrl);
       result &= other.blockSubset.equals(blockSubset);

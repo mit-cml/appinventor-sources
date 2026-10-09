@@ -114,9 +114,16 @@ public final class FileImporterImpl implements FileImporter {
             props.load(zin);
             lastOpened = props.getProperty("lastopened", "Screen1");
             String projectColors = props.getProperty("projectcolors", "{}");
+            // Keep the custom package name, so that an exported project imported again still
+            // builds the same app.
+            String packageName = props.getProperty("packagename", "").trim();
+            if (!StringUtils.isValidPackageName(packageName)) {
+              packageName = "";
+            }
             YoungAndroidSettingsBuilder settingsBuilder = new YoungAndroidSettingsBuilder()
                 .setProjectName(projectName)
                 .setQualifiedFormName(qualifiedFormName)
+                .setPackageName(packageName)
                 .setDefaultLastOpened(lastOpened)
                 .setProjectColors(projectColors);
             String content = settingsBuilder.toProperties();

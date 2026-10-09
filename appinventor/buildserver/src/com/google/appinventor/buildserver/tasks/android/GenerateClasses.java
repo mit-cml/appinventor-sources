@@ -8,7 +8,6 @@ package com.google.appinventor.buildserver.tasks.android;
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
 import com.google.appinventor.buildserver.Project;
-import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
@@ -163,7 +162,7 @@ public class GenerateClasses implements AndroidTask {
           "kawa.repl",
           "-f", yailRuntime,
           "-d", context.getPaths().getClassesDir().getAbsolutePath(),
-          "-P", Signatures.getPackageName(context.getProject().getMainClass()) + ".",
+          "-P", context.getProject().getFormPackageName() + ".",
           "-C");
       // TODO(lizlooney) - we are currently using (and have always used) absolute paths for the
       // source file names. The resulting .class files contain references to the source file names,
@@ -215,7 +214,7 @@ public class GenerateClasses implements AndroidTask {
     try {
       error = context.getComponentInfo().getExplodedAarLibs().writeRClasses(
           context.getPaths().getClassesDir(),
-          Signatures.getPackageName(context.getProject().getMainClass()),
+          context.getProject().getFormPackageName(),
           context.getResources().getAppRTxt()
       );
     } catch (IOException | InterruptedException e) {

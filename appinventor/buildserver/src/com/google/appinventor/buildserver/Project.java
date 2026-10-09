@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 
 import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.YAIL_FILE_EXTENSION;
 
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -87,6 +88,7 @@ public final class Project {
    *    build - output directory for the compiler
    *    useslocation - flag indicating whether or not the project uses locations
    *    aname - the human-readable application name
+   *    packagename - the Android application package name, if different from the package of main
    *    androidminsdk - the minimum Android sdk required for the app
    *    theme - the base theme for the app
    *    color.primary - the primary color for the theme
@@ -104,6 +106,7 @@ public final class Project {
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
   private static final String ANAMETAG = "aname";
+  private static final String PACKAGE_NAME_TAG = "packagename";
   private static final String ANDROID_MIN_SDK_TAG = "androidminsdk";
   private static final String ACTIONBAR_TAG = "actionbar";
   private static final String COLOR_THEMETAG = "theme";
@@ -197,6 +200,27 @@ public final class Project {
    */
   public void setMainClass(String main) {
     properties.setProperty(MAINTAG, main);
+  }
+
+  /**
+   * Returns the Android application package name. This is the custom package name if the
+   * project sets one, and the package of the form classes otherwise.
+   *
+   * @return  application package name
+   */
+  public String getPackageName() {
+    String packageName = properties.getProperty(PACKAGE_NAME_TAG, "").trim();
+    return packageName.isEmpty() ? getFormPackageName() : packageName;
+  }
+
+  /**
+   * Returns the Java package of the generated form classes, which is derived from the project
+   * and never changes with the custom package name.
+   *
+   * @return  package of the form classes
+   */
+  public String getFormPackageName() {
+    return StringUtils.getPackageName(getMainClass());
   }
 
   /**

@@ -25,6 +25,7 @@ public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizar
   @UiField protected Button addButton;
   @UiField protected Button cancelButton;
   @UiField protected LabeledTextBox projectNameTextBox;
+  @UiField protected LabeledTextBox packageNameTextBox;
   @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField protected FlowPanel horizontalThemePanel;
@@ -39,6 +40,7 @@ public class NewYoungAndroidProjectWizardNeo extends NewYoungAndroidProjectWizar
     super.addButton = addButton;
     super.cancelButton = cancelButton;
     super.projectNameTextBox = projectNameTextBox;
+    super.packageNameTextBox = packageNameTextBox;
     super.horizontalThemePanel = horizontalThemePanel;
     super.horizontalBlocksPanel = horizontalBlocksPanel;
   }

@@ -5,15 +5,18 @@
 
 package com.google.appinventor.components.runtime;
 
+import android.content.Intent;
 import com.google.appinventor.components.runtime.test.TestExtension;
 import com.google.appinventor.components.runtime.util.IOUtils;
 import org.junit.Test;
+import org.robolectric.Shadows;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * Tests for the Form component.
@@ -56,6 +59,23 @@ public class FormTest extends RobolectricTestBase {
     } finally {
       IOUtils.closeQuietly("test", is);
     }
+  }
+
+  /**
+   * Tests that a new screen is opened in the package of the form classes, which is not the
+   * application package when the app has a custom package name. The test app's package,
+   * edu.mit.appinventor.aicompanion3, differs from the package of the test form class.
+   */
+  @Test
+  public void testStartNewFormUsesFormClassPackage() {
+    Form form = getForm();
+    // The companion's ReplForm evaluates the next screen's YAIL instead of starting an activity.
+    assumeFalse(form instanceof ReplForm);
+    form.startNewForm("Screen2", null);
+    Intent intent = Shadows.shadowOf(form).getNextStartedActivity();
+    assertEquals(form.getPackageName(), intent.getComponent().getPackageName());
+    assertEquals("com.google.appinventor.components.runtime.Screen2",
+        intent.getComponent().getClassName());
   }
 
   /// Helper functions

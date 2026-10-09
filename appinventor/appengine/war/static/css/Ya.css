@@ -2113,6 +2113,63 @@ path.ode-SimpleMockMapFeature-selected {
   margin-top: 18px;
 }
 
+/* New project dialog: every row shares one label column and one field column. */
+.ode-NewProjectForm {
+  padding: 8px 12px 0;
+}
+
+.ode-DialogBox .ode-NewProjectForm table.ode-LabeledTextBox,
+.ode-DialogBox .ode-NewProjectForm .contentRow {
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.ode-DialogBox .ode-NewProjectForm .contentRow {
+  display: flex;
+  align-items: center;
+}
+
+.ode-DialogBox .ode-NewProjectForm table.ode-LabeledTextBox td {
+  padding: 0;
+}
+
+.ode-NewProjectForm table.ode-LabeledTextBox > tbody > tr:first-child > td > table {
+  width: 100%;
+}
+
+.ode-NewProjectForm table.ode-LabeledTextBox > tbody > tr:first-child > td > table > tbody > tr > td:first-child,
+.ode-NewProjectForm .contentRow > .gwt-Label {
+  flex: 0 0 200px;
+  width: 200px;
+  padding-right: 10px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  text-align: left;
+  font-size: 13px;
+  color: #333;
+}
+
+.ode-DialogBox .ode-NewProjectForm input.ode-LabeledTextBox {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+/* Validation messages line up under the field. */
+.ode-DialogBox .ode-NewProjectForm table.ode-LabeledTextBox > tbody > tr + tr > td {
+  padding: 4px 0 0 200px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ode-NewProjectForm .ode-TextButton[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .ode-propertyDialogPropertyDescription {
   font-size: 14px;
   font-weight: 400;

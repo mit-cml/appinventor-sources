@@ -12,12 +12,17 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.storage.StorageUtil;
 
 import junitx.framework.ListAssert;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Test FileImporterImpl.
@@ -119,6 +124,43 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/project2/Screen1.scm");
     ListAssert.assertContains(projectSourceFiles,
         "src/appinventor/ai_joeuser/project2/Screen1.yail");
+  }
+
+  public void testImportProject_keepsCustomPackageName() throws Exception {
+    String screen1 = "#|\n$JSON\n{\"YaVersion\":\"238\",\"Source\":\"Form\",\"Properties\":"
+        + "{\"$Name\":\"Screen1\",\"$Type\":\"Form\",\"PackageName\":\"com.author.game\"}}\n|#";
+    long projectId = importProject("packagename=com.author.game\n", screen1);
+
+    // An exported project imported again must still build the same app.
+    assertEquals(screen1, storageIo.downloadFile(USER_ID, projectId,
+        "src/appinventor/ai_joeuser/project2/Screen1.scm", StorageUtil.DEFAULT_CHARSET));
+    assertTrue(storageIo.downloadFile(USER_ID, projectId,
+        "youngandroidproject/project.properties", StorageUtil.DEFAULT_CHARSET)
+        .contains("packagename=com.author.game"));
+    assertTrue(storageIo.loadProjectSettings(USER_ID, projectId).contains("com.author.game"));
+  }
+
+  public void testImportProject_dropsInvalidPackageName() throws Exception {
+    long projectId = importProject("packagename=myapp\n",
+        "#|\n$JSON\n{\"YaVersion\":\"238\",\"Source\":\"Form\",\"Properties\":"
+        + "{\"$Name\":\"Screen1\",\"$Type\":\"Form\"}}\n|#");
+
+    assertFalse(storageIo.downloadFile(USER_ID, projectId,
+        "youngandroidproject/project.properties", StorageUtil.DEFAULT_CHARSET)
+        .contains("packagename"));
+  }
+
+  private long importProject(String extraProperties, String screen1) throws Exception {
+    ByteArrayOutputStream aia = new ByteArrayOutputStream();
+    try (ZipOutputStream zip = new ZipOutputStream(aia)) {
+      zip.putNextEntry(new ZipEntry("youngandroidproject/project.properties"));
+      zip.write(("main=appinventor.ai_author.game.Screen1\nname=game\n" + extraProperties)
+          .getBytes(StorageUtil.DEFAULT_CHARSET));
+      zip.putNextEntry(new ZipEntry("src/appinventor/ai_author/game/Screen1.scm"));
+      zip.write(screen1.getBytes(StorageUtil.DEFAULT_CHARSET));
+    }
+    return fileImporter.importProject(USER_ID, PROJECT_NAME_2,
+        new ByteArrayInputStream(aia.toByteArray())).getProjectId();
   }
 
   public void testImportProject_withoutProjectHistory() throws Exception {

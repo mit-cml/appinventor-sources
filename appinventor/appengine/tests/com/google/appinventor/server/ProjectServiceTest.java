@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
+import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -283,6 +284,131 @@ public class ProjectServiceTest {
   }
 
   @Test
+  public void testNewYoungAndroidProjectWithCustomPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "com.example.myapp");
+    long yaProject =
+        projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+                                      PROJECT1_NAME, params).getProjectId();
+
+    // The source files stay in the generated package; only the app's package name changes.
+    assertEquals(
+        "#|\n$JSON\n" +
+        "{\"authURL\":[]," +
+        "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
+        "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
+        "\"Title\":\"Screen1\",\"AppName\":\"noname\",\"Theme\":\"Classic\"," +
+        "\"PackageName\":\"com.example.myapp\"}}\n|#",
+        getTextFiles(USER_ID_ONE, yaProject, true)
+            .get("src/com/domain/noname/Project1/Screen1.scm"));
+    assertEqualProperties(new YoungAndroidSettingsBuilder()
+        .setProjectName("Project1")
+        .setQualifiedFormName("com.domain.noname.Project1.Screen1")
+        .setPackageName("com.example.myapp")
+        .toProperties(), getProjectProperties(USER_ID_ONE, yaProject));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNewYoungAndroidProjectWithInvalidPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "myapp");
+    projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+        PROJECT1_NAME, params);
+  }
+
+  @Test
+  public void testCopyProjectClearsCustomPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "com.example.myapp");
+    long yaProject1 =
+        projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+                                      PROJECT1_NAME, params).getProjectId();
+
+    // The copy is a separate app, so it goes back to the generated package name.
+    long yaProject2 =
+        projectServiceImpl.copyProject(yaProject1, PROJECT2_NAME, false).getProjectId();
+    String screen1 = getTextFiles(USER_ID_ONE, yaProject1, true)
+        .get("src/com/domain/noname/Project1/Screen1.scm");
+    // Only the property is removed; the rest of the file is unchanged.
+    assertEquals(screen1.replace(",\"PackageName\":\"com.example.myapp\"", ""),
+        getTextFiles(USER_ID_ONE, yaProject2, true)
+            .get("src/appinventor/ai_noname1/Project2/Screen1.scm"));
+    assertFalse(getProjectProperties(USER_ID_ONE, yaProject2).contains("packagename"));
+    assertFalse(projectServiceImpl.loadProjectSettings(yaProject2)
+        .contains("com.example.myapp"));
+  }
+
+  @Test
+  public void testCheckpointKeepsCustomPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
+    do_init();
+
+    NewYoungAndroidProjectParameters params = new NewYoungAndroidProjectParameters(
+        PACKAGE_BASE + PROJECT1_NAME, null, null, "com.example.myapp");
+    long yaProject1 =
+        projectServiceImpl.newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+                                      PROJECT1_NAME, params).getProjectId();
+
+    // A checkpoint is a backup of the same app, so it keeps the package name.
+    long yaProject2 =
+        projectServiceImpl.copyProject(yaProject1, PROJECT2_NAME, true).getProjectId();
+    assertTrue(getTextFiles(USER_ID_ONE, yaProject2, true)
+        .get("src/appinventor/ai_noname1/Project2/Screen1.scm")
+        .contains("\"PackageName\":\"com.example.myapp\""));
+    assertTrue(getProjectProperties(USER_ID_ONE, yaProject2)
+        .contains("packagename=com.example.myapp"));
+    assertTrue(projectServiceImpl.loadProjectSettings(yaProject2)
+        .contains("com.example.myapp"));
+  }
+
+  @Test
+  public void testRemovePackageNameProperty() {
+    String prefix = "#|\n$JSON\n";
+    String suffix = "\n|#";
+    // The Form's property is removed; a component's property of the same name is kept.
+    assertEquals(prefix + "{\"Properties\":{\"$Name\":\"Screen1\",\"$Components\":"
+        + "[{\"$Name\":\"Ext1\",\"PackageName\":\"com.example.myapp\"}]}}" + suffix,
+        YoungAndroidProjectService.removePackageNameProperty(prefix
+            + "{\"Properties\":{\"$Name\":\"Screen1\",\"PackageName\":\"com.example.myapp\","
+            + "\"$Components\":[{\"$Name\":\"Ext1\","
+            + "\"PackageName\":\"com.example.myapp\"}]}}" + suffix));
+    assertEquals(prefix + "{\"Properties\":{\"$Name\":\"Screen1\"}}" + suffix,
+        YoungAndroidProjectService.removePackageNameProperty(
+            prefix + "{\"Properties\":{\"PackageName\":\"a.b\",\"$Name\":\"Screen1\"}}"
+            + suffix));
+    // Malformed files are left alone.
+    String malformed = prefix + "{\"Properties\":{\"PackageName\":\"a.b\"" + suffix;
+    assertEquals(malformed, YoungAndroidProjectService.removePackageNameProperty(malformed));
+    String empty = "\"PackageName\"\n" + prefix + suffix;
+    assertEquals(empty, YoungAndroidProjectService.removePackageNameProperty(empty));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testStoreProjectSettingsRejectsInvalidPackageName() throws Exception {
+    when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
+    when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
+    do_init();
+
+    long yaProject = getBuildableYoungAndroidProjectId(USER_ID_ONE, PROJECT1_NAME);
+    projectServiceImpl.storeProjectSettings("test-session", yaProject, new YoungAndroidSettingsBuilder()
+        .setProjectName(PROJECT1_NAME)
+        .setPackageName("myapp")
+        .build());
+  }
+
+  @Test
   public void testCopyProject() throws Exception {
     when(localUserMock.getUserId()).thenReturn(USER_ID_ONE);
     when(localUserMock.getUser()).thenReturn(storageIo.getUser(USER_ID_ONE, USER_EMAIL_ONE));
@@ -310,7 +436,7 @@ public class ProjectServiceTest {
     assertTrue(project1ModificationDate >= project1CreationDate);
 
     // Make a copy of project 1.
-    long yaProject2 = projectServiceImpl.copyProject(yaProject1, PROJECT2_NAME).
+    long yaProject2 = projectServiceImpl.copyProject(yaProject1, PROJECT2_NAME, false).
         getProjectId();
     // Check the contents of each file in the new project.
     Map<String, String> expectedYaFiles2 = new HashMap<String, String>();

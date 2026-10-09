@@ -18,6 +18,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsMessage;
@@ -221,9 +224,8 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     Intent newIntent = null;
 
-    // Will the activity name always be "Screen1"?   If not, we need to revise this
     try {
-      String classname = packageName + ".Screen1";
+      String classname = getMainActivityClassName(context);
       newIntent = new Intent(context, Class.forName(classname));
       newIntent.setAction(Intent.ACTION_MAIN);
       newIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -256,10 +258,37 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     }
   }
 
+  /**
+   * Returns the class name of the app's main activity (Screen1). It is looked up from the app's
+   * activities because the application package name can differ from the package of the app's
+   * classes.
+   */
+  static String getMainActivityClassName(Context context) {
+    String packageName = context.getPackageName();
+    PackageManager packageManager = context.getPackageManager();
+    Intent launchIntent = packageManager.getLaunchIntentForPackage(packageName);
+    if (launchIntent != null && launchIntent.getComponent() != null) {
+      return launchIntent.getComponent().getClassName();
+    }
+    // The launcher activity can be missing or disabled; look for Screen1 among the activities.
+    try {
+      PackageInfo info = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+      if (info.activities != null) {
+        for (ActivityInfo activity : info.activities) {
+          if (activity.name.endsWith(".Screen1")) {
+            return activity.name;
+          }
+        }
+      }
+    } catch (PackageManager.NameNotFoundException e) {
+      Log.w(TAG, "Unable to read the activities of " + packageName, e);
+    }
+    return packageName + ".Screen1";
+  }
+
   private boolean isRepl(Context context) {
     try {
-      String packageName = context.getPackageName();
-      String classname = packageName + ".Screen1";
+      String classname = getMainActivityClassName(context);
       Class appClass = Class.forName(classname);
       Class superClass = appClass.getSuperclass(); // This should be either Form or ReplForm
       if (superClass.equals(ReplForm.class))

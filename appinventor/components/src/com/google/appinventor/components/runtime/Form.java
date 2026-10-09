@@ -2384,6 +2384,29 @@ public class Form extends AppInventorCompatActivity
   public void AndroidMinSdk(String value) {
     // Stored automatically in project properties
   }
+
+  /**
+   * The Android package name that identifies the app on devices and in the Google Play Store,
+   * for example `com.example.myapp`. Leave it empty to use the package name App Inventor
+   * generates from your account and project name. Changing it for an app that is already
+   * installed or published makes Android treat the result as a different app. The screens keep
+   * their generated class names, so an ActivityStarter that opens one of the app's own screens
+   * must set ActivityPackage to this package name.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_PACKAGE_NAME,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "The Android package name that identifies the app on devices and in the "
+                  + "Google Play Store, for example com.example.myapp. Leave it empty to use "
+                  + "the package name App Inventor generates from your account and project "
+                  + "name. Changing it for an app that is already installed or published makes "
+                  + "Android treat the result as a different app. The screens keep their "
+                  + "generated class names, so an ActivityStarter that opens one of the app's own "
+                  + "screens must set ActivityPackage to this package name.",
+    category = PropertyCategory.PUBLISHING)
+  public void PackageName(String packageName) {
+    // Stored automatically in project properties
+  }
   
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
     defaultValue = "")
@@ -2459,8 +2482,12 @@ public class Form extends AppInventorCompatActivity
     Log.i(LOG_TAG, "startNewForm:" + nextFormName);
     Intent activityIntent = new Intent();
     // Note that the following is dependent on form generated class names being the same as
-    // their form names and all forms being in the same package.
-    activityIntent.setClassName(this, getPackageName() + "." + nextFormName);
+    // their form names and all forms being in the same package. That package is not always the
+    // application package returned by getPackageName(), since the app's package name can be
+    // customized.
+    String className = getClass().getName();
+    activityIntent.setClassName(this,
+        className.substring(0, className.lastIndexOf('.') + 1) + nextFormName);
     String functionName = (startupValue == null) ? "open another screen" :
       "open another screen with start value";
     String jValue;

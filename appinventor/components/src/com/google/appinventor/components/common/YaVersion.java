@@ -640,7 +640,9 @@ public class YaVersion {
   // - EV3_GYROSENSOR_COMPONENT_VERSION was incremented to 3.
   // - EV3_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
   // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
-  public static final int YOUNG_ANDROID_VERSION = 237;
+  // For YOUNG_ANDROID_VERSION 238:
+  // - FORM_COMPONENT_VERSION was incremented to 33.
+  public static final int YOUNG_ANDROID_VERSION = 238;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1125,7 +1127,9 @@ public class YaVersion {
   // - The default theme was changed to Device Default.
   // For FORM_COMPONENT_VERSION 32:
   // - Added the AndroidMinSdk designer property.
-  public static final int FORM_COMPONENT_VERSION = 32;
+  // For FORM_COMPONENT_VERSION 33:
+  // - Added the PackageName designer property.
+  public static final int FORM_COMPONENT_VERSION = 33;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

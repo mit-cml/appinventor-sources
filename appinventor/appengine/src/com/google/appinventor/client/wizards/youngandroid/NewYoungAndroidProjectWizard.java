@@ -12,6 +12,7 @@ import static com.google.appinventor.components.common.ComponentConstants.DEFAUL
 
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidPackageNamePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor;
 import com.google.appinventor.client.wizards.Dialog;
 import com.google.gwt.core.client.GWT;
@@ -41,6 +42,7 @@ import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidPro
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.dom.client.Element;
 
 import java.util.logging.Logger;
 
@@ -64,12 +66,16 @@ public class NewYoungAndroidProjectWizard {
   @UiField protected Button addButton;
   @UiField protected Button cancelButton;
   @UiField protected LabeledTextBox projectNameTextBox;
+  @UiField protected LabeledTextBox packageNameTextBox;
   @UiField(provided = true) YoungAndroidThemeChoicePropertyEditor themeEditor;
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField protected FlowPanel horizontalThemePanel;
   @UiField protected FlowPanel horizontalBlocksPanel;
   @UiField protected Button topInvisible;
   @UiField protected Button bottomInvisible;
+
+  private boolean projectNameValid = true;
+  private boolean packageNameValid = true;
 
   /**
    * Creates a new YoungAndroid project wizard.
@@ -96,12 +102,12 @@ public class NewYoungAndroidProjectWizard {
       public boolean validate(String value) {
         errorMessage = TextValidators.getErrorMessage(value);
         projectNameTextBox.setErrorMessage(errorMessage);
-        if (errorMessage.length() > 0) {
-          addButton.setEnabled(false);
+        projectNameValid = errorMessage.isEmpty();
+        updateAddButton();
+        if (!projectNameValid) {
           return false;
         }
         errorMessage = TextValidators.getWarningMessages(value);
-        addButton.setEnabled(true);
         return true;
       }
       @Override
@@ -109,7 +115,20 @@ public class NewYoungAndroidProjectWizard {
         return errorMessage;
       }
     });
-    projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
+    packageNameTextBox.setValidator(new Validator() {
+      @Override
+      public boolean validate(String value) {
+        errorMessage = YoungAndroidPackageNamePropertyEditor.getPackageNameError(value);
+        packageNameValid = errorMessage.isEmpty();
+        updateAddButton();
+        return packageNameValid;
+      }
+      @Override
+      public String getErrorMessage() {
+        return errorMessage;
+      }
+    });
+    KeyDownHandler submitOrCancel = new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
@@ -119,19 +138,55 @@ public class NewYoungAndroidProjectWizard {
           cancelButton.click();
         }
       }
-    });
+    };
+    projectNameTextBox.getTextBox().addKeyDownHandler(submitOrCancel);
+    packageNameTextBox.getTextBox().addKeyDownHandler(submitOrCancel);
 
     projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
       @Override
       public void onKeyUp(KeyUpEvent event) { //Validate the text each time a key is lifted
         projectNameTextBox.validate();
+        updatePackageNamePlaceholder();
       }
     });
+    packageNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+      @Override
+      public void onKeyUp(KeyUpEvent event) {
+        packageNameTextBox.validate();
+      }
+    });
+    updatePackageNamePlaceholder();
   }
 
   public void bindUI() {
     NewYoungAndroidProjectWizardUiBinder uibinder = GWT.create(NewYoungAndroidProjectWizardUiBinder.class);
     uibinder.createAndBindUi(this);
+  }
+
+  private static String normalizeProjectName(String projectName) {
+    return projectName.trim().replaceAll("( )+", " ").replace(" ", "_");
+  }
+
+  private void updateAddButton() {
+    addButton.setEnabled(projectNameValid && packageNameValid);
+  }
+
+  /**
+   * Shows the package name generated for the project name as the placeholder of the package name
+   * box, since that is what an empty box means. Until the project name is valid, the placeholder
+   * is an example package name.
+   */
+  private void updatePackageNamePlaceholder() {
+    String projectName = normalizeProjectName(projectNameTextBox.getText());
+    String placeholder = "com.example.myapp";
+    if (!projectName.isEmpty() && TextValidators.getErrorMessage(projectName).isEmpty()) {
+      placeholder = StringUtils.getProjectPackage(
+          Ode.getInstance().getUser().getUserEmail(), projectName);
+    }
+    Element textBox = packageNameTextBox.getTextBox().getElement();
+    textBox.setAttribute("placeholder", placeholder);
+    // A long generated name does not fit in the box, so it is also shown on hover.
+    textBox.setTitle(placeholder);
   }
 
   public void show() {
@@ -151,8 +206,11 @@ public class NewYoungAndroidProjectWizard {
 
   @UiHandler("addButton")
   protected void addProject(ClickEvent e) {
-    String projectName = projectNameTextBox.getText().trim()
-        .replaceAll("( )+", " ").replace(" ", "_");
+    String projectName = normalizeProjectName(projectNameTextBox.getText());
+    if (!packageNameTextBox.validate()) {
+      packageNameTextBox.setFocus(true);
+      return;
+    }
     TextValidators.ProjectNameStatus status = TextValidators.checkNewProjectName(projectName);
     if (status == TextValidators.ProjectNameStatus.SUCCESS) {
       LOG.info("Project status success");
@@ -181,8 +239,13 @@ public class NewYoungAndroidProjectWizard {
             == TextValidators.ProjectNameStatus.SUCCESS) {
       String packageName = StringUtils.getProjectPackage(
           Ode.getInstance().getUser().getUserEmail(), projectName);
+      // An empty or unchanged package name keeps the generated one.
+      String customPackageName = packageNameTextBox.getText();
+      if (customPackageName.equals(packageName)) {
+        customPackageName = "";
+      }
       NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
-          packageName, theme.getValue(), toolkit.getValue());
+          packageName, theme.getValue(), toolkit.getValue(), customPackageName);
       NewProjectWizard.NewProjectCommand callbackCommand = new NewProjectWizard.NewProjectCommand() {
         @Override
         public void execute(final Project project) {

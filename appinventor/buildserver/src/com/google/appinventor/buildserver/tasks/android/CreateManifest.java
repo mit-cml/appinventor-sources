@@ -7,11 +7,11 @@ package com.google.appinventor.buildserver.tasks.android;
 
 import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.Project;
-import com.google.appinventor.buildserver.Signatures;
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
+import com.google.appinventor.common.utils.StringUtils;
 
 import com.google.appinventor.components.common.YaVersion;
 
@@ -48,8 +48,14 @@ public class CreateManifest implements AndroidTask {
     // Create AndroidManifest.xml
     context.getReporter().info("Reading project specs...");
     String mainClass = context.getProject().getMainClass();
-    String packageName = Signatures.getPackageName(mainClass);
-    String className = Signatures.getClassName(mainClass);
+    // The application package can be customized, so it may differ from the package of the
+    // generated form classes. Generated package names are valid by construction.
+    String packageName = context.getProject().getPackageName();
+    if (!packageName.equals(context.getProject().getFormPackageName())
+        && !StringUtils.isValidPackageName(packageName)) {
+      context.getReporter().error("Invalid package name: " + packageName, true);
+      return TaskResult.generateError("Invalid package name: " + packageName);
+    }
     String projectName = context.getProject().getProjectName();
     String versionCode = context.getProject().getVCode();
     String versionName = cleanName(context.getProject().getVName());
@@ -276,13 +282,9 @@ public class CreateManifest implements AndroidTask {
         // String screenName = formClassName.substring(formClassName.lastIndexOf('.') + 1);
         boolean isMain = formClassName.equals(mainClass);
 
-        if (isMain) {
-          // The main activity of the application.
-          out.write("    <activity android:name=\"." + className + "\" ");
-        } else {
-          // A secondary activity of the application.
-          out.write("    <activity android:name=\"" + formClassName + "\" ");
-        }
+        // Use the fully qualified class name, since the form classes are not necessarily in
+        // the application package.
+        out.write("    <activity android:name=\"" + formClassName + "\" ");
 
         // This line is here for NearField and NFC.   It keeps the activity from
         // restarting every time NDEF_DISCOVERED is signaled.
