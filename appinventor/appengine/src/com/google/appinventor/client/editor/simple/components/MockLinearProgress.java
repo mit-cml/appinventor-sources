@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -30,6 +31,7 @@ public final class MockLinearProgress extends MockVisibleComponent {
 
     horizontalPanel = new HorizontalPanel();
     horizontalPanel.setStylePrimaryName("ode-SimpleMockComponent");
+    TableAccessibility.setLayoutTables(horizontalPanel);
     MockComponentsUtil.setWidgetBackgroundColor(horizontalPanel, "&HFFCCCCCC");
 
     //left bar for indeterminate property

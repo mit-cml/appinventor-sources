@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -46,6 +47,7 @@ public final class MockSwitch extends MockToggleBase<HorizontalPanel> {
     super(editor, TYPE, images.toggleswitch());
 
     panel = new HorizontalPanel();
+    TableAccessibility.setLayoutTables(panel);
     switchLabel = new InlineHTML();
     panel.add(switchLabel);
     toggleWidget = panel;
