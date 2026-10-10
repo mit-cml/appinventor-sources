@@ -20,10 +20,9 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetN
 import com.google.appinventor.shared.util.Base64Util;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class UrlImportWizard extends Wizard {
   private final Set<OnImportListener> listeners = new HashSet<OnImportListener>();
@@ -37,9 +36,10 @@ public class UrlImportWizard extends Wizard {
 
     listeners.add(listener);
 
-    final Grid urlGrid = createUrlGrid();
-    VerticalPanel panel = new VerticalPanel();
-    panel.add(urlGrid);
+    final FlowPanel urlPanel = createUrlPanel();
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
+    panel.add(urlPanel);
 
     addPage(panel);
 
@@ -56,7 +56,7 @@ public class UrlImportWizard extends Wizard {
         final long projectId = ode.getCurrentYoungAndroidProjectId();
         final Project project = ode.getProjectManager().getProject(projectId);
 
-        TextBox urlTextBox = (TextBox) urlGrid.getWidget(1, 0);
+        TextBox urlTextBox = (TextBox) urlPanel.getWidget(1);
         String url = urlTextBox.getText();
         if (url.trim().isEmpty()) {
           Window.alert(MESSAGES.noUrlError());
@@ -83,12 +83,13 @@ public class UrlImportWizard extends Wizard {
     listeners.add(listener);
   }
 
-  private static Grid createUrlGrid() {
+  private static FlowPanel createUrlPanel() {
     TextBox urlTextBox = new TextBox();
     urlTextBox.setWidth("100%");
-    Grid grid = new Grid(2, 1);
-    grid.setWidget(0, 0, new Label("Url:"));
-    grid.setWidget(1, 0, urlTextBox);
-    return grid;
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
+    panel.add(new Label("Url:"));
+    panel.add(urlTextBox);
+    return panel;
   }
 }

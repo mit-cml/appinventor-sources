@@ -48,13 +48,12 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -240,7 +239,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
   /**
    * UI Panel holding the template list.
    */
-  private HorizontalPanel templatePanel;
+  private FlowPanel templatePanel;
 
   /**
    * UI Listbox of template Urls.
@@ -395,20 +394,22 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
    * @param templates should never be null
    * @return the main panel for Wizard dialog.
    */
-  VerticalPanel createUI(final ArrayList<TemplateInfo> templates) {
-    VerticalPanel panel = new VerticalPanel();
+  FlowPanel createUI(final ArrayList<TemplateInfo> templates) {
+    FlowPanel panel = new FlowPanel();
     panel.setStylePrimaryName("gwt-SimplePanel");
-    panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-    panel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+    panel.addStyleName("ode-VerticalLayout");
+    panel.addStyleName("ode-VerticalLayout-center");
 
-    templatePanel = new HorizontalPanel();
+    templatePanel = new FlowPanel();
+    templatePanel.setStyleName("ode-HorizontalLayout");
     templatePanel.add(makeTemplateSelector(templates));
     if (templates.size() > 0)
       templatePanel.add(new TemplateWidget(templates.get(0), templateHostUrl));
 
     templatesMenu = makeTemplatesMenu();
 
-    HorizontalPanel hPanel = new HorizontalPanel();
+    FlowPanel hPanel = new FlowPanel();
+    hPanel.setStyleName("ode-HorizontalLayout");
     hPanel.add(templatesMenu);
     removeButton = new Button("Remove this repository", new ClickHandler() {
         @Override
@@ -575,9 +576,10 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     for (int k = 0; k < templatePanel.getWidgetCount(); k++) {
       templatePanel.getWidget(k).removeFromParent();
     }
-    VerticalPanel parent = (VerticalPanel) templatePanel.getParent();
+    FlowPanel parent = (FlowPanel) templatePanel.getParent();
     templatePanel.removeFromParent();
-    templatePanel = new HorizontalPanel();
+    templatePanel = new FlowPanel();
+    templatePanel.setStyleName("ode-HorizontalLayout");
     // Add the new templates
     templatePanel.add(makeTemplateSelector(templates));
     if (templates.size() > 0)
@@ -832,12 +834,13 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
     private static Label subtitle = new Label();
     private static Image image = new Image();
     private static HTML descriptionHtml = new HTML();
-    private VerticalPanel panel;
+    private FlowPanel panel;
 
     public TemplateWidget(TemplateInfo info, String hostUrl) {
       setTemplate(info, hostUrl);
 
-      panel = new VerticalPanel();
+      panel = new FlowPanel();
+      panel.setStyleName("ode-VerticalLayout");
       panel.add(title);
       title.getElement().getStyle().setFontWeight(Style.FontWeight.BOLD);
       panel.add(subtitle);
@@ -892,7 +895,7 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
       public void render(Context context, TemplateInfo template, SafeHtmlBuilder sb) {
       if (template == null)
         return;
-      sb.appendHtmlConstant("<table style='margin: 4pt 0;'>");
+      sb.appendHtmlConstant("<table role='presentation' style='margin: 4pt 0;'>");
 
       // Add the thumbnail image, if available, or a default image.
       sb.appendHtmlConstant("<tr><td rowspan='3' width=\"32px\">");
