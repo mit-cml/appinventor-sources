@@ -296,6 +296,7 @@ public class Clock extends AndroidNonvisibleComponent
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
+      return null;
     }
     return instant;
   }
@@ -327,6 +328,7 @@ public class Clock extends AndroidNonvisibleComponent
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
+      return null;
     }
 
     instant = Dates.DateInstant(year, month, day);
