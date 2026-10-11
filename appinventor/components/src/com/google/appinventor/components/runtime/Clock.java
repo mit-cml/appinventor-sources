@@ -270,10 +270,9 @@ public class Clock extends AndroidNonvisibleComponent
       cal.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeDate", ErrorMessages.ERROR_ILLEGAL_DATE);
+      return null;
     }
-    
-    Calendar instant = Dates.DateInstant(year, month, day);
-    return instant;
+    return Dates.DateInstant(year, month, day);
   }
 
   /**
