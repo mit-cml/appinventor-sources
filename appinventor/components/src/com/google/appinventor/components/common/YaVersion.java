@@ -640,7 +640,9 @@ public class YaVersion {
   // - EV3_GYROSENSOR_COMPONENT_VERSION was incremented to 3.
   // - EV3_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
   // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
-  public static final int YOUNG_ANDROID_VERSION = 237;
+  // For YOUNG_ANDROID_VERSION 238:
+  // - SWITCH_COMPONENT_VERSION was incremented to 3.
+  public static final int YOUNG_ANDROID_VERSION = 238;
 
   // ............................... Blocks Language Version Number ...............................
 
