@@ -5432,6 +5432,12 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String firebaseExperimentalWarning();
 
+  @DefaultMessage("This doesn''t look like a standard Firebase URL " +
+    "(usually ending in “firebaseio.com” or “firebasedatabase.app”).<br>" +
+    "If you''re using a custom backend, that''s fine. Otherwise, please check for typos.")
+  @Description("")
+  String firebaseUrlWarning();
+
   @DefaultMessage("ChatBot is an experimental feature " +
     "which may change in the future. It''s usage may be restricted, " +
     "see <a href=\"https://appinv.us/chatbot\" target=\"_blank\">" +
