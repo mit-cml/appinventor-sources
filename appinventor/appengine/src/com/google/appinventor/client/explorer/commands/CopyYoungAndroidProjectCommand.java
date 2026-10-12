@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -27,12 +28,10 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.Collections;
@@ -92,8 +91,9 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       getElement().setAttribute("aria-label",
           checkpoint ? "Save Checkpoint - " + oldName : "Save Project As - " + oldName);
 
-      VerticalPanel contentPanel = new VerticalPanel();
-      contentPanel.setSpacing(10);
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
+      contentPanel.addStyleName("ode-Layout-spacing10");
 
       String defaultNewName;
 
@@ -110,8 +110,8 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
           // Sort the checkpoints project by the date they were last modified, in descending order.
           Collections.sort(checkpointProjects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING);
 
-          VerticalPanel previousCheckpointsPanel = new VerticalPanel();
-          previousCheckpointsPanel.setSpacing(0);
+          FlowPanel previousCheckpointsPanel = new FlowPanel();
+          previousCheckpointsPanel.setStyleName("ode-VerticalLayout");
           previousCheckpointsPanel.add(new Label(MESSAGES.previousCheckpointsLabel()));
           Widget previousCheckpointsTable = createPreviousCheckpointsTable(checkpointProjects);
           previousCheckpointsTable.setSize("100%", "100%");
@@ -176,7 +176,9 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
       });
       contentPanel.add(newNameTextBox);
 
-      HorizontalPanel buttonPanel = new HorizontalPanel();
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
       Button cancelButton = new Button(MESSAGES.cancelButton());
       cancelButton.addClickHandler(new ClickHandler() {
         @Override
@@ -193,7 +195,6 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
         }
       });
       buttonPanel.add(okButton);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
 
       contentPanel.setSize(checkpoint ? "400px" : "320px", "100%");
