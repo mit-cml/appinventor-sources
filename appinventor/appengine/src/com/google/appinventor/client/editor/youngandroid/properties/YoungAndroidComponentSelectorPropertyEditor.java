@@ -18,8 +18,8 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.Set;
 
 /**
@@ -62,7 +62,8 @@ public final class YoungAndroidComponentSelectorPropertyEditor
     this.editor = editor;
     this.componentTypes = componentTypes;
 
-    VerticalPanel selectorPanel = new VerticalPanel();
+    FlowPanel selectorPanel = new FlowPanel();
+    selectorPanel.setStyleName("ode-VerticalLayout");
     componentsList = new ListBox();
     componentsList.setVisibleItemCount(10);
     componentsList.setWidth("100%");
