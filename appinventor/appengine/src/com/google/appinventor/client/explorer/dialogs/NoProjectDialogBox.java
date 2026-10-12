@@ -7,6 +7,7 @@ package com.google.appinventor.client.explorer.dialogs;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -19,7 +20,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**

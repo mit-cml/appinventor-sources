@@ -16,6 +16,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.dialogs.NoProjectDialogBox;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.wizards.ComponentImportWizard.ImportComponentCallback;
 import com.google.appinventor.client.wizards.RequestNewProjectNameWizard;
 import com.google.appinventor.client.wizards.RequestProjectNewNameInterface;
@@ -39,10 +40,8 @@ import com.google.gwt.query.client.builders.JsniBundle;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import jsinterop.annotations.JsFunction;
 
@@ -153,10 +152,12 @@ public final class HTML5DragDrop {
               dialog.setText("Confirm Overwrite...");
               Button cancelButton = new Button(MESSAGES.cancelButton());
               Button deleteButton = new Button(MESSAGES.overwriteButton());
-              DockPanel buttonPanel = new DockPanel();
-              buttonPanel.add(cancelButton, DockPanel.WEST);
-              buttonPanel.add(deleteButton, DockPanel.EAST);
-              VerticalPanel panel = new VerticalPanel();
+              FlowPanel buttonPanel = new FlowPanel();
+              buttonPanel.setStyleName("ode-HorizontalLayout");
+              buttonPanel.add(cancelButton);
+              buttonPanel.add(deleteButton);
+              FlowPanel panel = new FlowPanel();
+              panel.setStyleName("ode-VerticalLayout");
               Label label = new Label();
               label.setText(MESSAGES.confirmOverwriteKeystore());
               panel.add(label);
