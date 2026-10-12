@@ -18,7 +18,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * Wizard for uploading an android.keystore file.
@@ -39,8 +39,8 @@ public class KeystoreUploadWizard extends Wizard {
     upload.setName(ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);
     upload.getElement().setAttribute("accept", KEYSTORE_EXTENSION);
     setStylePrimaryName("ode-DialogBox");
-    VerticalPanel panel = new VerticalPanel();
-    panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
     panel.add(upload);
     addPage(panel);
 

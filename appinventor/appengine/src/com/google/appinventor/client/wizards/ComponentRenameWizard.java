@@ -21,7 +21,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.List;
 
@@ -89,7 +89,8 @@ public class ComponentRenameWizard extends Wizard{
 
         renameTextBox.setText(defaultName);
 
-        VerticalPanel page = new VerticalPanel();
+        FlowPanel page = new FlowPanel();
+        page.setStyleName("ode-VerticalLayout");
 
         page.add(renameTextBox);
         addPage(page);
