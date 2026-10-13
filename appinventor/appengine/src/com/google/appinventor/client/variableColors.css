@@ -708,16 +708,6 @@ path.ode-SimpleMockMapFeature-selected {
   color: panel-shadow;
 }
 
-/* AI2 Extensions Styles */
-
-a.ode-ExtensionAnchor {
-  color: label-color;
-}
-
-a.ode-ExtensionAnchor:hover {
-  color: panel-shadow;
-}
-  
 .ode-Android-caption {
   background-color: selected-color;
   color: background-color;
