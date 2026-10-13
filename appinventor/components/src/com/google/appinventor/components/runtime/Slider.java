@@ -185,7 +185,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
  // seekbar position is an integer in the range [0,numberOfSteps] and is determined by MinValue,
  // MaxValue and ThumbPosition
  private void setSeekbarPosition() {
-    float seekbarPosition = ((thumbPosition - minValue) / (maxValue - minValue)) * numberOfSteps;
+    int seekbarPosition = (int) Math.round(((double) thumbPosition - minValue) / ((double) maxValue - minValue) * numberOfSteps);
 
     if (DEBUG) {
       Log.d(LOG_TAG, "Trying to recalculate seekbar position "
@@ -197,9 +197,9 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     // as it does in the iOS version. 
     // However, animation is disabled when setting the NumberOfSteps property.
     if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      seekbar.setProgress((int) seekbarPosition, notice);
+      seekbar.setProgress(seekbarPosition, notice);
     } else {
-      seekbar.setProgress((int) seekbarPosition);
+      seekbar.setProgress(seekbarPosition);
     }
   }
 
@@ -294,7 +294,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
       Log.d(LOG_TAG, "Min value is set to: " + value);
     }
-    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
+    thumbPosition = (float) (((double) maxValue - minValue) * seekbar.getProgress() / numberOfSteps + minValue);
   }
 
 
@@ -327,7 +327,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     if (DEBUG) {
      Log.d (LOG_TAG, "Max value is set to: " + value);
     }
-    thumbPosition = ((maxValue - minValue) * (float) seekbar.getProgress() / numberOfSteps) + minValue;
+    thumbPosition = (float) (((double) maxValue - minValue) * seekbar.getProgress() / numberOfSteps + minValue);
   }
 
   /**
@@ -484,7 +484,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
 
     // We check the notice flag so as not to trigger the event when we change the NumberOfSteps property.
     if (notice) {
-      thumbPosition = ((maxValue - minValue) * (float) progress / numberOfSteps) + minValue;
+      thumbPosition = (float) (((double) maxValue - minValue) * progress / numberOfSteps + minValue);
 
       if (DEBUG) {
       Log.d(LOG_TAG, "onProgressChanged progress value [0 - numberOfSteps]: " + progress
