@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2014-2015 MIT, All rights reserved
+// Copyright 2014-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -48,6 +48,10 @@ public class Config implements IsSerializable, Serializable {
   private String iosExtensions;
   private String surveyUrl;
   private boolean iosBuildServer;
+  /* preferredCompanion */
+  private String preferredCompanion;
+  /* comma delimited list of acceptable companions */
+  private String acceptableCompanions;
 
   public Config() {
   }
@@ -275,4 +279,21 @@ public class Config implements IsSerializable, Serializable {
   public void setiOSBuildServer(boolean value) {
     iosBuildServer = value;
   }
+
+  public String getPreferredCompanion() {
+    return preferredCompanion;
+  }
+
+  public void setPreferredCompanion(String companion) {
+    preferredCompanion = companion;
+  }
+
+  public String getAcceptableCompanions() {
+    return acceptableCompanions;
+  }
+
+  public void setAcceptableCompanions(String companions) {
+    acceptableCompanions = companions;
+  }
+
 }
