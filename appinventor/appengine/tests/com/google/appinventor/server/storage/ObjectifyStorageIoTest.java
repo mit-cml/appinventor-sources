@@ -10,6 +10,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
@@ -605,6 +606,29 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     int numBlobsDeleted() {
       return numDeletedBlobs;
     }
+  }
+
+  public void testStoreNonceOwnerCanRebind() {
+    final String NONCE = "0123456789abcdef0123456789abcdef";
+    storage.storeNonce(NONCE, "100", 1L);
+    storage.storeNonce(NONCE, "100", 2L);
+    Nonce nonce = storage.getNoncebyValue(NONCE);
+    assertEquals("100", nonce.getUserId());
+    assertEquals(2L, nonce.getProjectId());
+  }
+
+  public void testStoreNonceOtherUserCannotRebind() {
+    final String NONCE = "fedcba9876543210fedcba9876543210";
+    storage.storeNonce(NONCE, "100", 1L);
+    try {
+      storage.storeNonce(NONCE, "200", 2L);
+      fail("Another user was able to rebind an existing nonce");
+    } catch (SecurityException expected) {
+      // expected
+    }
+    Nonce nonce = storage.getNoncebyValue(NONCE);
+    assertEquals("100", nonce.getUserId());
+    assertEquals(1L, nonce.getProjectId());
   }
 
   private long createProject(String userId, String name, String type, String fileName) {
