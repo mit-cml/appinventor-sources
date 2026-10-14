@@ -403,6 +403,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     private static final Pattern AT_SIGN = Pattern.compile("[^\\\\]@");
     private static final Pattern LINK_FORM = Pattern.compile("\\{@link ([A-Za-z]*#?)([A-Za-z]*)[^}]*}");
     private static final Pattern CODE_FORM = Pattern.compile("\\{@code ([^}]*)}");
+    // Groups: 1 = class (or member for a bare link), 2 = member name, 3 = optional label
+    private static final Pattern PLAIN_LINK_FORM =
+        Pattern.compile("\\{@link(?:plain)?\\s+([A-Za-z0-9_.]*)#?([A-Za-z0-9_]*)(?:\\([^)]*\\))?(?:\\s+([^}]*))?}");
+    private static final Pattern KRAMDOWN_ATTRIBUTES = Pattern.compile("\\{:[^}]*}");
 
     private final String featureType;
     protected final String name;
@@ -431,14 +435,44 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         this.description = featureType + " for " + name;
         defaultDescription = true;
       } else {
-        // Throw out the first @ or { and everything after it,
-        // in order to strip out @param, @author, {@link ...}, etc.
-        this.description = description.split("@|\\{@")[0].trim();
-        this.description = removeMarkup(this.description);
+        this.description = toPlainDescription(description);
         defaultDescription = false;
       }
     }
-    private String removeMarkup(String str) {
+
+    /**
+     * Converts a Javadoc comment into the plain text used for tooltips. Inline tags such as
+     * {@code {@link ...}} and {@code {@code ...}} are replaced by their text, and everything from
+     * the first block tag (@param, @author, etc.) onward is thrown out.
+     *
+     * @param javadoc the Javadoc comment, or an explicit description
+     * @return the plain text description
+     */
+    protected static String toPlainDescription(String javadoc) {
+      String result = javadoc;
+      Matcher linkMatcher = PLAIN_LINK_FORM.matcher(result);
+      StringBuffer sb = new StringBuffer();
+      while (linkMatcher.find()) {
+        String label = linkMatcher.group(3);
+        if (label == null || label.trim().isEmpty()) {
+          label = linkMatcher.group(2).isEmpty() ? linkMatcher.group(1) : linkMatcher.group(2);
+        }
+        if ("Form".equals(label)) {
+          label = "Screen";
+        }
+        linkMatcher.appendReplacement(sb, Matcher.quoteReplacement(label.trim()));
+      }
+      linkMatcher.appendTail(sb);
+      result = CODE_FORM.matcher(sb.toString()).replaceAll("$1");
+      // Throw out the first unescaped @ and everything after it, in order to strip out @param,
+      // @author, and any inline tag we did not understand.
+      result = result.split("(?<!\\\\)@")[0];
+      // Remove kramdown attribute lists, e.g. {:.logic.block}
+      result = KRAMDOWN_ATTRIBUTES.matcher(result).replaceAll("");
+      return removeMarkup(result.trim());
+    }
+
+    private static String removeMarkup(String str) {
       String result = str.replaceAll("\\\\(.)", "$1");
       result = result.replaceAll("\\[([a-zA-Z0-9]*)\\]\\(#.*\\)", "$1");
       return result;
@@ -1963,8 +1997,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (description == null) {
       description = "";
     }
-    // Read only until the first javadoc parameter
-    description = description.split("[^\\\\][@{]")[0].trim();
+    description = Feature.toPlainDescription(description);
 
     Property property = new Property(propertyName,
                                      description,
@@ -2244,8 +2277,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     if (description == null) {
       description = "";
     }
-    // Read only until the first javadoc parameter
-    description = description.split("[^\\\\][@{]")[0].trim();
+    description = Feature.toPlainDescription(description);
 
     return new Option(
       field.getSimpleName().toString(),
