@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { BlockSvg } from '../block_svg.js';
+import type { IBubble } from '../interfaces/i_bubble.js';
 import type { IHasBubble } from '../interfaces/i_has_bubble.js';
 import { Size } from '../utils.js';
 import { Coordinate } from '../utils/coordinate.js';
@@ -60,6 +61,8 @@ export declare class WarningIcon extends Icon implements IHasBubble {
     isClickableInFlyout(): boolean;
     bubbleIsVisible(): boolean;
     setBubbleVisible(visible: boolean): Promise<void>;
+    /** See IHasBubble.getBubble. */
+    getBubble(): IBubble | null;
     /**
      * @returns the location the bubble should be anchored to.
      *     I.E. the middle of this icon.
@@ -70,5 +73,13 @@ export declare class WarningIcon extends Icon implements IHasBubble {
      *     I.E. the block that owns this icon.
      */
     private getBubbleOwnerRect;
+    /**
+     * Returns the ARIA label to use for this icon (defaults to null). Note that this
+     * method will only be called during initialization by default, so dynamic changes
+     * to the icon's ARIA label need to be applied by calling recomputeAriaContext.
+     *
+     * @returns The ARIA label to use for this icon, or null to use a default.
+     */
+    protected getAriaLabel(): string | null;
 }
 //# sourceMappingURL=warning_icon.d.ts.map

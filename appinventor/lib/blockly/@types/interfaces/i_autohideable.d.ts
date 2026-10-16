@@ -16,4 +16,6 @@ export interface IAutoHideable extends IComponent {
      */
     autoHide(onlyClosePopups: boolean): void;
 }
+/** Returns true if the given object is autohideable. */
+export declare function isAutoHideable(obj: any): obj is IAutoHideable;
 //# sourceMappingURL=i_autohideable.d.ts.map

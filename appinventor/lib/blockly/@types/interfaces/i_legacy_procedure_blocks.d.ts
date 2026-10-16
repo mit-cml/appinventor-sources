@@ -23,12 +23,12 @@ export interface LegacyProcedureDefBlock {
     getProcedureDef: () => ProcedureTuple;
 }
 /** @internal */
-export declare function isLegacyProcedureDefBlock(block: object): block is LegacyProcedureDefBlock;
+export declare function isLegacyProcedureDefBlock(obj: any): obj is LegacyProcedureDefBlock;
 /** @internal */
 export interface LegacyProcedureCallBlock {
     getProcedureCall: () => string;
     renameProcedure: (p1: string, p2: string) => void;
 }
 /** @internal */
-export declare function isLegacyProcedureCallBlock(block: object): block is LegacyProcedureCallBlock;
+export declare function isLegacyProcedureCallBlock(obj: any): obj is LegacyProcedureCallBlock;
 //# sourceMappingURL=i_legacy_procedure_blocks.d.ts.map

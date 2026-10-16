@@ -10,13 +10,12 @@
  */
 import type { Block } from './block.js';
 import type { Input } from './inputs/input.js';
-import type { IASTNodeLocationWithBlock } from './interfaces/i_ast_node_location_with_block.js';
 import type { IConnectionChecker } from './interfaces/i_connection_checker.js';
 import * as blocks from './serialization/blocks.js';
 /**
  * Class for a connection between blocks.
  */
-export declare class Connection implements IASTNodeLocationWithBlock {
+export declare class Connection {
     type: number;
     /** Constants for checking whether two connections are compatible. */
     static CAN_CONNECT: number;
@@ -41,6 +40,8 @@ export declare class Connection implements IASTNodeLocationWithBlock {
     private check;
     /** DOM representation of a shadow block, or null if none. */
     private shadowDom;
+    /** The unique ID of this connection. */
+    id: string;
     /**
      * Horizontal location of this connection.
      *
@@ -216,7 +217,7 @@ export declare class Connection implements IASTNodeLocationWithBlock {
      *
      * Headless configurations (the default) do not have neighboring connection,
      * and always return an empty list (the default).
-     * {@link RenderedConnection#neighbours} overrides this behavior with a list
+     * {@link (RenderedConnection:class).neighbours} overrides this behavior with a list
      * computed from the rendered positioning.
      *
      * @param _maxLimit The maximum radius to another connection.

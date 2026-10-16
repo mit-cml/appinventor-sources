@@ -3,18 +3,16 @@
  * Copyright 2011 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import './events/events_block_create.js';
-import './events/workspace_events.js';
-import './events/events_ui_base.js';
-import './events/events_var_create.js';
 import { Block } from './block.js';
 import * as blockAnimations from './block_animations.js';
+import { BlockFlyoutInflater } from './block_flyout_inflater.js';
 import { BlockSvg } from './block_svg.js';
 import { BlocklyOptions } from './blockly_options.js';
 import { Blocks } from './blocks.js';
 import * as browserEvents from './browser_events.js';
 import * as bubbles from './bubbles.js';
 import * as bumpObjects from './bump_objects.js';
+import { ButtonFlyoutInflater } from './button_flyout_inflater.js';
 import * as clipboard from './clipboard.js';
 import * as comments from './comments.js';
 import * as common from './common.js';
@@ -38,7 +36,7 @@ import * as Events from './events/events.js';
 import * as Extensions from './extensions.js';
 import { Field, FieldConfig, FieldValidator, UnattachedFieldError } from './field.js';
 import { FieldCheckbox, FieldCheckboxConfig, FieldCheckboxFromJsonConfig, FieldCheckboxValidator } from './field_checkbox.js';
-import { FieldDropdown, FieldDropdownConfig, FieldDropdownFromJsonConfig, FieldDropdownValidator, MenuGenerator, MenuGeneratorFunction, MenuOption } from './field_dropdown.js';
+import { FieldDropdown, FieldDropdownConfig, FieldDropdownFromJsonConfig, FieldDropdownValidator, ImageProperties, MenuGenerator, MenuGeneratorFunction, MenuOption } from './field_dropdown.js';
 import { FieldImage, FieldImageConfig, FieldImageFromJsonConfig } from './field_image.js';
 import { FieldLabel, FieldLabelConfig, FieldLabelFromJsonConfig } from './field_label.js';
 import { FieldLabelSerializable } from './field_label_serializable.js';
@@ -49,22 +47,27 @@ import { FieldVariable, FieldVariableConfig, FieldVariableFromJsonConfig, FieldV
 import { Flyout } from './flyout_base.js';
 import { FlyoutButton } from './flyout_button.js';
 import { HorizontalFlyout } from './flyout_horizontal.js';
+import { FlyoutItem } from './flyout_item.js';
 import { FlyoutMetricsManager } from './flyout_metrics_manager.js';
+import { FlyoutSeparator } from './flyout_separator.js';
 import { VerticalFlyout } from './flyout_vertical.js';
+import { FocusManager, ReturnEphemeralFocus, getFocusManager } from './focus_manager.js';
 import { CodeGenerator } from './generator.js';
 import { Gesture } from './gesture.js';
 import { Grid } from './grid.js';
 import * as icons from './icons.js';
 import { inject } from './inject.js';
 import * as inputs from './inputs.js';
+import { IFlyoutInflater } from './interfaces/i_flyout_inflater.js';
+import { Direction, KeyboardMover } from './keyboard_nav/keyboard_mover.js';
+import { MoveIndicator } from './keyboard_nav/move_indicator.js';
+import { LabelFlyoutInflater } from './label_flyout_inflater.js';
+import { SeparatorFlyoutInflater } from './separator_flyout_inflater.js';
+import { FocusableTreeTraverser } from './utils/focusable_tree_traverser.js';
 import { Input } from './inputs/input.js';
-import { InsertionMarkerManager } from './insertion_marker_manager.js';
 import { InsertionMarkerPreviewer } from './insertion_marker_previewer.js';
-import { IASTNodeLocation } from './interfaces/i_ast_node_location.js';
-import { IASTNodeLocationSvg } from './interfaces/i_ast_node_location_svg.js';
-import { IASTNodeLocationWithBlock } from './interfaces/i_ast_node_location_with_block.js';
 import { IAutoHideable } from './interfaces/i_autohideable.js';
-import { IBoundedElement } from './interfaces/i_bounded_element.js';
+import { IBoundedElement, isBoundedElement } from './interfaces/i_bounded_element.js';
 import { IBubble } from './interfaces/i_bubble.js';
 import { ICollapsibleToolboxItem } from './interfaces/i_collapsible_toolbox_item.js';
 import { IComponent } from './interfaces/i_component.js';
@@ -75,9 +78,11 @@ import { ICopyData, ICopyable, isCopyable } from './interfaces/i_copyable.js';
 import { IDeletable, isDeletable } from './interfaces/i_deletable.js';
 import { IDeleteArea } from './interfaces/i_delete_area.js';
 import { IDragTarget } from './interfaces/i_drag_target.js';
-import { IDragStrategy, IDraggable, isDraggable } from './interfaces/i_draggable.js';
+import { DragDisposition, IDragStrategy, IDraggable, isDraggable } from './interfaces/i_draggable.js';
 import { IDragger } from './interfaces/i_dragger.js';
 import { IFlyout } from './interfaces/i_flyout.js';
+import { IFocusableNode } from './interfaces/i_focusable_node.js';
+import { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import { IHasBubble, hasBubble } from './interfaces/i_has_bubble.js';
 import { IIcon, isIcon } from './interfaces/i_icon.js';
 import { IKeyboardAccessible } from './interfaces/i_keyboard_accessible.js';
@@ -95,14 +100,12 @@ import { IStyleable } from './interfaces/i_styleable.js';
 import { IToolbox } from './interfaces/i_toolbox.js';
 import { IToolboxItem } from './interfaces/i_toolbox_item.js';
 import { IVariableBackedParameterModel, isVariableBackedParameterModel } from './interfaces/i_variable_backed_parameter_model.js';
-import { ASTNode } from './keyboard_nav/ast_node.js';
-import { BasicCursor } from './keyboard_nav/basic_cursor.js';
-import { Cursor } from './keyboard_nav/cursor.js';
-import { Marker } from './keyboard_nav/marker.js';
-import { TabNavigateCursor } from './keyboard_nav/tab_navigate_cursor.js';
+import { IVariableMap } from './interfaces/i_variable_map.js';
+import { IVariableModel, IVariableState } from './interfaces/i_variable_model.js';
+import { ToolboxNavigator } from './keyboard_nav/navigators/toolbox_navigator.js';
+import { KeyboardNavigationController, keyboardNavigationController } from './keyboard_navigation_controller.js';
 import type { LayerManager } from './layer_manager.js';
 import * as layers from './layers.js';
-import { MarkerManager } from './marker_manager.js';
 import { Menu } from './menu.js';
 import { MenuItem } from './menuitem.js';
 import { MetricsManager } from './metrics_manager.js';
@@ -151,8 +154,6 @@ import { ZoomControls } from './zoom_controls.js';
  * This constant is overridden by the build script (npm run build) to the value
  * of the version in package.json. This is done by the Closure Compiler in the
  * buildCompressed gulp task.
- * For local builds, you can pass --define='Blockly.VERSION=X.Y.Z' to the
- * compiler to override this constant.
  *
  * @define {string}
  */
@@ -262,7 +263,24 @@ export declare const VARIABLE_DYNAMIC_CATEGORY_NAME: string;
  * procedure blocks.
  */
 export declare const PROCEDURE_CATEGORY_NAME: string;
-export { ASTNode, BasicCursor, Block, BlockSvg, BlocklyOptions, Blocks, CollapsibleToolboxCategory, ComponentManager, Connection, ConnectionChecker, ConnectionDB, ConnectionType, ContextMenu, ContextMenuItems, ContextMenuRegistry, Css, Cursor, DeleteArea, DragTarget, Events, Extensions, Procedures, ShortcutItems, Themes, Tooltip, Touch, Variables, VariablesDynamic, WidgetDiv, Xml, blockAnimations, blockRendering, browserEvents, bubbles, bumpObjects, clipboard, comments, common, constants, dialog, dragging, fieldRegistry, geras, Procedures as procedures, registry, thrasos, uiPosition, utils, zelos, };
+export * from './interfaces/i_json_block_definition.js';
+export * from './interfaces/i_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/block_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/bubble_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/comment_bar_button_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/comment_editor_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/connection_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/field_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/flyout_button_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/flyout_separator_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/icon_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/toolbox_item_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/workspace_comment_navigation_policy.js';
+export * from './keyboard_nav/navigation_policies/workspace_navigation_policy.js';
+export * from './keyboard_nav/navigators/flyout_navigator.js';
+export * from './keyboard_nav/navigators/navigator.js';
+export * from './toast.js';
+export { Block, BlockSvg, BlocklyOptions, Blocks, CollapsibleToolboxCategory, ComponentManager, Connection, ConnectionChecker, ConnectionDB, ConnectionType, ContextMenu, ContextMenuItems, ContextMenuRegistry, Css, DeleteArea, DragTarget, Events, Extensions, Procedures, ShortcutItems, Themes, Tooltip, Touch, Variables, VariablesDynamic, WidgetDiv, Xml, blockAnimations, blockRendering, browserEvents, bubbles, bumpObjects, clipboard, comments, common, constants, dialog, dragging, fieldRegistry, geras, Procedures as procedures, registry, thrasos, uiPosition, utils, zelos, };
 export declare const DropDownDiv: typeof dropDownDiv;
-export { CodeGenerator, Field, FieldCheckbox, FieldCheckboxConfig, FieldCheckboxFromJsonConfig, FieldCheckboxValidator, FieldConfig, FieldDropdown, FieldDropdownConfig, FieldDropdownFromJsonConfig, FieldDropdownValidator, FieldImage, FieldImageConfig, FieldImageFromJsonConfig, FieldLabel, FieldLabelConfig, FieldLabelFromJsonConfig, FieldLabelSerializable, FieldNumber, FieldNumberConfig, FieldNumberFromJsonConfig, FieldNumberValidator, FieldTextInput, FieldTextInputConfig, FieldTextInputFromJsonConfig, FieldTextInputValidator, FieldValidator, FieldVariable, FieldVariableConfig, FieldVariableFromJsonConfig, FieldVariableValidator, Flyout, FlyoutButton, FlyoutMetricsManager, CodeGenerator as Generator, Gesture, Grid, HorizontalFlyout, IASTNodeLocation, IASTNodeLocationSvg, IASTNodeLocationWithBlock, IAutoHideable, IBoundedElement, IBubble, ICollapsibleToolboxItem, IComponent, IConnectionChecker, IConnectionPreviewer, IContextMenu, ICopyData, ICopyable, IDeletable, IDeleteArea, IDragStrategy, IDragTarget, IDraggable, IDragger, IFlyout, IHasBubble, IIcon, IKeyboardAccessible, IMetricsManager, IMovable, IObservable, IPaster, IPositionable, IRegistrable, IRenderedElement, ISelectable, ISelectableToolboxItem, ISerializable, IStyleable, IToolbox, IToolboxItem, IVariableBackedParameterModel, Input, InsertionMarkerManager, InsertionMarkerPreviewer, LayerManager, Marker, MarkerManager, Menu, MenuGenerator, MenuGeneratorFunction, MenuItem, MenuOption, MetricsManager, Msg, Names, Options, RenderedConnection, Scrollbar, ScrollbarPair, ShortcutRegistry, TabNavigateCursor, Theme, ThemeManager, Toolbox, ToolboxCategory, ToolboxItem, ToolboxSeparator, Trashcan, UnattachedFieldError, VariableMap, VariableModel, VerticalFlyout, Workspace, WorkspaceAudio, WorkspaceDragger, WorkspaceSvg, ZoomControls, config, hasBubble, icons, inject, inputs, isCopyable, isDeletable, isDraggable, isIcon, isObservable, isPaster, isRenderedElement, isSelectable, isSerializable, isVariableBackedParameterModel, layers, renderManagement, serialization, setLocale, };
+export { BlockFlyoutInflater, ButtonFlyoutInflater, CodeGenerator, Direction, DragDisposition, Field, FieldCheckbox, FieldCheckboxConfig, FieldCheckboxFromJsonConfig, FieldCheckboxValidator, FieldConfig, FieldDropdown, FieldDropdownConfig, FieldDropdownFromJsonConfig, FieldDropdownValidator, FieldImage, FieldImageConfig, FieldImageFromJsonConfig, FieldLabel, FieldLabelConfig, FieldLabelFromJsonConfig, FieldLabelSerializable, FieldNumber, FieldNumberConfig, FieldNumberFromJsonConfig, FieldNumberValidator, FieldTextInput, FieldTextInputConfig, FieldTextInputFromJsonConfig, FieldTextInputValidator, FieldValidator, FieldVariable, FieldVariableConfig, FieldVariableFromJsonConfig, FieldVariableValidator, Flyout, FlyoutButton, FlyoutItem, FlyoutMetricsManager, FlyoutSeparator, FocusManager, FocusableTreeTraverser, CodeGenerator as Generator, Gesture, Grid, HorizontalFlyout, IAutoHideable, IBoundedElement, IBubble, ICollapsibleToolboxItem, IComponent, IConnectionChecker, IConnectionPreviewer, IContextMenu, ICopyData, ICopyable, IDeletable, IDeleteArea, IDragStrategy, IDragTarget, IDraggable, IDragger, IFlyout, IFlyoutInflater, IFocusableNode, IFocusableTree, IHasBubble, IIcon, IKeyboardAccessible, IMetricsManager, IMovable, IObservable, IPaster, IPositionable, IRegistrable, IRenderedElement, ISelectable, ISelectableToolboxItem, ISerializable, IStyleable, IToolbox, IToolboxItem, IVariableBackedParameterModel, IVariableMap, IVariableModel, IVariableState, ImageProperties, Input, InsertionMarkerPreviewer, KeyboardMover, KeyboardNavigationController, LabelFlyoutInflater, LayerManager, Menu, MenuGenerator, MenuGeneratorFunction, MenuItem, MenuOption, MetricsManager, MoveIndicator, Msg, Names, Options, RenderedConnection, ReturnEphemeralFocus, Scrollbar, ScrollbarPair, SeparatorFlyoutInflater, ShortcutRegistry, Theme, ThemeManager, Toolbox, ToolboxCategory, ToolboxItem, ToolboxNavigator, ToolboxSeparator, Trashcan, UnattachedFieldError, VariableMap, VariableModel, VerticalFlyout, Workspace, WorkspaceAudio, WorkspaceDragger, WorkspaceSvg, ZoomControls, config, getFocusManager, hasBubble, icons, inject, inputs, isBoundedElement, isCopyable, isDeletable, isDraggable, isIcon, isObservable, isPaster, isRenderedElement, isSelectable, isSerializable, isVariableBackedParameterModel, keyboardNavigationController, layers, renderManagement, serialization, setLocale, };
 //# sourceMappingURL=blockly.d.ts.map

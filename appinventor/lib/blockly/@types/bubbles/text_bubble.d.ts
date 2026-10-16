@@ -3,9 +3,11 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Coordinate } from '../utils/coordinate.js';
-import { Rect } from '../utils/rect.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
+import type { IFocusableNode } from '../interfaces/i_focusable_node.js';
+import type { IHasBubble } from '../interfaces/i_has_bubble.js';
+import type { Coordinate } from '../utils/coordinate.js';
+import type { Rect } from '../utils/rect.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
 import { Bubble } from './bubble.js';
 /**
  * A bubble that displays non-editable text. Used by the warning icon.
@@ -15,8 +17,9 @@ export declare class TextBubble extends Bubble {
     readonly workspace: WorkspaceSvg;
     protected anchor: Coordinate;
     protected ownerRect?: Rect | undefined;
+    protected owner?: (IHasBubble & IFocusableNode) | undefined;
     private paragraph;
-    constructor(text: string, workspace: WorkspaceSvg, anchor: Coordinate, ownerRect?: Rect | undefined);
+    constructor(text: string, workspace: WorkspaceSvg, anchor: Coordinate, ownerRect?: Rect | undefined, owner?: (IHasBubble & IFocusableNode) | undefined);
     /** @returns the current text of this text bubble. */
     getText(): string;
     /** Sets the current text of this text bubble, and updates the display. */

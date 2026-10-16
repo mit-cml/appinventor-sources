@@ -27,7 +27,6 @@ import type { CommentDelete } from './events_comment_delete.js';
 import type { CommentDrag } from './events_comment_drag.js';
 import type { CommentMove } from './events_comment_move.js';
 import type { CommentResize } from './events_comment_resize.js';
-import type { MarkerMove } from './events_marker_move.js';
 import type { Selected } from './events_selected.js';
 import type { ThemeChange } from './events_theme_change.js';
 import type { ToolboxItemSelect } from './events_toolbox_item_select.js';
@@ -59,8 +58,6 @@ export declare function isBlockDrag(event: Abstract): event is BlockDrag;
 export declare function isSelected(event: Abstract): event is Selected;
 /** @returns true iff event.type is EventType.CLICK */
 export declare function isClick(event: Abstract): event is Click;
-/** @returns true iff event.type is EventType.MARKER_MOVE */
-export declare function isMarkerMove(event: Abstract): event is MarkerMove;
 /** @returns true iff event.type is EventType.BUBBLE_OPEN */
 export declare function isBubbleOpen(event: Abstract): event is BubbleOpen;
 /** @returns true iff event.type is EventType.TRASHCAN_OPEN */

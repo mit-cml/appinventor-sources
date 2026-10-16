@@ -11,6 +11,7 @@ import { InputConnection } from './input_connection.js';
  * during rendering
  */
 export declare class StatementInput extends InputConnection {
+    private statementInput;
     /**
      * @param constants The rendering constants provider.
      * @param input The statement input to measure and store information for.
