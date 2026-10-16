@@ -16,6 +16,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.TimerInternal;
@@ -289,11 +290,14 @@ public class Clock extends AndroidNonvisibleComponent
   public Calendar MakeTime(int hour, int minute, int second) {
     Calendar instant = new GregorianCalendar();
     try {
+      instant.setLenient(false);
       instant.set(Calendar.HOUR_OF_DAY, hour);
       instant.set(Calendar.MINUTE, minute);
       instant.set(Calendar.SECOND, second);
+      instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
+      throw new StopBlocksExecution();
     }
     return instant;
   }
@@ -317,7 +321,7 @@ public class Clock extends AndroidNonvisibleComponent
     int jMonth = month - 1;
     Calendar instant = null;
     try {
-      instant = new GregorianCalendar(year, jMonth, day);
+      instant = new GregorianCalendar(year, jMonth, day, hour, minute, second);
       instant.setLenient(false);
 
       // A non-lenient GregorianCalendar throws an exception upon 
@@ -325,21 +329,15 @@ public class Clock extends AndroidNonvisibleComponent
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
+      throw new StopBlocksExecution();
     }
-    
-    instant = Dates.DateInstant(year, month, day);
-    
-    try {
-      instant.set(Calendar.HOUR_OF_DAY, hour);
-      instant.set(Calendar.MINUTE, minute);
-      instant.set(Calendar.SECOND, second);
 
-    } catch (IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
-    }
+    instant = Dates.DateInstant(year, month, day);
+    instant.set(Calendar.HOUR_OF_DAY, hour);
+    instant.set(Calendar.MINUTE, minute);
+    instant.set(Calendar.SECOND, second);
 
     return instant;
-    
   }
 
   /**
