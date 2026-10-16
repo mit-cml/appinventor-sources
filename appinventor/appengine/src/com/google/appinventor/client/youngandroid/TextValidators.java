@@ -46,7 +46,12 @@ public final class TextValidators {
 
   protected static final List<String> SCHEME_NAMES = Arrays.asList("begin", "def", "foreach", "forrange", "JavaStringUtils", "quote");
 
-  private static final String ID_DISALLOWED_CHARS = "^-!&%^/>=<`'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ ";
+  private static final String ID_DISALLOWED_CHARS = "^-!&%^/>=<`'\"#:;,\\\\^\\*\\+\\.\\(\\)\\|\\{\\}\\[\\]\\ "
+			+ "\\u0000-\\u001F\\u007F-\\u009F"
+			+ "\\u00A0\\u00AD\\u1680\\u2000-\\u200F"
+			+ "\\u2028-\\u202F\\u205F-\\u2064\\u2066-\\u206F"
+			+ "\\u3000\\uFEFF";
+
   private static final String ID_DISALLOWED_STARTCHARS = ID_DISALLOWED_CHARS + "0-9";
 
   // This class should never be instantiated.
