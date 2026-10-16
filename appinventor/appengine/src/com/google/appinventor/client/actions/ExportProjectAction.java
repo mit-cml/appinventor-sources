@@ -17,10 +17,8 @@ import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.user.client.Command;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class ExportProjectAction implements Command {
-  private static final Logger LOG = Logger.getLogger(ExportProjectAction.class.getName());
   @Override
   public void execute() {
     if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {

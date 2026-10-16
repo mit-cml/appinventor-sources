@@ -167,12 +167,6 @@ public final class FolderManager {
     return new ArrayList<FolderManagerEventListener>(folderManagerEventListeners);
   }
 
-  private void fireFolderRenamed(ProjectFolder folder) {
-    for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
-      listener.onFolderRenamed(folder);
-    }
-  }
-
   private void fireFolderAdded(ProjectFolder folder) {
     for (FolderManagerEventListener listener : copyFolderManagerEventListeners()) {
       listener.onFolderAdded(folder);

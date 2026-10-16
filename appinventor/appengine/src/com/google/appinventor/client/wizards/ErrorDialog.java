@@ -10,7 +10,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTML;
 
 public class ErrorDialog {
@@ -21,10 +20,6 @@ public class ErrorDialog {
 
   @UiField
   Dialog dialog;
-  @UiField
-  Button okButton;
-  @UiField
-  Button infoButton;
   @UiField
   HTML errorMessage;
 

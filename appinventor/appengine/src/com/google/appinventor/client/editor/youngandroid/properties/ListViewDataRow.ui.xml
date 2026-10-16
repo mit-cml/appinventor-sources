@@ -7,7 +7,7 @@
 
   <!-- Styling lives in war/static/css/Ya.css (the .lie-* classes) so it is
        shared with the Java-built image picker popup. -->
-  <g:FlowPanel ui:field="container" styleName="lie-row">
+  <g:FlowPanel styleName="lie-row">
 
     <g:FlowPanel ui:field="thumbColumn" styleName="lie-thumb">
       <g:FocusPanel ui:field="thumbTile" styleName="lie-thumb-tile"/>

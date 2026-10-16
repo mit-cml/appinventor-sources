@@ -23,7 +23,6 @@ import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.blocks.BlocklyPanel;
-import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
 import com.google.appinventor.client.editor.youngandroid.ConsolePanel;
 import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.editor.youngandroid.TutorialPanel;
@@ -202,12 +201,6 @@ public class Ode implements EntryPoint {
 
   private AssetManager assetManager = AssetManager.getInstance();
   private boolean isAnon = false;
-  private boolean displayedCodes = false; // True means we have displayed the dialog box
-                                          // with the four word codes for an anonymous account
-                                          // to revisit us. Only used if we are an anonymous
-                                          // account. I.e. isAnon is true
-
-  private DropTargetProvider dragDropTargets;
 
   // Remembers the current View
   public static final int DESIGNER = 0;
@@ -240,7 +233,6 @@ public class Ode implements EntryPoint {
   private int debuggingTabIndex;
   private int userAdminTabIndex;
   @UiField protected TopPanel topPanel;
-  @UiField protected StatusPanel statusPanel;
   @UiField protected FlowPanel workColumns;
   @UiField protected FlowPanel structureAndAssets;
   @UiField protected ProjectToolbar projectToolbar;
@@ -287,9 +279,6 @@ public class Ode implements EntryPoint {
 
   private boolean screensLocked;
 
-  // Licensing related variables
-  private String licenseCode;
-  private String systemId;
   private static UiStyleFactory uiFactory = null;
 
   /**
@@ -1901,17 +1890,6 @@ public class Ode implements EntryPoint {
     }
   }
 
-  private void maybeShowSplash2() {
-    projectManager.ensureProjectsLoadedFromServer(projectService).then0(() -> {
-      if (ProjectListBox.getProjectListBox().getProjectList().getMyProjectsCount() == 0
-          && !templateLoadingFlag && !newGalleryLoadingFlag) {
-        ErrorReporter.hide();  // hide the "Please choose a project" message
-        showSplashScreens();
-      }
-      return null;
-    });
-  }
-
   public void requestShowSplashScreens() {
     mayNeedSplash = true;
     if (didTransitionFromProjectList) {  // do immediately
@@ -2710,22 +2688,6 @@ public class Ode implements EntryPoint {
       top.location.replace(top.location.origin);
     } else {
       top.location.reload();
-    }
-  }-*/;
-
-  private static native boolean finish(String userId) /*-{
-    var delete_cookie = function(name) {
-       document.cookie = name + '=;Path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    };
-    var retval = {
-       "type": "closeApp",
-       "uuid" : userId }
-    if (top.opener) {
-      delete_cookie("AppInventor"); // This ends our authentication
-      top.opener.postMessage(retval, "*");
-      return true;
-    } else {
-      return false;
     }
   }-*/;
 

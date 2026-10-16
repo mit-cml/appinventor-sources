@@ -27,7 +27,6 @@ public class FileUploadErrorDialog {
       GWT.create(FileUploadErrorDialog.FileUploadErrorUiBinder.class);
 
   @UiField Dialog uploadError;
-  @UiField Button okButton;
   @UiField Button infoButton;
   @UiField HTML errorMessage;
   private final FolderNode folderNode;

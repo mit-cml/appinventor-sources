@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
-import java.util.logging.Logger;
 
 
 /**
@@ -27,8 +26,6 @@ import java.util.logging.Logger;
  *
  */
 public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEditor {
-  private static final Logger LOG = Logger.getLogger(YoungAndroidLengthPropertyEditor.class.getName());
-
   public static final String CONST_AUTOMATIC = "" + MockVisibleComponent.LENGTH_PREFERRED;
   public static final String CONST_FILL_PARENT = "" + MockVisibleComponent.LENGTH_FILL_PARENT;
 

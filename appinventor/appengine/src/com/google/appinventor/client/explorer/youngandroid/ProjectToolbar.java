@@ -41,8 +41,6 @@ public class ProjectToolbar extends Toolbar {
   @UiField protected Label projectLabel;
   @UiField protected Label trashLabel;
 
-  private static volatile boolean lockPublishButton = false; // To prevent double clicking
-
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */

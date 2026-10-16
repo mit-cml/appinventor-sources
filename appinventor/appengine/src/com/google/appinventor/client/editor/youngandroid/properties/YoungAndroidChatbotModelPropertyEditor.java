@@ -25,15 +25,12 @@ import com.google.gwt.json.client.JSONParser;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 /**
  * Property editor for chatbot model property
  *
  */
 public class YoungAndroidChatbotModelPropertyEditor extends ChoicePropertyEditor {
-  private static final Logger LOG = Logger.getLogger(YoungAndroidChatbotModelPropertyEditor.class.getName());
-
   private static final Promise<Choice[]> choicePromise = new Promise<Choice[]>((resolve, reject) -> {
       String url = AppInventorFeatures.chatBotHost() + "model_list/v1";
       RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);

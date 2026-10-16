@@ -41,7 +41,6 @@ import com.google.gwt.xml.client.XMLParser;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Editor for Young Android Blocks (.blk) files.
@@ -63,7 +62,6 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
           new BlocksCategory("Dictionaries", IMAGES.dictionaries()),
           new BlocksCategory("Colors", IMAGES.colors()),
           new BlocksCategory("Variables", IMAGES.variables()), new BlocksCategory("Procedures", IMAGES.procedures()));
-  private static final Logger LOG = Logger.getLogger(YaBlocksEditor.class.getName());
 
   // The project associated with this blocks editor.
   private Project project;

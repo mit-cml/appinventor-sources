@@ -78,7 +78,6 @@ public class ListViewDataRow extends Composite {
     void onMoveFocus(ListViewDataRow from, int deltaRows, int column);
   }
 
-  @UiField FlowPanel container;
   @UiField FlowPanel thumbColumn;
   @UiField FocusPanel thumbTile;
   @UiField Label thumbName;

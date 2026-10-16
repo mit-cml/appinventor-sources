@@ -39,7 +39,6 @@ import com.google.gwt.user.client.Window;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +62,6 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     YoungAndroidPalettePanel, SimpleComponentDatabase, YaVisibleComponentsPanel> {
   private static final Logger LOG = Logger.getLogger(YaFormEditor.class.getName());
 
-  private static final String ERROR_EXISTING_UUID = "Component with UUID \"%1$s\" already exists.";
-  private static final String ERROR_NONEXISTENT_UUID = "No component exists with UUID \"%1$s\".";
-
   // JSON parser
   private static final JSONParser JSON_PARSER = new ClientJsonParser();
 
@@ -78,11 +74,6 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
   private String preUpgradeJsonString;
 
   private JSONArray authURL;    // List of App Inventor versions we have been edited on.
-
-  /**
-   * A mapping of component UUIDs to mock components in the designer view.
-   */
-  private final Map<String, MockComponent> componentsDb = new HashMap<>();
 
   private static final int OLD_PROJECT_YAV = 150; // Projects older then this have no authURL
 

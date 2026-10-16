@@ -39,10 +39,7 @@ public final class MoveProjectsWizard {
 
   @UiField Dialog moveDialog;
   @UiField Button moveButton;
-  @UiField Button cancelButton;
   @UiField Tree tree;
-  @UiField Button topInvisible;
-  @UiField Button bottomInvisible;
   private List<Project> selectedProjects;
   private List<ProjectFolder> selectedFolders;
 

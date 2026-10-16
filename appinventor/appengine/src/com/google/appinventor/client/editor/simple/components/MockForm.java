@@ -326,11 +326,6 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
   private static final int PHONE_LANDSCAPE_WIDTH = PHONE_PORTRAIT_HEIGHT;
   private static final int PHONE_LANDSCAPE_HEIGHT = PHONE_PORTRAIT_WIDTH;
 
-  private static final int TABLET_PORTRAIT_WIDTH = 480;
-  private static final int TABLET_PORTRAIT_HEIGHT = 640 + 35; // Adds 35 for the navigation bar
-  private static final int TABLET_LANDSCAPE_WIDTH = TABLET_PORTRAIT_HEIGHT;
-  private static final int TABLET_LANDSCAPE_HEIGHT = TABLET_PORTRAIT_WIDTH;
-
   private static final int PHONE_PORTRAIT_WIDTH_iPHONE = 320;
   private static final int PHONE_PORTRAIT_HEIGHT_iPHONE= 650;
   private static final int PHONE_LANDSCAPE_WIDTH_iPHONE = PHONE_PORTRAIT_HEIGHT_iPHONE;

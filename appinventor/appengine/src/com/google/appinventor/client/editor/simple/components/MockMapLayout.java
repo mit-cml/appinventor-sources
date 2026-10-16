@@ -10,9 +10,6 @@ import java.util.Map;
 import com.google.appinventor.components.common.ComponentConstants;
 
 final class MockMapLayout extends MockLayout {
-  private static final String PROPERTY_NAME_LATITUDE = "Latitude";
-  private static final String PROPERTY_NAME_LONGITUDE = "Longitude";
-
   MockMapLayout() {
     layoutWidth = ComponentConstants.VIDEOPLAYER_PREFERRED_WIDTH;
     layoutHeight = ComponentConstants.VIDEOPLAYER_PREFERRED_HEIGHT;

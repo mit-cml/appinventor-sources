@@ -358,10 +358,6 @@ public final class AssetManager implements ProjectChangeListener {
     if (typeof callback === 'function') callback.call(null);
   }-*/;
 
-  private static native boolean useWebRTC() /*-{
-    return top.usewebrtc;
-  }-*/;
-
   private static native boolean hasFetchAssets() /*-{
     return top.ReplState.hasfetchassets;
   }-*/;

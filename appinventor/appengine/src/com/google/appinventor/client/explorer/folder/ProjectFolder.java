@@ -37,14 +37,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM;
 
 
 public class ProjectFolder extends Composite {
-  private static final Logger LOG = Logger.getLogger(ProjectFolder.class.getName());
   private static final DateTimeFormat DATE_FORMAT = DateTimeFormat.getFormat(DATE_TIME_MEDIUM);
   /**
    * This class represents a folder containing project objects.

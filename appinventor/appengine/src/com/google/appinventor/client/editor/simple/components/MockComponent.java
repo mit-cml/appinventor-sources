@@ -102,8 +102,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   // Common property names (not all components support all properties).
   public static final String PROPERTY_NAME_NAME = "Name";
   public static final String PROPERTY_NAME_UUID = "Uuid";
-  private static final int ICON_IMAGE_WIDTH = 16;
-  private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
 
   /**

@@ -116,10 +116,6 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_TUTORIAL_TOGGLE = "TutorialToggle";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
-  private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
-  private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
-  private static final String WIDGET_NAME_SENDTOGALLERY = "SendToGallery";
-  private static final String WIDGET_NAME_PROJECT_PROPERTIES_DIALOG = "ProjectPropertiesDialog";
 
   // Enum for type of view showing in the design tab
   public enum View {

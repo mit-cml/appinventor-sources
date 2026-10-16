@@ -51,15 +51,7 @@ public class NoProjectDialogBox extends DialogBox {
   @UiField
   Button goToPurr;
   @UiField
-  Button goToChat;
-  @UiField
-  Button goToYR;
-  @UiField
   Button noDialogNewProject;
-  @UiField
-  Button topInvisible;
-  @UiField
-  Button bottomInvisible;
 
   /**
    * Creates a new dialog box when the user has no current projects in their

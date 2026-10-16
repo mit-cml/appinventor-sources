@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -54,7 +53,6 @@ public abstract class AbstractPalettePanel<
     T extends ComponentDatabaseInterface,
     U extends DesignerEditor<?, ?, ?, T, ?>>
     extends Composite implements SimplePalettePanel, ComponentDatabaseChangeListener {
-  private static final Logger LOG = Logger.getLogger(AbstractPalettePanel.class.getName());
   // Component database: information about components (including their properties and events)
   private T componentDatabase;
 
@@ -74,8 +72,6 @@ public abstract class AbstractPalettePanel<
   private final ComponentFactory factory;
 
   private final ComponentCategory[] categories;
-
-  private DropTargetProvider dropTargetProvider;
 
   // panel that holds all palette items
   private final FlowPanel panel;

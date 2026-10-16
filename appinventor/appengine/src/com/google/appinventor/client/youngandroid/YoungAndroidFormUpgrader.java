@@ -1817,16 +1817,6 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
-  private static int upgradeRegressionProperties(Map<String, JSONValue> componentProperties,
-      int srcCompVersion) {
-    if (srcCompVersion < 2) {
-      // The Regression.ComputeLineOfBestFitValues method had its signature changed.
-      // No properties need to be modified to upgrade to version 2.
-      srcCompVersion = 2;
-    }
-    return srcCompVersion;
-  }
-
   private static int upgradeSoundProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -2534,16 +2524,6 @@ public final class YoungAndroidFormUpgrader {
       String oldPropName, String newPropName) {
     if (componentProperties.containsKey(oldPropName)) {
       componentProperties.put(newPropName, componentProperties.remove(oldPropName));
-    }
-  }
-
-  private static void handleSupplyValueForPreviouslyDefaultedProperty(
-      Map<String, JSONValue> componentProperties,
-      String PropName, JSONValue valueToSupply) {
-    // if the property wasn't previously there as a key, the previous value was
-    // the default value
-    if (!(componentProperties.containsKey(PropName))) {
-      componentProperties.put(PropName, valueToSupply);
     }
   }
 

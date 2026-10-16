@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Panel in the Simple design editor holding visible Simple components.
@@ -23,8 +22,6 @@ import java.util.logging.Logger;
  */
 public abstract class SimpleVisibleComponentsPanel<T extends DesignerRootComponent>
     extends Composite implements DropTarget, ComponentDatabaseChangeListener {
-  private static final Logger LOG = Logger.getLogger(SimpleVisibleComponentsPanel.class.getName());
-
   // Corresponding panel for non-visible components (because we allow users to drop
   // non-visible components onto the root, but we show them in the non-visible
   // components panel)

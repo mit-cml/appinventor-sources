@@ -68,8 +68,6 @@ public class NewYoungAndroidProjectWizard {
   @UiField(provided = true) SubsetJSONPropertyEditor blockstoolkitEditor;
   @UiField protected FlowPanel horizontalThemePanel;
   @UiField protected FlowPanel horizontalBlocksPanel;
-  @UiField protected Button topInvisible;
-  @UiField protected Button bottomInvisible;
 
   /**
    * Creates a new YoungAndroid project wizard.

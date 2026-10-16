@@ -31,52 +31,16 @@ import java.util.logging.Logger;
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
 public class TopToolbar extends Composite {
-  private static final String WIDGET_NAME_NEW = "New";
-  private static final String WIDGET_NAME_DELETE = "Delete";
-  private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
-  private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
   private static final String WIDGET_NAME_DOWNLOAD_CSR = "DownloadCSR";
-  private static final String WIDGET_NAME_SAVE = "Save";
-  private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
-  private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
-  private static final String WIDGET_NAME_MY_PROJECTS = "MyProjects";
-  private static final String WIDGET_NAME_BUILD = "Build";
-  private static final String WIDGET_NAME_BUILD_ANDROID_APK = "BuildApk";
-  private static final String WIDGET_NAME_BUILD_ANDROID_AAB = "BuildAab";
   private static final String WIDGET_NAME_BUILD_ANDROID_APK2 = "BuildApk2";
   private static final String WIDGET_NAME_BUILD_ANDROID_AAB2 = "BuildAab2";
   private static final String WIDGET_NAME_BUILD_IOS_ADHOC = "BuildIPA";
   private static final String WIDGET_NAME_BUILD_IOS_APPSTORE = "BuildIPAStore";
   private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
-  private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
-  private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
-  private static final String WIDGET_NAME_CHROMEBOOK = "Chromebook";
-  private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
-  private static final String WIDGET_NAME_USB_BUTTON = "Usb";
-  private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
-  private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
-  private static final String WIDGET_NAME_REFRESHCOMPANION_BUTTON = "RefreshCompanion";
-  private static final String WIDGET_NAME_PROJECT = "Project";
-  private static final String WIDGET_NAME_SETTINGS = "Settings";
   private static final String WIDGET_NAME_AUTOLOAD = "AutoloadLastProject";
   private static final String WIDGET_NAME_DYSLEXIC_FONT = "DyslexicFont";
   private static final String WIDGET_NAME_APP_STORE_SETTINGS = "AppStoreSettings";
-  private static final String WIDGET_NAME_NEW_LAYOUT = "NewLayout";
-  private static final String WIDGET_NAME_OLD_LAYOUT = "OldLayout";
-  private static final String WIDGET_NAME_DARK_THEME_ENABLED = "DarkThemeEnabled";
-  private static final String WIDGET_NAME_HELP = "Help";
-  private static final String WIDGET_NAME_ABOUT = "About";
-  private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
-  private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
-  private static final String WIDGET_NAME_PROJECTPROPERTIES = "ProjectProperties";
-
-  private static final String WIDGET_NAME_ADMIN = "Admin";
-  private static final String WIDGET_NAME_USER_ADMIN = "UserAdmin";
-  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
-  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
-  private static final String WINDOW_OPEN_FEATURES = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-  private static final String WINDOW_OPEN_LOCATION = "_blank";
 
   private static final boolean iamChromebook = isChromeBook();
 

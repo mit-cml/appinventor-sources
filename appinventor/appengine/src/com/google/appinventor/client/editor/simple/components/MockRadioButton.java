@@ -21,9 +21,6 @@ public final class MockRadioButton extends MockVisibleComponent {
    */
   public static final String TYPE = "RadioButton";
 
-  // Property names
-  private static final String PROPERTY_NAME_GROUP = "Group";
-
   // GWT radioButton widget used to mock a Simple RadioButton
   private final RadioButton radioButtonWidget;
 

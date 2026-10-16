@@ -32,7 +32,6 @@ public class AppStoreSettingsDialog {
       new LabeledTextBox("App Specific Password", true);
   @UiField LabeledTextBox shortNameTextbox;
   @UiField Button okButton;
-  @UiField Button cancelButton;
 
   /**
    * Create a new dialog for configuring App Store connections.

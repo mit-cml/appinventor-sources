@@ -45,6 +45,6 @@
         </g:FlowPanel>
       </g:DeckPanel>
     </g:FlowPanel>
-    <neo:StatusPanelNeo ui:field="statusPanel" />
+    <neo:StatusPanelNeo />
   </g:FlowPanel>
 </ui:UiBinder>

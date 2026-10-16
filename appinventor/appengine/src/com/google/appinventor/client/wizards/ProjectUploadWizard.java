@@ -22,7 +22,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
 
 import java.util.logging.Logger;
@@ -40,8 +39,6 @@ public class ProjectUploadWizard {
 
   @UiField Dialog uploadDialog;
   @UiField FileUpload upload;
-  @UiField Button okButton;
-  @UiField Button cancelButton;
 
   // Project archive extension
   private static final String PROJECT_ARCHIVE_EXTENSION = ".aia";

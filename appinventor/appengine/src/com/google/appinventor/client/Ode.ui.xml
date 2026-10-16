@@ -41,6 +41,6 @@
         </g:FlowPanel>
       </g:DeckPanel>
     </g:FlowPanel>
-    <ode:StatusPanel ui:field="statusPanel" />
+    <ode:StatusPanel />
   </g:FlowPanel>
 </ui:UiBinder>

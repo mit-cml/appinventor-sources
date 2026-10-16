@@ -12,10 +12,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Label;
 
-import java.util.logging.Logger;
-
 public class ProjectToolbarNeo extends ProjectToolbar {
-  private static final Logger LOG = Logger.getLogger(ProjectToolbarNeo.class.getName());
   interface ProjectToolbarUiBinderNeo extends UiBinder<Toolbar, ProjectToolbarNeo> {}
   private static final ProjectToolbarUiBinderNeo uibinder =
       GWT.create(ProjectToolbarUiBinderNeo.class);

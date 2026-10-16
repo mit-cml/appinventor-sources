@@ -59,12 +59,6 @@ public class ProjectPropertiesDialogBox {
   @UiField
   Button closeDialogBox;
 
-  @UiField
-  Button topInvisible;
-
-  @UiField
-  Button bottomInvisible;
-
   /**
    * List Of project properties category, which will be used to group properties in the dialog 
    * properties category are : General, Theming, Publishing

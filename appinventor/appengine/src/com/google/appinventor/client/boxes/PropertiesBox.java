@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Box implementation for properties panels.
@@ -32,7 +31,6 @@ import java.util.logging.Logger;
 public final class PropertiesBox extends Box {
 
   // Singleton properties box instance
-  private static final Logger LOG = Logger.getLogger(PropertiesBox.class.getName());
   private static PropertiesBox INSTANCE = new PropertiesBox();
   private EditableProperties selectedProperties = null;
   private final PropertiesPanel designProperties = new PropertiesPanel();

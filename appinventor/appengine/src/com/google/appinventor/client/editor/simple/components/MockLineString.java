@@ -13,7 +13,6 @@ import com.google.gwt.json.client.JSONObject;
 public class MockLineString extends MockMapFeatureBase {
   public static final String TYPE = "LineString";
   private static final String PROPERTY_NAME_POINTS = "PointsFromString";
-  private JavaScriptObject svgContent = null;
 
   public MockLineString(SimpleEditor editor) {
     super(editor, TYPE, images.linestring());

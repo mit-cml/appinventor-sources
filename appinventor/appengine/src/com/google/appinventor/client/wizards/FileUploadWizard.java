@@ -47,9 +47,6 @@ public class FileUploadWizard {
   @UiField Dialog uploadDialog;
   @UiField FileUpload upload;
   @UiField Button okButton;
-  @UiField Button cancelButton;
-  @UiField Button topInvisible;
-  @UiField Button bottomInvisible;
 
 
   private final FolderNode folderNode;

@@ -71,8 +71,6 @@ public class ListViewAddDataDialog {
   @UiField Button addRow;
   @UiField Button save;
   @UiField Button cancel;
-  @UiField Button topInvisible;
-  @UiField Button bottomInvisible;
 
   private final YoungAndroidListViewAddDataPropertyEditor owner;
   private final int layout;

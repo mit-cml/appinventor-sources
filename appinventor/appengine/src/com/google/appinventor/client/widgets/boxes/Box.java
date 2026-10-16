@@ -17,8 +17,6 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -554,12 +552,4 @@ public abstract class Box extends HandlerPanel {
     onResize(width, height);
   }
 
-  /**
-   * Helper method for adding style elements (in particular the rounded corners).
-   */
-  private void appendDecorationElement(String styleClass) {
-    Element element = DOM.createDiv();
-    element.setClassName(styleClass);
-    getElement().appendChild(element);
-  }
 }

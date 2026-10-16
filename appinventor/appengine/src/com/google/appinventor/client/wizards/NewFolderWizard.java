@@ -30,14 +30,12 @@ import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.folder.FolderManager;
 import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.youngandroid.TextValidators;
-import java.util.logging.Logger;
 
 /**
  * A command that adds a new folder.
  */
 public final class NewFolderWizard {
   interface NewFolderWizardUiBinder extends UiBinder<Dialog, NewFolderWizard> {}
-  private static final Logger LOG = Logger.getLogger(NewFolderWizard.class.getName());
 
   private FolderManager manager;
 
@@ -46,8 +44,6 @@ public final class NewFolderWizard {
   @UiField Button cancelButton;
   @UiField LabeledTextBox input;
   @UiField Tree tree;
-  @UiField Button topInvisible;
-  @UiField Button bottomInvisible;
 
   /**
    * Creates a new command for renaming projects

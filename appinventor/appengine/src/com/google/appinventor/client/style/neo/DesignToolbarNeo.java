@@ -14,10 +14,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 
-import java.util.logging.Logger;
-
 public class DesignToolbarNeo extends DesignToolbar {
-  private static final Logger LOG = Logger.getLogger(DesignToolbarNeo.class.getName());
   interface DesignToolbarUiBinderNeo extends UiBinder<Toolbar, DesignToolbarNeo> {}
 
   @UiField protected DropDownButton pickFormItem;

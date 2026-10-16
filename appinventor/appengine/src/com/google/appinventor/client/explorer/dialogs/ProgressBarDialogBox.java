@@ -18,7 +18,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * to its own class.
  */
 public class ProgressBarDialogBox extends DialogBox {
-  private static final String LOADING_ASSETS_ACTION = "LoadingAssetsAction";
   // 0 means just initialize, 1 means click once, 2 means click twice
   private int progressBarShow = 0;
   private Button dismissButton = new Button(MESSAGES.dismissButton());

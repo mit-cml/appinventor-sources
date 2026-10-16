@@ -5,18 +5,14 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.appinventor.client.widgets.properties.PropertiesPanel;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public class CollapsablePanel extends Composite {
-  private static final Logger LOG = Logger.getLogger(PropertiesPanel.class.getName());
-
   // UI elements
   private final FlowPanel panel;
   private final HashMap<ComponentCategory, CollapsiblePaletteCategoryPanel> categoryPanels;

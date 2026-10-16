@@ -6,8 +6,6 @@
 package com.google.appinventor.client.boxes;
 
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
-import com.google.appinventor.client.Images;
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.blocks.BlockDrawerSelectionListener;
 import com.google.appinventor.client.editor.blocks.BlocksCategory;
 import com.google.appinventor.client.editor.blocks.BlocksLanguage;
@@ -20,7 +18,6 @@ import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -33,7 +30,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -48,8 +44,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public final class BlockSelectorBox extends Box {
-  private static final Logger LOG = Logger.getLogger(BlockSelectorBox.class.getName());
-
   private static class BlockSelectorItem implements SourceStructureExplorerItem {
     BlockSelectorItem() {
     }
@@ -102,9 +96,6 @@ public final class BlockSelectorBox extends Box {
   private static final Set<String> BUILTIN_DRAWER_NAMES = new HashSet<String>(
       Arrays.asList("Control", "Logic", "Math", "Matrices", "Text", "Lists", "Dictionaries", "Colors",
           "Variables", "Procedures"));
-
-  private static final Images images = Ode.getImageBundle();
-  private static final Map<String, ImageResource> bundledImages = Maps.newHashMap();
 
   // Source structure explorer (for components and built-in blocks)
   private final SourceStructureExplorer sourceStructureExplorer;

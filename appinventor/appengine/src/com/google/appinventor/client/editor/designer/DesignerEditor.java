@@ -114,7 +114,6 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
   private final PropertiesPanel designProperties;
 
   private EditableProperties selectedProperties = null;
-  private List<MockComponent> selectedComponents = new ArrayList<MockComponent>();
   private DropTargetProvider dropTargetProvider = new DropTargetProvider() {
     @Override
     public DropTarget[] getDropTargets() {

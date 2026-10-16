@@ -59,11 +59,6 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
   protected static final Images IMAGES = Ode.getImageBundle();
   private static final Logger LOG = Logger.getLogger(BlocksEditor.class.getName());
 
-  // A constant to substract from the total height of the Viewer window, set through
-  // the computed height of the user's window (Window.getClientHeight())
-  // This is an approximation of the size of the header navigation panel
-  private static final int VIEWER_WINDOW_OFFSET = 170;
-
   protected final BlocksLanguage language;
   protected final ComponentDatabaseInterface componentDatabase;
   protected final S blocksNode;

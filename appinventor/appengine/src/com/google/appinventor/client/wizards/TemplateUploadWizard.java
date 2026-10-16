@@ -133,12 +133,6 @@ public class TemplateUploadWizard extends Wizard implements NewUrlDialogCallback
   private static TemplateUploadWizard instance;
 
   /**
-   * Needed to retrieve existing templates from user settings
-   *
-   */
-  private static UserSettings userSettings;
-
-  /**
    * The current template host Url.
    */
   private String templateHostUrl = "";

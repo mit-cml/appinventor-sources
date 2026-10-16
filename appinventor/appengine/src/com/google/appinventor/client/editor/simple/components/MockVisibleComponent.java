@@ -112,25 +112,6 @@ public abstract class MockVisibleComponent extends MockComponent {
     super(editor, type, new Image(icon));
   }
 
-  /**
-   * Creates a text property editor that throws an exception if an invalid
-   * number is entered.
-   *
-   * @return a text property editor object with an overridden validate method
-   */
-  private static TextPropertyEditor makeCoordTextPropertyEditor() {
-    return new TextPropertyEditor() {
-      @Override
-      protected void validate(String text) throws InvalidTextException {
-        try {
-          Integer.valueOf(text);
-        } catch (NumberFormatException e) {
-          throw new InvalidTextException("invalid coordinate provided: " + text);
-        }
-      }
-    };
-  }
-
   @Override
   public final void initComponent(Widget widget) {
     super.initComponent(widget);

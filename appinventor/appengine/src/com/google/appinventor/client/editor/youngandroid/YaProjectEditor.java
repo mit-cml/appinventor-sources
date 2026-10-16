@@ -627,28 +627,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }
   }
 
-  private void removeIotEditor(String formName) {
-    if (editorMap.containsKey(formName)) {
-      EditorSet editors = editorMap.get(formName);
-      if (editors.blocksEditor == null) {
-        editorMap.remove(formName);
-      } else {
-        editors.formEditor = null;
-      }
-    }
-  }
-
-  private void removeSkillEditor(String formName) {
-    if (editorMap.containsKey(formName)) {
-      EditorSet editors = editorMap.get(formName);
-      if (editors.blocksEditor == null) {
-        editorMap.remove(formName);
-      } else {
-        editors.formEditor = null;
-      }
-    }
-  }
-
   private void removeBlocksEditor(String formName) {
     if (editorMap.containsKey(formName)) {
       EditorSet editors = editorMap.get(formName);
