@@ -3,7 +3,6 @@ package com.google.appinventor.client.explorer.dialogs;
 import com.google.appinventor.client.explorer.commands.MiniProgressBar;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.widgets.DialogBox;
-import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

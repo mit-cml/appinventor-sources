@@ -14,11 +14,6 @@ import com.google.appinventor.client.utils.MessageDialog;
 
 import com.google.appinventor.client.widgets.properties.EditableProperty;
 
-import com.google.appinventor.shared.rpc.components.FirebaseAuthService;
-import com.google.appinventor.shared.rpc.components.FirebaseAuthServiceAsync;
-
-import com.google.gwt.core.client.GWT;
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import com.google.gwt.user.client.ui.Image;

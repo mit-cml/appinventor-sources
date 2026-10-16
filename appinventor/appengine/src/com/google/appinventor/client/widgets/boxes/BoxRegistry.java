@@ -6,8 +6,6 @@
 
 package com.google.appinventor.client.widgets.boxes;
 
-import com.google.appinventor.client.widgets.boxes.Box;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

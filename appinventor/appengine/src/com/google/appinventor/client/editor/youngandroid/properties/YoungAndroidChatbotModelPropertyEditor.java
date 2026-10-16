@@ -7,14 +7,9 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import static com.google.appinventor.client.utils.Promise.reject;
-import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 
-import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.YaProjectEditor;
 import com.google.appinventor.client.utils.Promise;
-import com.google.appinventor.client.utils.Promise.RejectCallback;
-import com.google.appinventor.client.utils.Promise.ResolveCallback;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
@@ -27,11 +22,9 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.user.client.Window;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**

@@ -7,7 +7,6 @@ package com.google.appinventor.client.editor.simple.components;
 
 import java.util.Map;
 
-import com.google.appinventor.client.editor.simple.components.MockMap.LatLng;
 import com.google.appinventor.components.common.ComponentConstants;
 
 final class MockMapLayout extends MockLayout {

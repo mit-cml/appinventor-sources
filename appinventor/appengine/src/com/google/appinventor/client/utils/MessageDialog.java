@@ -6,7 +6,6 @@
 package com.google.appinventor.client.utils;
 
 import com.google.appinventor.client.widgets.DialogBox;
-import com.google.appinventor.client.widgets.boxes.Box;
 
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.dom.client.Document;

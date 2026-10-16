@@ -5,7 +5,6 @@
 
 package com.google.appinventor.client.explorer.folder;
 
-import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.gwt.user.client.ui.TreeItem;
 
 public class FolderTreeItem extends TreeItem {

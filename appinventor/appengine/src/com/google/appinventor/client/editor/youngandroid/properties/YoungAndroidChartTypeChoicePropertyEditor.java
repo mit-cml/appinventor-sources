@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
-import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * Property editor for Chart type.

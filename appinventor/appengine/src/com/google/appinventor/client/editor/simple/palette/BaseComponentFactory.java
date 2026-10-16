@@ -6,7 +6,6 @@
 package com.google.appinventor.client.editor.simple.palette;
 
 import com.google.appinventor.client.editor.designer.DesignerEditor;
-import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.MockAbsoluteArrangement;
 import com.google.appinventor.client.editor.simple.components.MockBall;
 import com.google.appinventor.client.editor.simple.components.MockButton;

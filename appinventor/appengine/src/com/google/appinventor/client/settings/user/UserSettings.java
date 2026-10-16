@@ -7,7 +7,6 @@
 package com.google.appinventor.client.settings.user;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 
 import com.google.appinventor.client.Ode;

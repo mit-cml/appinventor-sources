@@ -8,7 +8,6 @@ package com.google.appinventor.client.widgets;
 
 import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.aria.client.Roles;
-import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;

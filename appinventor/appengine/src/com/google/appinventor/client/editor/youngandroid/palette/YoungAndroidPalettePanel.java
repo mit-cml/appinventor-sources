@@ -18,8 +18,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 
-import java.util.logging.Logger;
-
 /**
  * Panel showing Simple components which can be dropped onto the Young Android
  * visual designer panel.

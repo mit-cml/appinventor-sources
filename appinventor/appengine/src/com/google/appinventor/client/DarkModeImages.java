@@ -5,9 +5,7 @@
 
 package com.google.appinventor.client;
 
-import com.google.appinventor.client.Images;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Tree.Resources;
 
 /**
  * Image bundle containing all client images.

@@ -5,7 +5,6 @@
 package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
-import com.google.appinventor.components.common.ComponentConstants;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 

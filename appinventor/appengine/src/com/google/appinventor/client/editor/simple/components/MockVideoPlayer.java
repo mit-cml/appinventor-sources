@@ -7,7 +7,6 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.SimplePanel;
 

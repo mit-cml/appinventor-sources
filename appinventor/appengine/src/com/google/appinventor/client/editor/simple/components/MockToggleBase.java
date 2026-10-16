@@ -12,8 +12,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.text.Normalizer;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**

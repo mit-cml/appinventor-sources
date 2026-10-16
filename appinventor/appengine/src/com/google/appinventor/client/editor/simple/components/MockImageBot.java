@@ -15,7 +15,6 @@ import com.google.appinventor.client.widgets.properties.EditableProperty;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

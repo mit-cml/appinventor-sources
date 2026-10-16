@@ -8,7 +8,6 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.wizards.Dialog;

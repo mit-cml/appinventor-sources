@@ -9,7 +9,6 @@ package com.google.appinventor.client.wizards;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.widgets.DialogBox;
 import com.google.gwt.aria.client.Roles;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;

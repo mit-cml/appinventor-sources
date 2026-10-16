@@ -10,8 +10,6 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 
 import com.google.appinventor.client.utils.MessageDialog;
 
-import com.google.gwt.core.client.GWT;
-
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Image;

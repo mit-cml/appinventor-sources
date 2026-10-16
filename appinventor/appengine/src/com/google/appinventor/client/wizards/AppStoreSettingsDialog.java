@@ -7,8 +7,6 @@ package com.google.appinventor.client.wizards;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.Validator;
 import com.google.gwt.core.client.GWT;

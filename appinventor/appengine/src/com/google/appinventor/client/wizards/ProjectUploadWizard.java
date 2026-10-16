@@ -10,7 +10,6 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -22,11 +21,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.logging.Logger;
 

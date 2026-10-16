@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client.style.neo;
 
-import com.google.appinventor.client.Images;
-import com.google.appinventor.client.Ode;
 import com.google.gwt.resources.client.ImageResource;
 
 public interface DarkModeImagesNeo extends ImagesNeo {

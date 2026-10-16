@@ -11,8 +11,6 @@ import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.components.DataFileChangeListener;
 import com.google.appinventor.client.editor.simple.components.MockDataFile;
 
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
-
 import com.google.appinventor.client.widgets.properties.AdditionalChoicePropertyEditor;
 
 import com.google.gwt.user.client.Command;
