@@ -137,6 +137,9 @@ public final class FileImporterImpl implements FileImporter {
             // download another user's project source.
             continue;
 
+          } else if (fileName.startsWith("build")) {
+            // Don't import aab, apk and build.out files!
+            continue;
           } else {
 
             if (fileName.startsWith(SRC_FOLDER)) {
