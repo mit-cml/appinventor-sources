@@ -16,6 +16,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.StopBlocksExecution;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.Dates;
 import com.google.appinventor.components.runtime.util.TimerInternal;
@@ -296,7 +297,7 @@ public class Clock extends AndroidNonvisibleComponent
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeTime", ErrorMessages.ERROR_ILLEGAL_DATE);
-      return null;
+      throw new StopBlocksExecution();
     }
     return instant;
   }
@@ -328,7 +329,7 @@ public class Clock extends AndroidNonvisibleComponent
       instant.getTime();
     } catch (IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "MakeInstantFromParts", ErrorMessages.ERROR_ILLEGAL_DATE);
-      return null;
+      throw new StopBlocksExecution();
     }
 
     instant = Dates.DateInstant(year, month, day);
