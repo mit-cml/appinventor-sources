@@ -1742,7 +1742,7 @@ Matrix implementation.
 - get matrix row        (yail-matrix-get-row yail-matrix row)
 - get matrix column     (yail-matrix-get-column yail-matrix col)
 - get matrix cell       (yail-matrix-get-cell yail-matrix row col)
-- set matrix cell       (yail-matrix-set-cell yail-matrix row col value)
+- set matrix cell       (yail-matrix-set-cell! yail-matrix value row col)
 - is YailMatrix?        (yail-matrix? x)
 - get matrix dimensions         (yail-matrix-get-dims matrix)
 - get matrix inverse    (yail-matrix-inverse matrix)
@@ -1765,17 +1765,29 @@ Matrix implementation.
 (define (yail-matrix-get-column matrix col)
   (invoke matrix 'getCol:error: col))
 
-(define (yail-matrix-get-cell matrix row col)
-  (invoke matrix 'getCell row col))
+(define (check-matrix-2d-indices idxs)
+  (if (not (= (length idxs) 2))
+      (signal-runtime-error
+       (format #f "Expected 2 indices but got ~A" (length idxs))
+       "Matrix Error")))
 
-(define (yail-matrix-set-cell! matrix row col value)
-  (invoke matrix 'setCell:::error: row col value))
+(define (yail-matrix-get-cell matrix . idxs)
+  (check-matrix-2d-indices idxs)
+  (let ((row (car idxs))
+        (col (cadr idxs)))
+    (invoke matrix 'getCell row col)))
+
+(define (yail-matrix-set-cell! matrix value . idxs)
+  (check-matrix-2d-indices idxs)
+  (let ((row (car idxs))
+        (col (cadr idxs)))
+    (invoke matrix 'setCell:::error: row col value)))
 
 (define (yail-matrix? x)
   (instance? x SchemeKit.YailMatrix))
 
 (define (yail-matrix-get-dims matrix)
-  (invoke matrix 'getDimensions'))
+  (invoke matrix 'getDimensions))
 
 (define (yail-matrix-inverse matrix)
   (invoke 'SchemeKit.YailMatrix 'inverse:error: matrix))
