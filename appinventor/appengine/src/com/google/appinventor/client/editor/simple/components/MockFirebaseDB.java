@@ -175,8 +175,6 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
   public void changeProperty(String name, String value) {
     if (name.equals(PROPERTY_NAME_DEVELOPER_BUCKET)) {
       return;
-    } else if (name.equals(PROPERTY_NAME_FIREBASE_URL)) {
-      onPropertyChange(name, value);
     }
     super.changeProperty(name, value);
   }
@@ -200,6 +198,20 @@ public class MockFirebaseDB extends MockNonVisibleComponent {
       } else {
         tokenType &= ~EditableProperty.TYPE_NONPERSISTED;
         persistToken = true;
+
+        // Warn if FirebaseUrl looks like a typo or custom backend.
+        String url = newValue.trim().toLowerCase();
+        while (url.endsWith("/")) {
+          url = url.substring(0, url.length() - 1);
+        }
+        boolean looksValid = url.isEmpty()
+          || url.endsWith(".firebaseio.com")
+          || url.endsWith(".firebasedatabase.app");
+        if (!looksValid && editor.isLoadComplete()) {
+          MessageDialog.messageDialog(MESSAGES.warningDialogTitle(),
+            MESSAGES.firebaseUrlWarning(),
+            MESSAGES.okButton(), null, null);
+        }
       }
       firebaseToken.setType(tokenType);
       // Need to fire this change to mark the form dirty when we change the type
