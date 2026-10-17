@@ -1915,6 +1915,20 @@ public final class YoungAndroidFormUpgrader {
       // FontBold, FontItalic, FontTypeface properties made visible in block editor.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The TrackColorInactive designer default was changed to Gray (&HFF888888) from Dark Gray
+      // (&HFF444444). A missing key meant the old default, so write it out explicitly to keep
+      // the same semantics. An explicit Gray now matches the default and can be dropped.
+      if (componentProperties.containsKey("TrackColorInactive")) {
+        String trackColorInactive = componentProperties.get("TrackColorInactive").asString().getString();
+        if ("&HFF888888".equals(trackColorInactive)) {
+          componentProperties.remove("TrackColorInactive");
+        }
+      } else {
+        componentProperties.put("TrackColorInactive", new ClientJsonString("&HFF444444"));
+      }
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

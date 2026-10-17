@@ -640,7 +640,9 @@ public class YaVersion {
   // - EV3_GYROSENSOR_COMPONENT_VERSION was incremented to 3.
   // - EV3_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
   // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
-  public static final int YOUNG_ANDROID_VERSION = 237;
+  // For YOUNG_ANDROID_VERSION 238:
+  // - SWITCH_COMPONENT_VERSION was incremented to 3.
+  public static final int YOUNG_ANDROID_VERSION = 238;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1564,7 +1566,9 @@ public class YaVersion {
   //  - Initial Version
   // For SWITCH_COMPONENT_VERSION 2:
   // - FontBold, FontItalic, FontTypeface properties made visible in block editor.
-  public static final int SWITCH_COMPONENT_VERSION = 2;
+  // For SWITCH_COMPONENT_VERSION 3:
+  // - The TrackColorInactive property default value was changed to Component.DEFAULT_VALUE_COLOR_GRAY.
+  public static final int SWITCH_COMPONENT_VERSION = 3;
 
   // For TABLEARRANGEMENT_COMPONENT_VERSION 2:
   // - Columns, Rows property (getters only) made visible in block editor.
