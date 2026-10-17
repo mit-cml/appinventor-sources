@@ -18,6 +18,7 @@ import com.google.appinventor.client.editor.simple.components.MockCheckBox;
 import com.google.appinventor.client.editor.simple.components.MockCircle;
 import com.google.appinventor.client.editor.simple.components.MockCircularProgress;
 import com.google.appinventor.client.editor.simple.components.MockCloudDB;
+import com.google.appinventor.client.editor.simple.components.MockNotifier;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
 import com.google.appinventor.client.editor.simple.components.MockDataFile;
@@ -102,6 +103,9 @@ public class BaseComponentFactory implements ComponentFactory {
           getImageFromPath(componentDatabase.getIconName(name), null));
       } else if (name.equals(MockCloudDB.TYPE)) {
         return new MockCloudDB(editor, name,
+          getImageFromPath(componentDatabase.getIconName(name), null));
+      } else if (name.equals(MockNotifier.TYPE)) {
+        return new MockNotifier(editor, name,
           getImageFromPath(componentDatabase.getIconName(name), null));
       } else if (name.equals(MockFusionTablesControl.TYPE)) {
         return new MockFusionTablesControl(editor, name,
