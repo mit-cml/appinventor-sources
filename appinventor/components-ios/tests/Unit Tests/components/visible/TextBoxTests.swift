@@ -64,4 +64,15 @@ class TextBoxTests: XCTestCase {
     XCTAssertFalse(adapter.textView(textView, shouldChangeTextIn: NSRange(location: 3, length: 0), replacementText: "-"))
     XCTAssertFalse(adapter.textView(textView, shouldChangeTextIn: NSRange(location: 3, length: 0), replacementText: "+"))
   }
+
+  func testSmartPunctuationDisabled() {
+    let adapter = TextBoxAdapter()
+    if #available(iOS 11.0, *) {
+      if let traits = adapter.responder as? UITextInputTraits {
+        XCTAssertEqual(.no, traits.smartPunctuationType)
+        XCTAssertEqual(.no, traits.smartQuotesType)
+        XCTAssertEqual(.no, traits.smartDashesType)
+      }
+    }
+  }
 }
