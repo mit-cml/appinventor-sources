@@ -88,9 +88,9 @@ If you decide to fork, follow the
 [instructions](https://help.github.com/articles/fork-a-repo) given by
 GitHub. After that you can clone your own copy of the sources with:
 
-    $ git clone https://github.com/YOUR\_USER\_NAME/appinventor-sources.git
+    $ git clone https://github.com/YOUR_USER_NAME/appinventor-sources.git
 
-Make sure you change *YOUR*USERNAME to your user name.
+Make sure you change *YOUR_USER_NAME* to your user name.
 
 Configuring a remote pointing to this repository is also a good idea if you are forking:
 
@@ -234,7 +234,7 @@ You will need a local PostgreSQL server installation. Most modern
 versions should work, but we have tested versions 17 and 18.
 
 By default the development server looks for a database named
-**appinventor\_db** on **localhost**, using a username of
+**appinventor_db** on **localhost**, using a username of
 **appinventor** and a password of **appinventor**. You can change
 these in the appinventor.ini.sample file in the *jettybase* directory.
 

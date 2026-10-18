@@ -33,11 +33,12 @@ menu() {
     echo "   5.Build Companion App"
     echo "   6.Build Extension"
     echo ""
-    echo "   7.Run Super Dev Mode"
-    echo "   8.Run Build Server"
-    echo "   9.Run Tests"
+    echo "   7.Run Local Server"
+    echo "   8.Run Super Dev Mode"
+    echo "   9.Run Build Server"
+    echo "   A.Run Tests"
     echo ""
-    echo "   A.Doctor"
+    echo "   B.Doctor"
 
     echo "   0.Exit"
     echo ""
@@ -51,10 +52,11 @@ menu() {
       4) clear ; buildnoplay ; pause ;;
       5) clear ; companion ; pause ;;
       6) clear ; extension ; pause ;;
-      7) clear ; sdm ; pause ;;
-      8) clear ; buildserver ; pause ;;
-      9) clear ; tests ; pause ;;
-      a|A) clear ; doctor ; pause ;;
+      7) clear ; localserver ; pause ;;
+      8) clear ; sdm ; pause ;;
+      9) clear ; buildserver ; pause ;;
+      a|A) clear ; tests ; pause ;;
+      b|B) clear ; doctor ; pause ;;
       0) clear ; exit 0 ;;
     esac
   done
@@ -102,7 +104,7 @@ extension() {
 
 localserver() {
   title Running Local Server...
-  start java_dev_appserver --address=0.0.0.0 --port=8888 appengine/build/war/
+  ant devserver
   # wait for 10 seconds for app engine server to start
   sleep 10
   open_url http://localhost:8888
@@ -135,18 +137,18 @@ doctor() {
     ((pass++))
     echo [PASS] Java is installed.
     # Check Java version
-    if java -version 2>&1 | grep -q "version \"11." &> /dev/null; then
+    if java -version 2>&1 | grep -qE "version \"(11|17)\." &> /dev/null; then
       ((pass++))
       echo [PASS] Required version of Java is installed.
     else
       ((fail++))
       echo [FAIL] Required version of Java is not installed or not found on PATH.
-      echo _______Please install Java 11 and try again.
+      echo _______Please install Java 11 or 17 and try again.
     fi
   else
     ((fail++))
     echo [FAIL] Java is not installed or not found on PATH.
-    echo _______Please install Java 11 and try again.
+    echo _______Please install Java 11 or 17 and try again.
   fi
   # Check if git is installed
   if command -v git &> /dev/null; then

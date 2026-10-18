@@ -151,19 +151,19 @@ if /i "%ERRORLEVEL%" equ "0" (
     set /a pass=pass+1
     echo [PASS] Java is installed.
     :: Check Java version
-    java -version 2>&1 | find "version ""11." > nul 2>&1
-    if /i "%ERRORLEVEL%" equ "0" (
+    call java -version 2>&1 | findstr /R /C:"version.*11\." /C:"version.*17\." >nul
+    if not errorlevel 1 (
         set /a pass=pass+1
         echo [PASS] Required version of Java is installed.
     ) else (
         set /a fail=fail+1
         echo [FAIL] Required version of Java is not installed or not found on PATH.
-        echo _______Please install Java 11 and try again.
+        echo _______Please install Java 11 or 17 and try again.
     )
 ) else (
     set /a fail=fail+1
     echo [FAIL] Java is not installed or not found on PATH.
-    echo _______Please install Java 11 and try again.
+    echo _______Please install Java 11 or 17 and try again.
 )
 :: Check if git is installed
 where git > nul 2>&1
@@ -184,16 +184,6 @@ if /i "%ERRORLEVEL%" equ "0" (
     set /a fail=fail+1
     echo [FAIL] Git is not installed or not found on PATH.
     echo _______Please install Git and try again.
-)
-:: Check if gcloud is installed
-where gcloud > nul 2>&1
-if /i "%ERRORLEVEL%" equ "0" (
-    set /a pass=pass+1
-    echo [PASS] Google Cloud SDK is installed.
-) else (
-    set /a fail=fail+1
-    echo [FAIL] Google Cloud SDK is not installed or not found on PATH.
-    echo _______Download gcloud from here: https://cloud.google.com/appengine/docs/standard/java/download
 )
 echo.
 echo Passed %pass% checks and %fail% failing
