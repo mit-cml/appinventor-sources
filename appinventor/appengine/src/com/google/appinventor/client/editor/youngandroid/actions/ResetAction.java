@@ -21,7 +21,7 @@ public class ResetAction implements Command {
   @Override
   public void execute() {
     if (Ode.getInstance().okToConnect()) {
-      Ode.getInstance().getTopToolbar().startRepl(false, false, false, false); // We are really stopping the repl here
+      Ode.getInstance().getTopToolbar().startRepl(false, false, false, false, false); // We are really stopping the repl here
     }
   }
 
