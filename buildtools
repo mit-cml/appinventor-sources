@@ -113,12 +113,12 @@ localserver() {
 sdm() {
   title Running Super Dev Mode...
   open_url http://localhost:9876
-  start ant devmode
+  ant devmode
 }
 
 buildserver() {
   title Running Build Server...
-  start ant RunLocalBuildServer
+  ant RunLocalBuildServer
 }
 
 tests() {

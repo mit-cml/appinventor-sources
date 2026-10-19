@@ -151,7 +151,7 @@ if /i "%ERRORLEVEL%" equ "0" (
     set /a pass=pass+1
     echo [PASS] Java is installed.
     :: Check Java version
-    call java -version 2>&1 | findstr /R /C:"version.*11\." /C:"version.*17\." >nul
+    call java -version 2>&1 | findstr /R /C:"version .11[^0-9]" /C:"version .17[^0-9]" >nul
     if not errorlevel 1 (
         set /a pass=pass+1
         echo [PASS] Required version of Java is installed.
