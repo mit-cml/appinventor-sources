@@ -12,6 +12,7 @@ import com.google.appinventor.client.explorer.folder.FolderTreeItem;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -59,6 +60,7 @@ public final class MoveProjectsWizard {
     // This undescriptive method below sets whether the tree is expanded or not
     root.setState(true);
     tree.addItem(root);
+    TableAccessibility.setLayoutTables(tree);
     tree.setSelectedItem(root);
     moveDialog.center();
     tree.setFocus(true);

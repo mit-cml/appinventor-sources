@@ -7,6 +7,7 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.WindowScrollListener;
@@ -37,6 +38,7 @@ public class RpcStatusPopup extends DecoratedPopupPanel implements RpcListener {
    */
   public RpcStatusPopup() {
     super(/* autoHide = */ false);
+    TableAccessibility.setEnclosingLayoutTable(getCellElement(1, 1));
     setStyleName("ode-RpcStatusMessage");
     setWidget(label);
 

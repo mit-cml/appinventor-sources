@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.StyleElement;
@@ -63,21 +64,21 @@ public class PreviewFileCommand extends ChainableCommand {
         }
       });
 
-    HorizontalPanel buttonPanel = new HorizontalPanel();
-    buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    buttonPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+    FlowPanel buttonPanel = new FlowPanel();
+    buttonPanel.setStyleName("ode-HorizontalLayout");
+    buttonPanel.addStyleName("ode-HorizontalLayout-middle");
     buttonPanel.add(closeButton);
 
-    VerticalPanel dialogPanel = new VerticalPanel();
-    dialogPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-    dialogPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+    FlowPanel dialogPanel = new FlowPanel();
+    dialogPanel.setStyleName("ode-VerticalLayout");
+    dialogPanel.addStyleName("ode-VerticalLayout-center");
 
     Widget filePreview = generateFilePreview(node);
     dialogPanel.clear();
     dialogPanel.add(filePreview);
 
     dialogPanel.add(buttonPanel);
-    dialogPanel.setWidth("300px");
+    dialogPanel.getElement().getStyle().setProperty("minWidth", "300px");
 
     dialogBox.setGlassEnabled(false);
     dialogBox.setModal(false);
@@ -128,15 +129,18 @@ public class PreviewFileCommand extends ChainableCommand {
     return new HTML(MESSAGES.filePreviewError());
   }
   
-  private VerticalPanel getFontResourcePreviewPanel(String fontResourceURL) {
-    VerticalPanel fontResourcePreviewPanel = new VerticalPanel();
+  private FlowPanel getFontResourcePreviewPanel(String fontResourceURL) {
+    FlowPanel fontResourcePreviewPanel = new FlowPanel();
+    fontResourcePreviewPanel.setStyleName("ode-VerticalLayout");
     fontResourcePreviewPanel.setWidth("600px");
     fontResourcePreviewPanel.setHeight("400px");
     
-    HorizontalPanel fontPropertiesPanel = new HorizontalPanel();
+    FlowPanel fontPropertiesPanel = new FlowPanel();
+    fontPropertiesPanel.setStyleName("ode-HorizontalLayout");
+    fontPropertiesPanel.addStyleName("ode-HorizontalLayout-middle");
+    fontPropertiesPanel.addStyleName("ode-HorizontalLayout-spread");
     fontPropertiesPanel.setHeight("100px");
     fontPropertiesPanel.setWidth("600px");
-    fontPropertiesPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     
     final TextBox textPreviewTextBox = new TextBox();
     textPreviewTextBox.getElement().setPropertyString("placeholder", "Text for Preview");
@@ -155,11 +159,12 @@ public class PreviewFileCommand extends ChainableCommand {
     
     fontResourcePreviewPanel.add(fontPropertiesPanel);
     
-    VerticalPanel fontPreviewPanel = new VerticalPanel();
+    FlowPanel fontPreviewPanel = new FlowPanel();
+    fontPreviewPanel.setStyleName("ode-VerticalLayout");
+    fontPreviewPanel.addStyleName("ode-VerticalLayout-center");
+    fontPreviewPanel.addStyleName("ode-VerticalLayout-middle");
     fontPreviewPanel.setHeight("300px");
     fontPreviewPanel.setWidth("600px");
-    fontPreviewPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-    fontPreviewPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
   
     StyleElement styleElement = Document.get().createStyleElement();
     String resource = "@font-face {";

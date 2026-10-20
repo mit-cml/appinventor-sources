@@ -52,6 +52,7 @@ import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Urls;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
 import com.google.appinventor.client.widgets.TutorialPopup;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
@@ -83,6 +84,7 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.shared.util.AccountUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
@@ -113,23 +115,24 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.googlecode.gwt.crypto.bouncycastle.digests.MD5Digest;
+
+import java.util.Date;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -799,6 +802,11 @@ public class Ode implements EntryPoint {
             isAnon = true;
           }
           registerIosExtensions(config.getIosExtensions());
+          if (user.getUserEmail().startsWith("anon-")) { // We are anonymous user
+             isAnon = true;
+          }
+          licenseCode = result.getAuthCode();
+          systemId = result.getSysUID();
           return resolve(null);
         })
         .then0(this::handleGalleryId)
@@ -810,6 +818,14 @@ public class Ode implements EntryPoint {
         ))
         .then0(this::handleUiPreference)
         .then(this::initializeUi)
+        .then0(() -> {
+            if (isAnon) {
+              topPanel.showUserEmail("Anonymous");
+            } else {
+              topPanel.showUserEmail(user.getUserEmail());
+            }
+            return null;
+        })
         .then0(() -> projectManager.ensureProjectsLoadedFromServer(projectService))
         .then(projects -> {
           folderManager.loadFolders();
@@ -1177,7 +1193,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the structureAndAssets panel.
    *
-   * @return  {@link VerticalPanel}
+   * @return  {@link FlowPanel}
    */
   public FlowPanel getStructureAndAssets() {
     return structureAndAssets;
@@ -1186,7 +1202,7 @@ public class Ode implements EntryPoint {
   /**
    * Returns the workColumns panel.
    *
-   * @return  {@link HorizontalPanel}
+   * @return  {@link FlowPanel}
    */
   public FlowPanel getWorkColumns() {
     return workColumns;
@@ -1372,6 +1388,15 @@ public class Ode implements EntryPoint {
    */
   public User getUser() {
     return user;
+  }
+
+  /** Returns whether or not this is an anonymous user
+   *
+   *  @return true if this is an anonymous user
+   */
+
+  public boolean isAnonUser() {
+    return isAnon;
   }
 
   /**
@@ -1666,23 +1691,21 @@ public class Ode implements EntryPoint {
     dialogBox.setStylePrimaryName("ode-DialogBox");
     dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
-    HorizontalPanel mainPanel = new HorizontalPanel();
-    mainPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    mainPanel.setSpacing(10);
+    FlowPanel mainPanel = new FlowPanel();
+    mainPanel.setStyleName("ode-HorizontalLayout");
+    mainPanel.addStyleName("ode-HorizontalLayout-middle");
+    mainPanel.addStyleName("ode-Layout-spacing10");
 
     Image dialogImage = new Image(Ode.getImageBundle().codiVert());
 
-    VerticalPanel messagePanel = new VerticalPanel();
-    messagePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+    FlowPanel messagePanel = new FlowPanel();
+    messagePanel.setStyleName("ode-VerticalLayout");
 
     Label messageChunk2 = new Label(MESSAGES.showEmptyTrashMessage());
     messagePanel.add(messageChunk2);
 
     mainPanel.add(dialogImage);
     mainPanel.add(messagePanel);
-
-    mainPanel.setCellHorizontalAlignment(dialogImage, HasHorizontalAlignment.ALIGN_CENTER);
-    mainPanel.setCellVerticalAlignment(dialogImage, HasVerticalAlignment.ALIGN_MIDDLE);
 
     dialogBox.setWidget(mainPanel);
     dialogBox.center();
@@ -1721,6 +1744,15 @@ public class Ode implements EntryPoint {
    * @param force Bypass the check to see if they have dimissed this version
    */
   private void createWelcomeDialog(final boolean force) {
+    if (isAnon && !displayedCodes) { // First display the revisit codes if we
+      displayRevisitCodes(false, new Runnable() {
+          @Override public void run() {
+            displayedCodes = true;
+            createWelcomeDialog(force);
+          }
+        });         // if we are an anonymous account
+      return;
+    }
     if (!shouldShowWelcomeDialog() && !force) {
       maybeShowNoProjectsDialog();
       return;
@@ -1734,7 +1766,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(splashConfig.content);
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -1769,6 +1802,50 @@ public class Ode implements EntryPoint {
         }
       }
     });
+  }
+
+  public void displayRevisitCodes(boolean leaving, final Runnable next) {
+    if (!isAnon) {                                          // We are not anonymous so don't
+      next.run();                                           // show the dialog
+      return;
+    }
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(MESSAGES.createWelcomeDialogText());
+    dialogBox.setHeight("200px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    String code = AccountUtil.accountToCode(getUser().getUserEmail());
+    String message;
+    if (leaving) {
+      message = "You are leaving MIT App Inventor. If you wish to " +
+        " access any projects you created here in the future, be sure " +
+        " to write down the code below and use it to re-enter MIT App " +
+        "Inventor.<br/><br/>Your Code: " + code;
+    } else {
+      message = "You are logged in without an account.<br/>\n" +
+        "You can use the code below to re-enter MIT App Inventor and work " +
+        "on your projects again.<br/><br/>\n" +
+        "Your Code is: " + code + "<br/>\n";
+    }
+    HTML htmlmessage = new HTML(message);
+    htmlmessage.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button ok = new Button(MESSAGES.createWelcomeDialogButton());
+    ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          next.run();
+        }
+      });
+    holder.add(ok);
+    DialogBoxContents.add(htmlmessage);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
   }
 
   /**
@@ -1824,7 +1901,7 @@ public class Ode implements EntryPoint {
     } else {
       uversion = Integer.parseInt(value);
     }
-    if (uversion >= splashConfig.version) {
+    if ((uversion >= splashConfig.version) && splashConfig.version != -2) { // -2 means always show the splash screen!
       return false;
     } else {
       return true;
@@ -1849,7 +1926,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.showSurveySplashMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -1930,6 +2008,26 @@ public class Ode implements EntryPoint {
   // (if enabled). This function is called out of SplashSettings.java
   // after the userSettings object is loaded (above) and parsed.
   private void showSplashScreens() {
+
+    // Timer t = new Timer() {
+    //     @Override
+    //     public void run() {
+    //       // Check System License
+    //       licenseCheck();
+    //     }
+    //   };
+    // t.schedule(4000);           // Fire in four seconds
+
+    // // Deal with possible expiration
+    // t = new Timer() {
+    //     @Override
+    //     public void run () {
+    //       // Display expiration dialog if appropriate
+    //       expireDialog();
+    //     }
+    //   };
+    // t.schedule(6000);           // In six seconds...
+
     boolean showSplash = false;
     if (AppInventorFeatures.showSurveySplashScreen()) {
       int nvalue = 0;
@@ -1975,7 +2073,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.sessionDead());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2014,7 +2113,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.invalidSessionDialogMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2074,7 +2174,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.bashWarningDialogMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2125,7 +2226,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.finalDialogMessage());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
@@ -2149,7 +2251,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.galleryLoadingDialogText());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
@@ -2173,7 +2276,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.corruptionDialogMessage());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
@@ -2194,7 +2298,8 @@ public class Ode implements EntryPoint {
     String screenNameParts = fileParts[fileParts.length - 1];
     final String screenName = screenNameParts.split("\\.")[0]; // Get rid of the .bky part
     final String userEmail = user.getUserEmail();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(MESSAGES.blocksTruncatedDialogMessage().replace("%1", screenName));
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2225,7 +2330,7 @@ public class Ode implements EntryPoint {
               @Override
               public void run() {
                 if (count > 0) {
-                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
+                  HTML html = (HTML) ((FlowPanel)dialogBox.getWidget()).getWidget(0);
                   html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
                   count -= 1;
                 } else {
@@ -2261,7 +2366,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML("<p>" + inputMessage + "</p>");
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2294,7 +2400,8 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML("<p>" + MESSAGES.noprojectDuringConnect() + "</p>");
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
@@ -2305,6 +2412,100 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(okButton);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * Dialog box to display expiration warning.
+   * If it is less then 10 days to expiration, this dialog box is displayed with
+   * a Continue button. If this copy of App Inventor has expired, then there
+   * is no Continue button and the application is now hung.
+   */
+  private void expireDialog() {
+    Date now = new Date();
+    Date expiration = new Date(1441080000000L);
+    Date warning = new Date(expiration.getTime() - 3600*1000*10*24); // Ten days before expiration
+    if (now.compareTo(warning) < 0) {
+      return;                                    // Don't display if expiration in far future
+    }
+    HTML message;
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    FlowPanel holder = new FlowPanel();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    if (now.compareTo(expiration) < 0) {         // Give warning
+      message = new HTML("This version of MIT App Inventor will expire: " + expiration.toString());
+      Button okButton = new Button("Continue");
+      okButton.addClickListener(new ClickListener() {
+          public void onClick(Widget sender) {
+            dialogBox.hide();
+          }
+        });
+      holder.add(okButton);
+      message.setStyleName("DialogBox-message");
+      DialogBoxContents.add(message);
+      DialogBoxContents.add(holder);
+      dialogBox.setWidget(DialogBoxContents);
+      dialogBox.show();
+    } else {
+      message = new HTML("This copy of MIT App Inventor has expired");
+      message.setStyleName("DialogBox-message");
+      DialogBoxContents.add(message);
+      dialogBox.setWidget(DialogBoxContents);
+      dialogBox.show();
+    }
+  }
+
+  private void licenseCheck() {
+    try {
+      if (makeAuthCode(makeCode(systemId)) == Long.parseLong(licenseCode)) {
+        return;                   // License checks out
+      }
+    } catch (Exception e) {
+      // fall through. An exception likely means that licenseCode is not a number
+      // because we are in a fresh database and it is null
+    }
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    final TextBox inputBox = new TextBox();
+    final String messageText = "Your siteCode is " + makeCode(systemId) + "<br />Please visit http://register.appinventor.mit.edu " +
+      "to obtain an authentication code. Enter it below to continue.";
+    final HTML message = new HTML(messageText);
+    FlowPanel holder = new FlowPanel();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("License Check");
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    Button okButton = new Button("Continue");
+    okButton.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          if (validLicense(inputBox.getText())) {
+            dialogBox.hide();
+            userInfoService.setAuthCode(inputBox.getText(), new OdeAsyncCallback<Void> ("") {
+                @Override
+                  public void onSuccess(Void result) {
+                  // do nothing
+                }
+              });
+          } else {
+            message.setHTML("<b>Invalid authCode entered, verify your siteCode and try again</b><br/><br/>" + messageText);
+          }
+        }
+      });
+    holder.add(inputBox);
+    holder.add(okButton);
+    message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
@@ -2330,12 +2531,28 @@ public class Ode implements EntryPoint {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML("<iframe src=\"" + Url + "\" style=\"border: 0; width: 680px; height: 660px;\"></iframe>");
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
+  }
+
+  private boolean validLicense(String authCodeString) {
+    try {
+      long siteCode = makeCode(systemId);
+      long inputAuthCode = Long.parseLong(authCodeString);
+      long authCode = makeAuthCode(siteCode);
+      if (inputAuthCode == authCode) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {     // Number format, null, who knows
+      return false;             // if we get one, no valid license!
+    }
   }
 
   /**
@@ -2440,6 +2657,39 @@ public class Ode implements EntryPoint {
       LOG.info("Unlocking Screens");
     }
     screensLocked = value;
+  }
+
+  // Convert a HEX input string into a decimal
+  // value reduce mod 100000000 (to yield an 8
+  // digit value, to ease typing requirements)
+  private static long makeCode(String systemId) {
+    Long v = Long.parseLong(systemId.substring(0, 10), 16);
+    v = v % 100000000;
+    return v.longValue();
+  }
+
+  private static long makeAuthCode(long sysCode) {
+    byte [] ikey = { 0x16, 0x7f, 0x01, 0x43, 0x79 };
+    byte [] okey = { 0x45, 0x13, 0x7f, 0x01, 0x03 };
+    byte [] code = Long.toString(sysCode, 16).getBytes();
+    MD5Digest md = new MD5Digest();
+    md.update(ikey, 0, ikey.length);
+    md.update(code, 0, code.length);
+    md.update(okey, 0, okey.length);
+    byte [] result = new byte[md.getDigestSize()];
+    md.doFinal(result, 0);
+    return makeCode(bytesToHex(result));
+  }
+
+  final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+  private static String bytesToHex(byte[] bytes) {
+    char[] hexChars = new char[bytes.length * 2];
+    for ( int j = 0; j < bytes.length; j++ ) {
+      int v = bytes[j] & 0xFF;
+      hexChars[j * 2] = hexArray[v >>> 4];
+      hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+    }
+    return new String(hexChars);
   }
 
   /**
@@ -2645,7 +2895,12 @@ public class Ode implements EntryPoint {
   }
 
   public boolean getGalleryReadOnly() {
-    return config.getGalleryReadOnly();
+    // If we have an anonymous user we are always in Gallery readonly
+    if (isAnon) {
+      return true;
+    } else {
+      return config.getGalleryReadOnly();
+    }
   }
 
   public boolean getDeleteAccountAllowed() {

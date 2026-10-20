@@ -12,17 +12,17 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.google.appinventor.client.utils.TableAccessibility;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.shared.rpc.AdminInterfaceException;
 import com.google.appinventor.shared.rpc.admin.AdminUser;
@@ -101,8 +101,9 @@ public class AdminUserList extends Composite {
     refreshSortIndicators();
     setHeaderRow();
 
-    HorizontalPanel searchPanel = new HorizontalPanel();
-    searchPanel.setSpacing(5);
+    FlowPanel searchPanel = new FlowPanel();
+    searchPanel.setStyleName("ode-HorizontalLayout");
+    searchPanel.addStyleName("ode-Layout-spacing5");
     final LabeledTextBox searchText = new LabeledTextBox("Enter Email address (or partial)");
     Button searchButton = new Button("Search");
     searchPanel.add(searchText);
@@ -123,8 +124,8 @@ public class AdminUserList extends Composite {
         }
       });
 
-    VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
 
     panel.add(searchPanel);
     panel.add(table);
@@ -146,26 +147,30 @@ public class AdminUserList extends Composite {
   private void setHeaderRow() {
     table.getRowFormatter().setStyleName(0, "ode-AdminUserListHeaderRow");
 
-    HorizontalPanel emailHeader = new HorizontalPanel();
+    FlowPanel emailHeader = new FlowPanel();
+    emailHeader.setStyleName("ode-HorizontalLayout");
     final Label emailHeaderLabel = new Label("User Email");
     emailHeaderLabel.addStyleName("ode-AdminUserListLabel");
     emailHeader.add(emailHeaderLabel);
     emailHeader.add(nameSortIndicator);
     table.setWidget(0, 0, emailHeader);
 
-    HorizontalPanel uidHeader = new HorizontalPanel();
+    FlowPanel uidHeader = new FlowPanel();
+    uidHeader.setStyleName("ode-HorizontalLayout");
     final Label uidHeaderLabel = new Label("UID");
     uidHeaderLabel.addStyleName("ode-AdminUserListLabel");
     uidHeader.add(uidHeaderLabel);
     table.setWidget(0, 1, uidHeader);
 
-    HorizontalPanel adminHeader = new HorizontalPanel();
+    FlowPanel adminHeader = new FlowPanel();
+    adminHeader.setStyleName("ode-HorizontalLayout");
     final Label adminHeaderLabel = new Label("isAdmin?");
     adminHeaderLabel.addStyleName("ode-AdminUserListLabel");
     adminHeader.add(adminHeaderLabel);
     table.setWidget(0, 2, adminHeader);
 
-    HorizontalPanel visitedHeader = new HorizontalPanel();
+    FlowPanel visitedHeader = new FlowPanel();
+    visitedHeader.setStyleName("ode-HorizontalLayout");
     final Label visitedLabel = new Label("Visited");
     visitedLabel.addStyleName("ode-AdminUserListLabel");
     visitedHeader.add(visitedLabel);
@@ -322,18 +327,22 @@ public class AdminUserList extends Composite {
     userInfo.setWidget(0, 1, userName);
     userInfo.setWidget(1, 0, passwordLabel);
     userInfo.setWidget(1, 1, passwordBox);
+    TableAccessibility.setLayoutTables(userInfo);
 
     final CheckBox isAdminBox = new CheckBox("Is Admin?");
     final CheckBox hidePasswordCheckbox = new CheckBox("Hide Password");
-    final HorizontalPanel checkboxPanel = new HorizontalPanel();
+    final FlowPanel checkboxPanel = new FlowPanel();
+    checkboxPanel.setStyleName("ode-HorizontalLayout");
     checkboxPanel.add(isAdminBox);
     checkboxPanel.add(hidePasswordCheckbox);
 
-    VerticalPanel vPanel = new VerticalPanel();
+    FlowPanel vPanel = new FlowPanel();
+    vPanel.setStyleName("ode-VerticalLayout");
     vPanel.add(message);
     vPanel.add(userInfo);
     vPanel.add(checkboxPanel);
-    HorizontalPanel buttonPanel = new HorizontalPanel();
+    FlowPanel buttonPanel = new FlowPanel();
+    buttonPanel.setStyleName("ode-HorizontalLayout");
     Button okButton = new Button("OK");
     buttonPanel.add(okButton);
     hidePasswordCheckbox.addClickListener(new ClickListener() {
@@ -414,7 +423,8 @@ public class AdminUserList extends Composite {
     // switchUserPanel -- Put up a button to permit us to
     // switch to the selected user, but readonly
     if (!adding) {
-      HorizontalPanel switchUserPanel = new HorizontalPanel();
+      FlowPanel switchUserPanel = new FlowPanel();
+      switchUserPanel.setStyleName("ode-HorizontalLayout");
       Button switchButton = new Button("Switch to This User");
       switchButton.addClickListener(new ClickListener() {
           @Override

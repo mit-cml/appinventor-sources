@@ -14,14 +14,14 @@
 
   <wiz:Dialog ui:field="projectProperties" role="dialog" ariaModal="true" ariaLabel="Project Properties"
               styleName="ode-DialogBox">
-    <g:VerticalPanel>
+    <g:FlowPanel styleName="ode-VerticalLayout">
     <g:Button ui:field='topInvisible' styleName="FocusTrap" tabIndex="-1"/>
-      <g:HorizontalPanel styleName='ode-propertyDialogContainer'>
+      <g:FlowPanel styleName='ode-HorizontalLayout ode-propertyDialogContainer'>
         <g:ListBox ui:field="categoryList" styleName='ode-projectPropertyCategoryTitlePanel'></g:ListBox>
         <g:ScrollPanel styleName='ode-propertyDialogPropertiesScrollPanel'>
           <g:DeckPanel ui:field="propertiesDeckPanel"></g:DeckPanel>
         </g:ScrollPanel>
-      </g:HorizontalPanel>
+      </g:FlowPanel>
 
       <g:FlowPanel styleName="ode-bottomRow">
         <g:Button ui:field='closeDialogBox' styleName='ode-closeDialogBox'>
@@ -30,6 +30,6 @@
         </g:Button>
       </g:FlowPanel>
     <g:Button ui:field='bottomInvisible' styleName="FocusTrap" tabIndex="-1"/>
-    </g:VerticalPanel>
+    </g:FlowPanel>
   </wiz:Dialog>
 </ui:UiBinder>

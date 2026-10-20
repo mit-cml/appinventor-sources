@@ -28,6 +28,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.folder.FolderTreeItem;
 import com.google.appinventor.client.explorer.folder.ProjectFolder;
 import com.google.appinventor.client.explorer.folder.FolderManager;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import java.util.logging.Logger;
 
@@ -57,6 +58,7 @@ public final class NewFolderWizard {
     manager = Ode.getInstance().getFolderManager();
     FolderTreeItem root = renderFolder(manager.getGlobalFolder());
     tree.addItem(root);
+    TableAccessibility.setLayoutTables(tree);
     tree.setSelectedItem(root);
     addDialog.center();
     input.setFocus(true);

@@ -42,7 +42,6 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
@@ -747,8 +746,9 @@ public final class DataVisualizerPanel extends Dialog {
       buttonRow.add(saveButton);
       buttonRow.add(cancelButton);
 
-      VerticalPanel layout = new VerticalPanel();
-      layout.setSpacing(4);
+      FlowPanel layout = new FlowPanel();
+      layout.setStyleName("ode-VerticalLayout");
+      layout.addStyleName("ode-Layout-spacing4");
       layout.add(new Label(MESSAGES.clouddbVizTagLabel()));
       layout.add(isAddMode ? tagBox : tagDisplayLabel);
       layout.add(warningLabel);
@@ -984,7 +984,8 @@ public final class DataVisualizerPanel extends Dialog {
         renderBody();
       });
 
-      VerticalPanel root = new VerticalPanel();
+      FlowPanel root = new FlowPanel();
+      root.setStyleName("ode-VerticalLayout");
       root.add(typeSelector);
       root.add(bodyPanel);
       initWidget(root);
@@ -1168,8 +1169,9 @@ public final class DataVisualizerPanel extends Dialog {
     }
 
     private Widget buildListWidget() {
-      VerticalPanel vp = new VerticalPanel();
-      vp.setSpacing(2);
+      FlowPanel vp = new FlowPanel();
+      vp.setStyleName("ode-VerticalLayout");
+      vp.addStyleName("ode-Layout-spacing2");
       for (int i = 0; i < listItems.size(); i++) {
         final int idx = i;
         FlowPanel row = new FlowPanel();
@@ -1202,8 +1204,9 @@ public final class DataVisualizerPanel extends Dialog {
     }
 
     private Widget buildDictWidget() {
-      VerticalPanel vp = new VerticalPanel();
-      vp.setSpacing(2);
+      FlowPanel vp = new FlowPanel();
+      vp.setStyleName("ode-VerticalLayout");
+      vp.addStyleName("ode-Layout-spacing2");
       for (int i = 0; i < dictKeyBoxes.size(); i++) {
         final int idx = i;
 

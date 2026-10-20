@@ -9,8 +9,8 @@
              ui:generatedKeys="com.google.gwt.i18n.server.keygen.MethodNameKeyGenerator"
              ui:generateLocales="default">
     <ui:with field="messages" type="com.google.appinventor.client.OdeMessages" />
-    <g:VerticalPanel styleName="ode-SimpleFormDesigner">
-        <g:VerticalPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner">
+    <g:FlowPanel styleName="ode-SimpleFormDesigner">
+        <g:FlowPanel ui:field="phoneScreen" stylePrimaryName="ode-SimpleFormDesigner">
           <g:CheckBox ui:field="HiddenComponentsCheckbox" text="{messages.showHiddenComponentsCheckbox}" title="{messages.showHiddenComponentsCheckbox}" />
             <g:ListBox ui:field="listboxPhoneTablet" title="{messages.previewDeviceSize}">
                 <g:item value="320, 505"><ui:text from="{messages.previewPhoneSize}" /> (320 x 505)</g:item>
@@ -22,7 +22,7 @@
             <g:item value="1"><ui:text from="{messages.previewAndroid4Devices}"/></g:item>
             <g:item value="2"><ui:text from="{messages.previewIOS}"/></g:item>
           </g:ListBox>
-        </g:VerticalPanel>
-    </g:VerticalPanel>
+        </g:FlowPanel>
+    </g:FlowPanel>
 </ui:UiBinder>
 

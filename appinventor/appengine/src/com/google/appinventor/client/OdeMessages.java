@@ -934,6 +934,12 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Title for moderator send email dialog")
   String emailSendTitle();
 
+  // Used in boxes/AdminUserListBox.java
+
+  @DefaultMessage("User List")
+  @Description("ARIA label for admin user list region landmark.")
+  String adminUserListAriaLabel();
+
   // Used in boxes/AssetListBox.java
 
   @DefaultMessage("Media")
@@ -5202,7 +5208,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   @DefaultMessage("<p><b>We detected errors while reading in your project</b></p>" +
                 "<p>To protect your project from damage, we have ended this session. You may close this " +
-                "window.</p>")
+                "window.</p>" +
+                "<p>For more information see <a href=\"http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html#Corrupt\" target=\"_blank\">the Trouble Shooting Page</a></p>")
   @Description("")
   String corruptionDialogMessage();
 

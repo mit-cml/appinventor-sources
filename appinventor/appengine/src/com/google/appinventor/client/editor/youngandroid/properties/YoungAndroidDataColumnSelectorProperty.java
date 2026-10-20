@@ -19,8 +19,8 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +48,8 @@ public class YoungAndroidDataColumnSelectorProperty
    */
   public YoungAndroidDataColumnSelectorProperty(final DesignerEditor<?, ?, ?, ?, ?> editor) {
 
-    final VerticalPanel selectorPanel = new VerticalPanel();
+    final FlowPanel selectorPanel = new FlowPanel();
+    selectorPanel.setStyleName("ode-VerticalLayout");
     columnsList = new ListBox();
     columnsList.setVisibleItemCount(10);
     columnsList.setWidth("100%");

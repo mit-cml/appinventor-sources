@@ -19,7 +19,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
@@ -33,8 +33,8 @@ public class ComponentUploadWizard extends Wizard {
     uploadWiget.getElement().setAttribute("accept", COMPONENT_ARCHIVE_EXTENSION);
     uploadWiget.setName(ServerLayout.UPLOAD_COMPONENT_ARCHIVE_FORM_ELEMENT);
 
-    VerticalPanel panel = new VerticalPanel();
-    panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-VerticalLayout");
     panel.add(uploadWiget);
 
     addPage(panel);

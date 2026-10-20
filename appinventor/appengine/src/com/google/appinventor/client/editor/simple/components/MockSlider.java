@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 /**
@@ -48,6 +49,7 @@ public final class MockSlider extends MockVisibleComponent {
     // Initialize mock slider UI
     panel = new HorizontalPanel();
     panel.setStylePrimaryName("ode-SimpleMockComponent");
+    TableAccessibility.setLayoutTables(panel);
     initComponent(panel);
     sliderGraphic = new SVGPanel();
     panel.add(sliderGraphic);

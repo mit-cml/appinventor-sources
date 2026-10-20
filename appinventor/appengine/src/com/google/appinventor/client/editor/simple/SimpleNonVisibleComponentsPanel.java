@@ -17,7 +17,6 @@ import com.google.appinventor.shared.simple.ComponentDatabaseChangeListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +41,8 @@ public class SimpleNonVisibleComponentsPanel<T extends DesignerRootComponent> ex
   public SimpleNonVisibleComponentsPanel() {
 
     // Initialize UI
-    VerticalPanel panel = new VerticalPanel();
-    panel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+    FlowPanel panel = new FlowPanel();
+    panel.setStyleName("ode-NonVisibleComponentsPanel");
 
     heading = new Label("");
     heading.setStyleName("ya-NonVisibleComponentsHeader");

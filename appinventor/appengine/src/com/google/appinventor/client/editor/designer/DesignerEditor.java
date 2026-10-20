@@ -59,7 +59,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -166,10 +166,10 @@ public abstract class DesignerEditor<S extends SourceNode, T extends MockDesigne
     nonVisibleComponentsPanel = visibleComponentsPanel.getNonVisibleComponentsPanel();
     componentDatabaseChangeListeners.add(nonVisibleComponentsPanel);
     componentDatabaseChangeListeners.add(visibleComponentsPanel);
-    DockPanel componentsPanel = new DockPanel();
-    componentsPanel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
-    componentsPanel.add(visibleComponentsPanel, DockPanel.NORTH);
-    componentsPanel.add(nonVisibleComponentsPanel, DockPanel.SOUTH);
+    FlowPanel componentsPanel = new FlowPanel();
+    componentsPanel.setStyleName("ode-DesignerComponentsPanel");
+    componentsPanel.add(visibleComponentsPanel);
+    componentsPanel.add(nonVisibleComponentsPanel);
     componentsPanel.setSize("100%", "100%");
 
     // Create designProperties, which will be used as the content of the PropertiesBox.

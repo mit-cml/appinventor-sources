@@ -9,6 +9,7 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.editor.simple.components.utils.SVGPanel;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
@@ -43,6 +44,7 @@ public final class MockCheckBox extends MockToggleBase<HorizontalPanel> {
     super(editor, TYPE, images.checkbox());
 
     panel = new HorizontalPanel();
+    TableAccessibility.setLayoutTables(panel);
     checkBoxLabel = new InlineHTML();
     toggleWidget = panel;
     isInitialized = false;

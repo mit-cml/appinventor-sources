@@ -6,6 +6,7 @@
 
 package com.google.appinventor.client.widgets;
 
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -37,6 +38,7 @@ public final class ContextMenu {
     popupPanel.setGlassEnabled(true);
     popupPanel.setGlassStyleName("none"); //No style is passed (the default grays out the window)
     menuBar = new MenuBar(true);
+    TableAccessibility.setLayoutTables(menuBar);
     menuBar.setStylePrimaryName("ode-ContextMenu");
     menuBar.getElement().getStyle().setProperty("maxHeight", "80%");
     menuBar.getElement().getStyle().setProperty("overflowY", "auto");

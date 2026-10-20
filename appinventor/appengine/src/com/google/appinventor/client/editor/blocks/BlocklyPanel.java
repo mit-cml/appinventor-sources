@@ -20,6 +20,7 @@ import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Promise.WrappedException;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -35,11 +36,9 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -411,9 +410,11 @@ public class BlocklyPanel extends HTMLPanel {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(mess);
-    HorizontalPanel holder = new HorizontalPanel();
+    FlowPanel holder = new FlowPanel();
+    holder.setStyleName("ode-HorizontalLayout");
     if (buttonName != null) {           // If buttonName and cancelButtonName are null
       Button ok = new Button(buttonName); // We won't have any buttons and other
       if (destructive) {
@@ -469,7 +470,7 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static void SetDialogContent(DialogBox dialog, String mess) {
-    HTML html = (HTML) ((VerticalPanel) dialog.getWidget()).getWidget(0);
+    HTML html = (HTML) ((FlowPanel) dialog.getWidget()).getWidget(0);
     html.setHTML(mess);
   }
 
@@ -685,9 +686,9 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.BlocklyPanel_createDialog =
         $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::createDialog(*));
     $wnd.BlocklyPanel_hideDialog =
-        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
+        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::HideDialog(Lcom/google/appinventor/client/widgets/DialogBox;));
     $wnd.BlocklyPanel_setDialogContent =
-        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
+        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::SetDialogContent(Lcom/google/appinventor/client/widgets/DialogBox;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstanceTypeName =
         $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentInstanceTypeName(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstancePropertyValue =

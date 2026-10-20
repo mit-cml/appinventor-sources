@@ -8,9 +8,9 @@ package com.google.appinventor.client.widgets;
 
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Implements a UI style icon with caption as seen on the desktops of many
@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class Icon extends Composite {
 
   // UI elements
-  private final VerticalPanel panel;
+  private final FlowPanel panel;
   private final Label captionLabel;
 
   /**
@@ -43,14 +43,13 @@ public class Icon extends Composite {
    */
   public Icon(Image image, String caption) {
 
-    panel = new VerticalPanel() {
+    panel = new FlowPanel() {
       @Override
       public void onBrowserEvent(Event event) {
         Icon.this.onBrowserEvent(event);
       }
     };
     panel.add(image);
-    panel.setCellHorizontalAlignment(image, VerticalPanel.ALIGN_CENTER);
     captionLabel = new Label(caption);
     panel.add(captionLabel);
 

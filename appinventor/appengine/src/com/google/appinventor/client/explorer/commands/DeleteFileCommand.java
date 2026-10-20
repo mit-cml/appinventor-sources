@@ -12,6 +12,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
@@ -30,10 +31,8 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Command for deleting files.
@@ -136,23 +135,29 @@ public class DeleteFileCommand extends ChainableCommand {
       });
       deleteButton.addStyleName("destructive-action");
 
-      VerticalPanel contentPanel = new VerticalPanel();
-      HorizontalPanel labelPanel = new HorizontalPanel();
+      FlowPanel contentPanel = new FlowPanel();
+      contentPanel.setStyleName("ode-VerticalLayout");
+      FlowPanel labelPanel = new FlowPanel();
+      labelPanel.setStyleName("ode-HorizontalLayout");
+      labelPanel.setWidth("100%");
+      labelPanel.getElement().getStyle().setProperty("minHeight", "22px");
       Label warnmsg = new Label(MESSAGES.reallyDeleteWarning(formName));
       labelPanel.add(warnmsg);
-      labelPanel.setSize("100%", "22px");
       contentPanel.add(labelPanel);
       contentPanel.add(topInvisible);
       contentPanel.add(nameTextBox);
-      HorizontalPanel buttonPanel = new HorizontalPanel();
-      HorizontalPanel checkboxPanel = new HorizontalPanel();
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-DialogButtons");
+      FlowPanel checkboxPanel = new FlowPanel();
+      checkboxPanel.setStyleName("ode-HorizontalLayout");
+      checkboxPanel.setWidth("100%");
+      checkboxPanel.getElement().getStyle().setProperty("minHeight", "20px");
       buttonPanel.add(cancelButton);
       buttonPanel.add(deleteButton);
       buttonPanel.add(bottomInvisible);
       checkboxPanel.add(cb);
-      checkboxPanel.setSize("100%", "20px");
       contentPanel.add(checkboxPanel);
-      buttonPanel.setSize("100%", "24px");
       contentPanel.add(buttonPanel);
       contentPanel.setSize("320px", "100%");
       deleteButton.setEnabled(false);
