@@ -906,7 +906,7 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-SimpleMockForm {
   border: none;
-  border-radius: 30px;
+  border-radius: 0px;
 }
 
 /* making changes for modern mockform */
@@ -1065,6 +1065,16 @@ select.ode-PropertyEditor[disabled] {
 .ode-SimpleMockFormPhonePortraitTablet .ode-SimpleMockForm,
 .ode-SimpleMockFormPhonePortraitMonitor .ode-SimpleMockForm {
   flex-direction: column;
+}
+
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm,
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockForm {
+  border-radius: 30px;
+}
+
+.ode-SimpleMockFormPhonePortrait .ode-SimpleMockFormDark,
+.ode-SimpleMockFormPhoneLandscape .ode-SimpleMockFormDark {
+  border-radius: 30px;
 }
 
 .ode-SimpleMockFormPhonePortrait .ode-SimpleMockForm {
