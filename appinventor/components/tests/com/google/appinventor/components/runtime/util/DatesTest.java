@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Tests for {@link Dates}.
@@ -17,8 +18,23 @@ import java.util.GregorianCalendar;
  */
 public class DatesTest extends TestCase {
 
+  private Locale defaultLocale;
+
   public DatesTest(String testName) {
     super(testName);
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    defaultLocale = Locale.getDefault();
+    Locale.setDefault(Locale.US);
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    Locale.setDefault(defaultLocale);
+    super.tearDown();
   }
 
   /**
