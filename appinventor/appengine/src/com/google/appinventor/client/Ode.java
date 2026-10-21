@@ -129,7 +129,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.crypto.bouncycastle.digests.MD5Digest;
 
 import java.util.Date;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -195,8 +194,6 @@ public class Ode implements EntryPoint {
   private String fauxProjectName; // Fake Project Name provided by login token
 
   private String sessionId = generateUuid(); // Create new session id
-
-  private Random random = new Random(); // For generating random nonce
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -2596,16 +2593,14 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * generateNonce() -- Generate a unique String value
-   * this value is used to reference a built APK without
+   * setNonce() -- Remember the nonce the server created for the last build.
+   * This value is used to reference a built APK without
    * requiring explicit authentication.
    *
-   * @return nonce
+   * @param nonce the nonce returned by the build call
    */
-  public String generateNonce() {
-    int v = random.nextInt(10000000);
-    nonce = Integer.toString(v, 36); // Base 36 string
-    return nonce;
+  public void setNonce(String nonce) {
+    this.nonce = nonce;
   }
 
   public String getSessionId() {
@@ -2613,7 +2608,7 @@ public class Ode implements EntryPoint {
   }
 
   /*
-   * getNonce() -- return a previously generated nonce.
+   * getNonce() -- return the nonce from the last build.
    *
    * @return nonce
    */

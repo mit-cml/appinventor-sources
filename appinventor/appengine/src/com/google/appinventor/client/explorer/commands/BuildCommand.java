@@ -110,6 +110,8 @@ public class BuildCommand extends ChainableCommand {
         Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_SUBACTION_BUILD_YA,
                             node.getName(), getElapsedMillis());
         if (result.succeeded()) {
+          // The server creates the nonce used in the download link
+          ode.setNonce(result.getExtra());
           executeNextCommand(node);
         } else {
           // The result is the HTTP response code from the build server.
@@ -171,8 +173,7 @@ public class BuildCommand extends ChainableCommand {
       }
     };
 
-    String nonce = ode.generateNonce();
-    ode.getProjectService().build(node.getProjectId(), nonce, target, secondBuildserver, isAab,
+    ode.getProjectService().build(node.getProjectId(), target, secondBuildserver, isAab,
         foriOS, forAppStore, callback);
   }
 }
