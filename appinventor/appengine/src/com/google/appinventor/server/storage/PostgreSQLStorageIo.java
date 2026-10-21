@@ -2637,30 +2637,24 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   @Override
-  public void storeNonce(
+  public boolean storeNonce(
       @Nonnull final String nonceValue, @Nonnull final String strUserId, final long projectId) {
     boolean ok = false;
+    boolean stored = false;
     try (Connection conn = this.cpds.getConnection()) {
       doSetAutoCommit(conn, false);
       long userId = getUserId(strUserId, conn, false);
+      // Never overwrite an existing nonce, it may belong to another user. The caller picks a new
+      // nonce and tries again if this one is already taken.
       try (PreparedStatement ustmt =
           conn.prepareStatement(
               "INSERT INTO nonce (projectId, strUserId, nonce) VALUES (?, ?::UUID, ?) ON CONFLICT"
-                  + " (nonce) DO UPDATE SET projectId = ?, strUserId = ?::UUID")) {
+                  + " (nonce) DO NOTHING")) {
         ustmt.setLong(1, projectId);
         ustmt.setString(2, strUserId);
         ustmt.setString(3, nonceValue);
-        ustmt.setLong(4, projectId);
-        ustmt.setString(5, strUserId);
 
-        int ret = ustmt.executeUpdate();
-        if (ret == 0) {
-          throw CrashReport.createAndLogError(
-              LOG,
-              null,
-              makeErrorMsg(strUserId, null, projectId, null),
-              new RuntimeException("Unknown database error"));
-        }
+        stored = ustmt.executeUpdate() == 1;
         ok = true;
       } finally {
         doFinish(conn, ok, "storeNonce");
@@ -2668,6 +2662,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
     }
+    return stored;
   }
 
   /**

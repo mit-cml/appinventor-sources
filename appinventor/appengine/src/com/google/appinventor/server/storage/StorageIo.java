@@ -576,7 +576,17 @@ public interface StorageIo {
     final String comments, final String datestamp, final String email, final String projectId);
 
   Nonce getNoncebyValue(String nonceValue);
-  void storeNonce(final String nonceValue, final String userId, final long projectId);
+
+  /**
+   * Stores a nonce for the given user and project. A nonce that is already
+   * stored is never rebound to another user or project.
+   *
+   * @param nonceValue the nonce to store
+   * @param userId the user who owns the project
+   * @param projectId the project the nonce points to
+   * @return true if the nonce was stored, false if it is already in use
+   */
+  boolean storeNonce(final String nonceValue, final String userId, final long projectId);
 
   // Cleanup expired nonces
   void cleanupNonces();

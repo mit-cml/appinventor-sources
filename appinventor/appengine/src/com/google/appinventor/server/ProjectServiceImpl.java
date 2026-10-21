@@ -585,13 +585,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver,
+  public RpcResult build(long projectId, String target, boolean secondBuildserver,
       boolean isAab, boolean foriOS, boolean forAppStore) {
     // Dispatch
 
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-      userInfoProvider.getUser(), projectId, nonce, target, secondBuildserver,
+      userInfoProvider.getUser(), projectId, target, secondBuildserver,
         isAab, foriOS, forAppStore);
   }
 

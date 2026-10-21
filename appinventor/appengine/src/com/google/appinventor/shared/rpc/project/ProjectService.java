@@ -310,15 +310,16 @@ public interface ProjectService extends RemoteService {
    * Invokes a build command for the project on the back-end.
    *
    * @param projectId  project ID
-   * @param nonce used to access the built project -- random string
    * @param target  build target (optional, implementation dependent)
    * @param secondBuildserver whether to use the second buildserver
    *
    * @param foriOS
    * @param forAppStore
-   * @return  results of invoking the build command
+   * @return  results of invoking the build command. On success, the extra field holds the nonce
+   *     used to access the built project.
    */
-  RpcResult build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab, boolean foriOS, boolean forAppStore);
+  RpcResult build(long projectId, String target, boolean secondBuildserver, boolean isAab,
+      boolean foriOS, boolean forAppStore);
 
   /**
    * Gets the result of a build command for the project from the back-end.

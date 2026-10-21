@@ -382,15 +382,15 @@ public abstract class CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
-   * @param nonce -- random string used to find finished APK
    * @param target  build target (optional, implementation dependent)
    * @param secondBuildserver use second buildserver
    *
    * @param foriOS
    * @param forAppStore
-   * @return  build results
+   * @return  build results. On success, the extra field holds the nonce used to download the
+   *     build output without logging in.
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target,
+  public abstract RpcResult build(User user, long projectId, String target,
       boolean secondBuildserver, boolean isAab, boolean foriOS, boolean forAppStore);
 
   /**

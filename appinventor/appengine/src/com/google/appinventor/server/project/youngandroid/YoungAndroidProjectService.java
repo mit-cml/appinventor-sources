@@ -80,6 +80,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -141,6 +142,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final String galleryLocation = Flag.createFlag("gallery.location", "http://localhost:9001").get();
   private static final String galleryId = Flag.createFlag("gallery.id", "").get();
+
+  // Nonces are kept short so that people can type the download link by hand
+  private static final int NONCE_RANGE = 10000000;
+
+  // How many nonces to try before giving up when the ones we pick are already in use
+  @VisibleForTesting
+  static final int MAX_NONCE_ATTEMPTS = 10;
+
+  private static final SecureRandom NONCE_RANDOM = new SecureRandom();
 
   public YoungAndroidProjectService(StorageIo storageIo) {
     super(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, storageIo);
@@ -511,14 +521,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
-   * @param nonce random string used to find resulting APK from unauth context
    * @param target  build target (optional, implementation dependent)
    * @param foriOS true if the app should be built for iOS
    * @param forAppStore true if the app should be built for App Store distribution
-   * @return an RpcResult reflecting the call to the Build Server
+   * @return an RpcResult reflecting the call to the Build Server. On success, the extra field
+   *     holds the nonce used to download the build output without logging in.
    */
   @Override
-  public RpcResult build(User user, long projectId, String nonce, String target,
+  public RpcResult build(User user, long projectId, String target,
       boolean secondBuildserver, boolean isAab, boolean foriOS, boolean forAppStore) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
@@ -544,8 +554,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Store the userId and projectId based on the nonce
-
-    storageIo.storeNonce(nonce, userId, projectId);
+    String nonce = storeNewNonce(userId, projectId);
+    if (nonce == null) {
+      return new RpcResult(false, "", "Unable to create a download link for this build.");
+    }
     List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
 
     // Delete the existing build output files, if any, so that future attempts to get it won't get
@@ -655,7 +667,36 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
       return new RpcResult(false, "", wrappedException.getMessage());
     }
-    return new RpcResult(true, "Building " + projectName, "");
+    return new RpcResult(RpcResult.SUCCESS, "Building " + projectName, "", nonce);
+  }
+
+  /**
+   * Generates a random nonce in base 36. The nonce is used in the /b/ download link.
+   *
+   * @return a new nonce
+   */
+  @VisibleForTesting
+  static String generateNonce() {
+    return Integer.toString(NONCE_RANDOM.nextInt(NONCE_RANGE), 36);
+  }
+
+  /**
+   * Picks a nonce that is not in use yet and stores it for the given project.
+   *
+   * @param userId the user who owns the project
+   * @param projectId the project being built
+   * @return the stored nonce, or null if no free nonce was found
+   */
+  @VisibleForTesting
+  String storeNewNonce(String userId, long projectId) {
+    for (int i = 0; i < MAX_NONCE_ATTEMPTS; i++) {
+      String nonce = generateNonce();
+      if (storageIo.storeNonce(nonce, userId, projectId)) {
+        return nonce;
+      }
+    }
+    LOG.severe("Unable to find a free nonce for project " + projectId);
+    return null;
   }
 
   public RpcResult loginToGallery(String userId) {
