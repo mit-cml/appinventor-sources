@@ -10,6 +10,7 @@ package com.google.appinventor.shared.util;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -17,7 +18,7 @@ public class AccountUtil {
 
   private static long mask = 0x7FF;  // 11 bits
 
-  private static Random random = new Random();
+  private static Random random = new SecureRandom();
 
   private static long MAX = 17592186044415L;
 
@@ -80,12 +81,7 @@ public class AccountUtil {
 
   private static long getRandom() {
     synchronized(AccountUtil.class) {
-      while(true) {
-        long witness = random.nextLong();
-        if (witness < 0 || witness > MAX) // nothing bigger then 2^45-1
-          continue;
-        return witness;
-      }
+      return random.nextLong() & MAX;  // MAX is 2^44-1, a 44-bit mask
     }
   }
 
