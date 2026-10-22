@@ -847,10 +847,12 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
    * Sets the form's BackgroundColor property to a new value.
    */
   private void setBackgroundColorProperty(String text) {
+    if (MockComponentsUtil.isDefaultColor(text)) {
+      MockComponentsUtil.resetWidgetBackgroundColor(rootPanel);
+      return;
+    }
     if (MockComponentsUtil.isNoneColor(text)) {
       text = "&HFF000000";  // black
-    } else if (MockComponentsUtil.isDefaultColor(text)) {
-      text = "&HFFFFFFFF";  // white
     }
     MockComponentsUtil.setWidgetBackgroundColor(rootPanel, text);
   }
@@ -1097,6 +1099,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
     } else {
       formWidget.setStylePrimaryName("ode-SimpleMockForm");
     }
+    MockComponentsUtil.resetWidgetBackgroundColor(rootPanel);
 
     // Resetting the MockForm with new preview styles
     if (idxPhonePreviewStyle == 0) {
