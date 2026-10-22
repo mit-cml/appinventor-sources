@@ -143,7 +143,15 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
     if (xData.size() == 0 || yData.size() == 0) {
       throw new IllegalStateException("List must have at least one element");
     }
-    int index = (int) getAnomalyIndex(anomaly);
+    double rawIndex = getAnomalyIndex(anomaly);
+    if (rawIndex != Math.floor(rawIndex)) {
+      throw new IllegalStateException("Anomaly index " + rawIndex + " must be a whole number.");
+    }
+    if (rawIndex < 1 || rawIndex > xData.size()) {
+      throw new IllegalStateException("Anomaly index " + (long) rawIndex
+          + " is out of range. It must be between 1 and " + xData.size() + ".");
+    }
+    int index = (int) rawIndex;
 
     xData.remove(index - 1);
     yData.remove(index - 1);
@@ -166,12 +174,12 @@ public final class AnomalyDetection extends DataCollection<ComponentContainer, D
    * @return double anomaly index
    */
   public static double getAnomalyIndex(YailList anomaly) {
-    if (!anomaly.isEmpty()) {
+    if (anomaly.size() > 0) {
       LList anomalyValue = (LList) anomaly.getCdr();
       List<Double> anomalyNr = castToDouble(anomalyValue);
       return anomalyNr.get(0);
     } else {
-      throw new IllegalStateException("Must have equal X and Y data points");
+      throw new IllegalStateException("Anomaly must not be empty");
     }
   }
 
