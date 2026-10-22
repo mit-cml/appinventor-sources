@@ -28,6 +28,26 @@ public class TextValidatorsTest extends TestCase {
   private final List<String> illegalComponentIdentifierNames = Arrays.asList("", "!你好吗", "2你好吗",
 		  "123按_钮", "1按2钮 ", "1botón", "!botón2", "Clock`");
 
+	private final List<String> invisibleCharacterNames = Arrays.asList("Label\u00091",   // tab
+      "Label\u007F1",   // DEL
+      "Label\u00A01",   // no-break space
+      "Label\u00AD1",   // soft hyphen
+      "Label\u16801",   // ogham space mark
+      "Label\u20031",   // em space
+      "Label\u200B1",   // zero-width space
+      "Label\u200C1",   // ZWNJ
+      "Label\u200D1",   // ZWJ
+      "Label\u200F1",   // right-to-left mark
+      "Label\u20281",   // line separator
+      "Label\u202E1",   // right-to-left override
+      "Label\u20601",   // word joiner
+      "Label\u20661",   // bidi isolate
+      "Label\u30001",   // ideographic space
+      "Label\uFEFF1",   // BOM
+      "\u200BLabel1",   // at the start
+      "Label1\u200B",   // at the end
+      "\u200B");        // only invisible
+
   private final List<String> reservedWordNames = Arrays.asList("YailList", "YailNumberToString", "YailRuntimeError",
           "final", "interface", "static");
 
@@ -46,6 +66,9 @@ public class TextValidatorsTest extends TestCase {
     }
     for (String illegalComponentIdentifier : illegalComponentIdentifierNames) {
       assertFalse(TextValidators.isValidComponentIdentifier(illegalComponentIdentifier));
+    }
+    for (String invisibleCharacter : invisibleCharacterNames) {
+      assertFalse(TextValidators.isValidComponentIdentifier(invisibleCharacter));
     }
   }
 
