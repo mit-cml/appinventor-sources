@@ -1924,11 +1924,15 @@ Matrix implementation.
          (len (string-length text)))
         ((>= i (string-length text)) (list->string (map integer->char (reverse acc))))
       (let* ((c (char->integer (string-ref text i)))
-             (b (bitwise-and (bitwise-xor c (- len i)) 255))
-             (b2 (bitwise-and (bitwise-xor (bitwise-arithmetic-shift-right c 8) i) 255))
-             (b3 (bitwise-and (bitwise-ior (bitwise-arithmetic-shift-left b2 8) b) 255))
-             (b4 (bitwise-and (bitwise-xor b3 (char->integer (string-ref lc i))) 255)))
-        (set! acc (cons b4 acc))))))
+             (a (bitwise-and c 255))
+             (b (bitwise-arithmetic-shift-right c 8))
+
+             (l (bitwise-xor a (- len i)))
+             (h (bitwise-xor b i))
+
+             (f (bitwise-ior (bitwise-arithmetic-shift-left h 8) l))
+             (f2 (bitwise-xor f (char->integer (string-ref lc i)))))
+        (set! acc (cons f2 acc))))))
 
 ;;; Mappings so we can replace substrings within strings
 (define (string-replace-mappings-dictionary text mappings)

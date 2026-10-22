@@ -313,10 +313,15 @@ AI.Yail.forBlock['obfuscated_text'] = function(block, generator) {
       confounder += confounder;
     }
     for (var i = 0; i < input.length; i++) {
-      var c = (input.charCodeAt(i) ^ confounder.charCodeAt(i)) & 0xFF;
-      var b = (c ^ input.length - i) & 0xFF;
-      var b2 = ((c >> 8) ^ i) & 0xFF;
-      acc.push(String.fromCharCode((b2 << 8 | b) & 0xFF));
+      var c = (input.charCodeAt(i) ^ confounder.charCodeAt(i));
+      // Lower 8-bit of c
+      var l = (c & 0xFF) ^ (input.length - i);
+      l = l & 0xFF;
+      // Higher 8-bit of c
+      var h = ((c >> 8) ^ i)
+      h = h & 0xFF;
+      // Final 16-bit
+      acc.push(String.fromCharCode(h << 8 | l));
     }
     return acc.join('');
   }
