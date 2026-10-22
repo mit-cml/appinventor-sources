@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -22,6 +23,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -111,6 +113,23 @@ public class UploadServlet extends OdeServlet {
         uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String fileName = uriComponents[FILE_PATH_INDEX];
+        // The project id comes straight from the URL, so make sure this user actually owns the
+        // project before we store anything in it.
+        try {
+          StorageIoInstanceHolder.getInstance().assertUserHasProject(
+              userInfoProvider.getUserId(), projectId);
+        } catch (SecurityException e) {
+          // Same as DownloadServlet: answer with a 404 instead of a 403 so we don't reveal
+          // whether someone else's project exists.
+          final String message = "404 Not Found";
+          resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+          resp.setContentType("text/plain");
+          resp.setContentLength(message.length());
+          ServletOutputStream out = resp.getOutputStream();
+          out.write(message.getBytes());
+          out.close();
+          return;
+        }
         InputStream uploadedStream;
         try {
           uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
