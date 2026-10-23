@@ -20,7 +20,7 @@ module.exports = function(config) {
       'lib/closure-compiler/base.js',
       'build/blocklyeditor/blockly-all.js',
       'build/blocklyeditor/component-types.js',
-      'appengine/war/static/js/scroll-options-13.3.0.min.js',
+      'appengine/war/static/js/scroll-options-13.4.0.min.js',
       'appengine/war/static/js/workspace-search-13.3.0.min.js',
       'appengine/war/static/js/block-dynamic-connection-13.3.0.min.js',
       'appengine/war/static/js/blockly-field-colour-13.3.0.min.js',
