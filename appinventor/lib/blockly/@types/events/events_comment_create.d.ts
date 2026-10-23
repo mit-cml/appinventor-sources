@@ -11,15 +11,14 @@
 import type { WorkspaceComment } from '../comments/workspace_comment.js';
 import * as comments from '../serialization/workspace_comments.js';
 import type { Workspace } from '../workspace.js';
-import { CommentBase, CommentBaseJson } from './events_comment_base.js';
+import type { CommentBaseJson } from './events_comment_base.js';
+import { CommentBase } from './events_comment_base.js';
 import { EventType } from './type.js';
 /**
  * Notifies listeners that a workspace comment was created.
  */
 export declare class CommentCreate extends CommentBase {
     type: EventType;
-    /** The XML representation of the created workspace comment. */
-    xml?: Element | DocumentFragment;
     /** The JSON representation of the created workspace comment. */
     json?: comments.State;
     /**
@@ -51,7 +50,6 @@ export declare class CommentCreate extends CommentBase {
     run(forward: boolean): void;
 }
 export interface CommentCreateJson extends CommentBaseJson {
-    xml: string;
     json: object;
 }
 //# sourceMappingURL=events_comment_create.d.ts.map

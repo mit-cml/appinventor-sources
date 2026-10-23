@@ -3,9 +3,9 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Flyout, FlyoutItem } from './flyout_base.js';
+import { Flyout } from './flyout_base.js';
+import type { FlyoutItem } from './flyout_item.js';
 import type { Options } from './options.js';
-import type { Coordinate } from './utils/coordinate.js';
 import { Rect } from './utils/rect.js';
 /**
  * Class for a flyout.
@@ -57,20 +57,9 @@ export declare class VerticalFlyout extends Flyout {
     /**
      * Lay out the blocks in the flyout.
      *
-     * @param contents The blocks and buttons to lay out.
-     * @param gaps The visible gaps between blocks.
+     * @param contents The flyout items to lay out.
      */
-    protected layout_(contents: FlyoutItem[], gaps: number[]): void;
-    /**
-     * Determine if a drag delta is toward the workspace, based on the position
-     * and orientation of the flyout. This is used in determineDragIntention_ to
-     * determine if a new block should be created or if the flyout should scroll.
-     *
-     * @param currentDragDeltaXY How far the pointer has moved from the position
-     *     at mouse down, in pixel units.
-     * @returns True if the drag is toward the workspace.
-     */
-    isDragTowardWorkspace(currentDragDeltaXY: Coordinate): boolean;
+    protected layout_(contents: FlyoutItem[]): void;
     /**
      * Returns the bounding rectangle of the drag target area in pixel units
      * relative to viewport.
@@ -80,7 +69,7 @@ export declare class VerticalFlyout extends Flyout {
      */
     getClientRect(): Rect | null;
     /**
-     * Compute width of flyout.  toolbox.Position mat under each block.
+     * Compute width of flyout.
      * For RTL: Lay out the blocks and buttons to be right-aligned.
      */
     protected reflowInternal_(): void;

@@ -135,8 +135,6 @@ export declare namespace Theme {
         cursorColour?: string;
         selectedGlowColour?: string;
         selectedGlowOpacity?: number;
-        replacementGlowColour?: string;
-        replacementGlowOpacity?: number;
     }
     interface FontStyle {
         family?: string;

@@ -30,6 +30,10 @@ export declare class ToolboxSeparator extends ToolboxItem {
     protected createDom_(): HTMLDivElement;
     getDiv(): HTMLDivElement;
     dispose(): void;
+    /**
+     * Prevents separator toolbox items from gaining focus.
+     */
+    canBeFocused(): boolean;
 }
 export declare namespace ToolboxSeparator {
     interface CssConfig {

@@ -3,7 +3,7 @@
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import type { ISelectableToolboxItem } from './i_selectable_toolbox_item.js';
+import { type ISelectableToolboxItem } from './i_selectable_toolbox_item.js';
 import type { IToolboxItem } from './i_toolbox_item.js';
 /**
  * Interface for an item in the toolbox that can be collapsed.
@@ -25,4 +25,8 @@ export interface ICollapsibleToolboxItem extends ISelectableToolboxItem {
     /** Toggles whether or not the toolbox item is expanded. */
     toggleExpanded(): void;
 }
+/**
+ * Type guard that checks whether an object is an ICollapsibleToolboxItem.
+ */
+export declare function isCollapsibleToolboxItem(obj: any): obj is ICollapsibleToolboxItem;
 //# sourceMappingURL=i_collapsible_toolbox_item.d.ts.map
