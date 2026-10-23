@@ -245,4 +245,52 @@ public class JsonUtilTest {
     YailList copy = YailList.makeList((List<?>) value);
     assertEquals(2, copy.size());
   }
+
+  /**
+   * Test case to ensure that a matrix stored in a dictionary is decoded as a matrix.
+   */
+  @Test
+  public void testMatrixInDictionaryRoundTrip() throws JSONException {
+    YailMatrix matrix = new YailMatrix(2, 2, new double[][] {{1, 2}, {3, 4}});
+    YailDictionary dict = YailDictionary.makeDictionary("board", matrix);
+    String json = JsonUtil.getJsonRepresentation(dict);
+    Object board = ((YailDictionary) JsonUtil.getObjectFromJson(json, true)).get("board");
+    assertTrue(board instanceof YailMatrix);
+    assertTrue(YailMatrix.matrixEqual(matrix, (YailMatrix) board));
+  }
+
+  /**
+   * Test case to ensure that matrices stored in lists, including nested lists,
+   * are decoded as matrices.
+   */
+  @Test
+  public void testMatrixInListRoundTrip() throws JSONException {
+    YailMatrix first = new YailMatrix(2, 2, new double[][] {{1, 2}, {3, 4}});
+    YailMatrix second = new YailMatrix(1, 3, new double[][] {{5, 6, 7}});
+    YailList inner = YailList.makeList(Collections.singletonList(second));
+    YailList list = YailList.makeList(Arrays.asList(first, inner));
+    String json = JsonUtil.getJsonRepresentation(list);
+    List<?> value = (List<?>) JsonUtil.getObjectFromJson(json, true);
+    assertTrue(value.get(0) instanceof YailMatrix);
+    assertTrue(YailMatrix.matrixEqual(first, (YailMatrix) value.get(0)));
+    Object nested = ((YailList) value.get(1)).getObject(0);
+    assertTrue(nested instanceof YailMatrix);
+    assertTrue(YailMatrix.matrixEqual(second, (YailMatrix) nested));
+  }
+
+  /**
+   * Test case to ensure that a matrix stored in a JSON object is decoded as a matrix
+   * when association lists are used instead of dictionaries.
+   */
+  @Test
+  public void testMatrixInAssociationListRoundTrip() throws JSONException {
+    YailMatrix matrix = new YailMatrix(2, 2, new double[][] {{1, 2}, {3, 4}});
+    YailDictionary dict = YailDictionary.makeDictionary("board", matrix);
+    String json = JsonUtil.getJsonRepresentation(dict);
+    List<?> pairs = (List<?>) JsonUtil.getObjectFromJson(json, false);
+    List<?> pair = (List<?>) pairs.get(0);
+    assertEquals("board", pair.get(0));
+    assertTrue(pair.get(1) instanceof YailMatrix);
+    assertTrue(YailMatrix.matrixEqual(matrix, (YailMatrix) pair.get(1)));
+  }
 }
