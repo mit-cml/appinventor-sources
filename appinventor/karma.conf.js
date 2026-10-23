@@ -21,7 +21,7 @@ module.exports = function(config) {
       'build/blocklyeditor/blockly-all.js',
       'build/blocklyeditor/component-types.js',
       'appengine/war/static/js/scroll-options-13.4.0.min.js',
-      'appengine/war/static/js/workspace-search-13.3.0.min.js',
+      'appengine/war/static/js/workspace-search-13.4.0.min.js',
       'appengine/war/static/js/block-dynamic-connection-13.3.0.min.js',
       'appengine/war/static/js/blockly-field-colour-13.3.0.min.js',
       'appengine/war/static/js/workspace-multiselect-pr154-4ae05c1.min.js',
