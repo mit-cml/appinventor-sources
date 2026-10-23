@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.explorer.commands.PreviewFileCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
@@ -34,6 +35,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -61,6 +63,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
   private YoungAndroidAssetsFolder assetsFolder;
   private int clientX;
   private int clientY;
+  private int clickCount = 0;
+  private TreeItem selectedItem;
 
   /**
    * Creates a new AssetList
@@ -105,11 +109,9 @@ public class AssetList extends Composite implements ProjectChangeListener {
     assetList.addSelectionHandler(new SelectionHandler<TreeItem>() {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) {
-        TreeItem selected = event.getSelectedItem();
-        ProjectNode node = (ProjectNode) selected.getUserObject();
-        // The actual menu is determined by what is registered for the filenode
-        // type in CommandRegistry.java
-        ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
+        clickCount++;
+        selectedItem = event.getSelectedItem();
+        clickTimer.schedule(300);
       }});
     assetList.addFocusHandler(new FocusHandler() {
       @Override
@@ -124,6 +126,27 @@ public class AssetList extends Composite implements ProjectChangeListener {
       }
     });
   }
+
+  /*
+   * Handle single and double clicks.
+   */
+  private final Timer clickTimer = new Timer() {
+    @Override
+    public void run() {
+      int count = clickCount;
+      TreeItem selected = selectedItem;
+      clickCount = 0;
+      selectedItem = null;
+
+      if (selected == null) return;
+      ProjectNode node = (ProjectNode) selected.getUserObject();
+      if (count == 1) {
+        ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
+      } else {
+        new PreviewFileCommand().execute(node);
+      }
+    }
+  };
 
   /*
    * Populate the asset tree with files from the project's assets folder.
