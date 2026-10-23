@@ -252,8 +252,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // project properties file, even when there are no changes to it.
     String projectName = properties.getProperty("name");
     String qualifiedName = properties.getProperty("main");
+    String status = properties.getProperty("Status", "unknown");
     newProperties.setProjectName(projectName)
-      .setQualifiedFormName(qualifiedName);
+      .setQualifiedFormName(qualifiedName)
+      .setStatus(status);
 
     if (!oldProperties.equals(newProperties)) {
       // Recreate the project.properties and upload it to storageIo.
