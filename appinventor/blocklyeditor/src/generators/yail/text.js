@@ -318,7 +318,7 @@ AI.Yail.forBlock['obfuscated_text'] = function(block, generator) {
       var l = (c & 0xFF) ^ (input.length - i);
       l = l & 0xFF;
       // Higher 8-bit of c
-      var h = ((c >> 8) ^ i)
+      var h = ((c >> 8) ^ i);
       h = h & 0xFF;
       // Final 16-bit
       acc.push(String.fromCharCode(h << 8 | l));
