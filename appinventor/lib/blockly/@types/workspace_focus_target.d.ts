@@ -3,6 +3,7 @@
  * Copyright 2026 Raspberry Pi Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
+import type { IContextMenu } from './interfaces/i_contextmenu.js';
 import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IFocusableTree } from './interfaces/i_focusable_tree.js';
 import type { WorkspaceSvg } from './workspace_svg.js';
@@ -18,7 +19,7 @@ import type { WorkspaceSvg } from './workspace_svg.js';
  * description; the enclosing region keeps a short, stable label
  * ("Blocks workspace.").
  */
-export declare class WorkspaceFocusTarget implements IFocusableNode {
+export declare class WorkspaceFocusTarget implements IFocusableNode, IContextMenu {
     private readonly workspace;
     private readonly element;
     /**
@@ -42,5 +43,9 @@ export declare class WorkspaceFocusTarget implements IFocusableNode {
      * @returns The workspace this focus target represents.
      */
     getWorkspace(): WorkspaceSvg;
+    /**
+     * Displays the workspace's context menu.
+     */
+    showContextMenu(e: Event): void;
 }
 //# sourceMappingURL=workspace_focus_target.d.ts.map
