@@ -214,6 +214,15 @@ public class JsonUtil {
     }
 
     if (o instanceof JSONObject) {
+      if (((JSONObject) o).has(TYPE_FIELD)) {
+        String type = ((JSONObject) o).getString(TYPE_FIELD);
+        if ("YailMatrix".equals(type)) {
+          JSONArray data = ((JSONObject) o).optJSONArray("data");
+          if (data != null) {
+            return YailMatrix.fromJsonArray(data);
+          }
+        }
+      }
       if (useDicts) {
         return getDictionaryFromJsonObject((JSONObject) o);
       } else {
