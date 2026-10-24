@@ -1,0 +1,18 @@
+/* Annotated CSS styles for ControlBar.java */
+@sprite .logo {
+  gwt-image: "logo";
+}
+
+@sprite .controlBar {
+  position: relative;
+  gwt-image: "topBarBg";
+  height: 45px;
+  width: 100%;
+  overflow: visible;
+  z-index: 10;
+}
+
+.control {
+  position: absolute;
+  top: 10px;
+}

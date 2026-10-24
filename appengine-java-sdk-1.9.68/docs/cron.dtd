@@ -1,0 +1,13 @@
+<!ELEMENT cronentries (cron)*>
+<!ELEMENT cron (url, description, schedule, timezone, retry-parameters?)>
+<!ELEMENT url (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT schedule (#PCDATA)>
+<!ELEMENT timezone (#PCDATA)>
+<!ELEMENT target (#PCDATA)>
+<!ELEMENT retry-parameters (task-retry-limit?, task-age-limit?, min-backoff-seconds?, max-backoff-seconds?, max-doublings?)>
+<!ELEMENT task-retry-limit (#PCDATA)>
+<!ELEMENT task-age-limit (#PCDATA)>
+<!ELEMENT min-backoff-seconds (#PCDATA)>
+<!ELEMENT max-backoff-seconds (#PCDATA)>
+<!ELEMENT max-doublings (#PCDATA)>

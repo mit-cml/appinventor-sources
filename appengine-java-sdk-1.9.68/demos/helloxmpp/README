@@ -1,0 +1,15 @@
+Google App Engine Java Runtime SDK - XMPP API Demo
+
+Illustrates simple application that use the XMPP API.
+
+To compile and run this sample on the local dev server, run ant in this
+directory as follows:
+
+ant runserver
+
+Once the server is running, point your web browser at:
+
+http://127.0.0.1:8080/_ah/admin/xmpp
+
+And send test messages to see it in action. Look at the logging console to
+see outbound echo messages.

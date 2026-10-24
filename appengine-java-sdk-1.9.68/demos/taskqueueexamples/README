@@ -1,0 +1,12 @@
+Google App Engine Java Runtime SDK - Task Queue Examples Demo
+
+Illustrates simple examples that use the Task Queue API.
+
+To compile and run this sample on the local dev server, run ant in this
+directory as follows:
+
+ant runserver
+
+Once the server is running, point your web browser at:
+
+http://127.0.0.1:8080/simplecounter.jsp

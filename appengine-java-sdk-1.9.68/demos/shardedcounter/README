@@ -1,0 +1,15 @@
+Google App Engine Java Runtime SDK - Sharded Counter Demo
+
+Illustrates increasingly sophisticated designs for a highly scalable counter.
+
+To compile and run this sample on the local dev server, run ant in this
+directory as follows:
+
+ant runserver
+
+Once the server is running, point your web browser at one of the following
+to try out the different sharded counter samples:
+
+http://127.0.0.1:8080/v1
+http://127.0.0.1:8080/v2
+http://127.0.0.1:8080/v3
