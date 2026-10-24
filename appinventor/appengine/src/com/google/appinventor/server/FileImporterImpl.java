@@ -89,7 +89,7 @@ public final class FileImporterImpl implements FileImporter {
       zin = new ZipInputStream(uploadedFileStream);
     } else {
       byte [] zipBinary = uploadedFileStream.readAllBytes();
-      sigResult = ZipSigner.verifyZip(new ByteArrayInputStream(zipBinary), verifyKey.get());
+      sigResult = ZipSigner.verifyZip(zipBinary, verifyKey.get());
       zin = new ZipInputStream(new ByteArrayInputStream(zipBinary));
     }
     LOG.log(Level.INFO, "importProject: sigResult = " + sigResult);

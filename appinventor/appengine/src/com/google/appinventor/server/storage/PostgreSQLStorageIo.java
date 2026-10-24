@@ -96,7 +96,8 @@ public class PostgreSQLStorageIo implements StorageIo {
       Flag.createFlag("aws.testing", false); // Still put contents into the db
   private static final Flag<String> redisServer = Flag.createFlag("db.redisserver", "");
   private static final Flag<Boolean> useReplicas = Flag.createFlag("db.usereplicas", false);
-  private static final Flag<String> signing_key = Flag.createFlag("aia.signing_key", "");
+  private static final Flag<String> signingKey = Flag.createFlag("aia.signing_key", "");
+  private static final Flag<Integer> signingKeyId = Flag.createFlag("aia.signing_key_id", 1);
   private static final Logger LOG = Logger.getLogger(PostgreSQLStorageIo.class.getName());
   private static final String DATABASE_ERROR = "Database Error";
 
@@ -2415,7 +2416,7 @@ public class PostgreSQLStorageIo implements StorageIo {
     // If we are not going to sign the ZIP, add this comment
     // the ZipSigner will also add this comment, followed by the
     // actual digital signature
-    if (signing_key.get().isEmpty()) {
+    if (signingKey.get().isEmpty()) {
       zipStream.setComment("Built with MIT App Inventor");
     }
 
@@ -2424,10 +2425,10 @@ public class PostgreSQLStorageIo implements StorageIo {
     byte [] zipBytes = zipFile.toByteArray();
 
     // Sign the ZIP if we have a signing key
-    if (!signing_key.get().isEmpty()) {
+    if (!signingKey.get().isEmpty()) {
       LOG.log(Level.INFO, "Have signing key");
       try {
-        zipBytes = ZipSigner.signZip(zipBytes, signing_key.get());
+        zipBytes = ZipSigner.signZip(zipBytes, signingKey.get(), signingKeyId.get());
       } catch (GeneralSecurityException e) {
         LOG.log(Level.SEVERE, "Exception thrown in signing", e);
       }
