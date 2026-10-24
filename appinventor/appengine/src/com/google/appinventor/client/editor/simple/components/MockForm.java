@@ -833,6 +833,7 @@ public final class MockForm extends MockDesignerRoot implements DesignerRootComp
       case PROPERTY_NAME_NSSPEECHRECOGNITIONUSAGEDESCRIPTION:
       case PROPERTY_NAME_NSLOCATIONWHENINUSEUSAGEDESCRIPTION:
       case PROPERTY_NAME_IOS_MIN_SDK:
+      case PROPERTY_NAME_ANDROID_MIN_SDK:
       case PROPERTY_NAME_DEFAULTFILESCOPE: {
         return false;
       }
