@@ -10,15 +10,12 @@ package com.google.appinventor.shared.util;
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
 
 public class AccountUtil {
 
   private static long mask = 0x7FF;  // 11 bits
-
-  private static Random random = new SecureRandom();
 
   private static long MAX = 17592186044415L;
 
@@ -75,14 +72,14 @@ public class AccountUtil {
     return makeWordList(accountId);
   }
 
-  public static String generateAccountId() {
-    return "anon-" + getRandom();
-  }
-
-  private static long getRandom() {
-    synchronized(AccountUtil.class) {
-      return random.nextLong() & MAX;  // MAX is 2^44-1, a 44-bit mask
-    }
+  /**
+   * Generates a new anonymous account id. This class is also compiled by GWT
+   * for the client, so the caller supplies the generator. Server code must pass
+   * a {@code java.security.SecureRandom} because the id doubles as the user's
+   * revisit code.
+   */
+  public static String generateAccountId(Random random) {
+    return "anon-" + (random.nextLong() & MAX);  // MAX is 2^44-1, a 44-bit mask
   }
 
   private static String [] words = {
@@ -318,7 +315,7 @@ public class AccountUtil {
 
   public static void main(String [] args) {
     for (int i = 0; i < 10; i++) {
-      String account = generateAccountId();
+      String account = generateAccountId(new Random());
       String code = accountToCode(account);
       String verify = codeToAccount(code);
       if (verify.equals(account)) {

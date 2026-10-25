@@ -39,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -96,6 +97,8 @@ public class PostgreSQLStorageIo implements StorageIo {
   private static final Flag<String> redisServer = Flag.createFlag("db.redisserver", "");
   private static final Flag<Boolean> useReplicas = Flag.createFlag("db.usereplicas", false);
   private static final Logger LOG = Logger.getLogger(PostgreSQLStorageIo.class.getName());
+  // Anonymous account ids are also the user's revisit code, so they must be unpredictable
+  private static final SecureRandom ACCOUNT_ID_RANDOM = new SecureRandom();
   private static final String DATABASE_ERROR = "Database Error";
 
   private final ComboPooledDataSource cpds;
@@ -3177,7 +3180,7 @@ public class PostgreSQLStorageIo implements StorageIo {
         // Verify that we have a unique account
         long count = 0;
         while (true) {
-          strAnonId = AccountUtil.generateAccountId();
+          strAnonId = AccountUtil.generateAccountId(ACCOUNT_ID_RANDOM);
           try (PreparedStatement qstmt =
               conn.prepareStatement("SELECT email FROM account WHERE email = ?")) {
             qstmt.setString(1, strAnonId);
