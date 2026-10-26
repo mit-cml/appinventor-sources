@@ -48,6 +48,9 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class YoungAndroidSettingsBuilder {
+
+  private static final Logger LOG = Logger.getLogger(YoungAndroidSettingsBuilder.class.getName());
+
   private String projectName = "";
   private String qualifiedFormName = "";
   private String icon = "";
@@ -79,9 +82,6 @@ public class YoungAndroidSettingsBuilder {
   private String nsLocationUsage = "";
   private String iosMinSdk = "";
   private String status = "unknown";
-
-  private static final Logger LOG = Logger.getLogger(YoungAndroidSettingsBuilder.class.getName());
-
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -314,7 +314,7 @@ public class YoungAndroidSettingsBuilder {
     this.status = status;
     if (status == null) {
       LOG.severe("setStatus status is null");
-      throw new RuntimeException("status is null");
+      throw new NullPointerException("status is null");
     }
     return this;
   }
@@ -459,12 +459,6 @@ public class YoungAndroidSettingsBuilder {
       result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
       result &= other.nsLocationUsage.equals(nsLocationUsage);
       result &= other.iosMinSdk.equals(iosMinSdk);
-      if (other.status == null) {
-        LOG.severe("other is null");
-      }
-      if (status == null) {
-        LOG.severe("status is null");
-      }
       result &= other.status.equals(status);
       return result;
     }

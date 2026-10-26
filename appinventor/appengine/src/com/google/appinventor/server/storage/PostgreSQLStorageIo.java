@@ -2381,7 +2381,6 @@ public class PostgreSQLStorageIo implements StorageIo {
 
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
     final ZipOutputStream zipStream = new ZipOutputStream(zipFile);
-    // zipStream.setComment("Built with MIT App Inventor");
 
     for (FileRow fr : files) { // project files
       byte[] content = fr.content != null ? fr.content : new byte[0];

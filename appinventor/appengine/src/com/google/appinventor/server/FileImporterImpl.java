@@ -92,7 +92,6 @@ public final class FileImporterImpl implements FileImporter {
       sigResult = ZipSigner.verifyZip(zipBinary, verifyKey.get());
       zin = new ZipInputStream(new ByteArrayInputStream(zipBinary));
     }
-    LOG.log(Level.INFO, "importProject: sigResult = " + sigResult);
     boolean isProjectArchive = false;  // have we found at least one project properties file?
     String lastOpened = "Screen1";
     try {
@@ -123,7 +122,6 @@ public final class FileImporterImpl implements FileImporter {
             lastOpened = props.getProperty("lastopened", "Screen1");
             String lastStatus = props.getProperty("Status", "unknown");
             String newStatus = determineStatus(lastStatus, sigResult);
-            LOG.log(Level.INFO, "importProject: newstatus = " + newStatus + " sigResult = " + sigResult);
             String projectColors = props.getProperty("projectcolors", "{}");
             YoungAndroidSettingsBuilder settingsBuilder =
                 new YoungAndroidSettingsBuilder()
@@ -133,7 +131,6 @@ public final class FileImporterImpl implements FileImporter {
                     .setStatus(newStatus)
                     .setProjectColors(projectColors);
             String content = settingsBuilder.toProperties();
-            // LOG.log(Level.INFO, "importProject: content: " + content);
             projectSettings = settingsBuilder.build();
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
@@ -256,16 +253,20 @@ public final class FileImporterImpl implements FileImporter {
 
   // Determine new status based on stored status and whether or not
   // the signature on the imported AIA file is present, valid or invalid
-  //
-  ///////////////////////////////////////////////////////////////
-  // |----+-------------------------+------------------------| //
-  // |  0 | Valid Signature         | All is good            | //
-  // |  1 | Invalid Signature       | File was tampered with | //
-  // |  2 | No signature, older AIA | predates signatures    | //
-  // |  3 | No signature, newer AIA | postdates signature    | //
-  // | -1 | No verification key     |                        | //
-  // |----+-------------------------+------------------------| //
-  ///////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Status can be one of "valid", "invalid" or "unknown." Unknown pretty   //
+  // much means that this is a new project or a project loaded from a       //
+  // non-signed template. Exporting it will give it a valid signature,      //
+  // though the status will still be "known." "Valid" means that when the   //
+  // project was imported, it had a valid signature. "Invalid" means that a //
+  // broken signature was found. This status is sticky, in the sense that   //
+  // once a project is marked invalid, it will stay that way, even if       //
+  // imported with a valid signature.                                       //
+  //                                                                        //
+  // Note: this may change in the future...                                 //
+  ////////////////////////////////////////////////////////////////////////////
+
 
   private String determineStatus(String oldStatus, int sigResult) {
     switch(sigResult) {
