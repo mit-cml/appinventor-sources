@@ -1496,14 +1496,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                     // Newer iOS versions will report the extensions that they support
                     top.ALLOWED_IOS_EXTENSIONS = JSON.parse(json.extensions);
                 }
-                if (!(rs.android) && Blockly.ReplMgr.hasDisallowedIosExtensions()) {
-                    rs.dialog.hide();
-                    top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
-                    top.BlocklyPanel_indicateDisconnect();
-                    rs.connection = null;
-                    var ios_dialog = new Blockly.Util.Dialog(Blockly.Msg.EXTENSIONS, Blockly.Msg.EXTENSIONS_iOS, Blockly.Msg.REPL_CANCEL, true, null, 0, function() {
-                        ios_dialog.hide();
-                    });
+                if (Blockly.ReplMgr.rejectDisallowedIosExtensions()) {
                     return;
                 }
                 // Keep the user informed about the connection
@@ -1555,6 +1548,48 @@ Blockly.ReplMgr.hasDisallowedIosExtensions = function() {
     return false;
 };
 
+Blockly.ReplMgr.rejectDisallowedIosExtensions = function() {
+    var rs = top.ReplState;
+
+    if (rs.android || !Blockly.ReplMgr.hasDisallowedIosExtensions()) {
+        return false;
+    }
+
+    if (rs.dialog) {
+        rs.dialog.hide();
+    }
+
+    rs.state = Blockly.ReplMgr.rsState.IDLE;
+    rs.connection = null;
+    rs.didversioncheck = false;
+    rs.isUSB = false;
+    rs.hasfetchassets = false;
+
+    try {
+        if (top.webrtcdata) {
+            top.webrtcdata.send("#DONE#");
+        }
+    } catch (err) {
+        console.log("webrtcdata: Error: " + err);
+    }
+
+    Blockly.ReplMgr.resetYail(false);
+    top.BlocklyPanel_indicateDisconnect();
+
+    var ios_dialog = new Blockly.Util.Dialog(
+        Blockly.Msg.EXTENSIONS,
+        Blockly.Msg.EXTENSIONS_iOS,
+        Blockly.Msg.REPL_CANCEL,
+        true,
+        null,
+        0,
+        function() {
+            ios_dialog.hide();
+        }
+    );
+
+    return true;
+};
 Blockly.ReplMgr.rendezvousDone = function() {
     var me = this;
     var rs = top.ReplState;
@@ -1737,12 +1772,20 @@ Blockly.ReplMgr.resendAssetsAndExtensions = function() {
     var RefreshAssets = top.AssetManager_refreshAssets;
     rs.state = Blockly.ReplMgr.rsState.ASSET;
     RefreshAssets(function() {
+        if (Blockly.ReplMgr.rejectDisallowedIosExtensions()) {
+            return;
+        }
         Blockly.ReplMgr.loadExtensions();
     });
 };
 
 Blockly.ReplMgr.loadExtensions = function() {
     var rs = top.ReplState;
+
+    if (Blockly.ReplMgr.rejectDisallowedIosExtensions()) {
+        return;
+    }
+
     // Note: If hasfetchassets is false, we are on iOS which doesn't yet
     // support extensions
     if (rs.hasfetchassets) {
