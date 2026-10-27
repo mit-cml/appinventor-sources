@@ -641,8 +641,10 @@ public class YaVersion {
   // - EV3_TOUCHSENSOR_COMPONENT_VERSION was incremented to 2.
   // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 238:
+  // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 5.
+  // For YOUNG_ANDROID_VERSION 239:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 40.
-  public static final int YOUNG_ANDROID_VERSION = 238;
+  public static final int YOUNG_ANDROID_VERSION = 239;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1284,7 +1286,10 @@ public class YaVersion {
   // For LISTVIEW_COMPONENT_VERSION 11:
   // - Added TextAlignmentMain property
   // - Added TextAlignmentDetail property
-  public static final int LISTVIEW_COMPONENT_VERSION = 11;
+  // For LISTVIEW_COMPONENT_VERSION 12:
+  // - Made the MultiSelect property visible in the designer and the blocks
+  // - Added SelectedItems property
+  public static final int LISTVIEW_COMPONENT_VERSION = 12;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -1293,7 +1298,9 @@ public class YaVersion {
   // For LOCATIONSENSOR_COMPONENT_VERSION 4:
   // - The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for
   // asynchronous calling
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 4;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 5:
+  // - The LastTimestamp property was added.
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 5;
 
   // For MAP_COMPONENT_VERSION 1:
   // - Initial Map implementation using OpenStreetMap

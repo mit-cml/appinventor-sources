@@ -934,6 +934,12 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Title for moderator send email dialog")
   String emailSendTitle();
 
+  // Used in boxes/AdminUserListBox.java
+
+  @DefaultMessage("User List")
+  @Description("ARIA label for admin user list region landmark.")
+  String adminUserListAriaLabel();
+
   // Used in boxes/AssetListBox.java
 
   @DefaultMessage("Media")

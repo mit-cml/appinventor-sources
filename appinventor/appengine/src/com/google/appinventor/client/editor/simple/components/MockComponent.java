@@ -1430,6 +1430,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         int targetIdx = targetContainer.getChildren().indexOf(target);
         insertIndex = (position < 0) ? targetIdx : targetIdx + 1;
       }
+      if (!targetContainer.willAcceptComponentType(source.getType())) {
+        return false;
+      }
       if (!source.isVisibleComponent() && !targetContainer.isRoot()) {
         return false;
       }

@@ -2529,7 +2529,12 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2:
     // - Added TextAlignmentMain property
     // - Added TextAlignmentDetail property
-    11: "noUpgrade"
+    11: "noUpgrade",
+
+    // AI2:
+    // - Made the MultiSelect property visible in the designer and the blocks
+    // - Added SelectedItems property
+    12: "noUpgrade"
 
   }, // End ListView upgraders
 
@@ -2542,7 +2547,10 @@ Blockly.Versioning.AllUpgradeMaps =
     // The speed parameter to the LocationChanged event
     3: "noUpgrade",
     // AI2: The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling.
-    4: "noUpgrade"
+    4: "noUpgrade",
+
+    // AI2: The LastTimestamp property was added.
+    5: "noUpgrade"
 
   }, // End LocationSensor upgraders
 

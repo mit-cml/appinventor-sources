@@ -11,7 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.designer.DesignerRootComponent;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * Box implementation for source structure explorer.
@@ -72,9 +72,9 @@ public class SourceStructureBox extends Box implements ISourceStructureBox {
 
   /**
    * Returns the header container for the source structure box (used by childs).
-   * @return DockPanel header container
+   * @return FlowPanel header container
    */
-  public DockPanel getHeaderContainer() {
+  public FlowPanel getHeaderContainer() {
     return super.getHeaderContainer();
   }
 }

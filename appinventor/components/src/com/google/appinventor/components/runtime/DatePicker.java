@@ -135,6 +135,7 @@ public class DatePicker extends ButtonBase {
       cal.getTime();
     } catch (java.lang.IllegalArgumentException e) {
       form.dispatchErrorOccurredEvent(this, "SetDateToDisplay", ErrorMessages.ERROR_ILLEGAL_DATE);
+      return;
     }
     date.updateDate(year, jMonth, day);
     instant = Dates.DateInstant(year, month, day);

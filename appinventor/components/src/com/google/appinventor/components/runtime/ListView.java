@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Canvas;
@@ -198,9 +199,11 @@ public final class ListView extends AndroidViewComponent {
         listAdapterWithRecyclerView.getFilter().filter(cs, new Filter.FilterListener() {
           @Override
           public void onFilterComplete(int count) {
-            // Keep the selection while the selected item is still on screen, and clear it only
-            // when the filter hides it, so the user never has a selection they cannot see.
-            if (selectionIndex > 0 && !dataModel.isVisible(selectionIndex - 1)) {
+            // A single selection is the one thing Selection reports, so a hidden one would be a
+            // selection the user cannot see: keep it while its row is on screen and drop it once
+            // the filter hides it. MultiSelect is a set the user is building up instead, so
+            // searching again must not throw away what they already picked.
+            if (!multiSelect && selectionIndex > 0 && !dataModel.isVisible(selectionIndex - 1)) {
               SelectionIndex(0);
             }
           }
@@ -349,8 +352,10 @@ public final class ListView extends AndroidViewComponent {
   @SimpleProperty
   public void Elements(List<Object> itemsList) {
     dataModel.setItems(itemsList);
+    // Every item was replaced, so nothing that was selected is still there to point at. The
+    // model dropped the selection with the items; this clears what the blocks read.
+    clearSelectionInfo();
     updateAdapterData();
-    listAdapterWithRecyclerView.notifyDataSetChanged();
   }
 
   /**
@@ -380,8 +385,10 @@ public final class ListView extends AndroidViewComponent {
       category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
     dataModel.setItems(ElementsUtil.elementsListFromString(itemstring));
+    // Every item was replaced, so nothing that was selected is still there to point at. The
+    // model dropped the selection with the items; this clears what the blocks read.
+    clearSelectionInfo();
     updateAdapterData();
-    listAdapterWithRecyclerView.notifyDataSetChanged();
   }
 
   /**
@@ -389,11 +396,16 @@ public final class ListView extends AndroidViewComponent {
    * will be `0`. If an attempt is made to set this to a number less than `1` or greater than the
    * number of items in the `ListView`, `SelectionIndex` will be set to `0`, and
    * {@link #Selection(String)} will be set to the empty text.
+   *
+   * While {@link #MultiSelect(boolean)} is enabled this is the row the user touched last, which
+   * may have been touched to deselect it. Read {@link #SelectedItems()} for what is selected now.
    */
   @SimpleProperty(description = "The index of the currently selected item, starting at 1. "
                                     + "If no item is selected, the value will be 0. If an attempt is made to set this "
                                     + "to a number less than 1 or greater than the number of stringItems in the ListView, "
-                                    + "SelectionIndex will be set to 0, and Selection will be set to the empty text.",
+                                    + "SelectionIndex will be set to 0, and Selection will be set to the empty text. "
+                                    + "While MultiSelect is enabled this is the row the user touched last, which may "
+                                    + "have been touched to deselect it; read SelectedItems for what is selected now.",
       category = PropertyCategory.BEHAVIOR)
   public int SelectionIndex() {
     return selectionIndex;
@@ -407,27 +419,22 @@ public final class ListView extends AndroidViewComponent {
    */
   @SimpleProperty
   public void SelectionIndex(int index) {
-    selectionIndex = index;
     if (index > 0 && index <= dataModel.size()) {
-      Object o = dataModel.get(index - 1);
-      if (o instanceof YailDictionary) {
-        if (((YailDictionary) o).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
-          selection = ((YailDictionary) o).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
-          selectionDetailText = ElementsUtil.toStringEmptyIfNull(((YailDictionary) o)
-              .get(Component.LISTVIEW_KEY_DESCRIPTION));
-        } else {
-          selection = o.toString();
+      selectionIndex = index;
+      readSelectionTextFrom(index);
+      if (multiSelect) {
+        // Setting the index picks that row. Unlike a tap it never un-picks one, so that setting
+        // the same index twice does not quietly undo itself.
+        if (!dataModel.isSelected(index - 1)) {
+          listAdapterWithRecyclerView.toggleSelection(index - 1);
         }
       } else {
-        selection = o.toString();
-      }
-      if (multiSelect) {
-        listAdapterWithRecyclerView.changeSelections(selectionIndex - 1);
-      } else {
-        listAdapterWithRecyclerView.toggleSelection(selectionIndex - 1);
+        listAdapterWithRecyclerView.selectOnly(index - 1);
       }
     } else {
-      selection = "";
+      // An index outside the list selects nothing, so report nothing rather than keeping a number
+      // that points at no row.
+      clearSelectionInfo();
       listAdapterWithRecyclerView.clearSelections();
       listAdapterWithRecyclerView.notifyDataSetChanged();
     }
@@ -435,8 +442,14 @@ public final class ListView extends AndroidViewComponent {
 
   /**
    * Returns the text in the `ListView` at the position of {@link #SelectionIndex(int)}.
+   *
+   * While {@link #MultiSelect(boolean)} is enabled this is the text of the row the user touched
+   * last. Read {@link #SelectedItems()} for every element that is selected now.
    */
-  @SimpleProperty(description = "The text value of the most recently selected item in the ListView.",
+  @SimpleProperty(description = "The text value of the most recently selected item in the "
+                                    + "ListView. While MultiSelect is enabled this is the row the "
+                                    + "user touched last; read SelectedItems for every element "
+                                    + "that is selected now.",
       category = PropertyCategory.BEHAVIOR)
   public String Selection() {
     return selection;
@@ -487,6 +500,34 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
+   * Points what the Selection blocks report at the item at the given 1-based index, reading the
+   * main and detail text out of it. Does not change which rows are selected.
+   */
+  private void readSelectionTextFrom(int index) {
+    Object item = dataModel.get(index - 1);
+    if (item instanceof YailDictionary
+        && ((YailDictionary) item).containsKey(Component.LISTVIEW_KEY_MAIN_TEXT)) {
+      selection = ((YailDictionary) item).get(Component.LISTVIEW_KEY_MAIN_TEXT).toString();
+      selectionDetailText = ElementsUtil.toStringEmptyIfNull(((YailDictionary) item)
+          .get(Component.LISTVIEW_KEY_DESCRIPTION));
+    } else {
+      selection = item.toString();
+    }
+  }
+
+  /**
+   * Clears what the Selection blocks report, without touching the selection the model holds.
+   *
+   * <p>Callers that removed or replaced items use this so that MultiSelect keeps the rest of the
+   * set the user built up; the model has already dropped the entries whose items are gone.
+   */
+  private void clearSelectionInfo() {
+    selectionIndex = 0;
+    selection = "";
+    selectionDetailText = "";
+  }
+
+  /**
    * Returns the Secondary or Detail text in the ListView at the position set by SelectionIndex
    */
   @SimpleProperty(description = "Returns the secondary text of the selected row in the ListView.",
@@ -496,11 +537,37 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
+   * Returns every element the user has selected, in the order they were picked. Unless
+   * {@link #MultiSelect(boolean)} is enabled this holds at most one element, since selecting a
+   * row replaces the previous selection.
+   *
+   * @return the selected elements, as strings or as dictionaries depending on the layout
+   */
+  @SimpleProperty(description = "The elements the user has selected, in the order they were "
+                                    + "picked. Unless MultiSelect is enabled this holds at most "
+                                    + "one element. Use GetMainText or GetDetailText to read an "
+                                    + "element from the list.",
+      category = PropertyCategory.BEHAVIOR)
+  public YailList SelectedItems() {
+    List<Object> selectedItems = new ArrayList<>();
+    for (int index : dataModel.getSelectedIndexes()) {
+      selectedItems.add(dataModel.get(index));
+    }
+    return YailList.makeList(selectedItems);
+  }
+
+  /**
    * Simple event to be raised after the an element has been chosen in the list.
    * The selected element is available in the {@link #Selection(String)} property.
+   *
+   * While {@link #MultiSelect(boolean)} is enabled this is raised for every tap, including a tap
+   * that takes a row back out of {@link #SelectedItems()}.
    */
   @SimpleEvent(description = "Simple event to be raised after the an element has been chosen in the"
-                                 + " list. The selected element is available in the Selection property.")
+                                 + " list. The selected element is available in the Selection"
+                                 + " property. While MultiSelect is enabled this is raised for"
+                                 + " every tap, including one that takes a row back out of"
+                                 + " SelectedItems.")
   public void AfterPicking() {
     EventDispatcher.dispatchEvent(this, "AfterPicking");
   }
@@ -943,30 +1010,37 @@ public final class ListView extends AndroidViewComponent {
    * @return true or false (is multiselect)
    * @suppressdoc
    */
-  // See https://github.com/mit-cml/appinventor-sources/pull/3235#issuecomment-2435573318
-//  @SimpleProperty(description = "A function that allows you to select multiple elements. "
-//                                    + "True - function enabled, false - disabled.",
-//      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(description = "Whether the user can select more than one element at a time. "
+                                    + "While this is enabled, tapping a row adds it to or removes "
+                                    + "it from SelectedItems, and Selection and SelectionIndex "
+                                    + "report the row that was tapped last.",
+      category = PropertyCategory.BEHAVIOR)
   public boolean MultiSelect() {
     return multiSelect;
   }
 
   /**
-   * Sets the multiselect function. `true`{:.logic.block} will enable the function,
-   * `false`{:.logic.block} will disable.
+   * Whether the user can select more than one element at a time. `true`{:.logic.block} makes a tap
+   * add a row to, or remove it from, {@link #SelectedItems()}; `false`{:.logic.block} makes each
+   * tap replace the previous selection.
    *
-   * @param multiSelect sets the function according to this input
+   * Turning this on or off clears whatever is selected at the time, since a set built up in one
+   * mode has no meaning in the other.
+   *
+   * @param multi whether more than one element can be selected at a time
    */
-  // See https://github.com/mit-cml/appinventor-sources/pull/3235#issuecomment-2435573318
-//  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-//      defaultValue = "False")
-//  @SimpleProperty
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty
   public void MultiSelect(boolean multi) {
-    if (selectionIndex > 0) {
-      listAdapterWithRecyclerView.clearSelections();
+    this.multiSelect = multi;
+    // Switching modes starts from a clean slate: a set built up in one mode has no meaning in the
+    // other, and a leftover highlight would outlive what the Selection blocks report.
+    dataModel.clearSelection();
+    clearSelectionInfo();
+    if (listAdapterWithRecyclerView != null) {
       listAdapterWithRecyclerView.notifyDataSetChanged();
     }
-    this.multiSelect = multi;
   }
 
   /**
@@ -1049,8 +1123,10 @@ public final class ListView extends AndroidViewComponent {
         Log.e(LOG_TAG, "Malformed JSON in ListView.ListData", e);
         container.$form().dispatchErrorOccurredEvent(this, "ListView.ListData", ErrorMessages.ERROR_DEFAULT, e.getMessage());
       }
+      // Every item was replaced, so nothing that was selected is still there to point at. The
+      // model dropped the selection with the items; this clears what the blocks read.
+      clearSelectionInfo();
       updateAdapterData();
-      listAdapterWithRecyclerView.notifyDataSetChanged();
     }
   }
 
@@ -1237,8 +1313,14 @@ public final class ListView extends AndroidViewComponent {
       return;
     }
     dataModel.remove(index - 1);
+    if (selectionIndex == index) {
+      // The item the blocks are reporting is the one that just went away.
+      clearSelectionInfo();
+    } else if (selectionIndex > index) {
+      // Everything after the hole moved down one, so follow the item that is still selected.
+      selectionIndex--;
+    }
     updateAdapterData();
-    listAdapterWithRecyclerView.notifyItemRemoved(index - 1);
   }
 
   /**
@@ -1264,8 +1346,8 @@ public final class ListView extends AndroidViewComponent {
         dataModel.add(CreateElement(mainText, detailText, imageName));
       }
     }
+    // Appending leaves every existing index where it was, so the selection needs no adjustment.
     updateAdapterData();
-    listAdapterWithRecyclerView.notifyItemChanged(listAdapterWithRecyclerView.getItemCount() - 1);
   }
 
   /**
@@ -1274,11 +1356,9 @@ public final class ListView extends AndroidViewComponent {
   @SimpleFunction(description = "Add new Items to list at the end.")
   public void AddItems(List<Object> itemsList) {
     if (!itemsList.isEmpty()) {
-      int positionStart = dataModel.size();
-      int itemCount = itemsList.size();
       dataModel.addAll(itemsList);
+      // Appending leaves every existing index where it was, so the selection needs no adjustment.
       updateAdapterData();
-      listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
     }
   }
 
@@ -1310,8 +1390,11 @@ public final class ListView extends AndroidViewComponent {
         dataModel.addAt(index - 1, CreateElement(mainText, detailText, imageName));
       }
     }
+    if (selectionIndex >= index) {
+      // The new row pushed the selected item down one.
+      selectionIndex++;
+    }
     updateAdapterData();
-    listAdapterWithRecyclerView.notifyItemInserted(index - 1);
   }
 
   /**
@@ -1325,11 +1408,12 @@ public final class ListView extends AndroidViewComponent {
       return;
     }
     if (!itemsList.isEmpty()) {
-      int positionStart = index - 1;
-      int itemCount = itemsList.size();
-      dataModel.addAllAt(positionStart, itemsList);
+      dataModel.addAllAt(index - 1, itemsList);
+      if (selectionIndex >= index) {
+        // The new rows pushed the selected item down by however many went in.
+        selectionIndex += itemsList.size();
+      }
       updateAdapterData();
-      listAdapterWithRecyclerView.notifyItemRangeChanged(positionStart, itemCount);
     }
   }
 
@@ -1378,10 +1462,12 @@ public final class ListView extends AndroidViewComponent {
   }
 
   /**
-   * Deselect the item and update the data in adapter.
+   * Rebuilds the filtered view after the data changed and redraws the rows.
+   *
+   * <p>The selection is left alone: callers that change the item list adjust the selected index
+   * themselves, since only they know which rows moved and by how much.
    */
   public void updateAdapterData() {
-    SelectionIndex(0);
     // Data changed, so rebuild the filtered view (a no-op when unfiltered) and refresh.
     dataModel.refreshFilter();
     listAdapterWithRecyclerView.notifyDataSetChanged();
@@ -1407,7 +1493,15 @@ public final class ListView extends AndroidViewComponent {
     listAdapterWithRecyclerView.setOnItemClickListener(new ListAdapterWithRecyclerView.ClickListener() {
       @Override
       public void onItemClick(int position, View v) {
-        SelectionIndex(position + 1);
+        if (multiSelect) {
+          // A tap toggles: touching a row that is already picked takes it back out of the set.
+          // Either way the row just touched is what the Selection blocks go on to report.
+          listAdapterWithRecyclerView.toggleSelection(position);
+          selectionIndex = position + 1;
+          readSelectionTextFrom(position + 1);
+        } else {
+          SelectionIndex(position + 1);
+        }
         AfterPicking();
       }
     });

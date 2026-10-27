@@ -127,10 +127,9 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
   }
 
   private void refreshCanvas() {
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockBall on the palette
-    if (mockCanvas != null) {
-      mockCanvas.reorderComponents(this); //refreshForm();
+    if (getContainer() instanceof MockCanvas) {
+      MockCanvas mockCanvas = (MockCanvas) getContainer();
+      mockCanvas.reorderComponents(this);
     }
   }
 
@@ -153,9 +152,8 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
   }
 
   private void setZProperty(String text) {
-    MockCanvas mockCanvas = (MockCanvas) getContainer();
-    // mockCanvas will be null for the MockBall on the palette
-    if (mockCanvas != null) {
+    if (getContainer() instanceof MockCanvas) {
+      MockCanvas mockCanvas = (MockCanvas) getContainer();
       mockCanvas.reorderComponents(this);
     }
   }

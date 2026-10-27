@@ -83,7 +83,7 @@ AI.ErrorIcon = class extends Blockly.icons.Icon {
   }
 
   isShownWhenCollapsed() {
-    return false;
+    return true;
   }
 
   updateCollapsed() {

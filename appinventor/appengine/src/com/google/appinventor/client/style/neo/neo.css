@@ -864,6 +864,12 @@ body {
   margin-bottom: 10px;
 }
 
+.ode-AssetTree .gwt-TreeItem span img {
+  width: 14px;
+  height: 14px;
+  margin-right: 5px;
+}
+
 .ode-ChoicePropertyEditor {
   white-space: unset;
   border: thin solid gray-300;

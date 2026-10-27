@@ -68,11 +68,10 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
     assetList = new Tree();
     assetList.setWidth("100%");
+    assetList.addStyleName("ode-AssetTree");
 
     panel = new VerticalPanel();
     panel.setWidth("100%");
-
-    panel.add(assetList);
 
     TextButton addButton = new TextButton(MESSAGES.addButton());
     addButton.addClickHandler(new ClickHandler() {
@@ -89,6 +88,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
     buttonPanel.add(addButton);
 
     panel.add(buttonPanel);
+    panel.add(assetList);
     panel.setCellHorizontalAlignment(buttonPanel, VerticalPanel.ALIGN_CENTER);
 
     initWidget(panel);
@@ -150,6 +150,10 @@ public class AssetList extends Composite implements ProjectChangeListener {
           treeItemText += new Image(images.mediaIconAudio());
         } else if (StorageUtil.isVideoFile(fileSuffix )) {
           treeItemText += new Image(images.mediaIconVideo());
+        } else if (StorageUtil.isFontFile(fileSuffix)) {
+          treeItemText += new Image(images.mediaIconFont());
+        } else if (StorageUtil.isTextFile(fileSuffix)) {
+          treeItemText += new Image(images.mediaIconFile());
         }
         treeItemText += nodeName + "</span>";
         TreeItem treeItem = new TreeItem(new HTML(treeItemText));
