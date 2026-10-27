@@ -642,7 +642,9 @@ public class YaVersion {
   // - EV3_ULTRASONICSENSOR_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 238:
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 5.
-  public static final int YOUNG_ANDROID_VERSION = 238;
+  // For YOUNG_ANDROID_VERSION 239:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 40.
+  public static final int YOUNG_ANDROID_VERSION = 239;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -745,7 +747,9 @@ public class YaVersion {
   // were added.
   // For BLOCKS_LANGUAGE_VERSION 39
   // - The Multiline Text block was added.
-  public static final int BLOCKS_LANGUAGE_VERSION = 39;
+  // For BLOCKS_LANGUAGE_VERSION 40
+  // - Add "titlecase" operator for text_changeCase block.
+  public static final int BLOCKS_LANGUAGE_VERSION = 40;
 
   // ................................. Target SDK Version Number ..................................
 
