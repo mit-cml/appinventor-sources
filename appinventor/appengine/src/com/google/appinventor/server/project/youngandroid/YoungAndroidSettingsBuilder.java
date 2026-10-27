@@ -36,6 +36,7 @@ import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_AND
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK;
 import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME;
+import static com.google.appinventor.shared.settings.SettingsConstants.YOUNG_ANDROID_SETTINGS_STATUS;
 
 import com.google.appinventor.shared.settings.Settings;
 import com.google.common.base.Strings;
@@ -47,6 +48,9 @@ import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class YoungAndroidSettingsBuilder {
+
+  private static final Logger LOG = Logger.getLogger(YoungAndroidSettingsBuilder.class.getName());
+
   private String projectName = "";
   private String qualifiedFormName = "";
   private String icon = "";
@@ -77,6 +81,7 @@ public class YoungAndroidSettingsBuilder {
   private String nsSpeechRecognitionUsage = "";
   private String nsLocationUsage = "";
   private String iosMinSdk = "";
+  private String status = "unknown";
 
   public YoungAndroidSettingsBuilder() {
   }
@@ -144,6 +149,11 @@ public class YoungAndroidSettingsBuilder {
         YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE));
     iosMinSdk = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
         YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK));
+    status = Strings.nullToEmpty(settings.getSetting(PROJECT_YOUNG_ANDROID_SETTINGS,
+        YOUNG_ANDROID_SETTINGS_STATUS));
+    if (status.isEmpty()) {
+      status = "unknown";
+    }
     if (buildNumber.isEmpty()) {
       buildNumber = "1";
     }
@@ -184,6 +194,8 @@ public class YoungAndroidSettingsBuilder {
     nsSpeechRecognitionUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, "");
     nsLocationUsage = properties.getProperty(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, "");
     iosMinSdk = properties.getProperty(YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, "");
+    status = properties.getProperty(YOUNG_ANDROID_SETTINGS_STATUS, "unknown");
+    LOG.severe("Called with properties, status = " + status);
   }
 
   public YoungAndroidSettingsBuilder setProjectName(String projectName) {
@@ -297,6 +309,15 @@ public class YoungAndroidSettingsBuilder {
     return this;
   }
 
+  public YoungAndroidSettingsBuilder setStatus(String status) {
+    this.status = status;
+    if (status == null) {
+      LOG.severe("setStatus status is null");
+      throw new NullPointerException("status is null");
+    }
+    return this;
+  }
+
   /**
    * Convert the internal settings into a JSON structure.
    *
@@ -332,6 +353,7 @@ public class YoungAndroidSettingsBuilder {
     object.put(YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
     object.put(YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
     object.put(YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, iosMinSdk);
+    object.put(YOUNG_ANDROID_SETTINGS_STATUS, status);
     JSONObject wrapper = new JSONObject();
     wrapper.put(PROJECT_YOUNG_ANDROID_SETTINGS, object);
     return wrapper.toString();
@@ -376,6 +398,7 @@ public class YoungAndroidSettingsBuilder {
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSSPEECHRECOGNITIONUSAGE, nsSpeechRecognitionUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_NSLOCATIONUSAGE, nsLocationUsage);
     addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_IOS_MIN_SDK, iosMinSdk);
+    addPropertyIfSet(result, YOUNG_ANDROID_SETTINGS_STATUS, status);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     try {
       result.store(out, "");
@@ -435,6 +458,7 @@ public class YoungAndroidSettingsBuilder {
       result &= other.nsSpeechRecognitionUsage.equals(nsSpeechRecognitionUsage);
       result &= other.nsLocationUsage.equals(nsLocationUsage);
       result &= other.iosMinSdk.equals(iosMinSdk);
+      result &= other.status.equals(status);
       return result;
     }
     return false;

@@ -38,6 +38,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -95,6 +96,8 @@ public class PostgreSQLStorageIo implements StorageIo {
       Flag.createFlag("aws.testing", false); // Still put contents into the db
   private static final Flag<String> redisServer = Flag.createFlag("db.redisserver", "");
   private static final Flag<Boolean> useReplicas = Flag.createFlag("db.usereplicas", false);
+  private static final Flag<String> signingKey = Flag.createFlag("aia.signing_key", "");
+  private static final Flag<Integer> signingKeyId = Flag.createFlag("aia.signing_key_id", 1);
   private static final Logger LOG = Logger.getLogger(PostgreSQLStorageIo.class.getName());
   private static final String DATABASE_ERROR = "Database Error";
 
@@ -2378,7 +2381,6 @@ public class PostgreSQLStorageIo implements StorageIo {
 
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
     final ZipOutputStream zipStream = new ZipOutputStream(zipFile);
-    zipStream.setComment("Built with MIT App Inventor");
 
     for (FileRow fr : files) { // project files
       byte[] content = fr.content != null ? fr.content : new byte[0];
@@ -2410,15 +2412,32 @@ public class PostgreSQLStorageIo implements StorageIo {
       fileCount += 1;
     }
 
-    // Finalize
+    // If we are not going to sign the ZIP, add this comment
+    // the ZipSigner will also add this comment, followed by the
+    // actual digital signature
+    if (signingKey.get().isEmpty()) {
+      zipStream.setComment("Built with MIT App Inventor");
+    }
+
     zipStream.close();
+
+    byte [] zipBytes = zipFile.toByteArray();
+
+    // Sign the ZIP if we have a signing key
+    if (!signingKey.get().isEmpty()) {
+      try {
+        zipBytes = ZipSigner.signZip(zipBytes, signingKey.get(), signingKeyId.get());
+      } catch (GeneralSecurityException e) {
+        LOG.log(Level.SEVERE, "Exception thrown in signing", e);
+      }
+    }
 
     assert projectFound && projectName != null;
     if (zipName == null) {
       zipName = projectName + ".aia";
     }
     ProjectSourceZip projectSourceZip =
-        new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount);
+        new ProjectSourceZip(zipName, zipBytes, fileCount);
     projectSourceZip.setMetadata(projectName);
     return projectSourceZip;
   }

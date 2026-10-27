@@ -12,25 +12,24 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidSettingsBuilder;
-import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.server.storage.ZipSigner;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteStreams;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +41,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
-
 import javax.annotation.Nullable;
 
 /**
@@ -54,6 +52,7 @@ public final class FileImporterImpl implements FileImporter {
 
   // Maximum size of an uploaded asset, in megabytes.
   private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 15f);
+  private static final Flag<String> verifyKey = Flag.createFlag("aia.verify_key", "");
 
   private static final Logger LOG = Logger.getLogger(FileImporterImpl.class.getName());
 
@@ -84,7 +83,15 @@ public final class FileImporterImpl implements FileImporter {
     String srcDirectory = YoungAndroidProjectService.getSourceDirectory(qualifiedFormName);
     String projectSettings = new YoungAndroidSettingsBuilder().build();
 
-    ZipInputStream zin = new ZipInputStream(uploadedFileStream);
+    int sigResult = -1;         // Default value if no verify key
+    ZipInputStream zin;
+    if (verifyKey.get().isEmpty()) {
+      zin = new ZipInputStream(uploadedFileStream);
+    } else {
+      byte [] zipBinary = uploadedFileStream.readAllBytes();
+      sigResult = ZipSigner.verifyZip(zipBinary, verifyKey.get());
+      zin = new ZipInputStream(new ByteArrayInputStream(zipBinary));
+    }
     boolean isProjectArchive = false;  // have we found at least one project properties file?
     String lastOpened = "Screen1";
     try {
@@ -113,12 +120,16 @@ public final class FileImporterImpl implements FileImporter {
             Properties props = new Properties();
             props.load(zin);
             lastOpened = props.getProperty("lastopened", "Screen1");
+            String lastStatus = props.getProperty("Status", "unknown");
+            String newStatus = determineStatus(lastStatus, sigResult);
             String projectColors = props.getProperty("projectcolors", "{}");
-            YoungAndroidSettingsBuilder settingsBuilder = new YoungAndroidSettingsBuilder()
-                .setProjectName(projectName)
-                .setQualifiedFormName(qualifiedFormName)
-                .setDefaultLastOpened(lastOpened)
-                .setProjectColors(projectColors);
+            YoungAndroidSettingsBuilder settingsBuilder =
+                new YoungAndroidSettingsBuilder()
+                    .setProjectName(projectName)
+                    .setQualifiedFormName(qualifiedFormName)
+                    .setDefaultLastOpened(lastOpened)
+                    .setStatus(newStatus)
+                    .setProjectColors(projectColors);
             String content = settingsBuilder.toProperties();
             projectSettings = settingsBuilder.build();
             project.addTextFile(new TextFile(fileName, content));
@@ -242,4 +253,37 @@ public final class FileImporterImpl implements FileImporter {
     });
     return ImmutableSet.copyOf(names);
   }
+
+  // Determine new status based on stored status and whether or not
+  // the signature on the imported AIA file is present, valid or invalid
+
+  ////////////////////////////////////////////////////////////////////////////
+  // Status can be one of "valid", "invalid" or "unknown." Unknown pretty   //
+  // much means that this is a new project or a project loaded from a       //
+  // non-signed template. Exporting it will give it a valid signature,      //
+  // though the status will still be "known." "Valid" means that when the   //
+  // project was imported, it had a valid signature. "Invalid" means that a //
+  // broken signature was found. This status is sticky, in the sense that   //
+  // once a project is marked invalid, it will stay that way, even if       //
+  // imported with a valid signature.                                       //
+  //                                                                        //
+  // Note: this may change in the future...                                 //
+  ////////////////////////////////////////////////////////////////////////////
+
+
+  private String determineStatus(String oldStatus, int sigResult) {
+    switch(sigResult) {
+      case 0:                  // Valid Signature
+        if (oldStatus.equals("unknown") || oldStatus.equals("valid")) {
+          return "valid";
+        } else {
+          return oldStatus;
+        }
+      case 1:                   // Invalid Signature
+        return "invalid";
+      default:
+        return oldStatus;
+    }
+  }
+
 }
