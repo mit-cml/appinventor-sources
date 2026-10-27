@@ -2425,14 +2425,11 @@ public class PostgreSQLStorageIo implements StorageIo {
 
     // Sign the ZIP if we have a signing key
     if (!signingKey.get().isEmpty()) {
-      LOG.log(Level.INFO, "Have signing key");
       try {
         zipBytes = ZipSigner.signZip(zipBytes, signingKey.get(), signingKeyId.get());
       } catch (GeneralSecurityException e) {
         LOG.log(Level.SEVERE, "Exception thrown in signing", e);
       }
-    } else {
-      LOG.log(Level.INFO, "Do not have signing key");
     }
 
     assert projectFound && projectName != null;

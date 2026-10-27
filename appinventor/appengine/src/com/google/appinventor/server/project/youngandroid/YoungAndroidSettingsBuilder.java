@@ -157,7 +157,6 @@ public class YoungAndroidSettingsBuilder {
     if (buildNumber.isEmpty()) {
       buildNumber = "1";
     }
-    LOG.severe("Called with settings, status = " + status);
   }
 
   /**
