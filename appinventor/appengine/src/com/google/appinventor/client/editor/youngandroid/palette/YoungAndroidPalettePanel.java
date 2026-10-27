@@ -11,12 +11,14 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.palette.AbstractPalettePanel;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.wizards.ComponentImportWizard;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.logging.Logger;
 
@@ -63,15 +65,19 @@ public class YoungAndroidPalettePanel extends AbstractPalettePanel<SimpleCompone
   }
 
   private void initExtensionPanel(FlowPanel panel) {
-    Anchor addComponentAnchor = new Anchor(MESSAGES.importExtensionMenuItem());
-    addComponentAnchor.setStylePrimaryName("ode-ExtensionAnchor");
-    addComponentAnchor.addClickHandler(new ClickHandler() {
+    TextButton importButton = new TextButton(MESSAGES.importExtensionMenuItem());
+
+    SimplePanel buttonPanel = new SimplePanel();
+    buttonPanel.setStyleName("ode-PanelButtons ode-ExtensionPanelButtons");
+    buttonPanel.add(importButton);
+
+    importButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         new ComponentImportWizard().center();
       }
     });
 
-    panel.add(addComponentAnchor);
+    panel.add(buttonPanel);
   }
 }
