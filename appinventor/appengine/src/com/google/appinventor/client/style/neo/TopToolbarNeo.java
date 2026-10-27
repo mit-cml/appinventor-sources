@@ -9,6 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.Toolbar;
+import com.google.appinventor.common.utils.StringUtils;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -28,6 +29,7 @@ public class TopToolbarNeo extends TopToolbar {
   @UiField DropDownButton adminDropDown;
   @UiField (provided = true) Boolean hasWriteAccess;
   @UiField (provided = true) Boolean isAvailable;
+  @UiField (provided = true) Boolean webEmulatorEnabled;
 
   @Override
   public void bindUI() {
@@ -36,6 +38,7 @@ public class TopToolbarNeo extends TopToolbar {
     LOG.info("bindUI neo");
     readOnly = Ode.getInstance().isReadOnly();
     hasWriteAccess = !readOnly;
+    webEmulatorEnabled = !StringUtils.isNullOrEmpty(Ode.getSystemConfig().getWebEmulatorUrl());
 
     boolean oneProjectMode = Ode.getInstance().getOneProjectMode();
     isAvailable = !oneProjectMode && hasWriteAccess;
