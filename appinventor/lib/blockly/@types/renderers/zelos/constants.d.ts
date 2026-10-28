@@ -65,10 +65,6 @@ export declare class ConstantProvider extends BaseConstantProvider {
     SELECTED_GLOW_COLOUR: string;
     /** The size of the selected glow. */
     SELECTED_GLOW_SIZE: number;
-    /** The replacement glow colour. */
-    REPLACEMENT_GLOW_COLOUR: string;
-    /** The size of the selected glow. */
-    REPLACEMENT_GLOW_SIZE: number;
     /**
      * The ID of the selected glow filter, or the empty string if no filter is
      * set.
@@ -78,15 +74,6 @@ export declare class ConstantProvider extends BaseConstantProvider {
      * The <filter> element to use for a selected glow, or null if not set.
      */
     private selectedGlowFilter;
-    /**
-     * The ID of the replacement glow filter, or the empty string if no filter
-     * is set.
-     */
-    replacementGlowFilterId: string;
-    /**
-     * The <filter> element to use for a replacement glow, or null if not set.
-     */
-    private replacementGlowFilter;
     /**
      * The object containing information about the hexagon used for a boolean
      * reporter block. Null before init is called.
@@ -102,7 +89,13 @@ export declare class ConstantProvider extends BaseConstantProvider {
      * rectangular reporter block. Null before init is called.
      */
     SQUARED: Shape | null;
-    constructor();
+    /**
+     * Creates a new ConstantProvider.
+     *
+     * @param gridUnit If set, defines the base unit used to calculate other
+     *     constants.
+     */
+    constructor(gridUnit?: number);
     setFontConstants_(theme: Theme): void;
     init(): void;
     setDynamicProperties_(theme: Theme): void;
@@ -153,7 +146,7 @@ export declare class ConstantProvider extends BaseConstantProvider {
     };
     generateSecondaryColour_(colour: string): string;
     generateTertiaryColour_(colour: string): string;
-    createDom(svg: SVGElement, tagName: string, selector: string): void;
+    createDom(svg: SVGElement, selector: string, injectionDivIfIsParent?: HTMLElement): void;
     getCSS_(selector: string): string[];
 }
 //# sourceMappingURL=constants.d.ts.map

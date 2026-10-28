@@ -3,12 +3,12 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { BlockSvg } from '../block_svg.js';
-import { ICopyData } from '../interfaces/i_copyable.js';
-import { IPaster } from '../interfaces/i_paster.js';
-import { State } from '../serialization/blocks.js';
+import type { BlockSvg } from '../block_svg.js';
+import type { ICopyData } from '../interfaces/i_copyable.js';
+import type { IPaster } from '../interfaces/i_paster.js';
+import type { State } from '../serialization/blocks.js';
 import { Coordinate } from '../utils/coordinate.js';
-import { WorkspaceSvg } from '../workspace_svg.js';
+import type { WorkspaceSvg } from '../workspace_svg.js';
 export declare class BlockPaster implements IPaster<BlockCopyData, BlockSvg> {
     static TYPE: string;
     paste(copyData: BlockCopyData, workspace: WorkspaceSvg, coordinate?: Coordinate): BlockSvg | null;

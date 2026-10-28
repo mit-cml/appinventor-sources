@@ -9,7 +9,8 @@
  * @class
  */
 import { Field } from './field.js';
-import { FieldInput, FieldInputConfig, FieldInputValidator } from './field_input.js';
+import type { FieldInputConfig, FieldInputValidator } from './field_input.js';
+import { FieldInput } from './field_input.js';
 /**
  * Class for an editable number field.
  */
@@ -43,7 +44,7 @@ export declare class FieldNumber extends FieldInput<number> {
      *     to abort the change.
      * @param config A map of options used to configure the field.
      *     See the [field creation documentation]{@link
-     * https://developers.google.com/blockly/guides/create-custom-blocks/fields/built-in-fields/number#creation}
+     * https://docs.blockly.com/guides/create-custom-blocks/fields/built-in-fields/number/#creation}
      * for a list of properties this parameter supports.
      */
     constructor(value?: string | number | typeof Field.SKIP_SETUP, min?: string | number | null, max?: string | number | null, precision?: string | number | null, validator?: FieldNumberValidator | null, config?: FieldNumberConfig);
@@ -146,6 +147,12 @@ export declare class FieldNumber extends FieldInput<number> {
      */
     protected widgetCreate_(): HTMLInputElement;
     /**
+     * Initialize the field's DOM.
+     *
+     * @override
+     */
+    initView(): void;
+    /**
      * Construct a FieldNumber from a JSON arg object.
      *
      * @param options A JSON object with options (value, min, max, and precision).
@@ -154,6 +161,16 @@ export declare class FieldNumber extends FieldInput<number> {
      * @internal
      */
     static fromJson(options: FieldNumberFromJsonConfig): FieldNumber;
+    /**
+     * Gets an ARIA-friendly label representation of this field's type.
+     *
+     * Implementations are responsible for, and encouraged to, return a localized
+     * version of the ARIA representation of the field's type.
+     *
+     * @returns An ARIA representation of the field's type or a default if it is
+     *     unspecified.
+     */
+    getAriaTypeName(): string | null;
 }
 /**
  * Config options for the number field.
@@ -173,7 +190,7 @@ export interface FieldNumberFromJsonConfig extends FieldNumberConfig {
  * A function that is called to validate changes to the field's value before
  * they are set.
  *
- * @see {@link https://developers.google.com/blockly/guides/create-custom-blocks/fields/validators#return_values}
+ * @see {@link https://docs.blockly.com/guides/create-custom-blocks/fields/validators/#return-values}
  * @param newValue The value to be validated.
  * @returns One of three instructions for setting the new value: `T`, `null`,
  * or `undefined`.

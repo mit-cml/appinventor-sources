@@ -12,12 +12,14 @@ import type { IAutoHideable } from './interfaces/i_autohideable.js';
 import type { IComponent } from './interfaces/i_component.js';
 import type { IDeleteArea } from './interfaces/i_delete_area.js';
 import type { IDragTarget } from './interfaces/i_drag_target.js';
+import type { IFocusableNode } from './interfaces/i_focusable_node.js';
 import type { IPositionable } from './interfaces/i_positionable.js';
 declare class Capability<_T> {
     static POSITIONABLE: Capability<IPositionable>;
     static DRAG_TARGET: Capability<IDragTarget>;
     static DELETE_AREA: Capability<IDeleteArea>;
     static AUTOHIDEABLE: Capability<IAutoHideable>;
+    static FOCUSABLE: Capability<IFocusableNode>;
     private readonly name;
     /** @param name The name of the component capability. */
     constructor(name: string);
