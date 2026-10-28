@@ -650,7 +650,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button leading to Connect related cascade items")
   String connectTabName();
 
-  @DefaultMessage("AI Companion")
+  @DefaultMessage("App Inventor Companion")
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
 

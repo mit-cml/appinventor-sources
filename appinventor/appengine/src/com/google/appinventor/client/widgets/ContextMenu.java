@@ -93,9 +93,14 @@ public final class ContextMenu {
       @Override
       public void execute() {
         hide();
-        command.execute();
+        if (command != null) {
+          command.execute();
+        }
       }
     });
+    if (command == null) {
+      menuItem.setEnabled(false);
+    }
     if (style != null) {
       menuItem.setStylePrimaryName(style);
     } else {

@@ -179,6 +179,10 @@ div.StatusPanel {
   font-size: small;
 }
 
+.ode-ContextMenuItem.ode-ContextMenuItem-disabled {
+  cursor: default;
+}
+
 .ode-ContextMenuItem {
   min-width: 50px;
   padding: 4px 12px;
