@@ -573,25 +573,22 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             .get(spreadsheetID, rangeReference ).execute();
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
-          // If the data we got is empty, then return so.
-          if (values == null || values.isEmpty())
-            ErrorOccurred("ReadRow: No data found");
+          final List<String> ret = new ArrayList<String>();
 
           // Format the result as a list of strings and run the callback
-          else {
-            final List<String> ret = new ArrayList<String>();
+          if (values != null && !values.isEmpty()) {
             for (Object obj : values.get(0)) {
               ret.add(String.format("%s", obj == null ? "" : obj));
             }
-
-            // We need to re-enter the main thread before we can dispatch the event!
-            activity.runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                GotRowData(ret);
-              }
-            });
           }
+
+          // We need to re-enter the main thread before we can dispatch the event!
+          activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              GotRowData(ret);
+            }
+          });
         }
         // Handle Errors which may have occured while sending the Read Request!
         catch (Exception e) {
@@ -1087,17 +1084,13 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           ValueRange readResult = sheetsService.spreadsheets().values()
               .get(spreadsheetID, rangeRef).execute();
           List<List<Object>> values = readResult.getValues();
-
-          // If the data we got is empty, then throw an error
-          if (values == null || values.isEmpty()) {
-            ErrorOccurred("ReadColumn: No data found.");
-            return;
-          }
+          final List<String> ret = new ArrayList<>();
 
           // Format the result as a list of strings and run the callback
-          final List<String> ret = new ArrayList<>();
-          for (List<Object> row : values) {
-            ret.add(row.isEmpty() ? "" : row.get(0).toString());
+          if (values != null && !values.isEmpty()) {
+            for (List<Object> row : values) {
+              ret.add(row.isEmpty() ? "" : row.get(0).toString());
+            }
           }
 
           // We need to re-enter the main thread before we can dispatch the event!
@@ -1655,21 +1648,18 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
             .get(spreadsheetID, sheetName + "!" + rangeReference).execute();
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
-
-          // No Data Found
-          if (values == null || values.isEmpty()) {
-            ErrorOccurred("ReadRange: No data found.");
-            return;
-          }
-          // Format the result as a string and run the call back
           final List<List<String>> ret = new ArrayList<List<String>>();
-          // For every object in the result, convert it to a string
-          for (List<Object> row : values) {
-            List<String> cellRow = new ArrayList<String>();
-            for (Object cellValue : row) {
-              cellRow.add(String.format("%s", cellValue == null ? "" : cellValue));
+
+          // Format the result as a string and run the call back
+          if (values != null && !values.isEmpty()) {
+            // For every object in the result, convert it to a string
+            for (List<Object> row : values) {
+              List<String> cellRow = new ArrayList<String>();
+              for (Object cellValue : row) {
+                cellRow.add(String.format("%s", cellValue == null ? "" : cellValue));
+              }
+              ret.add(cellRow);
             }
-            ret.add(cellRow);
           }
 
           // Run the callback event
@@ -1966,26 +1956,22 @@ public class Spreadsheet extends AndroidNonvisibleComponent implements Component
           Log.d(LOG_TAG, "Got read result");
           // Get the actual data from the response
           List<List<Object>> values = readResult.getValues();
-          Log.d(LOG_TAG, "Reading Sheet: values count " + values.size());
-
-          // No Data Found
-          if (values == null || values.isEmpty()) {
-            ErrorOccurred("ReadSheet: No data found.");
-            return;
-          }
-          // Format the result as a string and run the call back
+          Log.d(LOG_TAG, "Reading Sheet: values count " + (values == null ? 0 : values.size()));
+  
           final List<List<String>> ret = new ArrayList<List<String>>();
-          // For every object in the result, convert it to a string
-          Log.d(LOG_TAG, "RetriveSheet data: " + values);
-
-          for (List<Object> row : values) {
-            List<String> cellRow = new ArrayList<String>();
-            for (Object cellValue : row) {
-              cellRow.add(String.format("%s", cellValue == null ? "" : cellValue));
+          // Format the result as a string and run the call back
+          if (values != null && !values.isEmpty()) {
+            Log.d(LOG_TAG, "RetriveSheet data: " + values);
+            // For every object in the result, convert it to a string
+            for (List<Object> row : values) {
+              List<String> cellRow = new ArrayList<String>();
+              for (Object cellValue : row) {
+                cellRow.add(String.format("%s", cellValue == null ? "" : cellValue));
+              }
+              ret.add(cellRow);
             }
-            ret.add(cellRow);
+            Log.d(LOG_TAG, "RetriveSheet return rowcount: " + ret.size());
           }
-          Log.d(LOG_TAG, "RetriveSheet return rowcount: " + ret.size());
 
           // We need to re-enter the main thread before we can dispatch the event!
           activity.runOnUiThread(new Runnable() {

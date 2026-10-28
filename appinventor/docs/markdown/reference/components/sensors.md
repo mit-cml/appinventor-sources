@@ -541,6 +541,16 @@ Non-visible component providing location information, including [`Latitude`](#Lo
 : If `true`{:.logic.block}, the device can report longitude and latitude.  It is
  always the case that either both or neither are.
 
+{:id="LocationSensor.LastTimestamp" .number .ro .bo} *LastTimestamp*
+: The time at which the most recent location was measured, in milliseconds since
+ January 1, 1970 UTC. The device may report a cached location, for example when the app
+ starts, so this can be older than the time the
+ [`LocationChanged`](#LocationSensor.LocationChanged) event fired. Subtract it from
+ [`Clock.SystemTime`](#Clock.SystemTime) to get the age of the location in milliseconds and
+ ignore locations that are too old for your app.
+
+   If no location has been received, the return value is 0.
+
 {:id="LocationSensor.Latitude" .number .ro .bo} *Latitude*
 : The most recently available latitude value in degrees reported to 5 decimal places.
  If no value is available, 0 will be returned.

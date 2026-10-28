@@ -232,4 +232,17 @@ public class JsonUtilTest {
     assertTrue(result.contains(expected2));
     assertTrue(result.contains(expected3));
   }
+
+  /**
+   * Test case to ensure that a JSON list decoded by getObjectFromJson keeps its size
+   * when converted with YailList.makeList, as done in CloudDB.getDataValue.
+   * If getObjectFromJson returned a YailList here, the copy would also include the
+   * *list* header and be one item larger.
+   */
+  @Test
+  public void testGetObjectFromJsonListCopiesWithSameSize() throws JSONException {
+    Object value = JsonUtil.getObjectFromJson("[[1,2],[3,4]]");
+    YailList copy = YailList.makeList((List<?>) value);
+    assertEquals(2, copy.size());
+  }
 }

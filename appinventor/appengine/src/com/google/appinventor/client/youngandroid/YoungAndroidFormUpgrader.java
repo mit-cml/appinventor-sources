@@ -1669,6 +1669,11 @@ public final class YoungAndroidFormUpgrader {
       // Added TextAlignmentDetail property (default: 0 = left).
       srcCompVersion = 11;
     }
+    if (srcCompVersion < 12) {
+      // The MultiSelect property became visible in the designer and the blocks (default: False).
+      // Added SelectedItems property.
+      srcCompVersion = 12;
+    }
     return srcCompVersion;
   }
 
@@ -1686,6 +1691,11 @@ public final class YoungAndroidFormUpgrader {
       //Version 4:
       //The geoCode, gotLocation, reverseGeoCode, gotAddress functions were added to allow for asynchronous calling
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // The LastTimestamp property was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

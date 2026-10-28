@@ -144,10 +144,16 @@ public class TextBoxTest extends RobolectricTestBase {
   @Test
   public void testReadOnly() {
     aTextBox.ReadOnly(true);
-    assertFalse(editText.isEnabled());
+    assertTrue(editText.isEnabled());
+    assertFalse(editText.isFocusable());
+    assertFalse(editText.isClickable());
+    assertFalse(editText.isLongClickable());
     
     aTextBox.ReadOnly(false);
     assertTrue(editText.isEnabled());
+    assertTrue(editText.isFocusable());
+    assertTrue(editText.isClickable());
+    assertTrue(editText.isLongClickable());
   }
   
   @Test

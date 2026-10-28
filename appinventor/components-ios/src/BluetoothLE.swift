@@ -777,7 +777,7 @@ func bleStringToUuid(_ uuidString: String) -> CBUUID? {
   @objc public func ShortsReceived(_ serviceUuid: String, _ characteristicUuid: String,
                                    _ values: [Int32]) {
     DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "ShortsReceived", arguments: values as AnyObject)
+      EventDispatcher.dispatchEvent(of: self, called: "ShortsReceived", arguments: serviceUuid as NSString, characteristicUuid as NSString, values as AnyObject)
     }
   }
 
@@ -1110,7 +1110,7 @@ extension BluetoothLE {
   @objc public func BytesReceived(_ serviceUuid: String, _ characteristicUuid: String,
                                   _ values: [Int32]) {
     DispatchQueue.main.async {
-      EventDispatcher.dispatchEvent(of: self, called: "BytesReceived", arguments: values as AnyObject)
+      EventDispatcher.dispatchEvent(of: self, called: "BytesReceived", arguments: serviceUuid as NSString, characteristicUuid as NSString, values as AnyObject)
     }
   }
 

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -78,5 +79,25 @@ public class TinyDBTest extends RobolectricTestBase {
     assertTrue(aTinyDB.GetTags().toString().contains("test-tag-3"));
     assertEquals("Invalid TinyDB StoreValue","test-value-3",
         aTinyDB.GetValue("test-tag-3", "tag-not-found"));
+  }
+
+  @Test
+  public void testGetDataValueReturnsStoredList() {
+    YailList pairs = YailList.makeList(new Object[] {
+        YailList.makeList(new Object[] {1, 2}),
+        YailList.makeList(new Object[] {3, 4})
+    });
+    aTinyDB.StoreValue("chart-data", pairs);
+    YailList result = aTinyDB.getDataValue("chart-data");
+    assertEquals("Stored list should be returned to the Chart", 2, result.size());
+    YailList firstRow = (YailList) result.getObject(0);
+    assertEquals(2, firstRow.size());
+    assertEquals("1", firstRow.getString(0));
+    assertEquals("2", firstRow.getString(1));
+  }
+
+  @Test
+  public void testGetDataValueMissingTagIsEmpty() {
+    assertEquals(0, aTinyDB.getDataValue("no-such-tag").size());
   }
 }

@@ -1095,6 +1095,17 @@ public class YailEvalTest extends TestCase {
                     + "(string-append \"\u03a7\u0391\u039f\" \"\u03a3\u03a3\"))").toString());
   }
 
+  public void testStringToTitleCaseForConstant() throws Throwable {
+    assertEquals("Hello World",
+        scheme.eval("(string-to-title-case \"hello WORLD\")").toString());
+  }
+
+  public void testStringToTitleCaseForExpression() throws Throwable {
+    assertEquals("Hello World",
+        scheme.eval("(string-to-title-case "
+                    + "(string-append \"hello \" \"WORLD\"))").toString());
+  }
+
   public void testStringReplace() throws Throwable {
     /* this tests that we've quoted the dot so it's not special as a regexp */
     assertEquals("12x34x56x", scheme.eval("(string-replace-all \"12.34.56.\" \".\" \"x\")")
