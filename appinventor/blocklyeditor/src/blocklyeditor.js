@@ -957,11 +957,12 @@ Blockly.BlocklyEditor['cssRegistered'] = false;
  * Create a new Blockly workspace but without initializing its DOM.
  * @param container The container that will host the Blockly workspace
  * @param formName The projectId_formName identifier used to name the workspace
+ * @param useDarkTheme Whether the Blocks workspace should use the dark theme
  * @param readOnly True if the workspace should be created read-only
  * @param rtl True if the workspace is using a right-to-left language
  * @returns {Blockly.WorkspaceSvg} A newly created workspace
  */
-Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
+Blockly.BlocklyEditor['create'] = function(container, formName, useDarkTheme, readOnly, rtl) {
   if (!Blockly.BlocklyEditor['cssRegistered']) {
     Blockly.BlocklyEditor['cssRegistered'] = true;
     try {
@@ -1008,6 +1009,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       menu: true,
     },
     renderer: 'geras2_renderer',
+    theme: useDarkTheme ? Blockly.Themes.darkTheme : Blockly.Themes.ClassicTheme
   };
   var workspace = Blockly.inject(container, options);
   AI.Blockly.multiselect = Multiselect;
@@ -1166,11 +1168,8 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Element|string} container
  * @param {!Blockly.WorkspaceSvg} workspace
  */
-AI.inject = function(container, workspace, isDarkMode=false) {
+AI.inject = function(container, workspace) {
   Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
-  if (isDarkMode) {
-    Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
-  }
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();
   var gridSnap = top.BlocklyPanel_getSnapEnabled && top.BlocklyPanel_getSnapEnabled();

@@ -2,7 +2,7 @@ suite('ExportBlocksImage', function() {
   let workspace;
 
   setup(async function() {
-    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
+    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*useDarkTheme*/ false, /*readonly*/ false, /*rtl*/ false));
     workspace = Blockly.common.getMainWorkspace();
   });
 
