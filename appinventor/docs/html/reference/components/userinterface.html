@@ -837,12 +837,32 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  Designer only property.</dd>
   <dt id="ListView.ListViewLayout" class="number"><em>ListViewLayout</em></dt>
   <dd>Specifies type of layout for ListView row.</dd>
+  <dt id="ListView.MultiSelect" class="boolean"><em>MultiSelect</em></dt>
+  <dd>Whether the user can select more than one element at a time. <code class="language-plaintext logic block highlighter-rouge">true</code> makes a tap
+ add a row to, or remove it from, <a href="#ListView.SelectedItems"><code class="language-plaintext highlighter-rouge">SelectedItems</code></a>; <code class="language-plaintext logic block highlighter-rouge">false</code> makes each
+ tap replace the previous selection.</dd>
+</dl>
+
+<p>Turning this on or off clears whatever is selected at the time, since a set built up in one
+ mode has no meaning in the other.</p>
+
+<dl>
   <dt id="ListView.Orientation" class="number"><em>Orientation</em></dt>
   <dd>Specifies the layout’s orientation. This may be: <code class="language-plaintext highlighter-rouge">Vertical</code>, which displays elements
  in rows one after the other; or <code class="language-plaintext highlighter-rouge">Horizontal</code>, which displays one element at a time and
  allows the user to swipe left or right to brows the elements.</dd>
+  <dt id="ListView.SelectedItems" class="list ro bo"><em>SelectedItems</em></dt>
+  <dd>Returns every element the user has selected, in the order they were picked. Unless
+ <a href="#ListView.MultiSelect"><code class="language-plaintext highlighter-rouge">MultiSelect</code></a> is enabled this holds at most one element, since selecting a
+ row replaces the previous selection.</dd>
   <dt id="ListView.Selection" class="text"><em>Selection</em></dt>
   <dd>Returns the text in the <code class="language-plaintext highlighter-rouge">ListView</code> at the position of <a href="#ListView.SelectionIndex"><code class="language-plaintext highlighter-rouge">SelectionIndex</code></a>.</dd>
+</dl>
+
+<p>While <a href="#ListView.MultiSelect"><code class="language-plaintext highlighter-rouge">MultiSelect</code></a> is enabled this is the text of the row the user touched
+ last. Read <a href="#ListView.SelectedItems"><code class="language-plaintext highlighter-rouge">SelectedItems</code></a> for every element that is selected now.</p>
+
+<dl>
   <dt id="ListView.SelectionColor" class="color"><em>SelectionColor</em></dt>
   <dd>The color of the item when it is selected.</dd>
   <dt id="ListView.SelectionDetailText" class="text ro bo"><em>SelectionDetailText</em></dt>
@@ -852,6 +872,12 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
  will be <code class="language-plaintext highlighter-rouge">0</code>. If an attempt is made to set this to a number less than <code class="language-plaintext highlighter-rouge">1</code> or greater than the
  number of items in the <code class="language-plaintext highlighter-rouge">ListView</code>, <code class="language-plaintext highlighter-rouge">SelectionIndex</code> will be set to <code class="language-plaintext highlighter-rouge">0</code>, and
  <a href="#ListView.Selection"><code class="language-plaintext highlighter-rouge">Selection</code></a> will be set to the empty text.</dd>
+</dl>
+
+<p>While <a href="#ListView.MultiSelect"><code class="language-plaintext highlighter-rouge">MultiSelect</code></a> is enabled this is the row the user touched last, which
+ may have been touched to deselect it. Read <a href="#ListView.SelectedItems"><code class="language-plaintext highlighter-rouge">SelectedItems</code></a> for what is selected now.</p>
+
+<dl>
   <dt id="ListView.ShowFilterBar" class="boolean"><em>ShowFilterBar</em></dt>
   <dd>Sets visibility of the filter bar. <code class="language-plaintext logic block highlighter-rouge">true</code> will show the bar,
  <code class="language-plaintext logic block highlighter-rouge">false</code> will hide it.</dd>
@@ -887,6 +913,9 @@ Valid values for the month field are 1-12 and 1-31 for the day field.</dd>
   <dd>Simple event to be raised after the an element has been chosen in the list.
  The selected element is available in the <a href="#ListView.Selection"><code class="language-plaintext highlighter-rouge">Selection</code></a> property.</dd>
 </dl>
+
+<p>While <a href="#ListView.MultiSelect"><code class="language-plaintext highlighter-rouge">MultiSelect</code></a> is enabled this is raised for every tap, including a tap
+ that takes a row back out of <a href="#ListView.SelectedItems"><code class="language-plaintext highlighter-rouge">SelectedItems</code></a>.</p>
 
 <h3 id="ListView-Methods">Methods</h3>
 
