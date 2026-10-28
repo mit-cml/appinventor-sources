@@ -726,14 +726,15 @@ public class BlocklyPanel extends HTMLPanel {
    * has been downloaded from the server.
    */
   public void initWorkspace() {
-    initWorkspace(LocaleInfo.getCurrentLocale().isRTL(), targetPlatform.getTarget());
+    initWorkspace(Ode.getUserDarkThemeEnabled(), LocaleInfo.getCurrentLocale().isRTL(), targetPlatform.getTarget());
     LOG.info("Initialized Blockly workspace for " + formName);
   }
 
-  private native void initWorkspace(boolean rtl, String targetLang)/*-{
+  private native void initWorkspace(boolean isDarkMode, boolean rtl, String targetLang)/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
     var workspace = $wnd.Blockly.BlocklyEditor.create(el,
       this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::formName,
+      isDarkMode,
       this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::readOnly,
       rtl, targetLang);
     workspace.projectId = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::projectId;
@@ -764,9 +765,9 @@ public class BlocklyPanel extends HTMLPanel {
   /**
    * Inject the workspace into the &lt;div&gt; element with specific mode
    */
-  native void injectWorkspace(boolean isDarkMode)/*-{
+  native void injectWorkspace()/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
-    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace, isDarkMode);
+    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace);
   }-*/;
 
   /**

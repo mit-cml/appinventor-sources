@@ -664,7 +664,7 @@ public abstract class BlocksEditor<S extends SourceNode, T extends DesignerEdito
       Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
       AssetListBox.getAssetListBox().setVisible(true);
-      blocksArea.injectWorkspace(Ode.getUserDarkThemeEnabled());
+      blocksArea.injectWorkspace();
       hideBlocksDrawer();
     } else {
       LOG.warning("Can't get designer for blocks: " + getFileId());

@@ -38,7 +38,7 @@ public class BlocklyEvalTestBuilder {
 
   public static final String OUTER_TEMPLATE_JS = "suite('Blockly Editor Tests', function() {\n"
       + "  setup(function() {\n"
-      + "    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));\n"
+      + "    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*useDarkTheme*/ false, /*readonly*/ false, /*rtl*/ false));\n"
       + "    initComponentTypes();\n"
       + "    processVersion(%d, %d);\n"
       + "  });\n";

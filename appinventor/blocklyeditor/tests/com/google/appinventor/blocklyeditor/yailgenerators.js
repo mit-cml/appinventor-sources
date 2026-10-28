@@ -59,7 +59,7 @@
 
 suite('Blockly Code Generator Tests', function() {
   setup(function() {
-    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
+    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*useDarkTheme*/ false, /*readonly*/ false, /*rtl*/ false));
   })
   suite('Control Blocks', function() {
     test('controls_eval_but_ignore', function() {
