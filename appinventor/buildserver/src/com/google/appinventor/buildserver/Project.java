@@ -87,6 +87,7 @@ public final class Project {
    *    build - output directory for the compiler
    *    useslocation - flag indicating whether or not the project uses locations
    *    aname - the human-readable application name
+   *    packagename - the Android application package name, if different from the package of main
    *    androidminsdk - the minimum Android sdk required for the app
    *    theme - the base theme for the app
    *    color.primary - the primary color for the theme
@@ -104,6 +105,7 @@ public final class Project {
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
   private static final String ANAMETAG = "aname";
+  private static final String PACKAGE_NAME_TAG = "packagename";
   private static final String ANDROID_MIN_SDK_TAG = "androidminsdk";
   private static final String ACTIONBAR_TAG = "actionbar";
   private static final String COLOR_THEMETAG = "theme";
@@ -187,7 +189,12 @@ public final class Project {
    * @return  main form class name
    */
   public String getMainClass() {
-    return properties.getProperty(MAINTAG);
+    String mainClass = properties.getProperty(MAINTAG);
+    String packageName = getCustomPackageName();
+    if (mainClass == null || packageName.isEmpty()) {
+      return mainClass;
+    }
+    return packageName + "." + Signatures.getClassName(mainClass);
   }
 
   /**
@@ -197,6 +204,33 @@ public final class Project {
    */
   public void setMainClass(String main) {
     properties.setProperty(MAINTAG, main);
+  }
+
+  /**
+   * Returns the Android application package name, which is also the package of the generated
+   * form classes. This is the custom package name if the project sets one, and the package of the
+   * source files otherwise.
+   *
+   * @return  application package name
+   */
+  public String getPackageName() {
+    String packageName = getCustomPackageName();
+    return packageName.isEmpty() ? getSourcePackageName() : packageName;
+  }
+
+  /**
+   * Returns the package of the project's source files, which is derived from the user and the
+   * project name. It differs from {@link #getPackageName()} when the project sets a custom
+   * package name.
+   *
+   * @return  package of the source files
+   */
+  public String getSourcePackageName() {
+    return Signatures.getPackageName(properties.getProperty(MAINTAG));
+  }
+
+  private String getCustomPackageName() {
+    return properties.getProperty(PACKAGE_NAME_TAG, "").trim();
   }
 
   /**
@@ -432,7 +466,12 @@ public final class Project {
         String absName = file.getAbsolutePath();
         String name = absName.substring(root.length() + 1, absName.length() -
             YAIL_FILE_EXTENSION.length());
-        sources.add(new SourceDescriptor(name.replace(File.separatorChar, '.'), file));
+        String qualifiedName = name.replace(File.separatorChar, '.');
+        if (!getCustomPackageName().isEmpty()) {
+          // The form classes are generated in the custom package.
+          qualifiedName = getPackageName() + "." + Signatures.getClassName(qualifiedName);
+        }
+        sources.add(new SourceDescriptor(qualifiedName, file));
       }
     }
   }

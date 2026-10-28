@@ -123,10 +123,17 @@ public final class FileImporterImpl implements FileImporter {
             String lastStatus = props.getProperty("Status", "unknown");
             String newStatus = determineStatus(lastStatus, sigResult);
             String projectColors = props.getProperty("projectcolors", "{}");
+            // Keep the custom package name, so that an exported project imported again still
+            // builds the same app.
+            String packageName = props.getProperty("packagename", "").trim();
+            if (!StringUtils.isValidPackageName(packageName)) {
+              packageName = "";
+            }
             YoungAndroidSettingsBuilder settingsBuilder =
                 new YoungAndroidSettingsBuilder()
                     .setProjectName(projectName)
                     .setQualifiedFormName(qualifiedFormName)
+                    .setPackageName(packageName)
                     .setDefaultLastOpened(lastOpened)
                     .setStatus(newStatus)
                     .setProjectColors(projectColors);

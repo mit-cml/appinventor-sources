@@ -12,6 +12,7 @@ import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
 import com.google.appinventor.buildserver.util.PermissionConstraint;
+import com.google.appinventor.common.utils.StringUtils;
 
 import com.google.appinventor.components.common.YaVersion;
 
@@ -50,6 +51,13 @@ public class CreateManifest implements AndroidTask {
     String mainClass = context.getProject().getMainClass();
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
+    // A custom package name is checked here, before the form classes are generated in it.
+    // Generated package names are valid by construction.
+    if (!packageName.equals(context.getProject().getSourcePackageName())
+        && !StringUtils.isValidPackageName(packageName)) {
+      context.getReporter().error("Invalid package name: " + packageName, true);
+      return TaskResult.generateError("Invalid package name: " + packageName);
+    }
     String projectName = context.getProject().getProjectName();
     String versionCode = context.getProject().getVCode();
     String versionName = cleanName(context.getProject().getVName());

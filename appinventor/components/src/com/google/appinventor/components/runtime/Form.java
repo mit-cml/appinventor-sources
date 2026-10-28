@@ -2384,6 +2384,25 @@ public class Form extends AppInventorCompatActivity
   public void AndroidMinSdk(String value) {
     // Stored automatically in project properties
   }
+
+  /**
+   * The Android package name that identifies the app on devices and in the Google Play Store,
+   * for example `com.example.myapp`. Leave it empty to use the package name App Inventor
+   * generates from your account and project name. Changing it for an app that is already
+   * installed or published makes Android treat the result as a different app.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_PACKAGE_NAME,
+    defaultValue = "")
+  @SimpleProperty(userVisible = false,
+    description = "The Android package name that identifies the app on devices and in the "
+                  + "Google Play Store, for example com.example.myapp. Leave it empty to use "
+                  + "the package name App Inventor generates from your account and project "
+                  + "name. Changing it for an app that is already installed or published makes "
+                  + "Android treat the result as a different app.",
+    category = PropertyCategory.PUBLISHING)
+  public void PackageName(String packageName) {
+    // Stored automatically in project properties
+  }
   
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SUBSET_JSON,
     defaultValue = "")

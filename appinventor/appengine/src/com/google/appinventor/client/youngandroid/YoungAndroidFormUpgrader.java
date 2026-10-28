@@ -1326,6 +1326,12 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 32;
     }
 
+    if (srcCompVersion < 33) {
+      // The PackageName property was added.
+      // No migration required. The empty default keeps the generated package name.
+      srcCompVersion = 33;
+    }
+
     return srcCompVersion;
   }
 
