@@ -62,18 +62,17 @@
         <yaactions:WirelessAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name ="Browser" caption="{messages.browserMenuItem}"
-                       dependentStyleName="needsAiStarter" beta="true"
-                       visible="{webEmulatorEnabled}">
+                       beta="true" visible="{webEmulatorEnabled}">
         <yaactions:BrowserAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
                        dependentStyleName="needsChromebook">
         <yaactions:ChromebookAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
+      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}" dependentStyleName="needsAiStarter">
         <yaactions:UsbAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}">
+      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}" dependentStyleName="needsAiStarter">
         <yaactions:EmulatorAction/>
       </ai:DropDownItem>
       <hr/>

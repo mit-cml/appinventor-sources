@@ -226,29 +226,21 @@ public class TopToolbar extends Composite {
 
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning,
       boolean isUsbRunning, boolean isBrowserRunning) {
-    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning && !isBrowserRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
-      if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), true);
-      } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
-        connectDropDown.setItemEnabledById(WIDGET_NAME_WEBTEST_BUTTON, true);
-      }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), false);
-      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), false);
+    final boolean isConnected = isEmulatorRunning || isCompanionRunning || isUsbRunning || isBrowserRunning;;
+
+    // Set up the various connection items to be enabled if we are not connected.
+    connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), !isConnected);
+    connectDropDown.setItemEnabledById(WIDGET_NAME_WEBTEST_BUTTON, !isConnected);
+    if (iamChromebook) {
+      connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), !isConnected);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
-      if (iamChromebook) {
-        connectDropDown.setItemEnabled(MESSAGES.chromebookMenuItem(), false);
-      } else {
-        connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
-        connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
-        connectDropDown.setItemEnabledById(WIDGET_NAME_WEBTEST_BUTTON, false);
-      }
-      connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), true);
-      connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), !isConnected);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), !isConnected);
     }
+
+    // Only allow refreshing and saving projects on the companion if we are connected
+    connectDropDown.setItemEnabled(MESSAGES.refreshCompanionMenuItem(), isConnected);
+    connectDropDown.setItemEnabled(MESSAGES.saveProjectToCompanionMenuItem(), isConnected);
   }
 
   /**
