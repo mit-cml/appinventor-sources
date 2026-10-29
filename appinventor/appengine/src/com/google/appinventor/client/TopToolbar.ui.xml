@@ -79,8 +79,7 @@
         <yaactions:WirelessAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name ="Browser" caption="{messages.browserMenuItem}"
-                       dependentStyleName="needsAiStarter" beta="true"
-                       visible="{webEmulatorEnabled}">
+                       beta="true" visible="{webEmulatorEnabled}">
         <yaactions:BrowserAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}"
