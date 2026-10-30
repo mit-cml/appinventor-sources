@@ -90,7 +90,7 @@ import org.osmdroid.util.BoundingBox;
     "Initial Bounds&quot; button can be used to re-center the Map at the starting location.</p>",
     iconName = "images/map.png")
 @SimpleObject
-@UsesAssets(fileNames = "location.png, marker.svg")
+@UsesAssets(fileNames = "marker.svg")
 @UsesPermissions({ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION})
 @UsesLibraries(libraries = "osmdroid.aar, osmdroid.jar, androidsvg.jar, jts.jar")
 public class Map extends MapFeatureContainerBase implements MapEventListener {

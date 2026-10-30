@@ -43,6 +43,10 @@ public class AttachCompAssets implements AndroidTask {
           if (context.getSimpleCompTypes().contains(type)) {
             String pathSuffix = context.getResources().getRuntimeFilesDir() + assetName;
             sourcePath = context.getResource(pathSuffix);
+            // The path for assets in compiled apps is assumed to be
+            // assets/components/<component-type>/<asset-name>
+            targetDir = ExecutorUtils.createDir(
+                ExecutorUtils.createDir(mergedAssetDir, "components"), type);
           } else if (context.getExtCompTypes().contains(type)) {
             final String extCompDir = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
                 context.getExtTypePathCache());
