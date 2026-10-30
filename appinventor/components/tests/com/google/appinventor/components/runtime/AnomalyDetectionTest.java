@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import com.google.appinventor.components.runtime.util.YailList;
 import java.util.ArrayList;
@@ -66,5 +67,40 @@ public class AnomalyDetectionTest extends RobolectricTestBase {
     );
     assertEquals(expectedList.size(), cleanData.size());
     assertEquals(expectedList, cleanData);
+  }
+
+  @Test
+  public void testCleanDataIndexZero() {
+    assertCleanDataError(Arrays.asList(0, 1.0),
+        "Anomaly index 0 is out of range. It must be between 1 and 6.");
+  }
+
+  @Test
+  public void testCleanDataIndexNegative() {
+    assertCleanDataError(Arrays.asList(-1, 1.0),
+        "Anomaly index -1 is out of range. It must be between 1 and 6.");
+  }
+
+  @Test
+  public void testCleanDataIndexTooLarge() {
+    assertCleanDataError(Arrays.asList(7, 1.0),
+        "Anomaly index 7 is out of range. It must be between 1 and 6.");
+  }
+
+  @Test
+  public void testCleanDataIndexNotWholeNumber() {
+    assertCleanDataError(Arrays.asList(2.7, 1.0),
+        "Anomaly index 2.7 must be a whole number.");
+  }
+
+  @Test
+  public void testCleanDataEmptyAnomaly() {
+    assertCleanDataError(Arrays.asList(), "Anomaly must not be empty");
+  }
+
+  private void assertCleanDataError(List<?> anomaly, String expectedMessage) {
+    IllegalStateException e = assertThrows(IllegalStateException.class,
+        () -> anomalyDetection.CleanData(YailList.makeList(anomaly), xList, yList));
+    assertEquals(expectedMessage, e.getMessage());
   }
 }
