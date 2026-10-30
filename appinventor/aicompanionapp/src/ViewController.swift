@@ -407,6 +407,10 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     return form
   }
 
+  override public var childForStatusBarHidden: UIViewController? {
+    return topViewController
+  }
+
   @objc func openMenu(caller: UIBarButtonItem) {
     if UIDevice.current.userInterfaceIdiom == .phone {
       let controller = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
