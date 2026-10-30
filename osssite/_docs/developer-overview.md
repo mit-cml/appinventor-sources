@@ -58,7 +58,7 @@ flowchart LR
   linkStyle 0,1 stroke:transparent,stroke-width:0px;
 ```
 
-_Figure 1: The App Inventor client is created with GWT, which converts the front-end code into JavaScript, which is run with the GWT client library in the user's browser. The back-end runs on the Jetty server as standalone Java service, using the third-party Objectify API for data storage, and using PostgreSQL for storage._
+_Figure 1: The App Inventor client is created with GWT, which converts the front-end code into JavaScript code that is run in the user's browser. The back-end runs on the Jetty server as a standalone Java service, using PostgreSQL for storage._
 
 ### 2.3 Android and iOS
 
