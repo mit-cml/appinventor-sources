@@ -644,7 +644,9 @@ public class YaVersion {
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 5.
   // For YOUNG_ANDROID_VERSION 239:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 40.
-  public static final int YOUNG_ANDROID_VERSION = 239;
+  // For YOUNG_ANDROID_VERSION 240:
+  // - FORM_COMPONENT_VERSION was incremented to 33.
+  public static final int YOUNG_ANDROID_VERSION = 240;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -1131,7 +1133,9 @@ public class YaVersion {
   // - The default theme was changed to Device Default.
   // For FORM_COMPONENT_VERSION 32:
   // - Added the AndroidMinSdk designer property.
-  public static final int FORM_COMPONENT_VERSION = 32;
+  // For FORM_COMPONENT_VERSION 33:
+  // - Added the PackageName designer property.
+  public static final int FORM_COMPONENT_VERSION = 33;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1

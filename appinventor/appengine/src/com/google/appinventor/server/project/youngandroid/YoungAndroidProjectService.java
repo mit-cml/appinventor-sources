@@ -36,6 +36,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.util.UriBuilder;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONUtil;
+import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
@@ -60,7 +61,9 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSource
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
@@ -208,6 +211,51 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
+   * Returns the contents of a form file without its PackageName property. A project saved under
+   * a new name must not keep the custom package name of the original, or the two apps would
+   * replace each other on devices.
+   *
+   * @param formContents the contents of a form (.scm) file
+   * @return the contents without the PackageName property, or formContents unchanged if it has
+   *     no PackageName property or cannot be parsed
+   */
+  public static String removePackageNameProperty(String formContents) {
+    String key = "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_PACKAGE_NAME + "\"";
+    if (!formContents.contains(key)) {
+      return formContents;
+    }
+    com.google.appinventor.shared.properties.json.JSONObject form;
+    try {
+      form = YoungAndroidSourceAnalyzer.parseSourceFile(formContents, JSON_PARSER);
+    } catch (RuntimeException | AssertionError e) {
+      // Leave malformed files alone; the form upgrader reports them when the project is opened.
+      return formContents;
+    }
+    JSONValue properties = form.get("Properties");
+    JSONValue packageName = properties == null ? null : properties.asObject().getProperties()
+        .remove(SettingsConstants.YOUNG_ANDROID_SETTINGS_PACKAGE_NAME);
+    if (packageName == null) {
+      return formContents;
+    }
+    // Remove only the Form's property, which comes before $Components, so that the rest of the
+    // file keeps its formatting and key order.
+    String property = key + ":" + JSONUtil.toJson(packageName.asString().getString());
+    int start = formContents.indexOf(property);
+    int componentsStart = formContents.indexOf("\"$Components\"");
+    if (start >= 0 && (componentsStart < 0 || start < componentsStart)) {
+      int end = start + property.length();
+      if (formContents.charAt(start - 1) == ',') {
+        start--;
+      } else if (formContents.charAt(end) == ',') {
+        end++;
+      }
+      return formContents.substring(0, start) + formContents.substring(end);
+    }
+    // The file was not written by the designer; regenerate it without the property.
+    return YoungAndroidSourceAnalyzer.generateSourceFile(form);
+  }
+
+  /**
    * Returns the initial contents of a Young Android blockly blocks file.
    */
   private static String getInitialBlocklySourceFileContents(String qualifiedName) {
@@ -226,11 +274,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   @Override
   public void storeProjectSettings(String userId, long projectId, String projectSettings) {
+    Settings settings = new Settings(JSON_PARSER, projectSettings);
+    String packageName = settings.getSetting(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_PACKAGE_NAME);
+    if (packageName != null && !packageName.isEmpty()
+        && !StringUtils.isValidPackageName(packageName)) {
+      throw new IllegalArgumentException("Invalid package name: " + packageName);
+    }
     super.storeProjectSettings(userId, projectId, projectSettings);
 
     // If the icon has been changed, update the project properties file.
     // Extract the new icon from the projectSettings parameter.
-    Settings settings = new Settings(JSON_PARSER, projectSettings);
     YoungAndroidSettingsBuilder newProperties = new YoungAndroidSettingsBuilder(settings);
 
     // Extract the old icon from the project.properties file from storageIo.
@@ -304,7 +358,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
 
   @Override
-  public long copyProject(String userId, long oldProjectId, String newName, String newuserId) {
+  public long copyProject(String userId, long oldProjectId, String newName, String newuserId,
+      boolean keepPackageName) {
     // By default we assume that the project ownership doesn't change
     if (newuserId == null) {
       newuserId = userId;
@@ -314,6 +369,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
     YoungAndroidSettingsBuilder builder = new YoungAndroidSettingsBuilder(
         new Settings(JSON_PARSER, oldProjectSettings));
+    if (!keepPackageName) {
+      // The copy is a separate app, so it goes back to the generated package name.
+      builder.setPackageName("");
+    }
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -341,6 +400,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
         // Replace the old name with the new name.
         newSourceFileName = newsrcDirectory + "/" + StorageUtil.basename(oldSourceFileName);
+        if (!keepPackageName && oldSourceFileName.endsWith(FORM_PROPERTIES_EXTENSION)) {
+          newContents = removePackageNameProperty(storageIo.downloadFile(userId, oldProjectId,
+              oldSourceFileName, StorageUtil.DEFAULT_CHARSET));
+        }
       } else {
         newSourceFileName = oldSourceFileName;
       }
