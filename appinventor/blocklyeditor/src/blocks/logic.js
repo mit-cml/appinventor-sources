@@ -317,8 +317,6 @@ Blockly.Blocks['logic_operation'] = {
   },
   makeDropdown: function(input) {
     var op = this.opField.getValue();
-    // Dispose of the old field first (issue #2266)
-    this.opField.dispose();
     this.opField = new Blockly.FieldDropdown(
       Blockly.Blocks.logic_operation.OPERATORS(),
       this.updateFields.bind(this));
@@ -335,7 +333,7 @@ Blockly.Blocks['logic_operation'] = {
     if (inline) {
       var ainput = this.getInput('A');
       if (ainput && ainput.fieldRow.length > 0) {
-        ainput.fieldRow.splice(0, 1);
+        ainput.removeField('OP', true);
         var binput = this.getInput('B');
         this.makeDropdown(binput);
       }
@@ -350,7 +348,7 @@ Blockly.Blocks['logic_operation'] = {
     } else {
       var binput = this.getInput('B');
       if (binput && binput.fieldRow.length > 0) {
-        binput.fieldRow.splice(0, 1);
+        binput.removeField('OP', true);
         var ainput = this.getInput('A');
         this.makeDropdown(ainput);
       }
