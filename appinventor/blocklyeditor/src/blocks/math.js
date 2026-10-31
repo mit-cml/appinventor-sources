@@ -288,7 +288,7 @@ Blockly.Blocks['math_mutator_item'] = {
   init: function () {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.appendDummyInput()
-      .appendField(Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER);
+        .appendField(Blockly.Msg.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.Msg.LANG_MATH_MUTATOR_ITEM_TOOLTIP);
