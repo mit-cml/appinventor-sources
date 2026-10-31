@@ -451,7 +451,8 @@ Blockly.Blocks['logic_mutator_item'] = {
   // Add items.
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.appendDummyInput().appendField("boolean");
+    this.appendDummyInput()
+      .appendField(Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_INPUT_BOOLEAN);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.contextMenu = false;
