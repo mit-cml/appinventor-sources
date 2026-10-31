@@ -452,9 +452,10 @@ Blockly.Blocks['logic_mutator_item'] = {
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.appendDummyInput()
-      .appendField(Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_INPUT_BOOLEAN);
+        .appendField(Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_INPUT_BOOLEAN);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.contextMenu = false;
+    this.setTooltip(Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_TOOLTIP);
   }
 };
