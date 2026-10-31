@@ -229,7 +229,7 @@
 	"Blockly.Msg.LANG_LOGIC_OPERATION_OR": "or",
 	"Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_AND": "Return true if all inputs are true.",
 	"Blockly.Msg.LANG_LOGIC_OPERATION_TOOLTIP_OR": "Return true if any input is true.",
-  "Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_INPUT_BOOLEAN": "boolean",
+	"Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_INPUT_BOOLEAN": "boolean",
 	"Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT": "not",
 	"Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP": "Returns true if the input is false.\nReturns false if the input is true.",
 	"Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE": "true",
