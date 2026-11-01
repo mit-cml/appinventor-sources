@@ -178,6 +178,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
 
     _view.translatesAutoresizingMaskIntoConstraints = false
     _view.clipsToBounds = true
+    _view.contentMode = .redraw
     parent.add(self)
 
     _view.addSubview(_backgroundImageView)
@@ -313,7 +314,7 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   
   override open var Width: Int32 {
     get {
-      return (super.Width < 0 && _view.Drawn) ? Int32(_view.bounds.width) : super.Width
+      return (_lastSetWidth < 0 && _view.Drawn) ? Int32(_view.bounds.width) : super.Width
     }
     set(width) {
       _oldWidth = _view.bounds.width
@@ -560,19 +561,22 @@ public class Canvas: ViewComponent, AbstractMethodsForViewComponent, UIGestureRe
   }
   
   fileprivate func findSpriteCollisions(_ movedSprite: Sprite) {
+    guard movedSprite.Visible && movedSprite.Enabled else { return }
+    let movedBox = movedSprite.getBoundingBox(border: 0)
+
     for sprite in _sprites {
-      if sprite != movedSprite {
-        let bothSpritesActive = movedSprite.Visible && movedSprite.Enabled && sprite.Visible && sprite.Enabled
+      if sprite !== movedSprite {
+        let bothSpritesActive = sprite.Visible && sprite.Enabled
         // Check whether we already raised an event for their collision.
         if movedSprite.CollidingWith(sprite) {
           // If they no longer conflict, make modifications.
-          if !bothSpritesActive || !Sprite.colliding(movedSprite, sprite) {
+          if !bothSpritesActive || !movedBox.intersects(sprite.getBoundingBox(border: 0)) || !Sprite.colliding(movedSprite, sprite) {
             movedSprite.NoLongerCollidingWith(sprite)
             sprite.NoLongerCollidingWith(movedSprite)
           }
         } else {
-          // Check if they now conflict.
-          if bothSpritesActive && Sprite.colliding(movedSprite, sprite) {
+          // Fast AABB intersection pre-check before executing geometric collision testing
+          if bothSpritesActive && movedBox.intersects(sprite.getBoundingBox(border: 0)) && Sprite.colliding(movedSprite, sprite) {
             movedSprite.CollidedWith(sprite)
             sprite.CollidedWith(movedSprite)
           }
@@ -1121,6 +1125,7 @@ open class CanvasView: UIView {
   
   override init(frame: CGRect) {
     super.init(frame: frame)
+    contentMode = .redraw
   }
   
   @objc open var Drawn: Bool {
@@ -1151,10 +1156,15 @@ open class CanvasView: UIView {
 
   open override func layoutSubviews() {
     super.layoutSubviews()
-    if let canvas = _canvas, _oldSize != .zero {
-      if _oldSize != frame.size {
-        let xScale = frame.width / _oldSize.width
-        let yScale = frame.height / _oldSize.height
+    let currentBounds = bounds
+    if currentBounds.width > 0 && currentBounds.height > 0 {
+      _drawn = true
+    }
+    if let canvas = _canvas {
+      let currentSize = currentBounds.size
+      if _oldSize != .zero && _oldSize != currentSize && _oldSize.width > 0 && _oldSize.height > 0 {
+        let xScale = currentSize.width / _oldSize.width
+        let yScale = currentSize.height / _oldSize.height
 
         for s in canvas._shapeLayers {
           canvas.transformLayerHeight(s, yScale)
@@ -1168,9 +1178,16 @@ open class CanvasView: UIView {
           canvas.transformLayerWidth(s, xScale)
         }
       }
+      // When adjacent autosized components (e.g. Button) trigger a layout pass,
+      // update all sprites so their dimensions and layers align with the new canvas size.
+      for sprite in canvas._sprites {
+        sprite.updateWidth()
+        sprite.updateHeight()
+        sprite.updateDisplayLayer()
+      }
     }
-    if frame.size != .zero {
-      _oldSize = frame.size
+    if currentBounds.size != .zero {
+      _oldSize = currentBounds.size
     }
   }
 }

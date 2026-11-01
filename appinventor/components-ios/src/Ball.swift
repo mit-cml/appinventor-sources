@@ -108,6 +108,7 @@ open class Ball: Sprite {
     let yCenter = CGFloat(YCenter)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
+    CATransaction.setDisableActions(true)
     DisplayLayer.position = CGPoint(x: xCenter, y: yCenter)
     CATransaction.commit()
   }

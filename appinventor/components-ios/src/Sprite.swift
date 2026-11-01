@@ -21,6 +21,8 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   fileprivate var _enabled = DEFAULT_ENABLED
   fileprivate var _heading = DEFAULT_HEADING
   fileprivate var _headingRadians = DEFAULT_HEADING
+  fileprivate var _headingCos: CGFloat = 1.0
+  fileprivate var _headingSin: CGFloat = 0.0
   internal var _xLeft: CGFloat = 0
   internal var _yTop: CGFloat = 0
   fileprivate var _z = DEFAULT_Z
@@ -99,6 +101,8 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
       // Flip, because y increases in the downward direction
       _heading = -heading
       _headingRadians = _heading * CGFloat.pi / 180
+      _headingCos = cos(_headingRadians)
+      _headingSin = sin(_headingRadians)
     }
   }
 
@@ -199,11 +203,11 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   open var XCenter: Double {
-    return Double(_xCenter)
+    return _xLeft + Double(Width) / 2.0
   }
 
   open var YCenter: Double {
-    return Double(_yCenter)
+    return _yTop + Double(Height) / 2.0
   }
 
   public func xLeftToOrigin(xLeft: Double) -> Double {
@@ -588,19 +592,19 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   fileprivate func overWestEdge() -> Bool {
-    return X < 0
+    return _xLeft < 0
   }
 
   fileprivate func overNorthEdge() -> Bool {
-    return Y < 0
+    return _yTop < 0
   }
 
   fileprivate func overEastEdge(_ canvasWidth: Int32) -> Bool {
-    return X + Double(Width) > Double(canvasWidth)
+    return _xLeft + CGFloat(Width) > CGFloat(canvasWidth)
   }
 
   fileprivate func overSouthEdge(_ canvasHeight: Int32) -> Bool {
-    return Y + Double(Height) > Double(canvasHeight)
+    return _yTop + CGFloat(Height) > CGFloat(canvasHeight)
   }
 
   @objc open func intersectsWith(_ rect: CGRect) -> Bool {
@@ -609,13 +613,12 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
 
   // Returns bounding box of sprite
   @objc open func getBoundingBox(border: Int) -> CGRect {
-    let start_x = CGFloat(X)
-    let start_y = CGFloat(Y)
-    return CGRect(origin: CGPoint(x: start_x, y: start_y), size: CGSize(width: CGFloat(Width), height: CGFloat(Height)))
+    let borderF = CGFloat(border)
+    return CGRect(origin: CGPoint(x: _xLeft - borderF, y: _yTop - borderF), size: CGSize(width: CGFloat(Width) + 2 * borderF, height: CGFloat(Height) + 2 * borderF))
   }
 
   @objc func contains(_ point: CGPoint) -> Bool {
-    return CGFloat(X) <= point.x && point.x <= CGFloat(X + Double(Width)) && CGFloat(Y) <= point.y && point.y <= CGFloat(Y + Double(Height))
+    return _xLeft <= point.x && point.x <= _xLeft + CGFloat(Width) && _yTop <= point.y && point.y <= _yTop + CGFloat(Height)
   }
 
   @objc func restartTimer() {
@@ -641,10 +644,8 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   @objc func animate() {
     let oldX = xOrigin
     let oldY = yOrigin
-    let headingCos = cos(_headingRadians)
-    let headingSin = sin(_headingRadians)
-    let newX = oldX + CGFloat(Speed) * headingCos
-    let newY = oldY + CGFloat(Speed) * headingSin
+    let newX = oldX + CGFloat(Speed) * _headingCos
+    let newY = oldY + CGFloat(Speed) * _headingSin
 
     if oldX == newX && oldY == newY {
       // no changes
@@ -662,6 +663,10 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   @objc public static func colliding(_ sprite1: Sprite, _ sprite2: Sprite) -> Bool {
+    // Fast AABB pre-check to eliminate non-overlapping sprites in O(1) time
+    if !sprite1.getBoundingBox(border: 0).intersects(sprite2.getBoundingBox(border: 0)) {
+      return false
+    }
     if let ball1 = sprite1 as? Ball {
       if let ball2 = sprite2 as? Ball {
         return collidingBalls(ball1, ball2)
@@ -687,13 +692,20 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   private static func collidingImageSprites(_ sprite1: ImageSprite, _ sprite2: ImageSprite) -> Bool {
-    var axes = sprite1.normalAxes
-    axes.append(contentsOf: sprite2.normalAxes)
+    let corners1 = sprite1.extremityVectors
+    let corners2 = sprite2.extremityVectors
+
+    let edge1_0 = corners1[0] - corners1[1]
+    let edge1_1 = corners1[1] - corners1[2]
+    let edge2_0 = corners2[0] - corners2[1]
+    let edge2_1 = corners2[1] - corners2[2]
+
+    let axes = [edge1_0.normalVector, edge1_1.normalVector, edge2_0.normalVector, edge2_1.normalVector]
     for a in axes {
-      let minA = sprite1.getMinProjection(a)
-      let maxA = sprite1.getMaxProjection(a)
-      let minB = sprite2.getMinProjection(a)
-      let maxB = sprite2.getMaxProjection(a)
+      let minA = sprite1.getMinProjection(a, corners: corners1)
+      let maxA = sprite1.getMaxProjection(a, corners: corners1)
+      let minB = sprite2.getMinProjection(a, corners: corners2)
+      let maxB = sprite2.getMaxProjection(a, corners: corners2)
       if maxA < minB || maxB < minA {
         return false
       }
@@ -702,17 +714,18 @@ open class Sprite: ViewComponent, UIGestureRecognizerDelegate {
   }
 
   private static func collidingBallAndImageSprite(_ ball: Ball, _ imageSprite: ImageSprite) -> Bool {
-    var axes = imageSprite.normalAxes
     let imageCorners = imageSprite.extremityVectors
+    let edge0 = imageCorners[0] - imageCorners[1]
+    let edge1 = imageCorners[1] - imageCorners[2]
     let ballCenter = ball.centerVector
     guard let closestCorner = ballCenter.closestVector(in: imageCorners) else {
       return false
     }
     let ballCenterToClosestCorner = closestCorner - ballCenter
-    axes.append(ballCenterToClosestCorner)
+    let axes = [edge0.normalVector, edge1.normalVector, ballCenterToClosestCorner]
     for a in axes {
-      let minA = imageSprite.getMinProjection(a)
-      let maxA = imageSprite.getMaxProjection(a)
+      let minA = imageSprite.getMinProjection(a, corners: imageCorners)
+      let maxA = imageSprite.getMaxProjection(a, corners: imageCorners)
       let minB = ball.getMinProjection(a)
       let maxB = ball.getMaxProjection(a)
       if maxA < minB || maxB < minA {

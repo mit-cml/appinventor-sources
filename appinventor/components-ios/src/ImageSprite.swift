@@ -153,6 +153,11 @@ open class ImageSprite: Sprite {
 
   override open var Width: Int32 {
     get {
+      if _width == kLengthPreferred || _width <= kLengthPercentTag {
+        if _image.size.width > 0 {
+          return Int32(_image.size.width)
+        }
+      }
       return _width
     }
     set(width) {
@@ -163,6 +168,11 @@ open class ImageSprite: Sprite {
 
   override open var Height: Int32 {
     get {
+      if _height == kLengthPreferred || _height <= kLengthPercentTag {
+        if _image.size.height > 0 {
+          return Int32(_image.size.height)
+        }
+      }
       return _height
     }
     set(height) {
@@ -173,14 +183,17 @@ open class ImageSprite: Sprite {
 
   //MARK: Methods
   override func updateHeight() {
-    if !_canvas.canvasView.Drawn {
-      return
-    }
     let canvasHeight = _canvas.canvasView.bounds.height
     if _lastSetHeight == kLengthPreferred {
-      _height = Int32(min(_image.size.height, canvasHeight))
-    } else if _height == kLengthFillParent {
-      _height = Int32(canvasHeight)
+      if _image.size.height > 0 {
+        _height = Int32(_image.size.height)
+      } else if _canvas.canvasView.Drawn && canvasHeight > 0 {
+        _height = Int32(canvasHeight)
+      }
+    } else if _lastSetHeight == kLengthFillParent {
+      if _canvas.canvasView.Drawn && canvasHeight > 0 {
+        _height = Int32(canvasHeight)
+      }
     } else {
       // pixels
       _height = _lastSetHeight
@@ -190,14 +203,17 @@ open class ImageSprite: Sprite {
   }
 
   override func updateWidth() {
-    if !_canvas.canvasView.Drawn {
-      return
-    }
     let canvasWidth = _canvas.canvasView.bounds.width
     if _lastSetWidth == kLengthPreferred {
-      _width = Int32(min(_image.size.width, canvasWidth))
+      if _image.size.width > 0 {
+        _width = Int32(_image.size.width)
+      } else if _canvas.canvasView.Drawn && canvasWidth > 0 {
+        _width = Int32(canvasWidth)
+      }
     } else if _lastSetWidth == kLengthFillParent {
-      _width = Int32(canvasWidth)
+      if _canvas.canvasView.Drawn && canvasWidth > 0 {
+        _width = Int32(canvasWidth)
+      }
     } else {
       _width = _lastSetWidth
     }
@@ -207,17 +223,20 @@ open class ImageSprite: Sprite {
 
   override func updateDisplayLayer() {
     let d = DisplayLayer
-    let xCenter = X + (0.5 - u) * Double(Width)
-    let yCenter = Y + (0.5 - v) * Double(Height)
+    let spriteWidth = max(0, CGFloat(Width))
+    let spriteHeight = max(0, CGFloat(Height))
+    let xCenter = X + (0.5 - u) * Double(spriteWidth)
+    let yCenter = Y + (0.5 - v) * Double(spriteHeight)
     CATransaction.begin()
     CATransaction.setAnimationDuration(0.0)
+    CATransaction.setDisableActions(true)
     if _rotates {
       DisplayLayer.transform = CATransform3DMakeRotation(HeadingRadians, 0, 0, 1.0)
     } else {
       DisplayLayer.transform = CATransform3DMakeRotation(0, 0, 0, 1.0)
     }
     d.position = CGPoint(x: xCenter, y: yCenter)
-    d.bounds = CGRect(x: xCenter, y: yCenter, width: CGFloat(Width), height: CGFloat(Height))
+    d.bounds = CGRect(x: 0, y: 0, width: spriteWidth, height: spriteHeight)
     CATransaction.commit()
   }
 
@@ -226,47 +245,68 @@ open class ImageSprite: Sprite {
   }
 
   var extremityVectors: [Vector2D] {
-    let deltas = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)]
-    return deltas.map { (dx, dy) in
-      return self.rotate(vector: Vector2D(x: _xLeft + dx * Double(Width), y: _yTop + dy * Double(Height)))
+    let w = Double(max(0, Width))
+    let h = Double(max(0, Height))
+    let p0 = Vector2D(x: Double(_xLeft), y: Double(_yTop))
+    let p1 = Vector2D(x: Double(_xLeft) + w, y: Double(_yTop))
+    let p2 = Vector2D(x: Double(_xLeft) + w, y: Double(_yTop) + h)
+    let p3 = Vector2D(x: Double(_xLeft), y: Double(_yTop) + h)
+
+    if _rotates && HeadingRadians != 0 {
+      let origin = Vector2D(x: xOrigin, y: yOrigin)
+      let rad = HeadingRadians
+      let cosVal = cos(rad)
+      let sinVal = sin(rad)
+      return [p0, p1, p2, p3].map { pt in
+        let ox = pt.x - origin.x
+        let oy = pt.y - origin.y
+        return Vector2D(x: origin.x + ox * cosVal - oy * sinVal,
+                        y: origin.y + ox * sinVal + oy * cosVal)
+      }
+    } else {
+      return [p0, p1, p2, p3]
     }
   }
 
   var normalAxes: [Vector2D] {
-    var corners = extremityVectors
+    let corners = extremityVectors
     let leftRightEdge = corners[0] - corners[1]
     let topDownEdge = corners[1] - corners[2]
     return [leftRightEdge.normalVector, topDownEdge.normalVector]
   }
 
   func getMinProjection(_ axis: Vector2D) -> Double {
-    let corners = extremityVectors
-    let starting: (vector: Vector2D?, d: Double) = (nil, Double.infinity)
-    return corners.reduce(starting) { partialResult, v in
-      let projMagnitude = Vector2D.dotProduct(axis, v)
-      if projMagnitude < partialResult.d {
-        return (vector: v, d: projMagnitude)
-      } else {
-        return partialResult
-      }
-    }.d
+    return getMinProjection(axis, corners: extremityVectors)
   }
 
   func getMaxProjection(_ axis: Vector2D) -> Double {
-    let corners = extremityVectors
-    let starting: (vector: Vector2D?, d: Double) = (nil, -Double.infinity)
-    return corners.reduce(starting) { partialResult, v in
+    return getMaxProjection(axis, corners: extremityVectors)
+  }
+
+  func getMinProjection(_ axis: Vector2D, corners: [Vector2D]) -> Double {
+    var minVal = Double.infinity
+    for v in corners {
       let projMagnitude = Vector2D.dotProduct(axis, v)
-      if projMagnitude > partialResult.d {
-        return (vector: v, d: projMagnitude)
-      } else {
-        return partialResult
+      if projMagnitude < minVal {
+        minVal = projMagnitude
       }
-    }.d
+    }
+    return minVal
+  }
+
+  func getMaxProjection(_ axis: Vector2D, corners: [Vector2D]) -> Double {
+    var maxVal = -Double.infinity
+    for v in corners {
+      let projMagnitude = Vector2D.dotProduct(axis, v)
+      if projMagnitude > maxVal {
+        maxVal = projMagnitude
+      }
+    }
+    return maxVal
   }
 
   private func rotate(vector: Vector2D) -> Vector2D {
-    if _rotates {
+    if _rotates && HeadingRadians != 0 {
       let origin = Vector2D(x: xOrigin, y: yOrigin)
       var originToPoint = vector - origin
       originToPoint.rotate(radians: HeadingRadians)
