@@ -15,6 +15,7 @@ import com.google.appinventor.shared.rpc.UploadResponse;
  */
 public final class FileImporterException extends Exception {
   final UploadResponse uploadResponse;
+  final String fileName;
 
   /**
    * Creates a FileImporterException
@@ -23,5 +24,22 @@ public final class FileImporterException extends Exception {
    */
   public FileImporterException(UploadResponse.Status status) {
     this.uploadResponse = new UploadResponse(status);
+    this.fileName = null;
+  }
+
+  /**
+   * Creates a FileImporterException
+   *
+   * @param status the UploadResponse status
+   * @param fileName the name of the file that caused the exception
+   */
+  public FileImporterException(UploadResponse.Status status, String fileName) {
+    this.uploadResponse = new UploadResponse(status);
+    this.fileName = fileName;
+  }
+
+  @Override
+  public String getMessage() {
+    return "Unable to upload file: " + uploadResponse.getStatus() + (fileName != null ? " (" + fileName + ")" : "");
   }
 }

@@ -209,7 +209,7 @@ public final class FileImporterImpl implements FileImporter {
         // a large object
         while((bytes = bis.read(buffer, 0, buffer.length)) != -1) {
         }
-        throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE);
+        throw new FileImporterException(UploadResponse.Status.FILE_TOO_LARGE, fileName);
       }
     }
     bos.flush();
