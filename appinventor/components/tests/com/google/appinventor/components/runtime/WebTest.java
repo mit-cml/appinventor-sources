@@ -6,15 +6,13 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.YailDictionary;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,14 +31,13 @@ import static org.junit.Assert.fail;
  *
  * @author lizlooney@google.com (Liz Looney)
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(sdk = 23, manifest="tests/AndroidManifest.xml")
-public class WebTest {
+public class WebTest extends RobolectricTestBase {
   private Web web;
 
   @Before
   public void setUp() {
-    web = new Web();
+    super.setUp();
+    web = new Web(getForm());
   }
 
   @Test
@@ -194,6 +191,25 @@ public class WebTest {
     assertEquals(2, ((YailList) result.get("$content")).size());
     assertEquals("1 2 3", result.getObjectAtKeyPath(Arrays.asList("foo", 1, "$content", 1)));
     assertEquals("456", result.getObjectAtKeyPath(Arrays.asList("bar", 1, "$content", 1)));
+  }
+
+  @Test
+  public void testDecodeBadXMLReportsXMLError() {
+    assertEquals(YailList.makeEmptyList(), web.XMLTextDecode("<foo>123"));
+    assertErrorOccurred("XMLTextDecode", ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED);
+  }
+
+  @Test
+  public void testDecodeBadXMLAsDictionaryReportsXMLError() {
+    assertEquals(new YailDictionary(), web.XMLTextDecodeAsDictionary("<foo>123"));
+    assertErrorOccurred("XMLTextDecodeAsDictionary",
+        ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED);
+  }
+
+  private void assertErrorOccurred(String functionName, int errorNumber) {
+    Object[] args = ShadowEventDispatcher.getArgumentsForEventFired(getForm(), "ErrorOccurred");
+    assertEquals(functionName, args[1]);
+    assertEquals(errorNumber, args[2]);
   }
 
   @Test

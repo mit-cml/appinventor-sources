@@ -367,7 +367,7 @@ open class Web: NonvisibleComponent {
       return JsonTextDecode(xml)
     } catch let error {
       _form?.dispatchErrorOccurredEvent(self, "XMLTextDecode",
-          ErrorMessage.ERROR_WEB_JSON_TEXT_DECODE_FAILED.code, error.localizedDescription)
+          ErrorMessage.ERROR_WEB_XML_TEXT_DECODE_FAILED.code, error.localizedDescription)
       return YailList<AnyObject>()
     }
   }

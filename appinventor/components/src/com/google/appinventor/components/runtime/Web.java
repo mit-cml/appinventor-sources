@@ -1094,7 +1094,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     } catch (Exception e) {
       Log.e(LOG_TAG, e.getMessage());
       form.dispatchErrorOccurredEvent(this, "XMLTextDecodeAsDictionary",
-          ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, e.getMessage());
+          ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED, e.getMessage());
       return new YailDictionary();
     }
   }
@@ -1137,7 +1137,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
       // be good enough.
       Log.e(LOG_TAG, e.getMessage());
       form.dispatchErrorOccurredEvent(this, "XMLTextDecode",
-          ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, e.getMessage());
+          ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED, e.getMessage());
       // This XMLTextDecode should always return a list, even in the case of an error
       return YailList.makeEmptyList();
     }
