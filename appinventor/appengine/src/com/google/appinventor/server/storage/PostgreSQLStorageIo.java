@@ -1539,8 +1539,8 @@ public class PostgreSQLStorageIo implements StorageIo {
    * @return int maximum job size in bytes
    */
   public int getMaxJobSizeBytes() {
-    // TODO It maybe dynamically determined by configs. We set to 5 MiB now.
-    return 5 * 1024 * 1024;
+    // TODO It maybe dynamically determined by configs. We set to 15 MiB now to match the old ObjectifyStorageIo.
+    return 15 * 1024 * 1024;
   }
 
   /**
