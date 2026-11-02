@@ -1056,6 +1056,13 @@ div.StatusPanel {
   cursor: pointer;
 }
 
+.ode-AssetList .gwt-Tree .gwt-TreeItem span {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .gwt-Tree .gwt-TreeItem span:hover,
 .gwt-Tree .gwt-TreeItem-selected span {
   background-color: #d2e0a6;
