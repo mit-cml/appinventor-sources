@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
 /**
@@ -243,4 +244,46 @@ public class DownloadServletTest {
 
   // TODO(user): Add testDownloadAllProjectsSource* to test
   // downloading all projects.
+
+  @Test
+  public void testDownloadDoesNotReflectArbitraryOrigin() throws Exception {
+    System.clearProperty("web.emulator.url");
+    final ProjectSourceZip zip = dummyZip;
+    try (MockedConstruction<FileExporterImpl> ignored = Mockito.mockConstruction(FileExporterImpl.class,
+        (mock, ctx) -> Mockito.when(mock.exportProjectSourceZip(
+            USER_ID, PROJECT_ID, true, false, null, false, false, false, false, false, false))
+            .thenReturn(zip))) {
+      MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL + "project-source/1234");
+      request.setHeader("Origin", "https://evil.example");
+      DownloadServlet download = new DownloadServlet();
+      MockHttpServletResponse response = new MockHttpServletResponse();
+      download.doGet(request, response);
+      assertNull(response.getHeader("Access-Control-Allow-Origin"));
+      assertNull(response.getHeader("Access-Control-Allow-Credentials"));
+    }
+  }
+
+  @Test
+  public void testDownloadReflectsConfiguredWebEmulatorOrigin() throws Exception {
+    System.setProperty("web.emulator.url", "https://webemu.example/");
+    try {
+      final ProjectSourceZip zip = dummyZip;
+      try (MockedConstruction<FileExporterImpl> ignored = Mockito.mockConstruction(FileExporterImpl.class,
+          (mock, ctx) -> Mockito.when(mock.exportProjectSourceZip(
+              USER_ID, PROJECT_ID, true, false, null, false, false, false, false, false, false))
+              .thenReturn(zip))) {
+        MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL + "project-source/1234");
+        request.setHeader("Origin", "https://webemu.example");
+        DownloadServlet download = new DownloadServlet();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        download.doGet(request, response);
+        assertEquals("https://webemu.example",
+            ((List) response.getHeader("Access-Control-Allow-Origin")).get(0));
+        assertEquals("true",
+            ((List) response.getHeader("Access-Control-Allow-Credentials")).get(0));
+      }
+    } finally {
+      System.clearProperty("web.emulator.url");
+    }
+  }
 }
