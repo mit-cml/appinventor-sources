@@ -5,8 +5,6 @@
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
-import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
-import java.io.IOException;
 
 public class ListViewImageTopTwoTextAdapter extends ListAdapterWithRecyclerView {
 
@@ -155,13 +151,15 @@ public class ListViewImageTopTwoTextAdapter extends ListAdapterWithRecyclerView 
     }
     imageTwoTextHolder.textViewFirst.setText(first);
     imageTwoTextHolder.textViewSecond.setText(second);
-    try {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
-      ViewUtil.setImage(imageTwoTextHolder.imageView, drawable);
-    } catch (IOException ioe) {
-      Log.e(
-          LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());
-    }
+    
+    MediaUtil.bindImageToImageView(
+        container.$form(),
+        imageTwoTextHolder.imageView,
+        imageName,
+        imageWidth,
+        imageHeight
+    );
+
     updateCardViewColor(imageTwoTextHolder.cardView, position);
   }
 

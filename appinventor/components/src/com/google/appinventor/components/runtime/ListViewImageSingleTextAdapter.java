@@ -1,11 +1,10 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2025 MIT, All rights reserved
+// Copyright 2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.components.runtime;
 
-import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.ViewCompat;
-import android.util.Log;
 
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
-import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailDictionary;
-
-import java.io.IOException;
 
 public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView {
 
@@ -44,7 +39,7 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
     this.imageWidth = imageWidth;
     this.imageHeight = imageHeight;
     this.textMainAlignment = textMainAlignment;
-  }  
+  }
 
   @Override
   public RvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -104,15 +99,18 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
       imageName = dictItem.get(Component.LISTVIEW_KEY_IMAGE).toString();
     }
     imageSingleTextHolder.textViewFirst.setText(first);
-    try {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
-      ViewUtil.setImage(imageSingleTextHolder.imageView, drawable);
-    } catch (IOException ioe) {
-      Log.e(LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());
-    }
+
+    MediaUtil.bindImageToImageView(
+        container.$form(),
+        imageSingleTextHolder.imageView,
+        imageName,
+        imageWidth,
+        imageHeight
+    );
+
     updateCardViewColor(imageSingleTextHolder.cardView, position);
   }
- 
+
   public class ImageSingleTextRvViewHolder extends RvViewHolder {
 
     public TextView textViewFirst;
@@ -124,6 +122,6 @@ public class ListViewImageSingleTextAdapter extends ListAdapterWithRecyclerView 
       cardView = (CardView) view.findViewById(idCard);
       textViewFirst = (TextView) view.findViewById(idFirst);
       imageView = (ImageView) view.findViewById(idImage);
-    }  
+    }
   }
 }
