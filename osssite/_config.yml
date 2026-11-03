@@ -1,0 +1,109 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you:
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+title: App Inventor Open Source Site
+description: >- # this means to ignore newlines until "baseurl:"
+  News, announcements and development guides for MIT App Inventor.
+  Follow us to be up to date.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: mitappinventor
+twitter:
+  username: mitappinventor # used by the link-preview tags
+  card: summary # small square preview: the preview image is a square
+github_username: mit-cml
+app_inventor_support: https://community.appinventor.mit.edu/
+
+# Collections
+# Technical docs live in _docs/ and guides in _guides/. Each is ordered by the
+# `order` front matter field.
+collections:
+  docs:
+    output: true
+    permalink: /docs/:path/
+  guides:
+    output: true
+    permalink: /guides/:path/
+
+defaults:
+  # Image used by link previews (Open Graph and Twitter cards, e.g. in Slack).
+  # It needs an absolute URL, so `url` must be set (the Pages workflow sets it).
+  - scope:
+      path: ""
+    values:
+      image: /assets/social-preview.png
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: doc
+  - scope:
+      path: ""
+      type: guides
+    values:
+      layout: doc
+
+# Build settings
+theme: minima
+
+# Sass deprecation warnings
+# Minima 2.5.2 (the last released version) is written in an older Sass dialect,
+# so every build printed dozens of deprecation warnings that come from the theme
+# rather than from this site. They are only warnings: the build succeeds and the
+# CSS is correct. We silence them to keep the build log readable:
+#   - color-functions: minima uses lighten()/darken() (superseded by color.adjust)
+#   - global-builtin:  minima calls those functions as globals, not via sass:color
+#   - import:          @import is deprecated in favour of @use. Minima uses it, and
+#                      so does our assets/main.scss (`@import "minima"`)
+#   quiet_deps hides warnings that originate in dependencies such as the theme.
+# These functions are deprecated, not removed. If a future Sass release removes
+# them the build will FAIL with a real error rather than a warning. At that point
+# either move to a maintained theme or override the affected minima styles.
+# To see the warnings again, delete this whole `sass:` block.
+sass:
+  quiet_deps: true
+  silence_deprecations:
+    - color-functions
+    - global-builtin
+    - import
+
+# Pages shown in the header nav (the home page is reached via the site title)
+header_pages:
+  - about.markdown
+
+# Exclude from processing.
+# The following items will not be processed, by default.
+# Any item listed under the `exclude:` key here will be automatically added to
+# the internal "default list".
+#
+# Excluded items can be processed by explicitly listing the directories or
+# their entries' file path in the `include:` list.
+#
+# exclude:
+#   - .sass-cache/
+#   - .jekyll-cache/
+#   - gemfiles/
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/

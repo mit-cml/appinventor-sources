@@ -1,0 +1,277 @@
+---
+---
+// App Inventor look: Poppins, soft near-black text, and the logo's colours.
+// Variables must be set before importing minima.
+
+$aio-purple: #92267c;
+$aio-green:  #a5cf47;
+$aio-orange: #f98d34;
+$aio-gray:   #58585a;
+
+$base-font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+$base-font-weight: 300;
+$base-line-height: 1.8;
+
+$text-color:       #2a2929;
+$background-color: #ffffff;
+$brand-color:      $aio-purple;
+$grey-color:       $aio-gray;
+
+$content-width:    900px;
+
+@import "minima";
+
+// --- Typography -------------------------------------------------------------
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+// --- Header -----------------------------------------------------------------
+
+.site-header {
+  border-top: 5px solid $aio-green;
+}
+
+.site-title img {
+  height: 36px;
+  width: auto;
+  vertical-align: middle;
+}
+
+.site-nav .page-link {
+  font-weight: 400;
+}
+
+// --- Home page lists --------------------------------------------------------
+
+.section-title {
+  display: inline-block;
+  margin-top: $spacing-unit;
+  padding-bottom: 0.1em;
+  border-bottom: 3px solid $aio-orange;
+}
+
+.doc-list {
+  list-style: none;
+  margin: 0 0 $spacing-unit * 0.5;
+  padding: 0;
+
+  li {
+    margin: 0 0 0.5em;
+  }
+
+  a {
+    display: block;
+    padding: 0.7em 1.1em;
+    border: 1px solid $grey-color-light;
+    border-radius: 12px;
+    color: $text-color;
+    transition: border-color 0.15s, background-color 0.15s;
+
+    &:hover {
+      border-color: $aio-green;
+      background-color: rgba($aio-green, 0.12);
+      text-decoration: none;
+    }
+  }
+}
+
+// Quicklinks: compact external-link pills under the intro text.
+.quicklinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6em;
+}
+
+.quicklink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.35em 1em;
+  border: 1px solid $grey-color-light;
+  border-radius: 999px;
+  color: $text-color;
+  font-weight: 400;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: $aio-purple;
+    color: $aio-purple;
+    text-decoration: none;
+  }
+
+  .quicklink-external {
+    opacity: 0.6;
+  }
+}
+
+// Text for screen readers only
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// External resources: deliberately unlike .doc-list (tinted rows, accent bar,
+// icon badge and a trailing "external link" arrow) so they read as leaving the site.
+.resource-list {
+  list-style: none;
+  margin: 0 0 $spacing-unit;
+  padding: 0;
+
+  li {
+    margin: 0 0 0.6em;
+  }
+}
+
+.post-content h2.section-title-small {
+  font-size: 1.3rem;
+}
+
+.resource {
+  --accent: #{$aio-purple};
+  font-size: 0.85em; // whole row (text, icon badge, padding) sits below the Docs/Guides cards
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.7em 1.1em 0.7em 0.9em;
+  border-left: 4px solid var(--accent);
+  border-radius: 4px 12px 12px 4px;
+  background-color: rgba($aio-purple, 0.05);
+  color: $text-color;
+  transition: background-color 0.15s;
+
+  &.resource-talk,
+  &.resource-video {
+    --accent: #{$aio-orange};
+    background-color: rgba($aio-orange, 0.08);
+  }
+
+  &:hover {
+    background-color: rgba($aio-purple, 0.12);
+    text-decoration: none;
+
+    &.resource-talk,
+    &.resource-video {
+      background-color: rgba($aio-orange, 0.18);
+    }
+
+    .resource-external {
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+.resource-icon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.resource-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+}
+
+.resource-title {
+  font-weight: 400;
+}
+
+.resource-meta {
+  font-size: 0.8em;
+  color: $grey-color;
+}
+
+.resource-external {
+  flex: none;
+  color: var(--accent);
+  transition: transform 0.15s;
+}
+
+// "Show N more" fold, styled as the rounded green button from appinventor.org
+details {
+  margin-bottom: $spacing-unit;
+
+  summary {
+    display: inline-block;
+    margin-bottom: 0.7em;
+    padding: 0.35em 1.4em;
+    border-radius: 999px;
+    background-color: $aio-green;
+    color: $text-color;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      background-color: darken($aio-green, 6%);
+    }
+  }
+}
+
+// --- Doc and guide pages ----------------------------------------------------
+
+.back-link {
+  margin-bottom: 1em;
+  font-size: $small-font-size;
+}
+
+.doc-nav {
+  margin-top: $spacing-unit * 2;
+  padding-top: $spacing-unit * 0.5;
+  border-top: 1px solid $grey-color-light;
+
+  // clear the floated "next" link
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .doc-next {
+    float: right;
+  }
+}
+
+// --- Mermaid diagrams -------------------------------------------------------
+
+pre.mermaid {
+  background: none;
+  border: none;
+  text-align: center;
+}
+
+// --- Footer -----------------------------------------------------------------
+
+.footer-heading {
+  font-weight: 500;
+}
+
+.footer-license {
+  margin-top: $spacing-unit;
+  font-size: 0.8em;
+  color: $grey-color;
+}
