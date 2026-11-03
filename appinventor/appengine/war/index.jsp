@@ -50,6 +50,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=10">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <!--meta name="gwt:property" content="locale=en_US"-->
     <!-- Title is set at runtime. -->
     <title> </title>
@@ -79,6 +80,7 @@
     <link type="text/css" rel="stylesheet" href="static/css/DarkTheme.css">
     <link type="text/css" rel="stylesheet" href="static/css/fonts.css">
     <link type="text/css" rel="stylesheet" href="static/css/nano.min.css">
+    <link type="text/css" rel="stylesheet" href="static/css/theme.css">
     <noscript>
       <div class="floatingBox">
         <h2> App Inventor needs JavaScript enabled to run.</h2>
@@ -118,6 +120,7 @@
       })();
     </script>
     <script src="static/js/tutorial.js"></script>
+    <script type="text/javascript" src="static/js/theme-toggle.js"></script>
     <script type="text/javascript" src="static/closure-compiler/base.js"></script>
     <script type="text/javascript" src="<%= odeBase %>ode/aiblockly-@blocklyeditor_BlocklyChecksum@.js"></script>
     <script type="text/javascript" src="static/js/scroll-options-6.0.16.min.js"></script>

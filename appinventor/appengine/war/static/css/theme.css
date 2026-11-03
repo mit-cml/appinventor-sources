@@ -1,0 +1,327 @@
+/* -*- mode: css; css-indent-offset: 2; -*- */
+/*
+ * Copyright 2024 MIT, All Rights Reserved.
+ * Released under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+/*
+ * theme.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Provides CSS custom properties (design tokens) for light and dark themes.
+ * - Light values are set on :root (default).
+ * - Dark values are applied when:
+ *     (a) The OS/browser reports prefers-color-scheme: dark  (system preference)
+ *     (b) The <html> element carries  data-theme="dark"      (manual toggle)
+ * - A manual light override via data-theme="light" always wins.
+ *
+ * Usage in other CSS files:
+ *   background-color: var(--ai-bg);
+ *   color:            var(--ai-text);
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ── Light theme (default) ───────────────────────────────────────────────── */
+:root {
+  --ai-bg:                  #f5f5f5;
+  --ai-bg-secondary:        #ffffff;
+  --ai-bg-panel:            #f7f9f2;
+  --ai-bg-header:           rgba(102, 153, 0, 0.3);
+  --ai-bg-hover:            #EEEEEE;
+  --ai-bg-selected:         #99CC00;
+  --ai-bg-project-row:      #ffffff;
+  --ai-bg-project-folder:   #ffffff;
+  --ai-bg-highlighted:      #fff6c3;
+  --ai-bg-separator:        #e5e5e5;
+  --ai-bg-context-menu:     #ffffff;
+  --ai-bg-messages:         #ffffff;
+
+  --ai-text:                #333333;
+  --ai-text-muted:          #555555;
+  --ai-text-disabled:       #999999;
+  --ai-text-link:           #112abb;
+  --ai-text-selected:       #ffffff;
+
+  --ai-border:              #d2d2d2;
+  --ai-border-bottom:       #b0b2a7;
+  --ai-border-header:       #bbccff;
+  --ai-border-separator:    #ffffff;
+
+  --ai-primary:             #A5CF47;
+  --ai-primary-hover:       #7D9D36;
+  --ai-primary-border:      #444444;
+
+  --ai-navbar-bg:           #ffffff;
+  --ai-navbar-text:         #1C1C1C;
+  --ai-dropdown-bg:         #EEEEEE;
+
+  --ai-shadow:              rgba(0, 0, 0, 0.065);
+
+  --ai-toggle-bg:           #cccccc;
+  --ai-toggle-knob:         #ffffff;
+  --ai-toggle-icon:         "☀️";
+}
+
+/* ── Dark theme — system preference ─────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ai-bg:                  #1a1a1a;
+    --ai-bg-secondary:        #242424;
+    --ai-bg-panel:            #2a2a2a;
+    --ai-bg-header:           rgba(80, 120, 0, 0.4);
+    --ai-bg-hover:            #3a3a3a;
+    --ai-bg-selected:         #5a7a00;
+    --ai-bg-project-row:      #242424;
+    --ai-bg-project-folder:   #2a2a2a;
+    --ai-bg-highlighted:      #3a3600;
+    --ai-bg-separator:        #3a3a3a;
+    --ai-bg-context-menu:     #2a2a2a;
+    --ai-bg-messages:         #2a2a2a;
+
+    --ai-text:                #e8e8e8;
+    --ai-text-muted:          #aaaaaa;
+    --ai-text-disabled:       #666666;
+    --ai-text-link:           #7a9fff;
+    --ai-text-selected:       #ffffff;
+
+    --ai-border:              #444444;
+    --ai-border-bottom:       #555555;
+    --ai-border-header:       #334488;
+    --ai-border-separator:    #333333;
+
+    --ai-primary:             #7DB832;
+    --ai-primary-hover:       #5a8a22;
+    --ai-primary-border:      #aaaaaa;
+
+    --ai-navbar-bg:           #1e1e1e;
+    --ai-navbar-text:         #e8e8e8;
+    --ai-dropdown-bg:         #2a2a2a;
+
+    --ai-shadow:              rgba(0, 0, 0, 0.4);
+
+    --ai-toggle-bg:           #A5CF47;
+    --ai-toggle-knob:         #ffffff;
+    --ai-toggle-icon:         "🌙";
+  }
+}
+
+/* ── Dark theme — manual override via data-theme="dark" ─────────────────── */
+html[data-theme="dark"] {
+  --ai-bg:                  #1a1a1a;
+  --ai-bg-secondary:        #242424;
+  --ai-bg-panel:            #2a2a2a;
+  --ai-bg-header:           rgba(80, 120, 0, 0.4);
+  --ai-bg-hover:            #3a3a3a;
+  --ai-bg-selected:         #5a7a00;
+  --ai-bg-project-row:      #242424;
+  --ai-bg-project-folder:   #2a2a2a;
+  --ai-bg-highlighted:      #3a3600;
+  --ai-bg-separator:        #3a3a3a;
+  --ai-bg-context-menu:     #2a2a2a;
+  --ai-bg-messages:         #2a2a2a;
+
+  --ai-text:                #e8e8e8;
+  --ai-text-muted:          #aaaaaa;
+  --ai-text-disabled:       #666666;
+  --ai-text-link:           #7a9fff;
+  --ai-text-selected:       #ffffff;
+
+  --ai-border:              #444444;
+  --ai-border-bottom:       #555555;
+  --ai-border-header:       #334488;
+  --ai-border-separator:    #333333;
+
+  --ai-primary:             #7DB832;
+  --ai-primary-hover:       #5a8a22;
+  --ai-primary-border:      #aaaaaa;
+
+  --ai-navbar-bg:           #1e1e1e;
+  --ai-navbar-text:         #e8e8e8;
+  --ai-dropdown-bg:         #2a2a2a;
+
+  --ai-shadow:              rgba(0, 0, 0, 0.4);
+
+  --ai-toggle-bg:           #A5CF47;
+  --ai-toggle-knob:         #ffffff;
+}
+
+/* ── Light theme — manual override via data-theme="light" ───────────────── */
+html[data-theme="light"] {
+  --ai-bg:                  #f5f5f5;
+  --ai-bg-secondary:        #ffffff;
+  --ai-bg-panel:            #f7f9f2;
+  --ai-bg-header:           rgba(102, 153, 0, 0.3);
+  --ai-bg-hover:            #EEEEEE;
+  --ai-bg-selected:         #99CC00;
+  --ai-bg-project-row:      #ffffff;
+  --ai-bg-project-folder:   #ffffff;
+  --ai-bg-highlighted:      #fff6c3;
+  --ai-bg-separator:        #e5e5e5;
+  --ai-bg-context-menu:     #ffffff;
+  --ai-bg-messages:         #ffffff;
+
+  --ai-text:                #333333;
+  --ai-text-muted:          #555555;
+  --ai-text-disabled:       #999999;
+  --ai-text-link:           #112abb;
+  --ai-text-selected:       #ffffff;
+
+  --ai-border:              #d2d2d2;
+  --ai-border-bottom:       #b0b2a7;
+  --ai-border-header:       #bbccff;
+  --ai-border-separator:    #ffffff;
+
+  --ai-primary:             #A5CF47;
+  --ai-primary-hover:       #7D9D36;
+  --ai-primary-border:      #444444;
+
+  --ai-navbar-bg:           #ffffff;
+  --ai-navbar-text:         #1C1C1C;
+  --ai-dropdown-bg:         #EEEEEE;
+
+  --ai-shadow:              rgba(0, 0, 0, 0.065);
+
+  --ai-toggle-bg:           #cccccc;
+  --ai-toggle-knob:         #ffffff;
+}
+
+/* ── Theme toggle button ─────────────────────────────────────────────────── */
+#ai-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ai-navbar-text);
+  transition: background 0.2s;
+  vertical-align: middle;
+}
+
+#ai-theme-toggle:hover {
+  background-color: var(--ai-bg-hover);
+}
+
+#ai-theme-toggle .ai-theme-icon {
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/* ── Apply tokens to key IDE UI elements ─────────────────────────────────── */
+body {
+  background-color: var(--ai-bg);
+  color: var(--ai-text);
+}
+
+.floatingBox {
+  background-color: var(--ai-bg-secondary);
+  color: var(--ai-text);
+  box-shadow: 0 0 4px var(--ai-shadow);
+}
+
+.ode-ContextMenu {
+  background-color: var(--ai-bg-context-menu);
+}
+
+.ode-ContextMenuItem,
+.ode-ContextMenuItem-Red,
+.ode-CurrentColor {
+  color: var(--ai-text-muted);
+}
+
+.ode-ContextMenuItemSeparator {
+  background-color: var(--ai-bg-separator);
+  border-bottom: 1px solid var(--ai-border-separator);
+}
+
+.ode-ContextMenuItem-selected {
+  color: var(--ai-text-selected);
+  background: var(--ai-bg-selected);
+}
+
+.ode-ContextMenuItem-disabled {
+  color: var(--ai-text-disabled);
+}
+
+.ode-Box-content {
+  background-color: var(--ai-bg-panel);
+  color: var(--ai-text-muted);
+  border-left:   1px solid var(--ai-border);
+  border-bottom: 1px solid var(--ai-border);
+  border-right:  1px solid var(--ai-border);
+  box-shadow: 0 0 4px var(--ai-shadow);
+}
+
+.ode-Box-header {
+  background: var(--ai-bg-header);
+  border-color: var(--ai-border) var(--ai-border) var(--ai-border-bottom) var(--ai-border);
+}
+
+.ode-Box-header-caption {
+  color: var(--ai-text-muted);
+}
+
+.ode-MessagesOutput {
+  background-color: var(--ai-bg-messages);
+}
+
+.ode-ProjectNameLabel,
+.ode-ProjectFieldLabel,
+.ode-ComponentNameLabel,
+.ode-AdminUserListNameLabel {
+  color: var(--ai-text-muted);
+}
+
+.ode-ProjectRow {
+  background-color: var(--ai-bg-project-row);
+}
+
+.ode-ProjectRow-Highlighted {
+  background-color: var(--ai-bg-highlighted);
+}
+
+.ode-ProjectFolderList {
+  background: var(--ai-bg-project-folder);
+}
+
+.ode-ProjectHeaderRow {
+  border-bottom: 1px solid var(--ai-border-header);
+}
+
+.ode-ProjectHeaderLabel {
+  color: var(--ai-text-link);
+}
+
+.gwt-PushButton-up,
+.gwt-PushButton-up-hovering,
+.gwt-PushButton-down {
+  background-color: var(--ai-primary);
+  border-color: var(--ai-primary-border);
+}
+
+.gwt-PushButton-up-hovering {
+  background-color: var(--ai-primary-hover);
+}
+
+/* ── Apply tokens to homepage / public page elements ─────────────────────── */
+.mit_app_inventor .navbar {
+  background-color: var(--ai-navbar-bg) !important;
+}
+
+.mit_app_inventor .navbar .navbar-nav a {
+  color: var(--ai-navbar-text);
+}
+
+.mit_app_inventor .navbar .navbar-nav .nav-item .nav-link:hover,
+.mit_app_inventor .navbar .navbar-nav .nav-item .nav-link:focus {
+  background-color: var(--ai-bg-hover);
+}
+
+.mit_app_inventor .navbar .navbar-nav .nav-item .dropdown-menu {
+  background-color: var(--ai-dropdown-bg);
+}
+
