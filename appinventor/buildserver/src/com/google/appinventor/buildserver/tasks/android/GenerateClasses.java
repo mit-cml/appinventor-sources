@@ -19,6 +19,7 @@ import com.google.appinventor.buildserver.util.Execution;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +38,9 @@ import java.util.Set;
  */
 @BuildType(apk = true, aab = true)
 public class GenerateClasses implements AndroidTask {
+  // Starts the header of a screen's YAIL, which names the form class.
+  private static final String DEFINE_FORM = "(define-form ";
+
   CompilerContext<AndroidPaths> context;
 
   @Override
@@ -52,14 +57,11 @@ public class GenerateClasses implements AndroidTask {
       List<String> classFileNames = Lists.newArrayListWithCapacity(sources.size());
       boolean userCodeExists = false;
       for (Project.SourceDescriptor source : sources) {
-        String sourceFileName = source.getFile().getAbsolutePath();
+        String sourceFileName = prepareSourceFile(source);
         context.getReporter().info("Source File: " + sourceFileName);
-        int srcIndex = sourceFileName.indexOf(File.separator + ".." + File.separator + "src"
-            + File.separator);
-        String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
-        String classFileName = (context.getPaths().getClassesDir().getAbsolutePath()
-            + File.separator + sourceFileRelativePath)
-            .replace(YAIL_FILE_EXTENSION, ".class");
+        String classFileName = context.getPaths().getClassesDir().getAbsolutePath()
+            + File.separator + source.getQualifiedName().replace('.', File.separatorChar)
+            + ".class";
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
         // a line in the file
@@ -204,6 +206,47 @@ public class GenerateClasses implements AndroidTask {
     }
 
     return TaskResult.generateSuccess();
+  }
+
+  /**
+   * Returns the path of the YAIL file to compile for a screen. The YAIL names the form class in
+   * the package of the project's source files. When the project has a custom package name, the
+   * form class is generated in that package instead, so a copy of the YAIL that names the class
+   * in that package is compiled.
+   */
+  private String prepareSourceFile(Project.SourceDescriptor source) throws IOException {
+    Project project = context.getProject();
+    String sourcePackageName = project.getSourcePackageName();
+    if (project.getPackageName().equals(sourcePackageName)) {
+      return source.getFile().getAbsolutePath();
+    }
+    String yail = Files.asCharSource(source.getFile(), StandardCharsets.UTF_8).read();
+    File file = new File(context.getPaths().getTmpDir(), "yail" + File.separator
+        + source.getQualifiedName().replace('.', File.separatorChar) + YAIL_FILE_EXTENSION);
+    Files.createParentDirs(file);
+    Files.asCharSink(file, StandardCharsets.UTF_8).write(renameFormClass(yail,
+        sourcePackageName + "." + source.getSimpleName(), source.getQualifiedName()));
+    return file.getAbsolutePath();
+  }
+
+  /**
+   * Returns the YAIL of a screen with the form class named in its define-form header replaced.
+   *
+   * @param yail the YAIL of a screen
+   * @param oldClassName the qualified class name in the define-form header
+   * @param newClassName the qualified class name to replace it with
+   * @return the YAIL with the new class name, or yail unchanged if it has no define-form header
+   *     for oldClassName
+   */
+  @VisibleForTesting
+  static String renameFormClass(String yail, String oldClassName, String newClassName) {
+    String oldHeader = DEFINE_FORM + oldClassName + " ";
+    int start = yail.indexOf(oldHeader);
+    if (start < 0) {
+      return yail;
+    }
+    return yail.substring(0, start) + DEFINE_FORM + newClassName + " "
+        + yail.substring(start + oldHeader.length());
   }
 
   @VisibleForTesting

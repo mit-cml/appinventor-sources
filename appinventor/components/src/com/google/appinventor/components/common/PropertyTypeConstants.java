@@ -453,4 +453,11 @@ public class PropertyTypeConstants {
    * Dynamic Android minimum SDK selector.
    */
   public static final String PROPERTY_TYPE_ANDROID_MIN_SDK = "android_min_sdk";
+
+  /**
+   * Android application package name. An empty value means the package is derived from the
+   * project name.
+   * @see com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidPackageNamePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_PACKAGE_NAME = "package_name";
 }

@@ -66,10 +66,11 @@ public interface ProjectService extends RemoteService {
    * Copies a project with a new name.
    * @param oldProjectId  old project ID
    * @param newName  new name of project
+   * @param keepPackageName  whether the copy keeps the custom package name, as a checkpoint does
    *
    * @return a {@link UserProject} for new project
    */
-  UserProject copyProject(long oldProjectId, String newName);
+  UserProject copyProject(long oldProjectId, String newName, boolean keepPackageName);
 
   /**
    * Deletes a project.

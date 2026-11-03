@@ -242,6 +242,23 @@ public class StringUtilsTest extends TestCase {
     assertTrue(StringUtils.VALID_FILENAME_CHARS.matchesNoneOf("!@#$%^&*()\"';:<>,/?"));
   }
 
+  public void testIsValidPackageName() {
+    assertTrue(StringUtils.isValidPackageName("com.example.myapp"));
+    assertTrue(StringUtils.isValidPackageName("appinventor.ai_test.HelloPurr"));
+    assertTrue(StringUtils.isValidPackageName("org.my_school.App2"));
+    assertFalse(StringUtils.isValidPackageName(null));
+    assertFalse(StringUtils.isValidPackageName(""));
+    assertFalse(StringUtils.isValidPackageName("myapp"));
+    assertFalse(StringUtils.isValidPackageName("com..myapp"));
+    assertFalse(StringUtils.isValidPackageName("com.myapp."));
+    assertFalse(StringUtils.isValidPackageName(".com.myapp"));
+    assertFalse(StringUtils.isValidPackageName("com.2fast.app"));
+    assertFalse(StringUtils.isValidPackageName("com._hidden.app"));
+    assertFalse(StringUtils.isValidPackageName("com.my-app.app"));
+    assertFalse(StringUtils.isValidPackageName("com.my app"));
+    assertFalse(StringUtils.isValidPackageName("com.new.app"));
+  }
+
   public void testNormalizeForFilename() {
     assertEquals("MyAppInventorProject1",
         StringUtils.normalizeForFilename("My App Inventor Project 1"));

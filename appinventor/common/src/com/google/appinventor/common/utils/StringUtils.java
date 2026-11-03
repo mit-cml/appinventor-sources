@@ -10,6 +10,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -17,6 +18,15 @@ import java.util.Set;
  *
  */
 public final class StringUtils {
+  // Java keywords and literals, which can't be used as package name segments.
+  private static final Set<String> JAVA_RESERVED_WORDS = new HashSet<>(Arrays.asList(
+      "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class",
+      "const", "continue", "default", "do", "double", "else", "enum", "extends", "false",
+      "final", "finally", "float", "for", "goto", "if", "implements", "import", "instanceof",
+      "int", "interface", "long", "native", "new", "null", "package", "private", "protected",
+      "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized",
+      "this", "throw", "throws", "transient", "true", "try", "void", "volatile", "while"));
+
   private StringUtils() {
   }
 
@@ -187,6 +197,38 @@ public final class StringUtils {
    */
   public static String getProjectPackage(String userEmail, String projectName) {
     return userToPackageName(userEmail) + "." + projectName;
+  }
+
+  /**
+   * Checks whether a string can be used as an Android application package name. The name must
+   * have at least two segments separated by dots, each segment must start with a letter and
+   * contain only letters, digits and underscores, and no segment may be a Java keyword.
+   *
+   * @param packageName the candidate package name
+   * @return true if packageName is a valid Android package name
+   */
+  public static boolean isValidPackageName(String packageName) {
+    if (packageName == null) {
+      return false;
+    }
+    String[] segments = packageName.split("\\.", -1);
+    if (segments.length < 2) {
+      return false;
+    }
+    for (String segment : segments) {
+      if (segment.isEmpty() || JAVA_RESERVED_WORDS.contains(segment)) {
+        return false;
+      }
+      for (int i = 0; i < segment.length(); i++) {
+        char ch = segment.charAt(i);
+        boolean letter = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+        boolean digitOrUnderscore = (ch >= '0' && ch <= '9') || ch == '_';
+        if (!letter && (i == 0 || !digitOrUnderscore)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**

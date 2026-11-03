@@ -255,7 +255,8 @@ public class LocalProjectService implements ProjectServiceAsync {
   }
 
   @Override
-  public void copyProject(long oldProjectId, String newName, AsyncCallback<UserProject> callback) {
+  public void copyProject(long oldProjectId, String newName, boolean keepPackageName,
+      AsyncCallback<UserProject> callback) {
 
   }
 

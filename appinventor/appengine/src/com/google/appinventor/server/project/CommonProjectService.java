@@ -89,8 +89,11 @@ public abstract class CommonProjectService {
    * @param userId the user id
    * @param oldProjectId  old project ID
    * @param newName new project name
+   * @param keepPackageName whether the copy keeps the custom package name of the original, as a
+   *     checkpoint or a transfer to another user does
    */
-  public abstract long copyProject(String userId, long oldProjectId, String newName, String newUserId);
+  public abstract long copyProject(String userId, long oldProjectId, String newName,
+      String newUserId, boolean keepPackageName);
 
   /**
    * Deletes a project.
