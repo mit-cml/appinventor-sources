@@ -17,8 +17,6 @@ public class AccountUtil {
 
   private static long mask = 0x7FF;  // 11 bits
 
-  private static Random random = new Random();
-
   private static long MAX = 17592186044415L;
 
   private AccountUtil() {       /* Cannot be instantiated */
@@ -74,19 +72,14 @@ public class AccountUtil {
     return makeWordList(accountId);
   }
 
-  public static String generateAccountId() {
-    return "anon-" + getRandom();
-  }
-
-  private static long getRandom() {
-    synchronized(AccountUtil.class) {
-      while(true) {
-        long witness = random.nextLong();
-        if (witness < 0 || witness > MAX) // nothing bigger then 2^45-1
-          continue;
-        return witness;
-      }
-    }
+  /**
+   * Generates a new anonymous account id. This class is also compiled by GWT
+   * for the client, so the caller supplies the generator. Server code must pass
+   * a {@code java.security.SecureRandom} because the id doubles as the user's
+   * revisit code.
+   */
+  public static String generateAccountId(Random random) {
+    return "anon-" + (random.nextLong() & MAX);  // MAX is 2^44-1, a 44-bit mask
   }
 
   private static String [] words = {
@@ -322,7 +315,7 @@ public class AccountUtil {
 
   public static void main(String [] args) {
     for (int i = 0; i < 10; i++) {
-      String account = generateAccountId();
+      String account = generateAccountId(new Random());
       String code = accountToCode(account);
       String verify = codeToAccount(code);
       if (verify.equals(account)) {
