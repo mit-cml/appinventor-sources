@@ -27,6 +27,19 @@ open class File: NonvisibleComponent {
 
   /// MARK: File Methods
   
+  /**
+   * Converts the scope and path into a single string for other components. On iOS all apps are
+   * sandboxed, so every scope other than Asset resolves to the same location used by SaveFile.
+   */
+  @objc open func MakeFullPath(_ scope: FileScope, _ path: String) -> String {
+    let fileName = scope == FileScope.Asset && !path.starts(with: "//") ? "//\(path)" : path
+    let filePath = FileUtil.absoluteFileName(fileName, _isRepl)
+    if filePath.isEmpty {
+      return ""
+    }
+    return URL(fileURLWithPath: filePath).absoluteString
+  }
+
   @objc open func SaveFile(_ text: String, _ fileName: String) {
     write(fileName, text, false)
   }

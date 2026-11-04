@@ -49,7 +49,9 @@ open class FileUtil {
    */
   public static func absoluteFileName(_ fileName: String, _ isRepl: Bool) -> String {
     var filePath = ""
-    if fileName.starts(with: "//") {
+    if fileName.starts(with: "file://") {
+      filePath = URL(string: fileName)?.path ?? ""
+    } else if fileName.starts(with: "//") {
       let postSlashIndex = fileName.index(fileName.startIndex, offsetBy: 2)
       if isRepl {
         let file = String(fileName[postSlashIndex...])
