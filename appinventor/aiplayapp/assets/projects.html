@@ -19,6 +19,7 @@
         <style>
          body { font-family: sans-serif; margin: 12px; }
          h1 { font-size: 20px; }
+         #home { min-height: 48px; padding: 0 16px; }
          #controls { margin-bottom: 10px; }
          #search { padding: 6px; width: 60%; }
          #sortmode { padding: 6px; }
@@ -121,13 +122,16 @@
          function deleteproject(name) {
              if (!confirm('Delete "' + name + '"?')) return;
              Android.deleteProject(name);
-             allProjects = allProjects.filter(function(p) { return p.name != name; });
+             refreshProjects();
+         }
+
+         function refreshProjects() {
+             let raw = Android.listProjects();
+             try { allProjects = JSON.parse(raw); } catch (e) { allProjects = []; }
              showprojects();
          }
 
          document.addEventListener("DOMContentLoaded", function() {
-             let raw = Android.listProjects();
-             try { allProjects = JSON.parse(raw); } catch (e) { allProjects = []; }
              let saved = localStorage.getItem("projects_sortMode");
              if (saved) document.getElementById("sortmode").value = saved;
              document.getElementById("search").addEventListener("input", showprojects);
@@ -135,11 +139,12 @@
                  localStorage.setItem("projects_sortMode", this.value);
                  showprojects();
              });
-             showprojects();
+             refreshProjects();
          });
         </script>
     </head>
     <body>
+      <button type="button" id="home" onclick="Android.finished()">&lsaquo; Home</button>
       <center>
         <h1>Saved Apps</h1>
       </center>
