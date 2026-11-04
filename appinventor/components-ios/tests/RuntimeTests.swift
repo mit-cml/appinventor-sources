@@ -287,6 +287,10 @@ class RuntimeTests: XCTestCase {
         interpreter.evalForm("(get-display-representation (string-split \"strteststr\" \"str\"))"))
     XCTAssertEqual("[\"many\", \"commas\"]",
         interpreter.evalForm("(get-display-representation (string-split \"many,commas,,,,,\" \",\"))"))
+    XCTAssertEqual("[\".\", \".\", \".\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"...\" \"\"))"))
+    XCTAssertEqual("[\"…\"]",
+        interpreter.evalForm("(get-display-representation (string-split \"…\" \"\"))"))
   }
 
   func testCoerceToList() throws {

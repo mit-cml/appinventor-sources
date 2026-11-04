@@ -33,6 +33,14 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     _view.delegate = self
     _field.delegate = self
     setupView()
+    if #available(iOS 11.0, *) {
+      _field.smartPunctuationType = .no
+      _view.smartPunctuationType = .no
+      _field.smartQuotesType = .no
+      _view.smartQuotesType = .no
+      _field.smartDashesType = .no
+      _view.smartDashesType = .no
+    }
     
     // We are single line by default
     makeSingleLine()

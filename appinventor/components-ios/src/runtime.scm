@@ -1881,7 +1881,7 @@ Matrix implementation.
   (string-split-helper text (yail-list-contents at) 2))
 
 (define (string-split text at)
-  (string-split-helper text (list at) -1))
+  (yail:invoke AIComponentKit.StringUtil 'split text at))
 
 (define (string-split-at-any text at)
   (string-split-helper text (yail-list-contents at) -1))
