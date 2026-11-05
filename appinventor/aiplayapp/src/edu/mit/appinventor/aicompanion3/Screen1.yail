@@ -302,7 +302,7 @@ $Source $Yail
 (add-component PhonePanel com.google.appinventor.components.runtime.Label Spacer4 
 (set-and-coerce-property! 'Spacer4 'HasMargins #f 'boolean)
 
-(set-and-coerce-property! 'Spacer4 'Height 8 'number)
+(set-and-coerce-property! 'Spacer4 'Height 48 'number)
 
 )
 
