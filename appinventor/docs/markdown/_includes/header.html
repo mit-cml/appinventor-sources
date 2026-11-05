@@ -73,19 +73,13 @@
         <div style="display: inline-flex;margin-left:auto;margin-right:0">
 	    <a href="https://giving.mit.edu/give/to?fundId=3832320" target="_blank">
                 <button type="button" class="btn donate-btn" style="margin-right: 20px;">Donate</button></a>
-            <script>
-             (function() {
-                 var cx = '005719495929270354943:tlvxrelje-e';
-                 var gcse = document.createElement('script');
-                 gcse.type = 'text/javascript';
-                 gcse.async = true;
-                 gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                            '//www.google.com/cse/cse.js?cx=' + cx;
-                 var s = document.getElementsByTagName('script')[0];
-                 s.parentNode.insertBefore(gcse, s);
-             })();
-            </script>
-            <gcse:searchbox-only></gcse:searchbox-only>
+            <!-- Global Search Container -->
+        <div id="global-search" class="ml-3"></div>
+        <!-- Load Lunr & Search UI scripts -->
+        <script src="/static/lunr.min.js"></script>
+        <script src="/static/search-bar.js"></script>
+        <link rel="stylesheet" href="/static/css/search.css">
+
         </div>
 	<!-- <form class="form-inline" action="/action_page.php">
 	     <div class="form-group has-search">
