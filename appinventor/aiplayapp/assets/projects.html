@@ -128,6 +128,7 @@
          function refreshProjects() {
              let raw = Android.listProjects();
              try { allProjects = JSON.parse(raw); } catch (e) { allProjects = []; }
+             document.getElementById("controls").hidden = allProjects.length === 0;
              showprojects();
          }
 
@@ -148,7 +149,7 @@
       <center>
         <h1>Saved Apps</h1>
       </center>
-      <div id="controls">
+      <div id="controls" hidden>
         <input type="text" id="search" placeholder="Search...">
         <select id="sortmode">
           <option value="recent">Recently Modified</option>
