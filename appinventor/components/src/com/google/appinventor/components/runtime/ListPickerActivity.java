@@ -111,6 +111,7 @@ public class ListPickerActivity extends AppInventorCompatActivity implements Ada
       // Adding items to listview
       adapter = new MyAdapter(this, items);
       listView.setAdapter(adapter);
+      listView.setSelection(myIntent.getIntExtra(ListPicker.LIST_ACTIVITY_RESULT_INDEX, 0) - 1);
       String showFilterBar =myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_SHOW_SEARCH_BAR);
 
       // Determine if we should even show the search bar
