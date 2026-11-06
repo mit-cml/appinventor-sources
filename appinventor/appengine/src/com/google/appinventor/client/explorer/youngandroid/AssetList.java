@@ -110,6 +110,10 @@ public class AssetList extends Composite implements ProjectChangeListener {
       @Override
       public void onSelection(SelectionEvent<TreeItem> event) {
         clickCount++;
+        if (selectedItem != null && selectedItem != event.getSelectedItem()) {
+          // Reset clickCount if different items are selected within 300 ms.
+          clickCount = 1;
+        }
         selectedItem = event.getSelectedItem();
         clickTimer.schedule(300);
       }});
