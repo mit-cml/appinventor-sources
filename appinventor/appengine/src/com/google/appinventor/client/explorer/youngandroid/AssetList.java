@@ -143,7 +143,10 @@ public class AssetList extends Composite implements ProjectChangeListener {
       if (count == 1) {
         ProjectNodeContextMenu.show(node, selected.getWidget(), clientX, clientY);
       } else {
-        new PreviewFileCommand().execute(node);
+        PreviewFileCommand command = new PreviewFileCommand();
+        if (command.isSupported(node)) {
+          command.execute(node);
+        }
       }
     }
   };
