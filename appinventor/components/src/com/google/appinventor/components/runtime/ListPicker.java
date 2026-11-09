@@ -288,6 +288,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     Intent intent = new Intent();
     intent.setClassName(container.$context(), LIST_ACTIVITY_CLASS);
     intent.putExtra(LIST_ACTIVITY_ARG_NAME, items.toStringArray());
+    intent.putExtra(LIST_ACTIVITY_RESULT_INDEX, selectionIndex);
     intent.putExtra(LIST_ACTIVITY_SHOW_SEARCH_BAR, String.valueOf(showFilter)); //convert to string
     if (!title.equals("")) {
       intent.putExtra(LIST_ACTIVITY_TITLE, title);
