@@ -151,7 +151,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         PreviewFileCommand command = new PreviewFileCommand();
         if (command.isSupported(node)) {
           command.execute(node);
-        } else{
+        } else {
           ErrorReporter.reportInfo(MESSAGES.filePreviewError());
         }
       }
