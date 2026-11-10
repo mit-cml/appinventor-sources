@@ -66,18 +66,256 @@ goog.provide('AI.Blockly.ExportBlocksImage');
     return css;
   }
 
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  /**
+   * The colours Blockly's theme gives comments. They are CSS custom
+   * properties on the injection div, so an exported SVG cannot see them.
+   * @param {Blockly.WorkspaceSvg} workspace The workspace.
+   * @return {{fill: string, border: string}} The colours.
+   */
+  function commentColours(workspace) {
+    var div = workspace && workspace.getInjectionDiv && workspace.getInjectionDiv();
+    var style = div ? window.getComputedStyle(div) : null;
+    var read = function(name, fallback) {
+      var value = style ? style.getPropertyValue(name).trim() : '';
+      return value || fallback;
+    };
+    return {
+      fill: read('--commentFillColour', '#FFFCC7'),
+      border: read('--commentBorderColour', '#F2E49B')
+    };
+  }
+
+  /**
+   * Comment text is edited in a <textarea> inside a <foreignObject>. Browsers
+   * do not reliably rasterise foreignObject content when an SVG is drawn onto
+   * a canvas (Safari refuses outright), so each one in the export is replaced
+   * with a background rect plus <text>/<tspan> lines wrapped to the same box.
+   * The text and font are read from the live textarea, since a cloned
+   * textarea has no value. Colours are set inline because the inlined
+   * stylesheet still refers to theme variables that do not exist in the
+   * export.
+   * @param {!Element} clone The export DOM being assembled.
+   * @param {!Element} original The live element the clone was made from.
+   * @param {{fill: string, border: string}} colours See commentColours.
+   */
+  function inlineCommentText(clone, original, colours) {
+    var topbars = clone.querySelectorAll('.blocklyCommentTopbarBackground');
+    for (var t = 0; t < topbars.length; t++) {
+      topbars[t].setAttribute('style', 'fill: ' + colours.border + ';');
+    }
+
+    var clonedObjects = clone.querySelectorAll('foreignObject');
+    var liveObjects = original.querySelectorAll('foreignObject');
+    if (clonedObjects.length !== liveObjects.length) {
+      return;  // Not a 1:1 clone; leave the export as it is.
+    }
+    for (var i = 0; i < clonedObjects.length; i++) {
+      var fo = clonedObjects[i];
+      var textarea = liveObjects[i].querySelector('textarea');
+      if (!textarea) {
+        continue;
+      }
+      var style = window.getComputedStyle(textarea);
+      var fontSize = parseFloat(style.fontSize) || 11;
+      var fontFamily = style.fontFamily || 'sans-serif';
+      var padding = parseFloat(style.paddingLeft) || 0;
+      var lineHeight = parseFloat(style.lineHeight) || fontSize * 1.2;
+      var boxX = parseFloat(fo.getAttribute('x')) || 0;
+      var boxY = parseFloat(fo.getAttribute('y')) || 0;
+      var boxWidth = parseFloat(fo.getAttribute('width')) || 0;
+      var boxHeight = parseFloat(fo.getAttribute('height')) || 0;
+
+      // The textarea's background: filled, and bordered for workspace
+      // comments (bubbles already sit on their own coloured rect).
+      var background = document.createElementNS(SVG_NS, 'rect');
+      background.setAttribute('x', boxX);
+      background.setAttribute('y', boxY);
+      background.setAttribute('width', boxWidth);
+      background.setAttribute('height', boxHeight);
+      var isWorkspaceComment = fo.classList.contains('blocklyCommentForeignObject');
+      background.setAttribute('style', 'fill: ' + colours.fill + ';' +
+          (isWorkspaceComment ? ' stroke: ' + colours.border + '; stroke-width: 1;' : ''));
+
+      // The font family is left to the blocklyText class: the export later
+      // rewrites 'sans-serif' into a quoted font list, which must not land
+      // inside an attribute value.
+      var text = document.createElementNS(SVG_NS, 'text');
+      text.setAttribute('class', 'blocklyText');
+      text.setAttribute('style', 'font-size: ' + fontSize + 'px; fill: ' +
+          (style.color || '#000') + ';');
+      text.setAttribute('xml:space', 'preserve');
+      var lines = wrapLines(textarea.value, boxWidth - 2 * padding,
+          fontSize + 'px ' + fontFamily);
+      var maxLines = Math.max(1, Math.floor((boxHeight - 2 * padding) / lineHeight));
+      for (var j = 0; j < lines.length && j < maxLines; j++) {
+        var tspan = document.createElementNS(SVG_NS, 'tspan');
+        tspan.setAttribute('x', boxX + padding);
+        tspan.setAttribute('y', boxY + padding + fontSize + j * lineHeight);
+        tspan.textContent = lines[j];
+        text.appendChild(tspan);
+      }
+      fo.parentNode.insertBefore(background, fo);
+      fo.parentNode.replaceChild(text, fo);
+    }
+  }
+
+  /**
+   * Breaks text into lines no wider than maxWidth, the way a textarea with
+   * white-space: pre-wrap does: explicit newlines are kept, and words that
+   * are too long for a line are split by character.
+   * @param {string} value The text.
+   * @param {number} maxWidth Available width in pixels.
+   * @param {string} font A CSS font shorthand used to measure.
+   * @return {!Array<string>} The lines.
+   */
+  function wrapLines(value, maxWidth, font) {
+    var context = document.createElement('canvas').getContext('2d');
+    context.font = font;
+    var measure = function(str) { return context.measureText(str).width; };
+    var lines = [];
+    var paragraphs = (value || '').split('\n');
+    for (var p = 0; p < paragraphs.length; p++) {
+      var words = paragraphs[p].split(' ');
+      var line = '';
+      for (var w = 0; w < words.length; w++) {
+        var word = words[w];
+        var candidate = line ? line + ' ' + word : word;
+        if (measure(candidate) <= maxWidth || !line && measure(word) <= maxWidth) {
+          line = candidate;
+          continue;
+        }
+        if (line) {
+          lines.push(line);
+          line = '';
+        }
+        // The word alone is wider than the box: split it by character.
+        while (measure(word) > maxWidth && word.length > 1) {
+          var cut = word.length;
+          while (cut > 1 && measure(word.slice(0, cut)) > maxWidth) {
+            cut--;
+          }
+          lines.push(word.slice(0, cut));
+          word = word.slice(cut);
+        }
+        line = word;
+      }
+      lines.push(line);
+    }
+    return lines;
+  }
+
+  /**
+   * Widens bounds to include an element, whose bbox is in its own coordinates
+   * and sits at offset within the export.
+   * @param {?{left: number, top: number, right: number, bottom: number}} bounds
+   *     The bounds so far, or null.
+   * @param {!Element} element A live SVG element.
+   * @param {{x: number, y: number}} offset Where the element sits.
+   * @return {{left: number, top: number, right: number, bottom: number}} The
+   *     widened bounds.
+   */
+  function includeBounds(bounds, element, offset) {
+    var box = element.getBBox();
+    var left = offset.x + box.x;
+    var top = offset.y + box.y;
+    if (!bounds) {
+      return {left: left, top: top, right: left + box.width, bottom: top + box.height};
+    }
+    bounds.left = Math.min(bounds.left, left);
+    bounds.top = Math.min(bounds.top, top);
+    bounds.right = Math.max(bounds.right, left + box.width);
+    bounds.bottom = Math.max(bounds.bottom, top + box.height);
+    return bounds;
+  }
+
+  /**
+   * Appends clones of the open comment bubbles of the given blocks to an
+   * export group. Bubbles live on the workspace's bubble canvas, positioned in
+   * the same coordinate space as the blocks.
+   * @param {!Element} group The export group.
+   * @param {!Array<!Blockly.BlockSvg>} blocks The blocks whose comments to add.
+   * @param {?Object} bounds The export bounds so far (see includeBounds).
+   * @param {{fill: string, border: string}} colours See commentColours.
+   * @return {?Object} The widened bounds.
+   */
+  function appendCommentBubbles(group, blocks, bounds, colours) {
+    for (var i = 0; i < blocks.length; i++) {
+      var icon = blocks[i].getIcon && blocks[i].getIcon('comment');
+      if (!icon || !icon.bubbleIsVisible()) {
+        continue;
+      }
+      // Blockly 11 has no public accessor for the icon's bubble.
+      var bubble = icon.textInputBubble;
+      if (!bubble || !bubble.getSvgRoot) {
+        continue;
+      }
+      var root = bubble.getSvgRoot();
+      var clone = root.cloneNode(true);
+      inlineCommentText(clone, root, colours);
+      group.appendChild(clone);
+      bounds = includeBounds(bounds, root, Blockly.utils.svgMath.getRelativeXY(root));
+    }
+    return bounds;
+  }
+
+  function toBBox(bounds) {
+    return {x: bounds.left, y: bounds.top, width: bounds.right - bounds.left,
+            height: bounds.bottom - bounds.top};
+  }
+
+  /**
+   * Assembles the part of a workspace that belongs in an exported image: the
+   * block canvas plus the open comment bubbles of its blocks. The block and
+   * bubble canvases share one transform, so with it removed their children
+   * line up. Mutator bubbles, warning bubbles and the backpack flyout also
+   * live on the bubble canvas and are deliberately left out.
+   * @param {!Blockly.WorkspaceSvg} workspace The workspace to export.
+   * @return {{group: !Element, bbox: {x: number, y: number, width: number,
+   *     height: number}}} A detached group and its bounds in workspace units.
+   */
+  out$.workspaceExportGroup = function(workspace) {
+    var colours = commentColours(workspace);
+    var blockCanvas = workspace.getCanvas();
+    var group = document.createElementNS(SVG_NS, 'g');
+    group.setAttribute('class', 'blocklyBlockCanvas');
+    var blocks = blockCanvas.cloneNode(true);
+    blocks.removeAttribute('transform');
+    inlineCommentText(blocks, blockCanvas, colours);  // workspace comments
+    group.appendChild(blocks);
+    var bounds = includeBounds(null, blockCanvas, {x: 0, y: 0});
+    bounds = appendCommentBubbles(group, workspace.getAllBlocks(false), bounds, colours);
+    return {group: group, bbox: toBBox(bounds)};
+  };
+
+  /**
+   * Assembles one block (with the blocks attached to it) and the open comment
+   * bubbles of those blocks, for the single-block PNG export.
+   * @param {!Blockly.BlockSvg} block The block to export.
+   * @return {{group: !Element, bbox: {x: number, y: number, width: number,
+   *     height: number}}} A detached group and its bounds in workspace units.
+   */
+  out$.blockExportGroup = function(block) {
+    var colours = commentColours(block.workspace);
+    var root = block.getSvgRoot();
+    var group = document.createElementNS(SVG_NS, 'g');
+    group.setAttribute('class', 'blocklyBlockCanvas');
+    // The clone keeps its translate(x, y): that is the block's position in
+    // workspace units, the same space the bubbles are positioned in.
+    var clone = root.cloneNode(true);
+    inlineCommentText(clone, root, colours);
+    group.appendChild(clone);
+    var bounds = includeBounds(null, root, block.getRelativeToSurfaceXY());
+    bounds = appendCommentBubbles(group, block.getDescendants(false), bounds, colours);
+    return {group: group, bbox: toBBox(bounds)};
+  };
+
   out$.svgAsDataUri = function(el, optmetrics, options, cb) {
     options = options || {};
     options.scale = options.scale || 1;
     var xmlns = "http://www.w3.org/2000/xmlns/";
     var outer = document.createElement("div");
-
-    var textAreas = document.getElementsByTagName("textarea");
-
-    for (var i = 0; i < textAreas.length; i++)
-      {
-        textAreas[i].innerHTML = textAreas[i].value;
-      }
 
     var clone = el.cloneNode(true);
     var width, height;
@@ -97,12 +335,16 @@ goog.provide('AI.Blockly.ExportBlocksImage');
       var bottom = (parseFloat(optmetrics.contentHeight)).toString();
       clone.setAttribute("viewBox", left + " " + top + " " + right + " " + bottom);
     } else {
-      var matrix = el.getScreenCTM();
-      clone.setAttribute('transform', clone.getAttribute('transform').replace(/translate\(.*?\)/, '')
-                         .replace(/scale\(.*?\)/, '').trim());
-      var box = el.getBBox();
-      //width = (box.x + box.width)/matrix.a;
-      //height = (box.y + box.height)/matrix.a;
+      var box;
+      if (options.bbox) {
+        // A group assembled for export (see workspaceExportGroup); it is not
+        // in the document, so its bounds are supplied by the caller.
+        box = options.bbox;
+      } else {
+        clone.setAttribute('transform', (clone.getAttribute('transform') || '')
+            .replace(/translate\(.*?\)/, '').replace(/scale\(.*?\)/, '').trim());
+        box = el.getBBox();
+      }
       width = box.width;
       height = box.height;
 
@@ -151,6 +393,16 @@ goog.provide('AI.Blockly.ExportBlocksImage');
 
     for (var i = 0; i < toHide.length; i++) {
       toHide[i].parentElement.removeChild(toHide[i]);
+    }
+
+    inlineCommentText(clone, el, commentColours(Blockly.common.getMainWorkspace()));
+
+    // Bubbles reference an emboss filter defined in the workspace's <defs>,
+    // which is not part of the export; a dangling filter reference makes
+    // browsers skip the element entirely.
+    var filtered = clone.querySelectorAll('[filter]');
+    for (var i = 0; i < filtered.length; i++) {
+      filtered[i].removeAttribute('filter');
     }
 
     var zelement = clone.getElementById("rectCorner");
@@ -218,7 +470,9 @@ goog.provide('AI.Blockly.ExportBlocksImage');
  *
  */
 AI.Blockly.ExportBlocksImage.onclickExportBlocks = function(metrics, opt_workspace) {
-  saveSvgAsPng((opt_workspace || Blockly.common.getMainWorkspace()).svgBlockCanvas_, "blocks.png", metrics);
+  var workspace = opt_workspace || Blockly.common.getMainWorkspace();
+  var exported = workspaceExportGroup(workspace);
+  saveSvgAsPng(exported.group, "blocks.png", metrics, {bbox: exported.bbox});
 }
 
 
@@ -233,7 +487,8 @@ AI.Blockly.ExportBlocksImage.getUri = function(callback, opt_workspace) {
   if (metrics == null || metrics.viewHeight == 0) {
     return null;
   }
-  svgAsDataUri(workspace.svgBlockCanvas_, metrics, {},
+  var exported = workspaceExportGroup(workspace);
+  svgAsDataUri(exported.group, metrics, {bbox: exported.bbox},
     function(uri) {
       var image = new Image();
       image.onload = function() {
@@ -462,7 +717,8 @@ Blockly.exportBlockAsPng = function(block) {
   var xml = document.createElement('xml');
   xml.appendChild(Blockly.Xml.blockToDom(block, true));
   var code = Blockly.Xml.domToText(xml);
-  svgAsDataUri(block.getSvgRoot(), block.workspace.getMetrics(), null, function(uri) {
+  var exported = blockExportGroup(block);
+  svgAsDataUri(exported.group, block.workspace.getMetrics(), {bbox: exported.bbox}, function(uri) {
     var img = new Image();
     img.src = uri;
     img.onload = function() {
