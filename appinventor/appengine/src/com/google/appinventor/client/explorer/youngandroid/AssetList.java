@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.commands.PreviewFileCommand;
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
@@ -150,6 +151,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
         PreviewFileCommand command = new PreviewFileCommand();
         if (command.isSupported(node)) {
           command.execute(node);
+        } else{
+          ErrorReporter.reportInfo(MESSAGES.filePreviewError());
         }
       }
     }
