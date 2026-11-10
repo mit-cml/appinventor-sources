@@ -334,7 +334,6 @@ public class HtmlEntities {
         // The complete entity was of the form "&#xhhhh;", where hhhh is hex.
         String hhhh = entity.substring(2);
         try {
-          System.out.println("hex number is " + hhhh);
           int code = Integer.parseInt(hhhh, 16);
           convertedEntity = Character.valueOf((char) code);
         } catch (NumberFormatException e) {
