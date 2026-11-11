@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Tests for {@link Dates}.
@@ -156,6 +157,21 @@ public class DatesTest extends TestCase {
     assertEquals(9, date.get(GregorianCalendar.HOUR_OF_DAY));
     assertEquals(29, date.get(GregorianCalendar.MINUTE));
     assertEquals(48, date.get(GregorianCalendar.SECOND));
+  }
+
+  /**
+   * Tests that {@link Dates#DateValue(String)} is not affected by the calendar
+   * system of the default locale.
+   */
+  public void testDateValueIgnoresDefaultLocale() {
+    Locale defaultLocale = Locale.getDefault();
+    try {
+      Locale.setDefault(Locale.forLanguageTag("th-TH"));
+      Calendar date = Dates.DateValue("04/21/2008");
+      assertEquals(2008, date.get(GregorianCalendar.YEAR));
+    } finally {
+      Locale.setDefault(defaultLocale);
+    }
   }
 
   /**
