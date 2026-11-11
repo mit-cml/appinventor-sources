@@ -19,6 +19,7 @@ import com.google.appinventor.components.runtime.util.MapFactory.MapFeature;
 import com.google.appinventor.components.runtime.util.MapFactory.MapMarker;
 import gnu.lists.FString;
 import gnu.lists.LList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -317,6 +318,67 @@ public class GeoJSONUtilTest extends MapTestBase {
     JSONObject json = new JSONObject(contents);
     assertEquals(6, json.getJSONArray("features").length());
     // Consider inspecting the objects more deeply to ensure correctness in the future
+  }
+
+  @Test
+  public void testWriteFeaturesAsGeoJSONClosesPolygonRings() throws IOException, JSONException {
+    // Regression test for #2776: polygon rings written by Map.Save must be closed
+    // (first and last positions equal), otherwise the GeoJSON is not parsable by
+    // other applications. defaultPolygon/defaultMultipolygon both use open rings.
+    defaultPolygon(new Polygon(getMap()));
+    defaultMultipolygon(new Polygon(getMap()));
+    String contents = saveMapToString();
+    JSONObject json = new JSONObject(contents);
+    JSONArray features = json.getJSONArray("features");
+    int polygonCount = 0;
+    for (int i = 0; i < features.length(); i++) {
+      JSONObject geometry = features.getJSONObject(i).getJSONObject("geometry");
+      String type = geometry.getString("type");
+      if ("Polygon".equals(type)) {
+        polygonCount++;
+        JSONArray rings = geometry.getJSONArray("coordinates");
+        for (int r = 0; r < rings.length(); r++) {
+          assertRingClosed(rings.getJSONArray(r));
+        }
+      } else if ("MultiPolygon".equals(type)) {
+        polygonCount++;
+        JSONArray polygons = geometry.getJSONArray("coordinates");
+        for (int p = 0; p < polygons.length(); p++) {
+          JSONArray rings = polygons.getJSONArray(p);
+          for (int r = 0; r < rings.length(); r++) {
+            assertRingClosed(rings.getJSONArray(r));
+          }
+        }
+      }
+    }
+    assertEquals(2, polygonCount);
+  }
+
+  @Test
+  public void testWriteFeaturesAsGeoJSONDoesNotDoubleCloseRings() throws IOException, JSONException {
+    // A polygon parsed from GeoJSON already has a closed ring; saving it again
+    // must not append a second copy of the first point (#2776).
+    GeoJSONUtil.processGeoJSONFeature(LOG_TAG, getMap(),
+        alist("type", "Feature",
+            "geometry", alist("type", "Polygon", "coordinates", list(list(
+                list(-71, 42), list(-70, 42), list(-70, 41), list(-71, 41),
+                list(-71, 42))))));
+    String contents = saveMapToString();
+    JSONObject json = new JSONObject(contents);
+    JSONArray features = json.getJSONArray("features");
+    assertEquals(1, features.length());
+    JSONArray ring = features.getJSONObject(0).getJSONObject("geometry")
+        .getJSONArray("coordinates").getJSONArray(0);
+    assertEquals(5, ring.length());
+    assertRingClosed(ring);
+  }
+
+  private static void assertRingClosed(JSONArray ring) throws JSONException {
+    assertTrue(ring.length() >= 4);
+    JSONArray first = ring.getJSONArray(0);
+    JSONArray last = ring.getJSONArray(ring.length() - 1);
+    assertEquals(first.getDouble(0), last.getDouble(0), 0.0);
+    assertEquals(first.getDouble(1), last.getDouble(1), 0.0);
   }
 
   @Test

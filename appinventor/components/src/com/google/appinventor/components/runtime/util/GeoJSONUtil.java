@@ -604,20 +604,53 @@ public final class GeoJSONUtil {
       writeProperty(PROPERTY_FILL_OPACITY, feature.FillOpacity());
     }
 
+    private void writePoint(GeoPoint p) {
+      out.print("[");
+      out.print(p.getLongitude());
+      out.print(",");
+      out.print(p.getLatitude());
+      if (hasAltitude(p)) {
+        out.print(",");
+        out.print(p.getAltitude());
+      }
+      out.print("]");
+    }
+
     private void writePoints(List<GeoPoint> points) {
       boolean first = true;
       for (GeoPoint p : points) {
         if (!first) out.print(',');
-        out.print("[");
-        out.print(p.getLongitude());
-        out.print(",");
-        out.print(p.getLatitude());
-        if (hasAltitude(p)) {
-          out.print(",");
-          out.print(p.getAltitude());
-        }
-        out.print("]");
+        writePoint(p);
         first = false;
+      }
+    }
+
+    // Two positions are the same when they have the same latitude and longitude,
+    // and the same altitude when either position carries one.
+    private static boolean samePoint(GeoPoint a, GeoPoint b) {
+      if (Double.compare(a.getLatitude(), b.getLatitude()) != 0
+          || Double.compare(a.getLongitude(), b.getLongitude()) != 0) {
+        return false;
+      }
+      if (!hasAltitude(a) && !hasAltitude(b)) {
+        return true;
+      }
+      return Double.compare(a.getAltitude(), b.getAltitude()) == 0;
+    }
+
+    // Writes a polygon ring, repeating the first point at the end when the ring
+    // is not already closed. GeoJSON requires polygon rings to be closed (RFC 7946);
+    // without this, Map.Save produces output other applications cannot parse (#2776).
+    // LineStrings must stay open, so they keep using writePoints directly.
+    private void writeClosedRing(List<GeoPoint> points) {
+      writePoints(points);
+      if (!points.isEmpty()) {
+        GeoPoint first = points.get(0);
+        GeoPoint last = points.get(points.size() - 1);
+        if (!samePoint(first, last)) {
+          out.print(',');
+          writePoint(first);
+        }
       }
     }
 
@@ -635,11 +668,11 @@ public final class GeoJSONUtil {
       while (pointIterator.hasNext()) {
         if (!first) out.print(",");
         out.print("[");
-        writePoints(pointIterator.next());
+        writeClosedRing(pointIterator.next());
         if (holePointIterator.hasNext()) {
           for (List<GeoPoint> holePoints : holePointIterator.next()) {
             out.print(",");
-            writePoints(holePoints);
+            writeClosedRing(holePoints);
           }
         }
         out.print("]");
@@ -650,11 +683,11 @@ public final class GeoJSONUtil {
 
     private void writePolygonGeometryNoHoles(MapPolygon polygon) {
       out.print("\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[");
-      writePoints(polygon.getPoints().get(0));
+      writeClosedRing(polygon.getPoints().get(0));
       if (!polygon.getHolePoints().isEmpty()) {
         for (List<GeoPoint> points : polygon.getHolePoints().get(0)) {
           out.print(",");
-          writePoints(points);
+          writeClosedRing(points);
         }
       }
       out.print("]}");
