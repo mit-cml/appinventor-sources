@@ -97,6 +97,9 @@ import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 class NativeOpenStreetMapController implements MapController, MapListener {
+  private static final String DEFAULT_MARKER_ASSET =
+      "components/com.google.appinventor.components.runtime.Map/marker.svg";
+
   /* copied from SVG */
   private static final long SPECIFIED_FILL                  =    1;
   private static final long SPECIFIED_FILL_OPACITY          = 1<<2;
@@ -1035,7 +1038,7 @@ class NativeOpenStreetMapController implements MapController, MapListener {
     SVG markerSvg = null;
     if (defaultMarkerSVG == null) {
       try {
-        defaultMarkerSVG = SVG.getFromAsset(view.getContext().getAssets(), "marker.svg");
+        defaultMarkerSVG = SVG.getFromAsset(view.getContext().getAssets(), DEFAULT_MARKER_ASSET);
       } catch (SVGParseException e) {
         Log.e(TAG, "Invalid SVG in Marker asset", e);
       } catch (IOException e) {
