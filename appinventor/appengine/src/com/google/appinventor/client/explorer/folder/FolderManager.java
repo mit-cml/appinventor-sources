@@ -81,9 +81,6 @@ public final class FolderManager {
     ProjectFolder folder = uiFactory.createProjectFolder(name, System.currentTimeMillis(),
         System.currentTimeMillis(), parent);
     parent.addChildFolder(folder);
-    while ((parent = parent.getParentFolder()) != null) {
-      parent.clearCache();
-    }
     saveAllFolders();
     fireFolderAdded(folder);
     return folder;
