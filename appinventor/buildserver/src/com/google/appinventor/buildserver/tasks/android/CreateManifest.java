@@ -204,12 +204,18 @@ public class CreateManifest implements AndroidTask {
       }
 
       for (String permission : permissions) {
+        String skipAttribute = null;
         if ("android.permission.WRITE_EXTERNAL_STORAGE".equals(permission)) {
           out.write("  <uses-permission android:name=\"" + permission + "\"");
 
           // we don't need these permissions post KitKat, but we do need them for the companion
           if (!context.isForCompanion() && !context.usesLegacyFileAccess() && minSdk < 29) {
-            out.write(" android:maxSdkVersion=\"29\"");
+            // An extension may also cap this permission with its own maxSdkVersion.
+            // Merge the two caps by taking the more restrictive one so the manifest
+            // never contains a duplicate maxSdkVersion attribute (fixes #3650).
+            out.write(" android:maxSdkVersion=\""
+                + writeExternalStorageMaxSdkVersion(permissionConstraints) + "\"");
+            skipAttribute = "maxSdkVersion";
           }
 
         } else {
@@ -218,7 +224,7 @@ public class CreateManifest implements AndroidTask {
               + permission.replace("%packageName%", packageName)
               + "\"");
         }
-        outputPermissionConstraints(out, permissionConstraints, permission);
+        outputPermissionConstraints(out, permissionConstraints, permission, skipAttribute);
         out.write(" />");
       }
 
@@ -480,8 +486,39 @@ public class CreateManifest implements AndroidTask {
     return TaskResult.generateSuccess();
   }
 
+  /**
+   * Computes the maxSdkVersion to write for WRITE_EXTERNAL_STORAGE. The platform does not
+   * need this permission past API 29, but an extension may cap it at an earlier version.
+   * The merged value is the more restrictive of the two.
+   *
+   * @param permissionConstraints the permission constraints from all components/extensions
+   * @return the maxSdkVersion to write, at most 29
+   */
+  private int writeExternalStorageMaxSdkVersion(
+      Multimap<String, PermissionConstraint<?>> permissionConstraints) {
+    PermissionConstraint.MaxReducer reducer = new PermissionConstraint.MaxReducer();
+    Collection<PermissionConstraint<?>> constraints =
+        permissionConstraints.get("android.permission.WRITE_EXTERNAL_STORAGE");
+    if (constraints != null) {
+      for (PermissionConstraint<?> constraint : constraints) {
+        if ("maxSdkVersion".equals(constraint.getAttribute())) {
+          constraint.as(Integer.class).apply(reducer);
+        }
+      }
+    }
+    int extensionMax = reducer.getResult();
+    return extensionMax < 0 ? 29 : Math.min(29, extensionMax);
+  }
+
   private void outputPermissionConstraints(Writer out,
       Multimap<String, PermissionConstraint<?>> permissionConstraints, String permission)
+      throws IOException {
+    outputPermissionConstraints(out, permissionConstraints, permission, null);
+  }
+
+  private void outputPermissionConstraints(Writer out,
+      Multimap<String, PermissionConstraint<?>> permissionConstraints, String permission,
+      String skipAttribute)
       throws IOException {
     Collection<PermissionConstraint<?>> constraints = permissionConstraints.get(permission);
     if (constraints == null) {
@@ -496,6 +533,9 @@ public class CreateManifest implements AndroidTask {
     for (Map.Entry<String, Collection<PermissionConstraint<?>>> entry :
         aggregates.asMap().entrySet()) {
       String attribute = entry.getKey();
+      if (attribute.equals(skipAttribute)) {
+        continue;
+      }
       // TODO(ewpatton): Figure out a more generic way of doing this.
       String value;
       if ("maxSdkVersion".equals(attribute)) {
