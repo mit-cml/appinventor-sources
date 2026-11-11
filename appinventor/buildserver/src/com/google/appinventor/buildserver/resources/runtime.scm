@@ -1092,9 +1092,6 @@
 ;;; Notice that the REPL looks for this
 (define *the-null-value-printed-rep* "*nothing*")
 
-;;; This is for use in error messages, to make the message more comprehensible
-(define *the-empty-string-printed-rep* "*empty-string*")
-
 ;;; A unique token that represents a non-coercible result. Used by the type coercion code.
 (define *non-coercible-value* '(non-coercible))
 
@@ -1684,10 +1681,7 @@
             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
             ((symbol? arg)
              (symbol->string arg))
-            ((string? arg)
-             (if (string=? arg "")
-                 *the-empty-string-printed-rep*
-                 arg))
+            ((string? arg) (string-append "\"" arg "\""))
             ((number? arg) (appinventor-number->string arg))
             ((boolean? arg) (boolean->string arg))
             ((yail-list? arg) (get-display-representation (yail-list->kawa-list arg)))
