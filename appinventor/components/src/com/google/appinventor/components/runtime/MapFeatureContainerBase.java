@@ -402,8 +402,12 @@ public abstract class MapFeatureContainerBase extends AndroidViewComponent imple
       processGeoJSON(url, jsonContent);
     } catch(Exception e) {
       Log.e(TAG, "Exception retreiving GeoJSON", e);
-      $form().dispatchErrorOccurredEvent(this, "LoadFromURL", ERROR_CODE_UNKNOWN_TYPE,
-          e.toString());
+      $form().runOnUiThread(new Runnable() {
+        public void run() {
+          MapFeatureContainerBase.this.LoadError(url, ERROR_CODE_UNKNOWN_TYPE,
+              ERROR_UNKNOWN_TYPE);
+        }
+      });
     }
   }
 
