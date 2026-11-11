@@ -26,6 +26,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public class PreviewFileCommand extends ChainableCommand {
+  private static DialogBox dialogBox;
+  private static FlowPanel previewPanel;
+  private static ProjectNode currentNode;
+
   /**
    * Creates a new command for previewing a file.
    */
@@ -46,45 +50,57 @@ public class PreviewFileCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    final DialogBox dialogBox = new DialogBox();
-    dialogBox.setText(node.getName());
-    dialogBox.setStylePrimaryName("ode-DialogBox");
+    if (dialogBox == null) {
+      dialogBox = new DialogBox();
+      dialogBox.setStylePrimaryName("ode-DialogBox");
+      dialogBox.setAnimationEnabled(true);
+      dialogBox.setGlassEnabled(false);
+      dialogBox.setModal(false);
 
-    //setting position of dialog box
-    dialogBox.center();
-    dialogBox.setAnimationEnabled(true);
+      // DialogPanel (previewPanel + buttonPanel)
+      FlowPanel dialogPanel = new FlowPanel();
 
-    //button element
-    final Button closeButton = new Button(MESSAGES.closeFilePreview());
-    closeButton.getElement().setId("closeButton");
-    closeButton.addClickHandler(new ClickHandler() {
+      // Preview panel
+      previewPanel = new FlowPanel();
+      previewPanel.setStyleName("ode-VerticalLayout");
+      previewPanel.addStyleName("ode-VerticalLayout-center");
+      previewPanel.getElement().getStyle().setProperty("minWidth", "300px");
+      dialogPanel.add(previewPanel);
+
+      // Button panel
+      FlowPanel buttonPanel = new FlowPanel();
+      buttonPanel.setStyleName("ode-HorizontalLayout");
+      buttonPanel.addStyleName("ode-HorizontalLayout-middle");
+      buttonPanel.addStyleName("ode-DialogButtons");
+      buttonPanel.addStyleName("ode-DialogButtons-centered");
+
+      final Button closeButton = new Button(MESSAGES.closeFilePreview());
+      closeButton.getElement().setId("closeButton");
+      closeButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           dialogBox.hide();
+          dialogBox = null;
+          previewPanel = null;
+          currentNode = null;
         }
       });
+      buttonPanel.add(closeButton);
+      dialogPanel.add(buttonPanel);
+      dialogBox.setWidget(dialogPanel);
+    }
 
-    FlowPanel buttonPanel = new FlowPanel();
-    buttonPanel.setStyleName("ode-HorizontalLayout");
-    buttonPanel.addStyleName("ode-HorizontalLayout-middle");
-    buttonPanel.add(closeButton);
+    if (currentNode == null || currentNode != node) {
+      currentNode = node;
+      Widget filePreview = generateFilePreview(node);
+      if (filePreview instanceof Image) {
+        ((Image) filePreview).addLoadHandler(event -> dialogBox.center());
+      }
+      previewPanel.clear();
+      previewPanel.add(filePreview);
+    }
 
-    FlowPanel dialogPanel = new FlowPanel();
-    dialogPanel.setStyleName("ode-VerticalLayout");
-    dialogPanel.addStyleName("ode-VerticalLayout-center");
-
-    Widget filePreview = generateFilePreview(node);
-    dialogPanel.clear();
-    dialogPanel.add(filePreview);
-
-    dialogPanel.add(buttonPanel);
-    dialogPanel.getElement().getStyle().setProperty("minWidth", "300px");
-
-    dialogBox.setGlassEnabled(false);
-    dialogBox.setModal(false);
-
-    // Set the contents of the Widget
-    dialogBox.setWidget(dialogPanel);
+    dialogBox.setText(node.getName());
     dialogBox.center();
     dialogBox.show();
   }
@@ -105,7 +121,8 @@ public class PreviewFileCommand extends ChainableCommand {
       if (fileType.endsWith("png") || fileType.endsWith("jpeg") || fileType.endsWith("gif")
           || fileType.endsWith("bmp") || fileType.endsWith("svg+xml")) {
         Image img = new Image(fileUrl);
-        img.getElement().getStyle().setProperty("maxWidth","600px");
+        img.getElement().getStyle().setProperty("maxWidth", "600px");
+        img.getElement().getStyle().setProperty("maxHeight", "70vh");
         return img;
       }
     } else if (StorageUtil.isAudioFile(fileSuffix)) { // Audio Preview
