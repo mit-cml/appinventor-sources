@@ -382,7 +382,11 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let app = self.downloadedApps[indexPath.row]
+    let apps = self.isSearching ? self.filteredApps : self.downloadedApps
+    guard apps.indices.contains(indexPath.row) else {
+      return
+    }
+    let app = apps[indexPath.row]
     SystemVariables.lastOpenedTable[app.title] = Date()
     let newapp = BundledApp(aiaPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
       .appendingPathComponent("samples/\(app.title).aia", isDirectory: false))
