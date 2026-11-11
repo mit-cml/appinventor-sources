@@ -131,8 +131,10 @@ public final class GeoJSONUtil {
       @Override
       public void apply(MapFeature feature, Object value) {
         if (feature instanceof HasFill) {
-          ((HasFill) feature).FillColor(value instanceof Number ? ((Number) value).intValue() :
-              parseColor(value.toString()));
+          Integer color = parseColorOrNull(value);
+          if (color != null) {
+            ((HasFill) feature).FillColor(color);
+          }
         }
       }
     });
@@ -170,8 +172,10 @@ public final class GeoJSONUtil {
       @Override
       public void apply(MapFeature feature, Object value) {
         if (feature instanceof HasStroke) {
-          ((HasStroke) feature).StrokeColor(value instanceof Number ? ((Number) value).intValue() :
-              parseColor(value.toString()));
+          Integer color = parseColorOrNull(value);
+          if (color != null) {
+            ((HasStroke) feature).StrokeColor(color);
+          }
         }
       }
     });
@@ -227,6 +231,26 @@ public final class GeoJSONUtil {
       return parseColorHex(lcValue.substring(2));
     } else {
       return COLOR_RED;
+    }
+  }
+
+  /**
+   * Parses a color from a GeoJSON property value. Numbers are used as-is; strings are
+   * parsed as color names or hex values. Returns {@code null} when the value is not a
+   * valid color, so callers can leave the feature's color unchanged instead of
+   * crashing the whole load (a malformed {@code fill} or {@code stroke} in a GeoJSON
+   * file used to throw IllegalArgumentException out of the property handler).
+   */
+  @VisibleForTesting
+  static Integer parseColorOrNull(final Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).intValue();
+    }
+    try {
+      return parseColor(value.toString());
+    } catch (IllegalArgumentException e) {
+      Log.w("GeoJSONUtil", "Ignoring invalid color \"" + value + "\"", e);
+      return null;
     }
   }
 

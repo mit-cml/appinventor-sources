@@ -37,6 +37,7 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.google.appinventor.components.runtime.Component.COLOR_BLACK;
 import static com.google.appinventor.components.runtime.Component.COLOR_BLUE;
 import static com.google.appinventor.components.runtime.Component.COLOR_GREEN;
 import static com.google.appinventor.components.runtime.Component.COLOR_RED;
@@ -92,6 +93,16 @@ public class GeoJSONUtilTest extends MapTestBase {
   public void testParseColorThrows() {
     GeoJSONUtil.parseColorHex("");
     fail();
+  }
+
+  @Test
+  public void testParseColorOrNull() {
+    assertEquals(Integer.valueOf(COLOR_BLUE), GeoJSONUtil.parseColorOrNull("#0000FF"));
+    assertEquals(Integer.valueOf(COLOR_BLUE), GeoJSONUtil.parseColorOrNull("blue"));
+    assertEquals(Integer.valueOf(0xFF123456), GeoJSONUtil.parseColorOrNull(0xFF123456));
+    assertEquals(Integer.valueOf(COLOR_RED), GeoJSONUtil.parseColorOrNull(""));
+    assertNull(GeoJSONUtil.parseColorOrNull("#7e7e7e7"));
+    assertNull(GeoJSONUtil.parseColorOrNull("#zzzzzz"));
   }
 
   @Test
@@ -233,6 +244,38 @@ public class GeoJSONUtilTest extends MapTestBase {
     assertEquals(new GeoPoint(42.0, -71.0), polygon.getPoints().get(0).get(3));
     assertTestProperties(polygon);
     assertLogTriggered();
+  }
+
+  /**
+   * A malformed {@code fill} color must not crash the load: the feature is created,
+   * the fill stays at its default, and the other properties are still applied.
+   */
+  @Test
+  public void testProcessGeoJSONFeaturePolygonBadFill() {
+    Polygon polygon = (Polygon) GeoJSONUtil.processGeoJSONFeature(LOG_TAG, getMap(),
+        alist("type", "Feature",
+            "geometry", alist("type", "Polygon", "coordinates", list(list(list(-71, 42), list(-70, 42), list(-70, 41), list(-71, 42)))),
+            "properties", alist("fill", "#7e7e7e7", "stroke", "green", "title", TEST_TITLE)));
+    assertNotNull(polygon);
+    assertEquals(COLOR_RED, polygon.FillColor() | 0xFF000000);
+    assertEquals(COLOR_GREEN, polygon.StrokeColor() | 0xFF000000);
+    assertEquals(TEST_TITLE, polygon.Title());
+  }
+
+  /**
+   * A malformed {@code stroke} color must not crash the load: the feature is created,
+   * the stroke stays at its default, and the other properties are still applied.
+   */
+  @Test
+  public void testProcessGeoJSONFeaturePolygonBadStroke() {
+    Polygon polygon = (Polygon) GeoJSONUtil.processGeoJSONFeature(LOG_TAG, getMap(),
+        alist("type", "Feature",
+            "geometry", alist("type", "Polygon", "coordinates", list(list(list(-71, 42), list(-70, 42), list(-70, 41), list(-71, 42)))),
+            "properties", alist("fill", "blue", "stroke", "#zzzzzz", "title", TEST_TITLE)));
+    assertNotNull(polygon);
+    assertEquals(COLOR_BLUE, polygon.FillColor() | 0xFF000000);
+    assertEquals(COLOR_BLACK, polygon.StrokeColor() | 0xFF000000);
+    assertEquals(TEST_TITLE, polygon.Title());
   }
 
   @Test
