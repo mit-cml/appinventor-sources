@@ -527,15 +527,14 @@ AI.Blockly.ContextMenuItems.registerArrangeOptions = function() {
         // compare type names
         res = compareStrTextNum(a.typeName, b.typeName);
       }
-      //the comparator is the type name, instance name, then event name
+      if (res === 0 && a.instanceName && b.instanceName) {
+        res = compareStrTextNum(a.instanceName, b.instanceName);
+      }
       if (res === 0) {
-        if (a.instanceName && b.instanceName) {
-          res = compareStrTextNum(a.instanceName, b.instanceName);
-        }
-        // Compare property names
-        let prop_method_A = a.propertyName || a.methodName;
-        let prop_method_B = b.propertyName || b.methodName;
-        res = prop_method_A.toLowerCase().localeCompare(prop_method_B.toLowerCase(), undefined, {numeric:true});
+        const memberNameA = a.propertyName || a.methodName || '';
+        const memberNameB = b.propertyName || b.methodName || '';
+        res = memberNameA.toLowerCase().localeCompare(memberNameB.toLowerCase(), undefined,
+            {numeric: true});
       }
       return res;
     }
