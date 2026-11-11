@@ -26,7 +26,23 @@ public final class CsvUtil {
   private CsvUtil() {
   }
 
+  // ! old code 
+  // public static YailList fromCsvTable(String csvString) throws Exception {
+  //   CsvParser csvParser = new CsvParser(new StringReader(csvString));
+  //   ArrayList<YailList> csvList = new ArrayList<YailList>();
+  //   while (csvParser.hasNext()) {
+  //     csvList.add(YailList.makeList(csvParser.next()));
+  //   }
+  //   csvParser.throwAnyProblem();
+  //   return YailList.makeList(csvList);
+  // }
+  
   public static YailList fromCsvTable(String csvString) throws Exception {
+    // FIX: strip UTF-8 BOM if present
+    if (csvString != null && csvString.startsWith("\uFEFF")) {
+        csvString = csvString.substring(1);
+    }
+
     CsvParser csvParser = new CsvParser(new StringReader(csvString));
     ArrayList<YailList> csvList = new ArrayList<YailList>();
     while (csvParser.hasNext()) {
@@ -35,6 +51,7 @@ public final class CsvUtil {
     csvParser.throwAnyProblem();
     return YailList.makeList(csvList);
   }
+
 
   public static YailList fromCsvRow(String csvString) throws Exception {
     CsvParser csvParser = new CsvParser(new StringReader(csvString));
