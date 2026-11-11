@@ -414,6 +414,35 @@ public class MapTest extends MapTestBase {
     }
   }
 
+  @Test
+  public void testLoadFromUrlWithInvalidJson() throws IOException {
+    String url = writeTempFile("not json");
+    map.LoadFromURL(url);
+    ShadowAsynchUtil.runAllPendingRunnables();
+    runAllEvents();
+    // -4 is ERROR_CODE_UNKNOWN_TYPE in MapFeatureContainerBase
+    assertEventFired(map, "LoadError", url, -4, "Unrecognized/invalid type in JSON object");
+  }
+
+  @Test
+  public void testLoadFromUrlWithoutFeaturesReportsError() throws IOException {
+    ShadowEventDispatcher.doNotHandleEvent(map, "LoadError");
+    String url = writeTempFile("{\"type\": \"FeatureCollection\"}");
+    map.LoadFromURL(url);
+    ShadowAsynchUtil.runAllPendingRunnables();
+    runAllEvents();
+    assertErrorOccurred(ErrorMessages.ERROR_CANNOT_READ_FILE);
+  }
+
+  private static String writeTempFile(String content) throws IOException {
+    File file = File.createTempFile("test", ".geojson");
+    file.deleteOnExit();
+    java.io.FileWriter writer = new java.io.FileWriter(file);
+    writer.write(content);
+    writer.close();
+    return file.toURI().toURL().toString();
+  }
+
   private MapView getMapView() {
     RelativeLayout layout = (RelativeLayout) map.getView();
     return (MapView) layout.getChildAt(0);
