@@ -115,7 +115,7 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of the available apps and allowing the " +
       "user to choose one from the list. The selected app will open with the file inserted on it.")
   public void ShareFile(String file) {
-    ShareFileWithMessage(file, "");
+    shareFileWithMessage(file, "", "ShareFile");
   }
 
   /**
@@ -126,6 +126,10 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of available apps and allowing the user to " +
       " choose one from the list. The selected app will open with the file and message inserted on it.")
   public void ShareFileWithMessage(String file, String message) {
+    shareFileWithMessage(file, message, "ShareFileWithMessage");
+  }
+
+  private void shareFileWithMessage(String file, String message, String eventName) {
     if (!file.startsWith("file://")) {
       if (!file.startsWith("/")) {
         // Files specified using a relative path should be resolved based on the form's default
@@ -160,9 +164,6 @@ public class Sharing extends AndroidNonvisibleComponent {
       this.form.startActivity(shareIntent);
     }
     else {
-      String eventName = "ShareFile";
-      if (message.equals(""))
-        eventName = "ShareFileWithMessage";
       form.dispatchErrorOccurredEvent(Sharing.this, eventName,
           ErrorMessages.ERROR_FILE_NOT_FOUND_FOR_SHARING, file);
     }
