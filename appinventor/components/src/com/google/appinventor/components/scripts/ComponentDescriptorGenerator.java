@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2019 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -299,6 +299,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       json.put("alwaysSend", true);
       json.put("defaultValue", defaultValue);
     }
+    if (prop.getDefaultValue() != null) {
+      json.put("defaultValue", prop.getDefaultValue());
+    }
+    if (prop.getDefaultValueType() != null && !prop.getDefaultValueType().isEmpty()) {
+      json.put("defaultValueType", prop.getDefaultValueType());
+    }
     return json;
   }
 
@@ -337,6 +343,12 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
       param.put("name", p.name);
       param.put("type", p.getYailType());
       outputHelper(p.getHelperKey(), param);
+      if (p.defaultValue != null) {
+        param.put("defaultValue", p.defaultValue);
+      }
+      if (p.defaultValueType != null && !p.defaultValueType.isEmpty()) {
+        param.put("defaultValueType", p.defaultValueType);
+      }
       json.put(param);
     }
     return json;
