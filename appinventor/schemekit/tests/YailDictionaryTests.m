@@ -68,6 +68,53 @@
 
 }
 
+// Element 0 of a YailList is its *list* header, so index 0 in a key path must not reach it.
+- (YailDictionary *)dictionaryWithFooList {
+  YailList *list = [YailList listInInterpreter:interpreter ofValues:@"a", @"b", nil];
+  return [YailDictionary dictionaryInInterpreter:interpreter
+                                     withObjects:@[list]
+                                         forKeys:@[@"foo"]];
+}
+
+- (void)testGetObjectAtKeyPathYailListIndexBounds {
+  YailDictionary *dict = [self dictionaryWithFooList];
+  NSError *error = nil;
+  XCTAssertEqualObjects(@"a", [dict getObjectAtKeyPath:@[@"foo", @1] error:&error]);
+  XCTAssertNil(error);
+  XCTAssertEqualObjects(@"b", [dict getObjectAtKeyPath:@[@"foo", @2] error:&error]);
+  XCTAssertNil(error);
+  for (NSNumber *bad in @[@0, @-1, @3]) {
+    error = nil;
+    XCTAssertNil([dict getObjectAtKeyPath:@[@"foo", bad] error:&error]);
+    XCTAssertNotNil(error);
+    XCTAssertEqual(SCMErrorIndexOutOfBounds, error.code);
+  }
+  error = nil;
+  XCTAssertNil([dict getObjectAtKeyPath:@[@"foo", @"0"] error:&error]);
+  XCTAssertNotNil(error);
+}
+
+- (void)testWalkKeyPathYailListIndexZero {
+  YailDictionary *dict = [self dictionaryWithFooList];
+  XCTAssertEqualObjects(@[@"a"], [dict walkKeyPath:@[@"foo", @1] error:nil]);
+  XCTAssertEqualObjects(@[], [dict walkKeyPath:@[@"foo", @0] error:nil]);
+  XCTAssertEqualObjects(@[], [dict walkKeyPath:@[@"foo", @"0"] error:nil]);
+  XCTAssertEqualObjects(@[], [dict walkKeyPath:@[@"foo", @3] error:nil]);
+}
+
+- (void)testSetObjectForKeyPathYailListIndexZero {
+  YailDictionary *dict = [self dictionaryWithFooList];
+  NSError *error = nil;
+  XCTAssertFalse([dict setObject:@"X" forKeyPath:@[@"foo", @0] error:&error]);
+  XCTAssertNotNil(error);
+  XCTAssertEqual(SCMErrorIndexOutOfBounds, error.code);
+  // The list is unchanged: same items, and the header is still in place.
+  YailList *list = dict[@"foo"];
+  XCTAssertEqual(3, list.count);
+  XCTAssertEqualObjects(@"a", list[1]);
+  XCTAssertEqualObjects(@"b", list[2]);
+}
+
 - (void)testContainsObject {
 
 }

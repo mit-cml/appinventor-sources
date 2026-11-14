@@ -53,6 +53,51 @@ static NSString *kSizeKey = @"size";
 static AllConstant *_ALL = nil;
 
 /**
+ * Checks that @c index names an item of @c target.
+ *
+ * Element 0 of a YailList is its *list* header, not an item, so a YailList's items are at 1 to
+ * count - 1 and index 0 must be rejected. Any other NSArray is indexed as before.
+ *
+ * @param target the array being indexed
+ * @param index the index from the key path
+ * @param arrayIndex receives the index into @c target if @c index is in range
+ * @return @c YES if @c index names an item of @c target, otherwise @c NO
+ */
+static BOOL arrayIndexForListIndex(NSArray *target, NSInteger index, NSUInteger *arrayIndex) {
+  NSInteger first = [target isKindOfClass:[YailList class]] ? 1 : 0;
+  if (index < first || (NSUInteger) index >= target.count) {
+    return NO;
+  }
+  *arrayIndex = (NSUInteger) index;
+  return YES;
+}
+
+/**
+ * Reads a list index from a key path step. Because App Inventor allows for duck typing of strings
+ * as numeric values, @c key may be a string, a number, or a Scheme number.
+ *
+ * @param key the key path step
+ * @param index receives the index if @c key is one
+ * @return @c YES if @c key is a list index, otherwise @c NO
+ */
+static BOOL listIndexFromKey(id key, NSInteger *index) {
+  if ([key isKindOfClass:[NSString class]]) {
+    *index = [(NSString *)key integerValue];
+    return YES;
+  } else if ([key isKindOfClass:[NSNumber class]]) {
+    *index = [(NSNumber *)key integerValue];
+    return YES;
+  } else if ([key isKindOfClass:[SCMValue class]]) {
+    SCMValue *temp = (SCMValue *)key;
+    if ([temp isNumber] && pic_int_p(nil, temp.value)) {
+      *index = pic_int(nil, temp.value);
+      return YES;
+    }
+  }
+  return NO;
+}
+
+/**
  * Gets the item from the @c target list indicated by @c currentKey.
  *
  * Because App Inventor allows for duck typing of strings as numeric values, we have to consider
@@ -72,24 +117,15 @@ static AllConstant *_ALL = nil;
  *     if @c error is provided, it will contain more information about the error.
  */
 static id getFromList(NSArray *target, id currentKey, NSUInteger step, NSError **error) {
-  NSUInteger index = NSUIntegerMax;
-  if ([currentKey isKindOfClass:[NSString class]]) {
-    index = (NSUInteger) [(NSString *)currentKey integerValue];
-  } else if ([currentKey isKindOfClass:[NSNumber class]]) {
-    index = [(NSNumber *)currentKey unsignedIntegerValue];
-  } else if ([currentKey isKindOfClass:[SCMValue class]]) {
-    SCMValue *temp = (SCMValue *)currentKey;
-    if ([temp isNumber] && pic_int_p(nil, temp.value)) {
-      index = pic_int(nil, temp.value);
-    }
-  }
-  if (index != NSUIntegerMax) {
-    if (index <= target.count) {
-      return target[index];
+  NSInteger index = 0;
+  if (listIndexFromKey(currentKey, &index)) {
+    NSUInteger arrayIndex;
+    if (arrayIndexForListIndex(target, index, &arrayIndex)) {
+      return target[arrayIndex];
     } else if (error) {
       *error = [NSError errorWithDomain:SCMErrorDomain
                                    code:SCMErrorIndexOutOfBounds
-                               userInfo:@{kSCMBadIndex: [NSNumber numberWithUnsignedInteger:index],
+                               userInfo:@{kSCMBadIndex: [NSNumber numberWithInteger:index],
                                           kSCMBadValue: target}];
       return nil;
     }
@@ -129,7 +165,12 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
         }
       } else if ([currentKey isKindOfClass:[NSString class]]) {
         if ([node isKindOfClass:[NSArray class]]) {
-          [nodesToVisit addObject:[(NSArray *)node objectAtIndex:[(NSString *) currentKey integerValue]]];
+          // An index that names no item, such as 0 (the *list* header of a YailList), matches
+          // nothing.
+          NSUInteger arrayIndex;
+          if (arrayIndexForListIndex(node, [(NSString *) currentKey integerValue], &arrayIndex)) {
+            [nodesToVisit addObject:[(NSArray *)node objectAtIndex:arrayIndex]];
+          }
         } else if ([node isKindOfClass:[NSDictionary class]]) {
           [nodesToVisit addObject:[(NSDictionary *)node objectForKey:currentKey]];
         } else {
@@ -137,7 +178,10 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
         }
       } else if ([currentKey isKindOfClass:[NSNumber class]]) {
         if ([node isKindOfClass:[NSArray class]]) {
-          [nodesToVisit addObject:[(NSArray *)node objectAtIndex:[(NSNumber *) currentKey unsignedIntegerValue]]];
+          NSUInteger arrayIndex;
+          if (arrayIndexForListIndex(node, [(NSNumber *) currentKey integerValue], &arrayIndex)) {
+            [nodesToVisit addObject:[(NSArray *)node objectAtIndex:arrayIndex]];
+          }
         } else if ([currentKey isKindOfClass:[NSDictionary class]]) {
           [nodesToVisit addObject:[(NSDictionary *)node objectForKey:currentKey]];
         } else {
@@ -352,11 +396,20 @@ NSMutableArray<id> *walkKeyPath(id root, NSArray<id> *keysOrIndices, NSMutableAr
     if ([last isKindOfClass:[NSDictionary class]]) {
       next = last[lastKey];
     } else if ([last isKindOfClass:[NSArray class]]) {
-      if ([key isKindOfClass:[NSNumber class]]) {
-        next = [(NSArray *)last objectAtIndex:[(NSNumber *)key unsignedIntegerValue]];
-      } else if ([key isKindOfClass:[NSString class]]) {
-        next = [(NSArray *)last objectAtIndex:[(NSString *)key integerValue]];
+      // Reject an index that names no item, such as 0, which would otherwise reach the *list*
+      // header of a YailList.
+      NSInteger index = 0;
+      NSUInteger arrayIndex;
+      if (!listIndexFromKey(key, &index) || !arrayIndexForListIndex(last, index, &arrayIndex)) {
+        if (error) {
+          *error = [NSError errorWithDomain:SCMErrorDomain
+                                       code:SCMErrorIndexOutOfBounds
+                                   userInfo:@{kSCMBadIndex: [NSNumber numberWithInteger:index],
+                                              kSCMBadValue: last}];
+        }
+        return NO;
       }
+      next = [(NSArray *)last objectAtIndex:arrayIndex];
     } else {
       return NO;
     }

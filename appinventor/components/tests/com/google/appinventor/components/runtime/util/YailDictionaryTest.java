@@ -15,12 +15,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.errors.DispatchableError;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import gnu.lists.FString;
 import gnu.lists.LList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -357,6 +359,88 @@ public class YailDictionaryTest {
   public void testSetValueForKeyPathFails() {
     YailDictionary dict = getTestDict();
     dict.setValueForKeyPath(asList("foo", "number", "invalid"), "fail");
+  }
+
+  // Index 0 is not a valid 1-based index into a YailList. YailList.get(0) is the *list* header,
+  // so it must not be returned to the app or overwritten.
+
+  @Test(expected = YailRuntimeError.class)
+  public void testRecursiveGetYailListIndexZero() throws JSONException {
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    dict.getObjectAtKeyPath(asList((Object) "foo", 1, "bar", 0));
+  }
+
+  @Test(expected = YailRuntimeError.class)
+  public void testRecursiveGetYailListNegativeIndex() throws JSONException {
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    dict.getObjectAtKeyPath(asList((Object) "foo", 1, "bar", -1));
+  }
+
+  @Test
+  public void testWalkKeyPathNestedYailListIndexZero() throws JSONException {
+    // Walking suppresses errors below the first list, so a bad nested index matches nothing,
+    // the same as a nested index that is too large.
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    assertEquals(Collections.emptyList(),
+        YailDictionary.walkKeyPath(dict, asList((Object) "foo", 1, "bar", 3)));
+    assertEquals(Collections.emptyList(),
+        YailDictionary.walkKeyPath(dict, asList((Object) "foo", 1, "bar", 0)));
+  }
+
+  @Test(expected = DispatchableError.class)
+  public void testWalkKeyPathYailListIndexZero() throws JSONException {
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    YailDictionary.walkKeyPath(dict, asList((Object) "foo", 0));
+  }
+
+  @Test
+  public void testSetValueForKeyPathYailListIndexZero() throws JSONException {
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    try {
+      dict.setValueForKeyPath(asList((Object) "foo", 1, "bar", 0), "fail");
+      fail("Expected a DispatchableError for index 0");
+    } catch (DispatchableError e) {
+      // expected
+    }
+    // The list is unchanged: still two items, and still a YailList.
+    Object bar = dict.getObjectAtKeyPath(asList((Object) "foo", 1, "bar"));
+    assertTrue(bar instanceof YailList);
+    assertEquals(2, ((YailList) bar).size());
+    assertEquals("0", String.valueOf(dict.getObjectAtKeyPath(asList((Object) "foo", 1, "bar", 1))));
+  }
+
+  @Test(expected = DispatchableError.class)
+  public void testSetValueForKeyPathIntermediateYailListIndexZero() throws JSONException {
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    dict.setValueForKeyPath(asList((Object) "foo", 0, "bar"), "fail");
+  }
+
+  @Test
+  public void testJavaListKeyPathBounds() {
+    YailDictionary dict = new YailDictionary();
+    dict.put("foo", new ArrayList<Object>(asList("a", "b")));
+    dict.setValueForKeyPath(asList((Object) "foo", 1), "first");
+    dict.setValueForKeyPath(asList((Object) "foo", 2), "second");
+    assertEquals(asList("first", "second"), dict.get("foo"));
+    assertEquals(asList("second"), YailDictionary.walkKeyPath(dict, asList((Object) "foo", 2)));
+    for (int bad : new int[] {0, 3}) {
+      try {
+        dict.setValueForKeyPath(asList((Object) "foo", bad), "fail");
+        fail("Expected a DispatchableError for index " + bad);
+      } catch (DispatchableError e) {
+        // expected
+      }
+    }
+    assertEquals(asList("first", "second"), dict.get("foo"));
+  }
+
+  @Test
+  public void testYailListLastIndexStillWorks() throws JSONException {
+    YailDictionary dict = (YailDictionary) JsonUtil.getObjectFromJson(TEST_JSON, true);
+    dict.setValueForKeyPath(asList((Object) "foo", 1, "bar", 2), "last");
+    assertEquals("last", dict.getObjectAtKeyPath(asList((Object) "foo", 1, "bar", 2)));
+    assertEquals(asList("last"),
+        YailDictionary.walkKeyPath(dict, asList((Object) "foo", 1, "bar", 2)));
   }
 
   @Test
