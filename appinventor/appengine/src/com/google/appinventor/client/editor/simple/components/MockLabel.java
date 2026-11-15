@@ -13,6 +13,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineHTML;
 
@@ -53,6 +54,7 @@ public final class MockLabel extends MockVisibleComponent implements DesignerCha
   protected void onAttach() {
     super.onAttach();
     ((YaFormEditor) editor).getForm().addDesignerChangeListener(this);
+    scheduleHeightRefresh();
   }
 
   @Override
@@ -136,6 +138,29 @@ public final class MockLabel extends MockVisibleComponent implements DesignerCha
           .replaceAll(">", "&gt;").replaceAll("\\\\n", "<br>")
       );
     }
+  }
+
+  @Override
+  public int getPreferredHeight() {
+    return MockComponentsUtil.getPreferredHeightAtCurrentWidth(this);
+  }
+
+  @Override
+  public void setPixelSize(int width, int height) {
+    int oldWidth = getOffsetWidth();
+    super.setPixelSize(width, height);
+    if (oldWidth != getOffsetWidth()) {
+      scheduleHeightRefresh();
+    }
+  }
+
+  private void scheduleHeightRefresh() {
+    new Timer() {
+      @Override
+      public void run() {
+        refreshForm(true);
+      }
+    }.schedule(0);
   }
 
   /*
