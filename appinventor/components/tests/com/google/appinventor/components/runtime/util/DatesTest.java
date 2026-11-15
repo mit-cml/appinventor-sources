@@ -19,6 +19,8 @@ import java.util.Locale;
 public class DatesTest extends TestCase {
 
   private Locale defaultLocale;
+  private Locale defaultDisplayLocale;
+  private Locale defaultFormatLocale;
 
   public DatesTest(String testName) {
     super(testName);
@@ -28,12 +30,16 @@ public class DatesTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
     defaultLocale = Locale.getDefault();
+    defaultDisplayLocale = Locale.getDefault(Locale.Category.DISPLAY);
+    defaultFormatLocale = Locale.getDefault(Locale.Category.FORMAT);
     Locale.setDefault(Locale.US);
   }
 
   @Override
   protected void tearDown() throws Exception {
     Locale.setDefault(defaultLocale);
+    Locale.setDefault(Locale.Category.DISPLAY, defaultDisplayLocale);
+    Locale.setDefault(Locale.Category.FORMAT, defaultFormatLocale);
     super.tearDown();
   }
 
