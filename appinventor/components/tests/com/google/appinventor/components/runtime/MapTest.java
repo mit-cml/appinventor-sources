@@ -15,6 +15,8 @@ import com.google.appinventor.components.runtime.shadows.ShadowEventDispatcher;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GeometryUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -437,9 +439,7 @@ public class MapTest extends MapTestBase {
   private static String writeTempFile(String content) throws IOException {
     File file = File.createTempFile("test", ".geojson");
     file.deleteOnExit();
-    java.io.FileWriter writer = new java.io.FileWriter(file);
-    writer.write(content);
-    writer.close();
+    Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
     return file.toURI().toURL().toString();
   }
 
