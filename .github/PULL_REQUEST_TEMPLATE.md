@@ -3,6 +3,18 @@ Thanks for contributing a pull request to MIT App Inventor. Please answer the fo
 If an item does not apply to this PR, leave the check box unselected.
 -->
 
+**AI Disclosure**
+
+Make sure you review the project's [AI Policy](../AI_POLICY.md) before opening a PR.
+
+*Usage of AI for this contribution*
+- [ ] I have used no AI at all
+- [ ] I have used AI in the following ways (please provide a description)
+
+<!--
+Please describe your use of AI for the changes in this PR if it applies.
+--->
+
 **What does this PR accomplish?**
 <!--
 Please describe below why the PR is needed, what it adds/fixes, etc.
