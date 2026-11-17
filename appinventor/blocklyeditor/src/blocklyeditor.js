@@ -1031,21 +1031,19 @@ Blockly.BlocklyEditor['create'] = function(container, formName, useDarkTheme, re
   const registry = Blockly.ShortcutRegistry.registry;
   const keyCodes = Blockly.utils.KeyCodes;
   const shortcutKeyRemappings = [
-    {from: keyCodes.T, to: registry.createSerializedKey(keyCodes.T, [keyCodes.ALT])},
-    {from: keyCodes.C, to: registry.createSerializedKey(keyCodes.C, [keyCodes.ALT])},
-    {from: keyCodes.X, to: registry.createSerializedKey(keyCodes.X, [keyCodes.ALT])},
-    {from: keyCodes.M, to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT])},
-    {from: registry.createSerializedKey(keyCodes.M, [keyCodes.SHIFT]), to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT, keyCodes.SHIFT])},
-    {from: registry.createSerializedKey(keyCodes.D, [keyCodes.SHIFT]), to: registry.createSerializedKey(keyCodes.D, [keyCodes.ALT, keyCodes.SHIFT])},
-    {from: keyCodes.N, to: registry.createSerializedKey(keyCodes.N, [keyCodes.ALT])},
-    {from: keyCodes.B, to: registry.createSerializedKey(keyCodes.B, [keyCodes.ALT])},
-    {from: keyCodes.W, to: registry.createSerializedKey(keyCodes.W, [keyCodes.ALT])},
+    {name: 'focus_toolbox', to: registry.createSerializedKey(keyCodes.T, [keyCodes.ALT])},
+    {name: 'cleanup', to: registry.createSerializedKey(keyCodes.C, [keyCodes.ALT])},
+    {name: 'disconnect', to: registry.createSerializedKey(keyCodes.X, [keyCodes.ALT])},
+    {name: 'start_move', to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT])},
+    {name: 'start_move_stack', to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT, keyCodes.SHIFT])},
+    {name: 'duplicate', to: registry.createSerializedKey(keyCodes.D, [keyCodes.ALT, keyCodes.SHIFT])},
+    {name: 'next_stack', to: registry.createSerializedKey(keyCodes.N, [keyCodes.ALT])},
+    {name: 'previous_stack', to: registry.createSerializedKey(keyCodes.B, [keyCodes.ALT])},
+    {name: 'focus_workspace', to: registry.createSerializedKey(keyCodes.W, [keyCodes.ALT])},
   ];
   shortcutKeyRemappings.forEach(shortcutKeyRemapping => {
-    registry.getShortcutNamesByKeyCode(shortcutKeyRemapping.from).forEach(shortcutName => {
-      registry.removeAllKeyMappings(shortcutName);
-      registry.addKeyMapping(shortcutKeyRemapping.to, shortcutName, true);
-    });
+    registry.removeAllKeyMappings(shortcutKeyRemapping.name);
+    registry.addKeyMapping(shortcutKeyRemapping.to, shortcutKeyRemapping.name, true);
   });
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
