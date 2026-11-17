@@ -5,6 +5,8 @@
 
 package com.google.appinventor.buildserver.util;
 
+import com.android.io.StreamException;
+import com.android.xml.AndroidManifest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,17 +17,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.commons.io.IOUtils;
 
-import com.android.io.StreamException;
-import com.android.xml.AndroidManifest;
-
 /**
- * AARLibrary encapsulates important information about Android Archive (AAR) files so that they
- * can be used as part of the App Inventor build process.
+ * AARLibrary encapsulates important information about Android Archive (AAR) files so that they can
+ * be used as part of the App Inventor build process.
  *
  * @author ewpatton@mit.edu (Evan W. Patton)
  */
@@ -38,65 +35,41 @@ public class AARLibrary {
   private static final String LIBS_DIR = "libs/";
   private static final String JNI_DIR = "jni/";
 
-  /**
-   * Path to the AAR file modeled by the AARLibrary.
-   */
+  /** Path to the AAR file modeled by the AARLibrary. */
   private final File aarPath;
 
-  /**
-   * Name of the simple name for the library based on its file name.
-   */
+  /** Name of the simple name for the library based on its file name. */
   private final String name;
 
-  /**
-   * The package name for the library based on its AndroidManifest.
-   */
+  /** The package name for the library based on its AndroidManifest. */
   private String packageName;
 
-  /**
-   * Base directory where the archive is unpacked.
-   */
+  /** Base directory where the archive is unpacked. */
   private File basedir;
 
-  /**
-   * Resource directory location after unpacking.
-   */
+  /** Resource directory location after unpacking. */
   private File resdir = null;
 
   // derived from https://sites.google.com/a/android.com/tools/tech-docs/new-build-system/aar-format
-  /**
-   * Manifest file location after unpacking.
-   */
+  /** Manifest file location after unpacking. */
   private File manifest;
 
-  /**
-   * Classes.dex file location after unpacking.
-   */
+  /** Classes.dex file location after unpacking. */
   private File classes;
 
-  /**
-   * R.txt file location after unpacking.
-   */
+  /** R.txt file location after unpacking. */
   private File rtxt;
 
-  /**
-   * Set of all descendants of the resources hierarchy.
-   */
+  /** Set of all descendants of the resources hierarchy. */
   private Set<File> resources = new HashSet<>();
 
-  /**
-   * Set of all assets found under the assets/ directory.
-   */
+  /** Set of all assets found under the assets/ directory. */
   private Set<File> assets = new HashSet<>();
 
-  /**
-   * Set of all JAR files found under the libs/ directory.
-   */
+  /** Set of all JAR files found under the libs/ directory. */
   private Set<File> libs = new HashSet<>();
 
-  /**
-   * Set of all dynamically linked libraries found under the jni/ directory.
-   */
+  /** Set of all dynamically linked libraries found under the jni/ directory. */
   private Set<File> jni = new HashSet<>();
 
   /**
@@ -123,7 +96,7 @@ public class AARLibrary {
   public AARLibrary(final File aar) {
     aarPath = aar;
     String temp = aar.getName();
-    name = temp.substring(0, temp.length()-4);
+    name = temp.substring(0, temp.length() - 4);
   }
 
   public File getFile() {
@@ -175,8 +148,8 @@ public class AARLibrary {
   }
 
   /**
-   * Extracts the package name from the Android Archive without needing to unzip it to a location
-   * in the file system
+   * Extracts the package name from the Android Archive without needing to unzip it to a location in
+   * the file system
    *
    * @param zip the input stream reading from the Android Archive.
    * @return the package name declared in the archive's AndroidManifest.xml.
@@ -191,7 +164,7 @@ public class AARLibrary {
       ZipEntryWrapper wrapper = new ZipEntryWrapper(zip.getInputStream(entry));
       // the following call will automatically close the input stream opened above
       return AndroidManifest.getPackage(wrapper);
-    } catch(StreamException|XPathExpressionException e) {
+    } catch (StreamException | XPathExpressionException e) {
       throw new IOException("Exception processing AndroidManifest.xml", e);
     }
   }
@@ -221,51 +194,72 @@ public class AARLibrary {
 
   /**
    * Unpacks the Android Archive to a directory in the file system. The unpacking operation will
-   * create a new directory named with the archive's package name to prevent collisions with
-   * other Android Archives.
+   * create a new directory named with the archive's package name to prevent collisions with other
+   * Android Archives.
+   *
    * @param path the path to where the archive will be unpacked.
    * @throws IOException if any error occurs attempting to read the archive or write new files to
-   *                     the file system.
+   *     the file system.
    */
   public void unpackToDirectory(final File path) throws IOException {
     ZipFile zip = null;
     try {
       zip = new ZipFile(aarPath);
       packageName = extractPackageName(zip);
+
+      // 1. Validate that packageName itself cannot traverse outside 'path'
+      final String canonicalRootPath = path.getCanonicalPath() + File.separator;
       basedir = new File(path, packageName);
+      if (!basedir.getCanonicalPath().startsWith(canonicalRootPath)) {
+        throw new IOException("Invalid package name in AAR manifest: " + packageName);
+      }
+
       if (!basedir.exists() && !basedir.mkdirs()) {
         throw new IOException("Unable to create directory for AAR package: " + basedir);
       }
-      InputStream input = null;
-      OutputStream output = null;
+
+      final String canonicalBaseDirPath = basedir.getCanonicalPath() + File.separator;
       Enumeration<? extends ZipEntry> i = zip.entries();
+
       while (i.hasMoreElements()) {
         ZipEntry entry = i.nextElement();
         if (entry.getName().startsWith(ASSET_DIR) || entry.getName().startsWith(JNI_DIR)) {
           // These are not needed here as we're already merging jni & assets (AttachAarLibs.java:104:122).
           continue;
         }
+
         File target = new File(basedir, entry.getName());
-        if (entry.isDirectory() && !target.exists() && !target.mkdirs()) {
-          throw new IOException("Unable to create directory " + path.getAbsolutePath());
-        } else if (!entry.isDirectory()) {
-          try {
-            // Need to make sure the parent directory is present. Files can appear
-            // in a ZIP (AAR) file without an explicit directory object
-            File parentDir = target.getParentFile();
-            if (!parentDir.exists()) {
-              parentDir.mkdirs();
-            }
-            output = new FileOutputStream(target);
-            input = zip.getInputStream(entry);
+
+        // 2. Validate that the resolved entry stays strictly inside 'basedir'
+        // (For directory entries like "res/", target.getCanonicalPath() strips the trailing slash,
+        // so also allow exact equality with basedir.getCanonicalFile())
+        String canonicalTargetPath = target.getCanonicalPath();
+        if (!canonicalTargetPath.startsWith(canonicalBaseDirPath)
+            && !target.getCanonicalFile().equals(basedir.getCanonicalFile())) {
+          throw new IOException("Zip Slip vulnerability detected in entry: " + entry.getName());
+        }
+
+        if (entry.isDirectory()) {
+          if (!target.exists() && !target.mkdirs()) {
+            throw new IOException("Unable to create directory " + target.getAbsolutePath());
+          }
+        } else {
+          // Need to make sure the parent directory is present. Files can appear
+          // in a ZIP (AAR) file without an explicit directory object
+          File parentDir = target.getParentFile();
+          if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+            throw new IOException(
+                "Unable to create parent directory " + parentDir.getAbsolutePath());
+          }
+
+          try (InputStream input = zip.getInputStream(entry);
+               OutputStream output = new FileOutputStream(target)) {
             IOUtils.copy(input, output);
-          } finally {
-            IOUtils.closeQuietly(input);
-            IOUtils.closeQuietly(output);
           }
           catalog(target);
         }
       }
+
       resdir = new File(basedir, "res");
       if (!resdir.exists()) {
         resdir = null;

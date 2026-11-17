@@ -5,20 +5,17 @@
 
 package com.google.appinventor.buildserver.tasks.android;
 
-import com.google.appinventor.buildserver.interfaces.BuildType;
+import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
+
 import com.google.appinventor.buildserver.TaskResult;
 import com.google.appinventor.buildserver.YoungAndroidConstants;
 import com.google.appinventor.buildserver.context.AndroidCompilerContext;
 import com.google.appinventor.buildserver.context.AndroidPaths;
 import com.google.appinventor.buildserver.interfaces.AndroidTask;
+import com.google.appinventor.buildserver.interfaces.BuildType;
 import com.google.appinventor.buildserver.util.AARLibraries;
 import com.google.appinventor.buildserver.util.AARLibrary;
 import com.google.appinventor.buildserver.util.ExecutorUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,9 +28,10 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import static com.google.appinventor.common.constants.YoungAndroidStructureConstants.ASSETS_FOLDER;
-
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * compiler.attachAarLibraries()
@@ -92,8 +90,11 @@ public class AttachAarLibs implements AndroidTask {
               // Resolve possible conflicts
               final String packageName = getAarPackageName(aarFile);
               if (packageName == null || packageName.trim().isEmpty()) {
-                context.getReporter().error("Unable to read packageName from: " + aarFile.getName(), true);
-                return TaskResult.generateError("Unable to read packageName from: " + aarFile.getName());
+                context
+                    .getReporter()
+                    .error("Unable to read packageName from: " + aarFile.getName(), true);
+                return TaskResult.generateError(
+                    "Unable to read packageName from: " + aarFile.getName());
               }
               if (!attachedAARs.contains(packageName)) {
                 // explode libraries into ${buildDir}/exploded-aars/<package>/
@@ -119,7 +120,14 @@ public class AttachAarLibs implements AndroidTask {
     return TaskResult.generateSuccess();
   }
 
-  private void copyAssetsAndJni(File aarFile, File mergedAssetDir, File libsDir) throws IOException {
+  private void copyAssetsAndJni(File aarFile, File mergedAssetDir, File libsDir)
+      throws IOException {
+    // Resolve canonical base paths once with a trailing separator to prevent sibling-prefix
+    // bypasses
+    // (e.g., "/tmp/assets_evil" matching "/tmp/assets")
+    final String canonicalAssetsDirPath = mergedAssetDir.getCanonicalPath() + File.separator;
+    final String canonicalLibsDirPath = libsDir.getCanonicalPath() + File.separator;
+
     try (ZipFile zip = new ZipFile(aarFile)) {
       Enumeration<? extends ZipEntry> entries = zip.entries();
 
@@ -131,17 +139,19 @@ public class AttachAarLibs implements AndroidTask {
 
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
+        if (entry.isDirectory()) {
+          continue;
+        }
+
         File targetFile = null;
         final String entryName = entry.getName();
 
         if (entryName.startsWith("assets/")) {
-          if (!entry.isDirectory()) {
-            targetFile = new File(mergedAssetDir, entryName.substring("assets/".length()));
-            if (!targetFile.getParentFile().exists()) {
-              // The target file may contain subfolders.
-              targetFile.getParentFile().mkdirs();
-            }
+          File candidate = new File(mergedAssetDir, entryName.substring("assets/".length()));
+          if (!candidate.getCanonicalPath().startsWith(canonicalAssetsDirPath)) {
+            throw new IOException("Zip Slip vulnerability detected in entry: " + entryName);
           }
+          targetFile = candidate;
         } else if (entryName.startsWith("jni/") && entryName.endsWith(".so")) {
           final String[] array = entryName.split("/", 3);
           if (array.length < 3) {
@@ -153,19 +163,28 @@ public class AttachAarLibs implements AndroidTask {
             continue;
           }
           final String libName = array[2];
-          if (!entry.isDirectory()) {
-            File parentFile = new File(libsDir, abi);
-            if (!parentFile.exists()) {
-              // Create the parent ABI directory if absent
-              parentFile.mkdir();
-            }
-            targetFile = new File(parentFile, libName);
+          File abiDir = new File(libsDir, abi);
+          File candidate = new File(abiDir, libName);
+
+          // Ensure the resolved path stays inside the specific ABI directory
+          String canonicalAbiDirPath = abiDir.getCanonicalPath() + File.separator;
+          if (!candidate.getCanonicalPath().startsWith(canonicalLibsDirPath)
+              || !candidate.getCanonicalPath().startsWith(canonicalAbiDirPath)) {
+            throw new IOException("Zip Slip vulnerability detected in entry: " + entryName);
           }
+          targetFile = candidate;
         }
+
         if (targetFile != null && !targetFile.exists()) {
+          // Only create parent directories AFTER canonical path validation succeeds
+          File parentDir = targetFile.getParentFile();
+          if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+            throw new IOException("Failed to create directory: " + parentDir);
+          }
+
           // Copy file contents from ZIP entry
           try (InputStream is = zip.getInputStream(entry);
-               OutputStream os = new FileOutputStream(targetFile)) {
+              OutputStream os = new FileOutputStream(targetFile)) {
             byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = is.read(buffer)) != -1) {
