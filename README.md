@@ -242,7 +242,7 @@ If you would rather use a container, check out this [gist](https://gist.github.c
 
 To start the main server run the following commands:
 
-    $ cd appinventor/appinventor
+    $ cd appinventor
     $ ant devserver
 
 ### Running the build server
