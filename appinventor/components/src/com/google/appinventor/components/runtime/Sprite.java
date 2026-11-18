@@ -112,6 +112,9 @@ public abstract class Sprite extends VisibleComponent
   protected double headingCos;      // cosine(heading)
   protected double headingSin;      // sine(heading)
 
+  // Indicates whether a change is pending
+  private volatile boolean changePending = false;
+
   /**
    * Creates a new Sprite component.  This version exists to allow injection
    * of a mock handler for testing.
@@ -810,6 +813,19 @@ public abstract class Sprite extends VisibleComponent
 
   // Internal methods supporting move-related functionality
 
+  protected void registerChange() {
+    if (changePending) {
+      return;
+    }
+    changePending = true;
+    form.androidUIHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        doRegisterChange();
+      }
+    });
+  }
+
   /**
    * Responds to a move or change of this sprite by redrawing the
    * enclosing Canvas and checking for any consequences that need
@@ -818,7 +834,8 @@ public abstract class Sprite extends VisibleComponent
    * {@link #EdgeReached(int)} event if the Sprite has reached the edge of the
    * Canvas.
    */
-  protected void registerChange() {
+  protected void doRegisterChange() {
+    changePending = false;
     // This was added to fix bug 2262218, where Ball.CollidedWith() was called
     // before all components had been constructed.
     if (!initialized) {
