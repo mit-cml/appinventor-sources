@@ -381,7 +381,7 @@
 	"Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TOOLTIP": "A multiline text string.",
 	"Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN": "join",
 	"Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM": "string",
-	"Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP": "Add a string input",
+	"Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP": "Add a string input.",
 	"Blockly.Msg.LANG_TEXT_APPEND_TO": "to",
 	"Blockly.Msg.LANG_TEXT_APPEND_APPENDTEXT": "append text",
 	"Blockly.Msg.LANG_TEXT_APPEND_VARIABLE": "item",
