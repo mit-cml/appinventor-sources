@@ -20,7 +20,7 @@
 
 title: App Inventor Open Source Site
 description: >- # this means to ignore newlines until "baseurl:"
-  News, announcements and development guides for MIT App Inventor.
+  Documentation and development guides for MIT App Inventor.
   Follow us to be up to date.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com

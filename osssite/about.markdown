@@ -4,9 +4,10 @@ title: About
 permalink: /about/
 ---
 
-This is the main site for the open source MIT App Inventor community. Here you will find blog posts with news, announcements, and development guides.
+This is the main site for the open source MIT App Inventor community. Here you will find documentation and development guides.
 
 ## Links
 
-- [appinventor.org](https://appinventor.org)
+- [App Inventor Community](https://community.appinventor.mit.edu/)
 - [MIT App Inventor](https://appinventor.mit.edu)
+- [appinventor.org](https://appinventor.org)
