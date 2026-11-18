@@ -115,7 +115,7 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of the available apps and allowing the " +
       "user to choose one from the list. The selected app will open with the file inserted on it.")
   public void ShareFile(String file) {
-    ShareFileWithMessage(file, "");
+    shareFileWithMessage(file, "", "ShareFile");
   }
 
   /**
@@ -126,6 +126,10 @@ public class Sharing extends AndroidNonvisibleComponent {
       + "installed on the phone by displaying a list of available apps and allowing the user to " +
       " choose one from the list. The selected app will open with the file and message inserted on it.")
   public void ShareFileWithMessage(String file, String message) {
+    shareFileWithMessage(file, message, "ShareFileWithMessage");
+  }
+
+  private void shareFileWithMessage(String file, String message, String methodName) {
     if (!file.startsWith("file://")) {
       if (!file.startsWith("/")) {
         // Files specified using a relative path should be resolved based on the form's default
@@ -136,10 +140,10 @@ public class Sharing extends AndroidNonvisibleComponent {
       }
     }
 
-    Uri uri  = Uri.parse(file);
+    Uri uri = Uri.parse(file);
     File imageFile = new File(uri.getPath());
     if (imageFile.isFile()) {
-      String fileExtension = file.substring(file.lastIndexOf(".")+1).toLowerCase();
+      String fileExtension = file.substring(file.lastIndexOf(".") + 1).toLowerCase();
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String type = mime.getMimeTypeFromExtension(fileExtension);
       if (type == null) {
@@ -158,12 +162,8 @@ public class Sharing extends AndroidNonvisibleComponent {
       // We cannot use Intent.createChooser(shareIntent, "Send using...") because it creates an
       // oversized pop up sharing window.
       this.form.startActivity(shareIntent);
-    }
-    else {
-      String eventName = "ShareFile";
-      if (message.equals(""))
-        eventName = "ShareFileWithMessage";
-      form.dispatchErrorOccurredEvent(Sharing.this, eventName,
+    } else {
+      form.dispatchErrorOccurredEvent(Sharing.this, methodName,
           ErrorMessages.ERROR_FILE_NOT_FOUND_FOR_SHARING, file);
     }
   }
