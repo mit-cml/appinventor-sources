@@ -11,6 +11,8 @@ package com.google.appinventor.shared.util;
  */
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class AccountUtil {
@@ -20,6 +22,37 @@ public class AccountUtil {
   private static Random random = new Random();
 
   private static long MAX = 17592186044415L;
+
+  // Accept previously issued words on input only. The replacement words must retain
+  // their original indices so that legacy codes continue to identify the same accounts.
+  private static final Map<String, String> LEGACY_WORD_REPLACEMENTS = new HashMap<>();
+
+  static {
+    LEGACY_WORD_REPLACEMENTS.put("BAWD", "BATS");
+    LEGACY_WORD_REPLACEMENTS.put("BONG", "BONES");
+    LEGACY_WORD_REPLACEMENTS.put("BUM", "BUMP");
+    LEGACY_WORD_REPLACEMENTS.put("COCK", "COCCI");
+    LEGACY_WORD_REPLACEMENTS.put("COKE", "COIR");
+    LEGACY_WORD_REPLACEMENTS.put("COON", "COOP");
+    LEGACY_WORD_REPLACEMENTS.put("DUMB", "DULY");
+    LEGACY_WORD_REPLACEMENTS.put("GYP", "GYRO");
+    LEGACY_WORD_REPLACEMENTS.put("HEBE", "HEAVE");
+    LEGACY_WORD_REPLACEMENTS.put("HELL", "HELLO");
+    LEGACY_WORD_REPLACEMENTS.put("HICK", "HICCUP");
+    LEGACY_WORD_REPLACEMENTS.put("HO", "HOAX");
+    LEGACY_WORD_REPLACEMENTS.put("JERK", "JELL");
+    LEGACY_WORD_REPLACEMENTS.put("KILL", "KILN");
+    LEGACY_WORD_REPLACEMENTS.put("KLAN", "KIWI");
+    LEGACY_WORD_REPLACEMENTS.put("KNOB", "KNOLL");
+    LEGACY_WORD_REPLACEMENTS.put("LAME", "LAMP");
+    LEGACY_WORD_REPLACEMENTS.put("LUST", "LUTE");
+    LEGACY_WORD_REPLACEMENTS.put("MUFF", "MUDS");
+    LEGACY_WORD_REPLACEMENTS.put("NIP", "NINTH");
+    LEGACY_WORD_REPLACEMENTS.put("NUDE", "NUB");
+    LEGACY_WORD_REPLACEMENTS.put("ORGY", "ORES");
+    LEGACY_WORD_REPLACEMENTS.put("SHAG", "SHAD");
+    LEGACY_WORD_REPLACEMENTS.put("WANG", "WANED");
+  }
 
   private AccountUtil() {       /* Cannot be instantiated */
   };
@@ -50,7 +83,9 @@ public class AccountUtil {
     }
     long acc = 0;
     for (int i = 0; i < 4; i++) {
-      int index = Arrays.binarySearch(words, p[3-i]);
+      String word = p[3-i];
+      String replacement = LEGACY_WORD_REPLACEMENTS.get(word);
+      int index = Arrays.binarySearch(words, replacement == null ? word : replacement);
       if (index < 0) {
         throw new IllegalArgumentException("parseWordList: invalid input (word not found): " + p[3-i] + " " + index);
       }
