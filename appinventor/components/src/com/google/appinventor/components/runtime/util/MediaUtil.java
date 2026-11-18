@@ -24,11 +24,14 @@ import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
+import android.net.http.HttpResponseCache;
 import android.os.Build;
 import android.provider.Contacts;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.VideoView;
 
 import com.google.appinventor.components.runtime.Form;
@@ -42,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +53,7 @@ import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +81,48 @@ public class MediaUtil {
   // tempFileMap maps cached media (assets, etc) to their respective temp files.
   private static final Map<String, File> tempFileMap = new HashMap<String, File>();
 
+  // Allocate 1/8th of the available RAM for the decoded image cache
+  private static final int IMAGE_CACHE_SIZE_KB = (int) (Runtime.getRuntime().maxMemory() / 1024 / 8);
+  private static final LruCache<String, BitmapDrawable> imageMemoryCache =
+      new LruCache<String, BitmapDrawable>(IMAGE_CACHE_SIZE_KB) {
+        @Override
+        protected int sizeOf(String key, BitmapDrawable drawable) {
+          if (drawable != null && drawable.getBitmap() != null) {
+            return drawable.getBitmap().getByteCount() / 1024;
+          }
+          return 1;
+        }
+      };
+
   private MediaUtil() {
+  }
+
+  /**
+   * Clears the in-memory bitmap cache when system memory is low.
+   */
+  public static void clearImageCache() {
+    if (imageMemoryCache != null) {
+      imageMemoryCache.evictAll();
+    }
+  }
+
+  private static volatile boolean httpResponseCacheInstalled = false;
+
+  // HttpResponseCache is only available from API 13 onward.
+  private static final int MIN_SDK_FOR_HTTP_RESPONSE_CACHE = 13;
+
+  private static synchronized void installHttpResponseCache(Form form) {
+    if (httpResponseCacheInstalled || Build.VERSION.SDK_INT < MIN_SDK_FOR_HTTP_RESPONSE_CACHE) {
+      return;
+    }
+    httpResponseCacheInstalled = true;
+    try {
+      File cacheDir = new File(form.getCacheDir(), "http_image_cache");
+      long cacheSize = 256 * 1024 * 1024; // 256 MiB
+      HttpResponseCache.install(cacheDir, cacheSize);
+    } catch (IOException e) {
+      Log.w(LOG_TAG, "Unable to install HttpResponseCache", e);
+    }
   }
 
   static String fileUrlToFilePath(String mediaPath) throws IOException {
@@ -279,7 +325,7 @@ public class MediaUtil {
     }
   }
 
-  private static InputStream openMedia(Form form, String mediaPath, MediaSource mediaSource)
+  private static InputStream openMedia(Form form, String mediaPath, MediaSource mediaSource, boolean useDiskCache)
       throws IOException {
     switch (mediaSource) {
       case ASSET:
@@ -326,7 +372,13 @@ public class MediaUtil {
           form.assertPermission(READ_EXTERNAL_STORAGE);
         }
       case URL:
-        return new URL(mediaPath).openStream();
+        if (useDiskCache) {
+          installHttpResponseCache(form);
+        }
+        URLConnection connection = new URL(mediaPath).openConnection();
+        connection.setConnectTimeout(10000);
+        connection.setReadTimeout(15000);
+        return connection.getInputStream();
 
       case CONTENT_URI:
         return form.getContentResolver().openInputStream(Uri.parse(mediaPath));
@@ -351,7 +403,11 @@ public class MediaUtil {
   }
 
   public static InputStream openMedia(Form form, String mediaPath) throws IOException {
-    return openMedia(form, mediaPath, determineMediaSource(form, mediaPath));
+    return openMedia(form, mediaPath, determineMediaSource(form, mediaPath), false);
+  }
+
+  public static InputStream openMedia(Form form, String mediaPath, boolean useDiskCache) throws IOException {
+    return openMedia(form, mediaPath, determineMediaSource(form, mediaPath), useDiskCache);
   }
 
   /**
@@ -369,7 +425,7 @@ public class MediaUtil {
 
   private static File copyMediaToTempFile(Form form, String mediaPath, MediaSource mediaSource)
       throws IOException {
-    InputStream in = openMedia(form, mediaPath, mediaSource);
+    InputStream in = openMedia(form, mediaPath, mediaSource, false);
     File file = null;
     try {
       file = File.createTempFile("AI_Media_", null);
@@ -449,7 +505,7 @@ public class MediaUtil {
     BitmapDrawable result = syncer.getResult();
     if (result == null) {
       String error = syncer.getError();
-      if (error.startsWith("PERMISSION_DENIED:")) {
+      if (error != null && error.startsWith("PERMISSION_DENIED:")) {
         throw new PermissionException(error.split(":")[1]);
       } else {
         throw new IOException(error);
@@ -526,7 +582,7 @@ public class MediaUtil {
    */
   public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
        final AsyncCallbackPair<BitmapDrawable> continuation) {
-    getBitmapDrawableAsync(form, mediaPath, -1, -1, continuation);
+    getBitmapDrawableAsync(form, mediaPath, -1, -1, false, continuation);
   }
 
   /**
@@ -543,6 +599,15 @@ public class MediaUtil {
    */
   public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
       final int desiredWidth, final int desiredHeight,
+      final AsyncCallbackPair<BitmapDrawable> continuation) {
+    getBitmapDrawableAsync(form, mediaPath, desiredWidth, desiredHeight, false, continuation);
+  }
+
+  /**
+   * Loads the image specified by mediaPath and returns a Drawable, with option to use disk cache for URLs.
+   */
+  public static void getBitmapDrawableAsync(final Form form, final String mediaPath,
+      final int desiredWidth, final int desiredHeight, final boolean useDiskCache,
       final AsyncCallbackPair<BitmapDrawable> continuation) {
     if (mediaPath == null || mediaPath.length() == 0) {
       continuation.onSuccess(null);
@@ -566,7 +631,7 @@ public class MediaUtil {
         int read;
         try {
           // copy the input stream to an in-memory buffer
-          is = openMedia(form, mediaPath, mediaSource);
+          is = openMedia(form, mediaPath, mediaSource, useDiskCache);
           while ((read = is.read(buf)) > 0) {
             bos.write(buf, 0, read);
           }
@@ -667,6 +732,79 @@ public class MediaUtil {
       }
     };
     AsynchUtil.runAsynchronously(loadImage);
+  }
+
+  /**
+   * Asynchronously loads and binds an image to the specified {@link android.widget.ImageView}.
+   *
+   * <p>Features include:
+   * <ul>
+   *   <li>In-memory caching via {@link android.util.LruCache} for instant retrieval.</li>
+   *   <li>Local disk caching for network URLs in {@link Form#getCacheDir()}.</li>
+   *   <li>Background decoding and downsampling to avoid blocking the main UI thread.</li>
+   *   <li>View-tag matching to safely handle concurrent requests and recycled views.</li>
+   * </ul>
+   *
+   * @param form the active {@link Form} instance
+   * @param imageView the target {@link android.widget.ImageView} where the drawable will be displayed
+   * @param mediaPath the media resource identifier (URL, asset name, content URI, or local file path)
+   * @param desiredWidth the target width for downsampling, or -1 to retain original width
+   * @param desiredHeight the target height for downsampling, or -1 to retain original height
+   */
+  public static void bindImageToImageView(
+      final Form form,
+      final ImageView imageView,
+      final String mediaPath,
+      final int desiredWidth,
+      final int desiredHeight) {
+
+    if (mediaPath == null || mediaPath.trim().isEmpty()) {
+      imageView.setImageDrawable(null);
+      imageView.setTag(null);
+      return;
+    }
+
+    final String cacheKey = mediaPath + "_" + desiredWidth + "x" + desiredHeight;
+
+    BitmapDrawable cachedDrawable = imageMemoryCache.get(cacheKey);
+    if (cachedDrawable != null) {
+      imageView.setTag(mediaPath);
+      imageView.setImageDrawable(cachedDrawable);
+      return;
+    }
+
+    imageView.setImageDrawable(null);
+    imageView.setTag(mediaPath);
+
+    getBitmapDrawableAsync(
+        form,
+        mediaPath,
+        desiredWidth,
+        desiredHeight,
+        true,
+        new AsyncCallbackPair<BitmapDrawable>() {
+          @Override
+          public void onSuccess(final BitmapDrawable result) {
+            if (result != null) {
+              imageMemoryCache.put(cacheKey, result);
+
+              form.runOnUiThread(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      if (mediaPath.equals(imageView.getTag())) {
+                        imageView.setImageDrawable(result);
+                      }
+                    }
+                  });
+            }
+          }
+
+          @Override
+          public void onFailure(String message) {
+            Log.w(LOG_TAG, "Failed to load image asynchronously for " + mediaPath + ": " + message);
+          }
+        });
   }
 
   private static Bitmap decodeStream(InputStream is, Rect outPadding, BitmapFactory.Options opts) {
@@ -770,7 +908,7 @@ public class MediaUtil {
         // stream contents to a temporary file so we can still read the EXIF data
         // on devices running API 14–23.
         tempFile = File.createTempFile("exif_", null);
-        java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
+        FileOutputStream fos = new FileOutputStream(tempFile);
         try {
           byte[] buffer = new byte[4096];
           int len;
@@ -953,7 +1091,6 @@ public class MediaUtil {
           afd.close();
         }
         return;
-
 
       case REPL_ASSET:
         if (RUtil.needsFilePermission(form, mediaPath, null)) {
