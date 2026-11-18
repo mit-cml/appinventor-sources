@@ -167,12 +167,17 @@ public func toString(_ object: Any?) -> String {
   }
 
   /// Splits text into parts based on a separator
-  public static func split(_ text: String, at: String) -> [String] {
-    var parts = text.components(separatedBy: at)
-    if at.isEmpty && parts.first == "" {
-      parts.removeFirst()
+  @objc public static func split(_ text: String, at: String) -> YailList<NSString> {
+    var parts: [String]
+    if at.isEmpty {
+      parts = text.map { String($0) }
+    } else {
+      parts = text.components(separatedBy: at)
+      while parts.last == "" {
+        parts.removeLast()
+      }
     }
-    return parts
+    return YailList<NSString>(array: parts as [NSString], in: SCMInterpreter.shared)
   }
 
   // MARK: - Mapping Methods
