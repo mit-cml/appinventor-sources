@@ -193,8 +193,8 @@ out.println("<center><font color=red><b>" + error + "</b></font></center><br/>")
 <tr><td><center>
 <form method=POST action="/login">
 <input type=hidden name=revisit value=true>
-Your Revisit Code:&nbsp;<input type=text name=A value="" size=4 maxlength=4>-<input type=text name=B value="" size=4 maxlength=4>-<input type=text name=C size=4 maxlength=4 value="">-
-<input type=text name=D size=4 maxlength=4 value=""><br/><br/>
+Your Revisit Code:&nbsp;<input type=text name=A value="" size=6 maxlength=6>-<input type=text name=B value="" size=6 maxlength=6>-<input type=text name=C size=6 maxlength=6 value="">-
+<input type=text name=D size=6 maxlength=6 value=""><br/><br/>
 <input type=submit value="Enter with Revisit Code">
 </form>
 </center>
