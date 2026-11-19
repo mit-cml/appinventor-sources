@@ -1,0 +1,23 @@
+# External links shown in the "Resources" section of the home page, in this order.
+# type: label shown before the title (e.g. Blog post, Talk)
+# author: optional, shown in the meta line
+- type: Blog post
+  title: "App Inventor dev tricks: reducing compilation time while doing development"
+  url: https://josmasflores.blogspot.com/2014/10/app-inventor-dev-tricks-reducing.html
+  author: José Dominguez
+- type: Talk
+  title: Blocks-Based Innovation Beyond the Connectivity Divide
+  url: https://blockly.com/summit/2026/session-videos#talk/blocks-based-innovation-beyond-the-connectivity-divide
+  author: Natalie Lao
+- type: Talk
+  title: The Relevance of Block-based Environments as Representational Systems in the age of AI Coding Agents
+  url: https://blockly.com/summit/2026/session-videos#talk/the-relevance-of-block-based-environments-as-representationa
+  author: José Dominguez
+- type: Talk
+  title: Visualizing Project Differences in MIT App Inventor
+  url: https://blockly.com/summit/2026/session-videos#talk/visualizing-project-differences-in-mit-app-inventor
+  author: Evan Patton
+- type: Talk
+  title: "Techniques for Debugging Block Programs: A Case Study with MIT App Inventor"
+  url: https://blockly.com/summit/2026/session-videos#talk/techniques-for-debugging-block-programs
+  author: Evan Patton
