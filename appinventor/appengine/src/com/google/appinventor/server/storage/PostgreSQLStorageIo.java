@@ -4118,7 +4118,6 @@ public class PostgreSQLStorageIo implements StorageIo {
         rs.close();
       }
       if (lsn == null) {
-        conn.rollback();        // Make sure we are not in a transaction
         return conn; // Return the primary, no history
       }
       conn.close(); // All done with the primary
