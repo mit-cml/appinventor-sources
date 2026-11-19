@@ -299,7 +299,8 @@ Blockly.Blocks['logic_operation'] = {
       if (inputNum === 1) {
         this.makeDropdown(input);
       } else if (inputNum > 1) {
-        var field = new Blockly.FieldLabel(this.opField.getValue());
+        var operation = Blockly.Blocks.logic_operation.OPERATION(this.opField.getValue());
+        var field = new Blockly.FieldLabel(operation);
         input.appendField(field);
         field.init();
       } else if (this.itemCount_ === 1) {
@@ -317,8 +318,6 @@ Blockly.Blocks['logic_operation'] = {
   },
   makeDropdown: function(input) {
     var op = this.opField.getValue();
-    // Dispose of the old field first (issue #2266)
-    this.opField.dispose();
     this.opField = new Blockly.FieldDropdown(
       Blockly.Blocks.logic_operation.OPERATORS(),
       this.updateFields.bind(this));
@@ -335,22 +334,20 @@ Blockly.Blocks['logic_operation'] = {
     if (inline) {
       var ainput = this.getInput('A');
       if (ainput && ainput.fieldRow.length > 0) {
-        ainput.fieldRow.splice(0, 1);
+        ainput.removeField('OP', true);
         var binput = this.getInput('B');
         this.makeDropdown(binput);
       }
-      var text = this.opField.getValue() === 'AND' ?
-        Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
+      var operation = Blockly.Blocks.logic_operation.OPERATION(this.opField.getValue());
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        var field = new Blockly.FieldLabel(text);
+        var field = new Blockly.FieldLabel(operation);
         input.appendField(field);
         field.init();
       }
     } else {
       var binput = this.getInput('B');
       if (binput && binput.fieldRow.length > 0) {
-        binput.fieldRow.splice(0, 1);
+        binput.removeField('OP', true);
         var ainput = this.getInput('A');
         this.makeDropdown(ainput);
       }
@@ -364,11 +361,10 @@ Blockly.Blocks['logic_operation'] = {
     Blockly.BlockSvg.prototype.setInputsInline.call(this, inline);
   },
   updateFields: function(op) {
+    var operation = Blockly.Blocks.logic_operation.OPERATION(op);
     if (this.getInputsInline()) {
-      var text = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-        Blockly.Msg.LANG_LOGIC_OPERATION_OR;
       for (var input, i = 2; (input = this.inputList[i]); i++) {
-        input.fieldRow[0].setValue(text);
+        input.fieldRow[0].setValue(operation);
       }
     }
     if (this.itemCount_ === 1) {
@@ -381,9 +377,7 @@ Blockly.Blocks['logic_operation'] = {
     if (this.lastMutator) {
       var mutatorBlock = this.lastMutator.getTopBlocks(false)[0];
       if (mutatorBlock) {
-        var title = op === 'AND' ? Blockly.Msg.LANG_LOGIC_OPERATION_AND :
-          Blockly.Msg.LANG_LOGIC_OPERATION_OR;
-        mutatorBlock.setFieldValue(title, 'CONTAINER_TEXT');
+        mutatorBlock.setFieldValue(operation, 'CONTAINER_TEXT');
       }
     }
     return op;
@@ -413,6 +407,11 @@ Blockly.Blocks.logic_operation.OPERATORS = function () {
 Blockly.Blocks.logic_operation.IDENTITY = function(op) {
   return {'AND': Blockly.Msg.LANG_LOGIC_BOOLEAN_TRUE,
     'OR': Blockly.Msg.LANG_LOGIC_BOOLEAN_FALSE}[op];
+}
+
+Blockly.Blocks.logic_operation.OPERATION = function(op) {
+  return {'AND': Blockly.Msg.LANG_LOGIC_OPERATION_AND,
+    'OR': Blockly.Msg.LANG_LOGIC_OPERATION_OR}[op];
 }
 
 Blockly.Blocks.logic_operation.HELPURLS = function () {
@@ -452,9 +451,11 @@ Blockly.Blocks['logic_mutator_item'] = {
   // Add items.
   init: function () {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.appendDummyInput().appendField("boolean");
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_INPUT_BOOLEAN);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.contextMenu = false;
+    this.setTooltip(Blockly.Msg.LANG_LOGIC_MUTATOR_ITEM_TOOLTIP);
   }
 };
