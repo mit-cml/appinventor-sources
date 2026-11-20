@@ -264,6 +264,7 @@ Blockly.ReplMgr.buildYail = function(workspace, opt_force) {
         }
         if (block.blockType != "event" &&
             block.type != "global_declaration" &&
+            block.type != "constant_group_declaration" &&
             block.type != "procedures_defnoreturn" &&
             block.type != "procedures_defreturn")
             continue;
