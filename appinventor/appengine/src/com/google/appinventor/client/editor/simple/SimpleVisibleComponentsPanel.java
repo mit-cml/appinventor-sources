@@ -102,4 +102,6 @@ public abstract class SimpleVisibleComponentsPanel<T extends DesignerRootCompone
   public void onResetDatabase() {
 
   }
+
+  public abstract void focusCheckbox();
 }

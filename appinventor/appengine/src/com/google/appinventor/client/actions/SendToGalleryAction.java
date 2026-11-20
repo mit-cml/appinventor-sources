@@ -49,7 +49,7 @@ public class SendToGalleryAction implements Command {
     if (lockPublishButton) {
       return;                   // De-bounce the publish button
     }
-    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+    if (Ode.getInstance().getCurrentViewId() == Ode.PROJECTS) {
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() != 1) {

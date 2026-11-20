@@ -516,18 +516,4 @@ public final class YaFormEditor extends DesignerEditor<YoungAndroidFormNode, Moc
     }
     return result;
   }
-
-  @Override
-  public void onKeyDown(KeyDownEvent event) {
-    if (!isActiveEditor()) {
-      return;  // Not the active editor
-    }
-    if (event.getNativeKeyCode() == KeyCodes.KEY_V && !palettePanel.shouldSuppressShortcuts()
-        && !(event.isControlKeyDown() || event.isMetaKeyDown())) {
-      getVisibleComponentsPanel().focusCheckbox();
-    } else {
-      super.onKeyDown(event);
-    }
-  }
-
 }

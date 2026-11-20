@@ -756,6 +756,110 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Display the Shortcuts dialog")
   String showShortcuts();
 
+  @DefaultMessage("Keyboard Shortcuts")
+  @Description("Title of the keyboard shortcuts dialog")
+  String shortcutsDialogTitle();
+
+  @DefaultMessage("Reset All to Defaults")
+  @Description("Button that resets all keyboard shortcuts to their default bindings")
+  String shortcutsResetAllButton();
+
+  @DefaultMessage("Edit Shortcuts")
+  @Description("Button that enters keyboard shortcut editing mode")
+  String shortcutsEditButton();
+
+  @DefaultMessage("Done Editing")
+  @Description("Button label when keyboard shortcut editing mode is active")
+  String shortcutsEditDoneButton();
+
+  @DefaultMessage("Action")
+  @Description("Column header for the action name column in the keyboard shortcuts table")
+  String shortcutsColumnAction();
+
+  @DefaultMessage("Keys")
+  @Description("Column header for the key binding column in the keyboard shortcuts table")
+  String shortcutsColumnKeys();
+
+  @DefaultMessage("Press a key…")
+  @Description("Placeholder shown in the key column while waiting for the user to press a key")
+  String shortcutsPressKey();
+
+  @DefaultMessage("Already used by {0}")
+  @Description("Shown when the user presses a key combo already bound to another shortcut")
+  String shortcutKeyConflict(String otherDisplayName);
+
+  @DefaultMessage("Already used by another shortcut")
+  @Description("Shown when the user presses a key combo already bound to another shortcut whose name isn't shown in this dialog")
+  String shortcutKeyConflictGeneric();
+
+  @DefaultMessage("Focus Component search box")
+  @Description("Keyboard shortcut action: move focus to the component search box")
+  String shortcutFocusSearch();
+
+  @DefaultMessage("Focus Components tree")
+  @Description("Keyboard shortcut action: move focus to the components tree panel")
+  String shortcutFocusTree();
+
+  @DefaultMessage("Focus Viewer")
+  @Description("Keyboard shortcut action: move focus to the designer viewer")
+  String shortcutFocusViewer();
+
+  @DefaultMessage("Focus Properties Panel")
+  @Description("Keyboard shortcut action: move focus to the properties panel")
+  String shortcutFocusProperties();
+
+  @DefaultMessage("Focus Media Panel")
+  @Description("Keyboard shortcut action: move focus to the media panel")
+  String shortcutFocusMedia();
+
+  @DefaultMessage("Switch Designer / Blocks")
+  @Description("Keyboard shortcut action: toggle between the Designer and Blocks views")
+  String shortcutToggleView();
+
+  @DefaultMessage("Rename Component")
+  @Description("Keyboard shortcut action: rename the selected component")
+  String shortcutRenameComponent();
+
+  @DefaultMessage("Delete Component")
+  @Description("Keyboard shortcut action: delete the selected component")
+  String shortcutDeleteComponent();
+
+  @DefaultMessage("Reset Connection")
+  @Description("Keyboard shortcut action: reset the companion connection")
+  String shortcutResetConnection();
+
+  @DefaultMessage("Refresh Companion")
+  @Description("Keyboard shortcut action: refresh the companion app")
+  String shortcutRefreshCompanion();
+
+  @DefaultMessage("Navigate Components")
+  @Description("Keyboard shortcut action: navigate between components with arrow keys")
+  String shortcutNavigateComponents();
+
+  @DefaultMessage("Add a row in the ListView data editor")
+  @Description("Keyboard shortcut action: add a row in the ListView data editor")
+  String shortcutListViewAddRow();
+
+  @DefaultMessage("Navigate rows in the ListView data editor")
+  @Description("Keyboard shortcut action: navigate rows in the ListView data editor")
+  String shortcutListViewNavigateRows();
+
+  @DefaultMessage("Move to the next / previous field in the ListView data editor")
+  @Description("Keyboard shortcut action: move between fields in the ListView data editor")
+  String shortcutListViewNavigateFields();
+
+  @DefaultMessage("Open this dialog")
+  @Description("Keyboard shortcut action: open the keyboard shortcuts dialog")
+  String shortcutOpenDialog();
+
+  @DefaultMessage("Move Component Up")
+  @Description("Keyboard shortcut action: move the selected component up in the tree")
+  String shortcutMoveComponentUp();
+
+  @DefaultMessage("Move Component Down")
+  @Description("Keyboard shortcut action: move the selected component down in the tree")
+  String shortcutMoveComponentDown();
+
   @DefaultMessage("Library")
   @Description("Name of Library link")
   String libraryMenuItem();
@@ -5278,35 +5382,6 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("")
   String MaximumRangeMethods();
 
-  @DefaultMessage(
-    "<table border='1' cellpadding='8' cellspacing='0'>" +
-    "<thead>" +
-    "<tr>" +
-    "<th>Action</th>" +
-    "<th>Key Combination</th>" +
-    "</tr>" +
-    "</thead>" +
-    "<tbody>" +
-    "<tr><td>Focus Component search box</td><td>/</td></tr>" +
-    "<tr><td>Focus Components tree</td><td>T</td></tr>" +
-    "<tr><td>Focus Viewer</td><td>V</td></tr>" +
-    "<tr><td>Focus Properties Panel</td><td>P</td></tr>" +
-    "<tr><td>Focus Media Panel</td><td>M</td></tr>" +
-    "<tr><td>Switch between Designer and Block editor</td><td>Ctrl + Alt</td></tr>" +
-    "<tr><td>Rename Component</td><td>Alt + N</td></tr>" +
-    "<tr><td>Delete Component</td><td>Delete/Backspace</td></tr>" +
-    "<tr><td>Reset Connection</td><td>Alt + Shift + R</td></tr>" +
-    "<tr><td>Refresh Companion Screen</td><td>Alt + R</td></tr>" +
-    "<tr><td>Navigate Components in components tree</td><td>↑/↓</td></tr>" +
-    "<tr><td>Add a row in the ListView data editor</td><td>Enter</td></tr>" +
-    "<tr><td>Navigate rows in the ListView data editor</td><td>↑/↓</td></tr>" +
-    "<tr><td>Move to the next / previous field in the ListView data editor</td><td>Tab / Shift+Tab</td></tr>" +
-    "<tr><td>Open this dialog</td><td>Alt + ?</td></tr>" +
-    "</tbody>" +
-    "</table>")
-  @Description("")
-  String KeyBoardShortcuts();
-
   // =========== ListPicker
   @DefaultMessage("ItemTextColor")
   @Description("")
@@ -6187,4 +6262,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @DefaultMessage("A tag with this name already exists. Saving will overwrite its current value.")
   @Description("Inline warning shown in add-entry dialog when the typed tag name matches an existing CloudDB entry.")
   String clouddbVizTagExistsWarning();
+
+  @DefaultMessage("Select All Projects")
+  String selectAllProjects();
 }

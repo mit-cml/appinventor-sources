@@ -26,7 +26,7 @@ public class DeleteAction implements Command {
     Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
-        if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+        if (Ode.getInstance().getCurrentViewId() == Ode.PROJECTS) {
           List<Project> selectedProjects = ProjectListBox.getProjectListBox().getProjectList()
               .getSelectedProjects();
           List<ProjectFolder> selectedFolders = ProjectListBox.getProjectListBox().getProjectList().getSelectedFolders();
