@@ -151,3 +151,114 @@ AI.Yail['local_variable'] = function(block, generator, isExpression) {
     return [ code, AI.Yail.ORDER_ATOMIC ];
   }
 };
+
+// ===== Constants =====================================================================
+
+AI.Yail.YAIL_CONSTANT_TAG = 'k$';
+
+AI.Yail.constantName = function(group, name) {
+  return AI.Yail.YAIL_CONSTANT_TAG + group + '$' + name;
+};
+
+AI.Yail.forBlock['constant_group_declaration'] = function(block, generator) {
+  const group = block.getFieldValue('GROUP');
+  const definitions = [];
+  for (let entry = block.getInputTargetBlock('CONSTANTS'); entry; entry = entry.getNextBlock()) {
+    if (entry.type !== 'constant_group_entry' || !entry.isEnabled()) {
+      continue;
+    }
+    const value = generator.valueToCode(entry, 'VALUE', AI.Yail.ORDER_NONE) || '0';
+    definitions.push(
+      AI.Yail.YAIL_DEFINE + AI.Yail.constantName(group, entry.getFieldValue('NAME')) +
+      AI.Yail.YAIL_SPACER + value + AI.Yail.YAIL_CLOSE_COMBINATION
+    );
+  }
+  if (definitions.length === 0) {
+    return AI.Yail.YAIL_FALSE;
+  }
+  if (definitions.length === 1) {
+    return definitions[0];
+  }
+  return '(begin ' + definitions.join('\n') + ')';
+};
+
+AI.Yail.forBlock['constant_group_entry'] = function() {
+  return '';
+};
+
+AI.Yail.forBlock['constant_group_get'] = function(block) {
+  const name = AI.Yail.constantName(
+      block.getFieldValue('GROUP'), block.getFieldValue('CONSTANT'));
+  return [AI.Yail.YAIL_GET_VARIABLE + name + AI.Yail.YAIL_CLOSE_COMBINATION,
+          AI.Yail.ORDER_ATOMIC];
+};
+
+AI.Yail.forBlock['constant_group_get_all'] = function(block) {
+  const group = block.getFieldValue('GROUP');
+
+  const names = Blockly.ConstantGroups.collect(
+      Blockly.ConstantGroups.getWorkspace(block)).get(group) || [];
+
+  if (names.length === 0) {
+    return [AI.Yail.YAIL_EMPTY_DICT, AI.Yail.ORDER_ATOMIC];
+  }
+
+  const pairs = [];
+
+  names.slice().sort().forEach(function(name) {
+    const key = AI.Yail.YAIL_DOUBLE_QUOTE + name +
+        AI.Yail.YAIL_DOUBLE_QUOTE;
+
+    const value = AI.Yail.YAIL_GET_VARIABLE +
+        AI.Yail.constantName(group, name) +
+        AI.Yail.YAIL_CLOSE_COMBINATION;
+
+    let pair = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE +
+        'make-dictionary-pair' + AI.Yail.YAIL_SPACER;
+
+    pair += AI.Yail.YAIL_OPEN_COMBINATION +
+        AI.Yail.YAIL_LIST_CONSTRUCTOR +
+        AI.Yail.YAIL_SPACER +
+        key + AI.Yail.YAIL_SPACER +
+        value +
+        AI.Yail.YAIL_CLOSE_COMBINATION;
+
+    pair += AI.Yail.YAIL_SPACER +
+        AI.Yail.YAIL_QUOTE +
+        AI.Yail.YAIL_OPEN_COMBINATION +
+        'key any' +
+        AI.Yail.YAIL_CLOSE_COMBINATION +
+        AI.Yail.YAIL_SPACER;
+
+    pair += AI.Yail.YAIL_DOUBLE_QUOTE +
+        'make a pair' +
+        AI.Yail.YAIL_DOUBLE_QUOTE +
+        AI.Yail.YAIL_CLOSE_COMBINATION;
+
+    pairs.push(pair);
+  });
+
+  let code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE +
+      'make-yail-dictionary' +
+      AI.Yail.YAIL_SPACER;
+
+  code += AI.Yail.YAIL_OPEN_COMBINATION +
+      AI.Yail.YAIL_LIST_CONSTRUCTOR +
+      AI.Yail.YAIL_SPACER +
+      pairs.join(AI.Yail.YAIL_SPACER) +
+      AI.Yail.YAIL_CLOSE_COMBINATION;
+
+  code += AI.Yail.YAIL_SPACER +
+      AI.Yail.YAIL_QUOTE +
+      AI.Yail.YAIL_OPEN_COMBINATION +
+      pairs.map(() => 'pair').join(AI.Yail.YAIL_SPACER) +
+      AI.Yail.YAIL_CLOSE_COMBINATION +
+      AI.Yail.YAIL_SPACER;
+
+  code += AI.Yail.YAIL_DOUBLE_QUOTE +
+      'make a dictionary' +
+      AI.Yail.YAIL_DOUBLE_QUOTE +
+      AI.Yail.YAIL_CLOSE_COMBINATION;
+
+  return [code, AI.Yail.ORDER_ATOMIC];
+};

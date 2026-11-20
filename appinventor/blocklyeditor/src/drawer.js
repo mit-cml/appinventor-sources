@@ -802,6 +802,16 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<value name="COLS"><block type="math_number"><title name="NUM">2</title></block></value>' +
     '</block>' +
   '</xml>'},
+  constant_group_declaration: {xmlString:
+      '<xml>' +
+        '<block type="constant_group_declaration">' +
+          '<statement name="CONSTANTS">' +
+            '<block type="constant_group_entry">' +
+              '<value name="VALUE"><block type="math_number"><field name="NUM">0</field></block></value>' +
+            '</block>' +
+          '</statement>' +
+        '</block>' +
+      '</xml>' },
 
   component_method: [
     {matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},

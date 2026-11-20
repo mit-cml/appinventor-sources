@@ -52,7 +52,7 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
     if (!block.category) {
       continue;
     }
-    if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn' || block.type == 'global_declaration') {
+    if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn' || block.type == 'global_declaration' || block.type == 'constant_group_declaration') {
       map.globals.push(block);
       // TODO: eventually deal with variable declarations, once we have them
     } else if (block.category == 'Component') {

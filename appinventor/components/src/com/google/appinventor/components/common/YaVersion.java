@@ -749,7 +749,9 @@ public class YaVersion {
   // - The Multiline Text block was added.
   // For BLOCKS_LANGUAGE_VERSION 40
   // - Add "titlecase" operator for text_changeCase block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 40;
+  // For BLOCKS_LANGUAGE_VERSION 41
+  // - Added the constant group blocks (constant_group_declaration, constant_group_entry, constant_group_get).
+  public static final int BLOCKS_LANGUAGE_VERSION = 41;
 
   // ................................. Target SDK Version Number ..................................
 

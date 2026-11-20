@@ -375,7 +375,7 @@ Blockly.WarningHandler.prototype["checkIsInDefinition"] = function(block){
     return false;
   }
   var rootBlock = block.getRootBlock();
-  if(rootBlock.type == "global_declaration"){
+  if(rootBlock.type == "global_declaration" || rootBlock.type == "constant_group_declaration"){
     var surroundParent = block;
     while (surroundParent.getSurroundParent()) {
       surroundParent = surroundParent.getSurroundParent();
@@ -593,6 +593,36 @@ Blockly.WarningHandler.prototype['checkIfIAmADuplicateEventHandler'] = function(
   }
 };
 
+Blockly.WarningHandler.prototype['checkIfDuplicateConstantGroup'] = function(block) {
+  var name = block.getFieldValue('GROUP');
+  var duplicate = block.workspace.getTopBlocks(false).some(function(other) {
+    return other !== block && other.type == 'constant_group_declaration' &&
+        other.isEnabled() && other.getFieldValue('GROUP') === name;
+  });
+  if (duplicate) {
+    block.setErrorIconText(Blockly.Msg.ERROR_DUPLICATE_CONSTANT_GROUP);
+    return true;
+  }
+  return false;
+};
+
+// warningHandler.js line 416
+Blockly.WarningHandler.prototype['checkIfDuplicateConstantName'] = function(block) {
+  var group = block.getSurroundParent();
+  if (!group || group.type != 'constant_group_declaration') {
+    return false;
+  }
+  var name = block.getFieldValue('NAME');
+  for (var other = group.getInputTargetBlock('CONSTANTS'); other; other = other.getNextBlock()) {
+    if (other !== block && other.type == 'constant_group_entry' && other.isEnabled() &&
+        other.getFieldValue('NAME') === name) {
+      block.setErrorIconText(Blockly.Msg.ERROR_DUPLICATE_CONSTANT_NAME);
+      return true;
+    }
+  }
+  return false;
+};
+
 
 /* [lyn, 12/23/2013] Putting a change handler that determines duplicates
    on each AI2 event handler block leads to
@@ -797,7 +827,7 @@ Blockly.WarningHandler.prototype['checkEmptySockets'] = function(block){
 //Check if the block is a root block that isn't a procedure definition, variable declaration, or event
 Blockly.WarningHandler.prototype['checkBlockAtRoot'] = function(block){
   var rootBlock = block.getRootBlock();
-  if(block == rootBlock && block.blockType != "event" && block.type !="global_declaration" &&
+  if(block == rootBlock && block.blockType != "event" && block.type !="global_declaration" && block.type != "constant_group_declaration" &&
      block.type != "procedures_defnoreturn" && block.type != "procedures_defreturn"){
     if(this.showWarningsToggle) {
       var warningMessage = Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS;
