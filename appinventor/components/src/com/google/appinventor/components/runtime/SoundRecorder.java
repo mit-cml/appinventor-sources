@@ -35,6 +35,7 @@ import com.google.appinventor.components.runtime.errors.PermissionException;
 import com.google.appinventor.components.runtime.util.BulkPermissionRequest;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
+import com.google.appinventor.components.runtime.util.MediaRecorderUtil;
 
 import java.io.IOException;
 
@@ -69,6 +70,7 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    */
   private class RecordingController {
     final MediaRecorder recorder;
+    boolean stopping;
 
     // file is the same as savedRecording, but we'll keep it local to the
     // RecordingController for future flexibility
@@ -111,7 +113,16 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
     void stop() {
       recorder.setOnErrorListener(null);
       recorder.setOnInfoListener(null);
-      recorder.stop();
+      try {
+        recorder.stop();
+      } finally {
+        release();
+      }
+    }
+
+    void release() {
+      recorder.setOnErrorListener(null);
+      recorder.setOnInfoListener(null);
       recorder.reset();
       recorder.release();
     }
@@ -295,20 +306,43 @@ public final class SoundRecorder extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Stop() {
-    if (controller == null) {
-      Log.i(TAG, "Stop() called, but already stopped.");
+    final RecordingController recording = controller;
+    if (recording == null || recording.stopping) {
+      Log.i(TAG, "Stop() called, but already stopped or stopping.");
       return;
     }
+    recording.stopping = true;
+    MediaRecorderUtil.stop(recording.recorder, new Runnable() {
+      @Override
+      public void run() {
+        finishRecording(recording, true);
+      }
+    }, new Runnable() {
+      @Override
+      public void run() {
+        finishRecording(recording, false);
+      }
+    });
+  }
+
+  private void finishRecording(RecordingController recording, boolean saved) {
+    if (controller != recording) {
+      return;
+    }
+    controller = null;
     try {
-      Log.i(TAG, "Stop() called");
-      Log.i(TAG, "stopping");
-      controller.stop();
-      Log.i(TAG, "Firing AfterSoundRecorded with " + controller.file);
-      AfterSoundRecorded(controller.file);
+      recording.release();
     } catch (Throwable t) {
-      form.dispatchErrorOccurredEvent(this, "Stop", ErrorMessages.ERROR_SOUND_RECORDER);
+      Log.e(TAG, "Unable to release recorder", t);
+      saved = false;
+    }
+    try {
+      if (saved) {
+        AfterSoundRecorded(recording.file);
+      } else {
+        form.dispatchErrorOccurredEvent(this, "Stop", ErrorMessages.ERROR_SOUND_RECORDER);
+      }
     } finally {
-      controller = null;
       StoppedRecording();
     }
   }
