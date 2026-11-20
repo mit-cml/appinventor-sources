@@ -252,13 +252,24 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
   private Object getFromList(List<?> target, Object currentKey) {
     int offset = target instanceof YailList ? 0 : 1;
     try {
+      int index;
       if (currentKey instanceof FString) {
-        return target.get(Integer.parseInt(currentKey.toString()) - offset);
+        index = Integer.parseInt(currentKey.toString());
       } else if (currentKey instanceof String) {
-        return target.get(Integer.parseInt((String) currentKey) - offset);
+        index = Integer.parseInt((String) currentKey);
       } else if (currentKey instanceof Number) {
-        return target.get(((Number) currentKey).intValue() - offset);
+        index = ((Number) currentKey).intValue();
+      } else {
+        // Not a list index, so there is nothing at this key.
+        return null;
       }
+      // Indices are 1-based. Element 0 of a YailList is its *list* header, not an item.
+      if (index < 1) {
+        Log.w(LOG_TAG, "Requested an index less than 1: " + currentKey);
+        throw new YailRuntimeError("Requested an index less than 1: " + currentKey,
+            "IndexOutOfBoundsException");
+      }
+      return target.get(index - offset);
     } catch (NumberFormatException e) {
       Log.w(LOG_TAG, "Unable to parse key as integer: " + currentKey, e);
       throw new YailRuntimeError("Unable to parse key as integer: " + currentKey,
@@ -268,7 +279,6 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
       throw new YailRuntimeError("Requested too large of an index: " + currentKey,
           "IndexOutOfBoundsException");
     }
-    return null;
   }
 
   @SuppressWarnings("WeakerAccess")  // Called from runtime.scm
@@ -388,18 +398,19 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
             key.toString());
       }
     }
-    index -= offset;
-    if (index < 0 || index >= target.size() + 1 - offset) {
+    // Indices are 1-based for both kinds of list. Element 0 of a YailList is its *list* header,
+    // so 0 must be rejected here too, not only after the offset is applied.
+    if (index < 1 || index > target.size()) {
       try {
         throw new DispatchableError(ErrorMessages.ERROR_INDEX_MISSING_IN_LIST,
-            index + offset, JsonUtil.getJsonRepresentation(target));
+            index, JsonUtil.getJsonRepresentation(target));
       } catch (JSONException e) {
         // We just parsed this...
         Log.e(LOG_TAG, "Unable to serialize object as JSON", e);
         throw new YailRuntimeError(e.getMessage(), "JSON Error");
       }
     }
-    return index;
+    return index - offset;
   }
 
   private Object lookupTargetForKey(Object target, Object key) {
