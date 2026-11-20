@@ -95,6 +95,10 @@ class RootViewController: UINavigationController {
     return self.topViewController
   }
 
+  override public var childForStatusBarHidden: UIViewController? {
+    return self.topViewController
+  }
+
   @objc public func mark() {
     for vc in self.viewControllers {
       if let form = vc as? PlayerForm {

@@ -39,7 +39,7 @@ let kMinimumToastWait = 10.0
   fileprivate var _startText = ""
   fileprivate var _compatibilityMode = true
   @objc public var _componentWithActiveEvent: Component?
-  fileprivate var _statusBarHidden: Bool = true
+  fileprivate var _statusBarHidden: Bool = false
   fileprivate var _linearView = LinearView()
   fileprivate var _scaleFrameLayout = ScaleFrameLayout(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
   fileprivate let _isPhone = UIDevice.current.userInterfaceIdiom == .phone
@@ -103,6 +103,8 @@ let kMinimumToastWait = 10.0
   open override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     Form.activeForm = self
+    // TitleVisible may have been set before this form was in a navigation controller.
+    navigationController?.setNavigationBarHidden(!_titleVisible, animated: animated)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(ScreenOrientationChanged), name: UIDevice.orientationDidChangeNotification, object: nil)
@@ -327,7 +329,7 @@ let kMinimumToastWait = 10.0
     NSLayoutConstraint.deactivate(_constraints)
     _constraints.removeAll()
     if ShowStatusBar && !TitleVisible {
-      _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor, constant: UIApplication.shared.statusBarFrame.height))
+      _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor))
     } else {
       _constraints.append(_scaleFrameLayout.topAnchor.constraint(equalTo: view.topAnchor))
     }
@@ -718,7 +720,7 @@ let kMinimumToastWait = 10.0
 
   @objc open var ShowStatusBar: Bool {
     get {
-      return !UIApplication.shared.isStatusBarHidden
+      return !_statusBarHidden
     }
     set(show) {
       _statusBarHidden = !show
