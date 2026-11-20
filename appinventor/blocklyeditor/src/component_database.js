@@ -878,9 +878,9 @@ Blockly.ComponentDatabase.prototype.getOptionList = function(key) {
 
 /**
  * Iterate over all option list definitions calling the callback function with
- * the OptionList
+ * the OptionList and its internal key.
  *
- * @param {function(!OptionList)} callback
+ * @param {function(!OptionList, string)} callback
  */
 Blockly.ComponentDatabase.prototype.forEachOptionList = function(callback) {
   for (const key in this.optionLists_) {

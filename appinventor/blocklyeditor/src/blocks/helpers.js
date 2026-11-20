@@ -131,7 +131,7 @@ Blockly.Blocks['helpers_dropdown'] = {
     var db = Blockly.common.getMainWorkspace().getComponentDatabase();
     var tb = [];
 
-    db.forEachOptionList(function(optionList) {
+    db.forEachOptionList(function(optionList, optionListKey) {
       for (var i = 0, option; option = optionList.options[i]; i++) {
         var tag = db.getInternationalizedOptionListTag(optionList.tag);
         var key = optionList.tag + option.name;
@@ -140,7 +140,7 @@ Blockly.Blocks['helpers_dropdown'] = {
           // TODO: This doesn't handle rtl langs, anyway to fix that?
           translatedName: tag + i18nName,
           mutatorAttributes: {
-            key: optionList.tag,
+            key: optionListKey,
             value: option.name
           }
         });
