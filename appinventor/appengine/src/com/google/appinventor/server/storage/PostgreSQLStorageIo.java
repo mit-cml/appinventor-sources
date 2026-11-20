@@ -525,8 +525,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "setUserEmail");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -557,8 +557,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "setTosAccepted");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -591,8 +591,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "setUserSessionId");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -628,8 +628,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "setUserPassword");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -700,8 +700,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "storeSettings");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -787,8 +787,8 @@ public class PostgreSQLStorageIo implements StorageIo {
 
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "createProject");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -821,8 +821,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ustmt.executeUpdate(); // Don't care about result
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "deleteProject");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -923,8 +923,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "setProjectName");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1002,8 +1002,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "storeProjectSettings");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1326,8 +1326,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ustmt.executeBatch(); // We don't care about the result
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "addFilesToUser");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1423,8 +1423,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "uploadRawUserFile");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1523,8 +1523,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         }
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "deleteUserFile");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1575,8 +1575,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         bulkCreateProjectFile(projectId, userId, FileData.RoleEnum.SOURCE, fileNames, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "addSourceFilesToProject");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1601,8 +1601,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         bulkCreateProjectFile(projectId, userId, FileData.RoleEnum.TARGET, fileNames, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "addOutputFilesToProject");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1638,8 +1638,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         bulkDeleteProjectFile(projectId, userId, FileData.RoleEnum.SOURCE, fileNames, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "removeSourceFilesFromProject");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1670,8 +1670,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         bulkDeleteProjectFile(projectId, userId, FileData.RoleEnum.TARGET, fileNames, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "removeOutputFilesFromProject");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1795,8 +1795,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ts = updateProjectFileContent(projectId, userId, fileName, contentBytes, false, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "uploadFile");
+        storeWriteLsn(conn, strUserId);
       }
       return ts;
     } catch (SQLException e) {
@@ -1842,8 +1842,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ts = updateProjectFileContent(projectId, userId, fileName, contentBytes, true, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "uploadFileForce");
+        storeWriteLsn(conn, strUserId);
       }
       return ts;
     } catch (SQLException e) {
@@ -1878,8 +1878,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ts = updateProjectFileContent(projectId, userId, fileName, content, force, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "uploadRawFile");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1912,8 +1912,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ts = updateProjectFileContent(projectId, userId, fileName, content, true, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "uploadRawFileForce");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -1961,8 +1961,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         ts = updateProjectModifiedDate(projectId, userId, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "deleteFile");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -2041,8 +2041,8 @@ public class PostgreSQLStorageIo implements StorageIo {
           ok = true;
         }
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "recordCorruption");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -3642,8 +3642,8 @@ public class PostgreSQLStorageIo implements StorageIo {
         retVal = updateProjectBuiltDate(projectId, userId, conn);
         ok = true;
       } finally {
-        storeWriteLsn(conn, strUserId);
         doFinish(conn, ok, "updateProjectBuiltDate");
+        storeWriteLsn(conn, strUserId);
       }
     } catch (SQLException e) {
       throw CrashReport.createAndLogError(LOG, null, DATABASE_ERROR, e);
@@ -4086,7 +4086,6 @@ public class PostgreSQLStorageIo implements StorageIo {
                           .skip(1) // Skips performAction()
                           .findFirst()
                           .orElse("Unknown"));
-      System.out.println("Called by method: " + callerMethodName);
       LOG.log(Level.INFO, "getConnection: Called by " + callerMethodName);
     }
 
@@ -4149,6 +4148,9 @@ public class PostgreSQLStorageIo implements StorageIo {
   }
 
   private void storeWriteLsn(Connection conn, String strUserId) throws SQLException {
+    if (!useReplicas.get()) {   // If we aren't using replicas
+      return;                   // don't bother storing the lsn
+    }
     if (DEBUG) {
       String callerMethodName =
           StackWalker.getInstance()
@@ -4159,33 +4161,22 @@ public class PostgreSQLStorageIo implements StorageIo {
                           .skip(1) // Skips performAction()
                           .findFirst()
                           .orElse("Unknown"));
-      System.out.println("Called by method: " + callerMethodName);
       LOG.log(Level.INFO, "storeWriteLsn: Called by " + callerMethodName);
     }
-    try (PreparedStatement stmt =
-        conn.prepareStatement("SELECT pg_current_wal_lsn()::TEXT AS lsn")) {
-      ResultSet rs = stmt.executeQuery();
-      if (rs.next()) {
-        String lsn = rs.getString(1);
-        LOG.log(Level.INFO, "storeWriteLsn: lsn = " + lsn);
-        rs.close();
-        try (PreparedStatement stmt1 =
-            conn.prepareStatement(
-                "INSERT INTO currentlsn (strUserId, lsn) VALUES (?, ?::pg_lsn) ON CONFLICT"
-                    + " (strUserId) DO UPDATE set lsn = ?::pg_lsn")) {
-          stmt1.setString(1, strUserId);
-          stmt1.setString(2, lsn);
-          stmt1.setString(3, lsn);
-          int ret = stmt1.executeUpdate();
+    conn.setAutoCommit(true);   // We avoid a round trip to call commit
+    try (PreparedStatement stmt = conn.prepareStatement(
+        "INSERT INTO currentlsn (strUserId, lsn) VALUES (?, pg_current_wal_lsn()) ON CONFLICT"
+        + " (strUserId) DO UPDATE set lsn = pg_current_wal_lsn()")) {
+          stmt.setString(1, strUserId);
+          int ret = stmt.executeUpdate();
           if (ret == 0) {
             LOG.log(Level.SEVERE, "Failed to store lsn");
           }
-        }
-      } else {
-        LOG.log(Level.SEVERE, "Fetch of pg_current_wal_lsn failed!");
-      }
     } catch (SQLException e) {
       LOG.log(Level.SEVERE, "DATABASE ERROR in storeWritLsn", e);
+    } finally {
+      conn.setAutoCommit(false); // This may be pointless if we are about the return
+                                 // the connection to the pool.
     }
   }
 }
