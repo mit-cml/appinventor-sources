@@ -5,6 +5,7 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -93,5 +94,44 @@ public class YoungAndroidProjectServiceTest extends TestCase {
 
     assertTrue(result.failed());
     verify(storageIo, never()).getProjectOutputFiles(USER_ID, PROJECT_ID);
+  }
+
+  /* A form's PackageName property is removed; a component's property of the same name is kept */
+  @Test
+  public void testRemovePackageNameProperty() {
+    String prefix = "#|\n$JSON\n";
+    String suffix = "\n|#";
+    assertEquals(prefix + "{\"Properties\":{\"$Name\":\"Screen1\",\"$Components\":"
+        + "[{\"$Name\":\"Ext1\",\"PackageName\":\"com.example.myapp\"}]}}" + suffix,
+        YoungAndroidProjectService.removePackageNameProperty(prefix
+            + "{\"Properties\":{\"$Name\":\"Screen1\",\"PackageName\":\"com.example.myapp\","
+            + "\"$Components\":[{\"$Name\":\"Ext1\","
+            + "\"PackageName\":\"com.example.myapp\"}]}}" + suffix));
+    assertEquals(prefix + "{\"Properties\":{\"$Name\":\"Screen1\"}}" + suffix,
+        YoungAndroidProjectService.removePackageNameProperty(
+            prefix + "{\"Properties\":{\"PackageName\":\"a.b\",\"$Name\":\"Screen1\"}}"
+            + suffix));
+    // Malformed files are left alone.
+    String malformed = prefix + "{\"Properties\":{\"PackageName\":\"a.b\"" + suffix;
+    assertEquals(malformed, YoungAndroidProjectService.removePackageNameProperty(malformed));
+    String empty = "\"PackageName\"\n" + prefix + suffix;
+    assertEquals(empty, YoungAndroidProjectService.removePackageNameProperty(empty));
+  }
+
+  /* Project settings with an invalid package name are rejected before anything is stored */
+  @Test
+  public void testStoreProjectSettingsRejectsInvalidPackageName() {
+    StorageIo storageIo = mock(StorageIo.class);
+    YoungAndroidProjectService service = new YoungAndroidProjectService(storageIo);
+    try {
+      service.storeProjectSettings(USER_ID, PROJECT_ID, new YoungAndroidSettingsBuilder()
+          .setProjectName("Project1")
+          .setPackageName("myapp")
+          .build());
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException expected) {
+      // expected
+    }
+    verify(storageIo, never()).storeProjectSettings(anyString(), anyLong(), anyString());
   }
 }
