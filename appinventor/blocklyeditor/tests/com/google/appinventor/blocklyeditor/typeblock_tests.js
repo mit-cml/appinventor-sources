@@ -30,6 +30,22 @@ suite('TypeBlock', function() {
     chai.assert.equal(Blockly.common.getSelected(), textBlock);
   });
 
+  test('create Shape dropdown block', async function() {
+    initComponentTypes();
+    await act(() => input('ShapeRounded'));
+
+    const shapeBlock = workspace.getAllBlocks().find(b => b.type === 'helpers_dropdown');
+    chai.assert.equal(shapeBlock.getFieldValue('OPTION'), 'Rounded');
+    chai.assert.equal(shapeBlock.mutationToDom().getAttribute('key'), 'ButtonShape');
+    chai.assert.equal(workspace.getAllBlocks().length, 1);
+
+    const saved = Blockly.Xml.workspaceToDom(workspace);
+    workspace.clear();
+    await act(() => Blockly.Xml.domToWorkspace(saved, workspace));
+    chai.assert.equal(workspace.getAllBlocks().length, 1);
+    chai.assert.equal(workspace.getAllBlocks()[0].getFieldValue('OPTION'), 'Rounded');
+  });
+
   test('create global variable get block', async function() {
     await act(() => Blockly.serialization.blocks.append({
       type: 'global_declaration',

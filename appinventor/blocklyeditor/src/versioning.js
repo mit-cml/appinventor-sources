@@ -479,7 +479,7 @@ Blockly.Versioning.isExternal = function(componentType, workspace) {
 };
 
 /******************************************************************************
- * Details for specific upgrades go below, in reverse chronological order.
+ * Details for specific upgrades go below, in chronological order.
  * The code for each upgrade *MUST* be well-documented in order to help
  * those implementing similar upgrades in the future.
  ******************************************************************************/
@@ -813,6 +813,15 @@ Blockly.Versioning.makeScreenNamesBeDropdowns = function (blocksRep, workspace) 
     }
   }
   return blocksRep;
+};
+
+Blockly.Versioning.renameOptionListKeyFromShapeToButtonShape = function (blocksRep) {
+  const dom = Blockly.Versioning.ensureDom(blocksRep);
+  const mutations = dom.querySelectorAll('block[type="helpers_dropdown"] > mutation[key="Shape"]');
+  for (const mutation of mutations) {
+    mutation.setAttribute('key', 'ButtonShape');
+  }
+  return dom;
 };
 
 /******************************************************************************
@@ -2454,7 +2463,9 @@ Blockly.Versioning.AllUpgradeMaps =
     39: "noUpgrade",
 
     // AI2: Add "titlecase" operator for text_changeCase block.
-    40: "noUpgrade"
+    40: "noUpgrade",
+
+    41: Blockly.Versioning.renameOptionListKeyFromShapeToButtonShape
   }, // End Language upgraders
 
 

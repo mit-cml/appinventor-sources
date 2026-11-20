@@ -644,7 +644,9 @@ public class YaVersion {
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 5.
   // For YOUNG_ANDROID_VERSION 239:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 40.
-  public static final int YOUNG_ANDROID_VERSION = 239;
+  // For YOUNG_ANDROID_VERSION 240:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 41.
+  public static final int YOUNG_ANDROID_VERSION = 240;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -749,7 +751,9 @@ public class YaVersion {
   // - The Multiline Text block was added.
   // For BLOCKS_LANGUAGE_VERSION 40
   // - Add "titlecase" operator for text_changeCase block.
-  public static final int BLOCKS_LANGUAGE_VERSION = 40;
+  // For BLOCKS_LANGUAGE_VERSION 41
+  // - Rename option list key from Shape to ButtonShape.
+  public static final int BLOCKS_LANGUAGE_VERSION = 41;
 
   // ................................. Target SDK Version Number ..................................
 
