@@ -432,6 +432,7 @@ public class Ode implements EntryPoint {
       case DESIGNER:
         return currentFileEditor;
       case PROJECTS:
+      case TRASHCAN:
         return projectListbox.getProjectList();
       case USERADMIN:
         return AdminUserListBox.getAdminUserListBox().getAdminUserList();
