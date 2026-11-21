@@ -660,7 +660,7 @@ Blockly.Blocks['obfuscated_text'] = {
         .appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_OBFUSCATE_TOOLTIP);
-    this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8);
+    this.confounder = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 8);
   },
   domToMutation: function(xmlElement) {
     var confounder = xmlElement.getAttribute('confounder');
