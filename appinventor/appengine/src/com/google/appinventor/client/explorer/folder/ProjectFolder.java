@@ -182,7 +182,7 @@ public class ProjectFolder extends Composite {
     }
     project.setHomeFolder(this);
     projects.add(project);
-    cachedJson = null;
+    clearCache();
   }
 
   public void refresh(Comparator<Project> projectComparator, Comparator<ProjectFolder> folderComparator,
@@ -223,7 +223,7 @@ public class ProjectFolder extends Composite {
 
   public void removeProject(Project project) {
     projects.remove(project);
-    cachedJson = null;
+    clearCache();
   }
 
   public void addChildFolder(ProjectFolder folder) {
@@ -235,12 +235,12 @@ public class ProjectFolder extends Composite {
     }
     folders.put(folder.name, folder);
     folder.parent = this;
-    cachedJson = null;
+    clearCache();
   }
 
   public void removeChildFolder(ProjectFolder folder) {
     folders.remove(folder.name);
-    cachedJson = null;
+    clearCache();
   }
 
   public long getDateModified() {
@@ -377,7 +377,7 @@ public class ProjectFolder extends Composite {
   public void setName(String name) {
     this.name = name;
     dateModified = System.currentTimeMillis();
-    cachedJson = null;
+    clearCache();
   }
 
   public String getName() {
@@ -430,8 +430,11 @@ public class ProjectFolder extends Composite {
     return cachedJson;
   }
 
-  public void clearCache() {
+  private void clearCache() {
     cachedJson = null;
+    if (parent != null) {
+      parent.clearCache();
+    }
   }
 
   protected JSONObject makeJSON() {
