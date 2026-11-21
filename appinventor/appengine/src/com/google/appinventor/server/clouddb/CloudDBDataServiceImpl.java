@@ -5,36 +5,68 @@
 
 package com.google.appinventor.server.clouddb;
 
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.OdeRemoteServiceServlet;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.util.SslUtils;
 import com.google.appinventor.shared.rpc.clouddb.CloudDBDataService;
 import com.google.appinventor.shared.rpc.clouddb.DataEntry;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisShardInfo;
-import redis.clients.jedis.Pipeline;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLSocketFactory;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
 /**
  * Server-side implementation of {@link CloudDBDataService}.
  *
- * <p>Uses the token passed from the client (the component's Token property, which was
- * issued by {@code TokenAuthServiceImpl}) to authenticate with Redis, then reads or
- * writes keys under the given projectId prefix. All Jedis connections are closed in
- * finally blocks. Jedis exception types are wrapped as plain {@link Exception} because
- * Jedis types are not in GWT's RPC serialization whitelist.
+ * <p>Uses the token passed from the client (the component's Token property, which was issued by
+ * {@code TokenAuthServiceImpl}) to authenticate with Redis, then reads or writes keys under the
+ * given projectId prefix. All Jedis connections are closed in finally blocks. Jedis exception types
+ * are wrapped as plain {@link Exception} because Jedis types are not in GWT's RPC serialization
+ * whitelist.
  */
-public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
-    implements CloudDBDataService {
+public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet implements CloudDBDataService {
 
   private static final Logger LOG = Logger.getLogger(CloudDBDataServiceImpl.class.getName());
   private static final int CONNECTION_TIMEOUT_MS = 10000;
   private static final int MAX_VIZ_ENTRIES = 2000;
 
   private final String defaultServer = Flag.createFlag("clouddb.server", "").get();
+
+  private static final String MIT_CA =
+      "-----BEGIN CERTIFICATE-----\n"
+          + "MIIFXjCCBEagAwIBAgIJAMLfrRWIaHLbMA0GCSqGSIb3DQEBCwUAMIHPMQswCQYD\n"
+          + "VQQGEwJVUzELMAkGA1UECBMCTUExEjAQBgNVBAcTCUNhbWJyaWRnZTEuMCwGA1UE\n"
+          + "ChMlTWFzc2FjaHVzZXR0cyBJbnN0aXR1dGUgb2YgVGVjaG5vbG9neTEZMBcGA1UE\n"
+          + "CxMQTUlUIEFwcCBJbnZlbnRvcjEmMCQGA1UEAxMdQ2xvdWREQiBDZXJ0aWZpY2F0\n"
+          + "ZSBBdXRob3JpdHkxEDAOBgNVBCkTB0Vhc3lSU0ExGjAYBgkqhkiG9w0BCQEWC2pp\n"
+          + "c0BtaXQuZWR1MB4XDTE3MTIyMjIyMzkyOVoXDTI3MTIyMDIyMzkyOVowgc8xCzAJ\n"
+          + "BgNVBAYTAlVTMQswCQYDVQQIEwJNQTESMBAGA1UEBxMJQ2FtYnJpZGdlMS4wLAYD\n"
+          + "VQQKEyVNYXNzYWNodXNldHRzIEluc3RpdHV0ZSBvZiBUZWNobm9sb2d5MRkwFwYD\n"
+          + "VQQLExBNSVQgQXBwIEludmVudG9yMSYwJAYDVQQDEx1DbG91ZERCIENlcnRpZmlj\n"
+          + "YXRlIEF1dGhvcml0eTEQMA4GA1UEKRMHRWFzeVJTQTEaMBgGCSqGSIb3DQEJARYL\n"
+          + "amlzQG1pdC5lZHUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDHzI3D\n"
+          + "FobNDv2HTWlDdedmbxZIJYSqWlzdRJC3oVJgCubdAs46WJRqUxDRWft9UpYGMKkw\n"
+          + "mYN8mdPby2m5OJagdVIZgnguB71zIQkC8yMzd94FC3gldX5m7R014D/0fkpzvsSt\n"
+          + "6fsNectJT0k7gPELOH6t4u6AUbvIsEX0nNyRWsmA/ucXCsDBwXyBJxfOKIQ9tDI4\n"
+          + "/WfcKk9JDpeMF7RP0CIOtlAPotKIaPoY1W3eMIi/0riOt5vTFsB8pxhxAVy0cfGX\n"
+          + "iHukdrAkAJixTgkyS7wzk22xOeXVnRIzAMGK5xHMDw/HRQGTrUGfIXHENV3u+3Ae\n"
+          + "L5/ZoQwyZTixmQNzAgMBAAGjggE5MIIBNTAdBgNVHQ4EFgQUZfMKQXqtC5UJGFrZ\n"
+          + "gZE1nmlx+t8wggEEBgNVHSMEgfwwgfmAFGXzCkF6rQuVCRha2YGRNZ5pcfrfoYHV\n"
+          + "pIHSMIHPMQswCQYDVQQGEwJVUzELMAkGA1UECBMCTUExEjAQBgNVBAcTCUNhbWJy\n"
+          + "aWRnZTEuMCwGA1UEChMlTWFzc2FjaHVzZXR0cyBJbnN0aXR1dGUgb2YgVGVjaG5v\n"
+          + "bG9neTEZMBcGA1UECxMQTUlUIEFwcCBJbnZlbnRvcjEmMCQGA1UEAxMdQ2xvdWRE\n"
+          + "QiBDZXJ0aWZpY2F0ZSBBdXRob3JpdHkxEDAOBgNVBCkTB0Vhc3lSU0ExGjAYBgkq\n"
+          + "hkiG9w0BCQEWC2ppc0BtaXQuZWR1ggkAwt+tFYhoctswDAYDVR0TBAUwAwEB/zAN\n"
+          + "BgkqhkiG9w0BAQsFAAOCAQEAIkKr3eIvwZO6a1Jsh3qXwveVnrqwxYvLw2IhTwNT\n"
+          + "/P6C5jbRnzUuDuzg5sEIpbBo/Bp3qIp7G5cdVOkIrqO7uCp6Kyc7d9lPsEe/cbF4\n"
+          + "aNwNmdWroRN1y0tuMU6+z7frd5pOeAZP9E/DM/0Uaz4yVzwnlvZUttaLymyMhH54\n"
+          + "isGQKbAqHDFtKZvb6DxsHzrO2YgeaBAtjeVhPWiv8BhzbOo9+hhZvYHYtoM2W+Ze\n"
+          + "DHuvv0v+qouphftDKVBp16N8Pk5WgabTXzV6VcNee92iwbWYDEv06+S3AF/q2TBe\n"
+          + "xxXtAa5ywbp6IRF37QuQChcYnOx7zIylYI1PIENfQFC2BA==\n"
+          + "-----END CERTIFICATE-----\n";
 
   @Override
   public List<DataEntry> getEntries(String projectId, String token, String redisServer,
@@ -151,15 +183,17 @@ public class CloudDBDataServiceImpl extends OdeRemoteServiceServlet
   }
 
   private Jedis buildJedis(String host, int port, boolean useSSL, String token) {
-    JedisShardInfo shardInfo;
-    if (useSSL) {
-      shardInfo = new JedisShardInfo(host, port, CONNECTION_TIMEOUT_MS,
-          true /* ssl */, null, null, null);
-    } else {
-      shardInfo = new JedisShardInfo(host, port, CONNECTION_TIMEOUT_MS);
+    SSLSocketFactory sslSocketFactory = null;
+    try {
+      sslSocketFactory = SslUtils.createSocketFactoryFromCertString(MIT_CA);
+    } catch (Exception e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
-    shardInfo.setPassword(token);
-    return new Jedis(shardInfo);
+    Jedis jedis =
+        new Jedis(host, port, CONNECTION_TIMEOUT_MS, 2000, useSSL, sslSocketFactory, null, null);
+    jedis.connect();
+    jedis.auth(token);
+    return jedis;
   }
 
   private void closeQuietly(Jedis jedis) {
