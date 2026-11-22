@@ -815,15 +815,6 @@ Blockly.Versioning.makeScreenNamesBeDropdowns = function (blocksRep, workspace) 
   return blocksRep;
 };
 
-Blockly.Versioning.renameOptionListKeyFromShapeToButtonShape = function (blocksRep) {
-  const dom = Blockly.Versioning.ensureDom(blocksRep);
-  const mutations = dom.querySelectorAll('block[type="helpers_dropdown"] > mutation[key="Shape"]');
-  for (const mutation of mutations) {
-    mutation.setAttribute('key', 'ButtonShape');
-  }
-  return dom;
-};
-
 /******************************************************************************
  General helper methods for upgrades go in this section
  ******************************************************************************/
@@ -905,6 +896,25 @@ Blockly.Versioning.renameBlockType = function(oldBlockType, newBlockType) {
     }
     return dom; // Return the modified dom, as required by the upgrading structure.
   }
+};
+
+/**
+ * Rename the option list key from oldKey to newKey in all matching dropdown blocks
+ * @param oldKey: string value of the old option list key
+ * @param newKey: string value of the new option list key
+ */
+
+Blockly.Versioning.renameOptionListKey = function(oldKey, newKey) {
+  return function (blocksRep) {
+    const dom = Blockly.Versioning.ensureDom(blocksRep);
+    const mutations = dom.querySelectorAll('block[type="helpers_dropdown"] > mutation[key]');
+    for (const mutation of mutations) {
+      if (mutation.getAttribute('key') === oldKey) {
+        mutation.setAttribute('key', newKey);
+      }
+    }
+    return dom;
+  };
 };
 
 /**
@@ -2465,7 +2475,8 @@ Blockly.Versioning.AllUpgradeMaps =
     // AI2: Add "titlecase" operator for text_changeCase block.
     40: "noUpgrade",
 
-    41: Blockly.Versioning.renameOptionListKeyFromShapeToButtonShape
+    // AI2: Fix dropdown blocks where typeblocking saved the display tag as the option list key.
+    41: Blockly.Versioning.renameOptionListKey('Shape', 'ButtonShape')
   }, // End Language upgraders
 
 
