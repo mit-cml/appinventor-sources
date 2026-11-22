@@ -259,18 +259,6 @@ Blockly.WorkspaceSvg.prototype.isDrawerShowing = function() {
 };
 
 /**
- * Obtain the {@link Blockly.ComponentDatabase} associated with the workspace.
- *
- * @returns {!Blockly.ComponentDatabase}
- */
-Blockly.WorkspaceSvg.prototype.getComponentDatabase = function() {
-  if (this.targetWorkspace) {
-    return this.targetWorkspace.getComponentDatabase();
-  }
-  return this.componentDb_;
-};
-
-/**
  * Obtain the {@link Blockly.ProcedureDatabase} associated with the workspace.
  * @returns {!Blockly.ProcedureDatabase}
  */
