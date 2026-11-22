@@ -86,3 +86,15 @@ Blockly.Workspace.prototype.dispose = (function(func) {
       return wrappedFunc;
     }
   })(Blockly.Workspace.prototype.dispose);
+
+/**
+ * Obtain the {@link Blockly.ComponentDatabase} associated with the workspace.
+ *
+ * @returns {!Blockly.ComponentDatabase}
+ */
+Blockly.Workspace.prototype.getComponentDatabase = function() {
+  if (this.targetWorkspace) {
+    return this.targetWorkspace.getComponentDatabase();
+  }
+  return this.componentDb_;
+};
