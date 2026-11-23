@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -203,22 +204,26 @@ public class AssetFetcher {
     final boolean makeReadonly = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
         && asset.contains("/external_comps/") && asset.endsWith("/classes.jar");
 
-    HttpsURLConnection connection = null;
+    HttpURLConnection connection = null;
     int responseCode = 0;
     String fileHash = null;
     boolean error = false;
 
     try {
       URL url = new URL(fileName);
-      connection = (HttpsURLConnection) url.openConnection();
-      SSLSocketFactory sslSocketFactory = AppinvSslSocketFactory.getSocketFactory();
+      connection = (HttpURLConnection) url.openConnection();
       if (connection != null) {
         connection.addRequestProperty("Cookie",  "AppInventor = " + cookieValue);
         HashFile hashFile = db.getHashFile(destinationFilename);
         if (hashFile != null && outFile.exists()) {
           connection.addRequestProperty("If-None-Match", hashFile.getHash()); // get old_hash from database
         }
-        connection.setSSLSocketFactory(sslSocketFactory);
+        // Local development servers are typically plain HTTP, so only
+        // HTTPS connections get the extra trusted certificates.
+        if (connection instanceof HttpsURLConnection) {
+          SSLSocketFactory sslSocketFactory = AppinvSslSocketFactory.getSocketFactory();
+          ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
+        }
         connection.setRequestMethod("GET");
         responseCode = connection.getResponseCode();
         Log.d(LOG_TAG, "asset = " + asset + " responseCode = " + responseCode);
