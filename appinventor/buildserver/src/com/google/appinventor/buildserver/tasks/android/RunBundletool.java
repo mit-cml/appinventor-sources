@@ -241,6 +241,11 @@ public class RunBundletool implements AndroidTask {
       bundletoolCommandLine.add("--metadata-file=com.android.tools.build.obfuscation/proguard.map:"
           + mapping.getAbsolutePath());
     }
+    File r8Metadata = RunR8.getBuildMetadataFile(context.getPaths());
+    if (r8Metadata.isFile()) {
+      bundletoolCommandLine.add("--metadata-file=com.android.tools/r8.json:"
+          + r8Metadata.getAbsolutePath());
+    }
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, bundletoolBuildCommandLine,

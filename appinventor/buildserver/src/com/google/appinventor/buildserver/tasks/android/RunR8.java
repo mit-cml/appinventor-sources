@@ -51,6 +51,14 @@ public class RunR8 extends DexTask implements AndroidTask {
     return new File(paths.getBuildDir(), "proguard.map");
   }
 
+  /**
+   * Build metadata written by R8 (r8.json). Google Play reads the obfuscation, optimization and
+   * shrinking percentages from it; RunBundletool embeds it when present.
+   */
+  static File getBuildMetadataFile(AndroidPaths paths) {
+    return new File(paths.getBuildDir(), "r8.json");
+  }
+
   @Override
   public TaskResult execute(AndroidCompilerContext context) {
     try {
@@ -117,9 +125,24 @@ public class RunR8 extends DexTask implements AndroidTask {
   private static File writeKeepRules(AndroidCompilerContext context) throws IOException {
     File rules = new File(context.getPaths().getBuildDir(), "appinventor_rules.pro");
     try (PrintStream out = new PrintStream(new FileOutputStream(rules))) {
-      // Inputs bundle optional dependencies that are not on the classpath.
+      // Kawa's desktop REPL and GUI, never loaded on Android.
+      out.println("-dontwarn java.awt.**");
+      out.println("-dontwarn javax.swing.**");
+      out.println("-dontwarn javax.imageio.**");
+      // Annotation-only dependencies of Guava, OpenCensus and others.
+      out.println("-dontwarn javax.annotation.**");
+      out.println("-dontwarn org.checkerframework.**");
+      out.println("-dontwarn com.google.errorprone.annotations.**");
+      out.println("-dontwarn androidx.annotation.**");
+      out.println("-dontwarn android.support.annotation.**");
+      // httpmime wants a newer httpcore than the device's org.apache.http.legacy. Those paths
+      // fail the same way in D8 builds.
+      out.println("-dontwarn org.apache.http.util.Args");
+      out.println("-dontwarn org.apache.http.entity.ContentType");
+      out.println("-dontwarn org.apache.http.Consts");
+      // Extensions and libraries may reference optional classes we can't foresee. R8 still logs
+      // each one as "Warning: Missing class ...", but doesn't fail the build, just as D8 doesn't.
       out.println("-ignorewarnings");
-      out.println("-dontwarn **");
       out.println("-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod,"
           + "Exceptions,SourceFile,LineNumberTable");
       out.println("-renamesourcefileattribute SourceFile");
@@ -170,6 +193,12 @@ public class RunR8 extends DexTask implements AndroidTask {
       out.println("  @" + ANNOTATIONS + "SimpleFunction *;");
       out.println("  @" + ANNOTATIONS + "SimpleEvent *;");
       out.println("  @" + ANNOTATIONS + "DesignerProperty *;");
+      // Looked up by name in PropertyUtil.copyComponentProperties.
+      out.println("  @" + ANNOTATIONS + "SimplePropertyCopier *;");
+      out.println("}");
+      // Form.callInitialize looks up Initialize() by name; Sprite and others rely on it.
+      out.println("-keepclassmembers class * implements " + RUNTIME + "Component {");
+      out.println("  public void Initialize();");
       out.println("}");
 
       // Standard Android rules (as in proguard-android-optimize.txt).
@@ -212,6 +241,9 @@ public class RunR8 extends DexTask implements AndroidTask {
     args.add("--dex");
     args.add("--lib");
     args.add(context.getResources().getAndroidRuntime());
+    // Provided on the device via <uses-library org.apache.http.legacy> (see CreateManifest).
+    args.add("--lib");
+    args.add(context.getResources().getApacheHttpLegacyJar());
     args.add("--output");
     args.add(context.getPaths().getTmpDir().getAbsolutePath());
     args.add("--min-api");
@@ -220,6 +252,8 @@ public class RunR8 extends DexTask implements AndroidTask {
     args.add(writeClassRules(context.getPaths().getClassesDir(), mainDexClasses));
     args.add("--pg-map-output");
     args.add(getMappingFile(context.getPaths()).getAbsolutePath());
+    args.add("--build-metadata-output");
+    args.add(getBuildMetadataFile(context.getPaths()).getAbsolutePath());
     for (File config : configs) {
       args.add("--pg-conf");
       args.add(config.getAbsolutePath());
