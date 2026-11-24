@@ -165,8 +165,6 @@ public class RunR8 extends DexTask implements AndroidTask {
 
       // Runtime classes that runtime.scm and generated YAIL reference by name.
       out.println("-keep class " + RUNTIME + "Form { *; }");
-      out.println("-keep class " + RUNTIME + "ReplForm { *; }");
-      out.println("-keep class " + RUNTIME + "ReplApplication { *; }");
       out.println("-keep class " + RUNTIME + "AppInventorCompatActivity { *; }");
       out.println("-keep class " + RUNTIME + "Component { *; }");
       out.println("-keep class " + RUNTIME + "ComponentContainer { *; }");
@@ -176,8 +174,11 @@ public class RunR8 extends DexTask implements AndroidTask {
       out.println("-keep class " + RUNTIME + "OptionHelper { *; }");
       // Compiled apps never evaluate YAIL at runtime, so R8 may drop the util, errors and common
       // classes they don't use (allowshrinking); the ones they use keep their names and members.
-      // The Companion's REPL can reach any of them, so it keeps them all.
+      // The same goes for the Companion-only ReplForm and ReplApplication. The Companion's REPL
+      // can reach any of them, so it keeps them all.
       String keepRuntime = context.isForCompanion() ? "-keep class " : "-keep,allowshrinking class ";
+      out.println(keepRuntime + RUNTIME + "ReplForm { *; }");
+      out.println(keepRuntime + RUNTIME + "ReplApplication { *; }");
       out.println(keepRuntime + RUNTIME + "util.** { *; }");
       out.println(keepRuntime + RUNTIME + "errors.** { *; }");
       out.println(keepRuntime + "com.google.appinventor.components.common.** { *; }");
