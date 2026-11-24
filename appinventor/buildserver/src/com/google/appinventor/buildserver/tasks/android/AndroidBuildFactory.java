@@ -33,9 +33,20 @@ public class AndroidBuildFactory extends BuildFactory<AndroidPaths, AndroidCompi
     USE_D8 = version >= 9;
   }
 
+  /**
+   * When true, App Bundle builds run R8 (shrinking, optimization and obfuscation) instead of
+   * D8. APK builds are unaffected. Set once at startup from the --enable-r8 flag.
+   */
+  private static boolean enableR8 = false;
+
   private final boolean isAab;
 
   public static void install() {
+    install(false);
+  }
+
+  public static void install(boolean enableR8) {
+    AndroidBuildFactory.enableR8 = enableR8 && USE_D8;
     register(BuildType.APK_EXTENSION, new AndroidBuildFactory(false));
     register(BuildType.AAB_EXTENSION, new AndroidBuildFactory(true));
   }
@@ -78,7 +89,11 @@ public class AndroidBuildFactory extends BuildFactory<AndroidPaths, AndroidCompi
   protected void compileSources(Compiler<AndroidPaths, AndroidCompilerContext> compiler) {
     super.compileSources(compiler);
     compiler.add(GenerateClasses.class);
-    compiler.add(USE_D8 ? RunD8.class : RunMultidex.class);
+    if (isAab && enableR8) {
+      compiler.add(RunR8.class);
+    } else {
+      compiler.add(USE_D8 ? RunD8.class : RunMultidex.class);
+    }
   }
 
   @Override

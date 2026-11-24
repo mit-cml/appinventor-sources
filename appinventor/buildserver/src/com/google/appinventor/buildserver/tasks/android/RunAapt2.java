@@ -95,6 +95,9 @@ public class RunAapt2 implements AndroidTask {
     aapt2CommandLine.add("--no-auto-version");
     aapt2CommandLine.add("--no-version-transitions");
     aapt2CommandLine.add("--no-resource-deduping");
+    // Keep rules for classes referenced from the manifest and layouts, consumed by RunR8.
+    aapt2CommandLine.add("--proguard");
+    aapt2CommandLine.add(RunR8.getAaptRulesFile(context.getPaths()).getAbsolutePath());
     String[] aapt2LinkCommandLine = aapt2CommandLine.toArray(new String[0]);
 
     if (!Execution.execute(null, aapt2LinkCommandLine,
