@@ -234,6 +234,9 @@ public class RunR8 extends DexTask implements AndroidTask {
     List<String> args = new ArrayList<>();
     args.add("-Xmx" + context.getChildProcessRam() + "M");
     args.add("-Xss8m");
+    // R8 runs in a short-lived JVM, where C2 compilation costs more than it saves. C1 only
+    // makes the R8 step 25-47% faster; R8's output doesn't depend on the JIT.
+    args.add("-XX:TieredStopAtLevel=1");
     args.add("-cp");
     args.add(context.getResources().getD8Jar());
     args.add("com.android.tools.r8.R8");
