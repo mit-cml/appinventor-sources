@@ -103,6 +103,10 @@ public class CloudDB: NonvisibleComponent, RedisManagerDelegate {
     super.init(container)
   }
 
+  @objc open func Initialize() {
+    getRedis()
+  }
+
   fileprivate func getRedis() {
     _redisQueue.sync {
       if _redis == nil {
