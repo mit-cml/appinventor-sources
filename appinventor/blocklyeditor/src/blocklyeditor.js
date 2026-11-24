@@ -1010,6 +1010,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, useDarkTheme, re
     renderer: 'geras2_renderer',
     theme: useDarkTheme ? Blockly.Themes.darkTheme : Blockly.Themes.ClassicTheme
   };
+  Blockly.common.setParentContainer(document.body);
   var workspace = Blockly.inject(container, options);
   AI.Blockly.multiselect = Multiselect;
   var multiselectPlugin = new AI.Blockly.multiselect(workspace);
