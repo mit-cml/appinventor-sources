@@ -367,6 +367,13 @@ public class ProjectList extends Composite implements FolderManagerEventListener
     return folder.containsAnyProjects();
   }
 
+  /**
+   * Select all projects in the project list.
+   */
+  public void selectAll() {
+    selectAllCheckBox.setValue(true);
+    toggleAllItemSelection(null);
+  }
 
   public int getMyProjectsCount() {
     int count = 0;

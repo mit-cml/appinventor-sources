@@ -2457,6 +2457,18 @@ path.ode-SimpleMockMapFeature-selected {
   box-shadow: 0 0 2px #aaa;
 }
 
+.ode-DialogBox .ode-shortcut-locked {
+  font-style: italic;
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ode-shortcut-buttons {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+}
+
 /* AI2 Extensions Styles */
 
 a.ode-ExtensionAnchor {

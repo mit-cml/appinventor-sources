@@ -13,6 +13,7 @@ import static com.google.appinventor.client.utils.Promise.rejectWithReason;
 import static com.google.appinventor.client.utils.Promise.resolve;
 import static com.google.appinventor.client.wizards.TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY;
 
+import com.google.appinventor.client.boxes.AdminUserListBox;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
@@ -40,8 +41,6 @@ import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.local.LocalProjectService;
-import com.google.appinventor.client.local.LocalTokenAuthService;
-import com.google.appinventor.client.local.LocalUserInfoService;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.style.neo.ImagesNeo;
@@ -51,6 +50,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.HTML5DragDrop;
 import com.google.appinventor.client.utils.PZAwarePositionCallback;
 import com.google.appinventor.client.utils.Promise;
+import com.google.appinventor.client.utils.ShortcutRegistry;
 import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.client.widgets.ExpiredServiceOverlay;
@@ -93,6 +93,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -116,7 +118,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -129,6 +130,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.googlecode.gwt.crypto.bouncycastle.digests.MD5Digest;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -421,8 +423,21 @@ public class Ode implements EntryPoint {
   /**
    * Get the current view
    */
-  public int getCurrentView() {
+  public int getCurrentViewId() {
     return currentView;
+  }
+
+  public Widget getCurrentView() {
+    switch (currentView) {
+      case DESIGNER:
+        return currentFileEditor;
+      case PROJECTS:
+      case TRASHCAN:
+        return projectListbox.getProjectList();
+      case USERADMIN:
+        return AdminUserListBox.getAdminUserListBox().getAdminUserList();
+    }
+    throw new IllegalStateException("Unknown view: " + currentView);
   }
 
   public DeckPanel getDeckPanel() {
@@ -1032,6 +1047,13 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private Promise<Object> initializeUi(Object result) {
+    ShortcutRegistry.getInstance().applyKeyOverrides(ShortcutRegistry.getInstance().loadKeyOverrides());
+    RootPanel.get().addDomHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent keyDownEvent) {
+        ShortcutRegistry.getInstance().onKeyDown(getCurrentView(), keyDownEvent);
+      }
+    }, KeyDownEvent.getType());
     EDITORS.register(YoungAndroidProjectNode.class, node -> new YaProjectEditor(node, uiFactory));
     sourceStructureBox = SourceStructureBox.getSourceStructureBox();
     folderManager = new FolderManager(uiFactory);
@@ -1142,6 +1164,13 @@ public class Ode implements EntryPoint {
         onClosing();
       }
     });
+
+    // TODO(ewpatton): This is for testing only and should be removed once we add a dialog
+    List<ShortcutRegistry.KeyboardShortcut> shortcuts = ShortcutRegistry.getInstance().getKeyboardShortcuts();
+    for (ShortcutRegistry.KeyboardShortcut shortcut : shortcuts) {
+      CLog("Shortcut: " + ShortcutRegistry.getShortcutKeys(shortcut.getKeyCodes().getString(0)) + " -> " + shortcut.getDisplayText());
+    }
+
 
     HTML5DragDrop.init();
     topPanel.showUserEmail(user.getUserEmail());

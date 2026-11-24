@@ -6,12 +6,10 @@
 
 package com.google.appinventor.client.editor.simple.palette;
 
-import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.designer.DesignerEditor;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.i18n.ComponentTranslationTable;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
-import com.google.appinventor.client.editor.youngandroid.DesignToolbar;
 import com.google.appinventor.client.json.JsArray;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -33,7 +31,6 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -175,22 +172,6 @@ public abstract class AbstractPalettePanel<
         doSearch();
       }
     });
-
-    /* User presses the slash key, the search text box is focused */
-    RootPanel.get().addDomHandler(new KeyDownHandler() {
-      @Override
-      public void onKeyDown(KeyDownEvent event) {
-        DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
-        if (designToolbar.currentView == DesignToolbar.View.DESIGNER && event.getNativeKeyCode() == 191
-                && !shouldSuppressShortcuts() && !event.isAltKeyDown()) {
-          {
-            event.preventDefault();
-            previousFocus = getActiveElement();
-            searchText.setFocus(true);
-          }
-        }
-      }
-    }, KeyDownEvent.getType());
 
     panel.add(searchText);
     panel.setWidth("100%");
@@ -556,6 +537,12 @@ public abstract class AbstractPalettePanel<
 
   public boolean shouldSuppressShortcuts() {
     return isTextboxFocused() || isMenuOpen();
+  }
+
+  @Override
+  public void focusSearchBox() {
+    previousFocus = getActiveElement();
+    searchText.setFocus(true);
   }
 
   private native boolean canReceiveFocus(Element el)/*-{

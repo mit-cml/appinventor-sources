@@ -116,7 +116,7 @@ public final class HTML5DragDrop {
   }-*/;
 
   public static boolean isProjectEditorOpen() {
-    return Ode.getInstance().getCurrentView() == 0;
+    return Ode.getInstance().getCurrentViewId() == Ode.DESIGNER;
   }
 
   public static boolean isBlocksEditorOpen() {
@@ -301,7 +301,7 @@ public final class HTML5DragDrop {
    * @return the element to use if the drop is valid, otherwise null
    */
   protected static Element shouldShowDropTarget(Element target) {
-    if (Ode.getInstance().getCurrentView() == Ode.PROJECTS) {
+    if (Ode.getInstance().getCurrentViewId() == Ode.PROJECTS) {
       boolean noProjects = 0 == ProjectListBox.getProjectListBox()
           .getProjectList().getMyProjectsCount();
       while (target != Document.get().getBody()) {
@@ -314,7 +314,7 @@ public final class HTML5DragDrop {
         }
         target = target.getParentElement();
       }
-    } else if (Ode.getInstance().getCurrentView() == Ode.DESIGNER) {
+    } else if (Ode.getInstance().getCurrentViewId() == Ode.DESIGNER) {
       while (target != Document.get().getBody()) {
         if (target == AssetListBox.getAssetListBox().getElement()) {
           return target;  // Media list is a drop target

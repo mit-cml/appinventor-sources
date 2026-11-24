@@ -48,4 +48,6 @@ public interface SimplePalettePanel {
   boolean isMenuOpen();
 
   boolean shouldSuppressShortcuts();
+
+  void focusSearchBox();
 }
