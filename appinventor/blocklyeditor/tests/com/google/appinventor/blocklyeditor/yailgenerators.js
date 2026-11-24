@@ -110,6 +110,13 @@ suite('Blockly Code Generator Tests', function() {
     })
   })
   suite('Text Blocks', function() {
+    test('text_newline', function() {
+      let expected = '"\\n"';
+      let testBlock = Blockly.common.getMainWorkspace().newBlock('text_newline');
+      let yailForBlock = AI.Yail.forBlock[testBlock.type](testBlock, AI.Yail);
+      chai.assert.lengthOf(yailForBlock, 2);
+      chai.assert.equal(yailForBlock[0], expected);
+    })
     test('text_split:SPLITATANY', function() {
       let expected = "(call-yail-primitive string-split-at-any (*list-for-runtime* \"\" 1) '(text list) \"split at any\")";
       let testBlock = Blockly.common.getMainWorkspace().newBlock('text_split');

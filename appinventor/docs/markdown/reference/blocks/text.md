@@ -5,6 +5,7 @@ layout: documentation
 
 * [string](#string)
 * [multiline text](#multiline-text)
+* [newline](#newline)
 * [join](#join)
 * [length](#length)
 * [is empty](#isempty)
@@ -44,6 +45,14 @@ This string can contain any characters (letters, numbers, or other special chara
 Contains a text string that can span multiple lines.
 
 This works like the regular string block but supports line breaks within the text. Press Enter inside the block to insert a new line.
+
+### newline
+
+![](images/text/newline.png)
+
+Represents a newline (line break) string.
+
+This block can be used with `join` or any other text block to insert a line break without having to write `\n` or `<br>`.
 
 ### join   {#join}
 

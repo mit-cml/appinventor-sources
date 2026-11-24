@@ -22,6 +22,11 @@ AI.Yail.forBlock['text_multiline_text'] = function(block, generator) {
   return [code, AI.Yail.ORDER_ATOMIC];
 };
 
+AI.Yail.forBlock['text_newline'] = function(block, generator) {
+  var code = '"\\n"';
+  return [code, AI.Yail.ORDER_ATOMIC];
+};
+
 AI.Yail.forBlock['text_join'] = function(block, generator) {
   // Create a string made up of elements of any type..
   var code = AI.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-append"

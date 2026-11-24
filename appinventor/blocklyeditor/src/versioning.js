@@ -2476,7 +2476,10 @@ Blockly.Versioning.AllUpgradeMaps =
     40: "noUpgrade",
 
     // AI2: Fix dropdown blocks where typeblocking saved the display tag as the option list key.
-    41: Blockly.Versioning.renameOptionListKey('Shape', 'ButtonShape')
+    41: Blockly.Versioning.renameOptionListKey('Shape', 'ButtonShape'),
+
+    // AI2: Added Newline text block.
+    42: "noUpgrade"
   }, // End Language upgraders
 
 
