@@ -1,0 +1,41 @@
+{%- comment -%}
+  List of external links from _data/resources.yml.
+  Params: title (heading).
+  Each entry's type picks the icon: Talk/Video = play, Blog post/Article/Doc = document, anything else = link.
+{%- endcomment -%}
+{%- if site.data.resources.size > 0 -%}
+<h2 class="section-title section-title-small" id="resources">{{ include.title }}</h2>
+<ul class="resource-list">
+  {%- for item in site.data.resources %}
+  {%- assign host = item.url | split: "/" -%}
+  {%- assign host = host[2] | remove: "www." -%}
+  {%- assign kind = item.type | downcase -%}
+  <li>
+    <a class="resource resource-{{ item.type | slugify }}" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
+      <span class="resource-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          {%- case kind -%}
+          {%- when "talk", "video" -%}
+          <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+          {%- when "blog post", "article", "doc" -%}
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          {%- else -%}
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          {%- endcase -%}
+        </svg>
+      </span>
+      <span class="resource-body">
+        <span class="resource-title">{{ item.title | escape }}</span>
+        <span class="resource-meta">
+          {%- if item.author %}{{ item.author | escape }} &middot; {% endif -%}
+          {{ item.type | escape }} &middot; {{ host }}
+        </span>
+      </span>
+      <svg class="resource-external" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Opens an external site" role="img">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+    </a>
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif -%}
