@@ -68,6 +68,66 @@
 
 }
 
+// Element 0 of a YailList is its *list* header, so index 0 in a key path must not reach it.
+- (YailDictionary *)dictionaryWithFooList {
+  YailList *list = [YailList listInInterpreter:interpreter ofValues:@"a", @"b", nil];
+  return [YailDictionary dictionaryInInterpreter:interpreter
+                                     withObjects:@[list]
+                                         forKeys:@[@"foo"]];
+}
+
+- (void)testGetObjectAtKeyPathYailListIndexBounds {
+  YailDictionary *dict = [self dictionaryWithFooList];
+  NSError *error = nil;
+  // The paths are held in variables: a comma inside @[...] would split a macro argument.
+  NSArray *first = @[@"foo", @1];
+  NSArray *second = @[@"foo", @2];
+  XCTAssertEqualObjects(@"a", [dict getObjectAtKeyPath:first error:&error]);
+  XCTAssertNil(error);
+  XCTAssertEqualObjects(@"b", [dict getObjectAtKeyPath:second error:&error]);
+  XCTAssertNil(error);
+  NSArray *badIndices = @[@0, @-1, @3];
+  for (NSNumber *bad in badIndices) {
+    error = nil;
+    NSArray *path = @[@"foo", bad];
+    XCTAssertNil([dict getObjectAtKeyPath:path error:&error]);
+    XCTAssertNotNil(error);
+    XCTAssertEqual(SCMErrorIndexOutOfBounds, error.code);
+  }
+  error = nil;
+  NSArray *stringZero = @[@"foo", @"0"];
+  XCTAssertNil([dict getObjectAtKeyPath:stringZero error:&error]);
+  XCTAssertNotNil(error);
+}
+
+- (void)testWalkKeyPathYailListIndexZero {
+  YailDictionary *dict = [self dictionaryWithFooList];
+  NSArray *one = @[@"foo", @1];
+  NSArray *zero = @[@"foo", @0];
+  NSArray *stringZero = @[@"foo", @"0"];
+  NSArray *three = @[@"foo", @3];
+  NSArray *expectedA = @[@"a"];
+  NSArray *none = @[];
+  XCTAssertEqualObjects(expectedA, [dict walkKeyPath:one error:nil]);
+  XCTAssertEqualObjects(none, [dict walkKeyPath:zero error:nil]);
+  XCTAssertEqualObjects(none, [dict walkKeyPath:stringZero error:nil]);
+  XCTAssertEqualObjects(none, [dict walkKeyPath:three error:nil]);
+}
+
+- (void)testSetObjectForKeyPathYailListIndexZero {
+  YailDictionary *dict = [self dictionaryWithFooList];
+  NSError *error = nil;
+  NSArray *zero = @[@"foo", @0];
+  XCTAssertFalse([dict setObject:@"X" forKeyPath:zero error:&error]);
+  XCTAssertNotNil(error);
+  XCTAssertEqual(SCMErrorIndexOutOfBounds, error.code);
+  // The list is unchanged: same items, and the header is still in place.
+  YailList *list = dict[@"foo"];
+  XCTAssertEqual(3, list.count);
+  XCTAssertEqualObjects(@"a", list[1]);
+  XCTAssertEqualObjects(@"b", list[2]);
+}
+
 - (void)testContainsObject {
 
 }
