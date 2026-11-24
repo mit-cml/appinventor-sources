@@ -71,6 +71,10 @@ public final class Main {
     @Option(name = "--ext",
         usage = "Specifies the build type to use.")
     String ext = "apk";
+
+    @Option(name = "--enable-r8",
+        usage = "Shrink, optimize and obfuscate App Bundles (.aab) with R8 instead of D8.")
+    boolean enableR8 = false;
   }
 
   private static CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -105,7 +109,7 @@ public final class Main {
       }
     }
 
-    AndroidBuildFactory.install();
+    AndroidBuildFactory.install(commandLineOptions.enableR8);
     // TODO(ewpatton): Install iOS build factory once published
 
     ProjectBuilder projectBuilder = new ProjectBuilder(new NullStatReporter());

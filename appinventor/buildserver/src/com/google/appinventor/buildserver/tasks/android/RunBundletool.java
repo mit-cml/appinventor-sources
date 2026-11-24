@@ -235,6 +235,17 @@ public class RunBundletool implements AndroidTask {
     bundletoolCommandLine.add("--modules=" + aab.getBase());
     bundletoolCommandLine.add("--config=" + configFile.getAbsolutePath());
     bundletoolCommandLine.add("--output=" + context.getPaths().getDeployFile().getAbsolutePath());
+    // When RunR8 ran, ship its mapping so Play can deobfuscate stack traces and score the bundle.
+    File mapping = RunR8.getMappingFile(context.getPaths());
+    if (mapping.isFile()) {
+      bundletoolCommandLine.add("--metadata-file=com.android.tools.build.obfuscation/proguard.map:"
+          + mapping.getAbsolutePath());
+    }
+    File r8Metadata = RunR8.getBuildMetadataFile(context.getPaths());
+    if (r8Metadata.isFile()) {
+      bundletoolCommandLine.add("--metadata-file=com.android.tools/r8.json:"
+          + r8Metadata.getAbsolutePath());
+    }
     String[] bundletoolBuildCommandLine = bundletoolCommandLine.toArray(new String[0]);
 
     return Execution.execute(null, bundletoolBuildCommandLine,

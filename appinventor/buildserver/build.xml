@@ -95,6 +95,7 @@
     <copy toFile="${classes.tools.dir}/bundletool.jar" file="${lib.dir}/android/tools/bundletool-all-1.7.1.jar" />
     <copy toFile="${classes.tools.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.tools.dir}/d8.jar" file="${lib.dir}/android/tools/d8.jar" />
+    <copy toFile="${classes.tools.dir}/org.apache.http.legacy.jar" file="${lib.dir}/android/legacy/org.apache.http.legacy.jar" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt2" />

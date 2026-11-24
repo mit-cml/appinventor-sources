@@ -172,6 +172,10 @@ public class BuildServer {
         usage = "Enables iOS builds for the buildserver")
     boolean ios = false;
 
+    @Option(name = "--enable-r8",
+        usage = "Shrink, optimize and obfuscate App Bundles (.aab) with R8 instead of D8.")
+    boolean enableR8 = false;
+
   }
 
   private static final CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -865,7 +869,10 @@ public class BuildServer {
       });
 
     // Now that the command line options have been processed, we can create the buildExecutor.
-    AndroidBuildFactory.install();
+    AndroidBuildFactory.install(commandLineOptions.enableR8);
+    if (commandLineOptions.enableR8) {
+      LOG.info("Enabling R8 for App Bundle builds");
+    }
     if (commandLineOptions.ios) {
       LOG.info("Enabling iOS builds");
       IosBuildFactory.install();
