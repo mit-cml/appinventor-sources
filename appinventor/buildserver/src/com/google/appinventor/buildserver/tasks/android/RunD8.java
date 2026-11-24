@@ -179,6 +179,8 @@ public class RunD8 extends DexTask implements AndroidTask {
     arguments.add("java");
     javaArgs.add("-Xmx" + context.getChildProcessRam() + "M");
     javaArgs.add("-Xss8m");
+    // D8 runs in a short-lived JVM, where C2 compilation costs more than it saves.
+    javaArgs.add("-XX:TieredStopAtLevel=1");
     javaArgs.add("-cp");
     javaArgs.add(context.getResources().getD8Jar());
     javaArgs.add("com.android.tools.r8.D8");
