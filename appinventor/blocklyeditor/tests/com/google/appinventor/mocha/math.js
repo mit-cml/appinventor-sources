@@ -57,6 +57,25 @@ suite('Radix number block', function() {
     });
   });
 
+  ['Infinity', '-Infinity'].forEach(function(text) {
+    ['BIN', 'OCT', 'HEX'].forEach(function(base) {
+      test('Keeps decimal ' + text + ' when switching to ' + base, function() {
+        const block = radixBlock('DEC', text);
+        block.setFieldValue(base, 'OP');
+        chai.assert.equal(block.getFieldValue('OP'), 'DEC');
+        chai.assert.equal(block.getFieldValue('NUM'), text);
+      });
+    });
+  });
+
+  test('Keeps a hex value too large for a number in hex', function() {
+    const digits = 'f'.repeat(300);
+    const block = radixBlock('HEX', digits);
+    block.setFieldValue('DEC', 'OP');
+    chai.assert.equal(block.getFieldValue('OP'), 'HEX');
+    chai.assert.equal(block.getFieldValue('NUM'), digits);
+  });
+
   test('Switches back to decimal from any base', function() {
     const block = radixBlock('HEX', 'ff');
     block.setFieldValue('DEC', 'OP');

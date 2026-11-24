@@ -80,8 +80,10 @@ Blockly.Blocks['math_number_radix'] = {
     var newRadix = Blockly.Blocks.math_number_radix.RADIX[newValue];
     // Binary, octal and hex only take digits, so a negative number or a
     // fraction cannot be shown in them. Stay in decimal rather than keep the
-    // decimal text under the new base, which generates NaN.
-    if (newRadix != 10 && !(Number.isInteger(oldValue) && oldValue >= 0)) {
+    // decimal text under the new base, which generates NaN. Infinity is not
+    // a number in any base, so refuse every switch for it.
+    if (!Number.isFinite(oldValue) ||
+        (newRadix != 10 && !(Number.isInteger(oldValue) && oldValue >= 0))) {
       return null;
     }
     this.getSourceBlock().currentPrefix = Blockly.Blocks.math_number_radix.PREFIX[newValue];
