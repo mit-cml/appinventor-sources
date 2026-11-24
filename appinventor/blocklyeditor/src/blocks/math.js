@@ -74,11 +74,19 @@ Blockly.Blocks['math_number_radix'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_MATH_NUMBER_RADIX_TITLE}],
 
   dropdownListener: function(newValue) {
-    this.getSourceBlock().currentPrefix = Blockly.Blocks.math_number_radix.PREFIX[newValue];
     var numberField = this.getSourceBlock().numberField;
     var oldPrefix = Blockly.Blocks.math_number_radix.PREFIX[this.getValue()];
     var oldValue = Number(oldPrefix + numberField.getValue());
     var newRadix = Blockly.Blocks.math_number_radix.RADIX[newValue];
+    // Binary, octal and hex only take digits, so a negative number or a
+    // fraction cannot be shown in them. Stay in decimal rather than keep the
+    // decimal text under the new base, which generates NaN. Infinity is not
+    // a number in any base, so refuse every switch for it.
+    if (!Number.isFinite(oldValue) ||
+        (newRadix != 10 && !(Number.isInteger(oldValue) && oldValue >= 0))) {
+      return null;
+    }
+    this.getSourceBlock().currentPrefix = Blockly.Blocks.math_number_radix.PREFIX[newValue];
     AI.Blockly.multiselect.withoutMultiFieldUpdates(function() {
         numberField.setValue(oldValue.toString(newRadix));
     });
