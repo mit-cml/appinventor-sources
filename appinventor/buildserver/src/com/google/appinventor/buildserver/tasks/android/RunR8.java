@@ -140,6 +140,11 @@ public class RunR8 extends DexTask implements AndroidTask {
       out.println("-dontwarn org.apache.http.util.Args");
       out.println("-dontwarn org.apache.http.entity.ContentType");
       out.println("-dontwarn org.apache.http.Consts");
+      // AndroidRuntime.jar refers to libraries that are added only for the Companion (WebRTC,
+      // ACRA) or only for components that need them (repackaged org.json).
+      out.println("-dontwarn org.webrtc.**");
+      out.println("-dontwarn org.acra.**");
+      out.println("-dontwarn " + RUNTIME + "repackaged.**");
       // Extensions and libraries may reference optional classes we can't foresee. R8 still logs
       // each one as "Warning: Missing class ...", but doesn't fail the build, just as D8 doesn't.
       out.println("-ignorewarnings");
@@ -169,9 +174,13 @@ public class RunR8 extends DexTask implements AndroidTask {
       out.println("-keep class " + RUNTIME + "EventDispatcher { *; }");
       out.println("-keep class " + RUNTIME + "HandlesEventDispatching { *; }");
       out.println("-keep class " + RUNTIME + "OptionHelper { *; }");
-      out.println("-keep class " + RUNTIME + "util.** { *; }");
-      out.println("-keep class " + RUNTIME + "errors.** { *; }");
-      out.println("-keep class com.google.appinventor.components.common.** { *; }");
+      // Compiled apps never evaluate YAIL at runtime, so R8 may drop the util, errors and common
+      // classes they don't use (allowshrinking); the ones they use keep their names and members.
+      // The Companion's REPL can reach any of them, so it keeps them all.
+      String keepRuntime = context.isForCompanion() ? "-keep class " : "-keep,allowshrinking class ";
+      out.println(keepRuntime + RUNTIME + "util.** { *; }");
+      out.println(keepRuntime + RUNTIME + "errors.** { *; }");
+      out.println(keepRuntime + "com.google.appinventor.components.common.** { *; }");
 
       // Components the project uses. Unused components may be removed.
       Set<String> types = new TreeSet<>(context.getSimpleCompTypes());
