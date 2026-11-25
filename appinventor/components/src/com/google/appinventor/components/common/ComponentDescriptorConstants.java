@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2011-2025 MIT, All rights reserved
+// Copyright 2011-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -34,6 +34,7 @@ public final class ComponentDescriptorConstants {
   public static final String CONDITIONALS_TARGET = "conditionals";
   public static final String XMLS_TARGET = "xmls";
   public static final String FEATURES_TARGET = "features";
+  public static final String APPLICATION_ATTRIBUTES = "applicationAttributes";
 
   // TODO(Will): Remove the following target once the deprecated
   //             @SimpleBroadcastReceiver annotation is removed. It should
