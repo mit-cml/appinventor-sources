@@ -139,15 +139,18 @@ public class ListViewImageTwoTextVerticalAdapter extends ListAdapterWithRecycler
     }
     imageTwoTextHolder.textViewFirst.setText(first);
     imageTwoTextHolder.textViewSecond.setText(second);
-    try {
-      Drawable drawable = MediaUtil.getBitmapDrawable(container.$form(), imageName);
-      ViewUtil.setImage(imageTwoTextHolder.imageView, drawable);
-    } catch (IOException ioe) {
-      Log.e(LOG_TAG, "onBindViewHolder Unable to load image " + imageName + ": " + ioe.getMessage());
-    }
+
+    MediaUtil.bindImageToImageView(
+        container.$form(),
+        imageTwoTextHolder.imageView,
+        imageName,
+        imageWidth,
+        imageHeight
+    );
+
     updateCardViewColor(imageTwoTextHolder.cardView, position);
   }
- 
+
   public class ImageTwoTextRvViewHolder extends RvViewHolder {
     public TextView textViewFirst;
     public TextView textViewSecond;
