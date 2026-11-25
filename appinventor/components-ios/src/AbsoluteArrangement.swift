@@ -13,6 +13,8 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
   public func setChildNeedsLayout(component: ViewComponent) {
     viewLayout.updateComponentPosition(component: component);
+    // The arrangement's Automatic size depends on its children's positions.
+    _view.invalidateIntrinsicContentSize()
   }
   
   // MARK: - Properties
@@ -78,7 +80,17 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
       viewLayout.getLayoutManager().rightAnchor.constraint(equalTo: _view.rightAnchor),
       viewLayout.getLayoutManager().bottomAnchor.constraint(equalTo: _view.bottomAnchor)
     ])
-    
+
+    // The outer _view reports the layout view's intrinsic size, and the parent's LinearView sets
+    // _view's hugging priority to implement Automatic vs. Fill parent. Keep the pinned layout view
+    // from adding its own default hugging/compression (250/750), which would otherwise outrank
+    // Fill parent (5) and pin the arrangement to its preferred size.
+    let layoutManager = viewLayout.getLayoutManager()
+    for axis in [NSLayoutConstraint.Axis.horizontal, .vertical] {
+      layoutManager.setContentHuggingPriority(UILayoutPriority(1), for: axis)
+      layoutManager.setContentCompressionResistancePriority(UILayoutPriority(1), for: axis)
+    }
+
     parent.add(self)
     BackgroundColor = Color.default.int32
   }
