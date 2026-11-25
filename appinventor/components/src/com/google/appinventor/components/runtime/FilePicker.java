@@ -9,6 +9,7 @@ import static android.content.Intent.ACTION_CREATE_DOCUMENT;
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
 import static android.content.Intent.ACTION_OPEN_DOCUMENT_TREE;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -107,18 +108,20 @@ public class FilePicker extends Picker {
 
   @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
-    if (data != null) {
-      Uri uri = data.getData();
-      final int takeFlags = data.getFlags() & (
-          Intent.FLAG_GRANT_READ_URI_PERMISSION
-              | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-          );
-      container.$form().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-      selection = uri.toString();
-      AfterPicking();
-    } else {
-      container.$form().dispatchErrorOccurredEvent(this, "Open",
-          ErrorMessages.ERROR_FILEPICKER_NO_URI_RETURNED);
+    if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
+      Uri uri = (data != null) ? data.getData() : null;
+      if (uri != null) {
+        final int takeFlags = data.getFlags() & (
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            );
+        container.$form().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+        selection = uri.toString();
+        AfterPicking();
+      } else {
+        container.$form().dispatchErrorOccurredEvent(this, "Open",
+            ErrorMessages.ERROR_FILEPICKER_NO_URI_RETURNED);
+      }
     }
   }
 
