@@ -98,10 +98,6 @@ Configuring a remote pointing to this repository is also a good idea if you are 
 
     $ git remote add upstream https://github.com/mit-cml/appinventor-sources.git
 
-Finally, you will also have to make sure that you are ignoring files that need ignoring:
-
-    $ cp sample-.gitignore .gitignore
-
 ### Checkout dependencies
 
 App Inventor uses the
