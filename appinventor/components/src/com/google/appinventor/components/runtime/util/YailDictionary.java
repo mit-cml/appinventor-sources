@@ -222,7 +222,7 @@ public class YailDictionary extends LinkedHashMap<Object, Object>
     }
   }
 
-  private static YailList checkListForDicts(YailList list) {
+  static YailList checkListForDicts(YailList list) {
     List<Object> copy = new ArrayList<>();
     for (Object o : (LList) list.getCdr()) {
       if (o instanceof YailDictionary) {

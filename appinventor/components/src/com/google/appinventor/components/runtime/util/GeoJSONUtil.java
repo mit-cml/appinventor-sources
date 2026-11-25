@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.appinventor.components.runtime.Component.*;
+import static com.google.appinventor.components.runtime.util.YailDictionary.alistToDict;
+import static com.google.appinventor.components.runtime.util.YailDictionary.checkListForDicts;
 
 /**
  * Utility class to process data from GeoJSON.
@@ -278,8 +280,9 @@ public final class GeoJSONUtil {
   public static MapFactory.MapFeature processGeoJSONFeature(final String logTag,
       final MapFactory.MapFeatureContainer container, final YailList descriptions) {
     String type = null;
-    YailList geometry = null;
-    YailList properties = null;
+    YailDictionary geometry = null;
+    YailDictionary properties = null;
+    //Converting descriptions dictionary from featureFromDescriptions method to Yaillist
     for (Object o : (LList) descriptions.getCdr()) {
       YailList keyvalue = (YailList)o;
       String key = keyvalue.getString(0);
@@ -287,9 +290,49 @@ public final class GeoJSONUtil {
       if (GEOJSON_TYPE.equals(key)) {
         type = (String) value;
       } else if (GEOJSON_GEOMETRY.equals(key)) {
-        geometry = (YailList) value;
+        geometry = (YailDictionary) value;
       } else if (GEOJSON_PROPERTIES.equals(key)) {
-        properties = (YailList) value;
+        //converts some nested Yaillist to Yaildictionary if present
+        if(value instanceof YailList){
+          value=alistToDict((YailList) value);
+        }
+        properties = (YailDictionary) value;
+      } else {
+        Log.w(logTag, String.format("Unsupported field \"%s\" in JSON format", key));
+      }
+    }
+    if (!GEOJSON_FEATURE.equals(type)) {
+      throw new IllegalArgumentException(String.format("Unknown type \"%s\"", type));
+    }
+    if (geometry == null) {
+      throw new IllegalArgumentException("No geometry defined for feature.");
+    }
+    MapFactory.MapFeature feature = processGeometry(logTag, container, geometry);
+    if (properties != null) {
+      processProperties(logTag, feature, properties);
+    }
+    return feature;
+  }
+
+  //new implementation supporting YailDictionary
+  public static MapFactory.MapFeature processGeoJSONFeature(final String logTag,
+                                                            final MapFactory.MapFeatureContainer container, final YailDictionary descriptions) {
+    String type = null;
+    YailDictionary geometry = null;
+    YailDictionary properties = null;
+    for (Map.Entry<Object, Object> entry : descriptions.entrySet()) {
+      String key = (String) entry.getKey();
+      Object value = entry.getValue();
+      if (GEOJSON_TYPE.equals(key)) {
+        type = (String) value;
+      } else if (GEOJSON_GEOMETRY.equals(key)) {
+        geometry = (YailDictionary) value;
+      } else if (GEOJSON_PROPERTIES.equals(key)) {
+        //converts some nested Yaillist to Yaildictionary if present
+        if(value instanceof YailList){
+          value=alistToDict((YailList) value);
+        }
+        properties = (YailDictionary) value;
       } else {
         Log.w(logTag, String.format("Unsupported field \"%s\" in JSON format", key));
       }
@@ -310,13 +353,12 @@ public final class GeoJSONUtil {
   }
 
   private static MapFactory.MapFeature processGeometry(final String logTag,
-      final MapFactory.MapFeatureContainer container, final YailList geometry) {
+      final MapFactory.MapFeatureContainer container, final YailDictionary geometry) {
     String type = null;
     YailList coordinates = null;
-    for (Object o : (LList) geometry.getCdr()) {
-      YailList keyvalue = (YailList)o;
-      String key = keyvalue.getString(0);
-      Object value = keyvalue.getObject(1);
+    for (Map.Entry<Object, Object> entry : geometry.entrySet()) {
+      String key = (String) entry.getKey();
+      Object value = entry.getValue();
       if (GEOJSON_TYPE.equals(key)) {
         type = (String) value;
       } else if (GEOJSON_COORDINATES.equals(key)) {
@@ -398,18 +440,15 @@ public final class GeoJSONUtil {
   }
 
   private static void processProperties(final String logTag, final MapFactory.MapFeature feature,
-      final YailList properties) {
-    for (Object o : properties) {
-      if (o instanceof YailList) {
-        YailList pair = (YailList) o;
-        String key = pair.get(KEY).toString();
+      final YailDictionary properties) {
+    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+        String key = (String) entry.getKey();
         PropertyApplication application = SUPPORTED_PROPERTIES.get(key.toLowerCase());
         if (application != null) {
-          application.apply(feature, pair.get(VALUE));
+          application.apply(feature, entry.getValue());
         } else {
           Log.i(logTag, String.format("Ignoring GeoJSON property \"%s\"", key));
         }
-      }
     }
   }
 
