@@ -10,7 +10,7 @@ import Alamofire
 /**
  * The default URL for connecting to OpenRouteService.
  */
-let kOpenRouteServiceUrl = "https://api.openrouteservice.org/v2/directions/"
+let kOpenRouteServiceUrl = "https://api.heigit.org/openrouteservice/v2/directions/"
 
 /**
  * The `NavigationRequest` structure encapsulates the information needed by the OpenRouteService
