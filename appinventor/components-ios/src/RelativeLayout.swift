@@ -13,9 +13,7 @@ open class RelativeLayout: Layout {
     
   private var layoutManager: UIView
   private var componentsToAdd: [ViewComponent] = []
-  
-  private let NOT_VALID: Int = -1
-  
+
   public init(preferredEmptyWidth: Int, preferredEmptyHeight: Int) {
     // Create a custom UIView that will act as our layout manager
     layoutManager = CustomRelativeLayoutView(preferredEmptyWidth: preferredEmptyWidth,
@@ -68,8 +66,8 @@ open class RelativeLayout: Layout {
     let view = component.view
 
       
-    if x <= NOT_VALID || y <= NOT_VALID {
-      return  // Position not yet set
+    if x == kDefaultXY || y == kDefaultXY {
+      return  // Position not yet set; negative values are real positions
     }
   
     // Ensure view is a child of layoutManager before setting constraints
@@ -117,7 +115,7 @@ open class RelativeLayout: Layout {
         view.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    if x == NOT_VALID || y == NOT_VALID {
+    if x == kDefaultXY || y == kDefaultXY {
         // Position not yet set, add it later
         addComponentLater(component: component)
     } else {
