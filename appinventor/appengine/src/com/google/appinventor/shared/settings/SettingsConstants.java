@@ -71,6 +71,7 @@ public class SettingsConstants {
   public static final String YOUNG_ANDROID_SETTINGS_PROJECT_COLORS = "ProjectColors";
   public static final String YOUNG_ANDROID_SETTINGS_AIVERSIONING = "AIVersioning";
   public static final String YOUNG_ANDROID_SETTINGS_LAST_OPENED = "LastOpened";
+  public static final String YOUNG_ANDROID_SETTINGS_LTI_LAUNCHED = "LtiLaunched";
   public static final String YOUNG_ANDROID_SETTINGS_BUILDNUMBER = "BuildNumber";
   public static final String YOUNG_ANDROID_SETTINGS_NSBTALWAYSUSAGE = "NSBluetoothAlwaysUsageDescription";
   public static final String YOUNG_ANDROID_SETTINGS_NSBTPERIPHERALUSAGE = "NSBluetoothPeripheralUsageDescription";
