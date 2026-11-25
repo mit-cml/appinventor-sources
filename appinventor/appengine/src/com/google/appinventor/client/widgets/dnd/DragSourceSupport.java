@@ -349,13 +349,7 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
     if (!mouseIsDown) {
       LOG.warning("received onMouseUp event when we thought the mouse was already up");
     }
-    mouseIsDown = false;
-
-    if (captured) {
-      // Allow other elements to receive events after the drag/click
-      dom.releaseCapture(sender.getElement());
-      captured = false;
-    }
+    releaseCapture(sender);
 
     if (dragInProgress) {
       // do not trigger onDragEnd if out of bounds
@@ -371,6 +365,14 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
 
     // Prevent default actions from being triggered
     dom.eventPreventDefaultOfCurrentEvent();
+  }
+
+  private void releaseCapture(Widget sender) {
+    mouseIsDown = false;
+    if (captured) {
+      dom.releaseCapture(sender.getElement());
+      captured = false;
+    }
   }
 
   @Override
@@ -491,8 +493,16 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
 
   @Override
   public void onTouchCancel(TouchCancelEvent event) {
-    Widget src = (Widget) event.getSource();
-    onMouseLeave(src);
+    releaseCapture((Widget) event.getSource());
+    // The browser interrupted the gesture, so discard the pending drop.
+    if (dragInProgress) {
+      if (hoverDropTarget != null) {
+        hoverDropTarget.onDragLeave(dragSource);
+      }
+      dragWidgetPopup.hide();
+      finishDrag();
+      dragInProgress = false;
+    }
   }
 
   // Drag handling
@@ -598,6 +608,10 @@ public final class DragSourceSupport implements MouseListener, TouchStartHandler
           getDragWidgetOffsetY(dragWidget));
     }
 
+    finishDrag();
+  }
+
+  private void finishDrag() {
     // Notify drag source of the drag end
     dragSource.onDragEnd();
 
