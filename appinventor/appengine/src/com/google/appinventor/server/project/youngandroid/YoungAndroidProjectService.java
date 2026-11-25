@@ -77,6 +77,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.ConnectException;
+import java.text.Normalizer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -985,7 +986,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
 
   private String verifyProjectName(String userId, String projectName) {
-    projectName = projectName.replace(" ", "_");
+    projectName = sanitizeProjectName(projectName);
     int count = 0;
     List<Long> projectIds = storageIo.getProjects(userId);
     List<UserProject> projects = storageIo.getUserProjects(userId, projectIds);
@@ -1004,6 +1005,27 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       count += 1;
       projectName = baseProjectName + "_" + count;
     }
+  }
+
+  /**
+   * Mirrors the client-side rules in {@link
+   * com.google.appinventor.client.youngandroid.TextValidators#isValidIdentifier(String)} so that
+   * gallery imports (which skip the client validation) cannot create projects whose names break
+   * downstream tooling such as AAPT or the Java compiler when building the APK.
+   */
+  static String sanitizeProjectName(String projectName) {
+    if (projectName == null) {
+      projectName = "";
+    }
+    // Decompose accented characters (e.g. "ñ" -> "n" + combining tilde) and drop the marks so
+    // names like "Mi Aplicación" become "Mi_Aplicacion" instead of being stripped to "Mi_Aplicacin".
+    String sanitized = Normalizer.normalize(projectName, Normalizer.Form.NFD)
+        .replaceAll("\\p{M}+", "");
+    sanitized = sanitized.replace(" ", "_").replaceAll("[^a-zA-Z0-9_]", "");
+    if (sanitized.isEmpty() || !Character.isLetter(sanitized.charAt(0))) {
+      sanitized = "Project_" + sanitized;
+    }
+    return sanitized;
   }
 
   private static byte [] getURLContents(String url) throws IOException {
