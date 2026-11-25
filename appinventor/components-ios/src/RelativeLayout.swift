@@ -46,6 +46,29 @@ open class RelativeLayout: Layout {
   open func getLayoutManager() -> UIView {
     return layoutManager
   }
+
+  /**
+   * Marks whether the component fills the layout horizontally and/or vertically. A filling
+   * child's size depends on the layout's size, so only its natural size counts toward the
+   * layout's preferred size.
+   */
+  open func setFills(component: ViewComponent, width: Bool, height: Bool) {
+    guard let layoutManager = layoutManager as? CustomRelativeLayoutView else {
+      return
+    }
+    let key = ObjectIdentifier(component.view)
+    if width {
+      layoutManager.fillWidthViews.insert(key)
+    } else {
+      layoutManager.fillWidthViews.remove(key)
+    }
+    if height {
+      layoutManager.fillHeightViews.insert(key)
+    } else {
+      layoutManager.fillHeightViews.remove(key)
+    }
+    layoutManager.invalidateIntrinsicContentSize()
+  }
   
     /**
      * Add a component to the layout
@@ -134,6 +157,8 @@ open class RelativeLayout: Layout {
   private class CustomRelativeLayoutView: UIView {
     private let preferredEmptyWidth: Int
     private let preferredEmptyHeight: Int
+    var fillWidthViews = Set<ObjectIdentifier>()
+    var fillHeightViews = Set<ObjectIdentifier>()
     
     init(preferredEmptyWidth: Int = kEmptyHVArrangementWidth, preferredEmptyHeight: Int = kEmptyHVArrangementHeight) {
       self.preferredEmptyWidth = preferredEmptyWidth
@@ -191,8 +216,11 @@ open class RelativeLayout: Layout {
     private func preferredSize(of view: UIView) -> CGSize {
       let fitting = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
       let intrinsic = view.intrinsicContentSize
-      return CGSize(width: preferredDimension(fitting.width, intrinsic.width, view.bounds.width),
-                    height: preferredDimension(fitting.height, intrinsic.height, view.bounds.height))
+      let key = ObjectIdentifier(view)
+      let width = fillWidthViews.contains(key) ? 0 : view.bounds.width
+      let height = fillHeightViews.contains(key) ? 0 : view.bounds.height
+      return CGSize(width: preferredDimension(fitting.width, intrinsic.width, width),
+                    height: preferredDimension(fitting.height, intrinsic.height, height))
     }
 
     private func preferredDimension(_ values: CGFloat...) -> CGFloat {
