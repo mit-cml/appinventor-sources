@@ -170,6 +170,48 @@ class LinearViewTests: XCTestCase {
     XCTAssertEqual(updatedTrendlineFrame.midX, testForm.view.frame.midX, accuracy: 0.5)
   }
 
+  private func layOutLabelArrangementButton(arrangementHeight: Int32)
+      -> (label: CGRect, arrangement: CGRect, button: CGRect) {
+    testForm.clear()
+    testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
+    testForm.Sizing = "Responsive"
+
+    let label = Label(testForm)
+    label.Text = "Text for Label1"
+    let arrangement = AbsoluteArrangement(testForm)
+    arrangement.Height = arrangementHeight
+    let button = Button(testForm)
+    button.Text = "Text for Button1"
+
+    testForm.onAttach()
+    testForm.view.setNeedsLayout()
+    testForm.view.layoutIfNeeded()
+
+    func frame(_ view: UIView) -> CGRect {
+      return view.convert(view.bounds, to: testForm.view)
+    }
+    return (frame(label.view), frame(arrangement.view), frame(button.view))
+  }
+
+  func testAbsoluteArrangementFillParentHeightFillsScreen() {
+    let frames = layOutLabelArrangementButton(arrangementHeight: kLengthFillParent)
+
+    // Components stay stacked in order, with no gaps from the leftover space.
+    XCTAssertEqual(frames.arrangement.minY, frames.label.maxY, accuracy: 1)
+    XCTAssertEqual(frames.button.minY, frames.arrangement.maxY, accuracy: 1)
+    // The arrangement takes the leftover height and the button ends at the bottom of the screen.
+    XCTAssertGreaterThan(frames.arrangement.height, CGFloat(kEmptyHVArrangementHeight) * 3)
+    XCTAssertEqual(frames.button.maxY, testForm.view.frame.maxY, accuracy: 1)
+  }
+
+  func testAbsoluteArrangementAutomaticHeightKeepsPreferredSize() {
+    let frames = layOutLabelArrangementButton(arrangementHeight: kLengthPreferred)
+
+    XCTAssertEqual(frames.arrangement.height, CGFloat(kEmptyHVArrangementHeight), accuracy: 1)
+    XCTAssertEqual(frames.arrangement.minY, frames.label.maxY, accuracy: 1)
+    XCTAssertEqual(frames.button.minY, frames.arrangement.maxY, accuracy: 1)
+  }
+
   func testScrollableFormDoesNotLeakIntoClearedCenteredForm() {
     testForm.clear()
     testForm.view.frame = CGRect(x: 0, y: 0, width: 393, height: 852)
