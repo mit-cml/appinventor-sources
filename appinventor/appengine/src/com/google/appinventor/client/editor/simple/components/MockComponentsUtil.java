@@ -445,6 +445,21 @@ public final class MockComponentsUtil {
   }
 
   /**
+   * Returns the preferred height of the given MockComponent at its current width.
+   */
+  static int getPreferredHeightAtCurrentWidth(MockComponent component) {
+    Element element = component.getElement();
+    String heightStyle = element.getStyle().getHeight();
+    element.getStyle().clearHeight();
+    int height = component.getOffsetHeight();
+    if (heightStyle != null) {
+      element.getStyle().setProperty("height", heightStyle);
+    }
+    // We want the size without the MockComponent's CSS border.
+    return height - MockComponent.BORDER_SIZE;
+  }
+
+  /**
    * Returns the preferred size of the specified widget,
    * in an array of the form {@code [width, height]}.
    * <p>
