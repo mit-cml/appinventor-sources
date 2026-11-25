@@ -147,10 +147,10 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected void addWidthHeightProperties() {
     addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
         "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
-        new YoungAndroidLengthPropertyEditor());
+        new YoungAndroidLengthPropertyEditor(), null);
     addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
         "Appearance", PropertyTypeConstants.PROPERTY_TYPE_LENGTH, null,
-        new YoungAndroidLengthPropertyEditor());
+        new YoungAndroidLengthPropertyEditor(), null);
   }
 
   @Override
