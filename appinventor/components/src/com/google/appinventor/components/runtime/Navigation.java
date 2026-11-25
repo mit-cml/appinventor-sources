@@ -60,7 +60,7 @@ public class Navigation extends AndroidNonvisibleComponent implements Component 
   private static final String TAG = "Navigation";
 
   public static final String OPEN_ROUTE_SERVICE_URL =
-      "https://api.openrouteservice.org/v2/directions/";
+      "https://api.heigit.org/openrouteservice/v2/directions/";
   private String apiKey;
   private GeoPoint startLocation;
   private GeoPoint endLocation;
