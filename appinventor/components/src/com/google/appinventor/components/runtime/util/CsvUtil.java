@@ -180,7 +180,7 @@ public final class CsvUtil {
           result.add(new String(buf, pos, cellLength).trim());
         } else {
           String cell = new String(buf, pos + 1, cellLength - 2);
-          result.add(ESCAPED_QUOTE_PATTERN.matcher(cell).replaceAll("\"").trim());
+          result.add(ESCAPED_QUOTE_PATTERN.matcher(cell).replaceAll("\""));
         }
         trailingComma = delimitedCellLength > 0 && buf[pos + delimitedCellLength - 1] == ',';
         pos += delimitedCellLength;

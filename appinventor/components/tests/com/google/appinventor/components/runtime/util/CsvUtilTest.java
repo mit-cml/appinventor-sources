@@ -172,6 +172,20 @@ public class CsvUtilTest extends TestCase {
     assertEquals(expectedCSVString, CsvUtil.toCsvRow(YailList.makeList(row)));
   }
 
+  public void testQuotedCellPreservesWhitespace() throws Exception {
+    // A quoted cell keeps its contents literally. toCsvRow quotes every field,
+    // so a write/read round trip has to be lossless.
+    YailList row = CsvUtil.fromCsvRow("\"  hello  \",\"x\"");
+    assertEquals("  hello  ", row.get(1));
+
+    ArrayList<String> original = new ArrayList<String>();
+    original.add("  spaces  ");
+    original.add("plain");
+    YailList roundTripped = CsvUtil.fromCsvRow(CsvUtil.toCsvRow(YailList.makeList(original)));
+    assertEquals("  spaces  ", roundTripped.get(1));
+    assertEquals("plain", roundTripped.get(2));
+  }
+
   public void testTrailingCommaRow() throws Exception {
     String testString1 = "a,b,c,,,";
     String testString2 = testString1 + "\n";
