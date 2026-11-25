@@ -34,6 +34,14 @@ class TextBoxAdapter: NSObject, TextBoxDelegate {
     _field.delegate = self
     setupView()
     
+    // Add visible border to both single-line and multi-line text boxes
+    _field.layer.borderWidth = 1.0
+    _field.layer.borderColor = UIColor.lightGray.cgColor
+    _field.layer.cornerRadius = 4.0
+    _view.layer.borderWidth = 1.0
+    _view.layer.borderColor = UIColor.lightGray.cgColor
+    _view.layer.cornerRadius = 4.0
+    
     // We are single line by default
     makeSingleLine()
     textColor = UIColor.black
