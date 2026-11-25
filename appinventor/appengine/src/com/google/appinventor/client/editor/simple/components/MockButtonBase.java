@@ -137,7 +137,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements DesignerCh
     switch(shape) {
       case 0:
         // Default Button
-        buttonWidget.getElement().getStyle().clearBorderStyle();
+        buttonWidget.getElement().getStyle().clearProperty("borderRadius");
         break;
       case 1:
         // Rounded Button.
@@ -145,16 +145,16 @@ abstract class MockButtonBase extends MockVisibleComponent implements DesignerCh
         // The value 10 px was chosen strictly for style.
         // 10 px is the same as ROUNDED_CORNERS_RADIUS defined in
         // com.google.appinventor.components.runtime.ButtonBase.
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "10px");
+        buttonWidget.getElement().getStyle().setProperty("borderRadius", "10px");
         break;
       case 2:
         // Rectangular Button
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
+        buttonWidget.getElement().getStyle().setProperty("borderRadius", "0px");
         break;
       case 3:
         // Oval Button
-        String height = DOM.getStyleAttribute(buttonWidget.getElement(), "height");
-        DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", height);
+        String height = buttonWidget.getElement().getStyle().getProperty("height");
+        buttonWidget.getElement().getStyle().setProperty("borderRadius", height);
         break;
       default:
         // This should never happen
@@ -247,7 +247,7 @@ abstract class MockButtonBase extends MockVisibleComponent implements DesignerCh
       // setting the widget's background color to COLOR_NONE.
       MockComponentsUtil.setWidgetBackgroundColor(buttonWidget,
           "&H" + COLOR_NONE);
-      DOM.setStyleAttribute(buttonWidget.getElement(), "borderRadius", "0px");
+      buttonWidget.getElement().getStyle().setProperty("borderRadius", "0px");
     }
     setShapeProperty(Integer.toString(shape));
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
@@ -321,10 +321,12 @@ abstract class MockButtonBase extends MockVisibleComponent implements DesignerCh
   private void updateTextAppearances(String width) {
     if (width.equals("-1")) {
       // for width = Automatic
-      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "nowrap");
+      buttonWidget.getElement().getStyle().setProperty("whiteSpace", "nowrap");
+      buttonWidget.getElement().getStyle().clearProperty("overflowWrap");
     } else {
       // for width = Fill Parent, Pixels or Percentage
-      DOM.setStyleAttribute(buttonWidget.getElement(), "whiteSpace", "normal");
+      buttonWidget.getElement().getStyle().setProperty("whiteSpace", "normal");
+      buttonWidget.getElement().getStyle().setProperty("overflowWrap", "anywhere");
     }
   }
 
