@@ -188,6 +188,46 @@ let kMinimumToastWait = 10.0
     _tapGesture = UITapGestureRecognizer(target: self, action: #selector(HideKeyboard))
     _tapGesture?.cancelsTouchesInView = false
     view.addGestureRecognizer(_tapGesture!)
+    // Listen for unsupported-component notifications posted from the YAIL runtime.
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleUnsupportedComponentNotification(_:)),
+      name: NSNotification.Name("AIUnsupportedComponentNotification"),
+      object: nil)
+  }
+
+  /**
+   * Called by the YAIL runtime (via NSNotificationCenter) when a project
+   * contains a component that is not implemented on iOS.
+   *
+   * Instead of crashing, the Companion shows this informational alert so the
+   * user understands what happened and can continue using the rest of the project.
+   */
+  @objc private func handleUnsupportedComponentNotification(_ notification: Notification) {
+    let componentName = (notification.userInfo?["componentName"] as? String) ?? "Unknown"
+    showUnsupportedComponentWarning(componentName)
+  }
+
+  /**
+   * Displays a user-friendly warning dialog when an unsupported component is
+   * encountered at runtime on iOS.
+   *
+   * - Parameter componentName: The class name of the unsupported component.
+   */
+  @objc open func showUnsupportedComponentWarning(_ componentName: String) {
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      // Extract just the simple class name (e.g. "BluetoothServer") from a
+      // fully qualified name like "AIComponentKit.BluetoothServer".
+      let simpleName = componentName.components(separatedBy: ".").last ?? componentName
+      let alert = UIAlertController(
+        title: "⚠️ Unsupported Component",
+        message: "\"\(simpleName)\" is not available on iOS.\n\nThe project will continue running without it.",
+        preferredStyle: .alert
+      )
+      alert.addAction(UIAlertAction(title: "OK", style: .default))
+      self.present(alert, animated: true)
+    }
   }
 
   open func add(_ component: NonvisibleComponent) {
