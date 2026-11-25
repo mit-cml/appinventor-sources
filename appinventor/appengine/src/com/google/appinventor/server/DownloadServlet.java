@@ -8,6 +8,8 @@ package com.google.appinventor.server;
 
 import com.google.appinventor.common.utils.StringUtils;
 
+import com.google.appinventor.server.flags.Flag;
+
 import com.google.appinventor.server.ios.CertificateRequestGenerator;
 
 import com.google.appinventor.server.storage.StorageIo;
@@ -295,8 +297,13 @@ public class DownloadServlet extends OdeServlet {
     }
 
     resp.setStatus(statusCode);
-    resp.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));
-    resp.setHeader("Access-Control-Allow-Credentials", "true");
+    // Only the configured web emulator may read downloads from another origin.
+    String origin = req.getHeader("Origin");
+    String webEmulatorUrl = Flag.createFlag("web.emulator.url", "").get();
+    if (!webEmulatorUrl.isEmpty() && stripTrailingSlash(webEmulatorUrl).equals(origin)) {
+      resp.setHeader("Access-Control-Allow-Origin", origin);
+      resp.setHeader("Access-Control-Allow-Credentials", "true");
+    }
 
     if (statusCode == HttpServletResponse.SC_OK) {
       LOG.fine("Sending File!");
@@ -327,6 +334,10 @@ public class DownloadServlet extends OdeServlet {
       formatter.format("%02x", b);
     }
     return formatter.toString();
+  }
+
+  private static String stripTrailingSlash(String url) {
+    return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
   }
 
   private byte[] getCSR() {
