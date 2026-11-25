@@ -385,6 +385,7 @@
 		DE6D5A0C20FE9E8D003B2C67 /* unchecked.svg in Resources */ = {isa = PBXBuildFile; fileRef = DE6D5A0A20FE9E8C003B2C67 /* unchecked.svg */; };
 		DE6D5A0F20FEA8DA003B2C67 /* checked.svg in Resources */ = {isa = PBXBuildFile; fileRef = DE6D5A0E20FEA8D9003B2C67 /* checked.svg */; };
 		DE84293420D3FC6A00094BCB /* GeometryUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE84293320D3FC6A00094BCB /* GeometryUtil.swift */; };
+		A1B2C3D4AA00000000000012 /* AbsoluteArrangementFillParentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4AA00000000000011 /* AbsoluteArrangementFillParentTests.swift */; };
 		DE85F126209CD9AB00A809AA /* SliderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE85F125209CD9AB00A809AA /* SliderTests.swift */; };
 		DE91AB931F93FF8F00AB742A /* PhoneNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */; };
 		DE962F3C20ADC8A3004AA45A /* CloudDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE962F3B20ADC8A3004AA45A /* CloudDB.swift */; };
@@ -811,6 +812,7 @@
 		DE6D5A0A20FE9E8C003B2C67 /* unchecked.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = unchecked.svg; sourceTree = "<group>"; };
 		DE6D5A0E20FEA8D9003B2C67 /* checked.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = checked.svg; sourceTree = "<group>"; };
 		DE84293320D3FC6A00094BCB /* GeometryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryUtil.swift; sourceTree = "<group>"; };
+		A1B2C3D4AA00000000000011 /* AbsoluteArrangementFillParentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbsoluteArrangementFillParentTests.swift; sourceTree = "<group>"; };
 		DE85F125209CD9AB00A809AA /* SliderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderTests.swift; sourceTree = "<group>"; };
 		DE91AB921F93FF8F00AB742A /* PhoneNumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPicker.swift; sourceTree = "<group>"; };
 		DE962F3B20ADC8A3004AA45A /* CloudDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudDB.swift; sourceTree = "<group>"; };
@@ -1602,6 +1604,7 @@
 				06FB67DE247D4CEC00ABEAD6 /* ListPickerTests.swift */,
 				06FB67DC247D4AB200ABEAD6 /* ListViewTests.swift */,
 				064F224827342A3300CFA04B /* MapTests.swift */,
+				A1B2C3D4AA00000000000011 /* AbsoluteArrangementFillParentTests.swift */,
 				DE85F125209CD9AB00A809AA /* SliderTests.swift */,
 				06009FF72285BEEB00E4EC4A /* SpinnerTests.swift */,
 				06F15C0E24059B0100C783E3 /* TextBoxTests.swift */,
@@ -2242,6 +2245,7 @@
 				06FB67DD247D4AB200ABEAD6 /* ListViewTests.swift in Sources */,
 				0665ADE7210F592D0044C887 /* FileTests.swift in Sources */,
 				06F15C0F24059B0100C783E3 /* TextBoxTests.swift in Sources */,
+				A1B2C3D4AA00000000000012 /* AbsoluteArrangementFillParentTests.swift in Sources */,
 				DE85F126209CD9AB00A809AA /* SliderTests.swift in Sources */,
 				0653CBD81F9719920052065A /* RuntimeTests.swift in Sources */,
 				06AC1CC81DB4559800A59EB3 /* AIComponentKitTests.m in Sources */,

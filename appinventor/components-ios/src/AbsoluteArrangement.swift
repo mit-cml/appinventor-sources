@@ -13,6 +13,12 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   
   public func setChildNeedsLayout(component: ViewComponent) {
     viewLayout.updateComponentPosition(component: component);
+    // A size set before the child was positioned could not be applied yet, and Fill parent
+    // depends on the position, so replay both once the child is in place.
+    if component.attachedToWindow {
+      setChildWidth(of: component, to: component._lastSetWidth)
+      setChildHeight(of: component, to: component._lastSetHeight)
+    }
   }
   
   // MARK: - Properties
@@ -153,11 +159,14 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     } else if width == kLengthPreferred {
       constraint = nil
     } else if width == kLengthFillParent {
-      constraint = component.view.widthAnchor.constraint(equalTo: _view.widthAnchor)
+      // Like Android's MATCH_PARENT with a left margin: fill from Left to the right edge.
+      constraint = component.view.rightAnchor.constraint(equalTo: _view.rightAnchor)
     } else {
       constraint = component.view.widthAnchor.constraint(equalToConstant: CGFloat(width))
     }
     component._lastSetWidth = width
+    viewLayout.setFills(component: component, width: width == kLengthFillParent,
+                        height: component._lastSetHeight == kLengthFillParent)
     replaceConstraint(&_widthConstraints, for: component, with: constraint)
     _view.invalidateIntrinsicContentSize()
   }
@@ -176,11 +185,14 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     } else if height == kLengthPreferred {
       constraint = nil
     } else if height == kLengthFillParent {
-      constraint = component.view.heightAnchor.constraint(equalTo: _view.heightAnchor)
+      // Like Android's MATCH_PARENT with a top margin: fill from Top to the bottom edge.
+      constraint = component.view.bottomAnchor.constraint(equalTo: _view.bottomAnchor)
     } else {
       constraint = component.view.heightAnchor.constraint(equalToConstant: CGFloat(height))
     }
     component._lastSetHeight = height
+    viewLayout.setFills(component: component, width: component._lastSetWidth == kLengthFillParent,
+                        height: height == kLengthFillParent)
     replaceConstraint(&_heightConstraints, for: component, with: constraint)
     _view.invalidateIntrinsicContentSize()
   }
