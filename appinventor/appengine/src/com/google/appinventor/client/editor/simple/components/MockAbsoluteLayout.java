@@ -168,11 +168,8 @@ final class MockAbsoluteLayout extends MockLayout {
       LayoutInfo childLayoutInfo = relativeLayoutInfo.layoutInfoMap.get(child);
 
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
-        // If the child's width is set to fill parent, we want to shift the child's top
-        // left corner to be on the left frame so that it fills the parent entirely.
-        // Then we set its width to be the same as the parent layout's width
-        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_LEFT, "0");
-        childLayoutInfo.width = layoutWidth;
+        // Like the companions, a Fill parent child fills from its Left to the right edge.
+        childLayoutInfo.width = Math.max(0, layoutWidth - coords.getX());
       } else if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childWidth = (- (childLayoutInfo.width - MockVisibleComponent.LENGTH_PERCENT_TAG))
             * form.screenWidth / 100;
@@ -182,11 +179,8 @@ final class MockAbsoluteLayout extends MockLayout {
       }
 
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
-        // If the child's height is set to fill parent, we want to shift the child's top
-        // left corner to be on the top frame so that it fills the parent entirely.
-        // Then we set its height to be the same as the parent layout's height
-        child.changeProperty(MockVisibleComponent.PROPERTY_NAME_TOP, "0");
-        childLayoutInfo.height = layoutHeight;
+        // Like the companions, a Fill parent child fills from its Top to the bottom edge.
+        childLayoutInfo.height = Math.max(0, layoutHeight - coords.getY());
       } else if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
         int childHeight = (- (childLayoutInfo.height - MockVisibleComponent.LENGTH_PERCENT_TAG))
             * form.usableScreenHeight / 100;
@@ -198,9 +192,7 @@ final class MockAbsoluteLayout extends MockLayout {
       if (child instanceof MockContainer) {
         ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
       }
-      int x = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_LEFT));
-      int y = Integer.parseInt(child.getPropertyValue(MockVisibleComponent.PROPERTY_NAME_TOP));
-      container.setChildSizeAndPosition(child, childLayoutInfo, x, y);
+      container.setChildSizeAndPosition(child, childLayoutInfo, coords.getX(), coords.getY());
     }
 
   }
