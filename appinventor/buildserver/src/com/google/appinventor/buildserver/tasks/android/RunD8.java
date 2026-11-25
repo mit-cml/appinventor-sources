@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2023 MIT, All rights reserved
+// Copyright 2023-2026 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -23,11 +23,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @BuildType(aab = true, apk = true)
 public class RunD8 extends DexTask implements AndroidTask {
@@ -46,9 +49,18 @@ public class RunD8 extends DexTask implements AndroidTask {
 
       final Set<String> criticalJars = getCriticalJars(context);
 
-      for (String jar : criticalJars) {
-        inputs.add(preDexLibrary(context, recordForMainDex(
-            new File(context.getResource(jar)), mainDexClasses)));
+      try {
+        Set<File> parallelResults = criticalJars.parallelStream().map(jar -> {
+          try {
+            return preDexLibrary(context, recordForMainDex(new File(context.getResource(jar)), mainDexClasses));
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }).collect(Collectors.toSet());
+        // Adding parallel results to existing list
+        inputs.addAll(parallelResults);
+      } catch (Exception e) {
+        throw new IOException(e);
       }
 
       // Only include ACRA for the companion app
@@ -57,29 +69,54 @@ public class RunD8 extends DexTask implements AndroidTask {
             new File(context.getResources().getAcraRuntime()), mainDexClasses)));
       }
 
-      for (String jar : context.getResources().getSupportJars()) {
-        if (criticalJars.contains(jar)) {  // already covered above
-          continue;
-        }
-        inputs.add(preDexLibrary(context, new File(context.getResource(jar))));
+      final List<String> supportJars = Arrays.asList(context.getResources().getSupportJars());
+      try {
+        Set<File> parallelResults = supportJars.parallelStream()
+            .filter(jar -> !criticalJars.contains(jar)) // already covered above
+            .map(jar -> {
+              try {
+                return preDexLibrary(context, new File(context.getResource(jar)));
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            })
+            .collect(Collectors.toSet());
+        // Adding parallel results to existing list
+        inputs.addAll(parallelResults);
+      } catch (Exception e) {
+        throw new IOException(e);
       }
 
       // Add the rest of the libraries in any order
-      for (String lib : context.getComponentInfo().getUniqueLibsNeeded()) {
-        inputs.add(preDexLibrary(context, new File(lib)));
+      try {
+        Set<File> parallelResults = context.getComponentInfo().getUniqueLibsNeeded().parallelStream().map(lib -> {
+          try {
+            return preDexLibrary(context, new File(lib));
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }).collect(Collectors.toSet());
+        // Adding parallel results to existing list
+        inputs.addAll(parallelResults);
+      } catch (Exception e) {
+        throw new IOException(e);
       }
 
       // Add extension libraries
-      Set<String> addedExtJars = new HashSet<>();
-      for (String type : context.getExtCompTypes()) {
-        String sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
-            context.getExtTypePathCache())
-            + context.getResources().getSimpleAndroidRuntimeJarPath();
-        if (!addedExtJars.contains(sourcePath)) {
-          inputs.add(new File(sourcePath));
-          addedExtJars.add(sourcePath);
-        }
-      }
+      Set<String> addedExtJars = ConcurrentHashMap.newKeySet();
+      Set<File> parallelResults = context.getExtCompTypes().parallelStream()
+          .map(type -> {
+            String sourcePath = ExecutorUtils.getExtCompDirPath(type, context.getProject(),
+                context.getExtTypePathCache())
+                + context.getResources().getSimpleAndroidRuntimeJarPath();
+            if (addedExtJars.add(sourcePath)) {
+              return new File(sourcePath);
+            }
+            return null;
+          })
+          .filter(file -> file != null)
+          .collect(Collectors.toSet());
+      inputs.addAll(parallelResults);
 
       Files.walkFileTree(context.getPaths().getClassesDir().toPath(), new FileVisitor<Path>() {
         @Override
