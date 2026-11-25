@@ -23,6 +23,10 @@ public enum VerticalGravity: Int32 {
 }
 
 let kDefaultRowColumn: Int32 = -1
+/// Left/Top value of a component whose position has not been set. Matches
+/// ComponentConstants.DEFAULT_X_Y on Android; any other value, including a negative one,
+/// is a real position.
+let kDefaultXY: Int = Int.min
 let kTextboxPreferredWidth: Int32 = 160
 let kEmptyHVArrangementWidth: Int = 100
 let kEmptyHVArrangementHeight: Int = 100

@@ -29,7 +29,6 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
   private var _heightConstraints = [ObjectIdentifier: NSLayoutConstraint]()
   
   // MARK: - Constants
-  private let NOT_VALID: Int = -1
   
   // MARK: - Custom View for Absolute Layout
   private class AbsoluteView: UIView {
@@ -131,7 +130,7 @@ open class AbsoluteArrangement: ViewComponent, ComponentContainer, AbstractMetho
     let x = component.Left
     let y = component.Top
     
-    if x != NOT_VALID && y != NOT_VALID {
+    if x != kDefaultXY && y != kDefaultXY {
       viewLayout.updateComponentPosition(component: component)
       setChildWidth(of: component, to: component._lastSetWidth)
       setChildHeight(of: component, to: component._lastSetHeight)

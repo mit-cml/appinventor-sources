@@ -27,8 +27,8 @@ import Foundation
   private var _visible = true
   
   
-  private var _left: Int = -1 //ComponentConstants.DEFAULT_X_Y  // Default invalid position
-  private var _top: Int = -1   // Default invalid position
+  private var _left: Int = kDefaultXY  // Position not set yet
+  private var _top: Int = kDefaultXY
       
 
   // Properties that users will set via App Inventor
