@@ -47,11 +47,22 @@ open class OrientationSensor: NonvisibleComponent, CLLocationManagerDelegate {
       if _enabled != shouldEnable, Available {
         _enabled = shouldEnable
         if shouldEnable {
-          _motion.startDeviceMotionUpdates(using: .xTrueNorthZVertical, to: OperationQueue.main, withHandler: processUpdate)
-          _location.startUpdatingHeading()
+          let frames = CMMotionManager.availableAttitudeReferenceFrames()
+          if frames.contains(.xMagneticNorthZVertical) {
+            _motion.startDeviceMotionUpdates(using: .xMagneticNorthZVertical, to: OperationQueue.main, withHandler: processUpdate)
+          } else if frames.contains(.xArbitraryCorrectedZVertical) {
+            _motion.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical, to: OperationQueue.main, withHandler: processUpdate)
+          } else {
+            _motion.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: processUpdate)
+          }
+          if CLLocationManager.headingAvailable() {
+            _location.startUpdatingHeading()
+          }
         } else {
           _motion.stopDeviceMotionUpdates()
-          _location.stopUpdatingHeading()
+          if CLLocationManager.headingAvailable() {
+            _location.stopUpdatingHeading()
+          }
         }
       }
     }
