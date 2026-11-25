@@ -1094,7 +1094,7 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     } catch (Exception e) {
       Log.e(LOG_TAG, e.getMessage());
       form.dispatchErrorOccurredEvent(this, "XMLTextDecodeAsDictionary",
-          ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, e.getMessage());
+          ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED, e.getMessage());
       return new YailDictionary();
     }
   }
@@ -1132,12 +1132,9 @@ public class Web extends AndroidNonvisibleComponent implements Component,
     try {
       return JsonTextDecode(XML.toJSONObject(XmlText).toString());
     } catch (com.google.appinventor.components.runtime.repackaged.org.json.JSONException e) {
-      // We could be more precise and signal different errors for the conversion to JSON
-      // versus the decoding of that JSON, but showing the actual error message should
-      // be good enough.
       Log.e(LOG_TAG, e.getMessage());
       form.dispatchErrorOccurredEvent(this, "XMLTextDecode",
-          ErrorMessages.ERROR_WEB_JSON_TEXT_DECODE_FAILED, e.getMessage());
+          ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED, e.getMessage());
       // This XMLTextDecode should always return a list, even in the case of an error
       return YailList.makeEmptyList();
     }
