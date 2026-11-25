@@ -646,7 +646,9 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 40.
   // For YOUNG_ANDROID_VERSION 240:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 41.
-  public static final int YOUNG_ANDROID_VERSION = 240;
+  // For YOUNG_ANDROID_VERSION 241:
+  // - BLOCKS_LANGUAGE_VERSION was incremented to 42.
+  public static final int YOUNG_ANDROID_VERSION = 241;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -753,7 +755,9 @@ public class YaVersion {
   // - Add "titlecase" operator for text_changeCase block.
   // For BLOCKS_LANGUAGE_VERSION 41
   // - Rename option list key from Shape to ButtonShape.
-  public static final int BLOCKS_LANGUAGE_VERSION = 41;
+  // For BLOCKS_LANGUAGE_VERSION 42
+  // - The Newline text block was added.
+  public static final int BLOCKS_LANGUAGE_VERSION = 42;
 
   // ................................. Target SDK Version Number ..................................
 

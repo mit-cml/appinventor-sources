@@ -747,6 +747,15 @@ AI.Swift.SwiftWriter.prototype['text'] = function(block) {
   return [code, 0];
 };
 
+AI.Swift.SwiftWriter.prototype['text_multiline_text'] = function(block) {
+  var code = this.quote_(block.getFieldValue('TEXT'));
+  return [code, 0];
+};
+
+AI.Swift.SwiftWriter.prototype['text_newline'] = function(block) {
+  return ['"\\n"', 0];
+};
+
 AI.Swift.SwiftWriter.prototype['text_join'] = function(block) {
   var code = '';
   if (block.itemCount_ > 0) {

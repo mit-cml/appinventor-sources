@@ -116,6 +116,20 @@ Blockly.Blocks['text_multiline_text'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_MULTILINE_TEXT_TITLE}]
 };
 
+Blockly.Blocks['text_newline'] = {
+  // Newline text block.
+  category: 'Text',
+  helpUrl: Blockly.Msg.LANG_TEXT_NEWLINE_HELPURL,
+  init: function () {
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
+    this.setOutput(true, AI.BlockUtils.YailTypeToBlocklyType("text", AI.BlockUtils.OUTPUT));
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_TEXT_NEWLINE_TITLE);
+    this.setTooltip(Blockly.Msg.LANG_TEXT_NEWLINE_TOOLTIP);
+  },
+  typeblock: [{translatedName: Blockly.Msg.LANG_TEXT_NEWLINE_TITLE}]
+};
+
 Blockly.Blocks['text_join'] = {
   // Create a string made up of any number of elements of any type.
   // TODO: (Andrew) Make this handle multiple arguments.
