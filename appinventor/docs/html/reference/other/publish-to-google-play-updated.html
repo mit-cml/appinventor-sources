@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Uploading Your Apps to Google Play</title>
+</head>
+<body>
+
+<h1>Uploading Your Apps to Google Play (Updated for 2025)</h1>
+
+<p><em>This page replaces the previous Google Play publishing guide, which referenced APK-based uploads. Updated for Android App Bundles (AAB) in 2025.</em></p>
+
+<p>Applications built with MIT App Inventor can be published on <strong>Google Play</strong>.<br>
+You’ll need to register as a <a href="https://play.google.com/console/signup">Google Play Developer</a> and pay a one-time $25 fee.</p>
+
+<hr>
+
+<h2>Before You Begin</h2>
+
+<p><strong>Important:</strong> As of <strong>August 2021</strong>, all new apps uploaded to Google Play must use <strong>Android App Bundles (.aab)</strong> instead of traditional APKs.<br>
+Existing apps that were already published as APKs can continue to update using APK for now, but new apps <em>must</em> be submitted as <code>.aab</code>.</p>
+
+<p>If your exported App Inventor build is an <strong>APK</strong>, you can use <strong>Android Studio</strong> to convert it to an <strong>App Bundle</strong> before uploading.<br>
+Learn more: <a href="https://developer.android.com/guide/app-bundle">Use Android App Bundles</a></p>
+
+<hr>
+
+<h2>Versioning Your App</h2>
+
+<p>Every app published on Google Play must define a <strong>VersionCode</strong> and a <strong>VersionName</strong>.</p>
+
+<p>In the MIT App Inventor Designer view:</p>
+<ul>
+  <li><strong>VersionCode</strong> → an integer (1, 2, 3, …). It must increase with each new release.</li>
+  <li><strong>VersionName</strong> → a string such as “1.0”, “1.1”, “2.0”, etc.</li>
+</ul>
+
+<p>When updating your app on Google Play:</p>
+<ul>
+  <li>Increment <strong>VersionCode</strong></li>
+  <li>Update <strong>VersionName</strong></li>
+</ul>
+
+<hr>
+
+<h2>Exporting and Preparing Your Build</h2>
+
+<ol>
+  <li>In App Inventor, click <strong>Build → App (provide QR code for .apk)</strong> or <strong>Build → App (save .apk to my computer)</strong>.</li>
+  <li>This exports your app as an <strong>APK</strong> file.</li>
+  <li>To publish on Google Play:
+    <ul>
+      <li>Import the APK into <strong>Android Studio</strong>.</li>
+      <li>Follow Android Studio’s wizard to generate an <strong>Android App Bundle (.aab)</strong> file.</li>
+      <li>Save the <code>.aab</code> to your computer.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr>
+
+<h2>Publishing to Google Play</h2>
+
+<ol>
+  <li>Go to <a href="https://play.google.com/console/">Google Play Console</a>.</li>
+  <li>Click <strong>Create App</strong>, then enter app name, language, and category.</li>
+  <li>Under <strong>Production → Create New Release</strong>, upload your <strong>.aab</strong> file.</li>
+  <li>Complete:
+    <ul>
+      <li>App details and screenshots</li>
+      <li>Content rating questionnaire</li>
+      <li>Privacy policy link</li>
+      <li>Target devices and permissions</li>
+    </ul>
+  </li>
+  <li>Ensure your app targets <strong>Android API Level 33 (Android 13)</strong> or higher.</li>
+  <li>Click <strong>Review and Publish</strong> when all checks pass.</li>
+</ol>
+
+<hr>
+
+<h2>App Signing</h2>
+
+<p>Google Play now requires <strong>Play App Signing</strong>.<br>
+When you upload an AAB, Google securely manages your signing key and automatically generates optimized APKs for users’ devices.</p>
+
+<p>You can still download and back up your <strong>MIT App Inventor keystore</strong> from the <em>Projects → Download Keystore</em> menu.<br>
+Store it safely if you ever migrate or rebuild your project.</p>
+
+<hr>
+
+<h2>Backups</h2>
+
+<p>Once published, users depend on your app’s maintenance.<br>
+Always back up your project’s source code (<code>.aia</code> file):</p>
+
+<ol>
+  <li>In <strong>My Projects</strong>, check your project.</li>
+  <li>Click <strong>Project → Export selected project (.aia)</strong></li>
+  <li>Save it securely — it contains your app’s source.</li>
+</ol>
+
+<p>MIT App Inventor makes best efforts to protect projects, but <strong>backups are your responsibility.</strong></p>
+
+<hr>
+
+<h2>Note on Large Apps</h2>
+
+<p>If your app exceeds <strong>150 MB</strong>, use <strong>Play Asset Delivery</strong> or <strong>Play Feature Delivery</strong>.<br>
+These allow modular delivery of additional assets without exceeding size limits.</p>
+
+<hr>
+
+<h2>License</h2>
+
+<p>This documentation is licensed under a<br>
+<a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
+
+<p>&copy; 2012–2025 Massachusetts Institute of Technology</p>
+
+</body>
+</html>
