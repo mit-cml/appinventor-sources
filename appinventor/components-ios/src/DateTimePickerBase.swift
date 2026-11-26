@@ -27,7 +27,7 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
     _isDatePicker = isDatePicker
     super.init()
     if #available(iOS 14.0, *) {
-      _pickerView.preferredDatePickerStyle = .inline
+      _pickerView.preferredDatePickerStyle = isDatePicker ? .inline : .wheels
       if UITraitCollection.current.userInterfaceStyle == .dark {
         _pickerView.backgroundColor = .black
       } else {
@@ -73,7 +73,7 @@ class DateTimePickerPadController: PickerPadController, DateTimePickerController
 
     view.bottomAnchor.constraint(equalTo: _setDateTimeButton.bottomAnchor, constant: 20).isActive = true
     view.backgroundColor = _setDateTimeButton.backgroundColor
-    self.preferredContentSize = CGSize(width: _pickerView.frame.width, height: 300)
+    self.preferredContentSize = CGSize(width: _pickerView.frame.width, height: _isDatePicker ? 440 : 300)
   }
 
   @objc func dateTimeSet() {
