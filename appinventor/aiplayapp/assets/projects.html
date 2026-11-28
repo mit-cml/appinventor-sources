@@ -1,4 +1,4 @@
-<!-- Copyright © 2025 Massachusetts Institute of Technology
+<!-- Copyright © 2025-2026 Massachusetts Institute of Technology
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,48 +13,201 @@
      limitations under the License.
    -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>Project Selector</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Saved Apps</title>
+        <style>
+         body { font-family: sans-serif; margin: 0; }
+         .heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+         h1 { margin: 0; font-size: 1.7rem; }
+         header { position: sticky; top: 0; z-index: 1; padding: 4px 12px; background: #a5cf47; }
+         #home { min-height: 44px; font: inherit; padding: 0 16px; border: 1px solid #799c36;
+             border-radius: 24px; background: #d1ee91; color: #162008; }
+         main { padding: 16px; }
+         #controls { margin-bottom: 10px; }
+         .sort { color: #862781; position: relative; display: inline-flex; align-items: center;
+             min-height: 44px; white-space: nowrap; padding: 0 10px; border-radius: 5px; border: 1px solid currentColor; }
+         .sort select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+         .sort:focus-within { outline: 2px solid currentColor; }
+         #search { box-sizing: border-box; width: 100%; margin: 8px 0; padding: 9px 16px; min-height: 44px; font: inherit;
+             border: 2px solid #862781; border-radius: 24px; color: inherit; background: transparent; }
+         #search::placeholder { color: #595959; opacity: 1; }
+         .project { position: relative; padding: 10px 0; border-bottom: 1px solid #ddd; }
+         .project-info { display: flex; align-items: center; gap: 12px; width: calc(100% - 44px);
+             padding: 0; border: 0; background: transparent; color: inherit; font: inherit;
+             text-align: start; cursor: pointer; }
+         .project-icon { box-sizing: border-box; flex: none; width: 52px; height: 52px;
+             object-fit: contain; border: 1px solid #862781; border-radius: 12px; }
+         .project-details { min-width: 0; overflow-wrap: anywhere; }
+         .pname { display: block; font-weight: bold; font-size: 15px; }
+         .pdate { display: block; color: #888; font-size: 12px; margin-top: 2px; }
+         .project-options { position: absolute; top: 10px; right: 0; }
+         .project-options summary { min-width: 44px; min-height: 44px; text-align: center; line-height: 44px;
+             color: #862781; font-size: 24px; list-style: none; cursor: pointer; }
+         .project-options summary::-webkit-details-marker { display: none; }
+         .project-delete { position: absolute; z-index: 2; top: 100%; right: 0; color: #a21d27;
+             background: white; border: 1px solid #ccc; border-radius: 6px; min-height: 44px;
+             padding: 0 16px; font: inherit; white-space: nowrap; }
+         .empty { text-align: center; padding: 40px 0; color: #888; }
+         .empty p { margin-top: 6px; font-size: 14px; }
+        </style>
         <script type="text/javascript">
-         function done() {
-             Android.finished();
-         };
-          function showprojects() {
-            let projects = Android.listProjects();
-            projects = JSON.parse(projects);
-            let html = "";
-            if (projects.length == 0) {
-              html += '<p>You do not have any projects saved.</p>'
-            } else {
-              html += "<table border=1>\n";
-              for (let i=0; i < projects.length; i++) {
-                html += "<tr><td>" + projects[i] + "</td><td><button onClick=\"loadproject('" + projects[i] + "');\">Run</button></td><td>&nbsp;-&nbsp;</td><td><button onClick=\"deleteproject('" + projects[i] + "');\">Delete</button></td></tr>\n"
-              }
-              html += "</table>\n";
-            }
-            let l = document.getElementById("projects");
-            l.innerHTML = html;
-          }
-          function loadproject(project) {
-            Android.loadProject(project);
-          }
-          function deleteproject(project) {
-            Android.deleteProject(project);
-            showprojects();
-          }
-          document.addEventListener("DOMContentLoaded", function() {
-            showprojects();
-          });
+         const DEFAULT_PROJECT_ICON = "saved-app-default.png";
+         let allProjects = [];
+
+         function formatdate(ts) {
+             if (!ts || ts <= 0) return "";
+             let diff = Date.now() - ts;
+             if (diff < 0) return "";
+             let days = Math.floor(diff / 86400000);
+             let hours = Math.floor(diff / 3600000);
+             let mins = Math.floor(diff / 60000);
+             if (days > 0) return days + " day" + (days == 1 ? "" : "s") + " ago";
+             if (hours > 0) return hours + " hour" + (hours == 1 ? "" : "s") + " ago";
+             if (mins > 0) return mins + " minute" + (mins == 1 ? "" : "s") + " ago";
+             return "just now";
+         }
+
+         function showprojects() {
+             let query = document.getElementById("search").value.toLowerCase();
+             let mode = document.getElementById("sortmode").value;
+             let list = allProjects.slice();
+
+             if (query) {
+                 list = list.filter(function(p) {
+                     return p.name.toLowerCase().indexOf(query) >= 0;
+                 });
+             }
+
+             if (mode == "az") {
+                 list.sort(function(a, b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+             } else if (mode == "za") {
+                 list.sort(function(a, b) { return b.name.toLowerCase().localeCompare(a.name.toLowerCase()); });
+             } else {
+                 list.sort(function(a, b) { return (b.lastModified || 0) - (a.lastModified || 0); });
+             }
+
+             let el = document.getElementById("projects");
+             el.innerHTML = "";
+
+             if (allProjects.length == 0) {
+                 el.innerHTML = '<div class="empty"><strong>No Apps Downloaded</strong>' +
+                     '<p>Connect to your project first to download it to your library!</p></div>';
+                 return;
+             }
+             if (list.length == 0) {
+                 el.innerHTML = '<div class="empty">No matching apps.</div>';
+                 return;
+             }
+
+             for (let i = 0; i < list.length; i++) {
+                 let p = list[i];
+                 let div = document.createElement("div");
+                 div.className = "project";
+
+                 let info = document.createElement("button");
+                 info.type = "button";
+                 info.className = "project-info";
+                 info.setAttribute("aria-label", "Open " + p.name);
+                 info.onclick = function() { Android.loadProject(p.name); };
+                 let icon = document.createElement("img");
+                 icon.onerror = function() {
+                     this.onerror = null;
+                     this.src = DEFAULT_PROJECT_ICON;
+                 };
+                 icon.src = p.icon || DEFAULT_PROJECT_ICON;
+                 icon.alt = "";
+                 icon.className = "project-icon";
+                 info.appendChild(icon);
+
+                 let details = document.createElement("span");
+                 details.className = "project-details";
+                 let nm = document.createElement("span");
+                 nm.className = "pname";
+                 nm.textContent = p.name;
+                 details.appendChild(nm);
+
+                 let rel = formatdate(p.lastModified);
+                 if (rel) {
+                     let dt = document.createElement("span");
+                     dt.className = "pdate";
+                     dt.textContent = "Last modified: " + rel;
+                     details.appendChild(dt);
+                 }
+
+                 info.appendChild(details);
+                 div.appendChild(info);
+
+                 let options = document.createElement("details");
+                 options.className = "project-options";
+                 let more = document.createElement("summary");
+                 more.textContent = "⋮";
+                 more.setAttribute("aria-label", "Options for " + p.name);
+                 options.appendChild(more);
+                 let del = document.createElement("button");
+                 del.type = "button";
+                 del.className = "project-delete";
+                 del.textContent = "Delete App";
+                 del.onclick = function() {
+                     options.open = false;
+                     deleteproject(p.name);
+                 };
+                 options.appendChild(del);
+                 div.appendChild(options);
+                 el.appendChild(div);
+             }
+         }
+
+         function deleteproject(name) {
+             if (!confirm('Delete "' + name + '"?')) return;
+             Android.deleteProject(name);
+             refreshProjects();
+         }
+
+         function refreshProjects() {
+             let raw = Android.listProjects();
+             try { allProjects = JSON.parse(raw); } catch (e) { allProjects = []; }
+             document.getElementById("controls").hidden = allProjects.length === 0;
+             showprojects();
+         }
+
+         document.addEventListener("DOMContentLoaded", function() {
+             let saved = localStorage.getItem("projects_sortMode");
+             if (saved) document.getElementById("sortmode").value = saved;
+             document.getElementById("search").addEventListener("input", showprojects);
+             document.getElementById("sortmode").addEventListener("change", function() {
+                 localStorage.setItem("projects_sortMode", this.value);
+                 showprojects();
+             });
+             document.addEventListener("click", function(event) {
+                 document.querySelectorAll(".project-options[open]").forEach(function(menu) {
+                     if (!menu.contains(event.target)) menu.open = false;
+                 });
+             });
+             refreshProjects();
+         });
         </script>
     </head>
     <body>
-      <center>
-        <h1>Select Project to load</h1>
-      </center>
-      <p>
+      <header><button type="button" id="home" onclick="Android.finished()">&lsaquo; Home</button></header>
+      <main>
+        <div id="controls" hidden>
+          <div class="heading">
+            <h1>Saved Apps</h1>
+            <label class="sort">↕ Sort
+              <select id="sortmode" aria-label="Sort saved apps">
+                <option value="recent">Recently Modified</option>
+                <option value="az">App Name: A-Z</option>
+                <option value="za">App Name: Z-A</option>
+              </select>
+            </label>
+          </div>
+          <input type="search" id="search" placeholder="Search" aria-label="Search saved apps">
+        </div>
         <div id="projects">
         </div>
-      </p>
+      </main>
     </body>
 </html>

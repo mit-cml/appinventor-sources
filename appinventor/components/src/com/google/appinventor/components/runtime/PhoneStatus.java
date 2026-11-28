@@ -398,7 +398,115 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     RetValManager.startCache();
   }
 
+  /** Styles the Companion's tutorial button as an underlined text link.  */
+  @SimpleFunction(description = "Style the Companion tutorial link.", userVisible = false)
+  public void StyleCompanionTutorialLink(AndroidViewComponent link) {
+    android.view.View view = link.getView();
+    if (!(view instanceof android.widget.TextView)) {
+      return;
+    }
+    android.widget.TextView textView = (android.widget.TextView) view;
+    textView.setBackgroundDrawable(null);
+    textView.setMinHeight(0);
+    textView.setMinimumHeight(0);
+    textView.setPadding(textView.getPaddingLeft(), 0, textView.getPaddingRight(), 0);
+    // Underlined like the link on iOS. The line is drawn in the text colour.
+    textView.setPaintFlags(textView.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
+    textView.requestLayout();
+  }
+
   public static String intToIp(int i) {
     return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >>24) & 0xFF);
+  }
+
+  /**
+   * Styles Companion UI components.
+   * Supports the Settings Home button and code textbox.
+   */
+  @SimpleFunction(description = "Styles Companion UI components.")
+  public void StyleCompanionHomeButton(AndroidViewComponent component) {
+    android.view.View view = component.getView();
+
+    float density = view.getResources().getDisplayMetrics().density;
+
+    android.graphics.drawable.GradientDrawable background =
+        new android.graphics.drawable.GradientDrawable();
+
+    background.setCornerRadius(8 * density);
+
+    // Settings Home button
+    if (view instanceof android.widget.Button) {
+      android.widget.Button button = (android.widget.Button) view;
+
+      background.setColor(0xFFD1EE91);
+      background.setCornerRadius(24 * density);
+      background.setStroke(Math.max(1, Math.round(density)), 0xFF799C36);
+
+      if (android.os.Build.VERSION.SDK_INT >= 21) {
+        button.setBackgroundTintList(null);
+        button.setStateListAnimator(null);
+        button.setElevation(0);
+      }
+
+      button.setBackgroundDrawable(background);
+      button.setAllCaps(false);
+      button.setTextColor(0xFF162008);
+      button.setTextSize(16);
+      button.setTypeface(android.graphics.Typeface.create(
+          "sans-serif", android.graphics.Typeface.NORMAL));
+      button.setMinWidth(0);
+      button.setMinimumWidth(0);
+      button.setMinHeight(Math.round(44 * density));
+      button.setMinimumHeight(Math.round(44 * density));
+      button.setPadding(Math.round(16 * density), 0,
+          Math.round(16 * density), 0);
+
+      if (button.getParent() instanceof android.view.View) {
+        ((android.view.View) button.getParent()).setPadding(
+            Math.round(12 * density), Math.round(4 * density),
+            Math.round(12 * density), Math.round(4 * density));
+      }
+
+    // Code textbox
+    } else if (view instanceof android.widget.EditText) {
+      background.setColor(0xFFFFFFFF);
+
+      android.widget.EditText editText =
+          (android.widget.EditText) view;
+
+      if (android.os.Build.VERSION.SDK_INT >= 21) {
+        editText.setBackgroundTintList(null);
+      }
+
+      editText.setBackgroundDrawable(background);
+
+    }
+  }
+
+  /**
+   * Fits a large label into one of the Companion's main buttons, which have a fixed size.
+   */
+  @SimpleFunction(description = "Style a Companion main button.", userVisible = false)
+  public void StyleCompanionMainButton(AndroidViewComponent button) {
+    android.view.View view = button.getView();
+    if (!(view instanceof android.widget.TextView)) {
+      return;
+    }
+    android.widget.TextView textView = (android.widget.TextView) view;
+    // The platform button style reserves space around the label, which would clip a label this
+    // large. The label is centered, so it does not need the padding.
+    textView.setPadding(0, 0, 0, 0);
+    textView.setIncludeFontPadding(false);
+    textView.setMaxLines(1);
+    if (android.os.Build.VERSION.SDK_INT >= 26) {
+      // If the system font size is turned up, shrink the label to fit instead of clipping it.
+      int largest = Math.round(textView.getTextSize());
+      int smallest = Math.round(12 * view.getResources().getDisplayMetrics().density);
+      if (smallest < largest) {
+        textView.setAutoSizeTextTypeUniformWithConfiguration(smallest, largest, 1,
+            android.util.TypedValue.COMPLEX_UNIT_PX);
+      }
+    }
+    textView.requestLayout();
   }
 }

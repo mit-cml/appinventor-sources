@@ -305,7 +305,8 @@ typedef union {
     pic_init_picrin(pic);
     ASTRecursiveVisitor *visitor = [[ASTRecursiveVisitor alloc] initWithPicState:pic];
     const char *content = [companion UTF8String];
-    port = pic_fmemopen(pic, content, companion.length, "r");
+    size_t length = [companion lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    port = pic_fmemopen(pic, content, length, "r");
     size_t ai = pic_enter(pic);
     
     while (! pic_eof_p(pic, form = pic_read(pic, port))) {

@@ -5,7 +5,8 @@ $Source $Yail
 (define-repl-form edu.mit.appinventor.aicompanion3.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
 
-(def (p$badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
+(def (p$badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text)
+  (set-and-coerce-property! 'ErrorLabel 'Visible #t 'boolean))
 (def (p$getRendezvousServer ) (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "rendezvousServer"  (get-var g$rendezvousServer)) '(text any)))
 (def (p$isAPK $input) (or-delayed (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "http://") '(text text) "starts at") 1) '(any any) "=") (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "https://") '(text text) "starts at") 1) '(any any) "=")))
 (def (p$startdirectconnect )  (let ( ($ignore "")  )   (set-lexical! $ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"  (get-var g$rendezvousServer)) '(text text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t) '(boolean)))
@@ -30,78 +31,211 @@ $Source $Yail
  (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
  (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
  (set-and-coerce-property! 'Screen1 'Theme "AppTheme.Light.DarkActionBar" 'text)
- (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor Companion" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)
-    (set-var! g$rendezvousServer ((get-var p$getRendezvousServer) ))(set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'PhoneStatus1 'WebRTC (get-property 'CheckBox1 'Checked) 'boolean))
+  (call-component-method 'PhoneStatus1 'StyleCompanionMainButton
+    (*list-for-runtime* (get-component ConnectButton)) '(component))
+
+  (call-component-method 'PhoneStatus1 'StyleCompanionMainButton
+    (*list-for-runtime* (get-component ScanButton)) '(component))
+
+  (call-component-method 'PhoneStatus1 'StyleCompanionMainButton
+    (*list-for-runtime* (get-component LibraryButton)) '(component))
+
+  (call-component-method 'PhoneStatus1 'StyleCompanionHomeButton
+    (*list-for-runtime* (get-component CodeBox)) '(component))
+
+  (call-component-method 'PhoneStatus1 'StyleCompanionTutorialLink
+    (*list-for-runtime* (get-component TutorialLink)) '(component))
+
+    (set-var! g$rendezvousServer ((get-var p$getRendezvousServer) ))(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'PhoneStatus1 'WebRTC (get-property 'CheckBox1 'Checked) 'boolean))
 ;;; SettingsPanel
 
-(add-component Screen1 com.google.appinventor.components.runtime.VerticalArrangement SettingsPanel 
-(set-and-coerce-property! 'SettingsPanel 'AlignHorizontal 3 'number)
+(add-component Screen1 com.google.appinventor.components.runtime.VerticalArrangement SettingsPanel
+  (set-and-coerce-property! 'SettingsPanel 'AlignHorizontal 3 'number)
+  (set-and-coerce-property! 'SettingsPanel 'Width -2 'number)
+  (set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)
+  (set-and-coerce-property! 'SettingsPanel 'Height -2 'number)
+)
 
-(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)
+;;; SettingsHeader
 
-(set-and-coerce-property! 'SettingsPanel 'Width -2 'number)
+(add-component SettingsPanel com.google.appinventor.components.runtime.HorizontalArrangement SettingsHeader
+  (set-and-coerce-property! 'SettingsHeader 'Width -2 'number)
+  (set-and-coerce-property! 'SettingsHeader 'AlignHorizontal 1 'number)
+  (set-and-coerce-property! 'SettingsHeader 'AlignVertical 2 'number)
+  (set-and-coerce-property! 'SettingsHeader 'BackgroundColor #xFFA5CF47 'number)
+)
 
+;;; SettingsHome
+
+(add-component SettingsHeader com.google.appinventor.components.runtime.Button SettingsHome
+  (set-and-coerce-property! 'SettingsHome 'FontSize 16 'number)
+  (set-and-coerce-property! 'SettingsHome 'Text "‹ Home" 'text)
+  (set-and-coerce-property! 'SettingsHome 'Shape 1 'number)
+  (set-and-coerce-property! 'SettingsHome 'Height 44 'number)
+  (set-and-coerce-property! 'SettingsHome 'BackgroundColor #xFFD1EE91 'number)
+  (set-and-coerce-property! 'SettingsHome 'TextColor #xFF162008 'number)
+)
+
+(define-event SettingsHome Click()(set-this-form)
+  (set-and-coerce-property! 'Screen1 'TitleVisible #t 'boolean)
+  (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
+  (set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)
+  (set-and-coerce-property! 'MainPanel 'Visible #t 'boolean))
+
+
+;;; SettingsBody
+
+(add-component SettingsPanel com.google.appinventor.components.runtime.VerticalScrollArrangement SettingsBody
+  (set-and-coerce-property! 'SettingsBody 'Width -2 'number)
+  (set-and-coerce-property! 'SettingsBody 'Height -2 'number)
+  (set-and-coerce-property! 'SettingsBody 'AlignHorizontal 3 'number)
 )
 
 ;;; settingsintro
 
-(add-component SettingsPanel com.google.appinventor.components.runtime.Label settingsintro 
-(set-and-coerce-property! 'settingsintro 'HasMargins #f 'boolean)
-
-(set-and-coerce-property! 'settingsintro 'Text "App Inventor Companion Settings" 'text)
-
+(add-component SettingsBody com.google.appinventor.components.runtime.Label settingsintro
+  (set-and-coerce-property! 'settingsintro 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'settingsintro 'Text "Settings" 'text)
 )
+
+;;; CheckBox1
+
+(add-component SettingsBody com.google.appinventor.components.runtime.CheckBox CheckBox1
+  (set-and-coerce-property! 'CheckBox1 'Text "Use Legacy Connection" 'text)
+)
+
+(define-event CheckBox1 Changed()(set-this-form)
+    (set-and-coerce-property! 'PhoneStatus1 'WebRTC (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") 'boolean))
+
 
 ;;; HorizontalArrangement4
 
-(add-component SettingsPanel com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement4 
+(add-component SettingsBody com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement4
 )
 
 ;;; Label12
 
-(add-component HorizontalArrangement4 com.google.appinventor.components.runtime.Label Label12 
-(set-and-coerce-property! 'Label12 'HasMargins #f 'boolean)
-
-(set-and-coerce-property! 'Label12 'Text "Set Rendezvous Server: " 'text)
-
+(add-component HorizontalArrangement4 com.google.appinventor.components.runtime.Label Label12
+  (set-and-coerce-property! 'Label12 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'Label12 'Text "Set Rendezvous Server: " 'text)
 )
 
 ;;; rendezvoustextbox
 
-(add-component HorizontalArrangement4 com.google.appinventor.components.runtime.TextBox rendezvoustextbox 
-(set-and-coerce-property! 'rendezvoustextbox 'Hint "Hint for TextBox1" 'text)
-
+(add-component HorizontalArrangement4 com.google.appinventor.components.runtime.TextBox rendezvoustextbox
+  (set-and-coerce-property! 'rendezvoustextbox 'Hint "Hint for TextBox1" 'text)
 )
 
 ;;; HorizontalArrangement5
 
-(add-component SettingsPanel com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement5 
+(add-component SettingsBody com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement5
 )
 
 ;;; SetRenzvousServer
 
-(add-component HorizontalArrangement5 com.google.appinventor.components.runtime.Button SetRenzvousServer 
-(set-and-coerce-property! 'SetRenzvousServer 'Text "Set Rendezvous Server" 'text)
-
+(add-component HorizontalArrangement5 com.google.appinventor.components.runtime.Button SetRenzvousServer
+  (set-and-coerce-property! 'SetRenzvousServer 'Text "Set Rendezvous Server" 'text)
+  (set-and-coerce-property! 'SetRenzvousServer 'Shape 1 'number)
+  (set-and-coerce-property! 'SetRenzvousServer 'BackgroundColor #xFFFFFFFF 'number)
+  (set-and-coerce-property! 'SetRenzvousServer 'TextColor #xFF000000 'number)
 )
 
 (define-event SetRenzvousServer Click()(set-this-form)
+  (set-and-coerce-property! 'Screen1 'TitleVisible #t 'boolean)
+  (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
     ((get-var p$setRendezvousServer) (get-property 'rendezvoustextbox 'Text) #t)(call-component-method 'rendezvoustextbox 'HideKeyboard (*list-for-runtime*) '())(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)(set-and-coerce-property! 'MainPanel 'Visible #t 'boolean))
+
+;;; SettingsActionGap
+
+(add-component HorizontalArrangement5 com.google.appinventor.components.runtime.Label SettingsActionGap
+  (set-and-coerce-property! 'SettingsActionGap 'Width 16 'number)
+  (set-and-coerce-property! 'SettingsActionGap 'Text "" 'text)
+  (set-and-coerce-property! 'SettingsActionGap 'HasMargins #f 'boolean)
+)
+
 ;;; ResetRendezvousServer
 
-(add-component HorizontalArrangement5 com.google.appinventor.components.runtime.Button ResetRendezvousServer 
-(set-and-coerce-property! 'ResetRendezvousServer 'Text "Reset to Default" 'text)
-
+(add-component HorizontalArrangement5 com.google.appinventor.components.runtime.Button ResetRendezvousServer
+  (set-and-coerce-property! 'ResetRendezvousServer 'Text "Reset to Default" 'text)
+  (set-and-coerce-property! 'ResetRendezvousServer 'Shape 1 'number)
+  (set-and-coerce-property! 'ResetRendezvousServer 'BackgroundColor #xFFFFFFFF 'number)
+  (set-and-coerce-property! 'ResetRendezvousServer 'TextColor #xFF000000 'number)
 )
 
 (define-event ResetRendezvousServer Click()(set-this-form)
+  (set-and-coerce-property! 'Screen1 'TitleVisible #t 'boolean)
+  (set-and-coerce-property! 'Screen1 'Scrollable #t 'boolean)
     ((get-var p$resetRendezvousServer) )(set-and-coerce-property! 'SettingsPanel 'Visible #f 'boolean)(set-and-coerce-property! 'MainPanel 'Visible #t 'boolean))
+
 ;;; aidLabel
 
-(add-component SettingsPanel com.google.appinventor.components.runtime.Label aidLabel 
+(add-component SettingsBody com.google.appinventor.components.runtime.Label aidLabel
+  (set-and-coerce-property! 'aidLabel 'Visible #f 'boolean)
+)
+
+;;; SettingsFooter
+
+(add-component SettingsPanel com.google.appinventor.components.runtime.VerticalArrangement SettingsFooter
+  (set-and-coerce-property! 'SettingsFooter 'Width -2 'number)
+  (set-and-coerce-property! 'SettingsFooter 'AlignHorizontal 3 'number)
+)
+
+;;; HorizontalArrangement3
+
+(add-component SettingsFooter com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement3
+  (set-and-coerce-property! 'HorizontalArrangement3 'AlignHorizontal 3 'number)
+  (set-and-coerce-property! 'HorizontalArrangement3 'Width -2 'number)
+)
+
+;;; Label11
+
+(add-component HorizontalArrangement3 com.google.appinventor.components.runtime.Label Label11
+  (set-and-coerce-property! 'Label11 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'Label11 'Text "Version: " 'text)
+  (set-and-coerce-property! 'Label11 'FontSize 14 'number)
+)
+
+;;; versionlabel
+
+(add-component HorizontalArrangement3 com.google.appinventor.components.runtime.Label versionlabel
+  (set-and-coerce-property! 'versionlabel 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'versionlabel 'Text "Unknown" 'text)
+  (set-and-coerce-property! 'versionlabel 'FontSize 14 'number)
+)
+
+;;; IPContainer
+
+(add-component SettingsFooter com.google.appinventor.components.runtime.HorizontalArrangement IPContainer
+  (set-and-coerce-property! 'IPContainer 'AlignHorizontal 3 'number)
+  (set-and-coerce-property! 'IPContainer 'Width -2 'number)
+)
+
+;;; Label4
+
+(add-component IPContainer com.google.appinventor.components.runtime.Label Label4
+  (set-and-coerce-property! 'Label4 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'Label4 'Text "Your IP Address Is: " 'text)
+  (set-and-coerce-property! 'Label4 'FontSize 14 'number)
+)
+
+;;; ipaddrlabel
+
+(add-component IPContainer com.google.appinventor.components.runtime.Label ipaddrlabel
+  (set-and-coerce-property! 'ipaddrlabel 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'ipaddrlabel 'Text "Unknown" 'text)
+  (set-and-coerce-property! 'ipaddrlabel 'FontSize 14 'number)
+)
+
+;;; SettingsBottomSpace
+
+(add-component SettingsFooter com.google.appinventor.components.runtime.Label SettingsBottomSpace
+  (set-and-coerce-property! 'SettingsBottomSpace 'Height 20 'number)
+  (set-and-coerce-property! 'SettingsBottomSpace 'Text "" 'text)
+  (set-and-coerce-property! 'SettingsBottomSpace 'HasMargins #f 'boolean)
 )
 
 ;;; MainPanel
@@ -135,6 +269,7 @@ $Source $Yail
 
 (add-component MainPanel com.google.appinventor.components.runtime.Label ErrorLabel 
 (set-and-coerce-property! 'ErrorLabel 'HasMargins #f 'boolean)
+(set-and-coerce-property! 'ErrorLabel 'Visible #f 'boolean)
 
 (set-and-coerce-property! 'ErrorLabel 'TextAlignment 1 'number)
 
@@ -166,7 +301,7 @@ $Source $Yail
 
 ;;; instructionContainer
 
-(add-component PhonePanel com.google.appinventor.components.runtime.HorizontalArrangement instructionContainer 
+(add-component PhonePanel com.google.appinventor.components.runtime.HorizontalArrangement instructionContainer
 (set-and-coerce-property! 'instructionContainer 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'instructionContainer 'Width -2 'number)
@@ -175,26 +310,93 @@ $Source $Yail
 
 ;;; Spacer2
 
-(add-component instructionContainer com.google.appinventor.components.runtime.Label Spacer2 
+(add-component instructionContainer com.google.appinventor.components.runtime.Label Spacer2
 (set-and-coerce-property! 'Spacer2 'HasMargins #f 'boolean)
 
-(set-and-coerce-property! 'Spacer2 'Width 8 'number)
+(set-and-coerce-property! 'Spacer2 'Width 0 'number)
 
 )
 
-;;; Image2
+;;; InstructionPanel
 
-(add-component instructionContainer com.google.appinventor.components.runtime.Image Image2 
-(set-and-coerce-property! 'Image2 'Picture "Instructions.png" 'text)
+(add-component instructionContainer com.google.appinventor.components.runtime.VerticalArrangement InstructionPanel
+(set-and-coerce-property! 'InstructionPanel 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'InstructionPanel 'BackgroundColor #xFF505050 'number)
+
+(set-and-coerce-property! 'InstructionPanel 'Width -2 'number)
+
+)
+
+;;; InstructionTopSpace
+
+(add-component InstructionPanel com.google.appinventor.components.runtime.Label InstructionTopSpace
+(set-and-coerce-property! 'InstructionTopSpace 'HasMargins #f 'boolean)
+
+(set-and-coerce-property! 'InstructionTopSpace 'Height 10 'number)
+
+)
+
+;;; InstructionCodeText
+
+(add-component InstructionPanel com.google.appinventor.components.runtime.Label InstructionCodeText
+(set-and-coerce-property! 'InstructionCodeText 'FontSize 16 'number)
+
+(set-and-coerce-property! 'InstructionCodeText 'Text "Type in the 6-Character Code" 'text)
+
+(set-and-coerce-property! 'InstructionCodeText 'TextAlignment 1 'number)
+
+(set-and-coerce-property! 'InstructionCodeText 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'InstructionCodeText 'Width -2 'number)
+
+)
+
+;;; InstructionOrText
+
+(add-component InstructionPanel com.google.appinventor.components.runtime.Label InstructionOrText
+(set-and-coerce-property! 'InstructionOrText 'FontSize 16 'number)
+
+(set-and-coerce-property! 'InstructionOrText 'Text "OR" 'text)
+
+(set-and-coerce-property! 'InstructionOrText 'TextAlignment 1 'number)
+
+(set-and-coerce-property! 'InstructionOrText 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'InstructionOrText 'Width -2 'number)
+
+)
+
+;;; InstructionScanText
+
+(add-component InstructionPanel com.google.appinventor.components.runtime.Label InstructionScanText
+(set-and-coerce-property! 'InstructionScanText 'FontSize 16 'number)
+
+(set-and-coerce-property! 'InstructionScanText 'Text "Scan the QR Code" 'text)
+
+(set-and-coerce-property! 'InstructionScanText 'TextAlignment 1 'number)
+
+(set-and-coerce-property! 'InstructionScanText 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'InstructionScanText 'Width -2 'number)
+
+)
+
+;;; InstructionBottomSpace
+
+(add-component InstructionPanel com.google.appinventor.components.runtime.Label InstructionBottomSpace
+(set-and-coerce-property! 'InstructionBottomSpace 'HasMargins #f 'boolean)
+
+(set-and-coerce-property! 'InstructionBottomSpace 'Height 10 'number)
 
 )
 
 ;;; Spacer3
 
-(add-component instructionContainer com.google.appinventor.components.runtime.Label Spacer3 
+(add-component instructionContainer com.google.appinventor.components.runtime.Label Spacer3
 (set-and-coerce-property! 'Spacer3 'HasMargins #f 'boolean)
 
-(set-and-coerce-property! 'Spacer3 'Width 8 'number)
+(set-and-coerce-property! 'Spacer3 'Width 0 'number)
 
 )
 
@@ -209,7 +411,7 @@ $Source $Yail
 
 ;;; HorizontalArrangement2
 
-(add-component PhonePanel com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement2 
+(add-component PhonePanel com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement2
 (set-and-coerce-property! 'HorizontalArrangement2 'AlignHorizontal 3 'number)
 
 (set-and-coerce-property! 'HorizontalArrangement2 'Width -2 'number)
@@ -218,7 +420,7 @@ $Source $Yail
 
 ;;; Label7
 
-(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.Label Label7 
+(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.Label Label7
 (set-and-coerce-property! 'Label7 'HasMargins #f 'boolean)
 
 (set-and-coerce-property! 'Label7 'Width 16 'number)
@@ -227,12 +429,14 @@ $Source $Yail
 
 ;;; CodeBox
 
-(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.TextBox CodeBox 
+(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.TextBox CodeBox
 (set-and-coerce-property! 'CodeBox 'BackgroundColor #xFFFFFFFF 'number)
 
 (set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
 
-(set-and-coerce-property! 'CodeBox 'Hint "Six Character Code" 'text)
+(set-and-coerce-property! 'CodeBox 'Hint "6-Character Code" 'text)
+
+(set-and-coerce-property! 'CodeBox 'HintColor #xFF595959 'number)
 
 (set-and-coerce-property! 'CodeBox 'TextAlignment 1 'number)
 
@@ -242,7 +446,7 @@ $Source $Yail
 
 ;;; Label8
 
-(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.Label Label8 
+(add-component HorizontalArrangement2 com.google.appinventor.components.runtime.Label Label8
 (set-and-coerce-property! 'Label8 'HasMargins #f 'boolean)
 
 (set-and-coerce-property! 'Label8 'Width 16 'number)
@@ -260,14 +464,20 @@ $Source $Yail
 
 ;;; ConnectButton
 
-(add-component PhonePanel com.google.appinventor.components.runtime.Button ConnectButton 
-(set-and-coerce-property! 'ConnectButton 'BackgroundColor #xFFFFFF00 'number)
+(add-component PhonePanel com.google.appinventor.components.runtime.Button ConnectButton
+(set-and-coerce-property! 'ConnectButton 'BackgroundColor #xFFC78500 'number)
 
-(set-and-coerce-property! 'ConnectButton 'FontSize 18 'number)
+(set-and-coerce-property! 'ConnectButton 'FontSize 30 'number)
 
-(set-and-coerce-property! 'ConnectButton 'Image "connectwCode.png" 'text)
+(set-and-coerce-property! 'ConnectButton 'Height 48 'number)
 
-(set-and-coerce-property! 'ConnectButton 'TextColor #xFF000000 'number)
+(set-and-coerce-property! 'ConnectButton 'Shape 1 'number)
+
+(set-and-coerce-property! 'ConnectButton 'Text "Connect with Code" 'text)
+
+(set-and-coerce-property! 'ConnectButton 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'ConnectButton 'Width 300 'number)
 
 )
 
@@ -284,14 +494,20 @@ $Source $Yail
 
 ;;; ScanButton
 
-(add-component PhonePanel com.google.appinventor.components.runtime.Button ScanButton 
-(set-and-coerce-property! 'ScanButton 'BackgroundColor #xFF00FF00 'number)
+(add-component PhonePanel com.google.appinventor.components.runtime.Button ScanButton
+(set-and-coerce-property! 'ScanButton 'BackgroundColor #xFF0E7490 'number)
 
-(set-and-coerce-property! 'ScanButton 'FontSize 18 'number)
+(set-and-coerce-property! 'ScanButton 'FontSize 30 'number)
 
-(set-and-coerce-property! 'ScanButton 'Image "connectwQR.png" 'text)
+(set-and-coerce-property! 'ScanButton 'Height 48 'number)
+
+(set-and-coerce-property! 'ScanButton 'Shape 1 'number)
+
+(set-and-coerce-property! 'ScanButton 'Text "Scan QR Code" 'text)
 
 (set-and-coerce-property! 'ScanButton 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'ScanButton 'Width 300 'number)
 
 )
 
@@ -302,108 +518,80 @@ $Source $Yail
 (add-component PhonePanel com.google.appinventor.components.runtime.Label Spacer4 
 (set-and-coerce-property! 'Spacer4 'HasMargins #f 'boolean)
 
-(set-and-coerce-property! 'Spacer4 'Height 8 'number)
+(set-and-coerce-property! 'Spacer4 'Height 48 'number)
 
 )
 
 ;;; LibraryButton
 
-(add-component PhonePanel com.google.appinventor.components.runtime.Button LibraryButton 
-(set-and-coerce-property! 'LibraryButton 'BackgroundColor #xFF00FF00 'number)
+(add-component PhonePanel com.google.appinventor.components.runtime.Button LibraryButton
+(set-and-coerce-property! 'LibraryButton 'BackgroundColor #xFF92257B 'number)
 
-(set-and-coerce-property! 'LibraryButton 'FontSize 18 'number)
+(set-and-coerce-property! 'LibraryButton 'FontSize 30 'number)
 
-(set-and-coerce-property! 'LibraryButton 'Image "myAppLibrary.png" 'text)
+(set-and-coerce-property! 'LibraryButton 'Height 48 'number)
+
+(set-and-coerce-property! 'LibraryButton 'Shape 1 'number)
+
+(set-and-coerce-property! 'LibraryButton 'Text "My Saved Apps" 'text)
 
 (set-and-coerce-property! 'LibraryButton 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'LibraryButton 'Width 300 'number)
 
 )
 
 (define-event LibraryButton Click()(set-this-form)
     (call-component-method 'PhoneStatus1 'loadProjects (*list-for-runtime*) '()))
-;;; IPContainer
+;;; WelcomeSpacer
 
-(add-component MainPanel com.google.appinventor.components.runtime.HorizontalArrangement IPContainer 
-(set-and-coerce-property! 'IPContainer 'AlignHorizontal 3 'number)
-
-(set-and-coerce-property! 'IPContainer 'Width -2 'number)
-
+(add-component PhonePanel com.google.appinventor.components.runtime.Label WelcomeSpacer
+  (set-and-coerce-property! 'WelcomeSpacer 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'WelcomeSpacer 'Height 32 'number)
+  (set-and-coerce-property! 'WelcomeSpacer 'Text "" 'text)
 )
 
-;;; Label4
+;;; WelcomeLabel
 
-(add-component IPContainer com.google.appinventor.components.runtime.Label Label4 
-(set-and-coerce-property! 'Label4 'HasMargins #f 'boolean)
-
-(set-and-coerce-property! 'Label4 'Text "Your IP Address is: " 'text)
-
+(add-component PhonePanel com.google.appinventor.components.runtime.Label WelcomeLabel
+  (set-and-coerce-property! 'WelcomeLabel 'FontSize 16 'number)
+  (set-and-coerce-property! 'WelcomeLabel 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'WelcomeLabel 'Width -2 'number)
+  (set-and-coerce-property! 'WelcomeLabel 'TextAlignment 1 'number)
+  (set-and-coerce-property! 'WelcomeLabel 'Text "New to MIT App Inventor?\nTry our beginner tutorials\nby opening" 'text)
 )
 
-;;; ipaddrlabel
+;;; TutorialLink
 
-(add-component IPContainer com.google.appinventor.components.runtime.Label ipaddrlabel 
-(set-and-coerce-property! 'ipaddrlabel 'HasMargins #f 'boolean)
-
-(set-and-coerce-property! 'ipaddrlabel 'Text "Unknown" 'text)
-
+(add-component PhonePanel com.google.appinventor.components.runtime.Button TutorialLink
+  (set-and-coerce-property! 'TutorialLink 'BackgroundColor #x00FFFFFF 'number)
+  (set-and-coerce-property! 'TutorialLink 'TextColor #xFF0A3A8C 'number)
+  (set-and-coerce-property! 'TutorialLink 'FontBold #t 'boolean)
+  (set-and-coerce-property! 'TutorialLink 'FontSize 16 'number)
+  (set-and-coerce-property! 'TutorialLink 'Width -2 'number)
+  (set-and-coerce-property! 'TutorialLink 'TextAlignment 1 'number)
+  (set-and-coerce-property! 'TutorialLink 'Text "https://appinventor.mit.edu/get-started" 'text)
 )
 
-;;; HorizontalArrangement3
+;;; WelcomeFooter
 
-(add-component MainPanel com.google.appinventor.components.runtime.HorizontalArrangement HorizontalArrangement3 
-(set-and-coerce-property! 'HorizontalArrangement3 'AlignHorizontal 3 'number)
-
-(set-and-coerce-property! 'HorizontalArrangement3 'Width -2 'number)
-
+(add-component PhonePanel com.google.appinventor.components.runtime.Label WelcomeFooter
+  (set-and-coerce-property! 'WelcomeFooter 'FontSize 16 'number)
+  (set-and-coerce-property! 'WelcomeFooter 'Width -2 'number)
+  (set-and-coerce-property! 'WelcomeFooter 'TextAlignment 1 'number)
+  (set-and-coerce-property! 'WelcomeFooter 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'WelcomeFooter 'Text "on your computer" 'text)
 )
 
-;;; Label11
+;;; TutorialBrowser
 
-(add-component HorizontalArrangement3 com.google.appinventor.components.runtime.Label Label11 
-(set-and-coerce-property! 'Label11 'HasMargins #f 'boolean)
-
-(set-and-coerce-property! 'Label11 'Text "Version: " 'text)
-
+(add-component MainPanel com.google.appinventor.components.runtime.ActivityStarter TutorialBrowser
+  (set-and-coerce-property! 'TutorialBrowser 'Action "android.intent.action.VIEW" 'text)
+  (set-and-coerce-property! 'TutorialBrowser 'DataUri "https://appinventor.mit.edu/get-started" 'text)
 )
 
-;;; versionlabel
-
-(add-component HorizontalArrangement3 com.google.appinventor.components.runtime.Label versionlabel 
-(set-and-coerce-property! 'versionlabel 'HasMargins #f 'boolean)
-
-(set-and-coerce-property! 'versionlabel 'Text "Unknown" 'text)
-
-)
-
-;;; CheckBox1
-
-(add-component MainPanel com.google.appinventor.components.runtime.CheckBox CheckBox1 
-(set-and-coerce-property! 'CheckBox1 'Text "Use Legacy Connection" 'text)
-
-)
-
-(define-event CheckBox1 Changed()(set-this-form)
-    (set-and-coerce-property! 'PhoneStatus1 'WebRTC (call-yail-primitive yail-not (*list-for-runtime* (get-property 'CheckBox1 'Checked)) '(boolean) "not") 'boolean))
-;;; SplashBox
-
-(add-component MainPanel com.google.appinventor.components.runtime.TextBox SplashBox 
-(set-and-coerce-property! 'SplashBox 'Enabled #f 'boolean)
-
-(set-and-coerce-property! 'SplashBox 'FontSize 16.0 'number)
-
-(set-and-coerce-property! 'SplashBox 'Height -2 'number)
-
-(set-and-coerce-property! 'SplashBox 'Hint "Hint for TextBox1" 'text)
-
-(set-and-coerce-property! 'SplashBox 'MultiLine #t 'boolean)
-
-(set-and-coerce-property! 'SplashBox 'ReadOnly #t 'boolean)
-
-(set-and-coerce-property! 'SplashBox 'Text "This App is a helper Application for MIT App Inventor. It does not do anything by itself! Go to appinventor.mit.edu for more information." 'text)
-
-(set-and-coerce-property! 'SplashBox 'Width -2 'number)
-
-)
+(define-event TutorialLink Click()(set-this-form)
+  (call-component-method 'TutorialBrowser 'StartActivity (*list-for-runtime*) '()))
 
 ;;; PhoneStatus1
 
@@ -411,6 +599,14 @@ $Source $Yail
 )
 
 (define-event PhoneStatus1 OnSettings()(set-this-form)
+  (call-component-method 'PhoneStatus1 'StyleCompanionHomeButton
+    (*list-for-runtime* (get-component SettingsHome)) '(component))
+
+  (set-and-coerce-property! 'Screen1 'TitleVisible #f 'boolean)
+  (set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
+  (set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)
+  (set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) 'text)
+
     (set-and-coerce-property! 'MainPanel 'Visible #f 'boolean)(set-and-coerce-property! 'SettingsPanel 'Visible #t 'boolean)(set-and-coerce-property! 'rendezvoustextbox 'Text ((get-var p$getRendezvousServer) ) 'text)(set-and-coerce-property! 'aidLabel 'Text (call-component-method 'PhoneStatus1 'InstallationId (*list-for-runtime*) '()) 'text))
 ;;; Web1
 
