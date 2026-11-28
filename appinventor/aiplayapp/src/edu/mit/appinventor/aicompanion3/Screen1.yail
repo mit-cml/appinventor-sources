@@ -30,10 +30,13 @@ $Source $Yail
  (set-and-coerce-property! 'Screen1 'ShowListsAsJson #t 'boolean)
  (set-and-coerce-property! 'Screen1 'Sizing "Responsive" 'text)
  (set-and-coerce-property! 'Screen1 'Theme "AppTheme.Light.DarkActionBar" 'text)
- (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor Companion" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)
+  (call-component-method 'PhoneStatus1 'StyleCompanionTutorialLink
+    (*list-for-runtime* (get-component TutorialLink)) '(component))
+
     (set-var! g$rendezvousServer ((get-var p$getRendezvousServer) ))(set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'GetVersionName (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'PhoneStatus1 'WebRTC (get-property 'CheckBox1 'Checked) 'boolean))
 ;;; SettingsPanel
 
@@ -439,6 +442,56 @@ $Source $Yail
 
 (define-event LibraryButton Click()(set-this-form)
     (call-component-method 'PhoneStatus1 'loadProjects (*list-for-runtime*) '()))
+;;; WelcomeSpacer
+
+(add-component PhonePanel com.google.appinventor.components.runtime.Label WelcomeSpacer
+  (set-and-coerce-property! 'WelcomeSpacer 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'WelcomeSpacer 'Height 32 'number)
+  (set-and-coerce-property! 'WelcomeSpacer 'Text "" 'text)
+)
+
+;;; WelcomeLabel
+
+(add-component PhonePanel com.google.appinventor.components.runtime.Label WelcomeLabel
+  (set-and-coerce-property! 'WelcomeLabel 'FontSize 16 'number)
+  (set-and-coerce-property! 'WelcomeLabel 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'WelcomeLabel 'Width -2 'number)
+  (set-and-coerce-property! 'WelcomeLabel 'TextAlignment 1 'number)
+  (set-and-coerce-property! 'WelcomeLabel 'Text "New to MIT App Inventor?\nTry our beginner tutorials\nby opening" 'text)
+)
+
+;;; TutorialLink
+
+(add-component PhonePanel com.google.appinventor.components.runtime.Button TutorialLink
+  (set-and-coerce-property! 'TutorialLink 'BackgroundColor #x00FFFFFF 'number)
+  (set-and-coerce-property! 'TutorialLink 'TextColor #xFF0A3A8C 'number)
+  (set-and-coerce-property! 'TutorialLink 'FontBold #t 'boolean)
+  (set-and-coerce-property! 'TutorialLink 'FontSize 16 'number)
+  (set-and-coerce-property! 'TutorialLink 'Width -2 'number)
+  (set-and-coerce-property! 'TutorialLink 'TextAlignment 1 'number)
+  (set-and-coerce-property! 'TutorialLink 'Text "https://appinventor.mit.edu/get-started" 'text)
+)
+
+;;; WelcomeFooter
+
+(add-component PhonePanel com.google.appinventor.components.runtime.Label WelcomeFooter
+  (set-and-coerce-property! 'WelcomeFooter 'FontSize 16 'number)
+  (set-and-coerce-property! 'WelcomeFooter 'Width -2 'number)
+  (set-and-coerce-property! 'WelcomeFooter 'TextAlignment 1 'number)
+  (set-and-coerce-property! 'WelcomeFooter 'HasMargins #f 'boolean)
+  (set-and-coerce-property! 'WelcomeFooter 'Text "on your computer" 'text)
+)
+
+;;; TutorialBrowser
+
+(add-component MainPanel com.google.appinventor.components.runtime.ActivityStarter TutorialBrowser
+  (set-and-coerce-property! 'TutorialBrowser 'Action "android.intent.action.VIEW" 'text)
+  (set-and-coerce-property! 'TutorialBrowser 'DataUri "https://appinventor.mit.edu/get-started" 'text)
+)
+
+(define-event TutorialLink Click()(set-this-form)
+  (call-component-method 'TutorialBrowser 'StartActivity (*list-for-runtime*) '()))
+
 ;;; PhoneStatus1
 
 (add-component MainPanel com.google.appinventor.components.runtime.PhoneStatus PhoneStatus1 

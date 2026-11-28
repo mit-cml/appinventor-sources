@@ -398,6 +398,23 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     RetValManager.startCache();
   }
 
+  /** Styles the Companion's tutorial button as an underlined text link.  */
+  @SimpleFunction(description = "Style the Companion tutorial link.", userVisible = false)
+  public void StyleCompanionTutorialLink(AndroidViewComponent link) {
+    android.view.View view = link.getView();
+    if (!(view instanceof android.widget.TextView)) {
+      return;
+    }
+    android.widget.TextView textView = (android.widget.TextView) view;
+    textView.setBackgroundDrawable(null);
+    textView.setMinHeight(0);
+    textView.setMinimumHeight(0);
+    textView.setPadding(textView.getPaddingLeft(), 0, textView.getPaddingRight(), 0);
+    // Underlined like the link on iOS. The line is drawn in the text colour.
+    textView.setPaintFlags(textView.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
+    textView.requestLayout();
+  }
+
   public static String intToIp(int i) {
     return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >>24) & 0xFF);
   }
