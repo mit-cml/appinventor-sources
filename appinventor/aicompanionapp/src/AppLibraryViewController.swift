@@ -294,12 +294,8 @@ class AppLibraryViewController: UIViewController, UITableViewDelegate, UITableVi
     
     cell.appName.text = title
     cell.lastOpened.text = "Last opened: " + lastOpened
-    if iconPath == "default" {
-      //TODO determine default icon
-      cell.appIconImage.image = UIImage(named: "Onboard-1")
-    } else {
-      cell.appIconImage.image = UIImage(named: iconPath)
-    }
+    let customIcon = iconPath == "default" ? nil : UIImage(contentsOfFile: iconPath)
+    cell.appIconImage.image = customIcon ?? UIImage(named: "saved-app-default.png")
     if projectVersioning < AppLibraryViewController.AIVersioning {
       cell.warningLabel.isHidden = false
     } else {
