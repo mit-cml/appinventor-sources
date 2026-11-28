@@ -421,6 +421,7 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
   /**
    * Styles Companion UI components.
+   * Supports the Settings Home button and code textbox.
    */
   @SimpleFunction(description = "Styles Companion UI components.")
   public void StyleCompanionHomeButton(AndroidViewComponent component) {
@@ -430,6 +431,8 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
     android.graphics.drawable.GradientDrawable background =
         new android.graphics.drawable.GradientDrawable();
+
+    background.setCornerRadius(8 * density);
 
     // Settings Home button
     if (view instanceof android.widget.Button) {
@@ -463,6 +466,47 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
             Math.round(12 * density), Math.round(4 * density),
             Math.round(12 * density), Math.round(4 * density));
       }
+
+    // Code textbox
+    } else if (view instanceof android.widget.EditText) {
+      background.setColor(0xFFFFFFFF);
+
+      android.widget.EditText editText =
+          (android.widget.EditText) view;
+
+      if (android.os.Build.VERSION.SDK_INT >= 21) {
+        editText.setBackgroundTintList(null);
+      }
+
+      editText.setBackgroundDrawable(background);
+
     }
+  }
+
+  /**
+   * Fits a large label into one of the Companion's main buttons, which have a fixed size.
+   */
+  @SimpleFunction(description = "Style a Companion main button.", userVisible = false)
+  public void StyleCompanionMainButton(AndroidViewComponent button) {
+    android.view.View view = button.getView();
+    if (!(view instanceof android.widget.TextView)) {
+      return;
+    }
+    android.widget.TextView textView = (android.widget.TextView) view;
+    // The platform button style reserves space around the label, which would clip a label this
+    // large. The label is centered, so it does not need the padding.
+    textView.setPadding(0, 0, 0, 0);
+    textView.setIncludeFontPadding(false);
+    textView.setMaxLines(1);
+    if (android.os.Build.VERSION.SDK_INT >= 26) {
+      // If the system font size is turned up, shrink the label to fit instead of clipping it.
+      int largest = Math.round(textView.getTextSize());
+      int smallest = Math.round(12 * view.getResources().getDisplayMetrics().density);
+      if (smallest < largest) {
+        textView.setAutoSizeTextTypeUniformWithConfiguration(smallest, largest, 1,
+            android.util.TypedValue.COMPLEX_UNIT_PX);
+      }
+    }
+    textView.requestLayout();
   }
 }
