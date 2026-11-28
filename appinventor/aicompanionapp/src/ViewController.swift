@@ -8,6 +8,45 @@ import AIComponentKit
 import AVKit
 import Zip
 
+private enum CompanionPalette {
+  // Instruction header on the home screen.
+  static let headerBackground = CompanionPalette.rgb(0x505050)
+  static let headerText = UIColor.white
+
+  // Home buttons.
+  static let connectBackground = CompanionPalette.rgb(0xC78500)
+  static let connectText = UIColor.white
+  static let scanBackground = CompanionPalette.rgb(0x0E7490)
+  static let scanText = UIColor.white
+  static let libraryBackground = CompanionPalette.rgb(0x92257B)
+  static let libraryText = UIColor.white
+
+  static let bodyText = CompanionPalette.dynamic(
+    light: UIColor.black, dark: UIColor.white)
+  static let link = CompanionPalette.dynamic(
+    light: CompanionPalette.rgb(0x0A3A8C), dark: CompanionPalette.rgb(0x8AB4F8))
+
+  static let placeholder = CompanionPalette.dynamic(
+    light: CompanionPalette.rgb(0x595959), dark: CompanionPalette.rgb(0xB3B3B3))
+
+  static func rgb(_ hex: UInt32) -> UIColor {
+    return UIColor(red: CGFloat((hex >> 16) & 0xFF) / 255.0,
+                   green: CGFloat((hex >> 8) & 0xFF) / 255.0,
+                   blue: CGFloat(hex & 0xFF) / 255.0,
+                   alpha: 1.0)
+  }
+
+  /// Returns a colour that is `dark` in dark mode (iOS 13 and later) and `light` otherwise.
+  static func dynamic(light: UIColor, dark: UIColor) -> UIColor {
+    if #available(iOS 13.0, *) {
+      return UIColor { traits in
+        return traits.userInterfaceStyle == .dark ? dark : light
+      }
+    }
+    return light
+  }
+}
+
 /**
  * Menu for the iPad REPL.
  */
@@ -173,7 +212,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       }
       form.PrimaryColor = Int32(bitPattern: 0xFFA5CF47)
       form.PrimaryColorDark = Int32(bitPattern: 0xFF516623)
-      form.title = "MIT App Inventor 2"
+      form.title = "MIT App Inventor Companion"
       interpreter.evalForm("(add-component Screen1 AIComponentKit.BarcodeScanner BarcodeScanner1)")
       interpreter.evalForm("(define-event BarcodeScanner1 AfterScan(result) (yail:invoke AICompanionApp.ViewController 'gotText result))")
       if let exception = interpreter.exception {
@@ -188,10 +227,27 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
       notifier1 = form.environment["Notifier1"] as? Notifier
       connectCode = form.view.viewWithTag(3) as! UITextField?
+      // Apply rounded corners to the Companion home screen.
+      connectCode?.layer.cornerRadius = 8
+      connectCode?.clipsToBounds = true
+      if let codeField = connectCode {
+        codeField.attributedPlaceholder = NSAttributedString(
+          string: codeField.placeholder ?? "6-Character Code",
+          attributes: [.foregroundColor: CompanionPalette.placeholder])
+      }
+
+      configureInstructionHeader()
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
       libraryButton = form.view.viewWithTag(7) as! UIButton?
+      styleHomeButton(connectButton, title: "Connect with Code",
+        background: CompanionPalette.connectBackground, text: CompanionPalette.connectText)
+      styleHomeButton(barcodeButton, title: "Scan QR Code",
+        background: CompanionPalette.scanBackground, text: CompanionPalette.scanText)
+      styleHomeButton(libraryButton, title: "My Saved Apps",
+        background: CompanionPalette.libraryBackground, text: CompanionPalette.libraryText)
       legacyCheckbox.Text = "Use Legacy Connection"
+      configureHomeTutorial()
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
@@ -212,7 +268,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   
   func showHelpButton() {
-    guard menuButton != nil else {
+    guard menuButton != nil, let item = topViewController?.navigationItem else {
       return
     }
     let helpMenuButton: UIBarButtonItem
@@ -231,8 +287,20 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         target: self, action: #selector(showCompanionSettings))
     }
     settingsButton.accessibilityLabel = "Settings"
-    topViewController?.navigationItem.leftBarButtonItem = nil
-    topViewController?.navigationItem.rightBarButtonItems = [settingsButton, helpMenuButton]
+    if #available(iOS 16.0, *) {
+      item.style = .browser
+    } else {
+      let heading = UILabel()
+      heading.text = item.title
+      heading.textColor = .white
+      heading.font = .systemFont(ofSize: 17, weight: .semibold)
+      heading.adjustsFontSizeToFitWidth = true
+      heading.minimumScaleFactor = 0.75
+      heading.accessibilityTraits = .header
+      item.titleView = UIView()
+      item.leftBarButtonItem = UIBarButtonItem(customView: heading)
+    }
+    item.rightBarButtonItems = [settingsButton, helpMenuButton]
   }
 
   @objc private func showCompanionSettings() {
@@ -243,11 +311,109 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     pushViewController(companionSettings, animated: true)
   }
 
-  func showMenuButton() {
-    guard let menuButton = menuButton else {
+  /// Lays out the connection instructions inside the Home header.
+  private func configureInstructionHeader() {
+    guard let header = form.view.viewWithTag(9), header.subviews.isEmpty else {
       return
     }
-    self.topViewController?.navigationItem.rightBarButtonItems = [menuButton]
+    header.backgroundColor = CompanionPalette.headerBackground
+    header.isUserInteractionEnabled = false
+    let lines = ["Type in the 6-Character Code", "OR", "Scan the QR Code"]
+    let labels: [UILabel] = lines.map { line in
+      let label = UILabel()
+      label.text = line
+      label.font = UIFont.systemFont(ofSize: 16)
+      label.textColor = CompanionPalette.headerText
+      label.textAlignment = .center
+      label.numberOfLines = 0
+      return label
+    }
+    labels.first?.accessibilityTraits = .header
+    let stack = UIStackView(arrangedSubviews: labels)
+    stack.axis = .vertical
+    stack.alignment = .fill
+    stack.spacing = 4
+    stack.translatesAutoresizingMaskIntoConstraints = false
+    header.addSubview(stack)
+    NSLayoutConstraint.activate([
+      stack.topAnchor.constraint(equalTo: header.topAnchor, constant: 12),
+      stack.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 16),
+      stack.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -16),
+      stack.bottomAnchor.constraint(equalTo: header.bottomAnchor, constant: -12)
+    ])
+  }
+
+  /// Gives a home button its title and colours. Sizes come from the storyboard.
+  private func styleHomeButton(_ button: UIButton?, title: String, background: UIColor, text: UIColor) {
+    guard let button = button else {
+      return
+    }
+    button.setImage(nil, for: .normal)
+    button.setTitle(title, for: .normal)
+    button.setTitleColor(text, for: .normal)
+    // The lettering in the original button images was this size. It also has to stay at 24 pt
+    // or more, because the Connect button's colours only pass WCAG AA as large text.
+    button.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+    button.titleLabel?.adjustsFontSizeToFitWidth = true
+    button.titleLabel?.minimumScaleFactor = 0.8
+    button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+    button.backgroundColor = background
+    button.layer.cornerRadius = 4
+    button.clipsToBounds = true
+  }
+
+  private func configureHomeTutorial() {
+    guard let content = form.view.viewWithTag(8), let libraryButton = libraryButton else {
+      return
+    }
+    let address = "https://appinventor.mit.edu/get-started"
+    let text = "New to MIT App Inventor?\nTry our beginner tutorials\nby opening\n\(address)\non your computer"
+    let paragraph = NSMutableParagraphStyle()
+    paragraph.alignment = .center
+    let attributedText = NSMutableAttributedString(string: text, attributes: [
+      .font: UIFont.systemFont(ofSize: 16),
+      .foregroundColor: CompanionPalette.bodyText,
+      .paragraphStyle: paragraph
+    ])
+    // The address is the only bold text on the home screen.
+    let addressRange = (text as NSString).range(of: address)
+    attributedText.addAttribute(.link, value: address, range: addressRange)
+    attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: addressRange)
+
+    let tutorial = UITextView()
+    tutorial.translatesAutoresizingMaskIntoConstraints = false
+    tutorial.backgroundColor = .clear
+    tutorial.isEditable = false
+    tutorial.isSelectable = true
+    tutorial.isScrollEnabled = false
+    tutorial.textContainerInset = .zero
+    tutorial.textContainer.lineFragmentPadding = 0
+    tutorial.attributedText = attributedText
+    tutorial.linkTextAttributes = [
+      .foregroundColor: CompanionPalette.link,
+      .font: UIFont.boldSystemFont(ofSize: 16),
+      .underlineStyle: NSUnderlineStyle.single.rawValue
+    ]
+    content.addSubview(tutorial)
+    NSLayoutConstraint.activate([
+      tutorial.topAnchor.constraint(equalTo: libraryButton.bottomAnchor, constant: 32),
+      tutorial.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 24),
+      tutorial.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -24),
+      tutorial.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -20)
+    ])
+  }
+
+  func showMenuButton() {
+    guard let menuButton = menuButton, let item = topViewController?.navigationItem else {
+      return
+    }
+    if #available(iOS 16.0, *) {
+      item.style = .navigator
+    } else {
+      item.titleView = nil
+      item.leftBarButtonItem = nil
+    }
+    item.rightBarButtonItems = [menuButton]
   }
 
   public override func didReceiveMemoryWarning() {
