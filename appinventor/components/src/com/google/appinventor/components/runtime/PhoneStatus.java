@@ -401,4 +401,51 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   public static String intToIp(int i) {
     return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >>24) & 0xFF);
   }
+
+  /**
+   * Styles Companion UI components.
+   */
+  @SimpleFunction(description = "Styles Companion UI components.")
+  public void StyleCompanionHomeButton(AndroidViewComponent component) {
+    android.view.View view = component.getView();
+
+    float density = view.getResources().getDisplayMetrics().density;
+
+    android.graphics.drawable.GradientDrawable background =
+        new android.graphics.drawable.GradientDrawable();
+
+    // Settings Home button
+    if (view instanceof android.widget.Button) {
+      android.widget.Button button = (android.widget.Button) view;
+
+      background.setColor(0xFFD1EE91);
+      background.setCornerRadius(24 * density);
+      background.setStroke(Math.max(1, Math.round(density)), 0xFF799C36);
+
+      if (android.os.Build.VERSION.SDK_INT >= 21) {
+        button.setBackgroundTintList(null);
+        button.setStateListAnimator(null);
+        button.setElevation(0);
+      }
+
+      button.setBackgroundDrawable(background);
+      button.setAllCaps(false);
+      button.setTextColor(0xFF162008);
+      button.setTextSize(16);
+      button.setTypeface(android.graphics.Typeface.create(
+          "sans-serif", android.graphics.Typeface.NORMAL));
+      button.setMinWidth(0);
+      button.setMinimumWidth(0);
+      button.setMinHeight(Math.round(44 * density));
+      button.setMinimumHeight(Math.round(44 * density));
+      button.setPadding(Math.round(16 * density), 0,
+          Math.round(16 * density), 0);
+
+      if (button.getParent() instanceof android.view.View) {
+        ((android.view.View) button.getParent()).setPadding(
+            Math.round(12 * density), Math.round(4 * density),
+            Math.round(12 * density), Math.round(4 * density));
+      }
+    }
+  }
 }
