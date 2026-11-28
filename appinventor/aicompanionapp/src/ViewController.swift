@@ -65,13 +65,13 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
 
   @IBOutlet public var form: ReplForm!
 
-  @IBOutlet weak var ipAddrLabel: UILabel?
-  @IBOutlet weak var versionNumber: UILabel?
   @IBOutlet weak var connectCode: UITextField?
   @IBOutlet weak var connectButton: UIButton?
   @IBOutlet weak var barcodeButton: UIButton?
   @IBOutlet weak var libraryButton: UIButton?
-  @IBOutlet weak var legacyCheckbox: CheckBoxView!
+  // Retain the same checkbox while navigating between Home and Settings.
+  private let legacyCheckbox = CheckBoxView()
+  private lazy var companionSettings = CompanionSettingsViewController(legacyCheckbox: legacyCheckbox)
   @objc var barcodeScanner: BarcodeScanner?
   @objc var phoneStatus: PhoneStatus!
   @objc var notifier1: Notifier!
@@ -187,19 +187,11 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
         """)
       phoneStatus = form.environment["PhoneStatus1"] as? PhoneStatus
       notifier1 = form.environment["Notifier1"] as? Notifier
-      ipAddrLabel = form.view.viewWithTag(1) as! UILabel?
-      versionNumber = form.view.viewWithTag(2) as! UILabel?
       connectCode = form.view.viewWithTag(3) as! UITextField?
       connectButton = form.view.viewWithTag(4) as! UIButton?
       barcodeButton = form.view.viewWithTag(5) as! UIButton?
-      legacyCheckbox = form.view.viewWithTag(6) as? CheckBoxView
       libraryButton = form.view.viewWithTag(7) as! UIButton?
       legacyCheckbox.Text = "Use Legacy Connection"
-      let ipaddr: String! = MAINetworkUtils.getIPAddress()
-      let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "unknown"
-      let build = Bundle.main.infoDictionary?["CFBundleVersion"] ?? "?"
-      ipAddrLabel?.text = "IP Address: \(ipaddr!)"
-      versionNumber?.text = "Version: \(version) (build \(build))"
       connectCode?.delegate = self
       connectButton?.addTarget(self, action: #selector(connect(_:)), for: UIControl.Event.primaryActionTriggered)
       barcodeButton?.addTarget(self, action: #selector(showBarcodeScanner(_:)), for: UIControl.Event.primaryActionTriggered)
@@ -220,7 +212,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     }
   
   func showHelpButton() {
-    guard let menuButton = menuButton else {
+    guard menuButton != nil else {
       return
     }
     let helpMenuButton: UIBarButtonItem
@@ -229,14 +221,33 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
     } else {
       helpMenuButton = UIBarButtonItem(title: "?", style: .plain, target: self, action: #selector(goBackToOnboarding(caller:)))
     }
-    self.topViewController?.navigationItem.rightBarButtonItem = helpMenuButton
+    let settingsButton: UIBarButtonItem
+    if #available(iOS 13.0, *),
+       let icon = UIImage(systemName: "gearshape") ?? UIImage(systemName: "gear") {
+      settingsButton = UIBarButtonItem(image: icon,
+        style: .plain, target: self, action: #selector(showCompanionSettings))
+    } else {
+      settingsButton = UIBarButtonItem(title: "Settings", style: .plain,
+        target: self, action: #selector(showCompanionSettings))
+    }
+    settingsButton.accessibilityLabel = "Settings"
+    topViewController?.navigationItem.leftBarButtonItem = nil
+    topViewController?.navigationItem.rightBarButtonItems = [settingsButton, helpMenuButton]
+  }
+
+  @objc private func showCompanionSettings() {
+    guard topViewController === form else {
+      return
+    }
+    form.view.endEditing(true)
+    pushViewController(companionSettings, animated: true)
   }
 
   func showMenuButton() {
     guard let menuButton = menuButton else {
       return
     }
-    self.topViewController?.navigationItem.rightBarButtonItem = menuButton
+    self.topViewController?.navigationItem.rightBarButtonItems = [menuButton]
   }
 
   public override func didReceiveMemoryWarning() {
@@ -270,7 +281,7 @@ public class ViewController: UINavigationController, UITextFieldDelegate {
       return
     }
     showMenuButton()
-    phoneStatus.WebRTC = !(legacyCheckbox?.Checked ?? true)
+    phoneStatus.WebRTC = !legacyCheckbox.Checked
     RetValManager.shared().usingWebRTC = phoneStatus.WebRTC
     form.startHTTPD(false)
     form.application?.makeCurrent()
@@ -588,5 +599,90 @@ extension ViewController: WebRTCConnectionDelegate {
     connectProgressDialog?.dismiss(animated: true)
     connectProgressView = nil
     connectProgressDialog = nil
+  }
+}
+
+private final class CompanionSettingsViewController: UIViewController {
+  private let legacyCheckbox: CheckBoxView
+  private let versionLabel = UILabel()
+  private let ipLabel = UILabel()
+
+  init(legacyCheckbox: CheckBoxView) {
+    self.legacyCheckbox = legacyCheckbox
+    super.init(nibName: nil, bundle: nil)
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    let textColor: UIColor
+    if #available(iOS 13.0, *) {
+      view.backgroundColor = .systemBackground
+      textColor = .label
+    } else {
+      view.backgroundColor = .white
+      textColor = .black
+    }
+    if let background = UIImage(named: "Mooning") {
+      view.backgroundColor = UIColor(patternImage: background)
+    }
+
+    // Use the same native Home back button and navigation appearance as Saved Apps.
+    navigationItem.hidesBackButton = false
+
+    let heading = UILabel()
+    heading.text = "Settings"
+    heading.font = .systemFont(ofSize: 20)
+    heading.textColor = textColor
+    heading.textAlignment = .center
+    heading.accessibilityTraits = .header
+
+    let scrollView = UIScrollView()
+    scrollView.translatesAutoresizingMaskIntoConstraints = false
+    let content = UIStackView(arrangedSubviews: [heading, legacyCheckbox])
+    content.axis = .vertical
+    content.alignment = .center
+    content.spacing = 12
+    content.translatesAutoresizingMaskIntoConstraints = false
+    scrollView.addSubview(content)
+    view.addSubview(scrollView)
+
+    for label in [versionLabel, ipLabel] {
+      label.font = .systemFont(ofSize: 14)
+      label.textColor = textColor
+      label.textAlignment = .center
+      label.numberOfLines = 0
+    }
+    let footer = UIStackView(arrangedSubviews: [versionLabel, ipLabel])
+    footer.axis = .vertical
+    footer.spacing = 4
+    footer.translatesAutoresizingMaskIntoConstraints = false
+    view.addSubview(footer)
+
+    NSLayoutConstraint.activate([
+      scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
+      scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+      scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+      scrollView.bottomAnchor.constraint(equalTo: footer.topAnchor, constant: -16),
+      content.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+      content.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+      content.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+      content.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+      content.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+      legacyCheckbox.widthAnchor.constraint(lessThanOrEqualTo: content.widthAnchor),
+      footer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+      footer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+      footer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+    ])
+  }
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+    versionLabel.text = "Version: \(version)"
+    ipLabel.text = "Your IP Address Is: \(PhoneStatus.GetWifiIpAddress())"
   }
 }
