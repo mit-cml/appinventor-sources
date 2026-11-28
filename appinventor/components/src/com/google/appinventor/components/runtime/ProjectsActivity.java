@@ -21,11 +21,14 @@ import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.net.Uri;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
 import android.util.Base64;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -36,6 +39,7 @@ import android.webkit.WebViewClient;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
 
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -52,6 +56,8 @@ import java.io.IOException;
  *
  */
 public final class ProjectsActivity extends AppInventorCompatActivity {
+
+  private static final int COMPANION_HEADER_COLOR = 0xFFA5CF47;
 
   WebView webview;
   Handler handler;
@@ -185,6 +191,7 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
     if (getSupportActionBar() != null) {
       getSupportActionBar().hide();
     }
+    styleStatusBar();
     // Uncomment the line below to enable debugging
     // the splash screen (splash.html)
     //
@@ -193,4 +200,19 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
     webview.loadUrl("file:///android_asset/projects.html");
   }
 
+  private void styleStatusBar() {
+    Window window = getWindow();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+      // The decor view draws behind the transparent status bar on edge-to-edge displays.
+      window.getDecorView().setBackgroundColor(COMPANION_HEADER_COLOR);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+      window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+      // Android 5 only supports light status bar icons.
+      int color = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? COMPANION_HEADER_COLOR : 0xFF516623;
+      window.setStatusBarColor(color);
+    }
+    WindowCompat.getInsetsController(window, window.getDecorView())
+        .setAppearanceLightStatusBars(true);
+  }
 }
