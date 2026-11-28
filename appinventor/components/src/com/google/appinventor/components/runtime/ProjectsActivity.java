@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import android.app.Activity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -22,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.util.Base64;
 import android.util.Log;
 
 import android.webkit.JavascriptInterface;
@@ -36,7 +39,12 @@ import androidx.core.content.ContextCompat;
 
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import com.google.appinventor.components.runtime.util.ProjectIconUtil;
 import com.google.appinventor.components.runtime.util.ProjectManager;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Create a An activity that display's the Repl's startup splash screen
@@ -48,6 +56,44 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
   WebView webview;
   Handler handler;
 
+  private static String getProjectIcon(File project) {
+    try {
+      byte[] data = ProjectIconUtil.readIcon(project);
+      if (data == null) {
+        return "";
+      }
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inJustDecodeBounds = true;
+      BitmapFactory.decodeByteArray(data, 0, data.length, options);
+      if (options.outWidth <= 0 || options.outHeight <= 0) {
+        return "";
+      }
+      // Only send a thumbnail to the WebView, even when the project has a large icon.
+      options.inSampleSize = 1;
+      while (options.outWidth / options.inSampleSize > 192
+          || options.outHeight / options.inSampleSize > 192) {
+        options.inSampleSize *= 2;
+      }
+      options.inJustDecodeBounds = false;
+      Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+      if (bitmap == null) {
+        return "";
+      }
+      try {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        if (!bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)) {
+          return "";
+        }
+        return "data:image/png;base64," + Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP);
+      } finally {
+        bitmap.recycle();
+      }
+    } catch (IOException | IllegalArgumentException e) {
+      Log.w("ProjectsActivity", "Unable to read saved project icon: " + project.getName(), e);
+      return "";
+    }
+  }
+
   public class JavaInterface {
     Context mContext;
 
@@ -57,18 +103,18 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
 
     @JavascriptInterface
     public String listProjects() {
-      java.io.File projectsDir = ProjectsActivity.this.getApplicationContext().getExternalFilesDir("assets/__projects__");
+      File projectsDir = ProjectsActivity.this.getApplicationContext().getExternalFilesDir("assets/__projects__");
       if (projectsDir == null) {
         Log.w("ProjectsActivity", "projectsDir is null");
         return "[]";
       }
       Log.d("ProjectsActivity", "projectsDir = " + projectsDir.getPath());
-      java.io.File[] files = projectsDir.listFiles();
+      File[] files = projectsDir.listFiles();
       if (files == null) {
         return "[]";
       }
       JSONArray retval = new JSONArray();
-      for (java.io.File file : files) {
+      for (File file : files) {
         if (!file.isFile() || file.getName().startsWith(".")) {
           continue;
         }
@@ -76,6 +122,7 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
           JSONObject entry = new JSONObject();
           entry.put("name", file.getName());
           entry.put("lastModified", file.lastModified());
+          entry.put("icon", getProjectIcon(file));
           retval.put(entry);
         } catch (JSONException e) {
           Log.e("ProjectsActivity", "Error building project entry", e);
@@ -134,6 +181,10 @@ public final class ProjectsActivity extends AppInventorCompatActivity {
         }
       });
     setContentView(webview);
+    hideTitleBar();
+    if (getSupportActionBar() != null) {
+      getSupportActionBar().hide();
+    }
     // Uncomment the line below to enable debugging
     // the splash screen (splash.html)
     //

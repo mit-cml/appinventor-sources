@@ -13,27 +13,48 @@
      limitations under the License.
    -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Saved Apps</title>
         <style>
-         body { font-family: sans-serif; margin: 12px; }
-         h1 { font-size: 20px; }
-         #home { min-height: 48px; padding: 0 16px; }
+         body { font-family: sans-serif; margin: 0; }
+         .heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+         h1 { margin: 0; font-size: 1.7rem; }
+         header { position: sticky; top: 0; z-index: 1; padding: 4px 12px; background: #a5cf47; }
+         #home { min-height: 44px; font: inherit; padding: 0 16px; border: 1px solid #799c36;
+             border-radius: 24px; background: #d1ee91; color: #162008; }
+         main { padding: 16px; }
          #controls { margin-bottom: 10px; }
-         #search { padding: 6px; width: 60%; }
-         #sortmode { padding: 6px; }
-         .project { padding: 10px 0; border-bottom: 1px solid #ddd; }
-         .pname { font-weight: bold; font-size: 15px; }
-         .pdate { color: #888; font-size: 12px; margin-top: 2px; }
-         .project button { margin-top: 6px; padding: 5px 14px; border: none;
-             color: white; border-radius: 3px; margin-right: 8px; }
-         .btn-run { background: #555; }
-         .btn-del { background: #c33; }
+         .sort { color: #862781; position: relative; display: inline-flex; align-items: center;
+             min-height: 44px; white-space: nowrap; padding: 0 10px; border-radius: 5px; border: 1px solid currentColor; }
+         .sort select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+         .sort:focus-within { outline: 2px solid currentColor; }
+         #search { box-sizing: border-box; width: 100%; margin: 8px 0; padding: 9px 16px; min-height: 44px; font: inherit;
+             border: 2px solid #862781; border-radius: 24px; color: inherit; background: transparent; }
+         #search::placeholder { color: #595959; opacity: 1; }
+         .project { position: relative; padding: 10px 0; border-bottom: 1px solid #ddd; }
+         .project-info { display: flex; align-items: center; gap: 12px; width: calc(100% - 44px);
+             padding: 0; border: 0; background: transparent; color: inherit; font: inherit;
+             text-align: start; cursor: pointer; }
+         .project-icon { box-sizing: border-box; flex: none; width: 52px; height: 52px;
+             object-fit: contain; border: 1px solid #862781; border-radius: 12px; }
+         .project-details { min-width: 0; overflow-wrap: anywhere; }
+         .pname { display: block; font-weight: bold; font-size: 15px; }
+         .pdate { display: block; color: #888; font-size: 12px; margin-top: 2px; }
+         .project-options { position: absolute; top: 10px; right: 0; }
+         .project-options summary { min-width: 44px; min-height: 44px; text-align: center; line-height: 44px;
+             color: #862781; font-size: 24px; list-style: none; cursor: pointer; }
+         .project-options summary::-webkit-details-marker { display: none; }
+         .project-delete { position: absolute; z-index: 2; top: 100%; right: 0; color: #a21d27;
+             background: white; border: 1px solid #ccc; border-radius: 6px; min-height: 44px;
+             padding: 0 16px; font: inherit; white-space: nowrap; }
          .empty { text-align: center; padding: 40px 0; color: #888; }
          .empty p { margin-top: 6px; font-size: 14px; }
         </style>
         <script type="text/javascript">
+         const DEFAULT_PROJECT_ICON = "saved-app-default.png";
          let allProjects = [];
 
          function formatdate(ts) {
@@ -86,35 +107,55 @@
                  let div = document.createElement("div");
                  div.className = "project";
 
-                 let nm = document.createElement("div");
+                 let info = document.createElement("button");
+                 info.type = "button";
+                 info.className = "project-info";
+                 info.setAttribute("aria-label", "Open " + p.name);
+                 info.onclick = function() { Android.loadProject(p.name); };
+                 let icon = document.createElement("img");
+                 icon.onerror = function() {
+                     this.onerror = null;
+                     this.src = DEFAULT_PROJECT_ICON;
+                 };
+                 icon.src = p.icon || DEFAULT_PROJECT_ICON;
+                 icon.alt = "";
+                 icon.className = "project-icon";
+                 info.appendChild(icon);
+
+                 let details = document.createElement("span");
+                 details.className = "project-details";
+                 let nm = document.createElement("span");
                  nm.className = "pname";
                  nm.textContent = p.name;
-                 div.appendChild(nm);
+                 details.appendChild(nm);
 
                  let rel = formatdate(p.lastModified);
                  if (rel) {
-                     let dt = document.createElement("div");
+                     let dt = document.createElement("span");
                      dt.className = "pdate";
                      dt.textContent = "Last modified: " + rel;
-                     div.appendChild(dt);
+                     details.appendChild(dt);
                  }
 
-                 let run = document.createElement("button");
-                 run.className = "btn-run";
-                 run.textContent = "Run";
-                 run.onclick = (function(name) {
-                     return function() { Android.loadProject(name); };
-                 })(p.name);
+                 info.appendChild(details);
+                 div.appendChild(info);
 
+                 let options = document.createElement("details");
+                 options.className = "project-options";
+                 let more = document.createElement("summary");
+                 more.textContent = "⋮";
+                 more.setAttribute("aria-label", "Options for " + p.name);
+                 options.appendChild(more);
                  let del = document.createElement("button");
-                 del.className = "btn-del";
-                 del.textContent = "Delete";
-                 del.onclick = (function(name) {
-                     return function() { deleteproject(name); };
-                 })(p.name);
-
-                 div.appendChild(run);
-                 div.appendChild(del);
+                 del.type = "button";
+                 del.className = "project-delete";
+                 del.textContent = "Delete App";
+                 del.onclick = function() {
+                     options.open = false;
+                     deleteproject(p.name);
+                 };
+                 options.appendChild(del);
+                 div.appendChild(options);
                  el.appendChild(div);
              }
          }
@@ -140,24 +181,33 @@
                  localStorage.setItem("projects_sortMode", this.value);
                  showprojects();
              });
+             document.addEventListener("click", function(event) {
+                 document.querySelectorAll(".project-options[open]").forEach(function(menu) {
+                     if (!menu.contains(event.target)) menu.open = false;
+                 });
+             });
              refreshProjects();
          });
         </script>
     </head>
     <body>
-      <button type="button" id="home" onclick="Android.finished()">&lsaquo; Home</button>
-      <center>
-        <h1>Saved Apps</h1>
-      </center>
-      <div id="controls" hidden>
-        <input type="text" id="search" placeholder="Search...">
-        <select id="sortmode">
-          <option value="recent">Recently Modified</option>
-          <option value="az">App Name: A-Z</option>
-          <option value="za">App Name: Z-A</option>
-        </select>
-      </div>
-      <div id="projects">
-      </div>
+      <header><button type="button" id="home" onclick="Android.finished()">&lsaquo; Home</button></header>
+      <main>
+        <div id="controls" hidden>
+          <div class="heading">
+            <h1>Saved Apps</h1>
+            <label class="sort">↕ Sort
+              <select id="sortmode" aria-label="Sort saved apps">
+                <option value="recent">Recently Modified</option>
+                <option value="az">App Name: A-Z</option>
+                <option value="za">App Name: Z-A</option>
+              </select>
+            </label>
+          </div>
+          <input type="search" id="search" placeholder="Search" aria-label="Search saved apps">
+        </div>
+        <div id="projects">
+        </div>
+      </main>
     </body>
 </html>
